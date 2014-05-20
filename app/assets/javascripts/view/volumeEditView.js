@@ -161,9 +161,20 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_publications': function (step) {
+				var study, citations = [];
+
 				if (volume) {
+					angular.forEach(volume.citations, function (citation) {
+						if (citation.study) {
+							study = citation;
+						} else {
+							citations.push(citation);
+						}
+					});
+
 					forms.publications.init({
-						citation: volume.citations,
+						study: study,
+						citation: citations,
 					});
 				}
 			},

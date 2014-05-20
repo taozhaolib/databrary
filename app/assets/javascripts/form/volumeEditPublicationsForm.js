@@ -54,22 +54,46 @@ module.directive('volumeEditPublicationsForm', [
 					});
 			};
 
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
+			//
+
+			form.autoDOI = function (target) {
+				if (!target.url || target.head) {
+					return;
 				}
 
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
+				var doi = page.constants.data.regex.doi.exec(target.url);
 
-				if (form.repeater) {
-					form.repeater.repeats = form.data.citation;
+				if (!doi || !doi[1]) {
+					return;
 				}
-			};
 
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
+				if (!target.name) {
+					page.models.CrossCite
+						.json(doi[1])
+						.then(function (res) {
+							if (!res.title) {
+								page.messages.add({
+									type: 'red',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.autodoi.name.error'),
+								});
+							} else {
+								target.head = res.title;
+								target.url = doi[1];
+
+								page.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.autodoi.name.success'),
+								});
+							}
+						}, function (res) {
+							page.messages.add({
+								type: 'red',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.name.error'),
+							});
+						});
 				}
 			};
 
@@ -81,7 +105,8 @@ module.directive('volumeEditPublicationsForm', [
 
 			form.retrieveRepeater = function (repeater) {
 				form.repeater = repeater;
-				form.repeater.repeats = form.data.citation;
+				form.repeater.autoDOI = form.autoDOI;
+				form.repeater.repeats = form.data.citation || [];
 				form.repeater.addFn = changeFn;
 				form.repeater.removeFn = changeFn;
 			};

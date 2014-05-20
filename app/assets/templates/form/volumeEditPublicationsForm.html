@@ -1,11 +1,28 @@
 <form name="volumeEditPublicationsForm" bindonce>
-  <fieldset class="clean">
+	<fieldset>
+		<legend bo-html="'citations.study.title' | message"></legend>
+		<div bo-html="'citations.study.body' | message | format"></div>
+
+		<label ng-bind-html="'citation.url' | message"></label>
+		<input type="text" name="url" ng-model="volumeEditPublicationsForm.data.study.url" idle="volumeEditPublicationsForm.autoDOI(volumeEditPublicationsForm.data.study)">
+
+		<label ng-bind-html="'citation.head' | message"></label>
+		<input type="text" name="head" ng-model="volumeEditPublicationsForm.data.study.head">
+
+		<label ng-bind-html="'citation.body' | message"></label>
+		<textarea name="body" ng-model="volumeEditPublicationsForm.data.study.body"></textarea>
+	</fieldset>
+
+  <fieldset>
+		<legend bo-html="'citations.more.title' | message"></legend>
+		<div bo-html="'citations.more.body' | message | format"></div>
+
     <repeater retrieve="volumeEditPublicationsForm.retrieveRepeater">
+      <label ng-bind-html="'citation.url' | message"></label>
+      <input type="text" name="url" ng-model="repeat.url" idle="autoDOI(repeat)">
+
       <label ng-bind-html="'citation.head' | message"></label>
       <input type="text" name="head" ng-model="repeat.head">
-
-      <label ng-bind-html="'citation.url' | message"></label>
-      <input type="text" name="url" ng-model="repeat.url">
 
       <label ng-bind-html="'citation.body' | message"></label>
       <textarea name="body" ng-model="repeat.body"></textarea>
@@ -13,8 +30,6 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditPublicationsForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditPublicationsForm.$dirty"></button>
-    <button ng-click="volumeEditPublicationsForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditPublicationsForm.$dirty"></button>
-    <button ng-click="volumeEditPublicationsForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditPublicationsForm.volume"></button>
+    <button ng-click="volumeEditPublicationsForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditPublicationsForm.$dirty"></button>
   </fieldset>
 </form>
