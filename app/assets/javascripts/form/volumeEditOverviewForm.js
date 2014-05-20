@@ -17,6 +17,7 @@ module.directive('volumeEditOverviewForm', [
 			form.init = function (data, volume) {
 				form.data = data;
 				form.volume = form.volume || volume;
+
 				backup = $.extend(true, {}, data);
 			};
 
@@ -35,6 +36,8 @@ module.directive('volumeEditOverviewForm', [
 								countdown: 3000,
 								body: page.constants.message('volume.edit.overview.success'),
 							});
+							//update backup so a future revert goes to current state, not pageload state
+							backup = $.extend(true, {}, form.data); 
 
 							if (angular.isFunction(form.successFn)) {
 								form.successFn(form, res);
@@ -63,11 +66,14 @@ module.directive('volumeEditOverviewForm', [
 							countdown: 3000,
 							body: page.constants.message('volume.edit.overview.success'),
 						});
+						//update backup so a future revert goes to current state, not pageload state
+						backup = $.extend(true, {}, form.data); 
 
 						if (angular.isFunction(form.successFn)) {
 							form.successFn(form, res);
 						}
 
+						form.$setPristine();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
 						page.messages.addError({
@@ -81,6 +87,14 @@ module.directive('volumeEditOverviewForm', [
 					});
 				}
 			};
+
+			form.reset = function () {
+				if (angular.isFunction(form.resetFn))
+					form.resetFn(form);
+
+				form.data = $.extend(true, {}, backup);
+				form.$setPristine();
+			}
 
 			//
 

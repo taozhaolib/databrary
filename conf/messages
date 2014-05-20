@@ -51,6 +51,7 @@ databrary=Databrary
 save=Save
 cancel=Cancel
 reset=Reset
+revert=Revert
 edit=Edit
 create=Create
 

@@ -20,6 +20,7 @@
 
   <fieldset class="clean">
     <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-if="volumeEditOverviewForm.$dirty"></button>
   </fieldset>
 </form>
 

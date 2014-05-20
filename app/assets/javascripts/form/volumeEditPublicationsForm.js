@@ -36,6 +36,9 @@ module.directive('volumeEditPublicationsForm', [
 							body: page.constants.message('volume.edit.publications.success'),
 						});
 
+						//update backup so a future revert goes to current state, not pageload state
+						backup = $.extend(true, {}, form.data); 
+
 						if (angular.isFunction(form.successFn)) {
 							form.successFn(form, res);
 						}
@@ -52,6 +55,17 @@ module.directive('volumeEditPublicationsForm', [
 							form.errorFn(form, res);
 						}
 					});
+			};
+
+			form.reset = function() { //reset to last saved state
+				if (angular.isFunction(form.resetFn))
+					form.resetFn(form);
+
+				form.data = $.extend(true, {}, backup);
+				form.$setPristine();
+
+				if(form.repeater)
+					form.repeater.repeats = form.data.citation;
 			};
 
 			//
