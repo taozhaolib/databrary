@@ -254,6 +254,8 @@ volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
 volume.doi.primary=TODO Enter the DOI of any corresponding publication
+volume.doi.primary.legend=TODO DOI Autopopulation
+volume.doi.primary.instructions=TODO If you enter a valid DOI, we will populate as much of the following form pages as possible.
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
@@ -428,15 +430,20 @@ volume.edit.access.error=Unable to update volume access.
 
 wizard.volume_edit_overview.name=Overview
 wizard.volume_edit_overview.description=Edit volume name, description, and alias.
+wizard.volume_edit_overview.instructions=TODO Edit volume name, description, and alias.
 
 wizard.volume_edit_publications.name=Publications
 wizard.volume_edit_publications.description=Update list of publications.
+wizard.volume_edit_publications.instructions=TODO Update list of publications.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload excerpts, papers, posters, and other materials.
+wizard.volume_edit_materials.instructions=TODO Upload excerpts, papers, posters, and other materials.
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
+wizard.volume_edit_funding.instructions=TODO Specify funding sources.
 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set visibility levels for volume data.
+wizard.volume_edit_access.instructions=TODO Set visibility levels for volume data.

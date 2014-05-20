@@ -1,5 +1,8 @@
 <form name="volumeEditOverviewForm" bindonce>
-  <fieldset class="clean" ng-if="!volumeEditOverviewForm.data.name">
+  <fieldset ng-if="!volumeEditOverviewForm.data.name">
+    <legend bo-html="'volume.doi.primary.legend' | message"></legend>
+		<div bo-html="'volume.doi.primary.instructions' | message | format"></div>
+
     <label bo-html="'volume.doi.primary' | message"></label>
     <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi" idle="volumeEditOverviewForm.autoDOI()">
   </fieldset>
