@@ -99,7 +99,7 @@ module.controller('VolumeEditView', [
 			angular.forEach($scope.wizard.steps, function (step) {
 				if (form && !step.active) {
 					step.allow = false;
-				} else {
+				} else if (volume) {
 					step.allow = true;
 				}
 			});
