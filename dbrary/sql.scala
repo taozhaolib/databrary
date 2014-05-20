@@ -219,11 +219,13 @@ protected sealed abstract class SQLBuilder[+A] protected (val query : String)(im
 final class SQL private (override val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
   final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args))
   final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse)(dbconn, context)
-  def execute : Future[Unit] = send(Nil).map(_ => ())
+  def execute() : Future[Unit] = send(Nil).map(_ => ())
 }
 object SQL {
   def apply(q : String*)(implicit dbc : db.Connection, context : ExecutionContext) : SQL =
     new SQL(unwords(q : _*))(dbc, context)
+  def quoted(s : String) =
+    "'" + s.replaceAllLiterally("'", "''") + "'";
   val logger : play.api.Logger = play.api.Logger("sql")
 }
 

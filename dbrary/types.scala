@@ -25,6 +25,8 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
     case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
     case _ => throw new SQLTypeMismatch(x, this, where)
   }
+  def escaped(a : A) : String =
+    SQL.quoted(show(a)) + "::" + name
 
   final def transform[B](n : String, bc : Class[B])(f : A => Option[B], g : B => A) : SQLType[B] =
     new SQLType[B](n, bc) {
@@ -72,6 +74,7 @@ object SQLType {
       case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
+    override def escaped(a : Boolean) = show(a)
   }
 
   implicit object int extends SQLDBType[Int]("integer", classOf[Int], db.column.IntegerEncoderDecoder) {
@@ -84,6 +87,7 @@ object SQLType {
       case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
+    override def escaped(a : Int) = show(a)
   }
 
   implicit object long extends SQLDBType[Long]("bigint", classOf[Long], db.column.LongEncoderDecoder) {
@@ -94,6 +98,7 @@ object SQLType {
       case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
+    override def escaped(a : Long) = show(a)
   }
 
   implicit object date extends SQLDBType[Date]("date", classOf[Date], db.column.DateEncoderDecoder)
