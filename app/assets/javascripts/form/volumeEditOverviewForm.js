@@ -105,9 +105,27 @@ module.directive('volumeEditOverviewForm', [
 					page.models.CrossCite
 						.json(doi[1])
 						.then(function (res) {
-							console.log(arguments);
+							if (!res.title) {
+								page.messages.add({
+									type: 'red',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.autodoi.name.error'),
+								});
+							} else {
+								form.data.name = res.title;
+
+								page.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.autodoi.name.success'),
+								});
+							}
 						}, function (res) {
-							console.log('fail', arguments);
+							page.messages.add({
+								type: 'red',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.name.error'),
+							});
 						});
 				}
 
@@ -115,9 +133,23 @@ module.directive('volumeEditOverviewForm', [
 					page.models.CrossCite
 						.apa(doi[1])
 						.then(function (res) {
-							console.log(arguments);
+							form.data.study = {
+								url: 'doi:' + doi[1],
+								head: res,
+								body: '',
+							};
+
+							page.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.citation.success'),
+							});
 						}, function (res) {
-							console.log('fail', arguments);
+							page.messages.add({
+								type: 'red',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.citation.error'),
+							});
 						});
 				}
 			};

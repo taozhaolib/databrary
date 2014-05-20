@@ -264,6 +264,10 @@ volume.body=Description
 volume.edit=edit volume
 volume.edit.success=Volume saved successfully!
 volume.edit.error=Unable to save volume.
+volume.edit.autodoi.name.success=TODO Title retrieved from DOI successfully!
+volume.edit.autodoi.name.error=TODO Could not retrieve title from DOI provided.
+volume.edit.autodoi.citation.success=TODO Primary citation retrieved from DOI successfully!
+volume.edit.autodoi.citation.error=TODO Could not retrieve primary citation from DOI provided.
 
 browser.title=Data
 browser.group=+
@@ -289,6 +293,10 @@ materials.title=Materials
 materials.empty=There are no files here.
 
 citations.title=Publications
+citations.study.title=TODO Primary Citation
+citations.study.body=TODO The primary citation will be featured in this volume's main content area.
+citations.more.title=TODO Additional Citations
+citations.more.body=TODO Additional citations will be grouped together on this volume's display.
 
 comments.title=Comments
 comments.post=Post
