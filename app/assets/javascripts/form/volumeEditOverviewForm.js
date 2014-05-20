@@ -41,6 +41,7 @@ module.directive('volumeEditOverviewForm', [
 							}
 
 							form.$setPristine();
+							page.models.Volume.$cache.removeAll();
 						}, function (res) {
 							page.messages.addError({
 								body: page.constants.message('volume.edit.overview.error'),
