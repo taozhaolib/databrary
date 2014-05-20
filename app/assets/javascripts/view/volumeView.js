@@ -11,13 +11,6 @@ module.controller('VolumeView', [
 				access: 'CONTRIBUTE',
 				object: volume,
 			},
-			{
-				type: 'orange',
-				html: 'access',
-				url: page.router.volumeAccess(volume),
-				access: 'ADMIN',
-				object: volume,
-			},
 		];
 
 		$scope.browser.initialize('volume', volume);

@@ -18,6 +18,7 @@ module.factory('displayService', [
 
 		$rootScope.$on('$routeChangeStart', function () {
 			display.loading = true;
+			display.toolbarLinks = [];
 		});
 
 		$rootScope.$on('$routeChangeSuccess', function () {
