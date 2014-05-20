@@ -1,13 +1,16 @@
 module.controller('VolumeEditView', [
 	'$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
 		page.display.title = page.constants.message('page.title.stub');
-		page.display.toolbarLinks = [
-			{
-				type: 'yellow',
-				html: page.constants.message('volume.edit.exit'),
-				url: page.router.volume({id: volume.id}),
-			},
-		];
+
+		if (volume) {
+			page.display.toolbarLinks = [
+				{
+					type: 'yellow',
+					html: page.constants.message('volume.edit.exit'),
+					url: page.router.volume({id: volume.id}),
+				},
+			];
+		}
 
 		$scope.volume = volume;
 
