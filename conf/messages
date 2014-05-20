@@ -252,7 +252,7 @@ volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
-volume.doi.primary=TODO Corresponding DOI
+volume.doi.primary=TODO Enter the DOI of any corresponding publication
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
@@ -264,10 +264,10 @@ volume.body=Description
 volume.edit=edit volume
 volume.edit.success=Volume saved successfully!
 volume.edit.error=Unable to save volume.
-volume.edit.autodoi.name.success=TODO Title retrieved from DOI successfully!
-volume.edit.autodoi.name.error=TODO Could not retrieve title from DOI provided.
-volume.edit.autodoi.citation.success=TODO Primary citation retrieved from DOI successfully!
-volume.edit.autodoi.citation.error=TODO Could not retrieve primary citation from DOI provided.
+volume.edit.autodoi.name.success=Title retrieved from DOI.
+volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
+volume.edit.autodoi.citation.success=Citation retrieved from DOI.
+volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 
 browser.title=Data
 browser.group=+
@@ -297,10 +297,14 @@ material.name=Name
 material.classification=Classification
 
 citations.title=Publications
-citations.study.title=TODO Primary Citation
-citations.study.body=TODO The primary citation will be featured in this volume's main content area.
-citations.more.title=TODO Additional Citations
-citations.more.body=TODO Additional citations will be grouped together on this volume's display.
+citations.study.title=TODO Corresponding Publication
+citations.study.body=TODO If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter a citation to it here.
+citations.more.title=Additional Citations
+citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
+
+citation.head=Citation
+citation.url=DOI or URL
+citation.body=Abstract
 
 comments.title=Comments
 comments.post=Post
@@ -434,7 +438,3 @@ wizard.volume_edit_funding.description=Specify funding sources.
 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set visibility levels for volume data.
-
-citation.head=Citation
-citation.url=URL
-citation.body=abstract
