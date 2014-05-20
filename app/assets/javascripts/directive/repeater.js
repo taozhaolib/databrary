@@ -40,6 +40,10 @@ module.directive('repeater', [
 
 			$scope.retrieve()($scope);
 
+			if (!Array.isArray($scope.repeats)) {
+				$scope.repeats = [];
+			}
+
 			if ($scope.repeats.length === 0) {
 				$scope.repeats.push({});
 			}
