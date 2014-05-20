@@ -15,7 +15,7 @@ module.factory('CrossCite', [
 					if (res.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);
 					} else {
-						deferred.resolve(arguments);
+						deferred.resolve(res);
 					}
 				}).error(function () {
 					deferred.reject(arguments);
@@ -35,7 +35,7 @@ module.factory('CrossCite', [
 					if (res.title.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);
 					} else {
-						deferred.resolve(arguments);
+						deferred.resolve(res);
 					}
 				}).error(function () {
 					deferred.reject(arguments);
