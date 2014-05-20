@@ -1,6 +1,7 @@
 module.directive('repeater', [
 	'pageService', function (page) {
 		var link = function ($scope, $el, $attrs) {
+			$scope.page = page;
 			$scope.repeats = [];
 			$scope.template = undefined;
 
