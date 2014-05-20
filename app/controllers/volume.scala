@@ -70,12 +70,12 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     } yield (result(vol))
   }
 
-  def create(owner : models.Party.Id) = ContributeAction(Some(owner)).async { implicit request =>
+  def create(owner : Option[Party.Id]) = ContributeAction(owner).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
       vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatten)
       _ <- citationSet(vol, form)
-      _ <- VolumeAccess.set(vol, owner, Permission.ADMIN, Permission.CONTRIBUTE)
+      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
     } yield (result(vol))
   }
 
@@ -83,7 +83,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
       new ActionHandler[PartyController.Request] {
         protected def handle[A](request : PartyController.Request[A]) =
-	  request.obj.party.access.map(a => if (a.group < Permission.CONTRIBUTE) Some(Forbidden) else None)
+	  request.obj.party.access.map(a => if (a.group < Permission.VIEW) Some(Forbidden) else None)
       }
 
   protected def accessForm(access : VolumeAccess)(implicit request : Request[_]) =
@@ -95,6 +95,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       form = new VolumeController.AccessForm(who)._bind
       _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
+	else if (form.isRestricted && request.access.group < Permission.CONTRIBUTE)
+	  form.withGlobalError("access.grant.restricted", form.party.name)._throw
 	else
 	  VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
     } yield (result(request.obj))
@@ -147,7 +149,7 @@ object VolumeController extends VolumeController {
 
   final class CreateForm(implicit request : PartyController.Request[_])
     extends HtmlForm[CreateForm](
-      routes.VolumeHtml.create(request.obj.party.id),
+      routes.VolumeHtml.create(Some(request.obj.party.id)),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Create"
     val name = Field(Mappings.some(Mappings.nonEmptyText))
@@ -158,8 +160,10 @@ object VolumeController extends VolumeController {
       routes.VolumeHtml.accessChange(request.obj.id, party.id),
       f => VolumeHtml.viewAdmin(accessChangeForm = Some(f))) {
     def partyId = party.id
-    val access = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
-    val inherit = Field(Mappings.enum(Permission, maxId = Some(if (party.id.unId <= 0) Permission.DOWNLOAD.id else Permission.EDIT.id)))
+    /** Does the affected party corresponding to a restricted-access group? */
+    def isGroup = party.id.unId <= 0
+    val access = Field(Mappings.enum(Permission, maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
+    val inherit = Field(Mappings.enum(Permission, maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
     val funding = Field(Mappings.maybeText)
     val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
@@ -169,6 +173,9 @@ object VolumeController extends VolumeController {
       funding.fill(a.funding)
       this
     }
+    /** Does granting this access level require CONTRIBUTE-level authorization? */
+    def isRestricted : Boolean =
+      isGroup && inherit.get > Permission.NONE
   }
 
   final class AccessSearchForm(implicit request : Request[_])
