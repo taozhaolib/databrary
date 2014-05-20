@@ -38,6 +38,10 @@ module.directive('repeater', [
 			//
 
 			$scope.retrieve()($scope);
+
+			if ($scope.repeats.length === 0) {
+				$scope.repeats.push({});
+			}
 		};
 
 		return {
