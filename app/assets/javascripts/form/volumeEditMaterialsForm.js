@@ -5,7 +5,7 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.data = {};
 			form.volume = undefined;
-			var backup = {};
+			var backup = [];
 
 			form.saveFn = undefined;
 			form.successFn = undefined;
@@ -18,7 +18,7 @@ module.directive('volumeEditMaterialsForm', [
 			form.init = function (data, volume) {
 				form.data = data;
 				form.volume = form.volume || volume;
-				backup = $.extend(true, {}, data);
+				backup = data.assets.slice(0);
 			};
 
 			//
@@ -28,49 +28,131 @@ module.directive('volumeEditMaterialsForm', [
 					form.saveFn(form);
 				}
 
-				page.models.Volume.save(form.data,
-					function (res) {
-						page.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.materials.success'),
+				var ids = [];
+				var promises = [];
+
+				angular.forEach(form.data.assets, function (asset) {
+					asset.saving = true;
+
+					if (asset.file) {
+						var fd = new FormData();
+						fd.append('file', asset.file[0]);
+						fd.append('name', asset.name);
+						fd.append('classification', asset.classification || 0);
+						fd.append('container', form.slot.container.id);
+
+						promises.push(page.$http
+							.post('/volume/' + form.volume.id + '/asset/create', fd, {
+								transformRequest: angular.identity,
+								headers: {
+									'Content-Type': undefined
+								},
+							}).success(function () {
+								page.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.materials.create.success', asset.name || asset.file[0].name),
+								});
+
+								asset.saving = false;
+							}).error(function () {
+								page.messages.add({
+									type: 'red',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.materials.create.error', asset.name || asset.file[0].name),
+								});
+
+								asset.saving = false;
+							}));
+					} else if (asset.asset) {
+						ids.push(asset.asset.id);
+
+						promises.push(page.$http
+							.post('/asset/' + asset.asset.id + '/edit', {
+								name: asset.name,
+								classification: asset.classification,
+							}).success(function () {
+								page.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.materials.update.success', asset.name || asset.file[0].name),
+								});
+
+								asset.saving = false;
+							}).error(function () {
+								page.messages.add({
+									type: 'red',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.materials.update.error', asset.name || asset.file[0].name),
+								});
+
+								asset.saving = false;
+							}));
+					}
+				});
+
+				angular.forEach(backup, function (asset) {
+					if (ids.indexOf(asset.asset.id) > -1) {
+						return;
+					}
+
+					promises.push(page.$http
+						.post('/asset/' + asset.asset.id + '/remove')
+						.success(function () {
+							page.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.materials.remove.success', asset.name || asset.file[0].name),
+							});
+
+							asset.saving = false;
+						}).error(function (data, status) {
+							console.log(arguments);
+
+							if (status === 404 || status === 303) {
+								return page.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.materials.remove.success', asset.name || asset.file[0].name),
+								});
+							}
+
+							page.messages.add({
+								type: 'red',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.materials.remove.error', asset.name || asset.file[0].name),
+							});
+
+							asset.saving = false;
+						}));
+				});
+
+				page.$q.all(promises).finally(function () {
+					page.models.Slot.$cache.removeAll();
+					page.models.Slot.get({
+						id: form.volume.top.id,
+						segment: ',',
+						assets: ''
+					}, function (res) {
+						form.repeater.repeats.splice(0, form.repeater.repeats.length);
+
+						angular.forEach(res.assets, function (asset) {
+							asset.name = asset.asset.name;
+							asset.classification = asset.asset.classification;
+
+							form.repeater.repeats.push(asset);
 						});
 
-						if (angular.isFunction(form.successFn)) {
-							form.successFn(form, res);
-						}
+						angular.extend(form.slot, res);
 
 						form.$setPristine();
-						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						page.messages.addError({
-							body: page.constants.message('volume.edit.materials.error'),
-							report: res
+						page.messages.add({
+							type: 'red',
+							body: page.constants.message('volume.edit.materials.refresh.error'),
 						});
-
-						if (angular.isFunction(form.errorFn)) {
-							form.errorFn(form, res);
-						}
 					});
-			};
-
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
-				}
-
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
-
-				if (form.repeater) {
-					form.repeater.repeats = form.data.citation;
-				}
-			};
-
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
+				});
 			};
 
 			//
@@ -81,7 +163,8 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.retrieveRepeater = function (repeater) {
 				form.repeater = repeater;
-				form.repeater.repeats = form.data.citation;
+				form.repeater.autoFile = form.autoFile;
+				form.repeater.repeats = form.data.assets;
 				form.repeater.addFn = changeFn;
 				form.repeater.removeFn = changeFn;
 			};

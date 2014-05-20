@@ -1,116 +1,23 @@
 <form name="volumeEditMaterialsForm" bindonce>
-  <fieldset class="clean">
-    <resumable></resumable>
-  </fieldset>
+	<fieldset class="clean">
+		<repeater retrieve="volumeEditMaterialsForm.retrieveRepeater">
+			<fieldset class="clean" ng-disabled="repeat.saving">
+				<div ng-if="!repeat.asset">
+					<label bo-html="'material.file' | message"></label>
+					<input type="file" name="file" file-model="repeat.file">
+				</div>
 
-  <p>Drag your top-level materials into appropriate bin. You may drag multiple files at once.</p>
+				<label bo-html="'material.name' | message"></label>
+				<input type="text" name="classification" ng-model="repeat.name">
 
-  <fieldset class="clean material-bins cf">
-    <div class="material-bin excerpts">
-      <div class="inner">
-        EXCERPTS
-      </div>
-    </div>
+				<label bo-html="'material.classification' | message"></label>
+				<select name="classification" ng-model="repeat.classification" ng-options="val.id as 'classification.'+val.name | message for (key, val) in page.constants.data.classification"></select>
+			</fieldset>
+		</repeater>
+	</fieldset>
 
-    <div class="material-bin products">
-      <div class="inner">
-        STIMULI
-      </div>
-    </div>
-
-    <div class="material-bin analysis">
-      <div class="inner">
-        PRODUCTS
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset class="clean material-list">
-    <div class="material-item">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <div class="icon-wrap">
-            <div class="icon excerpt line"></div>
-          </div>
-        </div>
-
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <div>poster.jpg</div>
-          <div class="progress">
-            <div class="loading-measure"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="material-item">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <div class="icon-wrap">
-            <div class="icon deidentified line"></div>
-          </div>
-        </div>
-
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <div>movie.mp4</div>
-          <div class="progress">
-            <div class="progress-measure"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="material-item">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <div class="icon-wrap">
-            <div class="icon material line"></div>
-          </div>
-        </div>
-
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <label>Name</label>
-          <input type="text" value="file.ext">
-
-          <label>Classification</label>
-          <select>
-            <option>Excerpt</option>
-            <option selected>Material</option>
-            <option>Identified</option>
-            <option>Deidentified</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div class="material-item">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <div class="icon-wrap">
-            <div class="icon identified line"></div>
-          </div>
-        </div>
-
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <label>Name</label>
-          <input type="text" value="identity.doc">
-
-          <label>Classification</label>
-          <select>
-            <option>Excerpt</option>
-            <option>Material</option>
-            <option selected>Identified</option>
-            <option>Deidentified</option>
-          </select>
-        </div>
-      </div>
-    </div>
-  </fieldset>
-
-  <fieldset class="clean">
-    <button ng-click="volumeEditMaterialsForm.save()" bo-html="'save' | message" class="green" ng-if="volumeEditMaterialsForm.$dirty"></button>
-    <button ng-click="volumeEditMaterialsForm.reset()" bo-html="'reset' | message" class="red" ng-if="volumeEditMaterialsForm.$dirty"></button>
-    <button ng-click="volumeEditMaterialsForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditMaterialsForm.volume"></button>
-  </fieldset>
+	<fieldset class="clean">
+		<button ng-click="volumeEditMaterialsForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+	</fieldset>
 </form>
 

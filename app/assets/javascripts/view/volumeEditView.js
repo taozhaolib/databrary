@@ -127,6 +127,7 @@ module.controller('VolumeEditView', [
 			'volume_edit_materials': function (step) {
 				forms.materials = step.volumeEditMaterialsForm;
 				forms.materials.volume = volume;
+				forms.materials.slot = slot;
 				forms.materials.cancelFn = cancelFn;
 			},
 
@@ -181,7 +182,12 @@ module.controller('VolumeEditView', [
 
 			'volume_edit_materials': function (step) {
 				if (slot) {
-					forms.materials.data = slot;
+					angular.forEach(slot.assets, function (asset) {
+						asset.name = asset.asset.name;
+						asset.classification = asset.asset.classification;
+					});
+
+					forms.materials.init(slot);
 				}
 			},
 

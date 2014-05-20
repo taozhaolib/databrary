@@ -292,6 +292,10 @@ player.close=Close the media player.
 materials.title=Materials
 materials.empty=There are no files here.
 
+material.file=File
+material.name=Name
+material.classification=Classification
+
 citations.title=Publications
 citations.study.title=TODO Primary Citation
 citations.study.body=TODO The primary citation will be featured in this volume's main content area.
@@ -406,8 +410,13 @@ volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
 volume.edit.publications.success=Publications updated successfully.
 volume.edit.publications.error=Unable to update publications.
-volume.edit.materials.success=Materials updated successfully.
-volume.edit.materials.error=Unable to update materials.
+volume.edit.materials.update.success=Updated {0} successfully.
+volume.edit.materials.update.error=Unable to update {0}.
+volume.edit.materials.create.success=Uploaded {0} successfully.
+volume.edit.materials.create.error=Unable to upload {0}.
+volume.edit.materials.remove.success=Removed {0} successfully.
+volume.edit.materials.remove.error=Unable to remove {0}.
+volume.edit.materials.refresh.error=Could not update materials display. Please refresh before making any new edits.
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
