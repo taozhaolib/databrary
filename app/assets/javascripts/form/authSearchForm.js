@@ -6,14 +6,11 @@ module.directive('authSearchForm', [
 			$scope.authSearchForm.id = $attrs.party || undefined;
 			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
 
-			if(angular.isDefined($attrs.institution)) {
-				$attrs.$observe('institution', function (institution) {
+			$attrs.$observe('institution', function (institution) {
 				$scope.authSearchForm.name = '';
 				$scope.authSearchForm.found = [];
-				$scope.authSearchForm.institution = instutution;
+				$scope.authSearchForm.institution = institution;
 			});
-			}
-
 
 			//
 

@@ -63,10 +63,10 @@ module.config([
 		//
 
 		$routeProvider.when('/token/:id', appResolve({
-			controller: function () {
+			controller: (function () {
 				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
-			},
-			templateUrl: function () {
+			}()),
+			templateUrl: function () {console.log(window.$play.object && window.$play.object.reset)
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
 			},
 			resolve: {
