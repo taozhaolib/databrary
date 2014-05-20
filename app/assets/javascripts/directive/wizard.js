@@ -2,7 +2,9 @@ module.directive('wizard', [
 	function () {
 		var compile = function ($element, $attrs, transclude) {
 			return function ($scope, $element, $attrs) {
-				$scope.retrieve()($scope);
+				if (angular.isFunction($scope.retrieve())) {
+					$scope.retrieve()($scope);
+				}
 
 				//
 
@@ -20,7 +22,9 @@ module.directive('wizard', [
 					$scope.stepsList[step.id] = step;
 					$scope.newStep = step;
 
-					$scope.update()();
+					if (angular.isFunction($scope.update())) {
+						$scope.update()();
+					}
 				};
 
 				$scope.activateStep = function (step) {
