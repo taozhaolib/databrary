@@ -139,6 +139,13 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       WHERE container.volume = ?""")
     .apply(id).list
 
+  /** List of parties through whom the current user has the given access to this volume. */
+  def adminAccessVia : Future[Seq[SiteParty]] =
+    SiteParty.row.SELECT(
+      """JOIN volume_access ON party.id = volume_access.party
+        WHERE authorize_view.direct = 'ADMIN' AND volume_access.access = 'ADMIN' AND volume_access.volume = ?""")
+    .apply(id).list
+
   def pageName = alias.getOrElse(name)
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)

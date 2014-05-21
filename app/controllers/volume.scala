@@ -92,13 +92,20 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   def accessChange(id : models.Volume.Id, e : models.Party.Id) = Action(id, Permission.ADMIN).async { implicit request =>
     for {
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
-      form = new VolumeController.AccessForm(who)._bind
+      via <- request.obj.adminAccessVia
+      form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
+      viaa <- via.mapAsync(_.party.access.map(_.group))
       _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
-	else if (form.isRestricted && request.access.group < Permission.CONTRIBUTE)
-	  form.withGlobalError("access.grant.restricted", form.party.name)._throw
 	else
-	  VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
+	  (if (form.isRestricted)
+	    via.mapAsync(_.party.access.map(_.group))
+	  else async(Seq(Permission.ADMIN))).flatMap { viaa =>
+	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))
+	      form.withGlobalError("access.grant.restricted", form.party.name)._throw
+	    else
+	      VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
+	  }
     } yield (result(request.obj))
   }
 
@@ -155,17 +162,20 @@ object VolumeController extends VolumeController {
     val name = Field(Mappings.some(Mappings.nonEmptyText))
   }
 
-  final class AccessForm(val party : Party)(implicit request : Request[_])
+  final class AccessForm(val party : Party, own : Boolean = false)(implicit request : Request[_])
     extends AHtmlForm[AccessForm](
       routes.VolumeHtml.accessChange(request.obj.id, party.id),
       f => VolumeHtml.viewAdmin(accessChangeForm = Some(f))) {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party.id.unId <= 0
-    val access = Field(Mappings.enum(Permission, maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.ADMIN.id)))
-    val inherit = Field(Mappings.enum(Permission, maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
+    val access = Field(Mappings.enum(Permission,
+      maxId = Some((if (isGroup) Permission.DOWNLOAD else Permission.ADMIN).id),
+      minId = (if (own) Permission.ADMIN else Permission.NONE).id))
+    val inherit = Field(Mappings.enum(Permission,
+      maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
     val funding = Field(Mappings.maybeText)
-    val delete = Field(if (request.identity === party) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
+    val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)

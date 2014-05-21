@@ -8,8 +8,8 @@ import macros._
 object Mappings {
   def some[A](map : Mapping[A], default : A = "") : Mapping[Option[A]] =
     map.transform[Option[A]](Some(_), _.getOrElse(default))
-  def enum(enum : Enumeration, maxId : Option[Int] = None) =
-    number(min=0, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
+  def enum(enum : Enumeration, maxId : Option[Int] = None, minId : Int = 0) =
+    number(min=minId, max=maxId.getOrElse(enum.maxId-1)).transform[enum.Value](enum(_), _.id)
   val text : Mapping[String] = Forms.text.transform[String](_.trim, identity)
   val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
   val maybeText : Mapping[Option[String]] =
