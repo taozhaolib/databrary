@@ -4,7 +4,7 @@
 	background-color: mix(@c, @white, 25%);
 	color: mix(@c, @dark, 25%);
 
-	a{
+	a {
 		&:link, &.link,
 		&:visited, &.visited {
 			color: mix(@c, @black, 75%);
@@ -110,10 +110,8 @@
 				content: ', ';
 			}
 		}
-	}
 
-	> span {
-		> *:last-child {
+		&:last-child {
 			.margin-bottom(0);
 		}
 	}
