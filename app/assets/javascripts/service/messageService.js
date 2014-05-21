@@ -78,8 +78,8 @@ module.factory('messageService', [
 		};
 
 		var countdownUnset = function (message) {
-			if (message.countdownTimer && message.countdownTimer.hasOwnProperty('cancel')) {
-				message.countdownTimer.cancel();
+			if (message.countdownTimer) {
+				$timeout.cancel(message.countdownTimer);
 			}
 		};
 

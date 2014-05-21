@@ -172,8 +172,11 @@ module.factory('ArrayHelper', [
 			this.catalogRemove(item);
 			return this.splice(i, 1).shift();
 		};
+		ArrayHelper.prototype.toArray = function () {
+			return this.slice(0);
+		};
 		ArrayHelper.prototype.filter = function (filter, comparator) {
-			return !angular.isObject(filter) ? this : $filter('filter')(this, filter, comparator);
+			return !angular.isObject(filter) ? this : $filter('filter')(this.toArray(), filter, comparator);
 		};
 		ArrayHelper.prototype.reset = function () {
 			return this.splice(0, this.length);

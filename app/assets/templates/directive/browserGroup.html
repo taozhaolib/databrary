@@ -12,7 +12,7 @@
 
     <span class="browser_widget_wrap"
           ng-class="recordGroupClasses(group, $last)"
-          ng-repeat="group in browser.options.record.categories|filter:{active: true, allow: true}"
+          ng-repeat="group in browser.options.record.categories.toArray() | filter:{active: true, allow: true}"
           ng-if="browser.options.record.allow">
         <a class="browser_widget_pill left"
            ng-click="browser.setRecordGroupToggle(group)" click-elsewhere="browser.clearRecordGroupToggle()">{{group.name}}</a>
@@ -35,7 +35,7 @@
            ng-click="browser.setRecordGroupToggle('add')" click-elsewhere="browser.clearRecordGroupToggle()">{{"browser.group" | message}}</a>
 
         <ul class="record_pill_options">
-          <li ng-repeat="maybe in browser.options.record.categories|filter:{active: false, allow: true}">
+          <li ng-repeat="maybe in browser.options.record.categories.toArray() | filter:{active: false, allow: true}">
             <a ng-click="browser.addRecordGroup(maybe)">{{maybe.name}}</a>
           </li>
         </ul>

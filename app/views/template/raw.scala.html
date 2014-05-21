@@ -133,7 +133,7 @@
 
   @if(angular){
     <div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="getControllerClasses()">
-      <div ng-repeat="message in messages | filter:{enabled: true}" id="{{message.id}}" ng-class="getMessageClasses(message)" ng-style="getMessageStyles(message, $index)">
+      <div ng-repeat="message in messages.toArray() | filter:{enabled: true}" id="{{message.id}}" ng-class="getMessageClasses(message)" ng-style="getMessageStyles(message, $index)">
         <div class="wrap">
           <div class="row">
             <div class="col-full">
@@ -146,7 +146,7 @@
     </div>
 
     <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
-      <div ng-repeat="tooltip in tooltips | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
+      <div ng-repeat="tooltip in tooltips.toArray() | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
         <div class="tooltip_content" ng-bind-html="tooltip.message"></div>
       </div>
     </div>
