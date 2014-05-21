@@ -1,6 +1,12 @@
 module.directive('messageRegion', [
 	'pageService', function (page) {
 		var controller = function ($scope, $element, $attrs) {
+			if (angular.isUndefined($attrs.form)) {
+				$scope.messageRegion = this;
+			} else if ($scope[$attrs.form]) {
+				$scope[$attrs.form].messageRegion = this;
+			}
+
 			var that = this;
 			this.messages = angular.isDefined($attrs.default) ? page.messages : page.messages.region();
 			this.enabled = true;
@@ -14,7 +20,7 @@ module.directive('messageRegion', [
 					classes.push('messages_enabled');
 				}
 
-				if ($attrs.default) {
+				if (angular.isDefined($attrs.default)) {
 					classes.push('messages_default');
 				}
 
@@ -80,7 +86,6 @@ module.directive('messageRegion', [
 			replace: true,
 			templateUrl: 'messageRegion.html',
 			controller: controller,
-			controllerAs: 'messageRegion',
 		};
 	}
 ]);
