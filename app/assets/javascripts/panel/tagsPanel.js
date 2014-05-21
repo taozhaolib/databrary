@@ -129,30 +129,31 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.voteNew = function (form) {
-			if (form.$invalid) {
+			if (form.$invalid || !form.newNameVal) {
 				return;
 			}
 
 			emptyAuto();
 
 			var tagModel = new page.models.Tag({id: form.newNameVal});
-
-			tagModel.$save({
+			var data = {
 				id: form.newNameVal,
 				vote: "true",
 				container: $scope.target.container,
 				segment: $scope.target.segment
-			}, function (newTag, status, headers, config) {
-				createMessage(page.constants.message('tags.new.success', form.newNameVal));
+			};
 
-				form.newNameVal = '';
+			form.newNameVal = '';
+
+			tagModel.$save(data, function (newTag, status, headers, config) {
+				createMessage(page.constants.message('tags.new.success', data.id));
 				emptyAuto();
 
 				$scope.retrieveTags();
 				hideTooltips();
 			}, function (res) {
 				page.messages.addError({
-					body: page.constants.message('tags.new.error', form.newNameVal),
+					body: page.constants.message('tags.new.error', data.id),
 					report: res,
 				});
 
