@@ -43,7 +43,7 @@
 							<li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
               <li ng-if="page.auth.hasAuth('ADMIN')" class="password_form">
-                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf">
+                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" message-region="none">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
                   <button type="submit" class="link superuser off" ng-click="page.auth.toggleSU(superuserForm)">activate SU</button>
                 </form>

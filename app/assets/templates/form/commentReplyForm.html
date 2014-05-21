@@ -6,6 +6,8 @@
       </footer>
 
       <div class="comment_body comment_form">
+        <message-region form="commentReplyForm"></message-region>
+
         <textarea ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
 
         <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">{{'comments.post' | message}}</button>
