@@ -1,8 +1,8 @@
 module.controller('TagsPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		var DEFAULT_MESSAGE = {
-			type: 'blue',
-			countdown: 3000
+			type: 'green',
+			countdown: 3000,
 		};
 
 		//
@@ -10,7 +10,7 @@ module.controller('TagsPanel', [
 		var createMessage = function (message) {
 			if (typeof(message) == 'string') {
 				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
-					body: message
+					body: message,
 				}));
 			}
 			else {
