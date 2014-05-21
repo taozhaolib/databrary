@@ -132,7 +132,7 @@
   </footer>
 
   @if(angular){
-    <message-region default></message-region>
+    <messages default></messages>
 
     <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
       <div ng-repeat="tooltip in tooltips.toArray() | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">

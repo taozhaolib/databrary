@@ -1,17 +1,17 @@
 module.directive('form', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			if (angular.isDefined($attrs.messageRegion)) {
+			if (angular.isDefined($attrs.messages)) {
 				if (!$attrs.name) {
 					return;
-				} else if ($attrs.messageRegion === 'default') {
-					$scope[$attrs.name].messageRegion = page.messages;
-				} else if ($attrs.messageRegion === 'nearest' && $scope.messageRegion) {
-					$scope[$attrs.name].messageRegion = $scope.messageRegion;
+				} else if ($attrs.messages === 'default') {
+					$scope[$attrs.name].messages = page.messages;
+				} else if ($attrs.messages === 'nearest' && $scope.messages) {
+					$scope[$attrs.name].messages = $scope.messages;
 				}
-			} else if ($scope[$attrs.name] && !$scope[$attrs.name].messageRegion) {
-				$scope[$attrs.name].messageRegion = page.messages.region();
-				page.$compile('<message-region form></message-region>')($scope, function ($clone, $scope) {
+			} else if ($scope[$attrs.name] && !$scope[$attrs.name].messages) {
+				$scope[$attrs.name].messages = page.messages.region();
+				page.$compile('<messages form></messages>')($scope, function ($clone, $scope) {
 					$element.prepend($clone);
 				});
 			}

@@ -6,13 +6,6 @@ module.controller('RegisterView', [
 
 		$scope.auth = $scope.auth || page.auth;
 
-		var mess = [];
-		$scope.$on('$destroy', function () {
-			angular.forEach(mess, function (message) {
-				page.messages.remove(message);
-			});
-		});
-
 		// TODO: Remove analytics
 		$scope.$watch(function () {
 			if (!$scope.wizard) {
@@ -125,23 +118,23 @@ module.controller('RegisterView', [
 
 				//
 
-				mess.push(page.messages.add({
+				page.messages.add({
 					type: 'blue',
 					target: '#field_name',
 					body: page.constants.message('wizard.register_form.name.help')
-				}));
+				});
 
-				mess.push(page.messages.add({
+				page.messages.add({
 					type: 'blue',
 					target: '#field_email',
 					body: page.constants.message('wizard.register_form.email.help')
-				}));
+				});
 
-				mess.push(page.messages.add({
+				page.messages.add({
 					type: 'blue',
 					target: '#field_affiliation',
 					body: page.constants.message('wizard.register_form.affiliation.help')
-				}));
+				});
 
 				//
 
@@ -150,8 +143,6 @@ module.controller('RegisterView', [
 					enabled: false,
 					body: page.constants.message('wizard.register_form.email.error')
 				});
-
-				mess.push(emailError);
 
 				step.$watch('registerForm.fieldEmail.$valid', function () {
 					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty) {
