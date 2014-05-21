@@ -132,18 +132,7 @@
   </footer>
 
   @if(angular){
-    <div id="messages" class="messages" ng-controller="MessageCtrl" ng-class="getControllerClasses()">
-      <div ng-repeat="message in messages.toArray() | filter:{enabled: true}" id="{{message.id}}" ng-class="getMessageClasses(message)" ng-style="getMessageStyles(message, $index)">
-        <div class="wrap">
-          <div class="row">
-            <div class="col-full">
-              <div class="message_close" ng-if="message.closeable" ng-click="messages.disable(message)"></div>
-              <div class="message_content" populate="message.body"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <message-region default></message-region>
 
     <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
       <div ng-repeat="tooltip in tooltips.toArray() | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">

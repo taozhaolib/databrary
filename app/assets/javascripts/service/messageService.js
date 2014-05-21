@@ -95,7 +95,7 @@ module.factory('messageService', [
 
 		//
 
-		MessageService.prototype.instance = function () {
+		MessageService.prototype.region = function () {
 			return new MessageService();
 		};
 
