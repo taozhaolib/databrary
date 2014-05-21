@@ -1,13 +1,13 @@
 module.factory('browserService', [
 	'$rootScope',
-	'arrayHelper',
+	'ArrayHelper',
 	'Slot',
 	'typeService',
 	'messageService',
 	'constantService',
 	'tooltipService',
 	'$timeout',
-	function ($rootScope, arrayHelper, Slot, typeService, messages, constants, tooltips, $timeout) {
+	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout) {
 		var browserService = {};
 
 		//
@@ -18,12 +18,12 @@ module.factory('browserService', [
 				active: true,
 				expand: false,
 				//filter: {},
-				sort: arrayHelper([])
+				sort: new ArrayHelper([])
 			},
 
 			record: {
 				allow: true,
-				categories: arrayHelper([])
+				categories: new ArrayHelper([])
 			},
 
 			session: {
@@ -31,7 +31,7 @@ module.factory('browserService', [
 				active: true,
 				expand: false,
 				//filter: {},
-				sort: arrayHelper([])
+				sort: new ArrayHelper([])
 			},
 
 			asset: {
@@ -39,7 +39,7 @@ module.factory('browserService', [
 				active: false,
 				expand: false,
 				//filter: {},
-				sort: arrayHelper([])
+				sort: new ArrayHelper([])
 			}
 		};
 
@@ -194,7 +194,7 @@ module.factory('browserService', [
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
 							name: constants.get('category', category).name,
-							sort: arrayHelper([])
+							sort: new ArrayHelper([])
 						}));
 					}
 				});

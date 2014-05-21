@@ -1,6 +1,6 @@
 module.factory('tooltipService', [
-	'$rootScope', 'arrayHelper', '$timeout', function ($rootScope, arrayHelper, $timeout) {
-		var tooltips = arrayHelper([]);
+	'$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, ArrayHelper, $timeout) {
+		var tooltips = new ArrayHelper([]);
 		var $doc = $(document);
 
 		var HOVER_DELAY = 500;
@@ -37,10 +37,8 @@ module.factory('tooltipService', [
 
 		//
 
-		var addFn = tooltips.add;
-
 		tooltips.add = function (tooltip) {
-			var newTooltip = addFn(tooltip);
+			var newTooltip = ArrayHelper.prototype.add.call(this, tooltip);
 
 			if (newTooltip) {
 				tooltips.target(newTooltip);
@@ -51,20 +49,16 @@ module.factory('tooltipService', [
 
 		//
 
-		var removeFn = tooltips.remove;
-
 		tooltips.remove = function (tooltip) {
 			removeEvents(tooltip);
 
-			return removeFn(tooltip);
+			return ArrayHelper.prototype.remove.call(this, tooltip);
 		};
 
 		//
 
-		var updateFn = tooltips.update;
-
 		tooltips.update = function (tooltip, obj) {
-			var newtooltip = updateFn(tooltip, obj);
+			var newtooltip = ArrayHelper.prototype.update.call(this, tooltip, obj);
 
 			if (newtooltip) {
 				tooltips.target(newtooltip);

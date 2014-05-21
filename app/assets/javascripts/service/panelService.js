@@ -3,17 +3,15 @@ module.factory('panelService', [
 	'$location',
 	'eventService',
 	'$timeout',
-	'arrayHelper',
+	'ArrayHelper',
 	'guiService',
-	function ($rootScope, $location, events, $timeout, arrayHelper, gui) {
-		var panels = arrayHelper([]);
+	function ($rootScope, $location, events, $timeout, ArrayHelper, gui) {
+		var panels = new ArrayHelper([]);
 
 		//
 
-		var addFn = panels.add;
-
 		panels.add = function (panel) {
-			var newPanel = addFn(panel);
+			var newPanel = ArrayHelper.prototype.add.call(this, panel);
 
 			if (angular.isFunction(newPanel.bootPanel)) {
 				newPanel.bootPanel();

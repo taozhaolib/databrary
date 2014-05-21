@@ -1,213 +1,186 @@
-module.factory('arrayHelper', [
+module.factory('ArrayHelper', [
 	'$filter', function ($filter) {
-		return function (array) {
-			var _transformFn, /* return formatted item */
-				_validateFn, /* return item or false */
-				_orderFn /* return standard ordering -/0/+ */;
-
-			var catalog = {}, catalogKey;
-
+		var ArrayHelper = function (array) {
 			if (!angular.isArray(array)) {
 				array = [];
 			}
 
-			//
+			array.unshift(0, this.length);
+			Array.prototype.splice.apply(this, array);
 
-			var newTransform = function (transformFn) {
-				_transformFn = transformFn;
-			};
+			this._transformFn = undefined /* return formatted item */;
+			this._validateFn = undefined /* return item or false */;
+			this._orderFn = undefined /* return standard ordering -/0/+ */;
 
-			var newValidate = function (validateFn) {
-				_validateFn = validateFn;
-			};
-
-			var newOrder = function (orderFn) {
-				_orderFn = orderFn;
-			};
-
-			//
-
-			var transform = function (item) {
-				return angular.isFunction(_transformFn) ? _transformFn(item) : item;
-			};
-
-			var validate = function (item) {
-				return angular.isFunction(_validateFn) ? _validateFn(item) : item;
-			};
-
-			var order = function () {
-				return angular.isFunction(_orderFn) ? array.sort(_orderFn) : array;
-			};
-
-			//
-
-			var newCatalog = function (key) {
-				catalogKey = key;
-				catalogUpdate();
-			};
-
-			var catalogUpdate = function () {
-				catalog = {};
-
-				if (angular.isString(catalogKey)) {
-					angular.forEach(array, function (item, index) {
-						catalogAdd(item);
-					});
-				}
-			};
-
-			var catalogAdd = function (item) {
-				if (item[catalogKey]) {
-					catalog[item[catalogKey]] = item;
-				}
-			};
-
-			var catalogRemove = function (item) {
-				if (item[catalogKey]) {
-					delete catalog[item[catalogKey]];
-				}
-			};
-
-			var useCatalog = function (item) {
-				return catalogKey && !angular.isObject(item);
-			};
-
-			//
-
-			var index = function (item) {
-				if (useCatalog(item)) {
-					item = catalog[item];
-				}
-
-				return array.indexOf(item);
-			};
-
-			var find = function (item, strict) {
-				if (useCatalog(item)) {
-					return catalog[item];
-				}
-
-				strict = angular.isUndefined(strict) ? true : strict;
-
-				return filter(item, strict).shift();
-			};
-
-			var has = function (item) {
-				if (useCatalog(item)) {
-					return catalog[item];
-				}
-
-				return array[index(item)];
-			};
-
-			//
-
-			var add = function (item) {
-				if (!(item = validate(transform(item)))) {
-					return false;
-				}
-
-				array.push(item);
-				catalogAdd(item);
-
-				order();
-
-				return item;
-			};
-
-			var update = function (item, obj) {
-				var i = index(item);
-
-				if (!~i) {
-					return undefined;
-				}
-
-				if (!angular.isObject(obj)) {
-					return false;
-				}
-
-				catalogRemove(item);
-				angular.extend(item, obj);
-				catalogAdd(item);
-
-				order();
-
-				return item;
-			};
-
-			var replace = function (old, item) {
-				if (!(item = validate(transform(item)))) {
-					return false;
-				}
-
-				var i = index(old);
-
-				if (!~i) {
-					return undefined;
-				}
-
-				array[i] = item;
-				catalogRemove(old);
-				catalogAdd(item);
-
-				order();
-
-				return item;
-			};
-
-			var toggle = function (item, property, state) {
-				var i = index(item);
-
-				if (!~i) {
-					return undefined;
-				}
-
-				var obj = {};
-
-				obj[property] = angular.isDefined(state) ? state : !array[i][property];
-
-				return update(item, obj);
-			};
-
-			var remove = function (item) {
-				var i = index(item);
-
-				if (!~i) {
-					return undefined;
-				}
-
-				catalogRemove(item);
-				return array.splice(i, 1).shift();
-			};
-
-			var filter = function (filter, comparator) {
-				return !angular.isObject(filter) ? array : $filter('filter')(array, filter, comparator);
-			};
-
-			var reset = function () {
-				return array.splice(0, array.length);
-			};
-
-			angular.extend(array, {
-				index: index,
-				validate: validate,
-				has: has,
-				add: add,
-				update: update,
-				replace: replace,
-				remove: remove,
-				filter: filter,
-				find: find,
-				order: order,
-				toggle: toggle,
-				reset: reset,
-				newCatalog: newCatalog,
-				newTransform: newTransform,
-				newValidate: newValidate,
-				newOrder: newOrder
-			});
-
-			return array;
+			this.catalog = {};
+			this.catalogKey = undefined;
 		};
+
+		ArrayHelper.prototype = [];
+
+		//
+
+		ArrayHelper.prototype.newTransform = function (transformFn) {
+			this._transformFn = transformFn;
+		};
+		ArrayHelper.prototype.newValidate = function (validateFn) {
+			this._validateFn = validateFn;
+		};
+		ArrayHelper.prototype.newOrder = function (orderFn) {
+			this._orderFn = orderFn;
+		};
+
+		//
+
+		ArrayHelper.prototype.transform = function (item) {
+			return angular.isFunction(this._transformFn) ? this._transformFn(item) : item;
+		};
+		ArrayHelper.prototype.validate = function (item) {
+			return angular.isFunction(this._validateFn) ? this._validateFn(item) : item;
+		};
+		ArrayHelper.prototype.order = function () {
+			return angular.isFunction(this._orderFn) ? this.sort(this._orderFn) : this;
+		};
+
+		//
+
+
+		ArrayHelper.prototype.newCatalog = function (key) {
+			this.catalogKey = key;
+			this.catalogUpdate();
+		};
+		ArrayHelper.prototype.catalogUpdate = function () {
+			this.catalog = {};
+
+			if (angular.isString(this.catalogKey)) {
+				var that = this;
+				angular.forEach(this, function (item) {
+					that.catalogAdd(item);
+				});
+			}
+		};
+		ArrayHelper.prototype.catalogAdd = function (item) {
+			if (item[this.catalogKey]) {
+				this.catalog[item[this.catalogKey]] = item;
+			}
+		};
+		ArrayHelper.prototype.catalogRemove = function (item) {
+			if (item[this.catalogKey]) {
+				delete this.catalog[item[this.catalogKey]];
+			}
+		};
+		ArrayHelper.prototype.useCatalog = function (item) {
+			return this.catalogKey && !angular.isObject(item);
+		};
+
+		//
+
+
+		ArrayHelper.prototype.index = function (item) {
+			if (this.useCatalog(item)) {
+				item = this.catalog[item];
+			}
+
+			return this.indexOf(item);
+		};
+		ArrayHelper.prototype.find = function (item, strict) {
+			if (this.useCatalog(item)) {
+				return this.catalog[item];
+			}
+
+			strict = angular.isUndefined(strict) ? true : strict;
+
+			return this.filter(item, strict).shift();
+		};
+		ArrayHelper.prototype.has = function (item) {
+			if (this.useCatalog(item)) {
+				return this.catalog[item];
+			}
+
+			return this[this.index(item)];
+		};
+		ArrayHelper.prototype.add = function (item) {
+			if (!(item = this.validate(this.transform(item)))) {
+				return false;
+			}
+
+			this.push(item);
+			this.catalogAdd(item);
+
+			this.order();
+
+			return item;
+		};
+		ArrayHelper.prototype.update = function (item, obj) {
+			var i = this.index(item);
+
+			if (!~i) {
+				return undefined;
+			}
+
+			if (!angular.isObject(obj)) {
+				return false;
+			}
+
+			this.catalogRemove(item);
+			angular.extend(item, obj);
+			this.catalogAdd(item);
+
+			this.order();
+
+			return item;
+		};
+		ArrayHelper.prototype.replace = function (old, item) {
+			if (!(item = this.validate(this.transform(item)))) {
+				return false;
+			}
+
+			var i = this.index(old);
+
+			if (!~i) {
+				return undefined;
+			}
+
+			this[i] = item;
+			this.catalogRemove(old);
+			this.catalogAdd(item);
+
+			this.order();
+
+			return item;
+		};
+		ArrayHelper.prototype.toggle = function (item, property, state) {
+			var i = this.index(item);
+
+			if (!~i) {
+				return undefined;
+			}
+
+			var obj = {};
+
+			obj[property] = angular.isDefined(state) ? state : !this[i][property];
+
+			return ArrayHelper.prototype.update.call(this, item, obj);
+		};
+		ArrayHelper.prototype.remove = function (item) {
+			var i = this.index(item);
+
+			if (!~i) {
+				return undefined;
+			}
+
+			this.catalogRemove(item);
+			return this.splice(i, 1).shift();
+		};
+		ArrayHelper.prototype.filter = function (filter, comparator) {
+			return !angular.isObject(filter) ? this : $filter('filter')(this, filter, comparator);
+		};
+		ArrayHelper.prototype.reset = function () {
+			return this.splice(0, this.length);
+		};
+
+		//
+
+		return ArrayHelper;
 	}
 ]);

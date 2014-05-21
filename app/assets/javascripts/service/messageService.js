@@ -1,20 +1,16 @@
 module.factory('messageService', [
 	'$rootScope',
-	'arrayHelper',
+	'ArrayHelper',
 	'$timeout',
 	'constantService',
-	function ($rootScope, arrayHelper, $timeout, constants) {
-		var messages = arrayHelper([]);
-
-		messages.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
+	function ($rootScope, ArrayHelper, $timeout, constants) {
+		var types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
 		//
 
-		messages.newCatalog('id');
-
-		messages.newTransform(function (message) {
+		var transformFn = function (message) {
 			message.id = message.id || 'message_' + Math.random().toString(36).substring(2);
-			message.type = messages.types.indexOf(message.type) != -1 ? message.type : 'blue';
+			message.type = types.indexOf(message.type) != -1 ? message.type : 'blue';
 			message.target = angular.isString(message.target) ? message.target : undefined;
 			message.closeable = angular.isDefined(message.closeable) && message.closeable != false;
 			message.countdown = parseInt(message.countdown) || false;
@@ -23,51 +19,104 @@ module.factory('messageService', [
 			message.body = message.body || undefined;
 
 			return message;
-		});
+		};
 
-		messages.newValidate(function (message) {
+		var validateFn = function (message) {
 			return angular.isObject(message) &&
 				message.id && message.type &&
 				angular.isDefined(message.body) &&
 				message.body.length > 0 ? message : false;
-		});
+		};
 
-		messages.newOrder(function (a, b) {
-			return (messages.types.indexOf(a.type) < messages.types.indexOf(b.type)) ? -1 : (messages.types.indexOf(a.type) > messages.types.indexOf(b.type)) ? 1 : 0;
-		});
+		var orderFn = function (a, b) {
+			return (types.indexOf(a.type) < types.indexOf(b.type)) ? -1 : (types.indexOf(a.type) > types.indexOf(b.type)) ? 1 : 0;
+		};
 
 		//
-
-		var addFn = messages.add;
 
 		var register = function (message) {
 			if (message) {
 				if (message.target) {
-					messages.target(message);
+					this.target(message);
 				}
 
 				if (message.countdown) {
-					messages.countdown(message);
+					this.countdown(message);
 				}
 			}
 
 			return message;
 		};
 
-		messages.add = function (message) {
-			var newMessage = addFn(message);
+		var errorHTML = function (html) {
+			return function () {
+				var doc = document.open('text/html', 'replace');
+				doc.write(html);
+				doc.close();
+			}
+		};
 
-			register(newMessage);
+		var getTargetEvents = function (message) {
+			if (!message.targetElement) {
+				return [];
+			}
+
+			var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
+				namespace = '.messageTarget';
+
+			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0) {
+				return [
+						'focusin' + namespace + '_' + message.id,
+						'focusout' + namespace + '_' + message.id
+				];
+			}
+
+			return [
+					'mouseenter' + namespace + '_' + message.id,
+					'mouseleave' + namespace + '_' + message.id
+			];
+		};
+
+		var countdownUnset = function (message) {
+			if (message.countdownTimer && message.countdownTimer.hasOwnProperty('cancel')) {
+				message.countdownTimer.cancel();
+			}
+		};
+
+		//
+
+		var MessageService = function () {
+			this.newCatalog('id');
+			this.newTransform(transformFn);
+			this.newValidate(validateFn);
+			this.newOrder(orderFn);
+		};
+		MessageService.prototype = new ArrayHelper();
+
+		//
+
+		MessageService.prototype.instance = function () {
+			return new MessageService();
+		};
+
+		//
+
+		//
+
+		MessageService.prototype.add = function (message) {
+			var newMessage = ArrayHelper.prototype.add.call(this, message);
+
+			register.call(this, newMessage);
 
 			return newMessage;
 		};
 
-		messages.addError = function (message) {
+		MessageService.prototype.addError = function (message) {
 			message.countdown = undefined;
 			message.closeable = true;
 			message.type = 'red';
 
-			var newMessage = addFn(message);
+			var newMessage = ArrayHelper.prototype.add.call(this, message);
 
 			if (!newMessage) {
 				return false;
@@ -107,37 +156,24 @@ module.factory('messageService', [
 			delete message.status;
 			delete message.url;
 
-			register(newMessage);
+			register.call(this, newMessage);
 			return newMessage;
 		};
 
-		var errorHTML = function (html) {
-			return function () {
-				var doc = document.open('text/html', 'replace');
-				doc.write(html);
-				doc.close();
-			}
-		};
-
 		//
 
-		var removeFn = messages.remove;
-
-		messages.remove = function (message) {
+		MessageService.prototype.remove = function (message) {
 			countdownUnset(message);
-
-			return removeFn(message);
+			return ArrayHelper.prototype.remove.call(this, message);
 		};
 
 		//
 
-		var updateFn = messages.update;
-
-		messages.update = function (message, obj) {
-			var newMessage = updateFn(message, obj);
+		MessageService.prototype.update = function (message, obj) {
+			var newMessage = ArrayHelper.prototype.update.call(this, message, obj);
 
 			if (newMessage) {
-				messages.target(newMessage);
+				this.target(newMessage);
 			}
 
 			return newMessage;
@@ -145,43 +181,22 @@ module.factory('messageService', [
 
 		//
 
-		messages.enable = function (message) {
+		MessageService.prototype.enable = function (message) {
 			countdownUnset(message);
-
-			return messages.toggle(message, 'enabled', true);
+			return this.toggle(message, 'enabled', true);
 		};
 
-		messages.disable = function (message) {
+		MessageService.prototype.disable = function (message) {
 			countdownUnset(message);
-
-			return messages.toggle(message, 'enabled', false);
+			return this.toggle(message, 'enabled', false);
 		};
 
 		//
 
-		var getTargetEvents = function (message) {
-			if (!message.targetElement) {
-				return [];
-			}
+		MessageService.prototype.target = function (message, target) {
+			var that = this;
 
-			var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
-				namespace = '.messageTarget';
-
-			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0) {
-				return [
-						'focusin' + namespace + '_' + message.id,
-						'focusout' + namespace + '_' + message.id
-				];
-			}
-
-			return [
-					'mouseenter' + namespace + '_' + message.id,
-					'mouseleave' + namespace + '_' + message.id
-			];
-		};
-
-		messages.target = function (message, target) {
-			if (messages.index(message) == -1) {
+			if (this.index(message) == -1) {
 				return undefined;
 			}
 
@@ -195,7 +210,7 @@ module.factory('messageService', [
 			var $target = $(message.target);
 
 			if ($target.length === 0) {
-				messages.disable(message);
+				this.disable(message);
 				return message.target = false;
 			}
 
@@ -205,31 +220,27 @@ module.factory('messageService', [
 
 			$target.bind(events[0], function () {
 				$rootScope.$apply(function () {
-					messages.enable(message);
+					that.enable(message);
 				});
 			});
 
 			$target.bind(events[1], function () {
 				$rootScope.$apply(function () {
-					messages.disable(message);
+					that.disable(message);
 				});
 			});
 
-			messages.disable(message);
+			this.disable(message);
 
 			return message;
 		};
 
 		//
 
-		var countdownUnset = function (message) {
-			if (message.countdownTimer && message.countdownTimer.hasOwnProperty('cancel')) {
-				message.countdownTimer.cancel();
-			}
-		};
+		MessageService.prototype.countdown = function (message, countdown) {
+			var that = this;
 
-		messages.countdown = function (message, countdown) {
-			if (messages.index(message) == -1) {
+			if (this.index(message) == -1) {
 				return undefined;
 			}
 
@@ -242,7 +253,7 @@ module.factory('messageService', [
 			}
 
 			message.countdownTimer = $timeout(function () {
-				messages.disable(message);
+				that.disable(message);
 			}, message.countdown);
 
 			return message;
@@ -250,6 +261,6 @@ module.factory('messageService', [
 
 		//
 
-		return messages;
+		return new MessageService();
 	}
 ]);
