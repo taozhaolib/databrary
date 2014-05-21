@@ -39,7 +39,7 @@ module.controller('CommentsPanel', [
 		//
 
 		$scope.pullComments = function () {
-			switch ($route.current.controller) {
+			switch (page.$route.current.controller) {
 				case 'VolumeView':
 					page.models.Volume.$cache.removeAll();
 
@@ -83,7 +83,7 @@ module.controller('CommentsPanel', [
 			var isParty = page.$route.current.controller == 'PartyView' && !$scope.volume;
 			var isTop = comment.container.top;
 
-			var meta = '<time datetime="' + $filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
+			var meta = '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
 
 			if (isTop && !isParty) {
 				return meta;
@@ -96,7 +96,7 @@ module.controller('CommentsPanel', [
 				($scope.volume ? $scope.volume.id : 0);
 
 			if (isParty) {
-				meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + $filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
+				meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
 			}
 
 			if (isParty && !isTop) {
@@ -150,7 +150,7 @@ module.controller('CommentsPanel', [
 		$scope.getCommentClasses = function (comment) {
 			var classes = [];
 
-			if ($route.current.controller != 'PartyView') {
+			if (page.$route.current.controller != 'PartyView') {
 				if (!comment.parent) {
 					comment.parent = 0;
 				}
