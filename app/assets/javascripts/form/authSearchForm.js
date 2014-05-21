@@ -9,7 +9,6 @@ module.directive('authSearchForm', [
 			$attrs.$observe('institution', function (institution) {
 				$scope.authSearchForm.name = '';
 				$scope.authSearchForm.found = [];
-				$scope.authSearchForm.institution = institution;
 			});
 
 			//
