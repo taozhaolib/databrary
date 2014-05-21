@@ -237,6 +237,14 @@ object Party extends TableId[Party]("party") {
 }
 
 object SiteParty {
+  def row(implicit site : Site) =
+    Party.row
+    .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
+    .pushArgs(SQLArgs(site.identity.id))
+    .map {
+      case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
+    }
+
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
     if (p.id === Party.ROOT) async(new SiteParty(site.access))
     else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
@@ -244,12 +252,7 @@ object SiteParty {
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =
     Party.getStatic(i).fold {
-    Party.row
-      .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
-      .pushArgs(SQLArgs(site.identity.id))
-      .map {
-	case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
-      }.SELECT("WHERE party.id = ?").apply(i).singleOpt
+      row.SELECT("WHERE party.id = ?").apply(i).singleOpt
     } (get(_).map(Some(_)))
 }
 
