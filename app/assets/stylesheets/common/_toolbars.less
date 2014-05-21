@@ -38,8 +38,8 @@
 		display: block;
 		background: url('/public/images/logo/databrary-nav.png') no-repeat 0 center;
 		.height(1.5);
-		padding-left: 1.75rem;
-		padding-right: @b1;
+		width: 114px;
+		.margin-right(@f2);
 
 		&:link {
 			color: @black;
@@ -55,9 +55,11 @@
 
 .toolbar_nav {
 	display: inline-block;
+	position: relative;
+	top: -@b2;
 
 	li {
-		margin-right: @gutter;
+		.margin-right(@f2);
 	}
 
 	a {
@@ -70,11 +72,6 @@
 		.icon {
 			position: relative;
 			top: @b12;
-		}
-
-		.text {
-			position: relative;
-			top: -@b24;
 		}
 	}
 }
