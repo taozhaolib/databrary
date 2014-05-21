@@ -23,11 +23,20 @@
 // STYLES
 
 .messages {
-	position: fixed;
-	z-index: 850;
-	top: @b1 * 1.5;
-	width: 100%;
 	display: none;
+	.margin-bottom(@f1);
+
+	&.messages_default {
+		position: fixed;
+		z-index: 850;
+		top: @b1 * 1.5;
+		width: 100%;
+		.margin-bottom(0);
+
+		.message {
+			.box-shadow();
+		}
+	}
 }
 
 .messages_enabled {
@@ -40,7 +49,6 @@
 	min-height: @b1 * 1.5;
 	background-color: @pale;
 	color: @gray;
-	.box-shadow();
 	position: relative;
 	opacity: .95;
 }
