@@ -38,6 +38,7 @@
 			.box-shadow();
 			border-width: 0;
 			.border-radius(0);
+			.margin-bottom(0);
 		}
 	}
 
@@ -64,8 +65,13 @@
 	color: @gray;
 	position: relative;
 	opacity: .95;
+	.margin-bottom(@f2);
 	border: @b12 solid @gray;
 	.border-radius(@b3);
+	
+	&:last-child {
+		.margin-bottom(0);
+	}
 }
 
 //
