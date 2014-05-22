@@ -125,4 +125,6 @@ object Asset {
     case t : TimeseriesData if !t.entire => Segment.read(t)
     case _ => Future.successful(FileAsset.read(o))
   }
+  def timestamp(asset : models.BackedAsset) : Long =
+    FileAsset.file(asset.source).lastModified
 }

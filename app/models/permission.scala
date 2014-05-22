@@ -95,7 +95,7 @@ object Classification extends PGEnum("classification") {
     if (c >= Consent.PUBLIC ||
         c >= Consent.SHARED && a >= Permission.DOWNLOAD)
       IDENTIFIED
-    else if (c == Consent.NONE && top)
+    else if (c >= Consent.EXCERPTS || c == Consent.NONE && top)
       // "unassigned" excerpts are unrestricted, by assertion of PIs
       EXCERPT
     else

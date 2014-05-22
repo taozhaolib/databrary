@@ -40,7 +40,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       async(NotModified)
     else for {
       data <- store.Asset.read(asset)
-      date <- asset.source.creation
+      date = store.Asset.timestamp(asset)
     } yield {
       val size = data.size
       val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
@@ -53,7 +53,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + size.toString)),
         Some(CONTENT_TYPE -> asset.format.mimetype),
         saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
-        date.map(d => (LAST_MODIFIED -> HTTP.date(d))),
+        Some(LAST_MODIFIED -> HTTP.date(new Timestamp(date))),
         Some(ETAG -> HTTP.quote(tag)),
         Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
       ).flatten
