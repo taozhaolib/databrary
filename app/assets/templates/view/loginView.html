@@ -12,12 +12,12 @@
 
           <div ng-switch="method">
             <div ng-switch-default>
-              <input id="loginEmail" type="email" ng-model="loginData.email" bo-placeholder="'email' | message">
-              <input id="loginPassword" type="password" ng-model="loginData.password" bo-placeholder="'password' | message" ng-required>
+              <input id="loginEmail" type="email" ng-model="loginData.email" bo-attr bo-attr-placeholder="'email' | message">
+              <input id="loginPassword" type="password" ng-model="loginData.password" bo-attr bo-attr-placeholder="'password' | message" ng-required>
             </div>
 
             <div ng-switch-when="openid">
-              <input id="loginOpenid" type="text" ng-model="loginData.openid" bo-placeholder="'openid' | message" ng-required>
+              <input id="loginOpenid" type="text" ng-model="loginData.openid" bo-attr bo-attr-placeholder="'openid' | message" ng-required>
             </div>
           </div>
 
