@@ -2,6 +2,7 @@
 
 .message-color(@c) {
 	background-color: mix(@c, @white, 25%);
+	border-color: mix(@c, @pale, 25%);
 	color: mix(@c, @dark, 25%);
 
 	a {
@@ -35,6 +36,18 @@
 
 		.message {
 			.box-shadow();
+			border-width: 0;
+			.border-radius(0);
+		}
+	}
+
+	&.messages_local {
+		.wrap,
+		.row {
+			width: auto;
+			display: block;
+			.margin(0);
+			.padding(0);
 		}
 	}
 }
@@ -51,6 +64,8 @@
 	color: @gray;
 	position: relative;
 	opacity: .95;
+	border: @b12 solid @gray;
+	.border-radius(@b3);
 }
 
 //

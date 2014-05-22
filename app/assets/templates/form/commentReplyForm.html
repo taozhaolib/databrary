@@ -11,7 +11,7 @@
         <textarea ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
 
         <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">{{'comments.post' | message}}</button>
-        <button class="orange" ng-click="commentReplyForm.cancel()" ng-if="!commentReplyForm.data.parent">{{'comments.cancel' | message}}</button>
+        <button class="orange" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.data.parent">{{'comments.cancel' | message}}</button>
       </div>
     </div>
   </div>

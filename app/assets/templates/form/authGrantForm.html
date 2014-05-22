@@ -1,4 +1,6 @@
 <form name="authGrantForm">
+  <messages form="authGrantForm"></messages>
+
   <fieldset class="clean radio-set" ng-if="authGrantForm.other">
     <legend>{{"auth.grant.title" | message:authGrantForm.other.party.name}}</legend>
 

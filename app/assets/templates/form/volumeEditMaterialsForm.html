@@ -1,5 +1,7 @@
 <form name="volumeEditMaterialsForm" bindonce>
-	<fieldset class="clean">
+  <messages form="volumeEditMaterialsForm"></messages>
+
+  <fieldset class="clean">
 		<repeater retrieve="volumeEditMaterialsForm.retrieveRepeater">
 			<fieldset class="clean" ng-disabled="repeat.saving">
 				<div ng-if="!repeat.asset">

@@ -11,6 +11,8 @@
 				<wizard retrieve="retrieveWizard" update="updateWizard">
 					<wizard-step id="register_create">
 						<form name="registerForm">
+              <messages form="registerForm"></messages>
+
 							<label for="field_name">{{'register.name.prompt' | message}}</label>
 							<input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
 
@@ -68,7 +70,9 @@
 							<div ng-bind-html="'auth.info.prompt' | message"></div>
 
 							<form name="infoForm">
-								<textarea id="field_info" ng-model="infoForm.data.info"></textarea>
+                <messages form="infoForm"></messages>
+
+                <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
 
 								<button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
 								<button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>

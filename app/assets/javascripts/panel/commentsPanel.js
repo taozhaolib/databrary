@@ -1,5 +1,10 @@
 module.controller('CommentsPanel', [
 	'$scope', 'pageService', function ($scope, page) {
+		var form;
+		page.events.listen($scope, 'commentReplyForm-init', function (event, commentForm) {
+			form = commentForm;
+		});
+		
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000
@@ -9,12 +14,12 @@ module.controller('CommentsPanel', [
 
 		var createMessage = function (message) {
 			if (typeof(message) == 'string') {
-				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
+				form.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
 					body: message
 				}));
 			}
 			else {
-				page.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
+				form.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
 			}
 		};
 
@@ -50,7 +55,7 @@ module.controller('CommentsPanel', [
 						$scope.volume.comments = data.comments;
 						$scope.refreshPanel();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('comments.update.error'),
 							report: res,
 						})

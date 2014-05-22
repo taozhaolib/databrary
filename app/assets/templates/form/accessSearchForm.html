@@ -1,4 +1,6 @@
 <form name="accessSearchForm">
+  <messages form="accessSearchForm"></messages>
+
   <input type="search" class="auth-search" placeholder="{{'access.search' | message}}" ng-model="accessSearchForm.name" ng-change="accessSearchForm.search()">
 
   <ul ng-if="accessSearchForm.found">

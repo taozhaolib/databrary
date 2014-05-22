@@ -6,35 +6,13 @@
 
 .panel {
 	.transition();
-
-	.wrap {
-		.padding-height(@panelpad);
-	}
-
-	&:first-of-type {
-		.wrap {
-			.padding-top(@panelpad);
-		}
-	}
-
-	&:last-of-type {
-		.wrap {
-			.border-padding-bottom(2px, @panelpad);
-		}
-	}
+	.margin-bottom(@f1);
 
 	> .row {
 		.padding-bottom(@panelpad);
 
 		&:last-child {
 			.padding-bottom(0);
-		}
-	}
-
-	&.nowrap {
-		.wrap {
-			width: auto;
-			.padding-width(@panelpad);
 		}
 	}
 

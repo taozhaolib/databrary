@@ -20,7 +20,9 @@
 			</div>
 
 			<form name="userEditForm" ng-show="editMode">
-				<fieldset>
+        <messages form="userEditForm"></messages>
+
+        <fieldset>
 					<legend bo-html="'party.edit.personal' | message"></legend>
 
 					<label bo-html="'fullname' | message"></label>

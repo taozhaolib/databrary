@@ -28,7 +28,7 @@ module.directive('commentReplyForm', [
 				form.comment = new page.models.Comment();
 
 				form.comment.$save(form.data, function () {
-					page.messages.add({
+					form.messages.add({
 						body: page.constants.message('comments.add.success'),
 						type: 'green',
 						countdown: 3000
@@ -40,7 +40,7 @@ module.directive('commentReplyForm', [
 
 					form.cancel();
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('comments.add.error'),
 						report: res,
 					});

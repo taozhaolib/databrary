@@ -2,9 +2,8 @@ module.directive('messages', [
 	'pageService', function (page) {
 		var controller = function ($scope, $element, $attrs) {
 			var Region = function () {
-				if (angular.isUndefined($attrs.form)) {
-					$scope.messages = this;
-				} else if ($scope[$attrs.form]) {
+				$scope.messages = this;
+				if ($scope[$attrs.form]) {
 					$scope[$attrs.form].messages = this;
 				}
 
@@ -22,6 +21,8 @@ module.directive('messages', [
 
 					if (angular.isDefined($attrs.default)) {
 						classes.push('messages_default');
+					} else {
+						classes.push('messages_local');
 					}
 
 					return classes;
@@ -90,6 +91,7 @@ module.directive('messages', [
 			replace: true,
 			templateUrl: 'messages.html',
 			controller: controller,
+			controllerAs: 'messages',
 		};
 	}
 ]);

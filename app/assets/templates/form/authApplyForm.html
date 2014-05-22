@@ -1,4 +1,6 @@
 <form name="authApplyForm">
+  <messages form="authApplyForm"></messages>
+
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
     <legend class="auth_request">{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
 

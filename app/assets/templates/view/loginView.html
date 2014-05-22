@@ -8,6 +8,8 @@
 
       <div class="col-full">
         <form name="loginForm">
+          <messages form="loginForm"></messages>
+
           <div ng-switch="method">
             <div ng-switch-default>
               <input id="loginEmail" type="email" ng-model="loginData.email" bo-placeholder="'email' | message">

@@ -118,19 +118,19 @@ module.controller('RegisterView', [
 
 				//
 
-				page.messages.add({
+				$scope.registerForm.messages.add({
 					type: 'blue',
 					target: '#field_name',
 					body: page.constants.message('wizard.register_form.name.help')
 				});
 
-				page.messages.add({
+				$scope.registerForm.messages.add({
 					type: 'blue',
 					target: '#field_email',
 					body: page.constants.message('wizard.register_form.email.help')
 				});
 
-				page.messages.add({
+				$scope.registerForm.messages.add({
 					type: 'blue',
 					target: '#field_affiliation',
 					body: page.constants.message('wizard.register_form.affiliation.help')
@@ -138,7 +138,7 @@ module.controller('RegisterView', [
 
 				//
 
-				var emailError = page.messages.add({
+				var emailError = $scope.registerForm.messages.add({
 					type: 'red',
 					enabled: false,
 					body: page.constants.message('wizard.register_form.email.error')
@@ -146,10 +146,10 @@ module.controller('RegisterView', [
 
 				step.$watch('registerForm.fieldEmail.$valid', function () {
 					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty) {
-						page.messages.disable(emailError);
+						$scope.registerForm.messages.disable(emailError);
 					}
 					else {
-						page.messages.enable(emailError);
+						$scope.registerForm.messages.enable(emailError);
 					}
 				});
 			},

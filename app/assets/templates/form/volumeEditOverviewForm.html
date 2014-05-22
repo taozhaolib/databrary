@@ -1,4 +1,6 @@
 <form name="volumeEditOverviewForm" bindonce>
+  <messages form="volumeEditOverviewForm"></messages>
+
   <fieldset ng-if="!volumeEditOverviewForm.data.name">
     <div bo-html="'volume.doi.primary.instructions' | message | format"></div>
 

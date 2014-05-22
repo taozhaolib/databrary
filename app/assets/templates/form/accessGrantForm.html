@@ -1,4 +1,6 @@
 <form name="accessGrantForm" bindonce>
+  <messages form="accessGrantForm"></messages>
+
   <fieldset class="clean" ng-if="accessGrantForm.funding">
 		<label bo-html="'access.grant.funding' | message"></label>
 		<input name="funding" type="text" ng-model="accessGrantForm.data.funding" idle="accessGrantForm.save()" ng-blur="accessGrantForm.save()">

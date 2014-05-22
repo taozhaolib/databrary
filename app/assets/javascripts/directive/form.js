@@ -1,19 +1,30 @@
 module.directive('form', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			if (angular.isDefined($attrs.messages)) {
-				if (!$attrs.name) {
-					return;
-				} else if ($attrs.messages === 'default') {
+			switch ($attrs.messages) {
+				case 'nearest':
+					if ($scope.messages) {
+						$scope[$attrs.name].messages = $scope.messages;
+					}
+					break;
+
+				case 'none':
+					$scope[$attrs.name].messages = page.messages.region();
+					break;
+
+				case 'default':
 					$scope[$attrs.name].messages = page.messages;
-				} else if ($attrs.messages === 'nearest' && $scope.messages) {
-					$scope[$attrs.name].messages = $scope.messages;
-				}
-			} else if ($scope[$attrs.name] && !$scope[$attrs.name].messages) {
-				$scope[$attrs.name].messages = page.messages.region();
-				page.$compile('<messages form></messages>')($scope, function ($clone, $scope) {
-					$element.prepend($clone);
-				});
+					break;
+
+				default:
+					if(angular.isString($attrs.messages)) {
+						$scope[$attrs.name].messages = page.$parse($attrs.messages)($scope);
+					}
+
+					if (!$scope[$attrs.name].messages instanceof page.messages.constructor) {
+						$scope[$attrs.name].messages = page.messages.region();
+					}
+					break;
 			}
 		};
 
