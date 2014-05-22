@@ -1,6 +1,6 @@
 <panel ng-controller="PublicationsPanel" id="panel_publications" panel-title="{{'citations.title' | message}}" fold>
     <div class="row">
-      <div bindonce ng-repeat="citation in volume.citations" class="publication" fold closed forget>
+      <div bindonce ng-repeat="citation in volume.citations" class="publication" fold="citation.body" closed forget>
         <div class="col-full">
 		<h3 class="publication_header" ng-click="toggleFold()"><div><span>{{citation.head}}</span> <a bo-if="citation.url" bo-href="citation.url | handle" bo-title="citation.head" class="cit_link" ng-click="stopProp($event)" target="_blank">link</a></div></h3>
         </div>
