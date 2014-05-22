@@ -430,7 +430,7 @@ volume.edit.access.error=Unable to update volume access.
 
 wizard.volume_edit_overview.name=Overview
 wizard.volume_edit_overview.description=Edit name and description.
-wizard.volume_edit_overview.instructions=Provide a name and description for your dataset or study. If this study corresponds to a paper, these can be the same as the title and abstract of the paper, which will be filled in if you enter its DOI.
+wizard.volume_edit_overview.instructions=Provide a name and description for your dataset or study. If this study corresponds to a paper, these can be the same as the title and abstract of the paper.
 
 # Same as citations.title above??!
 wizard.volume_edit_publications.name=Citations
