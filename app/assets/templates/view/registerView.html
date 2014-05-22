@@ -10,7 +10,7 @@
 			<div class="col-full">
 				<wizard retrieve="retrieveWizard" update="updateWizard">
 					<wizard-step id="register_create">
-						<form name="registerForm">
+						<form name="registerForm" novalidate>
               <messages form="registerForm"></messages>
 
 							<label for="field_name">{{'register.name.prompt' | message}}</label>
@@ -68,7 +68,7 @@
 						<div ng-show="ifInfo() && institution">
 							<div ng-bind-html="'auth.info.prompt' | message"></div>
 
-							<form name="infoForm">
+							<form name="infoForm" novalidate>
                 <messages form="infoForm"></messages>
 
                 <textarea id="field_info" ng-model="infoForm.data.info"></textarea>

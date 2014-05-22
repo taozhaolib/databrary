@@ -68,7 +68,7 @@ select {
 		.input-shadow(@orange);
 	}
 
-	&.ng-invalid {
+	&.ng-invalid:not(.ng-pristine) {
 		border-color: @red;
 		.input-shadow(@red);
 	}

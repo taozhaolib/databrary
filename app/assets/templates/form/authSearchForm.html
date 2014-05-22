@@ -1,4 +1,4 @@
-<form name="authSearchForm">
+<form name="authSearchForm" novalidate>
   <messages form="authSearchForm"></messages>
 
   <input type="search" class="auth-search" placeholder="{{'auth.search.'+(authSearchForm.institution?'institution':'individual') | message}}" ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
