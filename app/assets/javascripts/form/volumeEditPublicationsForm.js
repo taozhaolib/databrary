@@ -83,17 +83,16 @@ module.directive('volumeEditPublicationsForm', [
 
 				if (!target.name) {
 					page.models.CrossCite
-						.json(doi[1])
+						.apa(doi[1])
 						.then(function (res) {
-							if (!res.title) {
+							if (!res) {
 								form.messages.add({
 									type: 'red',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.autodoi.name.error'),
 								});
 							} else {
-								target.head = res.title;
-								target.url = doi[1];
+								target.head = res;
 
 								form.messages.add({
 									type: 'green',

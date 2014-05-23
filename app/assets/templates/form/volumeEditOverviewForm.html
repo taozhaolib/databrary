@@ -1,11 +1,12 @@
 <form name="volumeEditOverviewForm" bindonce novalidate>
   <messages form="volumeEditOverviewForm"></messages>
 
-  <fieldset ng-if="!volumeEditOverviewForm.data.name">
+  <fieldset ng-if="!volumeEditOverviewForm.volume">
     <div bo-html="'volume.edit.autodoi.instructions' | message | format"></div>
 
     <label bo-html="'volume.edit.autodoi' | message"></label>
-    <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi" idle="volumeEditOverviewForm.autoDOI()">
+    <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi">
+    <button class="pull mini pull_citation" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
   </fieldset>
 
   <fieldset class="clean">
