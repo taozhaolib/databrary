@@ -284,7 +284,7 @@ error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and t
 
 error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
 error.report.subject=[Error {0}] {1}
-error.report.body=Describe the error in your own words:\n\n\n\n----\n\n{0}
+error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
 
 error.view=<a href="" ng-click="message.fn()">View error</a>.
 
