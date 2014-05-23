@@ -141,7 +141,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	subject = Messages("mail.authorize.subject"),
 	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(true),
 	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
-	  parent.name)
+	  parent.name + form.info.get.fold("")(" (" + _ + ")"))
       ).recover {
 	case ServiceUnavailableException => ()
       } else macros.Async.void
