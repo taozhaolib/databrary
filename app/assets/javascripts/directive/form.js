@@ -13,11 +13,22 @@ module.directive('form', [
 				form.validators = {};
 				form.validator = {
 					server: function (data, replace) {
+						var formWide;
+
 						for (var name in data) {
-							if (data.hasOwnProperty(name) && form.validator[name]) {
+							if (data.hasOwnProperty(name) && form.validators[name]) {
 								form.validators[name].server(data[name], replace);
+							} else if (form.messages) {
+								form.messages.add({
+									type: 'red',
+									closeable: true,
+									body: angular.isArray(data[name]) ? data[name].join(', ') : data[name],
+								});
+								formWide = true;
 							}
 						}
+
+						return formWide;
 					},
 
 					client: function (data, replace) {

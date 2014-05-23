@@ -12,8 +12,9 @@
 
           <div ng-switch="method">
             <div ng-switch-default>
-              <input id="loginEmail" type="email" ng-model="loginData.email" bo-attr bo-attr-placeholder="'email' | message">
-              <input id="loginPassword" type="password" ng-model="loginData.password" bo-attr bo-attr-placeholder="'password' | message" ng-required>
+              <input id="loginEmail" name="email" type="email" ng-model="loginData.email" bo-attr bo-attr-placeholder="'email' | message">
+              <input id="loginPassword" name="password" type="password" ng-model="loginData.password" bo-attr bo-attr-placeholder="'password' | message" ng-required>
+              <validator form="loginForm" name="password"></validator>
             </div>
 
             <div ng-switch-when="openid">

@@ -130,41 +130,6 @@ module.controller('RegisterView', [
 						tips: page.constants.message('wizard.register_form.affiliation.help'),
 					},
 				}, true);
-
-				$scope.registerForm.messages.add({
-					type: 'blue',
-					target: '#field_name',
-					body: page.constants.message('wizard.register_form.name.help')
-				});
-
-				$scope.registerForm.messages.add({
-					type: 'blue',
-					target: '#field_email',
-					body: page.constants.message('wizard.register_form.email.help')
-				});
-
-				$scope.registerForm.messages.add({
-					type: 'blue',
-					target: '#field_affiliation',
-					body: page.constants.message('wizard.register_form.affiliation.help')
-				});
-
-				//
-
-				var emailError = $scope.registerForm.messages.add({
-					type: 'red',
-					enabled: false,
-					body: page.constants.message('wizard.register_form.email.error')
-				});
-
-				step.$watch('registerForm.fieldEmail.$valid', function () {
-					if ($scope.registerForm.fieldEmail.$valid || !$scope.registerForm.fieldEmail.$dirty) {
-						$scope.registerForm.messages.disable(emailError);
-					}
-					else {
-						$scope.registerForm.messages.enable(emailError);
-					}
-				});
 			},
 
 			'register_agreement': function (step) {

@@ -36,10 +36,14 @@ module.controller('LoginView', [
 			}, function (res) {
 				page.auth.parseUser(undefined);
 
-				$scope.loginForm.messages.addError({
-					body: page.constants.message('login.error'),
-					report: res
-				});
+				if(!$scope.loginForm.validator.server(res.data, true)) {
+					$scope.loginForm.messages.add({
+						body: page.constants.message('login.error'),
+						type: 'red',
+						closeable: true,
+						report: res,
+					});
+				}
 			});
 		};
 	}
