@@ -2,13 +2,15 @@
   <div class="row">
     <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
       <hgroup>
+        <div ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></div>
         <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
-        <h2 ng-if="auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></h2>
       </hgroup>
 
       <div ng-show="!editMode">
         <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
           <div class="description" ng-bind-html="volume.body | format"></div>
+
+					<p class="primary_study" ng-bind-html="primaryStudy()"></p>
 
           <div class="metadata">
             <dl class="flat">

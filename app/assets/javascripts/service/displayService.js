@@ -5,7 +5,8 @@ module.factory('displayService', [
 	'$filter',
 	'messageService',
 	'constantService',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants) {
+	'routerService',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router) {
 		var display = {};
 
 		//
@@ -23,6 +24,16 @@ module.factory('displayService', [
 
 		$rootScope.$on('$routeChangeSuccess', function () {
 			display.loading = false;
+			if (display.toolbarLinks) {
+				display.toolbarLinks = [
+					{
+						type: 'green',
+						html: constants.message('volume.edit.create'),
+						url: router.volumeCreate(),
+						auth: 'CONTRIBUTE',
+					},
+				];
+			}
 		});
 
 		//

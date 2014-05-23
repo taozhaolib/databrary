@@ -71,6 +71,7 @@ module.factory('routerService', [
 		router.search = makeRoute('/search');
 		router.asset = makeRoute('/asset/:id');
 		router.volume = makeRoute('/volume/:id');
+		router.volumeCreate = makeRoute('/volume/create');
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
 
 		//

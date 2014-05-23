@@ -17,7 +17,8 @@ module.directive('toolbar', [
 
 			this.links = function () {
 				return page.$filter('filter')(page.display.toolbarLinks, function (link) {
-					return !link.access || !link.object ? true : page.auth.hasAccess(link.access, link.object);
+					return link.access && link.object ? page.auth.hasAccess(link.access, link.object) :
+						link.auth ? page.auth.hasAuth(link.auth) : true;
 				});
 			};
 

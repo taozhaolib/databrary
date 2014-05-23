@@ -47,6 +47,23 @@ module.controller('OverviewVolumePanel', [
 			return false;
 		};
 
+		$scope.primaryStudy = function () {
+			var study;
+
+			for (var cite in $scope.volume.citations) {
+				if ($scope.volume.citations.hasOwnProperty(cite) && $scope.volume.citations[cite].study) {
+					study = $scope.volume.citations[cite];
+					break;
+				}
+			}
+
+			if (!study || !study.url) {
+				return;
+			}
+
+			return '<a href="' + page.$filter('handle')(study.url) + '" target="_blank">' + page.constants.message('volume.doi.primary.visit') + '</a>';
+		};
+
 		//
 
 		$scope.editMode = false;

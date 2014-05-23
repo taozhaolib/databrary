@@ -255,6 +255,7 @@ volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
 volume.citation.title=Citation
+volume.doi.primary.visit=TODO Visit corresponding publication.
 volume.doi.primary=Enter the DOI or URL of any corresponding publication
 volume.doi.primary.instructions=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter its DOI or URL here.  If you enter a DOI, we will attempt to automatically fill in the title and citation.
 volume.access.title=Shared with
@@ -266,6 +267,7 @@ volume.name=Title
 volume.alias=Internal short name
 volume.body=Description
 volume.edit=edit mode
+volume.edit.create=create new volume
 volume.edit.exit=exit edit mode
 volume.edit.success=Volume saved successfully!
 volume.edit.error=Unable to save volume.

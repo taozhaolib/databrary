@@ -11,7 +11,14 @@ module.controller('PartyView', [
 				url: page.router.partyEdit(party),
 				access: 'CONTRIBUTE',
 				object: party,
-			}
+			},
+			{
+				type: 'green',
+				html: page.constants.message('volume.edit.create'),
+				url: page.router.volumeCreate(),
+				access: 'ADMIN',
+				object: party,
+			},
 		];
 
 		$scope.browser.initialize('party', volumes);
