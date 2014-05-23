@@ -37,7 +37,7 @@ module.directive('authSearchForm', [
 						id: $scope.authSearchForm.id || page.auth.user.id,
 						apply: $scope.authSearchForm.apply,
 						name: $scope.authSearchForm.name,
-						institution: $element.attr('institution') === 'true'
+						institution: $element.attr('institution') ? $element.attr('institution') === 'true' : undefined
 					}, function (data) {
 						$scope.authSearchForm.found = data;
 

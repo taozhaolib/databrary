@@ -3,7 +3,7 @@
 
   <input type="search" class="auth-search" placeholder="{{'access.search' | message}}" ng-model="accessSearchForm.name" ng-change="accessSearchForm.search()">
 
-  <ul ng-if="accessSearchForm.found">
+  <ul ng-if="accessSearchForm.found" class="flat auth-found-list">
     <li ng-repeat="found in accessSearchForm.found">
       <a href="" class="auth-found" ng-click="accessSearchForm.select(found)">{{found.name}}</a>
     </li>

@@ -45,6 +45,14 @@
 	}
 }
 
+.auth-search-add,
+.network-auth-add {
+	form {
+		position: relative;
+		top: -@b1 + @b8;
+	}
+}
+
 .network-auth-inherit,
 .network-auth-direct {
 }
@@ -64,3 +72,34 @@
 .remote-action {
 	.line-height(2.25);
 }
+
+//
+
+.auth-found-list {
+	.margin-width(@f1);
+	.padding(0);
+
+	li {
+		.margin-bottom(@f8);
+
+		&:last-child {
+			.margin-bottom(0);
+		}
+	}
+
+	a {
+		border-left: 1px solid @gray;
+		border-right: 1px solid @gray;
+		border-bottom: 1px solid @gray;
+		border-top: 1px solid @pale;
+		display: block;
+		.padding(@f4, @f2);
+
+		&:hover {
+			background-color: @yellow51;
+			color: @blue21;
+		}
+	}
+}
+
+
