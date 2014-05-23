@@ -10,7 +10,10 @@
         <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
           <div class="description" ng-bind-html="volume.body | format"></div>
 
-					<p class="primary_study" ng-bind-html="primaryStudy()"></p>
+	  <p class="primary_study" ng-if="primaryStudy">
+	    <span class="icon jump" ng-click="page.gui.scrollTo('panel_publications')"></span>
+	    <a href="{{primaryStudy.url | handle}}" target="_blank">{{'volume.citation.study.link' | message}}</a>
+	  </p>
 
           <div class="metadata">
             <dl class="flat">

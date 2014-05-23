@@ -2,9 +2,9 @@
   <messages form="volumeEditOverviewForm"></messages>
 
   <fieldset ng-if="!volumeEditOverviewForm.data.name">
-    <div bo-html="'volume.doi.primary.instructions' | message | format"></div>
+    <div bo-html="'volume.edit.autodoi.instructions' | message | format"></div>
 
-    <label bo-html="'volume.doi.primary' | message"></label>
+    <label bo-html="'volume.edit.autodoi' | message"></label>
     <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi" idle="volumeEditOverviewForm.autoDOI()">
   </fieldset>
 
