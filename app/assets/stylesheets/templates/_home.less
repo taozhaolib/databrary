@@ -1,10 +1,5 @@
 // STYLES
 
-.view_home {
-}
-
-//
-
 .home_feature {
 	.margin-bottom(3);
 
@@ -25,6 +20,7 @@
 		background: @green;
 		color: @white;
 		text-transform: uppercase;
+		.grid-width(max, 6);
 		font-weight: bold;
 		.font-size(0.9);
 		.padding(@f6, @f3)
@@ -32,14 +28,24 @@
 
 	.info {
 		position: absolute;
-		bottom: @b1;
-		right: @b1;
-		width: 45%;
-		background: fadeout(@white, 10%);
+		top: @b1;
+		right: -@b1 * 13.25;
+		.grid-width(fix, 4.5);
+		background: @white;
+		.box-shadow();
 		.padding(@f6, @f3);
 
+		.inner_feature {
+			font-weight: bold;
+			text-transform: uppercase;
+			color: @gray;
+			letter-spacing: .5;
+			.font-line(.9);
+			display: inline-block;
+		}
+
 		h1 {
-			.font-line(1.25);
+			.font-line(1);
 
 			a {
 				.link-color(@black);
@@ -85,6 +91,29 @@
 	.margin-bottom(3);
 }
 
+.home_parties_header {
+	font-weight: normal;
+	letter-spacing: 3px;
+	text-transform: uppercase;
+	.font(3, 4);
+	.margin(0, 2, @f1, 0);
+	.padding-right(@f1);
+	display: inline-block;
+	background-color: @orange52;
+	position: relative;
+	text-shadow: -1px 0 2px @orange51;
+
+	span:first-child {
+		background-color: @orange52;
+		position: absolute;
+		width: 1000px;
+		left: -1000px;
+		top: 0;
+		bottom: 0;
+		z-index: -100;
+	}
+}
+
 .home_party {
 	.margin-bottom(@f1);
 	.transition();
@@ -104,7 +133,7 @@
 
 		a {
 			color: @black;
-			&:hover{
+			&:hover {
 				color: @gray;
 			}
 		}

@@ -5,17 +5,16 @@
           <search-form></search-form>
       </div>
 
-      <article class="home_feature col-full">
+      <article class="home_feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="inner">
           <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
 
-          <div class="feature">Featured</div>
-
           <div class="info">
+						<div class="inner_feature" bo-html="'featured' | message"></div>
             <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
 
             <div class="investigators">
-              <ul class="inline-block">
+              <ul class="inline-block flat">
                 <li ng-repeat="access in volume.access | filter:{access: 4}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
               </ul>
             </div>
@@ -25,7 +24,10 @@
 
       <div class="home_parties col-full">
         <div class="row">
-          <h1 ng-bind-html="'splash.investigators.header' | message"></h1>
+					<div class="col-full">
+						<h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
+					</div>
+
           <div ng-repeat="column in columns" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
             <article class="home_party" ng-repeat="party in column" bindonce>
               <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">

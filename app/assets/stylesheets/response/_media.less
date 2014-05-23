@@ -10,21 +10,52 @@
 	.home_feature {
 		.info {
 			width: auto;
+			top: auto;
+			bottom: -@b1 * 2;
+			right: @b1;
 			left: @b1;
+
+			h1 {
+				.font-size(.75);
+				.line-height(.75);
+			}
 		}
+	}
+
+	.home_parties_header {
+		.font(1.25, 2);
+		letter-spacing: 1px;
 	}
 }
 
 //
 
 @media screen and (min-width: @tablet) and (max-width: (@laptop - 1)) {
+	.home_feature {
+		.info {
+			width: @b1 * 10;
+			top: 0;
+			bottom: @b4;
+			right: -@b1 * 10;
+		}
+	}
 
+	.home_parties_header {
+		.font(2, 3);
+	}
 }
 
 //
 
 @media screen and (min-width: @laptop) and (max-width: (@desktop - 1)) {
-
+	.home_feature {
+		.info {
+			.grid-width(fix, 3.5);
+			top: auto;
+			bottom: @b1;
+			right: -@b1 * 9.5;
+		}
+	}
 }
 
 //

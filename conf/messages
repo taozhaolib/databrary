@@ -47,6 +47,7 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
 databrary=Databrary
+featured=Featured Dataset
 
 save=Save
 cancel=Cancel
