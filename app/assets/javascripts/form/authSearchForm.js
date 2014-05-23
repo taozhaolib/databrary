@@ -43,7 +43,7 @@ module.directive('authSearchForm', [
 
 						fin();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('auth.search.error'),
 							report: res,
 						});

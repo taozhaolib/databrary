@@ -49,7 +49,7 @@ module.directive('accessGrantForm', [
 
 					form.$setPristine();
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('access.grant.save.error'),
 						report: res,
 					});
@@ -84,7 +84,7 @@ module.directive('accessGrantForm', [
 
 						form.$setPristine();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('access.grant.remove.error'),
 							report: res,
 						});
@@ -117,7 +117,7 @@ module.directive('accessGrantForm', [
 
 						form.$setPristine();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('access.grant.save.error'),
 							report: res,
 						});

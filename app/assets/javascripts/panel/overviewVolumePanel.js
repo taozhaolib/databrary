@@ -63,49 +63,5 @@ module.controller('OverviewVolumePanel', [
 
 			return '<a href="' + page.$filter('handle')(study.url) + '" target="_blank">' + page.constants.message('volume.doi.primary.visit') + '</a>';
 		};
-
-		//
-
-		$scope.editMode = false;
-
-		var form;
-
-		$scope.edit = function () {
-			$scope.editMode = true;
-			form = $scope.volumeEditForm;
-
-			form.data = {
-				name: $scope.volume.name,
-				alias: $scope.volume.alias,
-				body: $scope.volume.body
-			};
-		};
-
-		$scope.save = function () {
-			var volume = new page.models.Volume(form.data);
-
-			volume.$save({
-				id: $scope.volume.id
-			}, function (res) {
-				page.messages.add({
-					body: page.constants.message('volume.edit.success'),
-					type: 'green',
-					countdown: 3000
-				});
-
-				angular.extend($scope.volume, res);
-				$scope.editMode = false;
-			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('volume.edit.error'),
-					report: res
-				});
-			});
-		};
-
-		$scope.cancel = function () {
-			$scope.editMode = false;
-			form.data = {};
-		};
 	}
 ]);

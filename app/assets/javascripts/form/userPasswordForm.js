@@ -34,7 +34,7 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
-						page.messages.add({
+						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('reset.request.success', form.data.email)
@@ -45,7 +45,7 @@ module.directive('userPasswordForm', [
 						}
 					})
 					.error(function (errors, status) {
-						page.messages.addError({
+						form.messages.addError({
 							closeable: true,
 							body: page.constants.message('reset.request.error'),
 							errors: errors,
@@ -72,7 +72,7 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
-						page.messages.add({
+						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('reset.save.success', form.data.email)
@@ -86,7 +86,7 @@ module.directive('userPasswordForm', [
 						page.auth.updateUser(data);
 					})
 					.error(function (errors, status) {
-						page.messages.add({
+						form.messages.add({
 							countdown: 3000,
 							type: 'red',
 							body: angular.isObject(errors) ? (errors['password.once'] || errors['password']).join('. ') + '.' : page.constants.message('error.generic')

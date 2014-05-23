@@ -256,7 +256,7 @@ module.controller('RegisterView', [
 							$scope.authApplyForm.successFn();
 						})
 						.error(function (errors, status) {
-							page.messages.addError({
+							$scope.infoForm.messages.addError({
 								body: page.constants.message('error.generic'),
 								errors: errors,
 								status: status

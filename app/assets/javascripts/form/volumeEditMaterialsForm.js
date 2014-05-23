@@ -48,7 +48,7 @@ module.directive('volumeEditMaterialsForm', [
 									'Content-Type': undefined
 								},
 							}).success(function () {
-								page.messages.add({
+								form.messages.add({
 									type: 'green',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.create.success', asset.name || asset.file[0].name),
@@ -56,7 +56,7 @@ module.directive('volumeEditMaterialsForm', [
 
 								asset.saving = false;
 							}).error(function () {
-								page.messages.add({
+								form.messages.add({
 									type: 'red',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.create.error', asset.name || asset.file[0].name),
@@ -72,7 +72,7 @@ module.directive('volumeEditMaterialsForm', [
 								name: asset.name,
 								classification: asset.classification,
 							}).success(function () {
-								page.messages.add({
+								form.messages.add({
 									type: 'green',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.update.success', asset.name || asset.file[0].name),
@@ -80,7 +80,7 @@ module.directive('volumeEditMaterialsForm', [
 
 								asset.saving = false;
 							}).error(function () {
-								page.messages.add({
+								form.messages.add({
 									type: 'red',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.update.error', asset.name || asset.file[0].name),
@@ -99,7 +99,7 @@ module.directive('volumeEditMaterialsForm', [
 					promises.push(page.$http
 						.post('/asset/' + asset.asset.id + '/remove')
 						.success(function () {
-							page.messages.add({
+							form.messages.add({
 								type: 'green',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.materials.remove.success', asset.name || asset.file[0].name),
@@ -110,14 +110,14 @@ module.directive('volumeEditMaterialsForm', [
 							console.log(arguments);
 
 							if (status === 404 || status === 303) {
-								return page.messages.add({
+								return form.messages.add({
 									type: 'green',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.remove.success', asset.name || asset.file[0].name),
 								});
 							}
 
-							page.messages.add({
+							form.messages.add({
 								type: 'red',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.materials.remove.error', asset.name || asset.file[0].name),
@@ -147,7 +147,7 @@ module.directive('volumeEditMaterialsForm', [
 
 						form.$setPristine();
 					}, function (res) {
-						page.messages.add({
+						form.messages.add({
 							type: 'red',
 							body: page.constants.message('volume.edit.materials.refresh.error'),
 						});

@@ -31,13 +31,13 @@ module.directive('volumeEditOverviewForm', [
 				if (form.volume) {
 					page.models.Volume.save(form.data,
 						function (res) {
-							page.messages.add({
+							form.messages.add({
 								type: 'green',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.overview.success'),
 							});
 							//update backup so a future revert goes to current state, not pageload state
-							backup = $.extend(true, {}, form.data); 
+							backup = $.extend(true, {}, form.data);
 
 							if (angular.isFunction(form.successFn)) {
 								form.successFn(form, res);
@@ -46,7 +46,7 @@ module.directive('volumeEditOverviewForm', [
 							form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
-							page.messages.addError({
+							form.messages.addError({
 								body: page.constants.message('volume.edit.overview.error'),
 								report: res
 							});
@@ -61,13 +61,13 @@ module.directive('volumeEditOverviewForm', [
 					volume.$save({
 						owner: page.auth.user.id
 					}, function (res) {
-						page.messages.add({
+						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('volume.edit.overview.success'),
 						});
 						//update backup so a future revert goes to current state, not pageload state
-						backup = $.extend(true, {}, form.data); 
+						backup = $.extend(true, {}, form.data);
 
 						if (angular.isFunction(form.successFn)) {
 							form.successFn(form, res);
@@ -76,7 +76,7 @@ module.directive('volumeEditOverviewForm', [
 						form.$setPristine();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('volume.edit.overview.error'),
 							report: res
 						});
@@ -94,7 +94,7 @@ module.directive('volumeEditOverviewForm', [
 
 				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
-			}
+			};
 
 			//
 
@@ -121,7 +121,7 @@ module.directive('volumeEditOverviewForm', [
 						.json(doi[1])
 						.then(function (res) {
 							if (!res.title) {
-								page.messages.add({
+								form.messages.add({
 									type: 'red',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.autodoi.name.error'),
@@ -129,14 +129,14 @@ module.directive('volumeEditOverviewForm', [
 							} else {
 								form.data.name = res.title;
 
-								page.messages.add({
+								form.messages.add({
 									type: 'green',
 									countdown: 3000,
 									body: page.constants.message('volume.edit.autodoi.name.success'),
 								});
 							}
 						}, function (res) {
-							page.messages.add({
+							form.messages.add({
 								type: 'red',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.autodoi.name.error'),
@@ -154,13 +154,13 @@ module.directive('volumeEditOverviewForm', [
 								body: '',
 							};
 
-							page.messages.add({
+							form.messages.add({
 								type: 'green',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.autodoi.citation.success'),
 							});
 						}, function (res) {
-							page.messages.add({
+							form.messages.add({
 								type: 'red',
 								countdown: 3000,
 								body: page.constants.message('volume.edit.autodoi.citation.error'),

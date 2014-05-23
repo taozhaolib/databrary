@@ -44,7 +44,7 @@ module.directive('accessSearchForm', [
 
 						fin();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('access.search.error'),
 							report: res,
 						});
@@ -74,7 +74,7 @@ module.directive('accessSearchForm', [
 			form.notFoundFn = undefined;
 
 			form.notFound = function () {
-				page.messages.add({
+				form.messages.add({
 					type: 'yellow',
 					countdown: 3000,
 					body: page.constants.message('access.grant.notfound.message'),

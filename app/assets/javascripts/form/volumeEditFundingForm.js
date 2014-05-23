@@ -30,7 +30,7 @@ module.directive('volumeEditFundingForm', [
 
 				page.models.VolumeAccess.save(form.data,
 					function (res) {
-						page.messages.add({
+						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('volume.edit.funding.success'),
@@ -43,7 +43,7 @@ module.directive('volumeEditFundingForm', [
 						form.$setPristine();
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('volume.edit.funding.error'),
 							report: res
 						});
@@ -77,7 +77,7 @@ module.directive('volumeEditFundingForm', [
 
 			$scope.$on('accessGrantForm-init', function (event, searchForm) {
 				searchForm.successFn = function (searchForm) {
-					page.messages.add({
+					form.messages.add({
 						body: page.constants.message('access.grant.funding.save.success'),
 						type: 'green',
 						countdown: 3000,
@@ -87,7 +87,7 @@ module.directive('volumeEditFundingForm', [
 				};
 
 				searchForm.removeSuccessFn = function (searchForm, args, access) {
-					page.messages.add({
+					form.messages.add({
 						body: page.constants.message('access.grant.funding.remove.success'),
 						type: 'green',
 						countdown: 3000,

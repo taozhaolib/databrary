@@ -38,7 +38,7 @@ module.directive('authApplyForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('auth.apply.error'),
 						report: res,
 					});
@@ -59,7 +59,7 @@ module.directive('authApplyForm', [
 					name: form.notFound.query,
 					info: form.notFound.info
 				}, function (res) {
-					page.messages.add({
+					form.messages.add({
 						type: 'green',
 						countdown: 3000,
 						body: page.constants.message('auth.request.notfound.success')
@@ -69,7 +69,7 @@ module.directive('authApplyForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('error.generic'),
 						report: res,
 					});

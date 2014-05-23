@@ -30,7 +30,7 @@ module.directive('volumeEditAccessForm', [
 
 				page.models.VolumeAccess.save(form.data,
 					function (res) {
-						page.messages.add({
+						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('volume.edit.access.success'),
@@ -43,7 +43,7 @@ module.directive('volumeEditAccessForm', [
 						form.$setPristine();
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						page.messages.addError({
+						form.messages.addError({
 							body: page.constants.message('volume.edit.access.error'),
 							report: res
 						});
@@ -77,7 +77,7 @@ module.directive('volumeEditAccessForm', [
 
 			$scope.$on('accessGrantForm-init', function (event, searchForm) {
 				searchForm.successFn = function (searchForm) {
-					page.messages.add({
+					form.messages.add({
 						body: page.constants.message('access.grant.access.save.success'),
 						type: 'green',
 						countdown: 3000,
@@ -87,7 +87,7 @@ module.directive('volumeEditAccessForm', [
 				};
 
 				searchForm.removeSuccessFn = function (searchForm, args, access) {
-					page.messages.add({
+					form.messages.add({
 						body: page.constants.message('access.grant.access.remove.success'),
 						type: 'green',
 						countdown: 3000,

@@ -64,7 +64,7 @@ module.directive('authGrantForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('auth.grant.save.error'),
 						report: res,
 					});
@@ -96,7 +96,7 @@ module.directive('authGrantForm', [
 						form.denySuccessFn(form, arguments);
 					}
 				}, function (res) {
-					page.messages.addError({
+					form.messages.addError({
 						body: page.constants.message('auth.grant.deny.error'),
 						report: res,
 					});
