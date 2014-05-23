@@ -7,36 +7,104 @@ module.directive('validator', [
 				$scope[$attrs.form].validators[$attrs.name] = this;
 			}
 
+			var that = this;
+
 			this.form = $scope[$attrs.form];
 			this.name = $scope[$attrs.form][$attrs.name];
-			this.$element = this.form.$element.find('[name="'+$attrs.name+'"]').first(); // TODO: won't work with repeaters
+			this.$element = this.form.$element.find('[name="' + $attrs.name + '"]').first(); // TODO: won't work with repeaters
 			this.changed = false;
+			this.focus = false;
 			this.serverErrors = [];
 			this.clientErrors = [];
 			this.clientTips = [];
 
+			this.$element.focus(function () {
+				$scope.$apply(function () {
+					that.focus = true;
+				});
+			}).blur(function () {
+				$scope.$apply(function () {
+					that.focus = false;
+				});
+			});
+
 			//
 
-			this.hasFocus = function () {
-				return this.$element.is(":focus");
-			};
-
 			this.showServerErrors = function () {
-				return !this.changed;
+				return this.serverErrors.length > 0 && !this.changed;
 			};
 
 			this.showClientErrors = function () {
-				return this.name.$invalid && this.hasFocus();
+				return this.clientErrors.length > 0 && this.name.$invalid && this.focus;
 			};
 
 			this.showClientTips = function () {
-				return this.name.$pristine && this.hasFocus();
+				return this.clientTips.length > 0 && this.name.$pristine && this.focus;
 			};
 
 			//
 
-			this.update = function (server, client, replace) {
+			var changeWatch = function () {
+				that.changed = true;
+				that.$element.off('change.validator');
+			};
 
+			this.server = function (data, replace) {
+				if (replace) {
+					this.serverErrors = [];
+					this.$element.off('change.validator');
+				}
+
+				if (!data) {
+					return;
+				}
+
+				this.$element.on('change.validator', changeWatch);
+
+				if (angular.isString(data)) {
+					data = [data];
+				}
+
+				angular.forEach(data, function (error) {
+					that.serverErrors.push(error);
+				});
+			};
+
+			this.client = function (data, replace) {
+				if (replace) {
+					this.clientErrors = [];
+					this.clientTips = [];
+				}
+
+				if (!data) {
+					return;
+				}
+
+				if (angular.isArray(data)) {
+					data = {
+						errors: data,
+					};
+				}
+
+				if (angular.isString(data.errors)) {
+					data.errors = [data.errors];
+				}
+
+				if (angular.isString(data.tips)) {
+					data.tips = [data.tips];
+				}
+
+				if (angular.isArray(data.errors)) {
+					angular.forEach(data.errors, function (error) {
+						that.clientErrors.push(error);
+					});
+				}
+
+				if (angular.isArray(data.tips)) {
+					angular.forEach(data.tips, function (tip) {
+						that.clientTips.push(tip);
+					});
+				}
 			};
 		};
 

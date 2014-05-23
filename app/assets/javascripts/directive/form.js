@@ -1,6 +1,6 @@
 module.directive('form', [
 	'pageService', function (page) {
-		var link = function ($scope, $element, $attrs) {
+		var pre = function ($scope, $element, $attrs) {
 			if (!$attrs.name) {
 				return;
 			}
@@ -8,6 +8,35 @@ module.directive('form', [
 			var form = $scope[$attrs.name];
 
 			form.$element = $element;
+
+			if (angular.isDefined($attrs.novalidate)) {
+				form.validators = {};
+				form.validator = {
+					server: function (data, replace) {
+						for (var name in data) {
+							if (data.hasOwnProperty(name) && form.validator[name]) {
+								form.validators[name].server(data[name], replace);
+							}
+						}
+					},
+
+					client: function (data, replace) {
+						for (var name in data) {
+							if (data.hasOwnProperty(name) && form.validators[name]) {
+								form.validators[name].client(data[name], replace);
+							}
+						}
+					},
+				};
+			}
+		};
+
+		var post = function ($scope, $element, $attrs) {
+			if (!$attrs.name) {
+				return;
+			}
+
+			var form = $scope[$attrs.name];
 
 			switch ($attrs.messages) {
 				case 'nearest':
@@ -34,30 +63,14 @@ module.directive('form', [
 					}
 					break;
 			}
-
-			if (angular.isDefined($attrs.novalidate)) {
-				form.validators = {};
-				form.validator = function (server, client, replace) {
-					var name, target;
-
-					for (name in server) {
-						if (server.hasOwnProperty(name) && form.validator[name]) {
-							form.validators[name].server(server[name], replace);
-						}
-					}
-
-					for (name in client) {
-						if (server.hasOwnProperty(name) && form.validator[name]) {
-							form.validators[name].client(client[name], replace);
-						}
-					}
-				};
-			}
 		};
 
 		return {
 			restrict: 'E',
-			link: link,
+			link: {
+				pre: pre,
+				post: post,
+			},
 		}
 	}
 ]);

@@ -118,6 +118,19 @@ module.controller('RegisterView', [
 
 				//
 
+				$scope.registerForm.validator.client({
+					fieldName: {
+						tips: page.constants.message('wizard.register_form.name.help'),
+					},
+					fieldEmail: {
+						errors: page.constants.message('wizard.register_form.email.error'),
+						tips: page.constants.message('wizard.register_form.email.help'),
+					},
+					fieldAffiliation: {
+						tips: page.constants.message('wizard.register_form.affiliation.help'),
+					},
+				}, true);
+
 				$scope.registerForm.messages.add({
 					type: 'blue',
 					target: '#field_name',
