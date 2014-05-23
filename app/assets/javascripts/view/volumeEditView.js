@@ -10,6 +10,10 @@ module.controller('VolumeEditView', [
 					url: page.router.volume({id: volume.id}),
 				},
 			];
+		} else {
+			page.display.toolbarLinks = [
+				{},
+			];
 		}
 
 		$scope.volume = volume;

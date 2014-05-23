@@ -51,15 +51,15 @@ module.factory('analyticService', [
 
 		$rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
 			analytics.add('open', $location.url(), {
-				current: current.controller,
-				previous: previous.controller
+				current: current && current.controller,
+				previous: previous && previous.controller
 			});
 		});
 
 		$rootScope.$on('$routeChangeError', function (event, next, current, error) {
 			analytics.add('close', $location.url(), {
-				next: next.controller,
-				current: current.controller,
+				next: next && next.controller,
+				current: current && current.controller,
 				error: error
 			});
 		});

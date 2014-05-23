@@ -20,7 +20,27 @@ module.controller('LoginView', [
 		//
 
 		$scope.submitForm = function () {
-			page.auth.login($scope.loginData);
+			page.models.Party.login(angular.extend({
+				email: '',
+				password: '',
+				openid: ''
+			}, $scope.loginData), function (data) {
+				page.auth.parseUser(data);
+
+				if (page.auth.next) {
+					page.$location.path(auth.next);
+					page.auth.next = undefined;
+				} else {
+					page.$location.path('/');
+				}
+			}, function (res) {
+				page.auth.parseUser(undefined);
+
+				$scope.loginForm.messages.addError({
+					body: page.constants.message('login.error'),
+					report: res
+				});
+			});
 		};
 	}
 ]);

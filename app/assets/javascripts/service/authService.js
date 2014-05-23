@@ -17,7 +17,7 @@ module.factory('authService', [
 
 		auth.user = undefined;
 
-		var parseUser = function (user) {
+		auth.parseUser = function (user) {
 			var reload = true;
 
 			if (user) {
@@ -31,6 +31,8 @@ module.factory('authService', [
 				if (auth.user && auth.user.id === user.id && !!auth.user.superuser === !!user.superuser) {
 					reload = false;
 				}
+			} else if (!user && !auth.user) {
+				reload = false;
 			}
 
 			auth.user = user || undefined;
@@ -46,21 +48,21 @@ module.factory('authService', [
 
 		auth.updateUser = function (user) {
 			if (user) {
-				parseUser(user);
+				auth.parseUser(user);
 				return deferred.resolve();
 			}
 
 			Party.user(function (data) {
 				if (data.id == -1 || angular.isString(data)) {
-					parseUser(undefined);
+					auth.parseUser(undefined);
 				}
 				else {
-					parseUser(data);
+					auth.parseUser(data);
 				}
 
 				deferred.resolve();
 			}, function () {
-				parseUser(undefined);
+				auth.parseUser(undefined);
 
 				deferred.resolve();
 			});
@@ -123,30 +125,6 @@ module.factory('authService', [
 
 		//
 
-		auth.login = function (data) {
-			Party.login(angular.extend({
-				email: '',
-				password: '',
-				openid: ''
-			}, data), function (data) {
-				parseUser(data);
-
-				if (auth.next) {
-					$location.path(auth.next);
-					auth.next = undefined;
-				} else {
-					$location.path('/');
-				}
-			}, function (res) {
-				parseUser(undefined);
-
-				messages.addError({
-					body: constants.message('login.error'),
-					report: res
-				});
-			});
-		};
-
 		auth.tryLogin = function () {
 			auth.next = $location.url();
 			$location.url(router.login());
@@ -154,7 +132,7 @@ module.factory('authService', [
 
 		auth.logout = function () {
 			Party.logout(function (data) {
-				parseUser(data);
+				auth.parseUser(data);
 				$location.url('/login');
 
 				messages.add({
@@ -217,7 +195,7 @@ module.factory('authService', [
 					auth: form.auth
 				},
 				function (data) {
-					parseUser(data);
+					auth.parseUser(data);
 
 					messages.add({
 						body: constants.message('superuser.on.success'),
@@ -234,7 +212,7 @@ module.factory('authService', [
 
 		var disableSU = function () {
 			Party.superuserOff(function (data) {
-				parseUser(data);
+				auth.parseUser(data);
 
 				messages.add({
 					body: constants.message('superuser.off.success'),
