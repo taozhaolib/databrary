@@ -30,7 +30,7 @@ module.factory('displayService', [
 						type: 'green',
 						html: constants.message('volume.edit.create'),
 						url: router.volumeCreate(),
-						auth: 'CONTRIBUTE',
+						auth: 'VIEW',
 					},
 				];
 			}

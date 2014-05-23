@@ -11,12 +11,15 @@
   <fieldset class="clean">
     <label bo-html="'volume.name' | message"></label>
     <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name">
+		<validator form="volumeEditOverviewForm" name="name"></validator>
 
     <label bo-html="'volume.alias' | message"></label>
     <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias">
+		<validator form="volumeEditOverviewForm" name="alias"></validator>
 
     <label bo-html="'volume.body' | message"></label>
     <textarea name="body" ng-model="volumeEditOverviewForm.data.body"></textarea>
+		<validator form="volumeEditOverviewForm" name="body"></validator>
   </fieldset>
 
   <fieldset class="clean">

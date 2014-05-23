@@ -7,6 +7,8 @@ module.directive('form', [
 
 			var form = $scope[$attrs.name];
 
+			form.$element = $element;
+
 			switch ($attrs.messages) {
 				case 'nearest':
 					if ($scope.messages) {
@@ -34,40 +36,19 @@ module.directive('form', [
 			}
 
 			if (angular.isDefined($attrs.novalidate)) {
-				var feedback = {
-					server: [],
-					client: [],
-					tips: [],
-				};
-
+				form.validators = {};
 				form.validator = function (server, client, replace) {
-					if (replace === true) {
-						// probably have to clear bindings here too...
+					var name, target;
 
-						if (angular.isObject(server)) {
-							feedback.server = [];
-						}
-
-						if (angular.isObject(client)) {
-							feedback.client = [];
-						}
-					}
-
-					//
-
-					var name;
-
-					// server errors persist until changes
 					for (name in server) {
-						if (!server.hasOwnProperty(name) || !form[name]) {
-							continue;
+						if (server.hasOwnProperty(name) && form.validator[name]) {
+							form.validators[name].server(server[name], replace);
 						}
 					}
 
-					// client errors persist until valid
 					for (name in client) {
-						if (!server.hasOwnProperty(name) || !form[name]) {
-							continue;
+						if (server.hasOwnProperty(name) && form.validator[name]) {
+							form.validators[name].client(client[name], replace);
 						}
 					}
 				};
