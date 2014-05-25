@@ -12,20 +12,19 @@ import site._
 import models._
 
 private[store] sealed abstract class StoreDir(conf : String) {
-  private[this] def getConfString(path : String) : String = {
+  protected val baseDir = {
     val c = current.configuration
-    c.getString(path).getOrElse(throw c.globalError("Missing configuration for " + path))
+    new File(c.getString(conf).getOrElse(throw c.globalError("Missing configuration for " + conf)))
   }
-  protected lazy val base = new File(getConfString(conf))
 }
 
 object Stage extends StoreDir("store.stage") {
   def file(f : File) : File =
-    if (f.isAbsolute) f else new File(base, f.getPath)
+    if (f.isAbsolute) f else new File(baseDir, f.getPath)
   def file(s : String) : File =
     file(new File(s))
   def path(f : File) : String =
-    f.getPath.stripPrefix(base.getPath + '/')
+    f.getPath.stripPrefix(baseDir.getPath + '/')
 
   private val transcodedRegex = "(.*)/transcoded/(.*)-01.mp4".r
   /** Locate the original and transcoded files. */
@@ -47,12 +46,21 @@ object Stage extends StoreDir("store.stage") {
 }
 
 object FileAsset extends StoreDir("store.master") {
-  protected[store] def file(asset : models.Asset) : File = {
+  private def relativeFile(asset : models.Asset) : File = {
     val i = asset.sha1
-    new File(new File(base, i.head.formatted("%02x")), new String(Hex(i.tail)))
+    new File(i.head.formatted("%02x"), new String(Hex(i.tail)))
+  }
+  private def masterFile(rel : File) : File =
+    new File(baseDir, rel.getPath)
+  private val fallbackDir =
+    current.configuration.getString("store.fallback").map(new File(_))
+  protected[store] def file(asset : models.Asset) : File = {
+    val r = relativeFile(asset)
+    val f = masterFile(r)
+    fallbackDir.filterNot(_ => f.exists).fold(f)(new File(_, r.getPath))
   }
   def store(asset : models.Asset, f : TemporaryFile) = {
-    val d = file(asset)
+    val d = masterFile(relativeFile(asset))
     if (d.exists) {
       if (org.apache.commons.io.FileUtils.contentEquals(f.file, d))
         f.clean
@@ -71,11 +79,11 @@ object FileAsset extends StoreDir("store.master") {
 private[store] object Segment extends StoreDir("store.cache") {
   protected def file(id : models.Asset.Id, ext : String) : File = {
     val i = id.unId
-    new File(new File(base, (i & 0xff).formatted("%02x")), (i >> 8).formatted("%06x:") + ext)
+    new File(new File(baseDir, (i & 0xff).formatted("%02x")), (i >> 8).formatted("%06x:") + ext)
   }
 
   /* Cache filenames use millisecond resolution */
-  private def cacheEnabled = base.exists
+  private def cacheEnabled = java.nio.file.Files.isWritable(baseDir.toPath)
   implicit val executionContext = site.context.process
 
   private def generate(file : File, gen : File => Unit, cache : Boolean = true) : Future[StreamEnumerator] =

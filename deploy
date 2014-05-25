@@ -62,7 +62,7 @@ if [[ $USER = databrary && $mode = prod ]] ; then
 fi
 addargs "-Dapplication.mode=$mode" "-Dconfig.file=${mode}.conf" "-Dpidfile.path=$HOME/${mode}.pid"
 while read l ; do
-	if [[ $l = http*=* ]] ; then
+	if [[ $l = http*=* || $l = java.*=* ]] ; then
 		addargs "-D$l"
 	fi
 done < ${mode}.conf
