@@ -10,7 +10,7 @@
 				</div>
 
 				<label bo-html="'material.name' | message"></label>
-				<input type="text" name="classification" ng-model="repeat.name">
+				<input type="text" name="name" ng-model="repeat.name">
 
 				<label bo-html="'material.classification' | message"></label>
 				<select name="classification" ng-model="repeat.classification" ng-options="val.id as 'classification.'+val.name | message for (key, val) in page.constants.data.classification"></select>
