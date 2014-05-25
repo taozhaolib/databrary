@@ -37,7 +37,7 @@ module.directive('volumeEditMaterialsForm', [
 					if (asset.file) {
 						var fd = new FormData();
 						fd.append('file', asset.file[0]);
-						fd.append('name', asset.name);
+						fd.append('name', asset.name || '');
 						fd.append('classification', asset.classification || 0);
 						fd.append('container', form.slot.container.id);
 
