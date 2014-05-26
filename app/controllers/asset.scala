@@ -63,6 +63,55 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           body = subdata)
       }
   }
+
+  def upload(v : models.Volume.Id) =
+    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+      val form = new AssetController.UploadForm()._bind
+      val adm = request.access.isAdmin
+      val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
+      val (file, fmt, fname) =
+	form.file.get.fold {
+	  /* local file handling, for admin only: */
+	  val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
+	    form.file.withError("error.required")._throw)
+	  val name = file.getName
+	  if (!file.isFile)
+	    form.localfile.withError("File not found")._throw
+	  val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
+	    form.format.withError("file.format.unknown", "unknown")._throw
+	  (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
+	} { file =>
+	  val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
+	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
+	  (file.ref, ffmt, file.filename)
+	}
+      val aname = form.name.get.flatten orElse Maybe(fname).opt
+      for {
+	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
+	  form.container.withError("Invalid container ID")._throw))
+	asset <- fmt match {
+	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
+	    val probe = media.AV.probe(file.file)
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
+	  case _ =>
+	    if (fmt.isTranscodable) try {
+	      media.AV.probe(file.file)
+	    } catch { case e : media.AV.Error =>
+	      form.file.withError("file.invalid", e.getMessage)._throw
+	    }
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
+	}
+	sa <- container.mapAsync(asset.link(_, form.position.get))
+	_ = if (fmt.isTranscodable && !form.timeseries.get)
+	  store.Transcode.start(asset)
+      } yield (sa.fold(result(asset))(SlotAssetController.result _))
+    }
+
+  def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>
+    for {
+      _ <- request.obj.unlink
+    } yield (result(request.obj))
+  }
 }
 
 object AssetController extends AssetController {
@@ -121,61 +170,12 @@ object AssetHtml extends AssetController with HtmlController {
       form.Ok
     }
 
-  def upload(v : models.Volume.Id) =
-    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
-      val form = new UploadForm()._bind
-      val adm = request.access.isAdmin
-      val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
-      val (file, fmt, fname) =
-	form.file.get.fold {
-	  /* local file handling, for admin only: */
-	  val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
-	    form.file.withError("error.required")._throw)
-	  val name = file.getName
-	  if (!file.isFile)
-	    form.localfile.withError("File not found")._throw
-	  val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
-	    form.format.withError("file.format.unknown", "unknown")._throw
-	  (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
-	} { file =>
-	  val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
-	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
-	  (file.ref, ffmt, file.filename)
-	}
-      val aname = form.name.get.flatten orElse Maybe(fname).opt
-      for {
-	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	  form.container.withError("Invalid container ID")._throw))
-	asset <- fmt match {
-	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
-	    val probe = media.AV.probe(file.file)
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
-	  case _ =>
-	    if (fmt.isTranscodable) try {
-	      media.AV.probe(file.file)
-	    } catch { case e : media.AV.Error =>
-	      form.file.withError("file.invalid", e.getMessage)._throw
-	    }
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
-	}
-	sa <- container.mapAsync(asset.link(_, form.position.get))
-	_ = if (fmt.isTranscodable && !form.timeseries.get)
-	  store.Transcode.start(asset)
-      } yield (Redirect(sa.getOrElse(asset).pageURL))
-    }
-
   def transcode(a : models.Asset.Id, stop : Boolean = false) =
     (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)) { implicit request =>
       if (stop) store.Transcode.stop(request.obj.id)
       else      store.Transcode.start(request.obj)
       Ok("transcoding")
     }
-
-  def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>
-    for {
-      _ <- request.obj.unlink
-    } yield (Redirect(request.obj.pageURL))
-  }
 }
 
 object AssetApi extends AssetController with ApiController {

@@ -42,7 +42,7 @@ module.directive('volumeEditMaterialsForm', [
 						fd.append('container', form.slot.container.id);
 
 						promises.push(page.$http
-							.post('/volume/' + form.volume.id + '/asset/create', fd, {
+							.post('/api/asset?volume=' + form.volume.id, fd, {
 								transformRequest: angular.identity,
 								headers: {
 									'Content-Type': undefined
@@ -55,11 +55,12 @@ module.directive('volumeEditMaterialsForm', [
 								});
 
 								asset.saving = false;
-							}).error(function () {
-								form.messages.add({
+							}).error(function (res, status) {
+								form.messages.addError({
 									type: 'red',
-									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.create.error', asset.name || asset.file[0].name),
+									errors: res,
+									status: status
 								});
 
 								asset.saving = false;
@@ -68,8 +69,8 @@ module.directive('volumeEditMaterialsForm', [
 						ids.push(asset.asset.id);
 
 						promises.push(page.$http
-							.post('/asset/' + asset.asset.id + '/edit', {
-								name: asset.name,
+							.post('/api/asset/' + asset.asset.id, {
+								name: asset.name || '',
 								classification: asset.classification,
 							}).success(function () {
 								form.messages.add({
@@ -79,11 +80,12 @@ module.directive('volumeEditMaterialsForm', [
 								});
 
 								asset.saving = false;
-							}).error(function () {
-								form.messages.add({
+							}).error(function (res, status) {
+								form.messages.addError({
 									type: 'red',
-									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.update.error', asset.name || asset.file[0].name),
+									errors: res,
+									status: status
 								});
 
 								asset.saving = false;
@@ -97,7 +99,7 @@ module.directive('volumeEditMaterialsForm', [
 					}
 
 					promises.push(page.$http
-						.post('/asset/' + asset.asset.id + '/remove')
+						.$delete('/api/asset/' + asset.asset.id)
 						.success(function () {
 							form.messages.add({
 								type: 'green',
@@ -117,10 +119,11 @@ module.directive('volumeEditMaterialsForm', [
 								});
 							}
 
-							form.messages.add({
+							form.messages.addError({
 								type: 'red',
-								countdown: 3000,
 								body: page.constants.message('volume.edit.materials.remove.error', asset.name || asset.file[0].name),
+								errors: data,
+								status: status
 							});
 
 							asset.saving = false;
@@ -134,9 +137,15 @@ module.directive('volumeEditMaterialsForm', [
 						segment: ',',
 						assets: ''
 					}, function (res) {
-						form.repeater.repeats.splice(0, form.repeater.repeats.length);
+						var clean = false;
 
 						angular.forEach(res.assets, function (asset) {
+							if (!clean) {
+								// XXX Hack #1520, don't clean out list for the first failed upload.
+								// Really we should not do so for any failed upload.
+								form.repeater.repeats.splice(0, form.repeater.repeats.length);
+								clean = true;
+							}
 							asset.name = asset.asset.name;
 							asset.classification = asset.asset.classification;
 
@@ -147,9 +156,10 @@ module.directive('volumeEditMaterialsForm', [
 
 						form.$setPristine();
 					}, function (res) {
-						form.messages.add({
+						form.messages.addError({
 							type: 'red',
 							body: page.constants.message('volume.edit.materials.refresh.error'),
+							report: res
 						});
 					});
 				});
