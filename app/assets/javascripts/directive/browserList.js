@@ -56,7 +56,7 @@ module.directive('browserList', [
 			//
 
 			$scope.setItemPlayer = function (data) {
-				if (page.auth.hasAccess('DOWNLOAD', data)) {
+				if (!data || page.auth.hasAccess('DOWNLOAD', data)) {
 					$scope.browser.setItemPlayer(data);
 				}
 				else if (data) {

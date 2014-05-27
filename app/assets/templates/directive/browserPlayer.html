@@ -16,6 +16,8 @@
         </div>
 
         <div ng-switch-when="video">
+	  <div bo-if="!played.object.asset.duration" bo-html="'asset.untranscoded | message"></div>
+
           <video bo-if="supported()" controls excerpt="played">
             <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{page.types.assetFormat(played.object).mimetype}}">
           </video>

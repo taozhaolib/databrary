@@ -8,13 +8,6 @@
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
                 @assets.map { link =>
-                    @defining(link.classification match {
-                        case Classification.IDENTIFIED => "<strong>Notice!</strong> This file contains <em>identifying data</em> and should be treated with care."
-                        case Classification.DEIDENTIFIED => "<strong>Notice!</strong> This file contains <em>no identifying data</em>."
-                        case Classification.EXCERPT => "<strong>Notice!</strong> This file is <em>an excerpt</em>, and may be shared with the public at your discretion."
-                        case Classification.MATERIAL => "<strong>Notice!</strong> This file is <em>a material</em>, contains no identifying data, and may be shared with the public at your discretion."
-                        case _ => ""
-                    }) { message =>
                         <li class="panel_materials_item @link.classification" ng-click="selectAsset(@link.sourceId)" ng-class="{active: currentAsset == @link.sourceId}">
                             <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
 
@@ -24,7 +17,6 @@
 
                             <span class="duration">@cast[SlotTimeseries](link).map(_.duration)</span>
                         </li>
-                    }
                 }
             } else {
 		<li class="empty">@Messages("materials.empty")</li>
@@ -53,7 +45,7 @@
                                     </video>
 
                                     @if(!link.isInstanceOf[SlotTimeseries]) {
-                                        Warning: This video has not (yet) been converted to Databrary's standand format, so some features may not work.
+                                        @Messages("asset.untranscoded")
                                     }
                                 }
                                 case ("text", "html") => {

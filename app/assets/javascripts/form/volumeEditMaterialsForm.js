@@ -50,7 +50,6 @@ module.directive('volumeEditMaterialsForm', [
 							}).success(function () {
 								form.messages.add({
 									type: 'green',
-									countdown: 3000,
 									body: page.constants.message('volume.edit.materials.create.success', asset.name || asset.file[0].name),
 								});
 
