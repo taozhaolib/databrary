@@ -123,7 +123,6 @@ module.directive('volumeEditOverviewForm', [
 							if (!res.title) {
 								form.messages.add({
 									type: 'red',
-									countdown: 3000,
 									body: page.constants.message('volume.edit.autodoi.name.error'),
 								});
 							} else {
@@ -138,7 +137,6 @@ module.directive('volumeEditOverviewForm', [
 						}, function (res) {
 							form.messages.add({
 								type: 'red',
-								countdown: 3000,
 								body: page.constants.message('volume.edit.autodoi.name.error'),
 							});
 						});
@@ -162,7 +160,6 @@ module.directive('volumeEditOverviewForm', [
 						}, function (res) {
 							form.messages.add({
 								type: 'red',
-								countdown: 3000,
 								body: page.constants.message('volume.edit.autodoi.citation.error'),
 							});
 						});

@@ -49,7 +49,7 @@ module.factory('constantService', [
 				]
 			},
 			regex: {
-				doi: /(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/.*)/,
+				doi: /^(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/.*)$/,
 			},
 		};
 
