@@ -49,7 +49,7 @@ private[controllers] sealed class LoginController extends SiteController {
 	    acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
 	}
       } else if (!form.openid.get.isEmpty)
-	OpenID.redirectURL(form.openid.get, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(true), realm = Some("http://" + request.host))
+	OpenID.redirectURL(form.openid.get, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(Play.isProd), realm = Some("http://" + request.host))
 	  .map(Redirect(_))
 	  .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
       else

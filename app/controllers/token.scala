@@ -56,7 +56,7 @@ private[controllers] sealed class TokenController extends SiteController {
 	body = token.fold {
 	  Messages("mail." + msg + ".none")
 	} { token =>
-	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL(true))
+	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL(Play.isProd))
 	}
       )
     } yield (token)

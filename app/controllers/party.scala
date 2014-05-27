@@ -139,7 +139,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- async.when(Play.isProd, Mail.send(
 	to = dl.map(_.email) :+ Mail.authorizeAddr,
 	subject = Messages("mail.authorize.subject"),
-	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(true),
+	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(Play.isProd),
 	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
 	  parent.name + form.info.get.fold("")(" (" + _ + ")"))
       ).recover {
@@ -157,7 +157,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	  _ <- Mail.send(
 	    to = Seq(Mail.authorizeAddr),
 	    subject = Messages("mail.authorize.subject"),
-	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(true),
+	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(Play.isProd),
 	      request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
 	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
 	} yield (Ok("request sent"))
