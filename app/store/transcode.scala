@@ -28,9 +28,8 @@ object Transcode {
   }
 
   private lazy val ctlCmd : Seq[String] = {
-    val ctl = current.resource("transctl.sh")
-      .flatMap(urlFile(_))
-      .getOrElse(throw new Exception("transctl.sh not found"))
+    val ctl = current.getExistingFile("conf/transctl.sh")
+      .getOrElse(throw new Exception("conf/transctl.sh not found"))
     ctl.setExecutable(true)
     ctl.getPath +: (dir.toSeq.flatMap(d => Seq("-d", d.getPath)) ++ host.toSeq.flatMap(Seq("-h", _)))
   }
