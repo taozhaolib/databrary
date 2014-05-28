@@ -40,6 +40,10 @@ module.directive('volumeEditMaterialsForm', [
 						fd.append('name', asset.name || '');
 						fd.append('classification', asset.classification || 0);
 						fd.append('container', form.slot.container.id);
+						var msg = form.messages.add({
+							type: 'yellow',
+							body: page.constants.message('volume.edit.materials.create', asset.name || asset.file[0].name),
+						});
 
 						promises.push(page.$http
 							.post('/api/asset?volume=' + form.volume.id, fd, {
@@ -48,7 +52,7 @@ module.directive('volumeEditMaterialsForm', [
 									'Content-Type': undefined
 								},
 							}).success(function () {
-								form.messages.add({
+								form.messages.update(msg, {
 									type: 'green',
 									body: page.constants.message('volume.edit.materials.create.success', asset.name || asset.file[0].name),
 								});
@@ -61,6 +65,7 @@ module.directive('volumeEditMaterialsForm', [
 									errors: res,
 									status: status
 								});
+								form.messages.remove(msg);
 
 								asset.saving = false;
 							}));
@@ -108,16 +113,6 @@ module.directive('volumeEditMaterialsForm', [
 
 							asset.saving = false;
 						}).error(function (data, status) {
-							console.log(arguments);
-
-							if (status === 404 || status === 303) {
-								return form.messages.add({
-									type: 'green',
-									countdown: 3000,
-									body: page.constants.message('volume.edit.materials.remove.success', asset.name || asset.file[0].name),
-								});
-							}
-
 							form.messages.addError({
 								type: 'red',
 								body: page.constants.message('volume.edit.materials.remove.error', asset.name || asset.file[0].name),
