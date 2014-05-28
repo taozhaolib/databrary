@@ -154,7 +154,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private def row(slot : Selector[Slot], asset : Selector[Volume => Asset] = Asset.columns, slot_table : String = "slot") : Selector[SlotAsset] =
     slot
     .join(SlotAssetSlot.columns, slot_table + ".container = slot_asset.container AND " + slot_table + ".segment && slot_asset.segment")
-    .leftJoin(Excerpt.columns, slot_table + ".segment <@ excerpt.segment")
+    .leftJoin(Excerpt.columns, slot_table + ".segment <@ excerpt.segment AND slot_asset.asset = excerpt.asset")
     .join(asset, "slot_asset.asset = asset.id")
     .map { case (((slot, segment), excerpt), asset) =>
       make(asset(slot.volume), segment, slot, excerpt)
