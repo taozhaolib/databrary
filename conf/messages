@@ -406,7 +406,7 @@ wizard.register_request.instructions=
 
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
-wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data with Databrary <a href="http://databrary.org/user-guide.html" target="_blank">here</a>.
+wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
 wizard.register_form.name.help=<strong>Name</strong>: Provide your full name.
 wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
