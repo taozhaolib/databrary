@@ -4,39 +4,40 @@ module.controller('HomeView', [
 		$scope.parties = parties;
 		$scope.volume = volume;
 
-		$scope.columns = [];
+		$scope.rows = [];
 
 		var $wrap = $('.wrap').first();
 
 		var resize = function (width) {
-			var cols = 1;
+			var parties_per_row = 1;
 			width = parseInt(width);
-			$scope.columns = [];
+			$scope.rows = [];
 
 			if (width >= 1200) {
-				cols = 5;
+				parties_per_row = 5;
 			} else if (width >= 960) {
-				cols = 4;
+				parties_per_row = 4;
 			} else if (width >= 720) {
-				cols = 3;
+				parties_per_row = 3;
 			} else if (width >= 480) {
-				cols = 2;
+				parties_per_row = 2;
 			}
 
-			var col, i = 0;
+			var row = -1, i = 0;
 
 			angular.forEach(parties, function (party) {
 				if (!party.id) {
 					return;
 				}
+				
+				if (i % parties_per_row == 0) row++;
+				i++;
 
-				col = i++ % cols;
-
-				if (!$scope.columns[col]) {
-					$scope.columns[col] = [];
+				if (!$scope.rows[row]) {
+					$scope.rows[row] = [];
 				}
 
-				$scope.columns[col].push(party);
+				$scope.rows[row].push(party);
 			});
 		};
 

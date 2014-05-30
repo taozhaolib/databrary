@@ -22,23 +22,21 @@
         </div>
       </article>
 
-      <div class="home_parties col-full">
+      <div class="home_parties">
         <div class="row">
-					<div class="col-full">
-						<h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
-					</div>
+		<div class="col-full">
+			<h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
+		</div>
+	</div>
 
-          <div ng-repeat="column in columns" class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3">
-            <article class="home_party" ng-repeat="party in column" bindonce>
-              <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
-
-              <div class="info">
-                <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
-
-                <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
-              </div>
-            </article>
-          </div>
+        <div class="party_row row" ng-repeat="row in rows">
+          <article class="home_party col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-repeat="party in row" bindonce>
+            <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
+            <div class="info">
+              <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
+              <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
+            </div>
+          </article>
         </div>
       </div>
     </div>
