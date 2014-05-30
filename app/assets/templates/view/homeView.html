@@ -10,9 +10,8 @@
           <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
 
           <div class="info">
-						<div class="inner_feature" bo-html="'featured' | message"></div>
+	    <div class="inner_feature" bo-html="'featured' | message"></div>
             <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
-
             <div class="investigators">
               <ul class="inline-block flat">
                 <li ng-repeat="access in volume.access | filter:{access: 4}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
@@ -25,7 +24,7 @@
       <div class="home_parties">
         <div class="row">
 		<div class="col-full">
-			<h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
+		  <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
 		</div>
 	</div>
 
