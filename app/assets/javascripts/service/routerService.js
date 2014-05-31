@@ -31,13 +31,11 @@ module.factory('routerService', [
 						v = angular.toJson(v);
 					}
 
-					var regex = new RegExp(':' + key + '\\*?'),
-						match = url.match(regex);
-
-					if (match != null && match[0].length > 0) {
-						url = url.replace(regex, v);
-					}
-					else {
+					var m = url.indexOf(':' + key);
+					if (m >= 0) {
+						var e = m + 1 + key.length;
+						url = url.slice(0, m) + v + url.slice(e + (url[e] === '*'));
+					} else {
 						parts.push($filter('uri')(key, true) + '=' +
 							$filter('uri')(v, true));
 					}

@@ -75,7 +75,7 @@ module.directive('volumeEditPublicationsForm', [
 					return;
 				}
 
-				var doi = page.constants.data.regex.doi.exec(target.url);
+				var doi = page.constants.regex.doi.exec(target.url);
 
 				if (!doi || !doi[1]) {
 					return;

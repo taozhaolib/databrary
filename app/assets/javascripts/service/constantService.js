@@ -1,57 +1,16 @@
 module.factory('constantService', [
 	'$http', function ($http) {
 		var constants = {
-			data: {}
-		};
-
-		//
-
-		var STATIC_DATA = {
-			preset: {
-				institution: [
-					{
-						inherit: 2,
-						direct: 0
-					},
-					{
-						inherit: 3,
-						direct: 0
-					},
-					{
-						inherit: 4,
-						direct: 0
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				],
-
-				individual: [
-					{
-						inherit: 2,
-						direct: 2
-					},
-					{
-						inherit: 3,
-						direct: 3
-					},
-					{
-						inherit: 4,
-						direct: 4
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				]
+			data: {
+				/* because toolbar loads first, hasAuth expects this to exist already, but is nevertheless broken: */
+				permissionName: []
 			},
 			regex: {
 				doi: /^(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/.*)$/,
 			},
 		};
+
+		//
 
 		var invertArray = function (data) {
 			var r = {};
@@ -71,11 +30,55 @@ module.factory('constantService', [
 			return r;
 		};
 
+		var addPresets = function(data) {
+			data.preset = {
+				institution: [
+					{
+						inherit: data.permissionName.DOWNLOAD,
+						direct: 0
+					},
+					{
+						inherit: data.permissionName.CONTRIBUTE,
+						direct: 0
+					},
+					{
+						inherit: data.permissionName.ADMIN,
+						direct: 0
+					},
+					{
+						inherit: undefined,
+						direct: undefined,
+						custom: true
+					}
+				],
+
+				individual: [
+					{
+						inherit: data.permissionName.DOWNLOAD,
+						direct: data.permissionName.DOWNLOAD
+					},
+					{
+						inherit: data.permissionName.CONTRIBUTE,
+						direct: data.permissionName.CONTRIBUTE
+					},
+					{
+						inherit: data.permissionName.ADMIN,
+						direct: data.permissionName.ADMIN
+					},
+					{
+						inherit: undefined,
+						direct: undefined,
+						custom: true
+					}
+				]
+			};
+		}
+
 		constants.update = function () {
 			constants.$promise = $http.get('/api/constants');
 
 			constants.$promise.then(function (result) {
-				angular.extend(constants.data, STATIC_DATA, result.data);
+				angular.extend(constants.data, result.data);
 				constants.data.permissionName = invertArray(constants.data.permission);
 				constants.data.classificationName = invertArray(constants.data.classification);
 				constants.data.consentName = invertArray(constants.data.consent);
@@ -83,6 +86,7 @@ module.factory('constantService', [
 				/* convenient aliases: */
 				constants.data.permissionName.EDIT = constants.data.permissionName.CONTRIBUTE;
 				constants.data.permissionName.SUPER = constants.data.permission.length;
+				addPresets(constants.data);
 			});
 		};
 

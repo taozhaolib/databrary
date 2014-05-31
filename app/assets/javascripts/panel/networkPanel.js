@@ -137,6 +137,7 @@ module.controller('NetworkPanel', [
 				id: child.id
 			};
 
+			/* XXX What's this for?  If the user doesn't have admin access to this party, they can't change anything anyway. */
 			if (!page.auth.hasAccess('ADMIN', $scope.party)) {
 				childWatch = $scope.$watch(function () {
 					return [child.direct, child.inherit, child.expiration];

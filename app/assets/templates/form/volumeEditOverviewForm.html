@@ -6,7 +6,7 @@
 
     <label bo-html="'volume.edit.autodoi' | message"></label>
     <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi">
-    <button class="pull mini pull_citation" ng-disabled="!page.constants.data.regex.doi.test(volumeEditOverviewForm.data.doi)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
+    <button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.doi)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
   </fieldset>
 
   <fieldset class="clean">

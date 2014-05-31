@@ -273,21 +273,21 @@ module.directive('browserList', [
 					return true;
 				}
 
-				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join("|"));
+				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join("|"), "i");
 
 				if (!page.types.isVolume(data.object)) {
 					return true;
 				}
 
-				if (data.object.name && regex.test(data.object.name.toLowerCase())) {
+				if (data.object.name && regex.test(data.object.name)) {
 					return true;
 				}
 
-				if (data.object.body && regex.test(data.object.body.toLowerCase())) {
+				if (data.object.body && regex.test(data.object.body)) {
 					return true;
 				}
 
-				if (data.object.more && regex.test(data.object.more.toLowerCase())) {
+				if (data.object.more && regex.test(data.object.more)) {
 					return true;
 				}
 

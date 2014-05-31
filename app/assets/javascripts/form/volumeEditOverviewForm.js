@@ -110,7 +110,7 @@ module.directive('volumeEditOverviewForm', [
 					}
 				}
 
-				var doi = page.constants.data.regex.doi.exec(form.data.doi);
+				var doi = page.constants.regex.doi.exec(form.data.doi);
 
 				if (!form.data.doi || !doi || !doi[1]) {
 					return;
