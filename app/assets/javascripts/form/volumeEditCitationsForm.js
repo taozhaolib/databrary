@@ -1,7 +1,7 @@
-module.directive('volumeEditPublicationsForm', [
+module.directive('volumeEditCitationsForm', [
 	'pageService', function (page) {
 		var link = function ($scope) {
-			var form = $scope.volumeEditPublicationsForm;
+			var form = $scope.volumeEditCitationsForm;
 
 			form.data = {};
 			form.volume = undefined;
@@ -33,7 +33,7 @@ module.directive('volumeEditPublicationsForm', [
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
-							body: page.constants.message('volume.edit.publications.success'),
+							body: page.constants.message('volume.edit.citations.success'),
 						});
 
 						//update backup so a future revert goes to current state, not pageload state
@@ -47,7 +47,7 @@ module.directive('volumeEditPublicationsForm', [
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
-							body: page.constants.message('volume.edit.publications.error'),
+							body: page.constants.message('volume.edit.citations.error'),
 							report: res
 						});
 
@@ -126,14 +126,14 @@ module.directive('volumeEditPublicationsForm', [
 
 			//
 
-			page.events.talk('volumeEditPublicationsForm-init', form, $scope);
+			page.events.talk('volumeEditCitationsForm-init', form, $scope);
 		};
 
 		//
 
 		return {
 			restrict: 'E',
-			templateUrl: 'volumeEditPublicationsForm.html',
+			templateUrl: 'volumeEditCitationsForm.html',
 			scope: false,
 			replace: true,
 			link: link

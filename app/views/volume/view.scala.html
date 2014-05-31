@@ -6,7 +6,7 @@
         @widget.panel.volume(volume, summary, access)
         @widget.panel.browser(sessions, records)
         @widget.panel.materials(assets)
-        @widget.panel.publications(citations)
+        @widget.panel.citations(citations)
         @widget.panel.people(access)
         @widget.panel.tags(top, Some(volume), tags, new TagController.TagForm(top))
         @widget.panel.comments(Some(top), Some(new CommentController.CommentForm(top)), comments)

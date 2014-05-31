@@ -96,7 +96,7 @@ module.controller('VolumeEditView', [
 
 		var forms = {
 			overview: undefined,
-			publications: undefined,
+			citations: undefined,
 			materials: undefined,
 			funding: undefined,
 			access: undefined,
@@ -133,10 +133,10 @@ module.controller('VolumeEditView', [
 				forms.overview.cancelFn = cancelFn;
 			},
 
-			'volume_edit_publications': function (step) {
-				forms.publications = step.volumeEditPublicationsForm;
-				forms.publications.volume = volume;
-				forms.publications.cancelFn = cancelFn;
+			'volume_edit_citations': function (step) {
+				forms.citations = step.volumeEditCitationsForm;
+				forms.citations.volume = volume;
+				forms.citations.cancelFn = cancelFn;
 			},
 
 			'volume_edit_materials': function (step) {
@@ -176,7 +176,7 @@ module.controller('VolumeEditView', [
 				}
 			},
 
-			'volume_edit_publications': function (step) {
+			'volume_edit_citations': function (step) {
 				var study, citations = [];
 
 				if (volume) {
@@ -188,7 +188,7 @@ module.controller('VolumeEditView', [
 						}
 					});
 
-					forms.publications.init({
+					forms.citations.init({
 						study: study,
 						citation: citations,
 					});

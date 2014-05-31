@@ -1,23 +1,23 @@
-<form name="volumeEditPublicationsForm" bindonce novalidate>
-  <messages form="volumeEditPublicationsForm"></messages>
+<form name="volumeEditCitationsForm" bindonce novalidate>
+  <messages form="volumeEditCitationsForm"></messages>
 
   <fieldset>
 		<legend bo-html="'citations.study.title' | message"></legend>
 		<div bo-html="'citations.study.body' | message | format"></div>
 
 		<label ng-bind-html="'citation.url' | message"></label>
-		<input type="text" name="url" ng-model="volumeEditPublicationsForm.data.study.url">
-		<button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(volumeEditPublicationsForm.data.study.url)" ng-click="autoDOI(volumeEditPublicationsForm.data.study)" bo-html="'lookup' | message"></button>
+		<input type="text" name="url" ng-model="volumeEditCitationsForm.data.study.url">
+		<button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(volumeEditCitationsForm.data.study.url)" ng-click="autoDOI(volumeEditCitationsForm.data.study)" bo-html="'lookup' | message"></button>
 
 		<label ng-bind-html="'citation.head' | message"></label>
-		<input type="text" name="head" ng-model="volumeEditPublicationsForm.data.study.head">
+		<input type="text" name="head" ng-model="volumeEditCitationsForm.data.study.head">
 	</fieldset>
 
   <fieldset>
 		<legend bo-html="'citations.more.title' | message"></legend>
 		<div bo-html="'citations.more.body' | message | format"></div>
 
-    <repeater retrieve="volumeEditPublicationsForm.retrieveRepeater">
+    <repeater retrieve="volumeEditCitationsForm.retrieveRepeater">
       <label ng-bind-html="'citation.url' | message"></label>
       <input type="text" name="url" ng-model="repeat.url">
       <button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(repeat.url)" ng-click="autoDOI(repeat)" bo-html="'lookup' | message"></button>
@@ -31,7 +31,7 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditPublicationsForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditPublicationsForm.$dirty"></button>
-    <button ng-click="volumeEditPublicationsForm.reset()" bo-html="'revert' | message" class="red" ng-if="volumeEditPublicationsForm.$dirty"></button>
+    <button ng-click="volumeEditCitationsForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditCitationsForm.$dirty"></button>
+    <button ng-click="volumeEditCitationsForm.reset()" bo-html="'revert' | message" class="red" ng-if="volumeEditCitationsForm.$dirty"></button>
   </fieldset>
 </form>

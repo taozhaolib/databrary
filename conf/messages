@@ -421,8 +421,8 @@ volume.edit.title.sub=New Volume
 
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
-volume.edit.publications.success=Publications updated successfully.
-volume.edit.publications.error=Unable to update publications.
+volume.edit.citations.success=Citations updated successfully.
+volume.edit.citations.error=Unable to update citations.
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
 volume.edit.materials.create=Upload of {0} in progress.  Please wait.
@@ -439,9 +439,9 @@ wizard.volume_edit_overview.description=Edit name and description.
 wizard.volume_edit_overview.instructions=Provide a name and description for your dataset or study. If this study corresponds to a paper, these can be the same as the title and abstract of the paper.\n\nVisit the tabs on the left to provide more information or additional files.
 
 # Same as citations.title above??!
-wizard.volume_edit_publications.name=Citations
-wizard.volume_edit_publications.description=Edit or add relevant citations.
-wizard.volume_edit_publications.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
+wizard.volume_edit_citations.name=Citations
+wizard.volume_edit_citations.description=Edit or add relevant citations.
+wizard.volume_edit_citations.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload excerpts, stimuli, and other materials.

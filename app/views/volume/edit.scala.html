@@ -10,8 +10,8 @@
             @widget.tag.inputText(form.alias(), 'placeholder -> "Short name", '_class -> "")
             @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
 
-            <fieldset class="publications">
-                <legend>Publications</legend>
+            <fieldset class="citations">
+                <legend>@Messages("citations.title")</legend>
 
 		<h3>Study</h3>
 		@widget.tag.inputText(form.study()("head"), ('placeholder, "Citation"))

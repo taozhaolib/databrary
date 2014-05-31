@@ -1,6 +1,6 @@
 // STYLES
 
-.panel .publication_header {
+.panel .citation_header {
 	.font-line(1);
 	font-weight: bold;
 	.padding-left(2);
@@ -9,9 +9,9 @@
 }
 
 
-.publication {
+.citation {
 	&.foldable {
-		.publication_header {
+		.citation_header {
 			.padding-left(0);
 			text-indent: 0;
 
@@ -44,14 +44,14 @@
 			}
 		}
 
-		.publication_description {
+		.citation_description {
 			.transition();
 			overflow: hidden;
 			max-height: 2000px;
 		}
 
 		&.folded {
-			.publication_header {
+			.citation_header {
 				&:before {
 					.transform-rotate(-90deg);
 				}
@@ -63,18 +63,18 @@
 				}
 			}
 
-			.publication_description {
+			.citation_description {
 				max-height: 0;
 			}
 		}
 	}
 
 	&.always_folded {
-		.publication_description {
+		.citation_description {
 			max-height: 0;
 		}
 
-		.publication_header{
+		.citation_header{
 			.padding-left(0);
 			text-indent: 0;
 
