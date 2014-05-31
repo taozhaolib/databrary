@@ -72,16 +72,9 @@ module.factory('authService', [
 
 		//
 
-		var levels = {};
-
-		constants.$promise.then(function () {
-			angular.extend(levels, constants.data.permissionName);
-			levels['SUPER'] = 5;
-		});
-
 		var parseAuthLevel = function (level) {
 			return $.isNumeric(level) ? parseInt(level) :
-				angular.isString(level) ? levels[level.toUpperCase()] : -1;
+				angular.isString(level) ? constants.data.permissionName[level.toUpperCase()] : -1;
 		};
 
 		var parseUserAuth = function (object) {

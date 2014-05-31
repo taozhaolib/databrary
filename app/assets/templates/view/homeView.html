@@ -14,7 +14,7 @@
             <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
             <div class="investigators">
               <ul class="inline-block flat">
-                <li ng-repeat="access in volume.access | filter:{access: 4}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+                <li ng-repeat="access in volume.access | filter:{access: page.constants.data.permissionName.ADMIN}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
               </ul>
             </div>
           </div>
