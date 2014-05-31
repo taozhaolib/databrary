@@ -48,27 +48,25 @@
 					<wizard-step id="register_agent">
 						<div class="radio-set">
 							<div>
-								<input type="radio" ng-model="authSearchForm.institution" ng-value="true">
+								<input type="radio" ng-model="authSearchForm.principal" ng-value="true">
 								<label class="option"><strong>{{'auth.register.CONTRIBUTE.title' | message}}</strong>: {{'auth.register.CONTRIBUTE' | possessive:'investigator'}}</label>
 							</div>
 
 							<div>
-								<input type="radio" ng-model="authSearchForm.institution" ng-value="false">
+								<input type="radio" ng-model="authSearchForm.principal" ng-value="false">
 								<label class="option"><strong>{{'auth.register.DOWNLOAD.title' | message}}</strong>: {{'auth.register.DOWNLOAD' | possessive:'investigator'}}</label>
 							</div>
 						</div>
 
-						<auth-search-form institution="{{authSearchForm.institution}}" ng-show="authSearchForm.institution === true || authSearchForm.institution === false"></auth-search-form>
+						<auth-search-form principal="{{authSearchForm.principal}}" ng-show="authSearchForm.principal === true || authSearchForm.principal === false"></auth-search-form>
 					</wizard-step>
 
 					<wizard-step id="register_request">
 						<div ng-hide="ifInfo()">
-							<legend ng-bind-html="'auth.request.from' | message:authApplyForm.other.party.name" ng-if="!authApplyForm.other.party.institution"></legend>
-
 							<auth-apply-form></auth-apply-form>
 						</div>
 
-						<div ng-show="ifInfo() && institution">
+						<div ng-show="ifInfo() && principal">
 							<div ng-bind-html="'auth.info.prompt' | message"></div>
 
 							<form name="infoForm" novalidate>
@@ -81,8 +79,8 @@
 							</form>
 						</div>
 
-						<div ng-show="ifInfo() && !institution">
-							<div ng-bind-html="'auth.request.notfound.individual.instructions' | message | format"></div>
+						<div ng-show="ifInfo() && !principal">
+							<div ng-bind-html="'auth.request.notfound.affiliate.instructions' | message | format"></div>
 						</div>
 					</wizard-step>
 

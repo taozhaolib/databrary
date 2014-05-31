@@ -4,13 +4,6 @@
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
     <legend class="auth_request">{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
 
-    <div class="auth_request add_f" ng-repeat="preset in authApplyForm.presets.get(authApplyForm.party, authApplyForm.other.party, true)">
-      <input type="radio" name="shortcut" ng-checked="authApplyForm.other.preset === preset" ng-click="authApplyForm.presets.set(authApplyForm.other, preset)">
-      <label class="option" ng-if="!preset.custom">
-        <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit]+'.'+page.constants.data.permission[preset.direct]+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit]+'.'+page.constants.data.permission[preset.direct] | possessive:authApplyForm.other}}
-      </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
-    </div>
-
     <div ng-if="authApplyForm.other.party.institution">
       <div class="cut_f" ng-bind-html="'auth.info.prompt' | message | format"></div>
 
@@ -29,7 +22,7 @@
   <fieldset class="clean">
     <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
-    <button ng-click="authApplyForm.save()" class="green" ng-disabled="authApplyForm.other.inherit == 0 && authApplyForm.other.direct == 0">{{"auth.request" | message}}</button>
+    <button ng-click="authApplyForm.save()" class="green">{{"auth.request" | message}}</button>
     <button ng-click="authApplyForm.cancel()" class="red">{{"cancel" | message}}</button>
   </fieldset>
 </form>

@@ -6,7 +6,6 @@ module.directive('authApplyForm', [
 			$scope.page = page;
 			$scope.constant = page.constants;
 
-			form.presets = page.authPresets;
 			form.party = $scope.party || page.auth.user;
 			form.other = undefined;
 			form.notFound = {
@@ -105,7 +104,6 @@ module.directive('authApplyForm', [
 				if (form.other) {
 					form.other.inherit = 0;
 					form.other.direct = 0;
-					form.other.preset = undefined;
 				}
 			};
 

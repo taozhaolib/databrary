@@ -6,7 +6,7 @@ module.directive('authSearchForm', [
 			$scope.authSearchForm.id = $attrs.party || undefined;
 			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
 
-			$attrs.$observe('institution', function (institution) {
+			$attrs.$observe('principal', function (principal) {
 				$scope.authSearchForm.name = '';
 				$scope.authSearchForm.found = [];
 			});
@@ -37,7 +37,7 @@ module.directive('authSearchForm', [
 						id: $scope.authSearchForm.id || page.auth.user.id,
 						apply: $scope.authSearchForm.apply,
 						name: $scope.authSearchForm.name,
-						institution: $element.attr('institution') ? $element.attr('institution') === 'true' : undefined
+						institution: $element.attr('principal') ? $element.attr('principal') === 'true' : undefined
 					}, function (data) {
 						$scope.authSearchForm.found = data;
 
