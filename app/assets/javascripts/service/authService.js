@@ -75,10 +75,7 @@ module.factory('authService', [
 		var levels = {};
 
 		constants.$promise.then(function () {
-			angular.forEach(constants.data.permission, function (permission) {
-				levels[permission.name] = permission.id;
-			});
-
+			angular.extend(levels, constants.data.permissionName);
 			levels['SUPER'] = 5;
 		});
 

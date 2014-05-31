@@ -108,7 +108,7 @@ module.config([
 
 						page.constants.$promise.then(function () {
 							page.models.Party.query({
-								access: page.constants.permission('CONTRIBUTE').id
+								access: page.constants.data.permissionName.CONTRIBUTE
 							}, function (data) {
 								deferred.resolve(data);
 							}, function (data) {

@@ -8,8 +8,8 @@
 
 	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
 		<div ng-repeat="permission in page.constants.data.permission">
-			<input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="permission.id" ng-selected="permission.id == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
-			<label bo-html="'access.'+page.constants.data.permission[permission.id].name | message:access.party.name" class="option"></label>
+			<input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
+			<label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
 		</div>
 
 		<div ng-if="!access.party.institution">

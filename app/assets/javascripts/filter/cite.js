@@ -8,7 +8,7 @@ module.filter('cite', [
 			var names = [];
 
 			angular.forEach(volume.access, function (access) {
-				if (angular.isUndefined(access.access) || access.access < 4 /* FIXME: constant.find('permission', 'ADMIN').id */) {
+				if (angular.isUndefined(access.access) || access.access < 4) {
 					return;
 				}
 

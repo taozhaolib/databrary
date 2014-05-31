@@ -111,7 +111,7 @@ module.directive('browserList', [
 			};
 
 			$scope.formatSessionCategory = function (data, categoryID, records) {
-				var category = page.constants.get('category', categoryID);
+				var category = page.constants.data.category[categoryID];
 
 				if (!category) {
 					return 'Uncategorized';
@@ -222,7 +222,7 @@ module.directive('browserList', [
 			};
 
 			$scope.nameRecord = function (data) {
-				var category = page.constants.get('category', data.object.category),
+				var category = page.constants.data.category[data.object.category],
 					name;
 
 				if (data.object.id == 0) {
@@ -256,7 +256,7 @@ module.directive('browserList', [
 							break;
 					}
 				} else {
-					name = $scope.capitalize(page.constants.get('category', data.object.category).name);
+					name = $scope.capitalize(page.constants.data.category[data.object.category].name);
 				}
 
 				var identifier = $scope.recordIdentifier(data.object);

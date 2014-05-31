@@ -17,7 +17,7 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
-			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access].name, volumeAccess.party.name);
+			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access], volumeAccess.party.name);
 		};
 
 		$scope.ageSummary = function (summary) {

@@ -13,7 +13,7 @@
 				<input type="text" name="name" ng-model="repeat.name">
 
 				<label bo-html="'material.classification' | message"></label>
-				<select name="classification" ng-model="repeat.classification" ng-options="val.id as 'classification.'+val.name | message for (key, val) in page.constants.data.classification" ng-required></select>
+				<select name="classification" ng-model="repeat.classification" ng-options="id as 'classification.'+name | message for (id, name) in page.constants.data.classification" ng-required></select>
 			</fieldset>
 		</repeater>
 	</fieldset>

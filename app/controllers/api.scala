@@ -19,15 +19,9 @@ object SiteApi extends SiteController {
       'messages -> json.Json.toJson(Messages.messages.get("default").map(
 	/* hack to fix quoting (consider using https://github.com/SlexAxton/messageformat.js if things get more complicated) */
 	_.mapValues(java.text.MessageFormat.format(_))))
-    , 'permission -> JsonRecord.map[Permission.Value](c => JsonRecord(c.id
-	, 'name -> c.toString
-	))(Permission.values.toSeq)
-    , 'consent -> JsonRecord.map[Consent.Value](c => JsonRecord.flatten(c.id
-	, Some('name -> c.toString)
-	))(Consent.values.toSeq)
-    , 'classification -> JsonRecord.map[Classification.Value](c => JsonRecord(c.id
-	, 'name -> c.toString
-	))(Classification.values.toSeq)
+    , 'permission -> json.Json.toJson(Permission.values.toSeq.map(_.toString))
+    , 'consent -> json.Json.toJson(Consent.values.toSeq.map(_.toString))
+    , 'classification -> json.Json.toJson(Classification.values.toSeq.map(_.toString))
     , 'category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
     , 'format -> JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll)
     , 'mode -> json.JsString(current.mode.toString)

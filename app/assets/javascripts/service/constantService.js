@@ -53,40 +53,34 @@ module.factory('constantService', [
 			},
 		};
 
-		//
+		var invertArray = function (data) {
+			var r = {};
+			for (var id in data) {
+				if (data.hasOwnProperty(id))
+					r[data[id]] = id;
+			}
+			return r;
+		};
+
+		var invertBy = function (data, field) {
+			var r = {};
+			for (var id in data) {
+				if (data.hasOwnProperty(id) && field in data[id])
+					r[data[id][field]] = data[id];
+			}
+			return r;
+		};
 
 		constants.update = function () {
 			constants.$promise = $http.get('/api/constants');
 
 			constants.$promise.then(function (result) {
 				angular.extend(constants.data, STATIC_DATA, result.data);
+				constants.data.permissionName = invertArray(constants.data.permission);
+				constants.data.classificationName = invertArray(constants.data.classification);
+				constants.data.consentName = invertArray(constants.data.consent);
+				constants.data.categoryName = invertBy(constants.data.category, "name");
 			});
-		};
-
-		constants.get = function (key, id) {
-			if (angular.isUndefined(constants.data[key])) {
-				return undefined;
-			}
-
-			if (angular.isDefined(id)) {
-				return constants.data[key][id] || undefined;
-			}
-
-			return constants.data[key];
-		};
-
-		constants.find = function (key, name) {
-			var data = constants.data[key];
-
-			if (angular.isDefined(data)) {
-				for (var id in data) {
-					if (data.hasOwnProperty(id) && data[id].name == name) {
-						return data[id];
-					}
-				}
-			}
-
-			return undefined;
 		};
 
 		constants.message = function (key /*, args...*/) {
@@ -103,18 +97,6 @@ module.factory('constantService', [
 			}
 
 			return msg;
-		};
-
-		constants.permission = function (key) {
-			for (var prop in constants.data.permission) {
-				if (!constants.data.permission.hasOwnProperty(prop)) {
-					continue;
-				}
-
-				if (constants.data.permission[prop].id == key || constants.data.permission[prop].name === key) {
-					return constants.data.permission[prop];
-				}
-			}
 		};
 
 		//

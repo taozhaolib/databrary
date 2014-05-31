@@ -7,7 +7,7 @@
     <div ng-repeat="preset in authGrantForm.presets.get(authGrantForm.party, authGrantForm.other.party)">
       <input type="radio" name="shortcut" ng-checked="authGrantForm.other.preset === preset" ng-click="authGrantForm.presets.set(authGrantForm.other, preset)">
       <label class="option" ng-if="!preset.custom">
-        <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit].name+'.'+page.constants.data.permission[preset.direct].name | possessive:authGrantForm.party}}
+        <strong>{{'auth.preset.'+page.constants.data.permission[preset.inherit]+'.'+page.constants.data.permission[preset.direct]+'.title' | message}}</strong>: {{'auth.preset.'+page.constants.data.permission[preset.inherit]+'.'+page.constants.data.permission[preset.direct] | possessive:authGrantForm.party}}
       </label> <label class="option" ng-if="preset.custom"><strong>Custom...</strong></label>
     </div>
   </fieldset>
@@ -18,8 +18,8 @@
         <legend bo-html="'auth.direct' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
-          <input type="radio" ng-model="authGrantForm.other.direct" name="direct" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.direct">
-          <label bo-html="'auth.direct.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
+          <input type="radio" ng-model="authGrantForm.other.direct" name="direct" ng-value="$index" ng-selected="$index == authGrantForm.other.direct">
+          <label bo-html="'auth.direct.'+permission | possessive:party" class="option"></label>
         </div>
       </fieldset>
     </div>
@@ -29,8 +29,8 @@
         <legend bo-html="'auth.inherit' | possessive:party"></legend>
 
         <div ng-repeat="permission in page.constants.data.permission">
-          <input type="radio" ng-model="authGrantForm.other.inherit" name="inherit" ng-value="permission.id" ng-selected="permission.id == authGrantForm.other.inherit">
-          <label bo-html="'auth.inherit.'+page.constants.data.permission[permission.id].name | possessive:party" class="option"></label>
+          <input type="radio" ng-model="authGrantForm.other.inherit" name="inherit" ng-value="$index" ng-selected="$index == authGrantForm.other.inherit">
+          <label bo-html="'auth.inherit.'+permission | possessive:party" class="option"></label>
         </div>
       </fieldset>
     </div>

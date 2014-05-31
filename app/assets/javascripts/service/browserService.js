@@ -193,7 +193,7 @@ module.factory('browserService', [
 					if (!browserService.options.record.categories.find({id: category})) {
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
-							name: constants.get('category', category).name,
+							name: constants.data.category[category].name,
 							sort: new ArrayHelper([])
 						}));
 					}
