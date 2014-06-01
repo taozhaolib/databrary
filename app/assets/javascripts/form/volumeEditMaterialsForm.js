@@ -141,7 +141,7 @@ module.directive('volumeEditMaterialsForm', [
 								clean = true;
 							}
 							asset.name = asset.asset.name;
-							asset.classification = asset.asset.classification;
+							asset.classification = ''+asset.asset.classification;
 
 							form.repeater.repeats.push(asset);
 						});

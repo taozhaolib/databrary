@@ -199,7 +199,7 @@ module.controller('VolumeEditView', [
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = asset.asset.classification;
+						asset.classification = ''+asset.asset.classification;
 					});
 
 					forms.materials.init(slot);
