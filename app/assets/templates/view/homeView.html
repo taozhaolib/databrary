@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="row">
       <div class="col-full">
-          <search-form></search-form>
+        <search-form></search-form>
       </div>
 
       <article class="home_feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
@@ -10,11 +10,13 @@
           <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
 
           <div class="info">
-	    <div class="inner_feature" bo-html="'featured' | message"></div>
+            <div class="inner_feature" bo-html="'featured' | message"></div>
             <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
+
             <div class="investigators">
               <ul class="inline-block flat">
-                <li ng-repeat="access in volume.access | filter:{access: page.constants.data.permissionName.ADMIN}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+                <li ng-repeat="access in volume.access | filter:{access: page.constants.data.permissionName.ADMIN}">
+                  <a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
               </ul>
             </div>
           </div>
@@ -23,19 +25,24 @@
 
       <div class="home_parties">
         <div class="row">
-		<div class="col-full">
-		  <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
-		</div>
-	</div>
+          <div class="col-full">
+            <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span>
+            </h1>
+          </div>
+        </div>
 
         <div class="party_row row" ng-repeat="row in rows">
-          <article class="home_party col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-repeat="party in row" bindonce>
-            <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
-            <div class="info">
-              <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
-              <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
-            </div>
-          </article>
+          <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-repeat="party in row" bindonce>
+            <article class="home_party">
+              <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
+
+              <div class="info">
+                <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
+
+                <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </div>
