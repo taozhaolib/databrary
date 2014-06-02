@@ -6,7 +6,8 @@ module.factory('displayService', [
 	'messageService',
 	'constantService',
 	'routerService',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router) {
+	'$location',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location) {
 		var display = {};
 
 		//
@@ -34,6 +35,15 @@ module.factory('displayService', [
 					},
 				];
 			}
+		});
+
+		//
+
+		display.error = undefined;
+
+		$rootScope.$on('$routeChangeError', function (event, next, previous, error) {
+			display.error = error;
+			$location.url(router.error());
 		});
 
 		//

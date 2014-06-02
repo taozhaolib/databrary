@@ -101,8 +101,6 @@ module.factory('messageService', [
 
 		//
 
-		//
-
 		MessageService.prototype.add = function (message) {
 			var newMessage = ArrayHelper.prototype.add.call(this, message);
 

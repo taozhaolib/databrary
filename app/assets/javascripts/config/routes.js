@@ -62,11 +62,19 @@ module.config([
 
 		//
 
+		$routeProvider.when('/error', appResolve({
+			controller: 'ErrorView',
+			templateUrl: 'errorView.html',
+			reloadOnSearch: false
+		}));
+
+		//
+
 		$routeProvider.when('/token/:id', appResolve({
 			controller: (function () {
 				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
 			}()),
-			templateUrl: function () {console.log(window.$play.object && window.$play.object.reset)
+			templateUrl: function () {
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
 			},
 			resolve: {
@@ -79,12 +87,12 @@ module.config([
 						} else {
 							page.$http
 								.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
-								.success(function (data) {
-									page.$window.$play.object = data;
-									deferred.resolve(data);
+								.success(function (res) {
+									page.$window.$play.object = res;
+									deferred.resolve(res);
 								})
 								.error(function () {
-									deferred.reject();
+									deferred.reject(res);
 									page.$location.url('/');
 								});
 						}
@@ -109,10 +117,10 @@ module.config([
 						page.constants.$promise.then(function () {
 							page.models.Party.query({
 								access: page.constants.data.permissionName.CONTRIBUTE
-							}, function (data) {
-								deferred.resolve(data);
-							}, function (data) {
-								deferred.reject();
+							}, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject(res);
 							});
 						});
 
@@ -126,9 +134,9 @@ module.config([
 						page.models.Volume.get({
 							id: 8,
 							access: ''
-						}, function (data) {
-							deferred.resolve(data);
-						}, function (data) {
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
 							deferred.resolve({});
 						});
 
@@ -150,10 +158,10 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Volume.query({}, function (data) {
-							deferred.resolve(data);
-						}, function (data) {
-							deferred.reject();
+						page.models.Volume.query({}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
 						});
 
 						return deferred.promise;
@@ -194,17 +202,17 @@ module.config([
 						}
 
 						if (page.$route.current.params.id) {
-							page.models.Party.get(req, function (data) {
-								deferred.resolve(data);
-							}, function (error) {
-								deferred.reject();
+							page.models.Party.get(req, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject(res);
 							});
 						}
 						else {
-							page.models.Party.profile(req, function (data) {
-								deferred.resolve(data);
-							}, function (error) {
-								deferred.reject();
+							page.models.Party.profile(req, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject(res);
 							});
 						}
 
@@ -229,10 +237,10 @@ module.config([
 							req.party = page.$window.$play.object.id;
 						}
 
-						page.models.Volume.query(req, function (data) {
-							deferred.resolve(data);
-						}, function (data) {
-							deferred.reject();
+						page.models.Volume.query(req, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
 						});
 
 						return deferred.promise;
@@ -270,7 +278,7 @@ module.config([
 							}, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
-								deferred.reject();
+								deferred.reject(res);
 							});
 						}
 
@@ -294,7 +302,7 @@ module.config([
 								}, function (res) {
 									deferred.resolve(res);
 								}, function (res) {
-									deferred.reject();
+									deferred.reject(res);
 								});
 							});
 						}
@@ -337,7 +345,7 @@ module.config([
 						}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
-							deferred.reject();
+							deferred.reject(res);
 						});
 
 						return deferred.promise;
@@ -365,8 +373,6 @@ module.run([
 						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView')) {
 							page.$location.url(page.router.register());
 						}
-					} else if (!next.authenticate) {
-						page.$location.url(page.router.home());
 					}
 				} else {
 					if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {

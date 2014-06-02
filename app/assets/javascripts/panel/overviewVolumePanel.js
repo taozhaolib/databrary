@@ -9,7 +9,7 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.isShared = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access < page.constant.data.permissionName.CONTRIBUTE;
+			return volumeAccess.access && volumeAccess.access < page.constants.data.permissionName.CONTRIBUTE;
 		};
 
 		$scope.isFunding = function (volumeAccess) {

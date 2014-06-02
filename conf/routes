@@ -233,6 +233,7 @@ GET     /favicon.ico                                                            
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
 
+GET     /error                                                                                  controllers.Site.untrail(path: String = "")
 GET     /loading                                                                                  controllers.Site.untrail(path: String = "")
 
 GET     /*path/                                                                                   controllers.Site.untrail(path: String)

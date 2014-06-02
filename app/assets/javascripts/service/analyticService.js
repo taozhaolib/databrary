@@ -5,7 +5,6 @@ module.factory('analyticService', [
 	'$injector',
 	function ($rootScope, $location, $cacheFactory, $injector) {
 		var analytics = {};
-
 		var queue = [];
 
 		//
@@ -52,7 +51,7 @@ module.factory('analyticService', [
 		$rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
 			analytics.add('open', $location.url(), {
 				current: current && current.controller,
-				previous: previous && previous.controller
+				previous: previous && previous.controller,
 			});
 		});
 
@@ -60,7 +59,7 @@ module.factory('analyticService', [
 			analytics.add('close', $location.url(), {
 				next: next && next.controller,
 				current: current && current.controller,
-				error: error
+				error: error,
 			});
 		});
 
