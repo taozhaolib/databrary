@@ -248,18 +248,6 @@ module.factory('routerService', [
 			return router.makeUrl('/volume/:id/edit', data);
 		};
 
-		router.volumeAccess = function (data) {
-			if (!type.isVolume(data)) {
-				throw new Error('routerService.volumeAccess() requires Volume as first argument');
-			}
-
-			data = {
-				id: data.id
-			};
-
-			return router.makeUrl('/volume/:id/access', data);
-		};
-
 		router.partyEdit = function (data) {
 			if (!type.isParty(data)) {
 				throw new Error('routerService.partyEdit() requires Party as first argument');
