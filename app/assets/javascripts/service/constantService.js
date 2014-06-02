@@ -1,10 +1,7 @@
 module.factory('constantService', [
 	'$http', function ($http) {
 		var constants = {
-			data: {
-				/* because toolbar loads first, hasAuth expects this to exist already, but is nevertheless broken: */
-				permissionName: []
-			},
+			data: {},
 			regex: {
 				doi: /^(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/.*)$/,
 			},
