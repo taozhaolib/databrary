@@ -72,7 +72,7 @@ module.factory('constantService', [
 					}
 				]
 			};
-		}
+		};
 
 		constants.update = function () {
 			constants.$promise = $http.get('/api/constants');

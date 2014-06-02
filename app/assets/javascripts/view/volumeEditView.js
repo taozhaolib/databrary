@@ -12,7 +12,11 @@ module.controller('VolumeEditView', [
 			];
 		} else {
 			page.display.toolbarLinks = [
-				{},
+				{
+					type: 'yellow',
+					html: page.constants.message('volume.edit.exit'),
+					url: page.router.home(),
+				}
 			];
 		}
 

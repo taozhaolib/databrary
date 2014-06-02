@@ -8,6 +8,7 @@
 		<label ng-bind-html="'citation.url' | message"></label>
 		<input type="text" name="url" ng-model="volumeEditCitationsForm.data.study.url">
 		<button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(volumeEditCitationsForm.data.study.url)" ng-click="autoDOI(volumeEditCitationsForm.data.study)" bo-html="'lookup' | message"></button>
+		<validator form="volumeEditPublicationsForm" name="url"></validator>
 
 		<label ng-bind-html="'citation.head' | message"></label>
 		<input type="text" name="head" ng-model="volumeEditCitationsForm.data.study.head">

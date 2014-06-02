@@ -36,7 +36,7 @@ module.directive('volumeEditOverviewForm', [
 								countdown: 3000,
 								body: page.constants.message('volume.edit.overview.success'),
 							});
-							//update backup so a future revert goes to current state, not pageload state
+
 							backup = $.extend(true, {}, form.data);
 
 							if (angular.isFunction(form.successFn)) {
@@ -46,10 +46,12 @@ module.directive('volumeEditOverviewForm', [
 							form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
-							form.messages.addError({
-								body: page.constants.message('volume.edit.overview.error'),
-								report: res
-							});
+							if (!form.validator.server(res.data)) {
+								form.messages.addError({
+									body: page.constants.message('volume.edit.overview.error'),
+									report: res
+								});
+							}
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);

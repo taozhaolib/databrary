@@ -46,10 +46,12 @@ module.directive('volumeEditCitationsForm', [
 						form.$setPristine();
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
+						if (!form.validator.server(res.data)) {
 						form.messages.addError({
 							body: page.constants.message('volume.edit.citations.error'),
 							report: res
 						});
+						}
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
