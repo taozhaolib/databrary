@@ -67,7 +67,7 @@ toolbar.contact=Send us your comments, questions, and suggestions.
 
 # Errors
 error.title=Error
-error.resolve=TODO We are having trouble resolving this page. It probably won''t work until we take a look, so feel free to let us know.
+error.resolve=An error occured retrieving this page. Please let us know if this was unexpected or you continue to have problems.
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
 error.402=402 - Payment Required
