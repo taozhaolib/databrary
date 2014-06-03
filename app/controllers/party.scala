@@ -374,7 +374,7 @@ object PartyApi extends PartyController with ApiController {
     val access = Field(OptionMapping(Mappings.enum(Permission)))
   }
 
-  def query = SiteAction.async { implicit request =>
+  def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
     Party.search(form.query.get, form.access.get).map(l =>
       Ok(JsonRecord.map[Party](_.json)(l)))
