@@ -3,7 +3,7 @@ module.controller('ErrorView', [
 		page.display.title = page.constants.message('page.title.error');
 
 		if (!page.display.error) {
-			page.$location.url(page.router.home());
+			page.$location.url(page.router.index());
 		}
 
 		$scope.error = page.display.error;

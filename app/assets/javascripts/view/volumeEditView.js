@@ -15,7 +15,7 @@ module.controller('VolumeEditView', [
 				{
 					type: 'yellow',
 					html: page.constants.message('volume.edit.exit'),
-					url: page.router.home(),
+					url: page.router.index(),
 				}
 			];
 		}
