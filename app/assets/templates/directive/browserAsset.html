@@ -9,10 +9,10 @@
 
         <div class="item_meta icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].name.toLowerCase()"></div>
 
-        <div class="item_meta sep" bo-if="auth.hasAccess('CONTRIBUTE', data)">|
+        <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|
         </div>
 
-        <a bo-href="editLink(data)" target="_self" ng-if="auth.hasAccess('CONTRIBUTE', data)">edit</a>
+        <a bo-href="editLink(data)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
       </footer>
 
       <header>

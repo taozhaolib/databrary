@@ -5,10 +5,10 @@
                 <span bo-if="data.object.consent">
                     <div class="item_meta icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()"></div>
 
-                    <div class="item_meta sep" bo-if="auth.hasAccess('CONTRIBUTE', data)">|</div>
+                    <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|</div>
                 </span>
 
-        <a bo-href="editLink(data)" target="_self" bo-if="auth.hasAccess('CONTRIBUTE', data)">edit</a>
+        <a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
       </footer>
 
       <header>
@@ -39,5 +39,5 @@
     </div>
   </div>
 
-  <browser-list ng-if="browser.showList(data)" data="data"></browser-list>
+  <browser-list ng-if="page.browser.showList(data)" data="data"></browser-list>
 </article>

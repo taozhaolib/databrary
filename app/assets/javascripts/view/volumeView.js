@@ -13,7 +13,7 @@ module.controller('VolumeView', [
 			},
 		];
 
-		$scope.browser.initialize('volume', volume);
+		page.browser.initialize('volume', volume);
 
 		$scope.$watchCollection('volume', function () {
 			page.events.talk('panelService-refresh');

@@ -22,7 +22,7 @@ module.controller('PartyView', [
 			},
 		];
 
-		$scope.browser.initialize('party', volumes);
+		page.browser.initialize('party', volumes);
 
 		$scope.$watchCollection('party', function () {
 			page.events.talk('panelService-refresh');

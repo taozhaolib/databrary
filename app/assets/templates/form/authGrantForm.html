@@ -41,7 +41,7 @@
 
     <input type="date" ng-model="authGrantForm.other.expiration" class="network-auth-expiration-input" ng-blur="authGrantForm.transformExpiration()">
 
-    <button ng-click="authGrantForm.other.expiration = ''" ng-if="auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
+    <button ng-click="authGrantForm.other.expiration = ''" ng-if="page.auth.hasAuth('SUPER')" class="orange network-auth-expiration-button">Clear expiration</button>
   </fieldset>
 
   <fieldset class="clean">

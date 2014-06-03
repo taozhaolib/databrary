@@ -4,39 +4,39 @@
     </span>
 
     <span class="browser_widget_wrap"
-          ng-if="browser.options.volume.allow"
+          ng-if="page.browser.options.volume.allow"
           ng-class="groupClasses('volume')">
         <a class="browser_widget_pill"
-           ng-click="browser.setGroupActive('volume')">{{"volume" | message}}</a>
+           ng-click="page.browser.setGroupActive('volume')">{{"volume" | message}}</a>
     </span>
 
     <span class="browser_widget_wrap"
           ng-class="recordGroupClasses(group, $last)"
-          ng-repeat="group in browser.options.record.categories.toArray() | filter:{active: true, allow: true}"
-          ng-if="browser.options.record.allow">
+          ng-repeat="group in page.browser.options.record.categories.toArray() | filter:{active: true, allow: true}"
+          ng-if="page.browser.options.record.allow">
         <a class="browser_widget_pill left"
-           ng-click="browser.setRecordGroupToggle(group)" click-elsewhere="browser.clearRecordGroupToggle()">{{group.name}}</a>
+           ng-click="page.browser.setRecordGroupToggle(group)" click-elsewhere="page.browser.clearRecordGroupToggle()">{{group.name}}</a>
 
         <ul class="record_pill_options">
-          <li ng-repeat="maybe in browser.options.record.categories">
-            <a ng-click="browser.switchRecordGroup(group, maybe)">{{maybe.name}}</a>
+          <li ng-repeat="maybe in page.browser.options.record.categories">
+            <a ng-click="page.browser.switchRecordGroup(group, maybe)">{{maybe.name}}</a>
           </li>
         </ul>
 
         <a class="browser_widget_pill right remove"
-           ng-click="browser.removeRecordGroup(group)"
-           ng-if="browser.canRemoveRecordGroup()">x</a>
+           ng-click="page.browser.removeRecordGroup(group)"
+           ng-if="page.browser.canRemoveRecordGroup()">x</a>
     </span>
 
     <span class="browser_widget_wrap last"
-          ng-class="{expanded: browser.isRecordGroupToggle('add')}"
-          ng-if="browser.canAddRecordGroup()">
+          ng-class="{expanded: page.browser.isRecordGroupToggle('add')}"
+          ng-if="page.browser.canAddRecordGroup()">
         <a class="browser_widget_pill add"
-           ng-click="browser.setRecordGroupToggle('add')" click-elsewhere="browser.clearRecordGroupToggle()">{{"browser.group" | message}}</a>
+           ng-click="page.browser.setRecordGroupToggle('add')" click-elsewhere="page.browser.clearRecordGroupToggle()">{{"browser.group" | message}}</a>
 
         <ul class="record_pill_options">
-          <li ng-repeat="maybe in browser.options.record.categories.toArray() | filter:{active: false, allow: true}">
-            <a ng-click="browser.addRecordGroup(maybe)">{{maybe.name}}</a>
+          <li ng-repeat="maybe in page.browser.options.record.categories.toArray() | filter:{active: false, allow: true}">
+            <a ng-click="page.browser.addRecordGroup(maybe)">{{maybe.name}}</a>
           </li>
         </ul>
     </span>

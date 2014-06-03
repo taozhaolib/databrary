@@ -1,12 +1,8 @@
 module.directive('browserIcon', [
 	'pageService', function (page) {
 		var link = function ($scope) {
-			$scope.browser = $scope.browser || page.browser;
-
-			//
-
 			$scope.toggleExpand = function () {
-				$scope.data = $scope.browser.setItemExpand($scope.data);
+				$scope.data = page.browser.setItemExpand($scope.data);
 			};
 
 			$scope.expanderClasses = function (data) {

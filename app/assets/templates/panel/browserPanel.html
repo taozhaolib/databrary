@@ -1,5 +1,5 @@
 <panel ng-controller="BrowserPanel" id="panel_browser" panel-title="{{'browser.title' | message}}" fold>
-    <browser-group ng-if="browser.context != 'search' && browser.context != 'party'"></browser-group>
-    <!--<browser-filter ng-repeat="group in browser.getActiveGroups()"></browser-filter>-->
-    <browser-list data="browser.data"></browser-list>
+    <browser-group ng-if="page.browser.context != 'search' && page.browser.context != 'party'"></browser-group>
+    <!--<browser-filter ng-repeat="group in page.browser.getActiveGroups()"></browser-filter>-->
+    <browser-list data="page.browser.data"></browser-list>
 </panel>

@@ -8,7 +8,7 @@
       <div class="investigators">
 	<strong>Investigators:</strong>
 	<ul class="inline-block">
-	  <li ng-repeat="access in v.access | filter:{access: page.constants.data.permissionName.ADMIN}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+	  <li ng-repeat="access in v.access | filter:{access: page.permission.ADMIN}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
 	</ul>
       </div>
 

@@ -1,22 +1,6 @@
 module.directive('browserList', [
 	'pageService', function (page) {
 		var link = function ($scope) {
-			if (!$scope.browser) {
-				$scope.browser = page.browser;
-			}
-
-			if (!$scope.router) {
-				$scope.router = page.router;
-			}
-
-			if (!$scope.constant) {
-				$scope.constant = page.constants;
-			}
-
-			if (!$scope.type) {
-				$scope.type = page.types;
-			}
-
 			$scope.data = $scope.data || page.browser.data;
 
 			$scope.getInclude = function () {
@@ -50,14 +34,14 @@ module.directive('browserList', [
 			};
 
 			$scope.setItemSelect = function (data) {
-				$scope.browser.setItemSelect(data);
+				page.browser.setItemSelect(data);
 			};
 
 			//
 
 			$scope.setItemPlayer = function (data) {
 				if (!data || page.auth.hasAccess('DOWNLOAD', data)) {
-					$scope.browser.setItemPlayer(data);
+					page.browser.setItemPlayer(data);
 				}
 				else if (data) {
 					page.messages.add({

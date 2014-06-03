@@ -4,7 +4,6 @@ module.directive('authApplyForm', [
 			var form = $scope.authApplyForm;
 
 			$scope.page = page;
-			$scope.constant = page.constants;
 
 			form.party = $scope.party || page.auth.user;
 			form.other = undefined;

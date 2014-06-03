@@ -19,18 +19,10 @@ module.config([
 
 module.run([
 	'$rootScope',
-	'browserService',
-	'authService',
-	'typeService',
 	'playService',
 	'pageService',
-	function ($rootScope, browser, auth, type, playService, page) {
+	function ($rootScope, playService, page) {
 		$rootScope.page = page;
-
-		// TODO: move these
-		$rootScope.browser = browser;
-		$rootScope.auth = auth;
-		$rootScope.type = type;
 
 		// TODO: someday...
 		//		playService.run();

@@ -1,7 +1,5 @@
 module.controller('NetworkPanel', [
 	'$scope', 'pageService', function ($scope, page) {
-		$scope.constant = $scope.constant || page.constants;
-
 		$scope.bootPanel = function () {
 			getPartyAuth();
 		};
@@ -143,9 +141,9 @@ module.controller('NetworkPanel', [
 					return [child.direct, child.inherit, child.expiration];
 				}, function (newVal, oldVal) {
 					if (newVal[0] != oldVal[0]) {
-						child.inherit = Math.min(child.inherit, Math.max(child.direct, page.constants.data.permissionName.DOWNLOAD));
+						child.inherit = Math.min(child.inherit, Math.max(child.direct, page.permission.DOWNLOAD));
 					} else if (newVal[1] != oldVal[1]) {
-						if (child.inherit > page.constants.data.permissionName.DOWNLOAD)
+						if (child.inherit > page.permission.DOWNLOAD)
 							child.direct = Math.max(child.direct, child.inherit);
 					}
 				}, true);
@@ -181,8 +179,8 @@ module.controller('NetworkPanel', [
 			form.other = $scope.currentAuthParent && $scope.currentAuthParent.remote ? {
 				party: $scope.party,
 				id: $scope.party.id,
-				inherit: page.constants.data.permissionName.DOWNLOAD,
-				direct: page.constants.data.permissionName.DOWNLOA,
+				inherit: page.permission.DOWNLOAD,
+				direct: page.permission.DOWNLOA,
 			} : $scope.currentAuthChild;
 
 			form.successFn = grantCancelFn;
@@ -247,8 +245,8 @@ module.controller('NetworkPanel', [
 			form.other = $scope.currentAuthChild && $scope.currentAuthChild.remote ? {
 				party: $scope.party,
 				id: $scope.party.id,
-				inherit: page.constants.data.permissionName.DOWNLOAD,
-				direct: page.constants.data.permissionName.DOWNLOAD
+				inherit: page.permission.DOWNLOAD,
+				direct: page.permission.DOWNLOAD
 			} : $scope.currentAuthParent;
 
 			form.successFn = applySuccessFn;
@@ -263,8 +261,8 @@ module.controller('NetworkPanel', [
 				party: found,
 				force: true,
 				id: found.id,
-				inherit: page.constants.data.permissionName.DOWNLOAD,
-				direct: page.constants.data.permissionName.DOWNLOAD
+				inherit: page.permission.DOWNLOAD,
+				direct: page.permission.DOWNLOAD
 			};
 
 			if (form.apply) {
@@ -314,8 +312,8 @@ module.controller('NetworkPanel', [
 				force: true,
 				remote: true,
 				id: page.auth.user.id,
-				direct: page.constants.data.permissionName.DOWNLOAD,
-				inherit: page.constants.data.permissionName.DOWNLOAD
+				direct: page.permission.DOWNLOAD,
+				inherit: page.permission.DOWNLOAD
 			};
 
 			if (apply) {

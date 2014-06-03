@@ -18,7 +18,7 @@ module.directive('accessGrantForm', [
 			//
 
 			form.extend = function () {
-				form.data.inherit = form.data.access === form.data.inherit ? 0 : Math.min(form.data.access, page.constants.data.permissionName.CONTRIBUTE);
+				form.data.inherit = form.data.access === form.data.inherit ? 0 : Math.min(form.data.access, page.permission.CONTRIBUTE);
 
 				form.save();
 			};

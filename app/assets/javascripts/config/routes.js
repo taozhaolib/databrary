@@ -31,9 +31,47 @@ module.config([
 		//
 
 		$routeProvider.when('/', appResolve({
-			controller: 'WelcomeView',
-			templateUrl: 'welcomeView.html',
-			reloadOnSearch: false
+			controller: 'HomeView',
+			templateUrl: 'homeView.html',
+			resolve: {
+				parties: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						page.constants.$promise.then(function () {
+							page.models.Party.query({
+								access: page.permission.CONTRIBUTE
+							}, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject(res);
+							});
+						});
+
+						return deferred.promise;
+					}
+				],
+				volume: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						if(page.auth.hasAuth())
+
+						page.models.Volume.get({
+							id: 8,
+							access: ''
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.resolve({});
+						});
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: false
 		}));
 
 		//
@@ -102,50 +140,6 @@ module.config([
 				]
 			},
 			reloadOnSearch: false
-		}));
-
-		//
-
-		$routeProvider.when('/home', appResolve({
-			controller: 'HomeView',
-			templateUrl: 'homeView.html',
-			resolve: {
-				parties: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
-
-						page.constants.$promise.then(function () {
-							page.models.Party.query({
-								access: page.constants.data.permissionName.CONTRIBUTE
-							}, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
-						});
-
-						return deferred.promise;
-					}
-				],
-				volume: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
-
-						page.models.Volume.get({
-							id: 8,
-							access: ''
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.resolve({});
-						});
-
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: true
 		}));
 
 		//
