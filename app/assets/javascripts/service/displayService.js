@@ -26,14 +26,7 @@ module.factory('displayService', [
 		$rootScope.$on('$routeChangeSuccess', function () {
 			display.loading = false;
 			if (display.toolbarLinks) {
-				display.toolbarLinks = [
-					{
-						type: 'green',
-						html: constants.message('volume.edit.create'),
-						url: router.volumeCreate(),
-						auth: 'VIEW',
-					},
-				];
+				display.toolbarLinks = []; 
 			}
 		});
 
