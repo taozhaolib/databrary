@@ -18,22 +18,26 @@ module.directive('repeater', [
 				return $scope.repeats.splice($index, 1);
 			};
 
-			$scope.add = function (repeat, $index) {
+			$scope.add = function () {
 				if (angular.isFunction($scope.addFn)) {
-					$scope.addFn($scope, repeat, $index);
+					$scope.addFn($scope);
 				}
 
-				return $scope.repeats.splice($index + 1, 0, $scope.template || {});
+				return $scope.repeats.push($scope.template || {});
 			};
 
 			//
 
 			$scope.canRemove = function (repeat, $index, $first) {
-				return $scope.repeats.length > 1;
+				if (angular.isFunction($scope.canRemoveFn)) {
+					$scope.canRemoveFn($scope, repeat, $index, $first);
+				}
 			};
 
 			$scope.canAdd = function (repeat, $index, $last) {
-				return $last;
+				if (angular.isFunction($scope.canAddFn)) {
+					$scope.canAddFn($scope, repeat, $index, $last);
+				}
 			};
 
 			//

@@ -140,6 +140,7 @@ module.directive('volumeEditMaterialsForm', [
 								form.repeater.repeats.splice(0, form.repeater.repeats.length);
 								clean = true;
 							}
+
 							asset.name = asset.asset.name;
 							asset.classification = ''+asset.asset.classification;
 
@@ -161,16 +162,16 @@ module.directive('volumeEditMaterialsForm', [
 
 			//
 
-			var changeFn = function () {
-				form.$setDirty();
+			form.remove = function (repeat) {
+
 			};
 
-			form.retrieveRepeater = function (repeater) {
-				form.repeater = repeater;
-				form.repeater.autoFile = form.autoFile;
-				form.repeater.repeats = form.data.assets;
-				form.repeater.addFn = changeFn;
-				form.repeater.removeFn = changeFn;
+			form.add = function () {
+				return form.data.assets.push({});
+			};
+
+			var changeFn = function () {
+				form.$setDirty();
 			};
 
 			//
