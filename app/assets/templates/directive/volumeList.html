@@ -1,15 +1,17 @@
 <ul class="flat search_results">
-  <li ng-repeat="v in vlist" bindonce>
+  <li ng-repeat="v in volumes" bindonce>
     <article class="search_result cf" bo-class="volumeClasses(v)">
       <img class="thumb" bo-src="page.router.volumeThumb(v)">
 
       <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-html="v.name"></a></h1>
 
       <div class="investigators">
-	<strong>Investigators:</strong>
-	<ul class="inline-block">
-	  <li ng-repeat="access in v.access | filter:{access: page.permission.ADMIN}"><a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
-	</ul>
+        <strong>Investigators:</strong>
+
+        <ul class="inline-block">
+          <li ng-repeat="access in v.access | filter:{access: page.permission.ADMIN}">
+            <a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+        </ul>
       </div>
 
       <div class="body" ng-bind-html="v.body.replace('\n', ' ') | truncate:30:'words'"></div>

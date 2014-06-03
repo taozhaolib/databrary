@@ -21,27 +21,8 @@ module.controller('SearchView', [
 
 		//
 
-		var successFn = function (form, res) {
-			updateData(res);
-		};
-
 		page.events.listen($scope, 'searchForm-init', function (form) {
 			$scope.searchForm = $scope.searchForm || form;
-			$scope.searchForm.successFn = successFn;
 		});
-
-		//
-
-		$scope.filterVolumes = function () {
-			if ($scope.searchForm.filterMode) {
-				return page.$filter('filter')($scope.volumes, $scope.searchForm.data.query);
-			}
-			return $scope.volumes;
-		};
-
-
-		//
-
-
 	}
 ]);

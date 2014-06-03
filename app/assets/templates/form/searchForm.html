@@ -8,7 +8,6 @@
       <div class="search_form_search" ng-if="page.auth.isAuthorized()">
         <div class="w">
           <input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" focus>
-          <a ng-if="!searchForm.filterMode" class="icon close line search_form_reset" ng-click="searchForm.reset()"></a>
         </div>
       </div>
     </div>
