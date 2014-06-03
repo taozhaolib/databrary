@@ -1,8 +1,12 @@
 module.directive('volumeEditMaterialsForm', [
 	'pageService', function (page) {
-		var link = function ($scope) {
-			var form = $scope.volumeEditMaterialsForm;
 
+
+		
+		var post = function ($scope) {
+
+
+			var form = $scope.volumeEditMaterialsForm;
 			form.data = {};
 			form.volume = undefined;
 			var backup = [];
@@ -160,6 +164,8 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			//
+			//
+
 
 			var changeFn = function () {
 				form.$setDirty();
@@ -172,20 +178,38 @@ module.directive('volumeEditMaterialsForm', [
 				form.repeater.addFn = changeFn;
 				form.repeater.removeFn = changeFn;
 			};
-
+			
+			form.getFormatsAsUnorderedList = function(){
+					var DELIMIT = "</li><li>";
+					var materialsFormats = page.constants.data.format;
+					var x="";
+					for(var i in materialsFormats)
+					{
+						var cur = materialsFormats[i];
+						console.log(i);
+						x += cur.extension +  ": " + cur.name + DELIMIT;
+					}
+					x = x.substr(0,x.length - DELIMIT.length);
+					console.log("arf");
+					return "<ul><li>"+x+"</li></ul>";
+			};
+			
 			//
 
 			page.events.talk('volumeEditMaterialsForm-init', form, $scope);
 		};
 
 		//
-
+		
+		
 		return {
 			restrict: 'E',
 			templateUrl: 'volumeEditMaterialsForm.html',
 			scope: false,
 			replace: true,
-			link: link
+			link: {
+				post: post 
+			}
 		};
 	}
 ]);
