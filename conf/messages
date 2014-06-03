@@ -192,7 +192,7 @@ access.grant.funding=Grant #
 access.update=Update
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
-access.grant.inherit=Extend access to those in {0}'s lab/group.
+access.grant.inherit=Extend access to those in {0}''s lab/group.
 access.grant.funding.save.success=Funding source updated.
 access.grant.funding.remove.success=Funding source removed.
 access.grant.access.save.success=Access record updated.
@@ -251,7 +251,7 @@ classification.ANALYSIS=This data in this file are summarized, aggregated, or ot
 classification.PRODUCT=This file contains research products, such as figures or manuscripts.
 classification.MATERIAL=This file contains no data but may have been used to collect data, such as proposals, protocols, stimuli, or blank forms.
 
-asset.untranscoded=This video is being converted to Databrary's standand format, so some features may not work yet.
+asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
 
 # objects
 object.tip.dataset=Datasets are collections of raw data.
@@ -407,10 +407,10 @@ wizard.register_password.instructions=Please set a secure password. Remember tha
 
 wizard.register_agent.name=Request Authorization
 wizard.register_agent.description=Begin the authorization process.
-wizard.register_agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html">Read more</a> about this process and its requirements.
+wizard.register_agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html" target="_blank">Read more</a> about this process and its requirements.
 
 auth.register.CONTRIBUTE.title=Authorized Investigator
-auth.register.CONTRIBUTE=Researchers with<a href="http://databrary.org/user-guide/definitions.html#people">PI status</a> (eligible to conduct independent research at their institution) may request authorization to access and share Databrary data, as well as authorize affiliates.
+auth.register.CONTRIBUTE=Researchers with <a href="http://databrary.org/user-guide/definitions.html#people" target="_blank">PI status</a> (eligible to conduct independent research at their institution) may request authorization to access and share Databrary data, as well as authorize affiliates.
 auth.register.DOWNLOAD.title=Affiliate Investigator
 auth.register.DOWNLOAD=Individuals working with Authorized Investigators may be sponsored to access shared Databrary data.
 
