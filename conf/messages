@@ -36,6 +36,7 @@ error.internal.body=Sorry, something is broken.  More information is below, or <
 
 error.title=Error
 error.resolve=<strong>Error</strong>: An error occured retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.0=Network Error
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
 error.402=402 - Payment Required
