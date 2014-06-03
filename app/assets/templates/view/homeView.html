@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="row" bo-if="page.auth.isUnauthorized()">
+    <div class="row" bo-if="!page.auth.isAuthorized()">
       <div class="col-full">
         <h1 class="home_parties_header"><span></span><span bo-html="'welcome.title.sub' | message"></span></h1>
         <div bo-html="'welcome.body' | message | format:false:true"></div>
