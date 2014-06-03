@@ -1,12 +1,6 @@
 module.directive('toolbar', [
 	'pageService', function (page) {
 		var controller = function ($scope) {
-			this.home = function () {
-				return page.auth.hasAuth('VIEW') ? page.router.home() : page.router.index();
-			};
-
-			//
-
 			this.hoverUser = false;
 
 			this.hideHover = function () {
