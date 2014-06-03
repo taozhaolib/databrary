@@ -80,7 +80,7 @@ toolbar.me=me
 toolbar.contact=Send us your comments, questions, and suggestions.
 
 # HTML page attributes
-page.title.welcome=Welcome
+page.title.home=Welcome
 page.title.login=Login
 page.title.reset=Password Reset
 page.title.register=Register

@@ -55,15 +55,19 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if(page.auth.hasAuth())
-
-						page.models.Volume.get({
-							id: 8,
-							access: ''
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.resolve({});
+						page.auth.$promise.then(function () {
+							if(page.auth.isAuthorized()) {
+								page.models.Volume.get({
+									id: 8,
+									access: ''
+								}, function (res) {
+									deferred.resolve(res);
+								}, function (res) {
+									deferred.reject(res);
+								});
+							} else {
+								deferred.resolve({});
+							}
 						});
 
 						return deferred.promise;

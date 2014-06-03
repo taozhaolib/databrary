@@ -4,7 +4,16 @@
       <div class="col-full">
         <search-form></search-form>
       </div>
+    </div>
 
+    <div class="row" bo-if="page.auth.isUnauthorized()">
+      <div class="col-full">
+        <h1 class="home_parties_header"><span></span><span bo-html="'welcome.title.sub' | message"></span></h1>
+        <div bo-html="'welcome.body' | message | format:false:true"></div>
+      </div>
+    </div>
+
+    <div class="row" bo-if="page.auth.isAuthorized()">
       <article class="home_feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="inner">
           <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
@@ -22,12 +31,13 @@
           </div>
         </div>
       </article>
+    </div>
 
+    <div class="row">
       <div class="home_parties">
         <div class="row">
           <div class="col-full">
-            <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span>
-            </h1>
+            <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
           </div>
         </div>
 
