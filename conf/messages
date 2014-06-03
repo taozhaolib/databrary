@@ -34,6 +34,19 @@ error.badrequest.body=Sorry, something went wrong with that request.  More infor
 error.internal.title=Internal error
 error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
+error.title=Error
+error.resolve=<strong>Error</strong>: An error occured retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.400=400 - Bad Request
+error.401=401 - Unauthorized
+error.402=402 - Payment Required
+error.403=403 - Forbidden
+error.404=404 - Not Found
+error.500=500 - Internal Server Error
+error.501=501 - Not Implemented
+error.502=502 - Bad Gateway
+error.503=503 - Service Unavailable
+error.504=504 - Gateway Timeout
+
 # --- Emails
 mail.password.subject=Databrary password reset
 mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no Databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
@@ -64,20 +77,6 @@ toolbar.profile=view profile
 toolbar.me=me
 
 toolbar.contact=Send us your comments, questions, and suggestions.
-
-# Errors
-error.title=Error
-error.resolve=An error occured retrieving this page. Please let us know if this was unexpected or you continue to have problems.
-error.400=400 - Bad Request
-error.401=401 - Unauthorized
-error.402=402 - Payment Required
-error.403=403 - Forbidden
-error.404=404 - Not Found
-error.500=500 - Internal Server Error
-error.501=501 - Not Implemented
-error.502=502 - Bad Gateway
-error.503=503 - Service Unavailable
-error.504=504 - Gateway Timeout
 
 # HTML page attributes
 page.title.welcome=Welcome
