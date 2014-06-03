@@ -147,7 +147,7 @@ module.factory('authService', [
 		//
 
 		auth.isLoggedIn = function () {
-			return auth.user && auth.user.id && auth.user.id != -1;
+			return !!(auth.user && auth.user.id && auth.user.id != -1);
 		};
 
 		auth.hasToken = function () {
