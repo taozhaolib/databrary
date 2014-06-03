@@ -195,9 +195,14 @@ object Party extends TableId[Party]("party") {
     Audit.add("party", SQLTerms('name -> name, 'orcid -> orcid, 'affiliation -> affiliation, 'duns -> duns), "id").single(SQLCols[Id])
       .map(new Party(_, name, orcid, affiliation, duns))
 
-  private def byName = "(name ILIKE ? OR email ILIKE ?)"
-  private def byNameArgs(name : String) =
-    SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) * 2
+  private def byName(implicit site : Site) =
+    if (site.access.group >= Permission.VIEW)
+      "(name ILIKE ? OR email ILIKE ?)"
+    else
+      "name ILIKE ?"
+  private def byNameArgs(name : String)(implicit site : Site) =
+    SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
+      (if (site.access.group >= Permission.VIEW) 2 else 1)
 
   def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
@@ -212,7 +217,7 @@ object Party extends TableId[Party]("party") {
     * @param who party doing the authorization, to exclude parties already authorized
     * @param institute limit to institutions
     */
-  def searchForAuthorize(name : String, who : Party, institute : Option[Boolean] = None) : Future[Seq[Party]] =
+  def searchForAuthorize(name : String, who : Party, institute : Option[Boolean] = None)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT("WHERE", byName, "AND id != ? AND id > 0",
       institute.fold("")(if (_) "AND duns IS NOT NULL" else "AND duns IS NULL"),
       "AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
@@ -222,7 +227,7 @@ object Party extends TableId[Party]("party") {
     * @param name string to match against name/email (case insensitive substring)
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
-  def searchForVolumeAccess(name : String, volume : Volume) : Future[Seq[Party]] =
+  def searchForVolumeAccess(name : String, volume : Volume)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
       apply(byNameArgs(name) :+ volume.id).list
 
