@@ -14,9 +14,5 @@ module.controller('VolumeView', [
 		];
 
 		page.browser.initialize('volume', volume);
-
-		$scope.$watchCollection('volume', function () {
-			page.events.talk('panelService-refresh');
-		});
 	}
 ]);
