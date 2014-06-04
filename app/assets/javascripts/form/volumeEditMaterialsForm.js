@@ -8,10 +8,10 @@ module.directive('volumeEditMaterialsForm', [
 			var backup = [];
 
 			form.saveFn = undefined;
+			form.addFn = undefined;
+			form.removeFn = undefined;
 			form.successFn = undefined;
 			form.errorFn = undefined;
-			form.resetFn = undefined;
-			form.cancelFn = undefined;
 
 			//
 
@@ -23,17 +23,12 @@ module.directive('volumeEditMaterialsForm', [
 
 			//
 
-			form.save = function () {
-				if (angular.isFunction(form.saveFn)) {
-					form.saveFn(form);
-				}
+			form.save = function (asset) {
 
 				var ids = [];
 				var promises = [];
 
 				angular.forEach(form.data.assets, function (asset) {
-					asset.saving = true;
-
 					if (asset.file) {
 						var fd = new FormData();
 						fd.append('file', asset.file[0]);
@@ -162,11 +157,25 @@ module.directive('volumeEditMaterialsForm', [
 
 			//
 
-			form.remove = function (repeat) {
+			form.save = function (asset) {
+				if (angular.isFunction(form.saveFn)) {
+					form.saveFn(form, asset);
+				}
+
+			};
+
+			form.remove = function (asset) {
+				if (angular.isFunction(form.removeFn)) {
+					form.saveFn(form, asset);
+				}
 
 			};
 
 			form.add = function () {
+				if (angular.isFunction(form.addFn)) {
+					form.saveFn(form);
+				}
+
 				return form.data.assets.push({});
 			};
 
