@@ -133,7 +133,7 @@ module.config([
 									page.$window.$play.object = res;
 									deferred.resolve(res);
 								})
-								.error(function () {
+								.error(function (res) {
 									deferred.reject(res);
 									page.$location.url('/');
 								});
@@ -227,12 +227,14 @@ module.config([
 
 						if (page.$route.current.params.id) {
 							req.party = page.$route.current.params.id;
-						}
-						else if (page.auth.isLoggedIn()) {
+						} else if (page.auth.isLoggedIn()) {
 							req.party = page.auth.user.id;
-						}
-						else if (page.types.isParty(page.$window.$play.object)) {
+						} else if (page.types.isParty(page.$window.$play.object)) {
 							req.party = page.$window.$play.object.id;
+						}
+
+						if (page.auth.isUnauthorized()) {
+							return [];
 						}
 
 						page.models.Volume.query(req, function (res) {
@@ -368,9 +370,17 @@ module.run([
 			page.auth.$promise.then(function () {
 				if (page.auth.isLoggedIn()) {
 					if (page.auth.isUnauthorized()) {
-						if (!next.$$route || next.$$route.controller != 'RegisterView' || (angular.isFunction(next.$$route.controller) && next.$$route.controller() != 'RegisterView')) {
+						if (!next.$$route) {
 							page.$location.url(page.router.register());
 						}
+
+						var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
+
+						if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
+							page.$location.url(page.router.register());
+						}
+					} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {
+						page.$location.url(page.router.index());
 					}
 				} else {
 					if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {

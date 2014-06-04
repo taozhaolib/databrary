@@ -1,12 +1,12 @@
 module.filter('possessive', [
-	'$rootScope', 'pageService', function ($rootScope, page) {
+	'pageService', function (page) {
 		return function (key, party, name) {
 			var replace;
 
 			if (angular.isString(party)) {
 				replace = party + "'s";
 			}
-			else if ($rootScope.auth.user.id == party.id) {
+			else if (page.auth.user.id == party.id) {
 				replace = 'my';
 			}
 			else {

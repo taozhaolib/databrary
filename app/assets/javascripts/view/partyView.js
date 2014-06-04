@@ -13,23 +13,6 @@ module.controller('PartyView', [
 				object: party,
 				target: '_top',
 			},
-			{
-				type: 'green',
-				html: page.constants.message('volume.edit.create'),
-				url: page.router.volumeCreate(),
-				access: 'ADMIN',
-				object: party,
-			},
 		];
-
-		page.browser.initialize('party', volumes);
-
-		$scope.$watchCollection('party', function () {
-			page.events.talk('panelService-refresh');
-		});
-
-		$scope.$watchCollection('volumes', function () {
-			page.events.talk('panelService-refresh');
-		});
 	}
 ]);

@@ -171,7 +171,7 @@ module.factory('authService', [
 		};
 
 		auth.isUnauthorized = function () {
-			return auth.isLoggedIn() && auth.isAuth('NONE');
+			return !auth.isAuthorized();
 		};
 
 		auth.isAuthorized = function () {
