@@ -1,7 +1,9 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate>
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" ng-init="">
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}">
+    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; volumeEditMaterialsForm.store(this)"></messages>
+
     <div ng-if="!asset.asset">
       <label bo-html="'material.file' | message"></label>
       <input type="file" name="file" file-model="asset.file">
@@ -13,8 +15,9 @@
     <label bo-html="'material.classification' | message"></label>
     <select name="classification" ng-model="asset.classification" ng-options="id as 'classification.'+name | message for (id, name) in page.constants.data.classification" ng-required></select>
 
-    <button ng-click="volumeEditMaterialsForm.save(asset)" bo-html="'save' | message" class="green" ng-disabled="!asset.$dirty"></button>
-    <button ng-click="volumeEditMaterialsForm.remove(asset)" bo-html="'remove' | message" class="red"></button>
+    <button ng-click="volumeEditMaterialsForm.save(this)" bo-html="'save' | message" class="green" ng-disabled="!form.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
+    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'reset' | message" class="orange"></button>
   </fieldset>
 
 	<fieldset class="clean">
