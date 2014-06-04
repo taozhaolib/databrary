@@ -49,12 +49,12 @@
 						<div class="radio-set">
 							<div>
 								<input type="radio" ng-model="authSearchForm.principal" ng-value="true">
-								<label class="option"><strong>{{'auth.register.CONTRIBUTE.title' | message}}</strong>: {{'auth.register.CONTRIBUTE' | possessive:'investigator'}}</label>
+								<label class="option" ng-bind-html="'auth.register.principal' | message"></label>
 							</div>
 
 							<div>
 								<input type="radio" ng-model="authSearchForm.principal" ng-value="false">
-								<label class="option"><strong>{{'auth.register.DOWNLOAD.title' | message}}</strong>: {{'auth.register.DOWNLOAD' | possessive:'investigator'}}</label>
+								<label class="option" ng-bind-html="'auth.register.affiliate' | message"></label>
 							</div>
 						</div>
 
