@@ -137,10 +137,12 @@ module.factory('messageService', [
 				var moreBody = '';
 				var messageBody = '';
 
-				angular.forEach(message.errors, function (errorArray, field) {
-					moreBody += '<dt>' + (field || '') + '</dt><dd>' + errorArray.join('</dd><dd>') + '</dd>';
-					messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
-				});
+				if (angular.isObject(message.errors)) {
+					angular.forEach(message.errors, function (errorArray, field) {
+						moreBody += '<dl><dt>' + (field || '') + '</dt><dd>' + errorArray.join('</dd><dd>') + '</dd></dl>';
+						messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
+					});
+				}
 
 				if (message.status) {
 					messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;

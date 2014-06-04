@@ -13,6 +13,6 @@ module.controller('VolumeView', [
 			},
 		];
 
-		$scope.browser.initialize('volume', volume);
+		page.browser.initialize('volume', volume);
 	}
 ]);
