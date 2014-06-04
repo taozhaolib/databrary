@@ -75,7 +75,6 @@ toolbar.login=login
 toolbar.logout=logout
 toolbar.register=register
 toolbar.profile=view profile
-toolbar.me=me
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
