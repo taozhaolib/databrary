@@ -40,7 +40,7 @@
 						<ul class="flat">
               <li><strong bo-html="page.auth.user.name"></strong></li>
 							<li><a bo-href="page.router.profile()" class="toolbar_user_link" bo-html="'toolbar.profile' | message"></a></li>
-							<li><a bo-href="page.router.volumeCreate()" bo-html="'volume.edit.create' | message"></a></li>
+							<li><a bo-href="page.router.volumeCreate()" bo-html="'volume.edit.create' | message" ng-if="page.auth.hasAuth('VIEW')"></a></li>
 							<li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
               <li ng-if="page.auth.hasAuth('ADMIN')" class="password_form">
