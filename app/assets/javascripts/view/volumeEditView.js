@@ -14,7 +14,7 @@ module.controller('VolumeEditView', [
 			page.display.toolbarLinks = [
 				{
 					type: 'yellow',
-					html: page.constants.message('volume.edit.exit'),
+					html: page.constants.message('volume.edit.cancel'),
 					url: page.router.index(),
 				}
 			];
