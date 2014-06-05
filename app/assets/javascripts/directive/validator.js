@@ -29,6 +29,10 @@ module.directive('validator', [
 
 			//
 
+			this.show = function () {
+				return this.showClientErrors() || this.showClientTips() || this.showServerErrors();
+			};
+
 			this.showServerErrors = function () {
 				return this.serverErrors.length > 0 && !this.changed;
 			};
