@@ -232,7 +232,39 @@ th, td {
 .validator {
 	position: relative;
 	top: -@b2;
+}
+
+.validator_message {
+	position: absolute;
+	background-color: @white;
+	left: 0;
+	right: 0;
+	top: @b3;
+	.border-radius(@b6);
+	.box-shadow();
+	.padding(0, @f6);
 	.font-line(.75);
+	z-index: 2000;
+
+	&:after,
+	&:before {
+		content: "";
+		.size(0);
+		left: @b1 + @b12;
+		top: -@b2;
+		border: @b4 solid transparent;
+		position: absolute;
+		pointer-events: none;
+	}
+
+	&:after {
+		border-bottom-color: @white;
+	}
+
+	&:before {
+		border-bottom-color: @gray;
+		top: -@b2 - 1px;
+	}
 }
 
 .validator_server {
