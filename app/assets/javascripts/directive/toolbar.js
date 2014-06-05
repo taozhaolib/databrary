@@ -15,13 +15,6 @@ module.directive('toolbar', [
 						link.auth ? page.auth.hasAuth(link.auth) : true;
 				});
 			};
-
-			//
-
-			this.stopProp = function ($event) { console.log(arguments);
-				$event.stopImmediatePropagation();
-				$event.stopPropagation();
-			}
 		};
 
 		return {
