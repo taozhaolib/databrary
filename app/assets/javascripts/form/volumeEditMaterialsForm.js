@@ -47,13 +47,22 @@ module.directive('volumeEditMaterialsForm', [
 								body: page.constants.message('volume.edit.materials.create.success', subform.asset.name || subform.asset.file[0].name),
 							});
 
+							if (angular.isFunction(form.successFn)) {
+								form.successFn(form, res);
+							}
+
 							subform.$setPristine();
+							page.models.Volume.$cache.removeAll();
 						}, function (res) {
 							subform.messages.addError({
 								type: 'red',
 								body: page.constants.message('volume.edit.materials.create.error', subform.asset.name || subform.asset.file[0].name),
 								report: res,
 							});
+
+							if (angular.isFunction(form.errorFn)) {
+								form.errorFn(form, res);
+							}
 
 							subform.messages.remove(msg);
 
@@ -74,13 +83,22 @@ module.directive('volumeEditMaterialsForm', [
 							body: page.constants.message('volume.edit.materials.update.success', subform.asset.name || subform.asset.file[0].name),
 						});
 
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, res);
+						}
+
 						form.clean(subform);
+						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						subform.messages.addError({
 							type: 'red',
 							body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || subform.asset.file[0].name),
 							report: res,
 						});
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, res);
+						}
 
 						form.clean(subform);
 					});
@@ -89,7 +107,7 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.remove = function (subform) {
 				if (angular.isFunction(form.removeFn)) {
-					form.saveFn(form, subform);
+					form.removeFn(form, subform);
 				}
 
 				if (!subform.asset.asset) {
@@ -106,9 +124,14 @@ module.directive('volumeEditMaterialsForm', [
 							body: page.constants.message('volume.edit.materials.remove.success', subform.asset.name || subform.asset.file[0].name),
 						});
 
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, res);
+						}
+
 						form.data.assets.splice(subform.$index, 1);
 
 						form.clean(subform);
+						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
 							type: 'red',
@@ -116,6 +139,10 @@ module.directive('volumeEditMaterialsForm', [
 							errors: data,
 							status: status
 						});
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, res);
+						}
 
 						form.clean(subform);
 					});
@@ -150,11 +177,11 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.store = function (subform) {
-				backup[subform.$index] = $.extend(true, {}, subform.asset);
+				backup[subform.$id] = $.extend(true, {}, subform.asset);
 			};
 
 			form.reset = function (subform) {
-				subform.asset = backup[subform.$index];
+				subform.asset = backup[subform.$id];
 				form.store(subform);
 				form.clean(subform);
 			};
