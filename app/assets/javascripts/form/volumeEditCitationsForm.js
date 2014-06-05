@@ -10,70 +10,46 @@ module.directive('volumeEditCitationsForm', [
 			form.saveFn = undefined;
 			form.successFn = undefined;
 			form.errorFn = undefined;
+			form.addFn = undefined;
+			form.removeFn = undefined;
 			form.resetFn = undefined;
-			form.cancelFn = undefined;
 
 			//
 
 			form.init = function (data, volume) {
 				form.data = data;
 				form.volume = form.volume || volume;
-				backup = $.extend(true, {}, data);
 			};
+			
+			form.clean = function (subform, scrubCitations) {
+				subform.$setPristine();
 
-			//
+				var pristine = true;
 
-			form.save = function () {
-				if (angular.isFunction(form.saveFn)) {
-					form.saveFn(form);
+				if(form.studyForm.$dirty) {
+					pristine = false;
 				}
 
-				page.models.Volume.save(form.data,
-					function (res) {
-						form.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.citations.success'),
-						});
-
-						//update backup so a future revert goes to current state, not pageload state
-						backup = $.extend(true, {}, form.data);
-
-						if (angular.isFunction(form.successFn)) {
-							form.successFn(form, res);
-						}
-
-						form.$setPristine();
-						page.models.Volume.$cache.removeAll();
-					}, function (res) {
-						if (!form.validator.server(res.data)) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.citations.error'),
-							report: res
-						});
-						}
-
-						if (angular.isFunction(form.errorFn)) {
-							form.errorFn(form, res);
+				if (pristine || scrubCitations) {
+					angular.forEach(form.citationsForm, function (subform, id) {
+						if (id.indexOf('citation-') === 0 && form.citationsForm[id].$dirty) {
+							if (scrubCitations) {
+								form.citationsForm[id].$setPristine();
+							} else {
+								pristine = false;
+								return false;
+							}
 						}
 					});
+				}
+
+				if (pristine) {
+					form.$setPristine();
+				}
 			};
-
-			form.reset = function() { //reset to last saved state
-				if (angular.isFunction(form.resetFn))
-					form.resetFn(form);
-
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
-
-				if(form.repeater)
-					form.repeater.repeats = form.data.citation;
-			};
-
-			//
 
 			form.autoDOI = function (target) {
-				if (!target.url || target.head) {
+				if (!target.url) {
 					return;
 				}
 
@@ -111,19 +87,127 @@ module.directive('volumeEditCitationsForm', [
 						});
 				}
 			};
-
+			
 			//
+			
+			form.studyForm.save = function () {
+				if (angular.isFunction(form.saveFn)) {
+					form.saveFn(form);
+				}
 
-			var changeFn = function () {
-				form.$setDirty();
+				page.models.Volume.save({
+						study: form.data.study,
+					},
+					function (res) {
+						form.messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: page.constants.message('volume.edit.citations.success'),
+						});
+
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, res);
+						}
+
+						form.clean(form.studyForm);
+						page.models.Volume.$cache.removeAll();
+					}, function (res) {
+						if (!form.validator.server(res.data)) {
+							form.messages.addError({
+								body: page.constants.message('volume.edit.citations.error'),
+								report: res
+							});
+						}
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, res);
+						}
+
+						form.clean(form.studyForm);
+					});
 			};
 
-			form.retrieveRepeater = function (repeater) {
-				form.repeater = repeater;
-				form.repeater.autoDOI = form.autoDOI;
-				form.repeater.repeats = form.data.citation || [];
-				form.repeater.addFn = changeFn;
-				form.repeater.removeFn = changeFn;
+			form.studyForm.store = function () {
+				backup.study = $.extend(true, {}, form.data.study);
+			};
+
+			form.studyForm.reset = function () {
+				if (angular.isFunction(form.resetFn)) {
+					form.resetFn(form, subform);
+				}
+
+				form.data.study = backup.study;
+				form.studyForm.store();
+				form.clean(form.studyForm);
+			};
+			
+			//
+			
+			form.citationsForm.save = function () {
+				if (angular.isFunction(form.saveFn)) {
+					form.saveFn(form);
+				}
+
+				page.models.Volume.save({
+						citation: form.data.citation,
+					},
+					function (res) {
+						form.messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: page.constants.message('volume.edit.citations.success'),
+						});
+
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, res);
+						}
+
+						form.clean(form.citationsForm, true);
+						page.models.Volume.$cache.removeAll();
+					}, function (res) {
+						if (!form.validator.server(res.data)) {
+							form.messages.addError({
+								body: page.constants.message('volume.edit.citations.error'),
+								report: res
+							});
+						}
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, res);
+						}
+
+						form.clean(form.citationsForm, true);
+					});
+			};
+
+			form.citationsForm.store = function (subform) {
+				backup[subform.$id] = $.extend(true, {}, subform.citation);
+			};
+
+			form.citationsForm.reset = function (subform) {
+				if (angular.isFunction(form.resetFn)) {
+					form.resetFn(form, subform);
+				}
+
+				subform.citation = backup[subform.$id];
+				form.citationsForm.store(subform);
+				form.clean(subform.form);
+			};
+
+			form.citationsForm.add = function () {
+				if (angular.isFunction(form.addFn)) {
+					form.saveFn(form);
+				}
+
+				return form.data.citation.push({});
+			};
+
+			form.citationsForm.remove = function (subform) {
+				if (angular.isFunction(form.removeFn)) {
+					form.removeFn(form, subform);
+				}
+
+				form.data.citations.splice(subform.$index, 1);
 			};
 
 			//
