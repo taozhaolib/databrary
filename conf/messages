@@ -281,6 +281,7 @@ volume.edit.create=create volume
 volume.edit.exit=view volume
 volume.edit.success=Volume saved successfully!
 volume.edit.error=Unable to save volume.
+volume.edit.cancel=cancel
 volume.edit.autodoi=Enter the DOI or URL of any corresponding publication
 volume.edit.autodoi.instructions=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter its DOI or URL here.  If you enter a DOI, we will attempt to automatically fill in the title and citation.
 volume.edit.autodoi.name.success=Title retrieved from DOI.
