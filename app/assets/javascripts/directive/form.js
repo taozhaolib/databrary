@@ -6,6 +6,7 @@ module.directive('form', [
 			}
 
 			var form = $scope[$attrs.name];
+			var unclaimed = {};
 
 			form.$element = $element;
 
@@ -33,9 +34,22 @@ module.directive('form', [
 
 					client: function (data, replace) {
 						for (var name in data) {
-							if (data.hasOwnProperty(name) && form.validators[name]) {
+							if (!data.hasOwnProperty(name)){
+								continue;
+							} else if(form.validators[name]) {
 								form.validators[name].client(data[name], replace);
+							} else {
+								unclaimed[name] = data[name];
 							}
+						}
+					},
+
+					add: function (name, validator) {
+						form.validators[name] = validator;
+
+						if (unclaimed[name]) {
+							validator.client(unclaimed[name], true);
+							delete unclaimed[name];
 						}
 					},
 				};

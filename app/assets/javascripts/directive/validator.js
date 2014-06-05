@@ -3,15 +3,14 @@ module.directive('validator', [
 		var controller = function ($scope, $element, $attrs) {
 			if (!$attrs.form || !$attrs.name || !$scope[$attrs.form] || !$scope[$attrs.form][$attrs.name]) {
 				return;
-			} else if ($scope[$attrs.form] && $scope[$attrs.form].validator) {
-				$scope[$attrs.form].validators[$attrs.name] = this;
 			}
 
 			var that = this;
 
 			this.form = $scope[$attrs.form];
 			this.name = $scope[$attrs.form][$attrs.name];
-			this.$element = this.form.$element.find('[name="' + $attrs.name + '"]').first(); // TODO: won't work with repeaters
+			// TODO: won't work with repeaters
+			this.$element = this.form.$element.find('[name="' + $attrs.name + '"]').first();
 			this.changed = false;
 			this.focus = false;
 			this.serverErrors = [];
@@ -106,6 +105,12 @@ module.directive('validator', [
 					});
 				}
 			};
+
+			//
+
+			if ($scope[$attrs.form] && $scope[$attrs.form].validator) {
+				$scope[$attrs.form].validator.add($attrs.name, this);
+			}
 		};
 
 		//
