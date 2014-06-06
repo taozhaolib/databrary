@@ -56,17 +56,11 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
     val all = (file +: rest).map(JSSourceFile.fromFile(_))
 
     val compiler = new Compiler()
-    try {
-      if (!compiler.compile(Array[JSSourceFile](), all.toArray, opts).success) {
-        val e = compiler.getErrors().head
-        throw AssetCompilationException(Some(new File(e.sourceName)), e.description, Some(e.lineNumber), None)
-      }
-      (extsrc + concat(all), Some(extsrc + compiler.toSource), rest)
-    } catch {
-      case e : Exception =>
-        e.printStackTrace()
-        throw AssetCompilationException(Some(file), "Internal Closure Compiler error (see logs)", None, None)
+    if (!compiler.compile(Array[JSSourceFile](), all.toArray, opts).success) {
+      val e = compiler.getErrors().head
+      throw AssetCompilationException(Some(new File(e.sourceName)), e.description, Some(e.lineNumber), None)
     }
+    (extsrc + concat(all), Some(extsrc + compiler.toSource), rest)
   }
 
   val Compiler = Def.bind(cacheDirectory zip externs) { case (cacheDir, ext) =>

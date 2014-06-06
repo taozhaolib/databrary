@@ -17,11 +17,6 @@ module.config([
 					'authService', function (auth) {
 						return auth.$promise;
 					}
-				],
-				constantPromise: [
-					'constantService', function (constants) {
-						return constants.$promise;
-					}
 				]
 			});
 
@@ -38,14 +33,12 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.constants.$promise.then(function () {
-							page.models.Party.query({
-								access: page.permission.CONTRIBUTE
-							}, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
+						page.models.Party.query({
+							access: page.permission.CONTRIBUTE
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
 						});
 
 						return deferred.promise;

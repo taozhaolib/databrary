@@ -81,9 +81,7 @@ module.factory('browserService', [
 			browserService.query = '';
 
 			if (angular.isUndefined(browserService.context)) {
-				constants.$promise.success(function () {
-					bindTooltips(tips);
-				});
+				bindTooltips(tips);
 			}
 
 			newData.$promise.then(function (newData) {

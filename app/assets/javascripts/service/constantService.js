@@ -1,7 +1,7 @@
 module.factory('constantService', [
-	'$http', function ($http) {
+	'$http', 'constantData', function ($http, constantData) {
 		var constants = {
-			data: {},
+			data: constantData,
 			regex: {
 				doi: /^(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/.*)$/,
 			},
@@ -72,32 +72,25 @@ module.factory('constantService', [
 		};
 
 		constants.update = function () {
-			constants.$promise = $http.get('/api/constants');
+			constants.data.permissionName = invertArray(constants.data.permission);
+			constants.data.classificationName = invertArray(constants.data.classification);
+			constants.data.consentName = invertArray(constants.data.consent);
+			constants.data.categoryName = invertBy(constants.data.category, "name");
 
-			constants.$promise.then(function (result) {
-				angular.extend(constants.data, result.data);
+			/* convenient aliases: */
+			constants.data.permissionName.EDIT = constants.data.permissionName.CONTRIBUTE;
+			constants.data.permissionName.SUPER = constants.data.permission.length;
 
-				constants.data.permissionName = invertArray(constants.data.permission);
-				constants.data.classificationName = invertArray(constants.data.classification);
-				constants.data.consentName = invertArray(constants.data.consent);
-				constants.data.categoryName = invertBy(constants.data.category, "name");
-
-				/* convenient aliases: */
-				constants.data.permissionName.EDIT = constants.data.permissionName.CONTRIBUTE;
-				constants.data.permissionName.SUPER = constants.data.permission.length;
-
-				addPresets(constants.data);
-			});
+			addPresets(constants.data);
 		};
 
 		constants.message = function (key /*, args...*/) {
-			if (!constants.data || !constants.data.messages || !constants.data.messages[key])
+			var msg = constants.data.messages[key];
+
+			if (!msg) {
 			// warning? error? placeholder.
-			{
 				return '[' + key + ']';
 			}
-
-			var msg = constants.data.messages[key];
 
 			for (var i = 1, length = arguments.length; i < length; i++) {
 				msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
