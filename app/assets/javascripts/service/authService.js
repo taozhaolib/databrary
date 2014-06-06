@@ -8,8 +8,8 @@ module.factory('authService', [
 	'constantService',
 	'routerService',
 	'Party',
-	'playData',
-	function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, playData) {
+	'playService',
+	function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, play) {
 		var auth = {};
 
 		//
@@ -54,7 +54,7 @@ module.factory('authService', [
 			});
 		};
 
-		auth.updateUser(playData.user);
+		auth.updateUser(play.user);
 
 		//
 
@@ -137,7 +137,7 @@ module.factory('authService', [
 		};
 
 		auth.hasToken = function () {
-			return playData.object && types.isToken(playData.object);
+			return play.object && types.isToken(play.object);
 		};
 
 		auth.getToken = function () {
@@ -145,15 +145,15 @@ module.factory('authService', [
 				return;
 			}
 
-			return playData.object;
+			return play.object;
 		};
 
 		auth.isPasswordReset = function () {
-			return auth.hasToken() && playData.object.reset;
+			return auth.hasToken() && play.object.reset;
 		};
 
 		auth.isPasswordPending = function () {
-			return auth.hasToken() && !playData.object.reset;
+			return auth.hasToken() && !play.object.reset;
 		};
 
 		auth.isUnauthorized = function () {

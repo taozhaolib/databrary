@@ -14,8 +14,6 @@ module.config([
 		$httpProvider.defaults.cache = true;
 
 		$logProvider.debugEnabled(true);
-
-		module.constant('playData', window.$play);
 	}
 ]);
 
