@@ -19,12 +19,10 @@ module.factory('pageService', [
 
 		//
 
-		page.constants.$promise.then(function () {
-			page.permission = page.constants.data.permissionName;
-			page.classification = page.constants.data.classificationName;
-			page.consent = page.constants.data.consentName;
-			page.category = page.constants.data.categoryName;
-		});
+		page.permission = page.constants.data.permissionName;
+		page.classification = page.constants.data.classificationName;
+		page.consent = page.constants.data.consentName;
+		page.category = page.constants.data.categoryName;
 
 		//
 
@@ -48,7 +46,6 @@ module.factory('pageService', [
 			'$routeParams',
 			'$sanitize',
 			'$sce',
-			'$templateCache',
 			'$timeout',
 			'$window',
 
