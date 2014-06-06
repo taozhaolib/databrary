@@ -50,6 +50,13 @@ trait Site {
   val superuser : Boolean
   /** IP of the client's host. */
   val clientIP : dbrary.Inet
+
+  final def json =
+    identity.json(this) ++
+    JsonObject.flatten(
+      Some('access -> access.group),
+      if (access.isAdmin) Some('superuser -> superuser) else None
+    )
 }
 
 trait AnonSite extends Site {

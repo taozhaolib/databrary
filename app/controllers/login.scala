@@ -18,17 +18,10 @@ import models._
 
 private[controllers] sealed class LoginController extends SiteController {
 
-  protected def json(implicit site : SiteRequest[_]) =
-    site.identity.json ++
-    JsonObject.flatten(
-      Some('access -> site.access.group),
-      if (site.access.isAdmin) Some('superuser -> site.session.get("superuser").flatMap(Maybe.toLong _).map(_ - System.currentTimeMillis).filter(_ > 0).getOrElse(0L)) else None
-    )
-
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
-      (if (request.isApi) Ok(json(new SiteRequest.Auth(request, token)))
+      (if (request.isApi) Ok((new SiteRequest.Auth(request, token)).json)
       else Redirect(routes.PartyHtml.profile))
         .withSession("session" -> token.id)
     }
@@ -77,13 +70,13 @@ private[controllers] sealed class LoginController extends SiteController {
       throw ForbiddenException
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(json + ('superuser -> superuserTime))
+    (if (request.isApi) Ok(request.json + ('superuser -> superuserTime))
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
-    (if (request.isApi) Ok(json - "superuser")
+    (if (request.isApi) Ok(request.json - "superuser")
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(session - "superuser")
   }
@@ -227,6 +220,6 @@ object LoginHtml extends LoginController with HtmlController {
 
 object LoginApi extends LoginController with ApiController {
   def get = SiteAction.Unlocked { implicit request =>
-    Ok(json)
+    Ok(request.json)
   }
 }

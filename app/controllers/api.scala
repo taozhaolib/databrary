@@ -1,6 +1,7 @@
 package controllers
 
 import scala.concurrent.Future
+import play.api.Play
 import play.api.Play.current
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -13,9 +14,27 @@ import site._
 import models._
 
 object SiteApi extends SiteController {
-  private final val startTime = new Timestamp
+  private val startTime = new Timestamp
+  private def publicResource(name : String, ext : String) =
+    Play.resourceAsStream("/public/" + name + (if (Play.isDev) "." else ".min.") + ext)
+    .fold(
+      throw new RuntimeException("missing: " + name))(
+      org.apache.commons.io.IOUtils.toString _)
 
-  private final val constantsJson = JsonObject(
+  private def static[A : play.api.http.Writeable](name : String, content : A) = {
+    val etag = name + ":" + content.hashCode
+    val result = Ok(content)
+      .withHeaders(
+	(ETAG, HTTP.quote(etag)),
+	(LAST_MODIFIED, HTTP.date(startTime)),
+	(CACHE_CONTROL, if (Play.isProd) "public, max-age=86400" else "no-cache"))
+    Action { implicit request =>
+      if (HTTP.notModified(etag, startTime)) NotModified
+      else result
+    }
+  }
+
+  private val constantsJson = JsonObject(
       'messages -> json.Json.toJson(Messages.messages.get("default").map(
 	/* hack to fix quoting (consider using https://github.com/SlexAxton/messageformat.js if things get more complicated) */
 	_.mapValues(java.text.MessageFormat.format(_))))
@@ -27,17 +46,13 @@ object SiteApi extends SiteController {
     , 'mode -> json.JsString(current.mode.toString)
     , 'version -> json.JsString(site.Site.version)
     ).js
-  private final val constantsETag = "constants:" + constantsJson.hashCode
-  private final val constantsResult = Ok(constantsJson)
-    .withHeaders(
-      (LAST_MODIFIED, HTTP.date(startTime))
-    , (ETAG, HTTP.quote(constantsETag))
-    , (CACHE_CONTROL, "max-age=86400")
-    )
-  def constants = Action { implicit request =>
-    if (HTTP.notModified(constantsETag, startTime)) NotModified
-    else constantsResult
-  }
+
+  val constants = static("constants", constantsJson)
+  val appJs = static("app.js",
+    views.js.app(
+      publicResource("javascripts/app", "js"),
+      publicResource("templates/_all", "js"),
+      constantsJson))
 
   private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
     case json.JsObject(f) =>

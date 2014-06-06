@@ -21,14 +21,9 @@ module.factory('authService', [
 			var reload = true;
 
 			if (user) {
-				if (angular.isDefined(user.superuser) && user.superuser > 0) {
-					user.superuser = new Date(Date.now() + user.superuser);
-				}
-				else {
-					user.superuser = false;
-				}
+				user.superuser = !!user.superuser;
 
-				if (auth.user && auth.user.id === user.id && !!auth.user.superuser === !!user.superuser) {
+				if (auth.user && auth.user.id === user.id && !auth.user.superuser === !user.superuser) {
 					reload = false;
 				}
 			} else if (!user && !auth.user) {
@@ -82,8 +77,8 @@ module.factory('authService', [
 				return -1;
 			}
 
-			if (angular.isDate(auth.user.superuser) && auth.user.superuser > new Date()) {
-				return parseAuthLevel('SUPER');
+			if (auth.user.superuser) {
+				return constants.data.permissionName.SUPER;
 			}
 
 			if (angular.isObject(object) && object.permission) {

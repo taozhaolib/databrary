@@ -32,7 +32,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   private abstract class AllTemplate(pre : String, post : String) extends AllTemplater {
     protected def each(f : File, p : String => String) : String
     final def apply(l : Seq[File], p : String => String = identity) =
-      (pre +: l.map(each(_, p)) :+ post).mkString("\n")
+      (pre +: l.map(each(_, p)) :+ post).mkString("")
   }
   private final class AllSubstTemplate(pre : String = "", each : String, post : String = "") extends AllTemplate(pre, post) {
     val replacer = Replacer(each, AllSubstTemplate.eachRegex)
@@ -57,12 +57,20 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   private val compressor = new com.googlecode.htmlcompressor.compressor.HtmlCompressor
   compressor.setRemoveIntertagSpaces(true)
 
+  def jsstr(t : String) = t
+    .replaceAllLiterally("\\", "\\\\")
+    .replaceAllLiterally("'", "\\'")
+    .replaceAllLiterally("\n", "\\n")
+
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
     if (file.getName.equals("_all.html")) {
       val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
       val tpl = AllSubstTemplate(read(file))
-      // compressor won't go inside <script>s so we have to do two passes (or compress tpl ahead of time)
-      (tpl(all), Some(compressor.compress(tpl(all, compressor.compress))), all : Seq[File])
+      (tpl(all), Some(tpl(all, compressor.compress)), all : Seq[File])
+    } else if (file.getName.equals("_all.js")) {
+      val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
+      val tpl = AllSubstTemplate(read(file))
+      (tpl(all, jsstr), Some(tpl(all, (compressor.compress _).andThen(jsstr))), all : Seq[File])
     } else {
       val c = read(file)
       (c, Some(compressor.compress(c)), Nil)
@@ -70,9 +78,9 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   }
 
   val Compiler = AssetsCompiler("angular",
-    (_ / "assets" ** "*.html"),
+    dir => dir / "assets" ** "*.html" +++ dir / "assets" ** "_all.js",
     entryPoints,
-    { (name, min) => if (min) name.replace(".html", ".min.html") else name },
+    { (name, min) => if (min) name.replace(".", ".min.") else name },
     compile,
     options
   )
@@ -80,7 +88,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   override val projectSettings = Seq(
     directory := "templates",
     entryPoints <<= (sourceDirectory in Compile, directory){ (base, dir) =>
-      base / "assets" / dir ** "*.html"
+      base / "assets" / dir ** "*.html" +++ base / "assets" / dir ** "_all.js"
     },
     options := Nil
   )

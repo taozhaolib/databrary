@@ -22,10 +22,14 @@
 
   <!-- js -->
   @angular.map { obj =>
-    <script src="@routes.Assets.at("javascripts/app"+(if(play.api.Play.isDev(play.api.Play.current)){""}else{".min"})+".js")"></script>
+    <script src="@routes.SiteApi.appJs"></script>
 
     <script>
-      window.$play = {'object':@format.raw(obj.toString)};
+	window.$play = {'object':@format.raw(obj.toString)
+	    @requestOption.map { request =>
+		,'user':@format.raw(request.json.toString)
+	    }
+	};
     </script>
   }
 

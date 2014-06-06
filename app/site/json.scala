@@ -26,6 +26,7 @@ object JsonField {
 
 trait JsonValue {
   def js : JsValue
+  override def toString = js.toString
 }
 
 object JsonValue {
