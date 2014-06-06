@@ -70,7 +70,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       val adm = request.access.isAdmin
       val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
       val (file, fmt, fname) =
-	form.file.get.fold {
+	form.file.get.fold[(TemporaryFile, AssetFormat, Option[String])] {
 	  /* local file handling, for admin only: */
 	  val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
 	    form.file.withError("error.required")._throw)
@@ -79,28 +79,29 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	    form.localfile.withError("File not found")._throw
 	  val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
 	    form.format.withError("file.format.unknown", "unknown")._throw
-	  (store.TemporaryFileLinkOrCopy(file) : TemporaryFile, ffmt, name)
+	  (store.TemporaryFileLinkOrCopy(file), ffmt, Some(name))
 	} { file =>
 	  val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
 	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
-	  (file.ref, ffmt, file.filename)
+	  (file.ref, ffmt, Maybe(file.filename).opt)
 	}
-      val aname = form.name.get.flatten orElse Maybe(fname).opt
       for {
 	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
 	  form.container.withError("Invalid container ID")._throw))
 	asset <- fmt match {
 	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
 	    val probe = media.AV.probe(file.file)
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, aname, file)
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, fname, file)
 	  case _ =>
 	    if (fmt.isTranscodable) try {
 	      media.AV.probe(file.file)
 	    } catch { case e : media.AV.Error =>
 	      form.file.withError("file.invalid", e.getMessage)._throw
 	    }
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), aname, file)
+	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
 	}
+	// we do this separately in order to preserve the original "upload" filename audit:
+	_ <- form.name.get.foreachAsync(name => asset.change(name = Some(name)))
 	sa <- container.mapAsync(asset.link(_, form.position.get))
 	_ = if (fmt.isTranscodable && !form.timeseries.get)
 	  store.Transcode.start(asset)

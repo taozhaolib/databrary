@@ -141,8 +141,9 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def source = this
   override def sourceId = id
 
-  def creation : Future[Option[Timestamp]] =
-    SQL("SELECT asset_creation(?)").apply(id).single(SQLCols[Option[Timestamp]])
+  def creation : Future[(Option[Timestamp], Option[String])] =
+    SQL("SELECT audit_time, name FROM audit.asset WHERE id = ? AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1")
+      .apply(id).singleOpt(SQLCols[Option[Timestamp], Option[String]]).map(_.getOrElse((None, None)))
 
   /** Update the given values in the database and this object in-place. */
   def change(classification : Option[Classification.Value] = None, name : Option[Option[String]] = None) : Future[Boolean] = {
@@ -181,7 +182,14 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
-      "revisions" -> (opt => Asset.getRevisions(this).map(JsonRecord.map(_.json)))
+      "revisions" -> (opt => Asset.getRevisions(this).map(JsonRecord.map(_.json))),
+      "creation" -> (opt => if (checkPermission(Permission.EDIT))
+	creation.map { case (date, name) => JsonObject.flatten(
+	  date.map('date -> _),
+	  name.map('name -> _))
+	  .js
+	}
+      else async(JsNull))
     )
 }
 
