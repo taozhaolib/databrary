@@ -207,7 +207,7 @@ module.directive('volumeEditCitationsForm', [
 					form.removeFn(form, subform);
 				}
 
-				form.data.citations.splice(subform.$index, 1);
+				form.data.citation.splice(subform.$index, 1);
 			};
 
 			//
