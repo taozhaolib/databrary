@@ -14,17 +14,16 @@ module.config([
 		$httpProvider.defaults.cache = true;
 
 		$logProvider.debugEnabled(true);
+
+		module.constant('playData', window.$play);
 	}
 ]);
 
 module.run([
 	'$rootScope',
-	'playService',
 	'pageService',
-	function ($rootScope, playService, page) {
+	function ($rootScope, page) {
 		$rootScope.page = page;
-
-		// TODO: someday...
-		//		playService.run();
 	}
 ]);
+

@@ -7,25 +7,7 @@ module.config([
 
 		//
 
-		var appResolve = function (config) {
-			if (!config.resolve) {
-				config.resolve = {};
-			}
-
-			angular.extend(config.resolve, {
-				authPromise: [
-					'authService', function (auth) {
-						return auth.$promise;
-					}
-				]
-			});
-
-			return config;
-		};
-
-		//
-
-		$routeProvider.when('/', appResolve({
+		$routeProvider.when('/', {
 			controller: 'HomeView',
 			templateUrl: 'homeView.html',
 			resolve: {
@@ -48,20 +30,18 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.auth.$promise.then(function () {
-							if(page.auth.isAuthorized()) {
-								page.models.Volume.get({
-									id: 8,
-									access: ''
-								}, function (res) {
-									deferred.resolve(res);
-								}, function (res) {
-									deferred.reject(res);
-								});
-							} else {
-								deferred.resolve({});
-							}
-						});
+						if(page.auth.isAuthorized()) {
+							page.models.Volume.get({
+								id: 8,
+								access: ''
+							}, function (res) {
+								deferred.resolve(res);
+							}, function (res) {
+								deferred.reject(res);
+							});
+						} else {
+							deferred.resolve({});
+						}
 
 						return deferred.promise;
 					}
@@ -69,43 +49,43 @@ module.config([
 			},
 			reloadOnSearch: false,
 			authenticate: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/login', appResolve({
+		$routeProvider.when('/login', {
 			controller: 'LoginView',
 			templateUrl: 'loginView.html',
 			reloadOnSearch: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/register', appResolve({
+		$routeProvider.when('/register', {
 			controller: 'RegisterView',
 			templateUrl: 'registerView.html',
 			reloadOnSearch: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/password', appResolve({
+		$routeProvider.when('/password', {
 			controller: 'ResetView',
 			templateUrl: 'resetView.html',
 			reloadOnSearch: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/error', appResolve({
+		$routeProvider.when('/error', {
 			controller: 'ErrorView',
 			templateUrl: 'errorView.html',
 			reloadOnSearch: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/token/:id', appResolve({
+		$routeProvider.when('/token/:id', {
 			controller: (function () {
 				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
 			}()),
@@ -137,11 +117,11 @@ module.config([
 				]
 			},
 			reloadOnSearch: false
-		}));
+		});
 
 		//
 
-		$routeProvider.when('/search', appResolve({
+		$routeProvider.when('/search', {
 			controller: 'SearchView',
 			templateUrl: 'searchView.html',
 			resolve: {
@@ -161,11 +141,11 @@ module.config([
 			},
 			reloadOnSearch: false,
 			authenticate: true
-		}));
+		});
 
 		//
 
-		var partyView = appResolve({
+		var partyView = {
 			controller: 'PartyView',
 			templateUrl: 'partyView.html',
 			resolve: {
@@ -242,7 +222,7 @@ module.config([
 			},
 			reloadOnSearch: false,
 			authenticate: true
-		});
+		};
 
 		$routeProvider.when('/party/:id', partyView);
 		$routeProvider.when('/profile', partyView);
@@ -308,12 +288,12 @@ module.config([
 			authenticate: true
 		};
 
-		$routeProvider.when('/volume/create', appResolve(volumeEdit));
-		$routeProvider.when('/volume/:id/edit', appResolve(volumeEdit));
+		$routeProvider.when('/volume/create', volumeEdit);
+		$routeProvider.when('/volume/:id/edit', volumeEdit);
 
 		//
 
-		$routeProvider.when('/volume/:id', appResolve({
+		$routeProvider.when('/volume/:id', {
 			controller: 'VolumeView',
 			templateUrl: 'volumeView.html',
 			resolve: {
@@ -347,7 +327,7 @@ module.config([
 			},
 			reloadOnSearch: false,
 			authenticate: true
-		}));
+		});
 
 		//
 
@@ -360,29 +340,27 @@ module.config([
 module.run([
 	'pageService', function (page) {
 		page.$rootScope.$on('$routeChangeStart', function (event, next) {
-			page.auth.$promise.then(function () {
-				if (page.auth.isLoggedIn()) {
-					if (page.auth.isUnauthorized()) {
-						if (!next.$$route) {
-							page.$location.url(page.router.register());
-						}
-
-						var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
-
-						if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
-							page.$location.url(page.router.register());
-						}
-					} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {
-						page.$location.url(page.router.index());
-					}
-				} else {
-					if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
+			if (page.auth.isLoggedIn()) {
+				if (page.auth.isUnauthorized()) {
+					if (!next.$$route) {
 						page.$location.url(page.router.register());
-					} else if (next.authenticate) {
-						page.$location.url(page.router.index());
 					}
+
+					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
+
+					if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
+						page.$location.url(page.router.register());
+					}
+				} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {
+					page.$location.url(page.router.index());
 				}
-			});
+			} else {
+				if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
+					page.$location.url(page.router.register());
+				} else if (next.authenticate) {
+					page.$location.url(page.router.index());
+				}
+			}
 		});
 	}
 ]);

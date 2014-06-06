@@ -25,9 +25,10 @@
     <script src="@routes.SiteApi.appJs"></script>
 
     <script>
-	window.$play = {'object':@format.raw(obj.toString)
+	window.$play = {
+        object: @format.raw(obj.toString),
 	    @requestOption.map { request =>
-		,'user':@format.raw(request.json.toString)
+		user: @format.raw(request.json.toString),
 	    }
 	};
     </script>

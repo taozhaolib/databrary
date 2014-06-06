@@ -4,13 +4,12 @@ module.factory('authService', [
 	'$route',
 	'$cacheFactory',
 	'typeService',
-	'$window',
-	'$q',
 	'messageService',
 	'constantService',
 	'routerService',
 	'Party',
-	function ($rootScope, $location, $route, $cacheFactory, typeService, $window, $q, messages, constants, router, Party) {
+	'playData',
+	function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, playData) {
 		var auth = {};
 
 		//
@@ -38,13 +37,9 @@ module.factory('authService', [
 			}
 		};
 
-		var deferred = $q.defer();
-		auth.$promise = deferred.promise;
-
 		auth.updateUser = function (user) {
 			if (user) {
-				auth.parseUser(user);
-				return deferred.resolve();
+				return auth.parseUser(user);
 			}
 
 			Party.user(function (data) {
@@ -54,16 +49,12 @@ module.factory('authService', [
 				else {
 					auth.parseUser(data);
 				}
-
-				deferred.resolve();
 			}, function () {
 				auth.parseUser(undefined);
-
-				deferred.resolve();
 			});
 		};
 
-		auth.updateUser();
+		auth.updateUser(playData.user);
 
 		//
 
@@ -146,7 +137,7 @@ module.factory('authService', [
 		};
 
 		auth.hasToken = function () {
-			return $window.$play && $window.$play.object && typeService.isToken($window.$play.object);
+			return playData.object && types.isToken(playData.object);
 		};
 
 		auth.getToken = function () {
@@ -154,15 +145,15 @@ module.factory('authService', [
 				return;
 			}
 
-			return $window.$play.object;
+			return playData.object;
 		};
 
 		auth.isPasswordReset = function () {
-			return auth.hasToken() && $window.$play.object.reset;
+			return auth.hasToken() && playData.object.reset;
 		};
 
 		auth.isPasswordPending = function () {
-			return auth.hasToken() && !$window.$play.object.reset;
+			return auth.hasToken() && !playData.object.reset;
 		};
 
 		auth.isUnauthorized = function () {

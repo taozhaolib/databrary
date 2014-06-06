@@ -1,5 +1,5 @@
 module.factory('constantService', [
-	'$http', 'constantData', function ($http, constantData) {
+	'$http', '$log', 'constantData', function ($http, $log, constantData) {
 		var constants = {
 			data: constantData,
 			regex: {
@@ -88,7 +88,7 @@ module.factory('constantService', [
 			var msg = constants.data.messages[key];
 
 			if (!msg) {
-			// warning? error? placeholder.
+				$log.info('Message key ['+key+'] is undefined.');
 				return '[' + key + ']';
 			}
 
