@@ -14,23 +14,28 @@ import site._
 import models._
 
 object SiteApi extends SiteController {
-  private val startTime = new Timestamp
   private def publicResource(name : String, ext : String) =
     Play.resourceAsStream("/public/" + name + (if (Play.isDev) "." else ".min.") + ext)
     .fold(
       throw new RuntimeException("missing: " + name))(
       org.apache.commons.io.IOUtils.toString _)
 
-  private def static[A : play.api.http.Writeable](name : String, content : A) = {
-    val etag = name + ":" + content.hashCode
-    val result = Ok(content)
-      .withHeaders(
-	(ETAG, HTTP.quote(etag)),
-	(LAST_MODIFIED, HTTP.date(startTime)),
-	(CACHE_CONTROL, if (Play.isProd) "public, max-age=86400" else "no-cache"))
-    Action { implicit request =>
-      if (HTTP.notModified(etag, startTime)) NotModified
-      else result
+  private def static[A : play.api.http.Writeable](name : String, content : => A) = {
+    if (Play.isDev)
+      Action(request => Ok(content))
+    else {
+      val data = content
+      val etag = name + ":" + data.hashCode
+      val now = new Timestamp
+      val result = Ok(data)
+	.withHeaders(
+	  (ETAG, HTTP.quote(etag)),
+	  (LAST_MODIFIED, HTTP.date(now)),
+	  (CACHE_CONTROL, if (Play.isProd) "public, max-age=86400" else "no-cache"))
+      Action { implicit request =>
+	if (HTTP.notModified(etag, now)) NotModified
+	else result
+      }
     }
   }
 
