@@ -41,6 +41,7 @@ object ApplicationBuild extends Build {
 
   val main = Project(appName, file("."))
     .enablePlugins(play.PlayScala)
+    .aggregate(macros, dbrary, media, logbackAccess)
     .dependsOn(macros, dbrary, media, logbackAccess)
     .settings(
       libraryDependencies ++= appDependencies,
