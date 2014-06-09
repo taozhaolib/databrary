@@ -64,47 +64,66 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       }
   }
 
+  private def create(form : AssetController.AssetUploadForm) : Future[Asset] = {
+    implicit val request = form.request
+    val adm = request.access.isAdmin
+    val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
+    val (file, fmt, fname) =
+      form.file.get.fold[(TemporaryFile, AssetFormat, Option[String])] {
+	/* local file handling, for admin only: */
+	val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
+	  form.file.withError("error.required")._throw)
+	val name = file.getName
+	if (!file.isFile)
+	  form.localfile.withError("File not found")._throw
+	val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
+	  form.format.withError("file.format.unknown", "unknown")._throw
+	(store.TemporaryFileLinkOrCopy(file), ffmt, Some(name))
+      } { file =>
+	val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
+	  form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
+	(file.ref, ffmt, Maybe(file.filename).opt)
+      }
+    for {
+      asset <- fmt match {
+	case fmt : TimeseriesFormat if adm && form.timeseries.get =>
+	  val probe = media.AV.probe(file.file)
+	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, fname, file)
+	case _ =>
+	  if (fmt.isTranscodable) try {
+	    media.AV.probe(file.file)
+	  } catch { case e : media.AV.Error =>
+	    form.file.withError("file.invalid", e.getMessage)._throw
+	  }
+	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
+      }
+      // we do this separately in order to preserve the original "upload" filename audit:
+      _ <- form.name.get.foreachAsync(name => asset.change(name = Some(name)))
+      _ = if (fmt.isTranscodable && !form.timeseries.get)
+	store.Transcode.start(asset)
+    } yield (asset)
+  }
+
   def upload(v : models.Volume.Id) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.UploadForm()._bind
-      val adm = request.access.isAdmin
-      val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
-      val (file, fmt, fname) =
-	form.file.get.fold[(TemporaryFile, AssetFormat, Option[String])] {
-	  /* local file handling, for admin only: */
-	  val file = store.Stage.file(form.localfile.get.filter(_ => adm) getOrElse
-	    form.file.withError("error.required")._throw)
-	  val name = file.getName
-	  if (!file.isFile)
-	    form.localfile.withError("File not found")._throw
-	  val ffmt = ifmt orElse AssetFormat.getFilename(name) getOrElse
-	    form.format.withError("file.format.unknown", "unknown")._throw
-	  (store.TemporaryFileLinkOrCopy(file), ffmt, Some(name))
-	} { file =>
-	  val ffmt = ifmt orElse AssetFormat.getFilePart(file) getOrElse
-	    form.file.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
-	  (file.ref, ffmt, Maybe(file.filename).opt)
-	}
       for {
 	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
 	  form.container.withError("Invalid container ID")._throw))
-	asset <- fmt match {
-	  case fmt : TimeseriesFormat if adm && form.timeseries.get =>
-	    val probe = media.AV.probe(file.file)
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, fname, file)
-	  case _ =>
-	    if (fmt.isTranscodable) try {
-	      media.AV.probe(file.file)
-	    } catch { case e : media.AV.Error =>
-	      form.file.withError("file.invalid", e.getMessage)._throw
-	    }
-	    models.Asset.create(request.obj, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
-	}
-	// we do this separately in order to preserve the original "upload" filename audit:
-	_ <- form.name.get.foreachAsync(name => asset.change(name = Some(name)))
+	asset <- create(form)
 	sa <- container.mapAsync(asset.link(_, form.position.get))
-	_ = if (fmt.isTranscodable && !form.timeseries.get)
-	  store.Transcode.start(asset)
+      } yield (sa.fold(result(asset))(SlotAssetController.result _))
+    }
+
+  def replace(o : models.Asset.Id) =
+    Action(o, Permission.CONTRIBUTE).async { implicit request =>
+      val form = new AssetController.ReplaceForm()._bind
+      for {
+	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
+	  form.container.withError("Invalid container ID")._throw))
+	asset <- create(form)
+	_ <- request.obj.supersede(asset)
+	sa <- container.mapAsync(asset.link(_, form.position.get))
       } yield (sa.fold(result(asset))(SlotAssetController.result _))
     }
 
@@ -116,11 +135,12 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 }
 
 object AssetController extends AssetController {
-  sealed abstract class AssetForm(action : Call)(implicit request : RequestObject.Site[_])
+  sealed abstract class AssetForm(action : Call)(implicit val request : RequestObject.Site[_])
     extends HtmlForm[AssetForm](action,
       views.html.asset.edit(_)) {
     def actionName : String
     def formName : String = actionName + " Asset"
+    def volume : Volume
 
     val name = Field(OptionMapping(Mappings.maybeText))
     val classification = Field(OptionMapping(Mappings.enum(Classification)))
@@ -128,24 +148,47 @@ object AssetController extends AssetController {
     val position = Field(Forms.optional(Forms.of[Offset]))
   }
 
+  sealed trait AssetUpdateForm extends AssetForm {
+    def asset : Asset
+    def volume = asset.volume
+  }
+
   final class ChangeForm(implicit request : Request[_])
-    extends AssetForm(routes.AssetHtml.update(request.obj.id)) {
+    extends AssetForm(routes.AssetHtml.update(request.obj.id))
+    with AssetUpdateForm {
     def actionName = "Update"
     override def formName = "Edit Asset"
+    def asset = request.obj
     name.fill(Some(request.obj.name))
     classification.fill(Some(request.obj.classification))
     container.fill(None)
     position.fill(None)
   }
 
-  final class UploadForm(implicit request : VolumeController.Request[_])
-    extends AssetForm(routes.AssetHtml.upload(request.obj.id)) {
-    classification.fill(Some(Classification.IDENTIFIED))
-    def actionName = "Upload"
+  sealed trait AssetUploadForm extends AssetForm {
     val format = Field(Forms.optional(Forms.of[AssetFormat.Id]))
     val timeseries = Field(Forms.boolean)
     val localfile = Field(Forms.optional(Forms.nonEmptyText))
     val file = OptionalFile()
+  }
+
+  final class UploadForm(implicit request : VolumeController.Request[_])
+    extends AssetForm(routes.AssetHtml.upload(request.obj.id))
+    with AssetUploadForm {
+    def actionName = "Upload"
+    def volume = request.obj
+    classification.fill(Some(Classification.IDENTIFIED))
+  }
+
+  final class ReplaceForm(implicit request : Request[_])
+    extends AssetForm(routes.AssetHtml.replace(request.obj.id))
+    with AssetUpdateForm with AssetUploadForm {
+    def actionName = "Replace"
+    def asset = request.obj
+    name.fill(Some(request.obj.name))
+    classification.fill(Some(request.obj.classification))
+    container.fill(None)
+    position.fill(None)
   }
 }
 
