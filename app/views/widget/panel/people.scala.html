@@ -1,13 +1,11 @@
 @(access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
 
-@import play.api.templates.HtmlFormat._
-
 @widget.panel.raw("people", "")(Messages("volume.access.title")){
     <div class="col-full">
         <div class="row">
 	@groupBy(access, (va : VolumeAccess) => va.access).map { case (permission, volumeAccesses) =>
             @volumeAccesses.map { a =>
-                @widget.portrait.maximal(a.party, caption = raw(display.permissionToRole(permission)))
+                @widget.portrait.maximal(a.party, caption = format.raw(display.permissionToRole(permission)))
             }
         }
         </div>

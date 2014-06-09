@@ -9,7 +9,10 @@ final class TemporaryFileLinkOrCopy(file : File) extends Files.TemporaryFile(fil
     java.nio.file.Files.createLink(to.toPath, file.toPath)
   }
   private[this] def copyTo(to : File, replace : Boolean = false) {
-    Files.copyFile(file, to, copyAttributes = false, replaceExisting = replace)
+    if (replace)
+      java.nio.file.Files.copy(file.toPath, to.toPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+    else
+      java.nio.file.Files.copy(file.toPath, to.toPath)
   }
   override def moveTo(to : File, replace : Boolean = false) {
     try {

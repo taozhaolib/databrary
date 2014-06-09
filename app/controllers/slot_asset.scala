@@ -9,7 +9,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
     RequestObject.check(models.SlotAsset.get(a, i, segment)(_), p)
 
   private[controllers] def Action(i : Container.Id, segment : Segment, a : Asset.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(i, segment, a, p)
+    SiteAction andThen action(i, segment, a, p)
 
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {

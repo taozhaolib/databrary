@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (String,String)*)(title: String = "")(body: Html)
+@(id: String, classes: String)(title: String = "")(body: Html)
 
-<section panel id="panel_@id" class="panel panel_@id @classes" @El.attrToHtml(attr)>
+<section panel id="panel_@id" class="panel panel_@id @classes">
     <div class="wrap">
         <div class="row">
         @if(title.nonEmpty) {

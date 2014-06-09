@@ -4,35 +4,31 @@ package views.html
  * The file needs to be sorted to views/script/
  */
 
-import play.api.templates.HtmlFormat._
+import play.twirl.api.{Html,HtmlFormat}
 import site._
 import models._
 import controllers._
 
-case class PathCrumb(name: String, url: Option[play.api.mvc.Call] = None, li: Boolean = false) {
+final class PathCrumb(name : String, url : play.api.mvc.Call, li : Boolean = false) {
   override def toString = name
 
-  def toHtml = {
-    val r = raw("")
-    if(li) r += raw("<li>")
-    r += raw("<a")
-    r += raw(" href='" + url.getOrElse("").toString + "'")
-    r += raw(">")
-    r += escape(name)
-    r += raw("</a>")
-    if(li) r += raw("</li>")
-    r
+  def toHtml : Html = {
+    import HtmlFormat._
+    val l = collection.immutable.Seq(
+      raw("<a href='"),
+      raw(url.toString),
+      raw("'>"),
+      escape(name),
+      raw("</a>"))
+    fill(if (li) raw("<li>") +: l :+ raw("</li>") else l)
   }
 }
 
 object PathCrumb {
-  def apply(name: String, url: play.api.mvc.Call): PathCrumb = PathCrumb(name, Some(url))
-
-  def apply(x: SitePage)(implicit site: Site): PathCrumb = PathCrumb(x.pageCrumbName.getOrElse(x.pageName), Some(x.pageURL))
-  def apply(x: SitePage, li: Boolean)(implicit site: Site): PathCrumb = PathCrumb(x.pageCrumbName.getOrElse(x.pageName), Some(x.pageURL), li)
+  def apply(x : SitePage, li : Boolean = false)(implicit site : Site): PathCrumb = new PathCrumb(x.pageCrumbName.getOrElse(x.pageName), x.pageURL, li)
 }
 
-final class Path private(parts: Seq[PathCrumb]) extends scala.collection.generic.SeqForwarder[PathCrumb] {
+final class Path private(parts : collection.immutable.Seq[PathCrumb]) extends scala.collection.generic.SeqForwarder[PathCrumb] {
   def underlying = parts
 
   def ++(t: Path) = new Path(parts ++ t)
@@ -41,16 +37,10 @@ final class Path private(parts: Seq[PathCrumb]) extends scala.collection.generic
 
   override def toString = parts.mkString(" :: ")
 
-  def toHtml = parts match {
-    case h :: l => l.foldLeft(h.toHtml) {
-      (r, x) => r += x.toHtml
-    }
-    case Nil => raw("")
-  }
+  def toHtml : Html = HtmlFormat.fill(parts.map(_.toHtml))
 }
 
 object Path {
-  def apply(c: PathCrumb*): Path = new Path(c)
-
-  def apply(x: SitePage)(implicit site: Site): Path = x.pageParent.fold(Path())(Path(_)) :+ PathCrumb(x, true)
+  def apply(c : PathCrumb*) : Path = new Path(collection.immutable.Seq(c : _*))
+  def apply(x : SitePage)(implicit site : Site) : Path = x.pageParent.fold(Path())(Path(_)) :+ PathCrumb(x, true)
 }

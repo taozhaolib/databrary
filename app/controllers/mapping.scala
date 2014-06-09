@@ -24,7 +24,8 @@ object EmptyMapping extends Mapping[Unit] {
   val mappings = Nil
   val constraints = Nil
   def bind(data : Map[String, String]) : Either[Seq[FormError], Unit] = Right(())
-  def unbind(value : Unit) : (Map[String, String], Seq[FormError]) = (Map.empty, Nil)
+  def unbind(value : Unit) : Map[String, String] = Map.empty
+  def unbindAndValidate(value : Unit) : (Map[String, String], Seq[FormError]) = (Map.empty, Nil)
   def withPrefix(prefix : String) : Mapping[Unit] = this
   def verifying(constraints : Constraint[Unit]*) : Mapping[Unit] = this
 }
@@ -37,7 +38,8 @@ final case class NoMapping[T]() extends MaybeMapping[T] {
   val mappings = Nil
   val constraints = Nil
   def bind(data : Map[String, String]) : Either[Seq[FormError], Option[T]] = Right(None)
-  def unbind(value : Option[T]) : (Map[String, String], Seq[FormError]) = 
+  def unbind(value : Option[T]) : Map[String, String] = Map.empty
+  def unbindAndValidate(value : Option[T]) : (Map[String, String], Seq[FormError]) = 
     Map.empty -> value.fold[Seq[FormError]](Nil)(_ => Seq(FormError("", "non-empty NoMapping value")))
   def withPrefix(prefix : String) : Mapping[Option[T]] = this
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] = this
@@ -53,7 +55,9 @@ final case class SomeMapping[T](wrapped : Mapping[T]) extends MaybeMapping[T] {
   def bind(data : Map[String, String]) : Either[Seq[FormError], Option[T]] =
     wrapped.bind(data).right.map(Some(_))
   def unbind(value : Option[T]) =
-    value.fold(Map.empty[String,String] -> Seq(FormError(key, "empty SomeMapping value")))(wrapped.unbind(_))
+    value.fold(Map.empty[String,String])(wrapped.unbind(_))
+  def unbindAndValidate(value : Option[T]) =
+    value.fold(Map.empty[String,String] -> Seq(FormError(key, "empty SomeMapping value")))(wrapped.unbindAndValidate(_))
   def withPrefix(prefix : String) : Mapping[Option[T]] = 
     SomeMapping[T](wrapped.withPrefix(prefix))
   def verifying(constraints : Constraint[Option[T]]*) : Mapping[Option[T]] =
@@ -78,10 +82,12 @@ final case class OptionMapping[T](wrapped : Mapping[T], val constraints : Seq[Co
     else
       Right(None)
   }
-  def unbind(value : Option[T]) = {
+  def unbind(value : Option[T]) =
+    value.fold[Map[String,String]](Map.empty)(wrapped.unbind(_))
+  def unbindAndValidate(value : Option[T]) = {
     val (m, e) = value.fold[(Map[String,String],Seq[FormError])](
       Map.empty -> Nil)(
-      wrapped.unbind(_))
+      wrapped.unbindAndValidate(_))
     (m, e ++ collectErrors(value))
   }
   def withPrefix(prefix : String) : Mapping[Option[T]] = 
@@ -104,6 +110,8 @@ final case class EitherMapping[L,R](leftMapping : Mapping[L], rightMapping : Map
   }
   def unbind(value : Either[L,R]) =
     value.fold(left.unbind(_), right.unbind(_))
+  def unbindAndValidate(value : Either[L,R]) =
+    value.fold(left.unbindAndValidate(_), right.unbindAndValidate(_))
   def withPrefix(prefix : String) : Mapping[Either[L,R]] =
     addPrefix(prefix).fold(this)(k => copy(key = k))
   def verifying(addConstraints : Constraint[Either[L,R]]*) : Mapping[Either[L,R]] =

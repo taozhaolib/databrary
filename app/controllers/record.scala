@@ -19,7 +19,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     RequestObject.check(models.Record.get(i)(_), p)
 
   protected def Action(i : models.Record.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(i, p)
+    SiteAction andThen action(i, p)
 
   protected final val categoryMapping : Mapping[RecordCategory] =
     Forms.of[RecordCategory.Id]
@@ -32,7 +32,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       .verifying(Messages("measure.unknown"), _.isDefined)
       .transform(_.get, Some(_))
 
-  private[this] def editResult(implicit request : Request[_]) : SimpleResult =
+  private[this] def editResult(implicit request : Request[_]) : Result =
     if (request.isApi) result(request.obj)
     else Redirect(routes.RecordHtml.edit(request.obj.id))
 

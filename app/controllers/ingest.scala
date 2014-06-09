@@ -13,7 +13,7 @@ import ingest._
 
 object IngestController extends SiteController with HtmlController {
   private def Action(i : models.Volume.Id) =
-    SiteAction.rootAccess(Permission.ADMIN) ~> VolumeController.action(i, Permission.EDIT)
+    SiteAction.rootAccess(Permission.ADMIN) andThen VolumeController.action(i, Permission.EDIT)
 
   trait CSVForm extends StructForm {
     protected def CSVFile() : File = File()

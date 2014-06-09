@@ -37,18 +37,20 @@ abstract class StructForm(val _action : Call) {
     def fill(v : T) : Field[T] = {
       value = v
       if (name != null)
-	_data ++= unbind._1
+	_data ++= unbind
       this
     }
     private[this] lazy val mapping : Mapping[T] = map.withPrefix(name.ensuring(_ != null))
     private[StructForm] def mappings : Seq[Mapping[_]] = mapping.mappings
     private[StructForm] def bind(data : Map[String,String]) : Option[Seq[FormError]] =
       mapping.bind(data).fold(Some(_), v => { value = v ; None })
-    private[StructForm] def unbind : (Map[String, String], Seq[FormError]) =
+    private[StructForm] def unbind : Map[String, String] =
+      if (value == null) Map.empty[String,String] else mapping.unbind(value)
+    private[StructForm] def unbindAndValidate : (Map[String, String], Seq[FormError]) =
       if (value == null)
 	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
       else
-	mapping.unbind(value)
+	mapping.unbindAndValidate(value)
   }
 
   protected def Const[T](x : T) : Field[T] =
@@ -118,8 +120,10 @@ abstract class StructForm(val _action : Call) {
       else
         Left(l.flatten)
     }
-    def unbind(value : self.type) : (Map[String, String], Seq[FormError]) = {
-      val (m, e) = _fields.map(_.unbind).unzip
+    def unbind(value : self.type) : Map[String, String] =
+      _fields.foldLeft(Map.empty[String, String])(_ ++ _.unbind)
+    def unbindAndValidate(value : self.type) : (Map[String, String], Seq[FormError]) = {
+      val (m, e) = _fields.map(_.unbindAndValidate).unzip
       (m.fold(Map.empty[String, String])(_ ++ _), e.flatten[FormError])
     }
     val mappings : Seq[Mapping[_]] =
@@ -143,13 +147,13 @@ abstract class StructForm(val _action : Call) {
     }
     override def fill(value : self.type) : Form[self.type] = {
       _data.clear
-      _data ++= mapping.unbind(value)._1
+      _data ++= mapping.unbind(value)
       new form(Some(value))
     }
     override def fillAndValidate(value : self.type) : Form[self.type] = {
       _data.clear
       _errors.clear
-      val (data, errors) = mapping.unbind(value)
+      val (data, errors) = mapping.unbindAndValidate(value)
       _data ++= data
       _errors ++= errors
       new form(Some(value))
@@ -165,7 +169,7 @@ abstract class StructForm(val _action : Call) {
   }
   def apply() = new form()
 
-  private[this] lazy val _data : mutable.Map[String, String] = mutable.Map(_mapping.unbind(self)._1.toSeq : _*)
+  private[this] lazy val _data : mutable.Map[String, String] = mutable.Map(_mapping.unbind(self).toSeq : _*)
   private[this] val _errors : mutable.ListBuffer[FormError] = mutable.ListBuffer.empty[FormError]
   private[this] val _constraints : mutable.ListBuffer[Constraint[self.type]] = mutable.ListBuffer.empty[Constraint[self.type]]
   final def hasErrors = _errors.nonEmpty
@@ -212,8 +216,8 @@ abstract class FormView(action : Call) extends StructForm(action) {
 
 abstract class HtmlFormView(action : Call) extends FormView(action) {
   def _view : Future[HtmlFormat.Appendable]
-  final def Ok : Future[SimpleResult] = _view.map(Results.Ok(_))
-  final def Bad(implicit request : SiteRequest[_]) : Future[SimpleResult] = _exception.result
+  final def Ok : Future[Result] = _view.map(Results.Ok(_))
+  final def Bad(implicit request : SiteRequest[_]) : Future[Result] = _exception.result
   final def _exception = new FormException(new form()) {
     def resultHtml(implicit request : SiteRequest[_]) = _view.map(Results.BadRequest(_))
   }

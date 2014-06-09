@@ -20,7 +20,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     RequestObject.check(models.Asset.get(i)(_), p)
 
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
-    SiteAction ~> action(i, p)
+    SiteAction andThen action(i, p)
 
   def update(o : models.Asset.Id) =
     Action(o, Permission.EDIT).async { implicit request =>
@@ -33,7 +33,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       } yield (result(request.obj))
     }
 
-  private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
+  private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
     val tag = asset.etag
     /* Assuming assets are immutable, any if-modified-since header is good enough */
     if (HTTP.notModified(tag, new Timestamp(0)))
@@ -57,7 +57,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
         Some(ETAG -> HTTP.quote(tag)),
         Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
       ).flatten
-        SimpleResult(
+        Result(
           header = ResponseHeader(range.fold(OK)(r => if (r._1 >= size) REQUESTED_RANGE_NOT_SATISFIABLE else PARTIAL_CONTENT),
             Map(headers : _*)),
           body = subdata)
@@ -153,7 +153,7 @@ object AssetHtml extends AssetController with HtmlController {
   import AssetController._
 
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
-    request.obj.slot.map(_.fold[SimpleResult](
+    request.obj.slot.map(_.fold[Result](
       throw NotFoundException /* TODO */)(
       sa => Redirect(sa.inContainer.pageURL)))
   }
@@ -172,7 +172,7 @@ object AssetHtml extends AssetController with HtmlController {
     }
 
   def transcode(a : models.Asset.Id, stop : Boolean = false) =
-    (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)) { implicit request =>
+    (SiteAction.rootAccess(Permission.ADMIN) andThen action(a, Permission.EDIT)) { implicit request =>
       if (stop) store.Transcode.stop(request.obj.id)
       else      store.Transcode.start(request.obj)
       Ok("transcoding")

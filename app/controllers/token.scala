@@ -37,7 +37,7 @@ private[controllers] sealed class TokenController extends SiteController {
     val form = new TokenController.PasswordForm(a)._bind
     models.LoginToken.get(form.token.get).flatMap(_
       .filter(t => t.valid && form.auth.get.equals(t.auth) && t.password && t.accountId === a)
-      .fold[Future[SimpleResult]](ForbiddenException.result) { token =>
+      .fold[Future[Result]](ForbiddenException.result) { token =>
 	form.checkPassword(token.account)
 	form.orThrow
 	token.account.change(password = form.cryptPassword).flatMap { _ =>

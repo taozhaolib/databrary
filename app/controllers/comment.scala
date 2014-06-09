@@ -8,7 +8,7 @@ import models._
 
 private[controllers] sealed class CommentController extends SiteController {
   def post(i : Container.Id, segment : Segment, parent : Option[Comment.Id] = None) =
-    (SiteAction.access(Permission.VIEW) ~> SlotController.action(i, segment)).async { implicit request =>
+    SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new CommentController.SlotForm()._bind
       for {
 	_ <- request.obj.postComment(form.text.get, parent orElse form.parent.get)(request.asInstanceOf[AuthSite])

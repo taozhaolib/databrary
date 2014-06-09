@@ -3,7 +3,7 @@ package views.html
  * The file needs to be sorted to views/script/
  */
 
-import play.api.templates.HtmlFormat._
+import play.twirl.api.HtmlFormat._
 import org.joda.time.format.DateTimeFormat
 import macros._
 import site._

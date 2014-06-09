@@ -18,7 +18,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     RequestObject.check(models.Volume.get(i)(_), p)
 
   private[controllers] def Action(i : models.Volume.Id, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(i, p)
+    SiteAction andThen action(i, p)
 
   protected def searchResults(implicit request : SiteRequest[AnyContent]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
     val form = new VolumeController.SearchForm()._bind
@@ -80,9 +80,9 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   }
 
   protected def ContributeAction(e : Option[models.Party.Id]) =
-    PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
-      new ActionHandler[PartyController.Request] {
-        protected def handle[A](request : PartyController.Request[A]) =
+    PartyController.Action(e, Some(Permission.CONTRIBUTE)) andThen
+      new ActionFilter[PartyController.Request] {
+        protected def filter[A](request : PartyController.Request[A]) =
 	  request.obj.party.access.map(a => if (a.group < Permission.VIEW) Some(Forbidden) else None)
       }
 
