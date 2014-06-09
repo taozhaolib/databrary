@@ -51,7 +51,7 @@ module.directive('volumeEditMaterialsForm', [
 								form.successFn(form, res);
 							}
 
-							subform.$setPristine();
+							subform.form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
 							subform.messages.addError({
