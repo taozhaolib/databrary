@@ -17,7 +17,7 @@ object ApplicationBuild extends Build {
 
   val macros = Project("macros", file("macros")).settings(
     libraryDependencies +=
-      "org.scala-lang" % "scala-reflect" % "2.10.4"
+      "org.scala-lang" % "scala-reflect" % "2.11.1"
   )
 
   val dbrary = Project("dbrary", file("dbrary")).dependsOn(macros).settings(
