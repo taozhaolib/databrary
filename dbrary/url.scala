@@ -47,7 +47,8 @@ object url extends URLStreamHandlerFactory {
     case e : Error if e.getMessage.equals("factory already defined") => () /* this defeats automatic reloading, but that's probably okay */
   }
 
-  def parse(s : String) : Option[URL] = {
+  def parse(i : String) : Option[URL] = {
+    val s = i.trim
     val doi = s.stripPrefix("http://dx.doi.org/")
     if (DOIHandler.validDOI(doi))
       Some(new URL("doi", null, doi))
