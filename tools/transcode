@@ -29,7 +29,7 @@ LOG=$aid.log
 
 if [[ -n $kill ]] ; then
 	if [[ -n $hpc ]] ; then
-		qdel $kill.hpc0.local
+		qdel $kill
 	else
 		kill $kill
 	fi
@@ -50,7 +50,7 @@ elif [[ -z $PBS_JOBNAME ]] ; then
 	exec >$LOG 2>&1
 	PID=$$
 else
-	PID=${PBS_JOBID%%.hpc0.local}
+	PID=${PBS_JOBID%%.*}
 fi
 
 ls -l $aid $aid.*
