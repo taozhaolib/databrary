@@ -21,7 +21,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
         else
           AssetController.assetResult(ts.sample(off))
       case _ =>
-        if (!offset.fold(_ => true, _ == 0))
+        if (!offset.fold(_ => true, _ == Offset.ZERO))
           ANotFound
         else
           AssetController.assetResult(request.obj)
