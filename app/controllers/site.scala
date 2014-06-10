@@ -111,8 +111,6 @@ object RequestObject {
   }
   def check[O <: HasPermission](get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
     getter(get) andThen permission(perm)
-  def check[O <: InVolume](v : models.Volume.Id, get : SiteRequest[_] => Future[Option[O]], perm : Permission.Value = Permission.VIEW) =
-    getter(get(_).map(_.filter(_.volumeId === v))) andThen permission(perm)
 
   def cast(request : SiteRequest[_]) : Option[Any] =
     request match {

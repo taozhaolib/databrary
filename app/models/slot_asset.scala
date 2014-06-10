@@ -208,5 +208,5 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     Excerpt.getThumb(slot).flatMap(_.orElseAsync(
       SlotAssetSlot.getThumb(slot)))
 
-  private final val fileNamePad = "[\0-,/?\\\\]+".r
+  private final val fileNamePad = "[\u0000-,/?\\\\]+".r
 }

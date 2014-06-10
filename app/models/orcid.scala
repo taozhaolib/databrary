@@ -8,10 +8,10 @@ import dbrary._
   * A 16 character string of a particular format, with 15 digits and one checksum which may be a digit or 'X'?
   * They are stored as a string of length 16, but displayed with dashes.
   */
-final class Orcid private (val orcid : String) extends scala.collection.immutable.WrappedString(orcid)
+final class Orcid private (val orcid : String)
 {
   /** Determine if this is a valid ORCID. */
-  def valid : Boolean = lengthCompare(16) == 0 && {
+  def valid : Boolean = orcid.lengthCompare(16) == 0 && {
     val (b, cs) = orcid.splitAt(15)
     val d = b.map(_.asDigit)
     d.forall(i => i >= 0 && i < 10) && {

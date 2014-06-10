@@ -25,28 +25,28 @@ abstract class PGEnum(name : String) extends Enumeration {
 
 object PGEnum {
   import scala.language.experimental.macros
-  import scala.reflect.macros.Context
+  import scala.reflect.macros.blackbox.Context
   import Macro._
 
   /* This is not very useful as it can only create structural values rather than top-level objects */
-  def make(enumName : String) = macro makeImpl
+  def make(enumName : String) : PGEnum = macro makeImpl
 
-  def makeImpl(c : Context)(enumName : c.Expr[String]) : c.Expr[Any] = {
+  def makeImpl(c : Context)(enumName : c.Expr[String]) : c.Expr[PGEnum] = {
     import c.universe._
     val name = getString(c)(enumName)
     val labels = Connection.Static.enumLabels(name)
-    val obj = newTermName(name)
+    val obj = TermName(name)
 
     c.Expr(Block(
       List(ModuleDef(Modifiers(), obj, Template(
         List(Ident(c.mirror.staticClass("dbrary.PGEnum"))),
-        emptyValDef,
-        DefDef(Modifiers(), nme.CONSTRUCTOR, Nil, List(Nil), TypeTree(), Block(
-          List(Apply(Select(Super(This(tpnme.EMPTY), tpnme.EMPTY), nme.CONSTRUCTOR), 
+        noSelfType,
+        DefDef(Modifiers(), termNames.CONSTRUCTOR, Nil, List(Nil), TypeTree(), Block(
+          List(Apply(Select(Super(This(typeNames.EMPTY), typeNames.EMPTY), termNames.CONSTRUCTOR), 
             List(enumName.tree))),
           Literal(Constant(()))))
         :: labels.map(l => 
-          ValDef(Modifiers(), newTermName(l), TypeTree(), Select(This(""), newTermName("Value"))))
+          ValDef(Modifiers(), TermName(l), TypeTree(), Select(This(TypeName("")), TermName("Value"))))
       ))),
       Ident(obj)
     ))

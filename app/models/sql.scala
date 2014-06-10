@@ -16,7 +16,7 @@ object SQLTerm {
 }
 
 /** Parameters (names and values) that may be passed to SQL queries. */
-private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs(terms) {
+final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs(terms) {
   def ++(other : SQLTerms) : SQLTerms = new SQLTerms(terms ++ other.terms)
   def :+(other : SQLTerm[_]) : SQLTerms = new SQLTerms(terms :+ other)
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
@@ -44,7 +44,7 @@ private[models] final class SQLTerms private (private val terms : Seq[SQLTerm[_]
     Columns(FromTable("(VALUES (" + placeholders + ")) AS " + table + " " + names))
     .pushArgs(this)
 }
-private[models] object SQLTerms {
+object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
   def flatten(terms : Option[SQLTerm[_]]*) = new SQLTerms(terms.flatten)
 }

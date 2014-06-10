@@ -25,7 +25,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  private val citationMapping = Forms.tuple(
+  protected val citationMapping = Forms.tuple(
     "head" -> Mappings.maybeText,
     "url" -> Forms.optional(Forms.of[URL]),
     "body" -> Mappings.maybeText

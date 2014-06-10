@@ -28,10 +28,8 @@ object PathCrumb {
   def apply(x : SitePage, li : Boolean = false)(implicit site : Site): PathCrumb = new PathCrumb(x.pageCrumbName.getOrElse(x.pageName), x.pageURL, li)
 }
 
-final class Path private(parts : collection.immutable.Seq[PathCrumb]) extends scala.collection.generic.SeqForwarder[PathCrumb] {
-  def underlying = parts
-
-  def ++(t: Path) = new Path(parts ++ t)
+final class Path private(val parts : collection.immutable.Seq[PathCrumb]) {
+  def ++(t: Path) = new Path(parts ++ t.parts)
 
   def :+(c: PathCrumb) = new Path(parts :+ c)
 

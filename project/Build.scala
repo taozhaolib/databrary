@@ -8,7 +8,7 @@ object ApplicationBuild extends Build {
 
   val dbDependencies = Seq(
     jdbc,
-    "com.github.mauricio" %% "postgresql-async" % "0.2.13"
+    "com.github.mauricio" %% "postgresql-async" % "0.2.14-SNAPSHOT"
   )
 
   val avDependencies = Seq(
@@ -36,7 +36,7 @@ object ApplicationBuild extends Build {
   val appDependencies = dbDependencies ++ avDependencies ++ Seq(
     "org.mindrot" % "jbcrypt" % "0.3m",
     ws,
-    "com.typesafe" %% "play-plugins-mailer" % "2.2.0"
+    "com.typesafe" %% "play-plugins-mailer" % "2.3.0"
   )
 
   val main = Project(appName, file("."))
@@ -45,9 +45,8 @@ object ApplicationBuild extends Build {
     .dependsOn(macros, dbrary, media, logbackAccess)
     .settings(
       libraryDependencies ++= appDependencies,
-      version <<= GitDescribe.gitDescribe.apply(_.getOrElse("unknown")),
-	PlayKeys.closureCompilerOptions += "ecmascript5_strict",
       play.twirl.sbt.Import.TwirlKeys.templateImports ++= Seq("macros._", "site._"),
+      PlayKeys.closureCompilerOptions += "ecmascript5_strict",
       PlayKeys.javascriptEntryPoints := PathFinder.empty, // disable play's standard js compiler
       resourceGenerators in Compile := Seq(),
       resourceGenerators in Compile <+= (resourceManaged in Compile, version) map { (dir, ver) =>

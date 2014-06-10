@@ -258,7 +258,7 @@ object Curated extends Ingest {
     _ <- data.subjectSessions.foreachAsync(ss =>
       ss.populate(subjs(ss.subjectKey), sess(ss.sessionKey)))
     assets <- data.assets
-      .sortBy(_.asset.position.map(-_))
+      .sortBy(_.asset.position.map(-_))(math.Ordering.Option)
       .mapAsync(sa => sa.populate(sess(sa.sessionKey)))
   } yield ((subjs.values, assets))
 
