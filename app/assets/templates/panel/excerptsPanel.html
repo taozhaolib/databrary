@@ -25,7 +25,10 @@
                 <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
               </div>
 
-              <div ng-switch-default></div>
+	      <div ng-switch-default>
+		      <img class="icon" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(current).extension + '.png'">
+		      <span bo-html="page.constants.data.format[current.asset.format].name">
+	      </div>
             </div>
           </div>
         </section>
