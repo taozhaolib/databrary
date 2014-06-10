@@ -16,7 +16,14 @@
 		}
 	}
 
-	&.foldable {
+	h3, .h3 {
+		.font(1.5, 1.5);
+		.margin(0);
+	}
+}
+
+.foldable {
+	.panel {
 		.fold {
 			max-height: 100000px;
 			.transition();
@@ -46,34 +53,29 @@
 				}
 			}
 		}
-
-		&.folded {
-			.panel_header {
-				&.folder {
-					color: mix(@blue, @black, 50%);
-				}
-
-				&:before {
-					.transform-rotate(-90deg);
-				}
-
-				&:hover {
-					&:before {
-						.transform-rotate(-45deg);
-					}
-				}
-			}
-
-			.fold {
-				overflow: hidden;
-				max-height: 0;
-			}
-		}
 	}
 
-	h3, .h3 {
-		.font(1.5, 1.5);
-		.margin(0);
+	&.folded {
+		.panel_header {
+			&.folder {
+				color: mix(@blue, @black, 50%);
+			}
+
+			&:before {
+				.transform-rotate(-90deg);
+			}
+
+			&:hover {
+				&:before {
+					.transform-rotate(-45deg);
+				}
+			}
+		}
+
+		.fold {
+			overflow: hidden;
+			max-height: 0;
+		}
 	}
 }
 

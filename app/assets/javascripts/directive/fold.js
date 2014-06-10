@@ -29,7 +29,7 @@ module.directive('fold', [
 			$scope.disableFold = function () {
 				$scope.foldable = false;
 				$element.removeClass(foldableClass);
-				$element.removeClass(foldedClass); 
+				$element.removeClass(foldedClass);
 				$element.find(folderAttr).removeClass(folderClass);
 				$element.find(folderAttr).removeClass(foldClass);
 				$element.addClass(disabledClass);
@@ -41,7 +41,7 @@ module.directive('fold', [
 
 			$scope.fold = function () {
 				folded = true;
-				if($scope.foldable){
+				if ($scope.foldable) {
 					$element.addClass(foldedClass);
 				}
 				$scope.setFolding();
@@ -57,8 +57,7 @@ module.directive('fold', [
 				if ($scope.foldable) {
 					if ((angular.isDefined(state) && !state) || folded) {
 						$scope.unfold();
-					}
-					else {
+					} else {
 						$scope.fold();
 					}
 				}
@@ -93,8 +92,7 @@ module.directive('fold', [
 
 				if (gotFolded) {
 					$scope.fold();
-				}
-				else {
+				} else {
 					$scope.unfold();
 				}
 			};
@@ -103,8 +101,7 @@ module.directive('fold', [
 
 			if (angular.isDefined($attrs.fold) && (!$attrs.fold || $scope.$eval($attrs.fold))) {
 				$scope.enableFold();
-			}
-			else {
+			} else {
 				$scope.disableFold();
 			}
 

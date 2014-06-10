@@ -32,49 +32,6 @@
 
 // STYLES
 
-.frame {
-	.transition();
-
-	&.nowrap {
-		.wrap {
-			width: auto;
-			.padding-width(@framepad);
-		}
-	}
-
-	&.foldable {
-		.fold {
-			max-height: 10000px;
-			.transition();
-		}
-
-		&.folded {
-			.frame_header {
-				&:before {
-					.transform-rotate(-90deg);
-				}
-
-				&:hover {
-					color: @gray;
-
-					&:before {
-						.transform-rotate(-45deg);
-					}
-				}
-			}
-
-			.fold {
-				overflow: hidden;
-				max-height: 0;
-			}
-		}
-	}
-
-	.portrait {
-		.margin-bottom(@f2);
-	}
-}
-
 .frame_body {
 	background-color: transparent;
 	.border-padding-bottom(0, @framepad);
@@ -110,6 +67,51 @@
 
 			&:before {
 				.transform-rotate(-45deg);
+			}
+		}
+	}
+}
+
+.frame {
+	.transition();
+
+	&.nowrap {
+		.wrap {
+			width: auto;
+			.padding-width(@framepad);
+		}
+	}
+
+	.portrait {
+		.margin-bottom(@f2);
+	}
+}
+
+.foldable {
+	.fold {
+		max-height: 10000px;
+		.transition();
+	}
+
+	&.folded {
+		.frame {
+			.frame_header {
+				&:before {
+					.transform-rotate(-90deg);
+				}
+
+				&:hover {
+					color: @gray;
+
+					&:before {
+						.transform-rotate(-45deg);
+					}
+				}
+			}
+
+			.fold {
+				overflow: hidden;
+				max-height: 0;
 			}
 		}
 	}
