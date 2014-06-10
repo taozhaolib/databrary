@@ -111,7 +111,7 @@ trait BackedAsset {
 
 /** Refinement (implicitly of Asset) for objects representing timeseries data. */
 trait TimeseriesData extends BackedAsset {
-  def source : Timeseries
+  def source : TimeseriesAsset
   /** The range of times represented by this object.
     * Should be a valid, finite, bounded range. */
   def section : Section
@@ -176,7 +176,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     Some('format -> format.id),
     Some('classification -> classification),
     name.map('name -> _),
-    cast[Timeseries](this).map('duration -> _.duration)
+    cast[TimeseriesAsset](this).map('duration -> _.duration)
   )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
@@ -196,7 +196,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
 /** Special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class Timeseries private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, sha1) with TimeseriesData {
+final class TimeseriesAsset private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, sha1) with TimeseriesData {
   override def source = this
   def entire = true
   def section : Section = Segment(Offset.ZERO, duration)
@@ -226,7 +226,7 @@ object Asset extends TableId[Asset]("asset") {
     ).map { (id, format, classification, duration, name, sha1) =>
       duration.fold(
         (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, sha1))(
-        dur => (volume : Volume) => new Timeseries(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
+        dur => (volume : Volume) => new TimeseriesAsset(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
     }
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
@@ -277,7 +277,7 @@ object Asset extends TableId[Asset]("asset") {
     val sha1 = store.SHA1(file.file)
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
       .single(SQLCols[Id]).map { id =>
-        val a = new Timeseries(id, volume, format, classification, duration, name, sha1)
+        val a = new TimeseriesAsset(id, volume, format, classification, duration, name, sha1)
         store.FileAsset.store(a, file)
         a
       }

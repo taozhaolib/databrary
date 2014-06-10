@@ -85,7 +85,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     )
 }
 
-final class SlotTimeseries private[models] (override val asset : Timeseries, asset_segment : Segment, slot : Slot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
+final class SlotTimeseries private[models] (override val asset : TimeseriesAsset, asset_segment : Segment, slot : Slot, excerpt_segment : Option[Segment]) extends SlotAsset(asset, asset_segment, slot, excerpt_segment) with TimeseriesData {
   override def source = asset.source
   def section = segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
@@ -105,7 +105,7 @@ final class SlotTimeseries private[models] (override val asset : Timeseries, ass
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def make(asset : Asset, asset_segment : Segment, slot : Slot, excerpt : Option[Segment]) = asset match {
-    case ts : Timeseries => new SlotTimeseries(ts, asset_segment, slot, excerpt)
+    case ts : TimeseriesAsset => new SlotTimeseries(ts, asset_segment, slot, excerpt)
     case _ => new SlotAsset(asset, asset_segment, slot, excerpt)
   }
 

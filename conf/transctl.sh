@@ -33,7 +33,7 @@ elif [[ -n $host ]] ; then
 	if [[ -z $kill ]] ; then
 		rsync "$src" "$host:$dir/$aid"
 	fi
-	ssh "$host" "$cmd" -h "$@" | sed 's/\.hpc0\.local$//'
+	ssh "$host" "$cmd" -h "$@" | sed 's/\..*$//'
 elif [[ -n $kill ]] ; then
 	"$cmd" "$@"
 else

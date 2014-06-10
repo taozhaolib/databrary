@@ -39,8 +39,8 @@ trait Asset {
 	    PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification, asset))
 	  _ <- info match {
 	    case ts : Asset.TimeseriesInfo =>
-	      check(asset.asInstanceOf[Timeseries].duration.equals(ts.duration),
-		PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[Timeseries].duration, asset))
+	      check(asset.asInstanceOf[TimeseriesAsset].duration.equals(ts.duration),
+		PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[TimeseriesAsset].duration, asset))
 	    case _ => async.void
 	  }
 	  _ <- if (asset.name.isEmpty) asset.change(name = Some(Maybe(name).opt))
