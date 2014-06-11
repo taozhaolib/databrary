@@ -136,7 +136,7 @@ module.controller('VolumeEditView', [
 
 		$scope.$watch(function () {
 			angular.forEach(forms, function (form) {
-				if (!form) {
+				if (!form || !form.form) {
 					return;
 				}
 
