@@ -11,6 +11,15 @@ module.factory('Asset', [
 			});
 		};
 
+		asset.replace = function (asset, fd) {
+			return $http.post('/api/asset/' + asset.asset.id + '/replace', fd, {
+				transformRequest: angular.identity,
+				headers: {
+					'Content-Type': undefined
+				},
+			});
+		};
+
 		return asset;
 	}
 ]);
