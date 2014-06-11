@@ -46,12 +46,5 @@ module.controller('OverviewVolumePanel', [
 
 			return false;
 		};
-
-		for (var cite in $scope.volume.citations) {
-			if ($scope.volume.citations.hasOwnProperty(cite) && $scope.volume.citations[cite].study) {
-				$scope.primaryStudy = $scope.volume.citations[cite];
-				break;
-			}
-		}
 	}
 ]);

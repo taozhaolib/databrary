@@ -6,14 +6,17 @@
         <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
       </hgroup>
 
-      <div ng-show="!editMode">
+      <div>
+        <div ng-if="volume.citation" frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+	  <p class="citation">
+	    <a ng-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank">
+	      {{volume.citation.head}}
+	    </a>
+	  </p>
+	</div>
+
         <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
           <div class="description" ng-bind-html="volume.body | format"></div>
-
-	  <p class="primary_study" ng-if="primaryStudy">
-	    <span class="icon jump" ng-click="page.display.scrollTo('panel_citations')"></span>
-	    <a href="{{primaryStudy.url | handle}}" target="_blank">{{'volume.citation.study.link' | message}}</a>
-	  </p>
 
           <div class="metadata">
             <dl class="flat">
@@ -31,7 +34,7 @@
           </div>
         </div>
 
-        <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+        <div frame id="frame_link" frame-title="{{'volume.link.title' | message}}" fold>
           <p ng-bind-html="volume | cite" class="citation"></p>
         </div>
       </div>
@@ -40,6 +43,14 @@
     <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
       <div class="panel_overview_thumbnail_wrap">
         <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
+      </div>
+
+      <div ng-if="volume.citation.authors" frame id="frame_authors" frame-title="{{'volume.authors.title' | message}}" fold>
+        <ul class="row">
+          <li ng-repeat="author in volume.citation.authors">
+	    {{author}}
+          </li>
+        </ul>
       </div>
 
       <div frame id="frame_people" frame-title="{{'volume.contributors.title' | message}}" fold>

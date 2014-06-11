@@ -303,7 +303,7 @@ module.config([
 
 						page.models.Volume.get({
 							access: '',
-							citations: '',
+							citation: '',
 							providers: '',
 							consumers: '',
 							top: '',
@@ -313,8 +313,7 @@ module.config([
 							records: '',
 							summary: '',
 							sessions: '',
-							categories: '',
-							funding: ''
+							categories: ''
 						}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
