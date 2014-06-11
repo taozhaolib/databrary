@@ -62,14 +62,16 @@ module.controller('VolumeEditView', [
 
 		// TODO: SEND THIS INFO FROM THE START
 
-		angular.forEach(slot.assets, function (asset) {
-			page.models.Asset.get({
-				creation: '',
-				id: asset.asset.id
-			}, function (res) {
-				asset.asset.creation = res.creation;
+		if (slot) {
+			angular.forEach(slot.assets, function (asset) {
+				page.models.Asset.get({
+					creation: '',
+					id: asset.asset.id
+				}, function (res) {
+					asset.asset.creation = res.creation;
+				});
 			});
-		});
+		}
 
 		//
 
@@ -121,7 +123,7 @@ module.controller('VolumeEditView', [
 		};
 
 		page.display.navigationFn = function (event, val) {
-			if (val.indexOf('/volume/'+volume.id+'/edit') > -1) {
+			if (!volume || val.indexOf('/volume/'+volume.id+'/edit') > -1) {
 				return true;
 			}
 
@@ -144,7 +146,7 @@ module.controller('VolumeEditView', [
 					form.step.complete = false;
 				} else if (form.form.$dirty) {
 					form.step.complete = undefined;
-				} else {
+				} else if (form.step.allow) {
 					form.step.complete = true;
 				}
 			});
@@ -227,7 +229,9 @@ module.controller('VolumeEditView', [
 						name: volume.name,
 						alias: volume.alias,
 						body: volume.body,
-					});
+					}, volume);
+				} else {
+					forms.overview.form.init({}, volume);
 				}
 			},
 

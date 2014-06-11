@@ -23,6 +23,10 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.filterAssets = function () {
+				if (!form.slot) {
+					return [];
+				}
+
 				return page.$filter('filter')(form.slot.assets, function (asset) {
 					return form.excerptsMode ? asset.classification == 1 : asset.classification != 1;
 				});

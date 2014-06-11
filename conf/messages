@@ -78,6 +78,7 @@ remove=Remove
 edit=Edit
 create=Create
 lookup=Lookup
+donthave=I don''t have one
 
 toolbar.login=login
 toolbar.logout=logout
@@ -294,6 +295,7 @@ volume.edit.autodoi.name.success=Title retrieved from DOI.
 volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
+volume.edit.autodoi.title=DOI Automation
 
 browser.title=Data
 browser.group=+
@@ -329,8 +331,9 @@ citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
 citation.head=Citation
+citation.year=Year
 citation.url=DOI or URL
-citation.body=Abstract
+citation.authors=Authors
 
 comments.title=Comments
 comments.post=Post

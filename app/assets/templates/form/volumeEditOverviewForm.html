@@ -1,26 +1,47 @@
 <form name="volumeEditOverviewForm" bindonce novalidate>
   <messages form="volumeEditOverviewForm"></messages>
 
-  <fieldset ng-if="!volumeEditOverviewForm.volume">
+  <fieldset>
+    <legend bo-html="'volume.edit.autodoi.title' | message"></legend>
     <div bo-html="'volume.edit.autodoi.instructions' | message | format"></div>
 
     <label bo-html="'volume.edit.autodoi' | message"></label>
-    <input type="text" name="doi" ng-model="volumeEditOverviewForm.data.doi">
-    <button class="pull mini pull_citation" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.doi)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
+    <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url">
+
+    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
+    <button class="yellow" ng-click="volumeEditOverviewForm.automatic = false" bo-html="'donthave' | message"></button>
+  </fieldset>
+
+  <fieldset class="clean skinny" ng-disabled="volumeEditOverviewForm.automatic">
+    <label bo-html="'citation.head' | message"></label>
+    <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head">
+    <validator form="volumeEditOverviewForm" name="citation.head"></validator>
+
+    <label bo-html="'volume.name' | message"></label>
+    <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name">
+    <validator form="volumeEditOverviewForm" name="name"></validator>
+
+    <label bo-html="'citation.authors' | message"></label>
+    <div ng-repeat="author in volumeEditOverviewForm.data.citation.authors">
+      <input type="text" name="citation.authors[$index]" ng-model="author">
+      <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="yellow mini pull"></button>
+    </div>
+    <validator form="volumeEditOverviewForm" name="citation.authors"></validator>
+    <button ng-click="volumeEditOverviewForm.addAuthor()" bo-html="'add' | message" class="yellow add_f"></button>
+
+    <label bo-html="'citation.year' | message"></label>
+    <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year">
+    <validator form="volumeEditOverviewForm" name="citation.year"></validator>
   </fieldset>
 
   <fieldset class="clean">
-    <label bo-html="'volume.name' | message"></label>
-    <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name">
-		<validator form="volumeEditOverviewForm" name="name"></validator>
-
-    <label bo-html="'volume.alias' | message"></label>
-    <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias">
-		<validator form="volumeEditOverviewForm" name="alias"></validator>
-
     <label bo-html="'volume.body' | message"></label>
     <textarea name="body" ng-model="volumeEditOverviewForm.data.body"></textarea>
 		<validator form="volumeEditOverviewForm" name="body"></validator>
+
+    <label bo-html="'volume.alias' | message"></label>
+    <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias">
+    <validator form="volumeEditOverviewForm" name="alias"></validator>
   </fieldset>
 
   <fieldset class="clean">
