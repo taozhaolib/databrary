@@ -136,6 +136,10 @@ module.controller('VolumeEditView', [
 
 		$scope.$watch(function () {
 			angular.forEach(forms, function (form) {
+				if (!form) {
+					return;
+				}
+
 				if (form.form.$invalid) {
 					form.step.complete = false;
 				} else if (form.form.$dirty) {
