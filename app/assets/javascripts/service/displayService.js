@@ -57,11 +57,15 @@ module.factory('displayService', [
 
 		var $scroll = $('html,body');
 
-		gui.scrollTo = function (id) {
+		display.scrollTo = function (id) {
 			$timeout(function () {
 				$scroll.scrollTop($('#' + id).offset().top - 72);
 			}, 1);
 		};
+
+		//
+
+		
 
 		//
 
