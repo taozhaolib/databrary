@@ -284,9 +284,9 @@ volume.reuse.consumes=These data were originally collected as part of...
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
 volume.body=Description
-volume.edit=edit volume
-volume.edit.create=create volume
-volume.edit.exit=view volume
+volume.edit=edit study
+volume.edit.create=create study
+volume.edit.exit=view study
 volume.edit.success=Volume saved successfully!
 volume.edit.error=Unable to save volume.
 volume.edit.cancel=cancel
@@ -296,7 +296,7 @@ volume.edit.autodoi.name.success=Title retrieved from DOI.
 volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
-volume.edit.autodoi.title=DOI Automation
+volume.edit.autodoi.title=Study Citation
 
 browser.title=Data
 browser.group=+
@@ -465,12 +465,12 @@ wizard.volume_edit_citations.description=Edit or add relevant citations.
 wizard.volume_edit_citations.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
 
 wizard.volume_edit_excerpts.name=Excerpts
-wizard.volume_edit_excerpts.description=TODO Upload excerpts, stimuli, and other materials.
-wizard.volume_edit_excerpts.instructions=TODO Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
+wizard.volume_edit_excerpts.description=Upload representative videos and images.
+wizard.volume_edit_excerpts.instructions=Provide any excerpts related to this study, which may be video clips, still images, or other identifying data that has been consented to be shared without restriction.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
 
 wizard.volume_edit_materials.name=Materials
-wizard.volume_edit_materials.description=TODO Upload excerpts, stimuli, and other materials.
-wizard.volume_edit_materials.instructions=TODO Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
+wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
+wizard.volume_edit_materials.instructions=Provide any other files related to this study that you wish to share, such as stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or non-data files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
