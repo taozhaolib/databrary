@@ -120,9 +120,13 @@ module.controller('VolumeEditView', [
 			access: undefined,
 		};
 
-		page.display.navigationFn = function () {
+		page.display.navigationFn = function (event, val) {
+			if (val.indexOf('/volume/'+volume.id+'/edit') > -1) {
+				return true;
+			}
+
 			for (var form in forms) {
-				if (forms.hasOwnProperty(form) && forms[form].$dirty) {
+				if (forms.hasOwnProperty(form) && forms[form].form && forms[form].form.$dirty) {
 					return false;
 				}
 			}
@@ -131,19 +135,13 @@ module.controller('VolumeEditView', [
 		};
 
 		$scope.$watch(function () {
-			for (var form in forms) {
-				if (forms.hasOwnProperty(form) && forms[form] && forms[form].$dirty) {
-					return forms[form];
-				}
-			}
-
-			return false;
-		}, function (form) {
-			angular.forEach($scope.wizard.steps, function (step) {
-				if (form && !step.active) {
-					step.allow = false;
-				} else if (volume) {
-					step.allow = true;
+			angular.forEach(forms, function (form) {
+				if (form.form.$invalid) {
+					form.step.complete = false;
+				} else if (form.form.$dirty) {
+					form.step.complete = undefined;
+				} else {
+					form.step.complete = true;
 				}
 			});
 		});
@@ -156,45 +154,63 @@ module.controller('VolumeEditView', [
 
 		$scope.prepareStep = {
 			'volume_edit_overview': function (step) {
-				forms.overview = step.volumeEditOverviewForm;
-				forms.overview.volume = volume;
-				forms.overview.cancelFn = cancelFn;
+				forms.overview = {
+					step: step,
+					form: step.volumeEditOverviewForm,
+				};
+				forms.overview.form.volume = volume;
+				forms.overview.form.cancelFn = cancelFn;
 			},
 
 			'volume_edit_citations': function (step) {
-				forms.citations = step.volumeEditCitationsForm;
-				forms.citations.volume = volume;
-				forms.citations.cancelFn = cancelFn;
+				forms.citations = {
+					step: step,
+					form: step.volumeEditCitationsForm,
+				};
+				forms.citations.form.volume = volume;
+				forms.citations.form.cancelFn = cancelFn;
 			},
 
 			'volume_edit_excerpts': function (step) {
-				forms.excerpts = step.volumeEditMaterialsForm;
-				forms.excerpts.volume = volume;
-				forms.excerpts.slot = slot;
-				forms.excerpts.cancelFn = cancelFn;
+				forms.excerpts = {
+					step: step,
+					form: step.volumeEditMaterialsForm,
+				};
+				forms.excerpts.form.volume = volume;
+				forms.excerpts.form.slot = slot;
+				forms.excerpts.form.cancelFn = cancelFn;
 			},
 
 			'volume_edit_materials': function (step) {
-				forms.materials = step.volumeEditMaterialsForm;
-				forms.materials.volume = volume;
-				forms.materials.slot = slot;
-				forms.materials.cancelFn = cancelFn;
+				forms.materials = {
+					step: step,
+					form: step.volumeEditMaterialsForm,
+				};
+				forms.materials.form.volume = volume;
+				forms.materials.form.slot = slot;
+				forms.materials.form.cancelFn = cancelFn;
 			},
 
 			'volume_edit_funding': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
 
-				forms.funding = step.volumeEditFundingForm;
-				forms.funding.volume = volume;
-				forms.funding.cancelFn = cancelFn;
+				forms.funding = {
+					step: step,
+					form: step.volumeEditFundingForm,
+				};
+				forms.funding.form.volume = volume;
+				forms.funding.form.cancelFn = cancelFn;
 			},
 
 			'volume_edit_access': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
 
-				forms.access = step.volumeEditAccessForm;
-				forms.access.volume = volume;
-				forms.access.cancelFn = cancelFn;
+				forms.access = {
+					step: step,
+					form: step.volumeEditAccessForm,
+				};
+				forms.access.form.volume = volume;
+				forms.access.form.cancelFn = cancelFn;
 			},
 		};
 
@@ -203,7 +219,7 @@ module.controller('VolumeEditView', [
 		$scope.updateStep = {
 			'volume_edit_overview': function (step) {
 				if (volume) {
-					forms.overview.init({
+					forms.overview.form.init({
 						name: volume.name,
 						alias: volume.alias,
 						body: volume.body,
@@ -223,7 +239,7 @@ module.controller('VolumeEditView', [
 						}
 					});
 
-					forms.citations.init({
+					forms.citations.form.init({
 						study: study,
 						citation: citations,
 					});
@@ -237,7 +253,7 @@ module.controller('VolumeEditView', [
 						asset.classification = '' + asset.asset.classification;
 					});
 
-					forms.excerpts.init(slot);
+					forms.excerpts.form.init(slot);
 				}
 			},
 
@@ -248,18 +264,18 @@ module.controller('VolumeEditView', [
 						asset.classification = '' + asset.asset.classification;
 					});
 
-					forms.materials.init(slot);
+					forms.materials.form.init(slot);
 				}
 			},
 
 			'volume_edit_funding': function (step) {
-				forms.funding.data = {
+				forms.funding.form.data = {
 					access: $scope.funding,
 				};
 			},
 
 			'volume_edit_access': function (step) {
-				forms.access.data = {
+				forms.access.form.data = {
 					access: $scope.granted,
 				};
 			},
