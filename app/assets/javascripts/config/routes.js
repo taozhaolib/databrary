@@ -244,7 +244,7 @@ module.config([
 						} else {
 							page.models.Volume.get({
 								access: '',
-								citations: '',
+								citation: '',
 								top: '',
 								excerpts: '',
 								funding: ''
@@ -271,7 +271,7 @@ module.config([
 								page.models.Slot.get({
 									id: volume.top.id,
 									segment: ',',
-									assets: ''
+									assets: '',
 								}, function (res) {
 									deferred.resolve(res);
 								}, function (res) {

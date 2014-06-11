@@ -28,7 +28,7 @@ module.directive('volumeEditOverviewForm', [
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
-console.log(form.data);
+
 				if (form.volume) {
 					page.models.Volume.save(form.data,
 						function (res) {
@@ -119,61 +119,59 @@ console.log(form.data);
 					return;
 				}
 
-				if (!form.data.name) {
-					page.models.CrossCite
-						.json(doi[1])
-						.then(function (res) {
-							if (!res.title) {
-								form.messages.add({
-									type: 'red',
-									body: page.constants.message('volume.edit.autodoi.name.error'),
-								});
-							} else {
-								form.data.name = res.title;
-
-								if (!form.data.citation) {
-									form.data.citation = {};
-								}
-
-								if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
-									form.data.citation.year = res.issued['date-parts'][0][0];
-								}
-
-								if (res.author) {
-									var parts = ['given', 'non-dropping-particle', 'family', 'suffix'];
-									
-									form.data.citation.authors = [];
-
-									angular.forEach(res.author, function (author) {
-										var name = '';
-
-										angular.forEach(parts, function (part) {
-											if (author[part]) {
-												name += author[part] + ' ';
-											}
-										});
-
-										name = name.slice(0, -1);
-
-										form.data.citation.authors.push(name);
-									});
-								}
-
-								form.automatic = false;
-
-								form.messages.add({
-									type: 'green',
-									countdown: 3000,
-									body: page.constants.message('volume.edit.autodoi.name.success'),
-								});
-							}
-						}, function (res) {
+				page.models.CrossCite
+					.json(doi[1])
+					.then(function (res) {
+						if (!res.title) {
 							form.messages.add({
 								type: 'red',
 								body: page.constants.message('volume.edit.autodoi.name.error'),
 							});
+						} else {
+							form.data.name = res.title;
+
+							if (!form.data.citation) {
+								form.data.citation = {};
+							}
+
+							if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
+								form.data.citation.year = res.issued['date-parts'][0][0];
+							}
+
+							if (res.author) {
+								var parts = ['given', 'non-dropping-particle', 'family', 'suffix'];
+
+								form.data.citation.authors = [];
+
+								angular.forEach(res.author, function (author) {
+									var name = '';
+
+									angular.forEach(parts, function (part) {
+										if (author[part]) {
+											name += author[part] + ' ';
+										}
+									});
+
+									name = name.slice(0, -1);
+
+									form.data.citation.authors.push(name);
+								});
+							}
+
+							form.automatic = false;
+
+							form.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.name.success'),
+							});
+						}
+					}, function (res) {
+						form.messages.add({
+							type: 'red',
+							body: page.constants.message('volume.edit.autodoi.name.error'),
 						});
-				}
+					});
 
 				if (!form.hasCitations) {
 					page.models.CrossCite

@@ -128,7 +128,7 @@ module.controller('VolumeEditView', [
 			}
 
 			for (var form in forms) {
-				if (forms.hasOwnProperty(form) && forms[form].form && forms[form].form.$dirty) {
+				if (forms.hasOwnProperty(form) && forms[form] && forms[form].form && forms[form].form.$dirty) {
 					return false;
 				}
 			}
@@ -229,6 +229,7 @@ module.controller('VolumeEditView', [
 						name: volume.name,
 						alias: volume.alias,
 						body: volume.body,
+						citation: volume.citation,
 					}, volume);
 				} else {
 					forms.overview.form.init({}, volume);
