@@ -60,6 +60,19 @@ module.controller('VolumeEditView', [
 
 		//
 
+		// TODO: SEND THIS INFO FROM THE START
+
+		angular.forEach(slot.assets, function (asset) {
+			page.models.Asset.get({
+				creation: '',
+				id: asset.asset.id
+			}, function (res) {
+				asset.asset.creation = res.creation;
+			});
+		});
+
+		//
+
 		$scope.wizard = {};
 
 		$scope.retrieveWizard = function (wizard) {
@@ -101,6 +114,7 @@ module.controller('VolumeEditView', [
 		var forms = {
 			overview: undefined,
 			citations: undefined,
+			excerpts: undefined,
 			materials: undefined,
 			funding: undefined,
 			access: undefined,
@@ -141,6 +155,13 @@ module.controller('VolumeEditView', [
 				forms.citations = step.volumeEditCitationsForm;
 				forms.citations.volume = volume;
 				forms.citations.cancelFn = cancelFn;
+			},
+
+			'volume_edit_excerpts': function (step) {
+				forms.excerpts = step.volumeEditMaterialsForm;
+				forms.excerpts.volume = volume;
+				forms.excerpts.slot = slot;
+				forms.excerpts.cancelFn = cancelFn;
 			},
 
 			'volume_edit_materials': function (step) {
@@ -199,11 +220,22 @@ module.controller('VolumeEditView', [
 				}
 			},
 
+			'volume_edit_excerpts': function (step) {
+				if (slot) {
+					angular.forEach(slot.assets, function (asset) {
+						asset.name = asset.asset.name;
+						asset.classification = '' + asset.asset.classification;
+					});
+
+					forms.excerpts.init(slot);
+				}
+			},
+
 			'volume_edit_materials': function (step) {
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = ''+asset.asset.classification;
+						asset.classification = '' + asset.asset.classification;
 					});
 
 					forms.materials.init(slot);

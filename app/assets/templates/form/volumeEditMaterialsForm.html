@@ -1,26 +1,33 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate>
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}">
-    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; volumeEditMaterialsForm.store(this)"></messages>
-
-    <div ng-if="!asset.asset">
-      <label bo-html="'material.file' | message"></label>
-      <input type="file" name="file" file-model="asset.file">
-    </div>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filterAssets()" ng-form="volumeEditMaterialsForm.asset-{{$index}}">
+    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
     <label bo-html="'material.name' | message"></label>
     <input type="text" name="name" ng-model="asset.name">
 
-    <label bo-html="'material.classification' | message"></label>
-    <select name="classification" ng-model="asset.classification" ng-options="id as 'classification.'+name | message for (id, name) in page.constants.data.classification" ng-required></select>
+    <div bo-if="!volumeEditMaterialsForm.excerptsMode">
+      <label bo-html="'material.classification' | message"></label>
+      <select name="classification" ng-model="asset.classification" ng-options="id as 'classification.'+name | message for (id, name) in page.constants.data.classification" ng-required></select>
+    </div>
 
-    <button ng-click="volumeEditMaterialsForm.save(this)" bo-html="'save' | message" class="green" ng-disabled="!form.$dirty"></button>
+    <label bo-html="'material.file' | message"></label>
+    <input type="file" name="file" file-model="asset.file" file-model-form="form" ng-if="!asset.asset.creation">
+
+    <div ng-if="asset.asset.creation">
+      <input type="text" name="filename" ng-model="asset.asset.creation.name" disabled>
+      <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
+    </div>
+
+    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="!form.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="orange" ng-disabled="!form.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
-    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="orange"></button>
   </fieldset>
 
 	<fieldset class="clean">
+    <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="orange" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.add()" bo-html="'add' | message" class="yellow"></button>
 	</fieldset>
 </form>

@@ -64,9 +64,13 @@ databrary=Databrary
 featured=Featured Dataset
 
 save=Save
+save.all=Save All
 cancel=Cancel
 reset=Reset
+replace=Replace
+upload=Upload
 revert=Revert
+revert.all=Revert All
 add=Add
 remove=Remove
 edit=Edit
@@ -437,6 +441,8 @@ volume.edit.materials.update.error=Unable to update {0}.
 volume.edit.materials.create=Upload of {0} in progress.  Please wait.
 volume.edit.materials.create.success=Uploaded {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
 volume.edit.materials.create.error=Unable to upload {0}.
+volume.edit.materials.replace.success=Replaced {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
+volume.edit.materials.replace.error=Unable to replace {0}.
 volume.edit.materials.remove.success=Removed {0} successfully.
 volume.edit.materials.remove.error=Unable to remove {0}.
 volume.edit.materials.refresh.error=Could not update materials display. Please refresh before making any new edits.
@@ -452,9 +458,13 @@ wizard.volume_edit_citations.name=Citations
 wizard.volume_edit_citations.description=Edit or add relevant citations.
 wizard.volume_edit_citations.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
 
+wizard.volume_edit_excerpts.name=Excerpts
+wizard.volume_edit_excerpts.description=TODO Upload excerpts, stimuli, and other materials.
+wizard.volume_edit_excerpts.instructions=TODO Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
+
 wizard.volume_edit_materials.name=Materials
-wizard.volume_edit_materials.description=Upload excerpts, stimuli, and other materials.
-wizard.volume_edit_materials.instructions=Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
+wizard.volume_edit_materials.description=TODO Upload excerpts, stimuli, and other materials.
+wizard.volume_edit_materials.instructions=TODO Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
