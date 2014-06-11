@@ -120,6 +120,16 @@ module.controller('VolumeEditView', [
 			access: undefined,
 		};
 
+		page.display.navigationFn = function () {
+			for (var form in forms) {
+				if (forms.hasOwnProperty(form) && forms[form].$dirty) {
+					return false;
+				}
+			}
+
+			return true;
+		};
+
 		$scope.$watch(function () {
 			for (var form in forms) {
 				if (forms.hasOwnProperty(form) && forms[form] && forms[form].$dirty) {
