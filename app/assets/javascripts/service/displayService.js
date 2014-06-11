@@ -65,7 +65,15 @@ module.factory('displayService', [
 
 		//
 
-		
+		display.navigationFn = undefined;
+
+		$rootScope.$on('$locationChangeStart', function (event, url) {
+			if (!angular.isFunction(display.navigationFn) || display.navigationFn(event, url) || confirm(constants.message('navigation.confirmation'))) {
+				return display.navigationFn = undefined;
+			}
+
+			event.preventDefault();
+		});
 
 		//
 

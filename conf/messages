@@ -63,6 +63,8 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 databrary=Databrary
 featured=Featured Dataset
 
+navigation.confirmation=Do you want to abandon all unsaved changes?
+
 save=Save
 save.all=Save All
 cancel=Cancel
