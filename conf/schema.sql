@@ -217,16 +217,15 @@ $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
 CREATE TABLE "volume_citation" (
-	"volume" integer NOT NULL References "volume",
+	"volume" integer NOT NULL Unique References "volume",
 	"head" text NOT NULL,
 	"url" text,
-	"body" text,
-	"study" boolean NOT NULL Default false
+	"authors" text[],
+	"year" smallint Check ("year" BETWEEN 1900 AND 2900)
 );
-CREATE INDEX ON "volume_citation" ("volume");
-CREATE UNIQUE INDEX ON "volume_citation" ("volume") WHERE "study";
-COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
-COMMENT ON COLUMN "volume_citation"."study" IS 'Primary external citation associated with each volume, in the case of studies, supplementals, excerpts, or other volumes directly attached to publications.';
+COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
+
+SELECT audit.CREATE_TABLE ('volume_citation');
 
 ----------------------------------------------------------- time intervals
 

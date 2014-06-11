@@ -11,20 +11,15 @@
             @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="citations">
-                <legend>@Messages("citations.title")</legend>
-
-		<h3>Study</h3>
-		@widget.tag.inputText(form.study()("head"), ('placeholder, "Citation"))
-		@widget.tag.inputText(form.study()("url"), ('placeholder, "DOI or URL"))
-		@widget.tag.textarea(form.study()("body"), ('placeholder, "Abstract"))
-
+		<h3>Citation</h3>
+		@widget.tag.inputText(form.citation()("head"), ('placeholder, "Citation"))
+		@widget.tag.inputText(form.citation()("url"), ('placeholder, "DOI or URL"))
                 <div class="repeater">
-                    @widget.tag.repeat(form.citation()) { f =>
-                        @widget.tag.inputText(f("head"), 'placeholder -> "Citation")
-                        @widget.tag.inputText(f("url"), 'placeholder -> "DOI or URL")
-                        @widget.tag.textarea(f("body"), 'placeholder -> "Abstract")
+                    @widget.tag.repeat(form.citation()("author")) { f =>
+                        @widget.tag.inputText(f, 'placeholder -> "Author")
                     }
                 </div>
+		@widget.tag.inputText(form.citation()("year"), ('placeholder, "Year"))
             </fieldset>
 
             @widget.formErrors(form)

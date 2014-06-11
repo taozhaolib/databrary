@@ -28,54 +28,42 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   private val citationMapping = Forms.tuple(
     "head" -> Mappings.maybeText,
     "url" -> Forms.optional(Forms.of[URL]),
-    "body" -> Mappings.maybeText
+    "authors" -> Forms.seq(Forms.nonEmptyText),
+    "year" -> Forms.optional(Forms.number(1900, 2900))
   ).verifying("citation.invalid", _ match {
-    case (None, None, None) => true
-    case (Some(_), _, _) => true
-    case (None, Some(url), _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
+    case (None, None, Nil, None) => true
+    case (Some(_), _, _, _) => true
+    case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
     case _ => false
   }).transform[Option[Citation]]({
-    case (None, None, None) => None
-    case (head, url, body) => Some(Citation(head.getOrElse(""), url, body))
+    case (None, None, Nil, None) => None
+    case (head, url, authors, year) => Some(Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
   }, {
-    case None => (None, None, None)
-    case Some(Citation(head, url, body, _)) => (Some(head), url, body)
+    case None => (None, None, Nil, None)
+    case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
   })
-  private def citationFill(cite : Citation) : Future[Citation] =
-    if (cite.head.isEmpty) cite.lookup else async(cite)
-  private def citationSet(volume : Volume, form : VolumeController.VolumeForm) = {
-    val cites = form.citation.get
-    for {
-      _ <- async.when(cites.nonEmpty,
-	cites.flatten.mapAsync(citationFill)
-	.flatMap(volume.setCitations _))
-      _ <- form.study.get.foreachAsync(
-	_.mapAsync(citationFill(_))
-	.flatMap(volume.setStudyCitation _))
-    } yield ()
-  }
-
-  protected def editFormFill(implicit request : Request[_]) =
-    request.obj.citations.map(new VolumeController.EditForm(_))
 
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
+    val form = new VolumeController.EditForm(None)._bind
     for {
-      form <- editFormFill
-      _ = form._bind
-      _ <- vol.change(name = form.name.get,
+      cite <- form.getCitation
+      _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
 	alias = form.alias.get.map(Maybe(_).opt),
 	body = form.body.get)
-      _ <- citationSet(vol, form)
+      _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
   }
 
   def create(owner : Option[Party.Id]) = ContributeAction(owner).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
-      vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatten)
-      _ <- citationSet(vol, form)
+      cite <- form.getCitation
+      vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
+	alias = form.alias.get.flatMap(Maybe(_).opt),
+	body = form.body.get.flatten)
       _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
+      _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
   }
 
@@ -134,24 +122,24 @@ object VolumeController extends VolumeController {
     def actionName : String
     def formName : String = actionName + " Volume"
 
-    val name : Field[Option[String]]
+    val name = Field(OptionMapping(Mappings.nonEmptyText))
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
     val body = Field(OptionMapping(Mappings.maybeText))
-    val study = Field(OptionMapping(citationMapping))
-    val citation = Field(Forms.seq(citationMapping))
+    val citation = Field(OptionMapping(citationMapping))
+    def getCitation : Future[Option[Option[Citation]]] =
+      citation.get.mapAsync(_.mapAsync(_.copy(title = name.get).lookup(false)))
   }
 
-  final class EditForm(cites : Seq[Citation])(implicit request : Request[_])
+  final class EditForm(cite : Option[Citation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Update"
     override def formName = "Edit Volume"
-    val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(request.obj.name))
-    body.fill(Some(request.obj.body))
+    name.fill(Some(request.obj.name))
     alias.fill(Some(request.obj.alias.getOrElse("")))
-    study.fill(Some(cites.headOption.filter(_.study)))
-    citation.fill(cites.dropWhile(_.study).map(Some(_)) :+ None)
+    body.fill(Some(request.obj.body))
+    citation.fill(Some(cite))
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])
@@ -159,7 +147,6 @@ object VolumeController extends VolumeController {
       routes.VolumeHtml.create(Some(request.obj.party.id)),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Create"
-    val name = Field(Mappings.some(Mappings.nonEmptyText))
   }
 
   final class AccessForm(val party : Party, own : Boolean = false)(implicit request : Request[_])
@@ -214,10 +201,10 @@ object VolumeHtml extends VolumeController with HtmlController {
       sessions <- vol.sessions
       records <- vol.recordCategorySlots
       excerpts <- vol.excerpts
-      citations <- vol.citations
+      citation <- vol.citation
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citations, comments, tags)))
+    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citation, comments, tags)))
   }
 
   def viewSearch(implicit request : SiteRequest[AnyContent]) = {
@@ -232,7 +219,9 @@ object VolumeHtml extends VolumeController with HtmlController {
   def search = SiteAction.async(viewSearch(_))
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
-    editFormFill.flatMap(_.Ok)
+    request.obj.citation
+    .map(new VolumeController.EditForm(_))
+    .flatMap(_.Ok)
   }
 
   def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>

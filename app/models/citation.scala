@@ -2,56 +2,101 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import java.net.URL
 import macros._
 import macros.async._
 import dbrary._
 import site._
 
-/** A citation or reference to a publication or other external resource associated with a Volume.
-  * This interface is temporary, quick and dirty, just to provide minimal functionality, and should not be expected to remain as is. */
-final case class Citation(val head : String, val url : Option[java.net.URL], val body : Option[String], val study : Boolean = false) extends TableRow {
-  private[models] def sqlKey = SQLTerms()
-  private[models] def sqlArgs = SQLTerms('head -> head, 'url -> url.map(_.toString), 'body -> body)
+/** A citation or reference to a publication or other external resource. */
+final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val authors : Option[IndexedSeq[String]] = None, val year : Option[Short] = None) {
+  def orElse(other : Citation) =
+    new Citation(
+      Maybe(head) orElse other.head,
+      title orElse other.title,
+      url orElse other.url,
+      authors orElse other.authors,
+      year orElse other.year)
 
-  def lookup : Future[Citation] =
-    url.flatMapAsync(Cite.getBibliography(_))
-    .map(_.fold(this)(h => copy(head = h)))
+  def lookup(replace : Boolean = false) : Future[Citation] = 
+    if (!replace && head.nonEmpty && title.nonEmpty && authors.nonEmpty && year.nonEmpty)
+      async(this)
+    else
+      url.fold(async(this))(Citation.get(_).map(_.fold(this)(if (replace) _ orElse this else this orElse _)))
 
   def json = JsonObject.flatten(
     Some('head -> head),
+    Some('title -> title),
     url.map(u => ('url, u.toString)),
-    body.map('body -> _),
-    if (study) Some('study -> true) else None
+    authors.map('authors -> _),
+    year.map('year -> _)
   )
+}
+
+object Citation {
+  private val crossRef = "http://data.crossref.org/"
+  private val bibliographyType = "text/x-bibliography"
+  private val jsonType = "application/vnd.citationstyles.csl+json"
+
+  import play.api.libs.json
+
+  private def crossref(hdl : String, typ : String) =
+    play.api.libs.ws.WS.url(crossRef + java.net.URLEncoder.encode(hdl))
+    .withHeaders(("Accept", typ))
+    .get.map { r =>
+      if (r.status == 200 && r.header("Content-Type").equals(Some(Maybe(typ.indexOf(';')).fold(typ)(typ.substring(0, _)))))
+	Some(r)
+      else None
+    }
+
+  private def getHDLJson(hdl : String, style : String = "apa") : Future[Option[json.JsObject]] =
+    crossref(hdl, jsonType)
+    .flatMap(_.flatMap(_.json.asOpt[json.JsObject] /* XXX: json parse error? */).mapAsync { j =>
+      crossref(hdl, bibliographyType + ";style=" + style).map(
+	_.fold(j)(b => j + ("head" -> json.JsString(b.body.trim /* XXX: utf8 */))))
+    })
+
+  private def getURLJson(url : java.net.URL, style : String = "apa") : Future[Option[json.JsObject]] =
+    if (url.getProtocol.equals("hdl") || url.getProtocol.equals("doi"))
+      getHDLJson(url.getFile, style)
+    else async(None)
+
+  private def name(j : json.JsObject) : String =
+    Seq("given", "non-dropping-particle", "family", "suffix")
+    .flatMap(j.\(_).asOpt[String])
+    .mkString(" ")
+
+  private def get(url : java.net.URL) : Future[Option[Citation]] =
+    getURLJson(url).map(_.map { j =>
+      new Citation(
+	head = (j \ "head").asOpt[String].getOrElse(""),
+	title = (j \ "title").asOpt[String],
+	url = Some(url),
+	authors = (j \ "author").asOpt[IndexedSeq[json.JsObject]].map(_.map(name)),
+	year = (j \ "issued" \ "date-parts")(0)(0).asOpt[Short])
+    })
 }
 
 object VolumeCitation extends Table[Citation]("volume_citation") {
   private val columns = Columns(
       SelectColumn[String]("head")
     , SelectColumn[Option[String]]("url")
-    , SelectColumn[Option[String]]("body")
-    , SelectColumn[Boolean]("study")
-    ).map { (head, url, body, study) =>
-      new Citation(head, url.flatMap(dbrary.url.parse _), body, study)
+    , SelectColumn[Option[IndexedSeq[String]]]("authors")
+    , SelectColumn[Option[Short]]("year")
+    ).map { (head, url, authors, year) =>
+      new Citation(head = head, url = url.flatMap(dbrary.url.parse _), authors = authors, year = year)
     }
 
-  private[models] def getVolume(vol : Volume) : Future[Seq[Citation]] =
-    columns.SELECT("WHERE volume = ? ORDER BY study DESC, head").apply(vol.id).list
+  private[models] def get(vol : Volume) : Future[Option[Citation]] =
+    columns.map(_.copy(title = Some(vol.name)))
+    .SELECT("WHERE volume = ?")
+    .apply(vol.id).singleOpt
 
-  private def set(vol : Volume, list : TraversableOnce[Citation], study : Boolean) : Future[Unit] = {
-    val i = SQLTerms('volume -> vol.id, 'study -> study)
-    val dbc = implicitly[Site.DB]
-    val exc = implicitly[ExecutionContext]
-    dbc.inTransaction { dbc => for {
-      _ <- DELETE(i)(dbc, exc)
-      _ <- list.foreachAsync(c =>
-	INSERT(i ++ c.sqlArgs)(dbc, exc).execute)
-    } yield () }
+  private[models] def set(vol : Volume, cite : Option[Citation]) : Future[Boolean] = {
+    implicit val site = vol.site
+    cite.fold(
+      Audit.remove("volume_citation", SQLTerms('volume -> vol.id))) { cite =>
+      Audit.changeOrAdd("volume_citation", SQLTerms('head -> cite.head, 'url -> cite.url.map(_.toString), 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
+    }.execute
   }
-
-  private[models] def setVolume(vol : Volume, list : Seq[Citation]) : Future[Unit] =
-    set(vol, list, false)
-
-  private[models] def setVolumeStudy(vol : Volume, cite : Option[Citation]) : Future[Unit] =
-    set(vol, cite, true)
 }

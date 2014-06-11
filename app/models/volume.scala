@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.{Json,JsObject}
+import play.api.libs.json.{Json,JsValue,JsObject,JsNull}
 import macros._
 import dbrary._
 import site._
@@ -24,7 +24,11 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
-    Audit.change("volume", SQLTerms.flatten(name.map('name -> _), alias.map('alias -> _), body.map('body -> _)), SQLTerms('id -> id))
+    Audit.change("volume", SQLTerms.flatten(
+	name.map('name -> _),
+	alias.map('alias -> _),
+	body.map('body -> _)),
+      sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(_name = _)
         body.foreach(_body = _)
@@ -47,11 +51,15 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     * @return records sorted by category */
   def records(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
 
-  /** List of all citations on this volume. */
-  lazy val citations = VolumeCitation.getVolume(this)
-  def studyCitation = citations.map(_.headOption.filter(_.study))
-  def setCitations(list : Seq[Citation]) = VolumeCitation.setVolume(this, list)
-  def setStudyCitation(cite : Option[Citation]) = VolumeCitation.setVolumeStudy(this, cite)
+  /** Corresponding citation for this volume. */
+  private val _citation : FutureVar[Option[Citation]] =
+    FutureVar(VolumeCitation.get(this))
+  def citation : Future[Option[Citation]] = _citation()
+  def setCitation(cite : Option[Citation]) : Future[Boolean] =
+    VolumeCitation.set(this, cite)
+    .andThen { case scala.util.Success(true) =>
+      _citation.set(cite)
+    }
 
   /** The list of comments in this volume. */
   def comments = Comment.getVolume(this)
@@ -164,7 +172,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("summary", opt => summary.map(_.json.js)),
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
 	.map(JsonArray.map(_.json - "volume"))),
-      ("citations", opt => citations.map(JsonArray.map(_.json))),
+      ("citation", opt => citation.map(_.fold[JsValue](JsNull)(_.json.js))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategorySlots.map(l =>
