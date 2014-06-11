@@ -265,6 +265,7 @@ object.tip.asset=Files can potentially contain a lot of valuable data.
 # Volume page
 volume=Volume
 volume.overview.title=Overview
+volume.authors.title=Original Authors
 volume.contributors.title=Investigators
 volume.funding.title=Funding
 volume.metadata.title=Description
@@ -273,8 +274,8 @@ volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
-volume.citation.title=Citation
-volume.citation.study.link=Original publication
+volume.citation.title=Original Work
+volume.link.title=How to Cite
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
