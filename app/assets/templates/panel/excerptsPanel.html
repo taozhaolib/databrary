@@ -8,6 +8,7 @@
               <a ng-href="{{page.router.assetLink(current, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'excerpts.download' | message}}"></a>
 
               <h1>
+                <img class="icon" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(current).extension + '.png'">
                 <span bo-html="page.types.assetDisplayName(current) | format:true"></span>
               </h1>
             </header>
@@ -25,10 +26,7 @@
                 <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
               </div>
 
-	      <div ng-switch-default>
-		      <img class="icon" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(current).extension + '.png'">
-		      <span bo-html="page.constants.data.format[current.asset.format].name">
-	      </div>
+              <div ng-switch-default></div>
             </div>
           </div>
         </section>
