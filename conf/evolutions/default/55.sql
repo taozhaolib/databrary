@@ -1,7 +1,7 @@
 # --- !Ups
 
 DROP INDEX "volume_citation_volume_idx", "volume_citation_volume_idx1";
-DELETE FROM "volume_citation" WHERE NOT "study";
+DELETE FROM "volume_citation" WHERE NOT "study" AND volume IN (SELECT volume FROM volume_citation GROUP BY volume HAVING count(head) > 1);
 ALTER TABLE "volume_citation" DROP "body", DROP "study",
 	ADD "authors" text[],
 	ADD "year" smallint Check ("year" BETWEEN 1900 AND 2900),
