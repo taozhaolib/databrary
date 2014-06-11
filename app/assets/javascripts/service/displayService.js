@@ -7,7 +7,8 @@ module.factory('displayService', [
 	'constantService',
 	'routerService',
 	'$location',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location) {
+	'$timeout',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout) {
 		var display = {};
 
 		//
@@ -51,6 +52,16 @@ module.factory('displayService', [
 		//
 
 		display.toolbarLinks = [];
+
+		//
+
+		var $scroll = $('html,body');
+
+		gui.scrollTo = function (id) {
+			$timeout(function () {
+				$scroll.scrollTop($('#' + id).offset().top - 72);
+			}, 1);
+		};
 
 		//
 

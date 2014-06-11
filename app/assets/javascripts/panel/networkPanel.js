@@ -112,7 +112,7 @@ module.controller('NetworkPanel', [
 			}
 
 			$scope.currentAuthChild = child;
-			page.gui.scrollTo('network-child-' + child.id);
+			page.display.scrollTo('network-child-' + child.id);
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -201,7 +201,7 @@ module.controller('NetworkPanel', [
 			}
 
 			$scope.currentAuthParent = parent;
-			page.gui.scrollTo('network-parent-' + parent.id);
+			page.display.scrollTo('network-parent-' + parent.id);
 		};
 
 		//

@@ -4,8 +4,8 @@ module.factory('panelService', [
 	'eventService',
 	'$timeout',
 	'ArrayHelper',
-	'guiService',
-	function ($rootScope, $location, events, $timeout, ArrayHelper, gui) {
+	'displayService',
+	function ($rootScope, $location, events, $timeout, ArrayHelper, display) {
 		var panels = new ArrayHelper([]);
 
 		//
@@ -60,7 +60,7 @@ module.factory('panelService', [
 				newHeight = $document.innerHeight();
 
 				if (oldHeight == newHeight) {
-					gui.scrollTo(panel.id);
+					display.scrollTo(panel.id);
 				} else {
 					$timeout(function () {
 						checkHeight();

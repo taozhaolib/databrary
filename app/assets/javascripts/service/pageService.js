@@ -8,7 +8,6 @@ module.factory('pageService', [
 			constants: $injector.get('constantService'),
 			display: $injector.get('displayService'),
 			events: $injector.get('eventService'),
-			gui: $injector.get('guiService'),
 			messages: $injector.get('messageService'),
 			models: $injector.get('modelService'),
 			panels: $injector.get('panelService'),

@@ -11,7 +11,7 @@
           <div class="description" ng-bind-html="volume.body | format"></div>
 
 	  <p class="primary_study" ng-if="primaryStudy">
-	    <span class="icon jump" ng-click="page.gui.scrollTo('panel_citations')"></span>
+	    <span class="icon jump" ng-click="page.display.scrollTo('panel_citations')"></span>
 	    <a href="{{primaryStudy.url | handle}}" target="_blank">{{'volume.citation.study.link' | message}}</a>
 	  </p>
 
