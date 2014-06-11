@@ -6,8 +6,6 @@
 	    @citations.map { citation =>
                 <div class="citation">
 		    <h3>@citation.head @citation.url.map{u => <a href="@dbrary.url.normalize(u)" title="@citation.head" class="cit_link">link</a>}</h3>
-
-                    @citation.body.map(display.plainText _)
                 </div>
             }
         </div>

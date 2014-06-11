@@ -77,6 +77,17 @@ object SQLType {
     override def escaped(a : Boolean) = show(a)
   }
 
+  implicit object short extends SQLDBType[Short]("smallint", classOf[Short], db.column.ShortEncoderDecoder) {
+    override def get(x : Any, where : String = "") : Short = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case i : Short => i
+      case i : java.lang.Short => i
+      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+      case _ => throw new SQLTypeMismatch(x, this, where)
+    }
+    override def escaped(a : Short) = show(a)
+  }
+
   implicit object int extends SQLDBType[Int]("integer", classOf[Int], db.column.IntegerEncoderDecoder) {
     override def get(x : Any, where : String = "") : Int = x match {
       case null => throw new SQLUnexpectedNull(this, where)
