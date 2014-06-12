@@ -19,6 +19,11 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.init = function (data, volume) {
 				form.data = data;
+
+				if (!form.data.assets) {
+					form.data.assets = [];
+				}
+
 				form.volume = form.volume || volume;
 			};
 
@@ -52,7 +57,7 @@ module.directive('volumeEditMaterialsForm', [
 
 					var msg = subform.messages.add({
 						type: 'yellow',
-						body: page.constants.message('volume.edit.materials.create', subform.asset.name || subform.asset.file[0].name),
+						body: page.constants.message('volume.edit.materials.create', subform.asset.name || page.constants.message('file')),
 					});
 
 					if (subform.asset.asset) {
@@ -60,8 +65,8 @@ module.directive('volumeEditMaterialsForm', [
 							.then(function (res) {
 								subform.messages.add({
 									type: 'green',
-									countdown: 3000,
-									body: page.constants.message('volume.edit.materials.replace.success', subform.asset.name || subform.asset.file[0].name),
+									closeable: true,
+									body: page.constants.message('volume.edit.materials.replace.success', subform.asset.name || page.constants.message('file')),
 								});
 
 								subform.messages.remove(msg);
@@ -78,14 +83,15 @@ module.directive('volumeEditMaterialsForm', [
 								}, function (res) {
 									subform.asset.asset.creation = res.creation;
 									form.store(subform);
+									form.clean(subform);
 								});
 
-								subform.form.$setPristine();
+								form.clean(subform);
 								page.models.Volume.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
 									type: 'red',
-									body: page.constants.message('volume.edit.materials.replace.error', subform.asset.name || subform.asset.file[0].name),
+									body: page.constants.message('volume.edit.materials.replace.error', subform.asset.name || page.constants.message('file')),
 									report: res,
 								});
 
@@ -95,15 +101,15 @@ module.directive('volumeEditMaterialsForm', [
 
 								subform.messages.remove(msg);
 
-								subform.form.$setPristine();
+								form.clean(subform);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
 							.then(function (res) {
 								subform.messages.add({
 									type: 'green',
-									countdown: 3000,
-									body: page.constants.message('volume.edit.materials.create.success', subform.asset.name || subform.asset.file[0].name),
+									closeable: true,
+									body: page.constants.message('volume.edit.materials.create.success', subform.asset.name || page.constants.message('file')),
 								});
 
 								subform.messages.remove(msg);
@@ -120,14 +126,15 @@ module.directive('volumeEditMaterialsForm', [
 								}, function (res) {
 									subform.asset.asset.creation = res.creation;
 									form.store(subform);
+									form.clean(subform);
 								});
 
-								subform.form.$setPristine();
+								form.clean(subform);
 								page.models.Volume.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
 									type: 'red',
-									body: page.constants.message('volume.edit.materials.create.error', subform.asset.name || subform.asset.file[0].name),
+									body: page.constants.message('volume.edit.materials.create.error', subform.asset.name || page.constants.message('file')),
 									report: res,
 								});
 
@@ -137,7 +144,7 @@ module.directive('volumeEditMaterialsForm', [
 
 								subform.messages.remove(msg);
 
-								subform.form.$setPristine();
+								form.clean(subform);
 							});
 					}
 				} else {
@@ -152,7 +159,7 @@ module.directive('volumeEditMaterialsForm', [
 						subform.messages.add({
 							type: 'green',
 							countdown: 3000,
-							body: page.constants.message('volume.edit.materials.update.success', subform.asset.name || subform.asset.file[0].name),
+							body: page.constants.message('volume.edit.materials.update.success', subform.asset.name || page.constants.message('file')),
 						});
 
 						if (angular.isFunction(form.successFn)) {
@@ -165,7 +172,7 @@ module.directive('volumeEditMaterialsForm', [
 					}, function (res) {
 						subform.messages.addError({
 							type: 'red',
-							body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || subform.asset.file[0].name),
+							body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || page.constants.message('file')),
 							report: res,
 						});
 
@@ -196,31 +203,31 @@ module.directive('volumeEditMaterialsForm', [
 				}
 
 				if (!subform.asset.asset) {
-					form.data.assets.splice(subform.$index, 1);
+					form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 				} else {
 					var newAsset = new page.models.Asset();
 
 					newAsset.$delete({
 						id: subform.asset.asset.id
-					}).then(function (res) {
+					}).then(function (res) { console.log(subform);
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
-							body: page.constants.message('volume.edit.materials.remove.success', subform.asset.name || subform.asset.file[0].name),
+							body: page.constants.message('volume.edit.materials.remove.success', subform.asset.name || page.constants.message('file')),
 						});
 
 						if (angular.isFunction(form.successFn)) {
 							form.successFn(form, res);
 						}
 
-						form.data.assets.splice(subform.$index, 1);
+						form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
 						form.clean(subform);
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
 							type: 'red',
-							body: page.constants.message('volume.edit.materials.remove.error', subform.asset.name || subform.asset.file[0].name),
+							body: page.constants.message('volume.edit.materials.remove.error', subform.asset.name || page.constants.message('file')),
 							errors: data,
 							status: status
 						});
@@ -250,7 +257,7 @@ module.directive('volumeEditMaterialsForm', [
 				var pristine = true;
 
 				angular.forEach(form, function (subform, id) {
-					if (id.indexOf('asset-') === 0 && form[id].$dirty) {
+					if (id.indexOf('asset-') === 0 && form[id] && form[id].$dirty) {
 						pristine = false;
 						return false;
 					}

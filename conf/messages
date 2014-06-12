@@ -79,6 +79,7 @@ edit=Edit
 create=Create
 lookup=Lookup
 donthave=I don''t have one
+file=file
 
 toolbar.login=login
 toolbar.logout=logout

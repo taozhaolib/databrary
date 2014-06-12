@@ -79,7 +79,7 @@ module.factory('displayService', [
 			} else if (angular.isUndefined(result)) {
 				return;
 			}
-			
+
 			if (result === true || confirm(constants.message('navigation.confirmation'))) {
 				return display.navigationFn = undefined;
 			}
