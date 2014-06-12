@@ -75,19 +75,14 @@ select {
 		width: 25%;
 	}
 
-	&.ng-dirty {
-		border-color: @green;
-		.input-shadow(@green);
-	}
-
-	&.ng-invalid:not(.ng-pristine) {
-		border-color: @red;
-		.input-shadow(@red);
-	}
-
 	&:focus {
 		border-color: @green;
 		.input-shadow(@green);
+
+		&.ng-invalid:not(.ng-pristine) {
+			border-color: @red;
+			.input-shadow(@red);
+		}
 	}
 }
 

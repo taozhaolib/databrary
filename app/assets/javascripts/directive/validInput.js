@@ -8,6 +8,8 @@ module.directive('validInput', [
 
 		return {
 			restrict: 'A',
+			template: '<div ng-transclude></div>',
+			transclude: true,
 			link: {
 				pre: pre,
 			},
