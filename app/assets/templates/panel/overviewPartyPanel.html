@@ -13,7 +13,7 @@
 							<dd bo-if="party.email"><a bo-href="'mailto:'+party.email">{{party.email}}</a></dd>
 
 							<dt bo-if="party.orcid" bo-html="'orcid' | message"/>
-							<dd bo-if="party.orcid"><a bo-href="party.orcid" bo-html="party.orcid"></a></dd>
+							<dd bo-if="party.orcid"><a bo-href="party.orcid" bo-text="party.orcid"></a></dd>
 						</dl>
 					</div>
 				</div>

@@ -91,8 +91,8 @@
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="network-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <a bo-href="page.router.party(child.party)" class="network-auth-username" bo-html="child.party.name"></a>
-              <span class="network-auth-email" bo-if="child.party.email" bo-html="child.party.email"></span>
+              <a bo-href="page.router.party(child.party)" class="network-auth-username" bo-text="child.party.name"></a>
+              <span class="network-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
               <span class="icon edit line" ng-click="openAuthChild(child)" ng-if="showExtended(false, child)"></span>
             </div>
 

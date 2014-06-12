@@ -20,12 +20,12 @@
 
           <div class="info">
             <div class="inner_feature" bo-html="'featured' | message"></div>
-            <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
+            <h1><a bo-href="page.router.volume({id: volume.id})" bo-text="volume.name"></a></h1>
 
             <div class="investigators">
               <ul class="inline-block flat">
                 <li ng-repeat="access in volume.access | filter:{access: page.permission.ADMIN}">
-                  <a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+                  <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
               </ul>
             </div>
           </div>
@@ -47,9 +47,9 @@
               <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
 
               <div class="info">
-                <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
+                <h1><a bo-href="page.router.party(party)" bo-text="party.name"></a></h1>
 
-                <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
+                <div class="affiliation" bo-if="party.affiliation" bo-text="party.affiliation"></div>
               </div>
             </article>
           </div>

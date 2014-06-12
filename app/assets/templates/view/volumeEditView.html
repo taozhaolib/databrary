@@ -1,14 +1,14 @@
 <article class="article article_crud article_volume article_edit panel" bindonce>
   <div class="wrap">
     <div class="row">
-      <hgroup class="col-full" ng-if="!volume">
+      <hgroup class="col-full" bo-if="!volume">
         <h1 class="panel_context" bo-html="'create' | message"></h1>
         <h2 class="panel_title with_context" bo-html="'volume.edit.title.sub' | message"></h2>
       </hgroup>
 
-      <hgroup class="col-full" ng-if="volume">
+      <hgroup class="col-full" bo-if="volume">
         <h1 class="panel_context" bo-html="'edit' | message"></h1>
-        <h2 class="panel_title with_context" ng-bind-html="volume.name | format:'title'"></h2>
+        <h2 class="panel_title with_context" ng-bind="volume.name"></h2>
       </hgroup>
 
       <div class="col-full">
