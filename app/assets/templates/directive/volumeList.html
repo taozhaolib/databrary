@@ -1,6 +1,9 @@
 <ul class="flat search_results">
   <li ng-repeat="v in volumes" bindonce>
-    <article class="search_result cf" bo-class="volumeClasses(v)">
+    <a bo-if="page.$location.path() === '/profile'" bo-href="page.router.volume({id: v.id})">
+	{{v.alias || v.name}}
+    </a>
+    <article bo-if="page.$location.path() !== '/profile'" class="search_result cf" bo-class="volumeClasses(v)">
       <img class="thumb" bo-src="page.router.volumeThumb(v)">
 
       <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-html="v.name"></a></h1>
