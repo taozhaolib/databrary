@@ -64,13 +64,27 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
 
-  def fileName : Future[String] =
-    idents.map { i =>
+  def fileName : Future[String] = {
+    def last(s : String) =
+      Maybe(s.lastIndexOf(' ')).fold(s)(i => s.substring(i+1))
+    for {
+      owns <- volume.partyAccess(Permission.ADMIN)
+      own = owns.headOption.map(_.party.name).map(last _)
+      cite <- volume.citation
+      auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(_.equals(own))
+      name = { 
+	val n = volume.alias.getOrElse(volume.name)
+	n.take(Maybe(n.lastIndexOf(' ', 32)).orElse(32))
+      }
+      ids <- idents
+    } yield {
       SlotAsset.fileNamePad.replaceAllIn(
-	(volume.alias.getOrElse(volume.name).take(16) +: (i ++ asset.name))
-	.mkString("-"),
+	(Seq("databrary" + volume.id) ++
+	own ++ auth ++ cite.flatMap(_.year).map(_.toString) ++
+	(name +: (ids ++ asset.name))).mkString("-"),
 	"_")
     }
+  }
 
   override lazy val json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
