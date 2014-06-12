@@ -127,8 +127,8 @@ module.controller('VolumeEditView', [
 				return true;
 			}
 
-			for (var form in forms) {
-				if (forms.hasOwnProperty(form) && forms[form] && forms[form].form && forms[form].form.$dirty) {
+			for (var id in forms) {
+				if (forms.hasOwnProperty(id) && forms[id] && forms[id].form && forms[id].form.$dirty) {
 					return false;
 				}
 			}

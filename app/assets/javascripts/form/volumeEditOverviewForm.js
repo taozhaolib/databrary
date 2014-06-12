@@ -4,6 +4,7 @@ module.directive('volumeEditOverviewForm', [
 			var form = $scope.volumeEditOverviewForm;
 
 			form.data = {};
+			form.authors = [];
 			var backup = {};
 
 			form.saveFn = undefined;
@@ -19,12 +20,34 @@ module.directive('volumeEditOverviewForm', [
 				form.volume = form.volume || volume;
 				form.automatic = !form.volume;
 
+				if (!form.data.citation) {
+					form.data.citation = {};
+				}
+
+				if (form.data.citation && form.data.citation.authors) {
+					form.authors = form.data.citation.authors.map(function (author) {
+						return {
+							name: author,
+						};
+					});
+				}
+
 				backup = $.extend(true, {}, data);
 			};
 
 			//
 
 			form.save = function () {
+				if (!form.data.citation) {
+					form.data.citation = {};
+				}
+
+				if (form.authors.length > 0) {
+					form.data.citation.authors = form.authors.map(function (author) {
+						return author.name;
+					});
+				}
+
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
@@ -141,7 +164,7 @@ module.directive('volumeEditOverviewForm', [
 							if (res.author) {
 								var parts = ['given', 'non-dropping-particle', 'family', 'suffix'];
 
-								form.data.citation.authors = [];
+								form.authors = [];
 
 								angular.forEach(res.author, function (author) {
 									var name = '';
@@ -154,7 +177,7 @@ module.directive('volumeEditOverviewForm', [
 
 									name = name.slice(0, -1);
 
-									form.data.citation.authors.push(name);
+									form.authors.push({name: name});
 								});
 							}
 
@@ -203,18 +226,18 @@ module.directive('volumeEditOverviewForm', [
 			//
 
 			form.addAuthor = function () {
-				if (!form.data.citation.authors) {
-					form.data.citation.authors = [];
+				if (!form.authors) {
+					form.authors = [];
 				}
 
-				form.data.citation.authors.push('');
+				form.authors.push({});
 			};
 
 			form.removeAuthor = function (author) {
-				var i = form.data.citation.authors.indexOf(author);
+				var i = form.authors.indexOf(author);
 
 				if (i > -1) {
-					form.data.citation.authors.splice(i, 1);
+					form.authors.splice(i, 1);
 				}
 			};
 

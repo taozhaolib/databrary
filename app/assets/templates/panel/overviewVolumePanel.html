@@ -8,12 +8,12 @@
 
       <div>
         <div ng-if="volume.citation" frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
-	  <p class="citation">
-	    <a bo-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank">
-	      {{volume.citation.head}}
-	    </a>
-	  </p>
-	</div>
+          <p class="citation">
+            <a bo-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank">
+              {{volume.citation.head}}
+            </a>
+          </p>
+        </div>
 
         <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
           <div class="description" ng-bind-html="volume.body | format"></div>
@@ -46,10 +46,8 @@
       </div>
 
       <div ng-if="volume.citation.authors" frame id="frame_authors" frame-title="{{'volume.authors.title' | message}}" fold>
-        <ul class="row">
-          <li ng-repeat="author in volume.citation.authors">
-	    {{author}}
-          </li>
+        <ul class="comma">
+          <li ng-repeat="author in volume.citation.authors">{{author}}</li>
         </ul>
       </div>
 
