@@ -68,7 +68,19 @@ module.factory('displayService', [
 		display.navigationFn = undefined;
 
 		$rootScope.$on('$locationChangeStart', function (event, url) {
-			if (!angular.isFunction(display.navigationFn) || display.navigationFn(event, url) || confirm(constants.message('navigation.confirmation'))) {
+			if (!angular.isFunction(display.navigationFn)) {
+				return;
+			}
+
+			var result = display.navigationFn(event, url);
+
+			if (result === true) {
+				return display.navigationFn = undefined;
+			} else if (angular.isUndefined(result)) {
+				return;
+			}
+			
+			if (result === true || confirm(constants.message('navigation.confirmation'))) {
 				return display.navigationFn = undefined;
 			}
 

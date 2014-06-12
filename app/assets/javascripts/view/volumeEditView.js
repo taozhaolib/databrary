@@ -124,7 +124,7 @@ module.controller('VolumeEditView', [
 
 		page.display.navigationFn = function (event, val) {
 			if (!volume || val.indexOf('/volume/'+volume.id+'/edit') > -1) {
-				return true;
+				return;
 			}
 
 			for (var id in forms) {
