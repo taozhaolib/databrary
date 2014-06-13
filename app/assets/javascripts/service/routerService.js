@@ -1,6 +1,7 @@
 module.factory('routerService', [
 	'$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
 		var router = {};
+		var prevUrl = "/"
 
 		router.$route = $route;
 
@@ -70,8 +71,13 @@ module.factory('routerService', [
 		router.asset = makeRoute('/asset/:id');
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
+		router.volumeCreateSetPrev = function(url){
+			prevUrl = url;
+			return router.volumeCreate;
+		}
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
-
+		
+		router.prevUrl = function() {return prevUrl;};
 		//
 
 		router.record = function (data) {
