@@ -437,7 +437,7 @@ splash.investigators.header=Databrary Investigators
 
 # --- Volume edit
 
-volume.edit.title.sub=New Volume
+volume.edit.title.sub=New Study
 
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
