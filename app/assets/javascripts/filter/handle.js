@@ -1,14 +1,14 @@
 module.filter('handle', [
 	function () {
 		var urlTypes = {
-			"doi": {
-				"prefix": "doi:",
-				"handler": "http://dx.doi.org/"
+			doi: {
+				prefix: "doi:",
+				handler: "http://dx.doi.org/"
 			},
 
-			"hdl": {
-				"prefix": "hdl:",
-				"handler": "http://hdl.handle.org/"
+			hdl: {
+				prefix: "hdl:",
+				handler: "http://hdl.handle.org/"
 			}
 		};
 
