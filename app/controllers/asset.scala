@@ -98,7 +98,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
       }
       // we do this separately in order to preserve the original "upload" filename audit:
-      _ <- form.name.get.foreachAsync(name => asset.change(name = Some(name)))
+      _ <- asset.change(name = form.name.get)
       _ = if (fmt.isTranscodable && !form.timeseries.get)
 	store.Transcode.start(asset)
     } yield (asset)
