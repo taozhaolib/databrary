@@ -25,10 +25,12 @@ trait Asset {
 		a <- models.Asset.create(volume, fmt, classification, duration, Maybe(name).opt, infile)
 		_ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
 	      } yield (a)
-	    case Asset.FileInfo(_, fmt) =>
+	    case Asset.TranscodableFileInfo(_, fmt, _) =>
 	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile).andThen {
-		case scala.util.Success(a) if fmt.isTranscodable => store.Transcode.start(a)
+		case scala.util.Success(a) => store.Transcode.start(a)
 	      }
+	    case Asset.FileInfo(_, fmt) =>
+	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile)
 	  }
 	  _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
 	} yield (asset)
@@ -66,9 +68,15 @@ private[ingest] object Asset {
   final case class FileInfo(val file : File, val format : AssetFormat) extends Info {
     def duration : Offset = Offset.ZERO
   }
-  final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : FileInfo) extends Info
+  final case class TranscodableFileInfo(val file : File, val format : AssetFormat, val duration : Offset) extends Info
+  final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : Info) extends Info
 
-  def fileInfo(file : File) : FileInfo =
-    Asset.FileInfo(file, AssetFormat.getFilename(file.getPath)
-      .getOrElse(Parse.fail("no file format found for " + file)))
+  def fileInfo(file : File) : Info = {
+    val fmt = AssetFormat.getFilename(file.getPath)
+      .getOrElse(Parse.fail("no file format found for " + file))
+    if (fmt.isTranscodable)
+      Asset.TranscodableFileInfo(file, fmt, media.AV.probe(file).duration)
+    else
+      Asset.FileInfo(file, fmt)
+  }
 }
