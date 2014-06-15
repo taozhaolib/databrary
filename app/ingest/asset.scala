@@ -12,7 +12,7 @@ trait Asset {
   def classification : Classification.Value
   def info : Asset.Info
 
-  def populate(volume : Volume, info : Asset.Info)(implicit site : Site, exc : ExecutionContext) : Future[models.Asset] =
+  def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(info.ingestPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
       case Nil =>
 	/* for now copy and don't delete */
@@ -26,7 +26,9 @@ trait Asset {
 		_ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
 	      } yield (a)
 	    case Asset.FileInfo(_, fmt) =>
-	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile)
+	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile).andThen {
+		case scala.util.Success(a) if fmt.isTranscodable => store.Transcode.start(a)
+	      }
 	  }
 	  _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
 	} yield (asset)
@@ -50,7 +52,7 @@ trait Asset {
       case _ =>
 	Future.failed(PopulateException("multiple imported assets for " + name + ": " + info.file.getPath))
     })
-  def populate(volume : Volume)(implicit site : Site, exc : ExecutionContext) : Future[models.Asset] =
+  def populate(volume : Volume)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     populate(volume, info)
 }
 
