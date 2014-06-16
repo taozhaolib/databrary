@@ -1,5 +1,5 @@
 module.factory('routerService', [
-	'$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
+	'$rootScope', '$route', '$filter', '$location', 'typeService', function ($rootScope, $route, $filter, $location, type) {
 		var router = {};
 		var prevUrl = "/"
 
@@ -53,7 +53,10 @@ module.factory('routerService', [
 		//
 
 		var makeRoute = function (route) {
-			return function (params, stripQuery) {
+			return function (params, stripQuery, setPrev) {
+				if(setPrev){
+					prevUrl = $location.path();
+				}
 				return router.makeUrl(route, params, stripQuery);
 			};
 		};
@@ -71,10 +74,6 @@ module.factory('routerService', [
 		router.asset = makeRoute('/asset/:id');
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
-		router.volumeCreateSetPrev = function(url){
-			prevUrl = url;
-			return router.volumeCreate;
-		}
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
 		
 		router.prevUrl = function() {return prevUrl;};

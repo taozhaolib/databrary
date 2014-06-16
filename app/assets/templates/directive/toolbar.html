@@ -39,8 +39,8 @@
 					<div class="user_links col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
 						<ul class="flat">
 						      <li><strong bo-text="page.auth.user.name"></strong></li>
-						      <li><a href="" ng-click="page.$location.url(page.router.profile())" class="toolbar_user_link" bo-html="'toolbar.profile' | message"></a></li>
-						      <li><a href="" ng-click="page.$location.url(page.router.volumeCreateSetPrev(page.$location.path())())" bo-html="'volume.edit.create' | message" ng-if="page.auth.hasAuth('VIEW')"></a></li>
+						      <li><a href="" ng-click="page.$location.url(page.router.profile());toolbar.hideHover()" class="toolbar_user_link" bo-html="'toolbar.profile' | message"></a></li>
+						      <li><a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message" ng-if="page.auth.hasAuth('VIEW')"></a></li>
 						      <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
 						      <li ng-if="page.auth.hasAuth('ADMIN')" class="password_form">
