@@ -71,6 +71,7 @@ module.directive('volumeEditOverviewForm', [
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res, true);
+							}
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);

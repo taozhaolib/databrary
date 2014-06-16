@@ -289,3 +289,23 @@ th, td {
 .validator_tip {
 	color: @green;
 }
+
+.valid-input {
+	position: relative;
+
+	.field {
+		.margin-right(2);
+	}
+
+	.indicator {
+		position: absolute;
+		.size(@b3 * 2);
+		top: 0;
+		right: 0;
+		background-color: gray;
+
+		img {
+			display: block;
+		}
+	}
+}
