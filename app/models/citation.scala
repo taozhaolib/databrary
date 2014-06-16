@@ -53,7 +53,9 @@ object Citation {
     crossref(hdl, jsonType)
     .flatMap(_.flatMap(_.json.asOpt[json.JsObject] /* XXX: json parse error? */).mapAsync { j =>
       crossref(hdl, bibliographyType + ";style=" + style).map(
-	_.fold(j)(b => j + ("head" -> json.JsString(b.body.trim /* XXX: utf8 */))))
+	_.fold(j)(b => j + ("head" -> json.JsString(new String(
+	  /* empirically this is UTF-8, but does not say so: */
+	  b.body.getBytes(com.ning.http.util.AsyncHttpProviderUtils.DEFAULT_CHARSET)).trim))))
     })
 
   private def getURLJson(url : java.net.URL, style : String = "apa") : Future[Option[json.JsObject]] =
