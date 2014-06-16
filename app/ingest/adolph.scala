@@ -279,12 +279,12 @@ object Adolph extends Ingest {
 		PopulateException("existing session for " + pr + " with different consent", s))
 	  } yield (c)
 	}
-	_ <- assets zip Asset.positions(assets) foreachAsync { case (a, o) =>
+	_ <- assets zip Asset.positions(assets) foreachAsync { case (i, o) =>
 	  for {
-	    a <- a.populate(volume)
+	    a <- i.populate(volume)
 	    as <- a.slot
 	    _ <- as.fold[Future[Any]] {
-	      a.link(c, Some(o), a.duration)
+	      a.link(c, Some(o), i.info.duration)
 	    } { as =>
 	      check(as.container === c,
 		PopulateException("existing asset in different container", as))
