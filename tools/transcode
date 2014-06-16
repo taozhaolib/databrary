@@ -43,11 +43,8 @@ if [[ ! -f $IN ]] ; then
 fi
 
 if [[ -n $hpc ]] ; then
-	rate=50000
+	rate=131072
 	sec=$[60+`stat -c %s "$IN"`/$rate]
-	if [[ $sec -lt 60 ]] ; then
-		sec=60
-	fi
 	exec qsub -d "$PWD" -q s48 -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$PBS"
 elif [[ -n $PBS_JOBNAME ]] ; then
 	PID=${PBS_JOBID%%.*}
@@ -56,11 +53,12 @@ else
 fi
 exec >$LOG 2>&1
 
-ls -l $aid $aid.*
 sleep 5 # hope server knows job has started by now
 
+ls -l $aid $aid.*
 ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
 r=$?
+ls -l "$OUT"
 if [[ $r -ne 0 ]] ; then
 	rm -f "$OUT"
 fi
