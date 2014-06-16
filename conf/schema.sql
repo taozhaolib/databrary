@@ -415,6 +415,7 @@ COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case
 SELECT audit.CREATE_TABLE ('slot_asset');
 
 CREATE TABLE "asset_revision" (
+	-- consider uniques on these
 	"prev" integer NOT NULL References "asset",
 	"next" integer NOT NULL References "asset",
 	Primary Key ("next", "prev")

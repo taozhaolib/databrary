@@ -165,8 +165,10 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
-  def supersede(asset : Asset) : Future[Boolean] =
-    SQL("SELECT asset_supersede(?, ?)").apply(asset.id, id).execute
+  def isSuperseded : Future[Boolean] =
+    SQL("SELECT next FROM asset_revision WHERE prev = ?").apply(id).execute
+  def supersede(old : Asset) : Future[Boolean] =
+    SQL("SELECT asset_supersede(?, ?)").apply(old.id, id).execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
