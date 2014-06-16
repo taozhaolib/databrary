@@ -204,6 +204,7 @@ module.directive('volumeEditMaterialsForm', [
 
 				if (!subform.asset.asset) {
 					form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
+					form.clean();
 				} else {
 					var newAsset = new page.models.Asset();
 
@@ -252,7 +253,9 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.clean = function (subform) {
-				subform.form.$setPristine();
+				if (subform) {
+					subform.form.$setPristine();
+				}
 
 				var pristine = true;
 
