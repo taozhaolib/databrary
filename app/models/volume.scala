@@ -60,6 +60,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     .andThen { case scala.util.Success(true) =>
       _citation.set(cite)
     }
+  def funding : Future[Seq[Funding]] = VolumeFunding.get(this)
 
   /** The list of comments in this volume. */
   def comments = Comment.getVolume(this)
@@ -232,7 +233,7 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(
       party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
       "WHERE volume.id > 0 AND",
-      party.fold("")(_ => "volume_access.party = ? AND (volume_access.access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND"),
+      party.fold("")(_ => "volume_access.party = ? AND volume_access.access >= 'CONTRIBUTE' AND"),
       query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
       condition,
       "ORDER BY",

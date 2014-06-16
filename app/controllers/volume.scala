@@ -92,7 +92,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))
 	      form.withGlobalError("access.grant.restricted", form.party.name)._throw
 	    else
-	      VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
+	      VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get)
 	  }
     } yield (result(request.obj))
   }
@@ -161,13 +161,11 @@ object VolumeController extends VolumeController {
       minId = (if (own) Permission.ADMIN else Permission.NONE).id))
     val inherit = Field(Mappings.enum(Permission,
       maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
-    val funding = Field(Mappings.maybeText)
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
       access.fill(a.access)
       inherit.fill(a.inherit)
-      funding.fill(a.funding)
       this
     }
     /** Does granting this access level require CONTRIBUTE-level authorization? */
@@ -202,9 +200,10 @@ object VolumeHtml extends VolumeController with HtmlController {
       records <- vol.recordCategorySlots
       excerpts <- vol.excerpts
       citation <- vol.citation
+      funding <- vol.funding
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citation, comments, tags)))
+    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citation, funding, comments, tags)))
   }
 
   def viewSearch(implicit request : SiteRequest[AnyContent]) = {
