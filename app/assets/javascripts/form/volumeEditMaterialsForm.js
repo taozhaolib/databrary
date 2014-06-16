@@ -209,7 +209,7 @@ module.directive('volumeEditMaterialsForm', [
 
 					newAsset.$delete({
 						id: subform.asset.asset.id
-					}).then(function (res) { console.log(subform);
+					}).then(function (res) {
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,

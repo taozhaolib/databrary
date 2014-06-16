@@ -101,11 +101,6 @@ module.factory('authService', [
 
 		//
 
-		auth.tryLogin = function () {
-			auth.next = $location.url();
-			$location.url(router.login());
-		};
-
 		auth.logout = function () {
 			Party.logout(function (data) {
 				auth.parseUser(data);
@@ -206,8 +201,7 @@ module.factory('authService', [
 		auth.toggleSU = function (form) {
 			if (angular.isDefined(form)) {
 				enableSU(form);
-			}
-			else {
+			} else {
 				disableSU();
 			}
 		};

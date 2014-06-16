@@ -23,7 +23,7 @@ module.controller('LoginView', [
 			page.models.Party.login(angular.extend({
 				email: '',
 				password: '',
-				openid: ''
+				openid: '',
 			}, $scope.loginData), function (data) {
 				page.auth.parseUser(data);
 
@@ -34,16 +34,7 @@ module.controller('LoginView', [
 					page.$location.path('/');
 				}
 			}, function (res) {
-				page.auth.parseUser(undefined);
-
-				if(!$scope.loginForm.validator.server(res.data, true)) {
-					$scope.loginForm.messages.add({
-						body: page.constants.message('login.error'),
-						type: 'red',
-						closeable: true,
-						report: res,
-					});
-				}
+				$scope.loginForm.validator.server(res, true, $scope.loginForm.messages);
 			});
 		};
 	}

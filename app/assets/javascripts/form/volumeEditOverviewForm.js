@@ -70,12 +70,7 @@ module.directive('volumeEditOverviewForm', [
 							form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
-							if (!form.validator.server(res.data)) {
-								form.messages.addError({
-									body: page.constants.message('volume.edit.overview.error'),
-									report: res
-								});
-							}
+							form.validator.server(res, true);
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);
