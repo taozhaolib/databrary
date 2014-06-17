@@ -23,8 +23,8 @@
       </div>
     </validator>
 
-    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="!form.$dirty"></button>
-    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="orange" ng-disabled="!form.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
+    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="orange" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
   </fieldset>
 
