@@ -46,6 +46,10 @@ object Funder extends Table[Funder]("funder") {
 }
 
 final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = IndexedSeq.empty) {
+  def json = JsonObject(
+    'funder -> funder.name,
+    'awards -> awards
+  )
 }
 
 object VolumeFunding extends Table[Funding]("volume_funding") {
@@ -65,13 +69,12 @@ object VolumeFunding extends Table[Funding]("volume_funding") {
     val ids = SQLTerms('volume -> vol.id, 'funder -> funderId)
     awards.fold(
       DELETE(ids).execute) { a =>
-      Funder.get(funderId).flatMap { f =>
-	f.getOrElse(throw new RuntimeException("funder not found: " + funderId))
+      Funder.get(funderId).flatMap(_.fold(async(false)) { _ =>
 	val args = ('awards -> a) +: ids
 	DBUtil.updateOrInsert(
 	  SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).apply(args))(
 	  INSERT(args)(_, _)).execute
-      }
+      })
     }
   }
 }

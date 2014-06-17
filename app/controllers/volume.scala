@@ -25,24 +25,6 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  private val citationMapping = Forms.tuple(
-    "head" -> Mappings.maybeText,
-    "url" -> Forms.optional(Forms.of[URL]),
-    "authors" -> Forms.seq(Forms.nonEmptyText),
-    "year" -> Forms.optional(Forms.number(1900, 2900))
-  ).verifying("citation.invalid", _ match {
-    case (None, None, Nil, None) => true
-    case (Some(_), _, _, _) => true
-    case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
-    case _ => false
-  }).transform[Option[Citation]]({
-    case (None, None, Nil, None) => None
-    case (head, url, authors, year) => Some(Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
-  }, {
-    case None => (None, None, Nil, None)
-    case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
-  })
-
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
     val form = new VolumeController.EditForm(None)._bind
@@ -117,6 +99,24 @@ object VolumeController extends VolumeController {
     val query = Field(Mappings.maybeText)
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
+
+  private val citationMapping = Forms.tuple(
+    "head" -> Mappings.maybeText,
+    "url" -> Forms.optional(Forms.of[URL]),
+    "authors" -> Forms.seq(Forms.nonEmptyText),
+    "year" -> Forms.optional(Forms.number(1900, 2900))
+  ).verifying("citation.invalid", _ match {
+    case (None, None, Nil, None) => true
+    case (Some(_), _, _, _) => true
+    case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
+    case _ => false
+  }).transform[Option[Citation]]({
+    case (None, None, Nil, None) => None
+    case (head, url, authors, year) => Some(Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
+  }, {
+    case None => (None, None, Nil, None)
+    case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
+  })
 
   trait VolumeForm extends FormView {
     def actionName : String
@@ -261,18 +261,40 @@ object VolumeApi extends VolumeController with ApiController {
     } yield (Ok(JsonArray(vols)))
   }
 
-  def accessGet(volumeId : models.Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
+  def accessGet(volumeId : Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
     for {
       parents <- request.obj.partyAccess()
     } yield (Ok(JsonRecord.map[VolumeAccess](a =>
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
   }
 
-  def accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
-    (if (!(partyId === request.identity.id))
-      VolumeAccess.delete(request.obj, partyId)
-    else macros.async(false)).map { _ =>
-      result(request.obj)
+  def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
+    Action(volumeId, Permission.ADMIN).async { implicit request =>
+      (if (!(partyId === request.identity.id))
+	VolumeAccess.delete(request.obj, partyId)
+      else macros.async(false)).map { _ =>
+	result(request.obj)
+      }
     }
+
+  final class FundingForm(funderId : Funder.Id)(implicit request : Request[_])
+    extends ApiForm(routes.VolumeApi.fundingChange(request.obj.id, funderId)) {
+    val awards = Field(Forms.seq(Mappings.nonEmptyText))
   }
+
+  def fundingChange(volumeId : Volume.Id, funderId : Funder.Id) =
+    Action(volumeId, Permission.EDIT).async { implicit request =>
+      val form = new FundingForm(funderId)._bind
+      VolumeFunding.set(request.obj, funderId, Some(form.awards.get.toIndexedSeq)).map { r =>
+	if (r) result(request.obj)
+	else form.withGlobalError("funder.notfound", funderId)._throw
+      }
+    }
+
+  def fundingDelete(volumeId : Volume.Id, funderId : Funder.Id) =
+    Action(volumeId, Permission.EDIT).async { implicit request =>
+      VolumeFunding.set(request.obj, funderId, None).map { _ =>
+	result(request.obj)
+      }
+    }
 }
