@@ -265,7 +265,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password || !!$scope.registerForm.ready();
+				step.complete = !user.anon || user.password || !!$scope.registerForm.ready() ? true : undefined;
 			},
 
 			'register_agreement': function (step, activate) {
@@ -275,7 +275,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password || !!$scope.registerForm.sent;
+				step.complete = !user.anon || user.password || !!$scope.registerForm.sent ? true : undefined;
 			},
 
 			'register_email': function (step, activate) {
@@ -285,7 +285,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password;
+				step.complete = !user.anon || user.password ? true : undefined;
 			},
 
 			'register_password': function (step, activate) {
@@ -295,7 +295,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon;
+				step.complete = !user.anon ? true : undefined;
 			},
 
 			'register_agent': function (step, activate) {
@@ -305,7 +305,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party);
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party) ? true : undefined;
 			},
 
 			'register_request': function (step, activate) {
@@ -315,7 +315,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent);
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent) ? true : undefined;
 
 				//
 
@@ -341,7 +341,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = user.auth;
+				step.complete = user.auth ? true : undefined;
 			}
 		};
 	}
