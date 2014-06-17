@@ -95,6 +95,7 @@ module.directive('volumeEditOverviewForm', [
 						}
 
 						form.$setPristine();
+						page.models.Volume.$cache.removeAll();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
 						form.validator.server(res, true);
