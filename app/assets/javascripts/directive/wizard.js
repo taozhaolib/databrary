@@ -64,11 +64,9 @@ module.directive('wizard', [
 
 					if (step.complete === true) {
 						classes.push('complete');
-					}
-
-					if (step.complete === false) {
+					} else if (step.complete === false) {
 						classes.push('error');
-					} else if (angular.isUndefined(step.complete)) {
+					} else {
 						classes.push('incomplete');
 					}
 
