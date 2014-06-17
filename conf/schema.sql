@@ -190,7 +190,6 @@ CREATE TABLE "volume_access" (
 	"party" integer NOT NULL References "party",
 	"access" permission NOT NULL DEFAULT 'NONE',
 	"inherit" permission NOT NULL DEFAULT 'NONE' Check ("inherit" < 'ADMIN'),
-	"funding" text,
 	Check ("access" >= "inherit"),
 	Primary Key ("volume", "party")
 );
@@ -226,6 +225,23 @@ CREATE TABLE "volume_citation" (
 COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
 
 SELECT audit.CREATE_TABLE ('volume_citation');
+
+CREATE TABLE "funder" (
+	"fundref_id" bigint NOT NULL Primary Key,
+	"name" text NOT NULL,
+	"party" integer References "party"
+);
+COMMENT ON TABLE "funder" IS 'Sources of funding, basically a mirror of fundref data, with local party associations (primarily for transition).';
+COMMENT ON COLUMN "funder"."fundref_id" IS 'Identifiers from fundref.org, under the http://dx.doi.org/10.13039/ namespace. Specifications suggest these may not be numeric, but they seem to be.';
+
+CREATE TABLE "volume_funding" (
+	"volume" integer NOT NULL References "volume",
+	"funder" bigint NOT NULL References "funder",
+	"awards" text[] NOT NULL Default '{}',
+	Primary Key ("volume", "funder")
+);
+COMMENT ON TABLE "volume_funding" IS 'Funding sources associated with a volume, based on fundref.org.';
+COMMENT ON COLUMN "volume_funding"."awards" IS 'Individual grant identifiers associated with this funder.';
 
 ----------------------------------------------------------- time intervals
 

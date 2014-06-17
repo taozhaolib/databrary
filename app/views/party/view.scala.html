@@ -5,7 +5,7 @@
 @template.crud("Profile: " + request.obj.party.name, angular = Some(request.obj.json.js)) {
     @widget.panel.party(parents, children)
 
-    @widget.panel.volumes(owned, edited, accesses.filter(_.funding.isDefined).map(_.volume))
+    @widget.panel.volumes(owned, edited)
 
     @widget.panel.comments(None, None, comments)
 }

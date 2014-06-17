@@ -1,9 +1,9 @@
-@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[(Slot,Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])], assets : Seq[SlotAsset], citation : Option[Citation], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
+@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[(Slot,Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
 
     @template.crud("Volume: " + volume.name, angular = Some(request.obj.json.js)) {
-        @widget.panel.volume(volume, summary, access)
+        @widget.panel.volume(volume, summary, access, funding)
         @widget.panel.browser(sessions, records)
         @widget.panel.materials(assets)
         @widget.panel.citations(citation)

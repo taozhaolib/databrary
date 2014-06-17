@@ -168,6 +168,14 @@ POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                 
 # DELETE
 DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
 
+# volume funding
+# SEARCH (see also search.crossref.org/funders?q=)
+GET     /api/funder                                                                               controllers.VolumeApi.funderSearch(query : String)
+# ADD/UPDATE awards=[]
+POST    /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingChange(volumeId : models.Volume.Id, funderId : models.Funder.Id)
+# DELETE
+DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingDelete(volumeId : models.Volume.Id, funderId : models.Funder.Id)
+
 # ----- SLOT ----- #
 # QUERY     ?volume=ID;record=ID;asset=ID
 #                                                                                                 TODO: GET     /api/slot

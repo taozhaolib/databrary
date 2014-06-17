@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.{Future,ExecutionContext}
+import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import java.net.URL
 import macros._

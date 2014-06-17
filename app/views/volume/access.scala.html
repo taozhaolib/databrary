@@ -8,7 +8,6 @@
 	<td>@display(form.party)</td>
 	@widget.enumSelect(form.access(), Permission)
 	@widget.tag.select(form.inherit(), Permission.values.to(if (form.partyId.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
-	@widget.tag.inputText(form.funding())
 }
 
 @template.form(Some(volume), "Manage Access") {
@@ -18,7 +17,6 @@
                     <th>Name</th>
                     <th>Individual</th>
                     <th>Group</th>
-                    <th>Funding</th>
                     <th>Action</th>
                 </tr>
             </thead>

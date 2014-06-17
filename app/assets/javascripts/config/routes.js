@@ -304,6 +304,7 @@ module.config([
 						page.models.Volume.get({
 							access: '',
 							citation: '',
+							funding: '',
 							providers: '',
 							consumers: '',
 							top: '',

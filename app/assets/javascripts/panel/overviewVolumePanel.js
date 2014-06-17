@@ -12,10 +12,6 @@ module.controller('OverviewVolumePanel', [
 			return volumeAccess.access && volumeAccess.access < page.permission.CONTRIBUTE;
 		};
 
-		$scope.isFunding = function (volumeAccess) {
-			return !!volumeAccess.funding;
-		};
-
 		$scope.shareMessage = function (volumeAccess) {
 			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access], volumeAccess.party.name);
 		};
