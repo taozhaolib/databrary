@@ -151,7 +151,7 @@ object LoginController extends LoginController {
       Forms.tuple(
 	"once" -> passwordOnceMapping,
 	"again" -> Forms.text
-      ).verifying("password.again", pa => pa._1.forall(_ == pa._2))
+      ).verifying("password.match", pa => pa._1.forall(_ == pa._2))
       .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
     protected final def passwordMapping : Mapping[Option[String]] =
       passwordInputMapping

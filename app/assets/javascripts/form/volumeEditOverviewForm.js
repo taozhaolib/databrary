@@ -87,7 +87,7 @@ module.directive('volumeEditOverviewForm', [
 							countdown: 3000,
 							body: page.constants.message('volume.edit.overview.success'),
 						});
-						//update backup so a future revert goes to current state, not pageload state
+
 						backup = $.extend(true, {}, form.data);
 
 						if (angular.isFunction(form.successFn)) {
@@ -97,10 +97,7 @@ module.directive('volumeEditOverviewForm', [
 						form.$setPristine();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.overview.error'),
-							report: res
-						});
+						form.validator.server(res, true);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
@@ -235,6 +232,29 @@ module.directive('volumeEditOverviewForm', [
 					form.authors.splice(i, 1);
 				}
 			};
+
+			//
+
+			form.validator.client({
+				name: {
+					tips: page.constants.message('volume.edit.name.help')
+				},
+				body: {
+					tips: page.constants.message('volume.edit.body.help')
+				},
+				alias: {
+					tips: page.constants.message('volume.edit.alias.help')
+				},
+				'citation.head': {
+					tips: page.constants.message('volume.edit.citation.head.help')
+				},
+				'citation.url': {
+					tips: page.constants.message('volume.edit.citation.url.help')
+				},
+				'citation.year': {
+					tips: page.constants.message('volume.edit.citation.year.help')
+				},
+			}, true);
 
 			//
 

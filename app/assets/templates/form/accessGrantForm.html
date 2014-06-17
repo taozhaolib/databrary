@@ -1,16 +1,17 @@
 <form name="accessGrantForm" bindonce novalidate>
   <messages form="accessGrantForm"></messages>
 
-  <fieldset class="clean" ng-if="accessGrantForm.funding">
-		<label bo-html="'access.grant.funding' | message"></label>
-		<input name="funding" type="text" ng-model="accessGrantForm.data.funding" idle="accessGrantForm.save()" ng-blur="accessGrantForm.save()">
+  <fieldset class="clean cut_f" ng-if="accessGrantForm.funding">
+    <validator form="accessGrantForm" name="funding" label="'access.grant.funding' | message">
+      <input name="funding" type="text" ng-model="accessGrantForm.data.funding" idle="accessGrantForm.save()" ng-blur="accessGrantForm.save()">
+    </validator>
   </fieldset>
 
 	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
-		<div ng-repeat="permission in page.constants.data.permission">
-			<input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
-			<label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
-		</div>
+    <div ng-repeat="permission in page.constants.data.permission">
+      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
+      <label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
+    </div>
 
 		<div ng-if="!access.party.institution">
 			<input type="checkbox" ng-checked="accessGrantForm.data.inherit != 0" ng-model="accessGrantForm.extending" ng-change="accessGrantForm.extend()">

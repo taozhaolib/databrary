@@ -64,10 +64,7 @@ module.directive('authGrantForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('auth.grant.save.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -96,10 +93,7 @@ module.directive('authGrantForm', [
 						form.denySuccessFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('auth.grant.deny.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.denyErrorFn)) {
 						form.denyErrorFn(form, arguments);
@@ -153,11 +147,9 @@ module.directive('authGrantForm', [
 
 				if (form.other.expires) {
 					form.other.expiration = page.$filter('date')(new Date(form.other.expires), 'yyyy-MM-dd');
-				}
-				else if (angular.isUndefined(form.other.authorized)) {
+				} else if (angular.isUndefined(form.other.authorized)) {
 					form.other.expiration = page.$filter('date')(dateLimit, 'yyyy-MM-dd');
-				}
-				else {
+				} else {
 					form.other.expiration = '';
 				}
 			});

@@ -8,7 +8,9 @@
       <div class="comment_body comment_form">
         <messages form="commentReplyForm"></messages>
 
-        <textarea ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
+        <validator form="commentReplyForm" name="text" label="'comments.text.title' | message">
+          <textarea name="text" ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
+        </validator>
 
         <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">{{'comments.post' | message}}</button>
         <button class="orange" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.data.parent">{{'comments.cancel' | message}}</button>

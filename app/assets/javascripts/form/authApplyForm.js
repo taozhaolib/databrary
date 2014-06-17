@@ -36,10 +36,7 @@ module.directive('authApplyForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('auth.apply.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -67,10 +64,7 @@ module.directive('authApplyForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('error.generic'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -105,6 +99,14 @@ module.directive('authApplyForm', [
 					form.other.direct = 0;
 				}
 			};
+
+			//
+
+			form.validator.client({
+				info: {
+					tips: page.constants.message('auth.request.info.help'),
+				},
+			}, true);
 
 			//
 

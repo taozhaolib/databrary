@@ -43,10 +43,7 @@ module.directive('volumeEditFundingForm', [
 						form.$setPristine();
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.funding.error'),
-							report: res
-						});
+						form.validator.server(res);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);

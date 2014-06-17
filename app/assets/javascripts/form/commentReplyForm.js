@@ -40,10 +40,7 @@ module.directive('commentReplyForm', [
 
 					form.cancel();
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('comments.add.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -82,6 +79,14 @@ module.directive('commentReplyForm', [
 			form.ready = function () {
 				return form.$dirty && form.$valid && form.data.text;
 			};
+
+			//
+
+			form.validator.client({
+				text: {
+					tips: page.constants.message('comments.text.help'),
+				}
+			}, true);
 
 			//
 

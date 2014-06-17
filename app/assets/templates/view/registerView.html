@@ -13,18 +13,15 @@
 						<form name="registerForm" novalidate>
               <messages form="registerForm"></messages>
 
-              <label for="field_name">{{'register.name.prompt' | message}}</label>
-              <validator form="registerForm" name="fieldName">
+              <validator form="registerForm" name="fieldName" label="'register.name.prompt' | message">
                 <input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
               </validator>
 
-              <label for="field_email">{{'email' | message}}</label>
-              <validator form="registerForm" name="fieldEmail">
+              <validator form="registerForm" name="fieldEmail" label="'email' | message">
                 <input id="field_email" name="fieldEmail" type="email" ng-model="registerForm.data.email">
               </validator>
 
-              <label for="field_affiliation">{{'affiliation' | message}}</label>
-              <validator form="registerForm" name="fieldAffiliation">
+              <validator form="registerForm" name="fieldAffiliation" label="'affiliation' | message">
                 <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation">
               </validator>
 
@@ -75,7 +72,9 @@
 							<form name="infoForm" novalidate>
                 <messages form="infoForm"></messages>
 
-                <textarea id="field_info" ng-model="infoForm.data.info"></textarea>
+                <validator form="infoForm" name="info" label="'auth.request.info.title' | message">
+                  <textarea id="field_info" name="info" ng-model="infoForm.data.info"></textarea>
+                </validator>
 
 								<button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">{{'register.continue' | message}}</button>
 								<button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>

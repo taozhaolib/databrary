@@ -27,8 +27,21 @@ agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
 url.invalid=Invalid URL (should start with http or doi:)
 
+error.generic=Something''s gone terribly wrong.
+error.prefix=<strong>Error</strong>:
+error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.view=<a href="" ng-click="message.fn()">View error</a>.
+error.email=feedback@databrary.org
+
+error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
+error.report.subject=[Error {0}] {1}
+error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
+
+scraper.error=Could not retrieve required document "{0}".
+video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
+
 error.forbidden.title=Access denied
-error.forbidden.body=
+error.forbidden.body=If you are not logged-in, try logging in.
 error.notfound.title=There''s nothing here
 error.notfound.body=The resource you requested may no longer be available.
 error.badrequest.title=Bad request
@@ -82,6 +95,7 @@ create=Create
 lookup=Lookup
 donthave=I don''t have one
 file=file
+account=Account
 
 toolbar.login=login
 toolbar.logout=logout
@@ -90,29 +104,56 @@ toolbar.profile=view profile
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
-# HTML page attributes
-page.title.home=Welcome
+# --- Login page
 page.title.login=Login
-page.title.reset=Password Reset
-page.title.register=Register
-page.title.search=Search
-page.title.stub=Create Volume Stub
-page.title.error=There''s been an Error!
 
-# Login, party, auth pages
 login.title=Login
 login.title.sub=Enter Databrary
 login.login=Login
 login.method.password=or login with Databrary.
 login.method.openid=or login with OpenID.
 login.forgot=Forgot your password?
+
+login.bad=Incorrect login.
+login.throttled=Too many login attempts. Try again later.
+login.openID.notFound=No account is associated with that OpenID.
+login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
+login.expired=Your session has expired. Please login again.
+login.error=Unable to log in with those credentials.
+
+login.email.help=Enter the email address on file.
+login.password.help=Enter your password.
+
+# --- Reset page
+page.title.reset=Password Reset
+
+reset.title=Password Reset
+reset.request=Reset
+reset.save=Save
+reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
+reset.save.success=Your password has been reset.
+reset.request.error=Password reset unsuccessful.
+
+reset.email.help=Enter your email address.
+reset.once.help=Enter a secure password.
+reset.again.help=Enter your password again.
+
+# --- HTML page attributes
+page.title.home=Welcome
+page.title.register=Register
+page.title.search=Search
+page.title.stub=Create Volume Stub
+page.title.error=There''s been an Error!
+
+# party, auth pages
 email=Email
 password=Password
+password.again=Password (again)
 password.current=Current Password
 password.new=New Password
 password.new.again=New Password (again)
 password.incorrect=Incorrect password.
-password.again=Passwords do not match.
+password.match=Passwords do not match.
 password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
@@ -120,12 +161,6 @@ fullname=Full Name
 duns=D-U-N-S
 avatar=Avatar
 affiliation=Affiliation
-login.bad=Incorrect login.
-login.throttled=Too many login attempts. Try again later.
-login.openID.notFound=No account is associated with that OpenID.
-login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
-login.expired=Your session has expired. Please login again.
-login.error=Unable to log in with those credentials.
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
@@ -134,13 +169,6 @@ superuser.on.success=Superuser mode activated!
 superuser.on.error=Could not activate superuser mode!
 superuser.off.success=Superuser mode deactivated!
 superuser.off.error=Could not deactivate superuser mode!
-
-reset.title=Password Reset
-reset.request=Reset
-reset.save=Save
-reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
-reset.save.success=Your password has been reset.
-reset.request.error=Password reset unsuccessful.
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
@@ -167,31 +195,41 @@ auth.direct=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
-auth.request.title=Request authorization from {0}
-auth.request.notfound.user=User Not Found
-auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
-auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
-auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 auth.apply.error=Could not submit your request.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
 auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
-auth.search=Search for a user or institution...
-auth.search.principal=Search for your institution...
-auth.search.affiliate=Search for your sponsoring PI...
-auth.search.error=Could not retrieve any users or institutions.
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+
+# --- Auth search
+auth.search=Search for a user or institution...
+auth.search.principal=Search for your institution...
+auth.search.affiliate=Search for your sponsoring PI...
+auth.search.error=Could not retrieve any users or institutions.
+
+auth.search.name.help=Begin typing the name of the desired party.
+
+# --- Auth apply
+auth.request.title=Request authorization from {0}
+auth.request.notfound.user=User Not Found
+auth.request.notfound.title=More information required
+auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
+auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
+
+auth.info.prompt=Expedite the authorization process by helping us contact your Institution''s Authorizing Official (a.k.a. the co-signer of your Agreement).
+auth.request.info.title=More Info
+auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
 access.search=Search for a user, group, or institution...
+access.search.name.help=Begin typing the name of the desired party.
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
 access.grant.funding=Grant #
@@ -325,8 +363,11 @@ materials.title=Materials
 materials.empty=There are no files here.
 
 material.file=File
-material.name=Name
+material.name=Caption
 material.classification=Classification
+
+material.file.help=Select the file you wish to upload.
+material.name.help=You may assign some descriptive text to this file.
 
 citations.title=Citations
 citations.study.title=Corresponding Publication
@@ -347,6 +388,9 @@ comments.prompt=Post a comment...
 comments.update.error=Could not update comments list.
 comments.add.success=Comment added.
 comments.add.error=Error while posting comment.
+
+comments.text.title=Comment
+comments.text.help=Comment on the content of this page.
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.
@@ -370,22 +414,6 @@ search.deep.info=You are in deep search mode. Press enter to submit new request,
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
 
-# Errors
-error.prefix=<strong>Error</strong>:
-error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
-
-error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
-error.report.subject=[Error {0}] {1}
-error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
-
-error.view=<a href="" ng-click="message.fn()">View error</a>.
-
-error.generic=Something''s gone terribly wrong.
-error.email=feedback@databrary.org
-
-scraper.error=Could not retrieve required document "{0}".
-video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
-
 # --- Registration
 register.title=Register
 register.title.sub=Get Databrary Access
@@ -395,6 +423,13 @@ register.agree=Agree
 register.register=Agree and register
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
+
+register.name.help=<strong>Name</strong>: Provide your full name.
+
+register.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
+register.email.error=<strong>Email</strong>: This email address is invalid.
+
+register.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
 
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.
@@ -428,11 +463,6 @@ wizard.register_request.instructions=
 wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
 wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
-
-wizard.register_form.name.help=<strong>Name</strong>: Provide your full name.
-wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
-wizard.register_form.email.error=<strong>Email</strong>: This email address is invalid.
-wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
 
 #Splash page text
 splash.investigators.header=Databrary Investigators
@@ -482,3 +512,10 @@ wizard.volume_edit_funding.instructions=Specify any sources of funding that may 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set access and sharing levels.
 wizard.volume_edit_access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
+
+volume.edit.name.help=The study name will typically be the same as the associated paper.
+volume.edit.body.help=Enter the abstract of the associated paper or a description of the contents of this study.
+volume.edit.alias.help=This brief, but descriptive name will only be shown to those with edit acess to this study.
+volume.edit.citation.head.help=Enter the citation of the associated paper.
+volume.edit.citation.url.help=Enter in this form: dx.doi.org/##.####.####/...
+volume.edit.citation.year.help=Enter the publication year of the associated paper, if available.

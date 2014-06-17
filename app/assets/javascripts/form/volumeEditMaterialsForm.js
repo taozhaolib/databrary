@@ -89,11 +89,7 @@ module.directive('volumeEditMaterialsForm', [
 								form.clean(subform);
 								page.models.Volume.$cache.removeAll();
 							}, function (res) {
-								subform.messages.addError({
-									type: 'red',
-									body: page.constants.message('volume.edit.materials.replace.error', subform.asset.name || page.constants.message('file')),
-									report: res,
-								});
+								form.validator.server(res);
 
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
@@ -132,11 +128,7 @@ module.directive('volumeEditMaterialsForm', [
 								form.clean(subform);
 								page.models.Volume.$cache.removeAll();
 							}, function (res) {
-								subform.messages.addError({
-									type: 'red',
-									body: page.constants.message('volume.edit.materials.create.error', subform.asset.name || page.constants.message('file')),
-									report: res,
-								});
+								form.validator.server(res);
 
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
@@ -170,11 +162,7 @@ module.directive('volumeEditMaterialsForm', [
 						form.store(subform);
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						subform.messages.addError({
-							type: 'red',
-							body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || page.constants.message('file')),
-							report: res,
-						});
+						form.validator.server(res);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
@@ -226,12 +214,7 @@ module.directive('volumeEditMaterialsForm', [
 						form.clean(subform);
 						page.models.Volume.$cache.removeAll();
 					}, function (res) {
-						form.messages.addError({
-							type: 'red',
-							body: page.constants.message('volume.edit.materials.remove.error', subform.asset.name || page.constants.message('file')),
-							errors: data,
-							status: status
-						});
+						form.validator.server(res);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
@@ -273,6 +256,20 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.store = function (subform) {
 				backup[subform.$id] = $.extend(true, {}, subform.asset);
+
+				//
+
+				var subwatch = subform.$watch('form.name.validator', function (val) {
+					if (!val) {
+						return;
+					}
+
+					subform.form.name.validator.client({
+						tips: page.constants.message('material.name.help'),
+					}, true);
+
+					subwatch();
+				});
 			};
 
 			form.reset = function (subform) {

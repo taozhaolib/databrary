@@ -2,6 +2,24 @@ module.controller('LoginView', [
 	'$scope', 'pageService', function ($scope, page) {
 		page.display.title = page.constants.message('page.title.login');
 
+		var form;
+		var loginWatch = $scope.$watch('loginForm', function () {
+			form = $scope.loginForm;
+
+			form.validator.client({
+				email: {
+					tips: page.constants.message('login.email.help'),
+				},
+				password: {
+					tips: page.constants.message('login.password.help'),
+				},
+			}, true);
+
+			//
+
+			loginWatch();
+		});
+
 		//
 
 		$scope.method = 'databrary';
@@ -34,7 +52,7 @@ module.controller('LoginView', [
 					page.$location.path('/');
 				}
 			}, function (res) {
-				$scope.loginForm.validator.server(res, true, $scope.loginForm.messages);
+				form.validator.server(res, true);
 			});
 		};
 	}

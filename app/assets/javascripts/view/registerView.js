@@ -120,14 +120,14 @@ module.controller('RegisterView', [
 
 				$scope.registerForm.validator.client({
 					fieldName: {
-						tips: page.constants.message('wizard.register_form.name.help'),
+						tips: page.constants.message('register.name.help'),
 					},
 					fieldEmail: {
-						errors: page.constants.message('wizard.register_form.email.error'),
-						tips: page.constants.message('wizard.register_form.email.help'),
+						errors: page.constants.message('register.email.error'),
+						tips: page.constants.message('register.email.help'),
 					},
 					fieldAffiliation: {
-						tips: page.constants.message('wizard.register_form.affiliation.help'),
+						tips: page.constants.message('register.affiliation.help'),
 					},
 				}, true);
 			},
@@ -197,6 +197,14 @@ module.controller('RegisterView', [
 				step.ifInfo = function () {
 					return angular.isString($scope.infoForm.data.query);
 				};
+
+				//
+
+				$scope.infoForm.validator.client({
+					info: {
+						tips: page.constants.message('auth.request.info.help'),
+					},
+				}, true);
 
 				//
 

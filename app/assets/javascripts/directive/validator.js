@@ -1,8 +1,11 @@
 module.directive('validator', [
 	'pageService', function (page) {
-		var link = function ($scope, $element, $attrs) {
+		var pre = function ($scope, $element, $attrs) {
 			$scope.validator = {};
+			$scope.validator.label = $attrs.label ? page.$parse($attrs.label)($scope) : undefined;
+		};
 
+		var post = function ($scope, $element, $attrs) {
 			$scope.validator.form = $scope[$attrs.form];
 			$scope.validator.name = $scope[$attrs.form][$attrs.name];
 			$scope.validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
@@ -17,6 +20,10 @@ module.directive('validator', [
 					$scope.validator.focus = true;
 				});
 			}).blur(function () {
+				$scope.$apply(function () {
+					$scope.validator.focus = false;
+				});
+			}).on('keyup change', function () {
 				$scope.$apply(function () {
 					$scope.validator.focus = false;
 				});
@@ -57,7 +64,7 @@ module.directive('validator', [
 			};
 
 			$scope.validator.showClientTips = function () {
-				return $scope.validator.clientTips.length > 0 && $scope.validator.name.$pristine && $scope.validator.focus;
+				return $scope.validator.clientTips.length > 0 && !$scope.validator.name.$invalid && $scope.validator.focus;
 			};
 
 			//
@@ -68,7 +75,7 @@ module.directive('validator', [
 			};
 
 			$scope.validator.server = function (data, replace) {
-				if (replace) {
+				if (replace !== false) {
 					$scope.validator.serverErrors = [];
 					$scope.validator.$element.off('change.validator');
 				}
@@ -127,8 +134,12 @@ module.directive('validator', [
 
 			//
 
-			if ($scope[$attrs.form] && $scope[$attrs.form].validator) {
-				$scope[$attrs.form].validator.add($attrs.name, $scope.validator);
+			if ($scope.validator.form && $scope.validator.form.validator) {
+				$scope.validator.form.validator.add($attrs.name, $scope.validator);
+			}
+
+			if ($scope.validator.name) {
+				$scope.validator.name.validator = $scope.validator;
 			}
 		};
 
@@ -140,7 +151,10 @@ module.directive('validator', [
 			scope: true,
 			transclude: true,
 			templateUrl: 'validator.html',
-			link: link,
+			link: {
+				pre: pre,
+				post: post,
+			},
 		};
 	}
 ]);
