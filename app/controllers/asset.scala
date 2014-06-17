@@ -27,7 +27,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       val form = new AssetController.ChangeForm()._bind
       for {
 	container <- form.container.get.mapAsync(
-	  Container.get(_).map(_.getOrElse(form.container.withError("Invalid container ID")._throw)))
+	  Container.get(_).map(_.getOrElse(form.container.withError("object.invalid", "container")._throw)))
 	_ <- request.obj.change(classification = form.classification.get, name = form.name.get)
 	_ <- container.foreachAsync(request.obj.link(_, form.position.get))
       } yield (result(request.obj))
@@ -109,7 +109,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       val form = new AssetController.UploadForm()._bind
       for {
 	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	  form.container.withError("Invalid container ID")._throw))
+	  form.container.withError("object.invalid", "container")._throw))
 	asset <- create(form)
 	sa <- container.mapAsync(asset.link(_, form.position.get))
       } yield (sa.fold(result(asset))(SlotAssetController.result _))
@@ -119,10 +119,12 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     Action(o, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.ReplaceForm()._bind
       for {
+	done <- request.obj.isSuperseded
+	_ = if (done) form.withGlobalError("file.superseded")._throw
 	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	  form.container.withError("Invalid container ID")._throw))
+	  form.container.withError("object.invalid", "container")._throw))
 	asset <- create(form)
-	_ <- request.obj.supersede(asset)
+	_ <- asset.supersede(request.obj)
 	sa <- container.mapAsync(asset.link(_, form.position.get))
       } yield (sa.fold(result(asset))(SlotAssetController.result _))
     }
