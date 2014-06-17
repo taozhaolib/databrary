@@ -122,7 +122,7 @@ login.noCookie=You must be logged in to perform that action. Please make sure yo
 login.expired=Your session has expired. Please login again.
 login.error=Unable to log in with those credentials.
 
-login.email.help=Enter the email address on file.
+login.email.help=Enter the email address you used to register.
 login.password.help=Enter your password.
 
 # --- Reset page
@@ -135,9 +135,9 @@ reset.request.success=Password reset email sent to {0}. Please follow the instru
 reset.save.success=Your password has been reset.
 reset.request.error=Password reset unsuccessful.
 
-reset.email.help=Enter your email address.
+reset.email.help=Enter the email address you used to register.
 reset.once.help=Enter a secure password.
-reset.again.help=Enter your password again.
+reset.again.help=Enter the same password again.
 
 # --- HTML page attributes
 page.title.home=Welcome
@@ -214,7 +214,7 @@ auth.search.principal=Search for your institution...
 auth.search.affiliate=Search for your sponsoring PI...
 auth.search.error=Could not retrieve any users or institutions.
 
-auth.search.name.help=Begin typing the name of the desired party.
+auth.search.name.help=Enter your institution or PI.
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}
@@ -230,7 +230,7 @@ auth.request.info.help=Enter contact information (name, email, phone number) for
 
 # Access
 access.search=Search for a user, group, or institution...
-access.search.name.help=Begin typing the name of the desired party.
+access.search.name.help=Enter to whom you want to grant access.
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
 access.grant.funding=Grant #
@@ -368,7 +368,7 @@ material.name=Caption
 material.classification=Classification
 
 material.file.help=Select the file you wish to upload.
-material.name.help=You may assign some descriptive text to this file.
+material.name.help=You may optionally provide a brief description of this file for other users.
 
 citations.title=Citations
 citations.study.title=Corresponding Publication
@@ -516,7 +516,7 @@ wizard.volume_edit_access.instructions=Specify with whom you want to share the d
 
 volume.edit.name.help=The study name will typically be the same as the associated paper.
 volume.edit.body.help=Enter the abstract of the associated paper or a description of the contents of this study.
-volume.edit.alias.help=This brief, but descriptive name will only be shown to those with edit acess to this study.
-volume.edit.citation.head.help=Enter the citation of the associated paper.
-volume.edit.citation.url.help=Enter in this form: dx.doi.org/##.####.####/...
+volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
+volume.edit.citation.head.help=Enter the full citation, preferably in APA format, of the associated paper.
+volume.edit.citation.url.help=Enter a DOI of the form "10.XXXX/YYYY" to automatically retrieve the paper information, or an optional URL to the resource if you do not have a DOI.
 volume.edit.citation.year.help=Enter the publication year of the associated paper, if available.
