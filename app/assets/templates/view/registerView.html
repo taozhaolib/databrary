@@ -13,14 +13,20 @@
 						<form name="registerForm" novalidate>
               <messages form="registerForm"></messages>
 
-							<label for="field_name">{{'register.name.prompt' | message}}</label>
-							<input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3" valid-input="registerForm">
+              <label for="field_name">{{'register.name.prompt' | message}}</label>
+              <valid-input form="registerForm" name="fieldName">
+                <input id="field_name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
+              </valid-input>
 
-							<label for="field_email">{{'email' | message}}</label>
-							<input id="field_email" name="fieldEmail" type="email" ng-model="registerForm.data.email" valid-input="registerForm">
+              <label for="field_email">{{'email' | message}}</label>
+              <valid-input form="registerForm" name="fieldEmail">
+                <input id="field_email" name="fieldEmail" type="email" ng-model="registerForm.data.email">
+              </valid-input>
 
-							<label for="field_affiliation">{{'affiliation' | message}}</label>
-							<input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation" valid-input="registerForm">
+              <label for="field_affiliation">{{'affiliation' | message}}</label>
+              <valid-input form="registerForm" name="fieldAffiliation">
+                <input id="field_affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation">
+              </valid-input>
 
 							<button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">{{'register.continue' | message}}</button>
 						</form>

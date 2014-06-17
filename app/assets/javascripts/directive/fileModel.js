@@ -16,8 +16,8 @@ module.directive('fileModel', [
 					$element[0].value = '';
 
 					if ($element[0].value) {
-						$element[0].type = "text";
-						$element[0].type = "file";
+						$element[0].type = 'text';
+						$element[0].type = 'file';
 					}
 				}
 			});
