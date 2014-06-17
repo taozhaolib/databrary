@@ -226,15 +226,21 @@ COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to st
 
 SELECT audit.CREATE_TABLE ('volume_citation');
 
+CREATE TABLE "funder" (
+	"fundref_id" bigint NOT NULL Primary Key,
+	"name" text NOT NULL,
+	"party" integer References "party"
+);
+COMMENT ON TABLE "funder" IS 'Sources of funding, basically a mirror of fundref data, with local party associations (primarily for transition).';
+COMMENT ON COLUMN "funder"."fundref_id" IS 'Identifiers from fundref.org, under the http://dx.doi.org/10.13039/ namespace. Specifications suggest these may not be numeric, but they seem to be.';
+
 CREATE TABLE "volume_funding" (
 	"volume" integer NOT NULL References "volume",
-	"fundref_id" numeric NOT NULL,
-	"funder" text NOT NULL,
+	"funder" bigint NOT NULL References "funder",
 	"awards" text[] NOT NULL Default '{}',
-	Primary Key ("volume", "fundref_id")
+	Primary Key ("volume", "funder")
 );
 COMMENT ON TABLE "volume_funding" IS 'Funding sources associated with a volume, based on fundref.org.';
-COMMENT ON COLUMN "volume_funding"."fundref_id" IS 'Identifiers from fundref.org, under the http://dx.doi.org/10.13039/ namespace. Specifications suggest these may not be numeric, but they seem to be.';
 COMMENT ON COLUMN "volume_funding"."awards" IS 'Individual grant identifiers associated with this funder.';
 
 ----------------------------------------------------------- time intervals
