@@ -36,7 +36,7 @@ object ApplicationBuild extends Build {
   val appDependencies = dbDependencies ++ avDependencies ++ Seq(
     "org.mindrot" % "jbcrypt" % "0.3m",
     ws,
-    "com.typesafe" %% "play-plugins-mailer" % "2.3.0"
+    "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0"
   )
 
   val main = Project(appName, file("."))
