@@ -23,10 +23,6 @@ module.directive('validator', [
 				$scope.$apply(function () {
 					$scope.validator.focus = false;
 				});
-			}).on('keyup change', function () {
-				$scope.$apply(function () {
-					$scope.validator.focus = false;
-				});
 			});
 
 			$scope.validator.iconClasses = function () {
