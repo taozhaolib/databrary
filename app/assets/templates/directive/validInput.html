@@ -1,6 +1,7 @@
 <div class="valid-input">
   <div class="field" ng-transclude></div>
-  <div class="indicator">
-    <img ng-src="/public/images/icon/{{validInput.getIcon()}}.png">
+  <div class="indicator" ng-class="iconClasses()">
+    <img class="invalid" src="/public/images/icon/invalid.png">
+    <img class="valid" src="/public/images/icon/valid.png">
   </div>
 </div>
