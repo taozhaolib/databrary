@@ -242,6 +242,46 @@ th, td {
 
 .validator {
 	position: relative;
+
+	.field {
+		.margin-right(1);
+	}
+
+	.indicator {
+		position: absolute;
+		.size(@b3 * 2);
+		top: @b3 + @b12;
+		right: @b8;
+		display: none;
+
+		img {
+			display: none;
+		}
+
+		&.show {
+			display: block;
+
+			&.invalid {
+				background-color: @red;
+
+				img.invalid {
+					display: block;
+				}
+			}
+
+			&.valid {
+				background-color: @green;
+
+				img.valid {
+					display: block;
+				}
+			}
+		}
+	}
+}
+
+.validator_messages {
+	position: relative;
 	top: -@b2;
 }
 
@@ -288,44 +328,4 @@ th, td {
 
 .validator_tip {
 	color: @green;
-}
-
-.valid-input {
-	position: relative;
-
-	.field {
-		.margin-right(1);
-	}
-
-	.indicator {
-		position: absolute;
-		.size(@b3 * 2);
-		top: @b3 + @b12;
-		right: @b8;
-		display: none;
-
-		img {
-			display: none;
-		}
-
-		&.show {
-			display: block;
-
-			&.invalid {
-				background-color: @red;
-
-				img.invalid {
-					display: block;
-				}
-			}
-
-			&.valid {
-				background-color: @green;
-
-				img.valid {
-					display: block;
-				}
-			}
-		}
-	}
 }

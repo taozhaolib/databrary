@@ -1,82 +1,97 @@
 module.directive('validator', [
 	'pageService', function (page) {
-		var controller = function ($scope, $element, $attrs) {
-			if (!$attrs.form || !$attrs.name || !$scope[$attrs.form] || !$scope[$attrs.form][$attrs.name]) {
-				return;
-			}
+		var link = function ($scope, $element, $attrs) {
+			$scope.validator = {};
 
-			var that = this;
+			$scope.validator.form = $scope[$attrs.form];
+			$scope.validator.name = $scope[$attrs.form][$attrs.name];
+			$scope.validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
+			$scope.validator.changed = false;
+			$scope.validator.focus = false;
+			$scope.validator.serverErrors = [];
+			$scope.validator.clientErrors = [];
+			$scope.validator.clientTips = [];
 
-			this.form = $scope[$attrs.form];
-			this.name = $scope[$attrs.form][$attrs.name];
-			// TODO: won't work with repeaters
-			this.$element = this.form.$element.find('[name="' + $attrs.name + '"]').first();
-			this.changed = false;
-			this.focus = false;
-			this.serverErrors = [];
-			this.clientErrors = [];
-			this.clientTips = [];
-
-			this.$element.focus(function () {
+			$scope.validator.$element.focus(function () {
 				$scope.$apply(function () {
-					that.focus = true;
+					$scope.validator.focus = true;
 				});
 			}).blur(function () {
 				$scope.$apply(function () {
-					that.focus = false;
+					$scope.validator.focus = false;
 				});
 			});
 
+			$scope.validator.iconClasses = function () {
+				var cls = [];
+
+				if (!$scope.validator.name) {
+					return cls;
+				}
+
+				if ($scope.validator.name.$dirty) {
+					cls.push('show');
+				}
+
+				if ($scope.validator.name.$valid) {
+					cls.push('valid');
+				} else {
+					cls.push('invalid');
+				}
+
+				return cls;
+			};
+
 			//
 
-			this.show = function () {
-				return this.showClientErrors() || this.showClientTips() || this.showServerErrors();
+			$scope.validator.show = function () {
+				return $scope.validator.showClientErrors() || $scope.validator.showClientTips() || $scope.validator.showServerErrors();
 			};
 
-			this.showServerErrors = function () {
-				return this.serverErrors.length > 0 && !this.changed;
+			$scope.validator.showServerErrors = function () {
+				return $scope.validator.serverErrors.length > 0 && !$scope.validator.changed;
 			};
 
-			this.showClientErrors = function () {
-				return this.clientErrors.length > 0 && this.name.$invalid && this.focus;
+			$scope.validator.showClientErrors = function () {
+				return $scope.validator.clientErrors.length > 0 && $scope.validator.name.$invalid && $scope.validator.focus;
 			};
 
-			this.showClientTips = function () {
-				return this.clientTips.length > 0 && this.name.$pristine && this.focus;
+			$scope.validator.showClientTips = function () {
+				return $scope.validator.clientTips.length > 0 && $scope.validator.name.$pristine && $scope.validator.focus;
 			};
 
 			//
 
 			var changeWatch = function () {
-				that.changed = true;
-				that.$element.off('change.validator');
+				$scope.validator.changed = true;
+				$scope.validator.$element.off('change.validator');
 			};
 
-			this.server = function (data, replace) {
+			$scope.validator.server = function (data, replace) {
 				if (replace) {
-					this.serverErrors = [];
-					this.$element.off('change.validator');
+					$scope.validator.serverErrors = [];
+					$scope.validator.$element.off('change.validator');
 				}
 
 				if (!data) {
 					return;
 				}
 
-				this.$element.on('change.validator', changeWatch);
+				$scope.validator.$element.on('change.validator', changeWatch);
 
 				if (angular.isString(data)) {
 					data = [data];
 				}
 
 				angular.forEach(data, function (error) {
-					that.serverErrors.push(error);
+					$scope.validator.serverErrors.push(error);
 				});
 			};
 
-			this.client = function (data, replace) {
+			$scope.validator.client = function (data, replace) {
 				if (replace) {
-					this.clientErrors = [];
-					this.clientTips = [];
+					$scope.validator.clientErrors = [];
+					$scope.validator.clientTips = [];
 				}
 
 				if (!data) {
@@ -99,13 +114,13 @@ module.directive('validator', [
 
 				if (angular.isArray(data.errors)) {
 					angular.forEach(data.errors, function (error) {
-						that.clientErrors.push(error);
+						$scope.validator.clientErrors.push(error);
 					});
 				}
 
 				if (angular.isArray(data.tips)) {
 					angular.forEach(data.tips, function (tip) {
-						that.clientTips.push(tip);
+						$scope.validator.clientTips.push(tip);
 					});
 				}
 			};
@@ -113,7 +128,7 @@ module.directive('validator', [
 			//
 
 			if ($scope[$attrs.form] && $scope[$attrs.form].validator) {
-				$scope[$attrs.form].validator.add($attrs.name, this);
+				$scope[$attrs.form].validator.add($attrs.name, $scope.validator);
 			}
 		};
 
@@ -123,9 +138,9 @@ module.directive('validator', [
 			restrict: 'E',
 			replace: true,
 			scope: true,
+			transclude: true,
 			templateUrl: 'validator.html',
-			controller: controller,
-			controllerAs: 'validator',
+			link: link,
 		};
 	}
 ]);

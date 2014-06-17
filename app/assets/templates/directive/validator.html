@@ -1,15 +1,25 @@
-<aside class="validator" bindonce>
-  <div class="validator_message" ng-show="validator.show()">
-    <div ng-if="validator.showServerErrors()">
-      <div class="validator_server" ng-repeat="tip in validator.serverErrors" bo-html="tip"></div>
-    </div>
+<div class="validator">
+  <div class="field">
+    <div ng-transclude></div>
 
-    <div ng-if="validator.showClientErrors()">
-      <div class="validator_client" ng-repeat="tip in validator.clientErrors" bo-html="tip"></div>
-    </div>
+    <aside class="validator_messages" bindonce>
+      <div class="validator_message" ng-show="validator.show()">
+        <div ng-if="validator.showServerErrors()">
+          <div class="validator_server" ng-repeat="tip in validator.serverErrors" bo-html="tip"></div>
+        </div>
 
-    <div ng-if="validator.showClientTips()">
-      <div class="validator_tip" ng-repeat="tip in validator.clientTips" bo-html="tip"></div>
-    </div>
+        <div ng-if="validator.showClientErrors()">
+          <div class="validator_client" ng-repeat="tip in validator.clientErrors" bo-html="tip"></div>
+        </div>
+
+        <div ng-if="validator.showClientTips()">
+          <div class="validator_tip" ng-repeat="tip in validator.clientTips" bo-html="tip"></div>
+        </div>
+      </div>
+    </aside>
   </div>
-</aside>
+  <div class="indicator" ng-class="validator.iconClasses()">
+    <img class="invalid" src="/public/images/icon/invalid.png">
+    <img class="valid" src="/public/images/icon/valid.png">
+  </div>
+</div>
