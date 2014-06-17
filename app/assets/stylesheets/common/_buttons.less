@@ -9,16 +9,16 @@ button, .button {
 	.border-radius(@b8);
 	color: @text;
 
-	border: 1px solid @blue33;
-	#gradient > .vertical(@blue51, @blue52);
+	border: 1px solid @neutral33;
+	#gradient > .vertical(@neutral51, @neutral52);
 
 	&:hover {
-		#gradient > .vertical(@blue52, @blue51);
+		#gradient > .vertical(@neutral52, @neutral51);
 		text-decoration: none;
 	}
 
 	&:active {
-		#gradient > .vertical(@blue52, @blue53);
+		#gradient > .vertical(@neutral52, @neutral53);
 	}
 
 	&.red {
@@ -31,6 +31,19 @@ button, .button {
 
 		&:active {
 			#gradient > .vertical(@red52, @red53);
+		}
+	}
+
+	&.blue {
+		border: 1px solid @blue33;
+		#gradient > .vertical(@blue51, @blue52);
+
+		&:hover {
+			#gradient > .vertical(@blue52, @blue51);
+		}
+
+		&:active {
+			#gradient > .vertical(@blue52, @blue53);
 		}
 	}
 
