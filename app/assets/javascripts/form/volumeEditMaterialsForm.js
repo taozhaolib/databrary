@@ -42,7 +42,17 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.disableButton = function (subform) {
-				return !(subform.form.$dirty && ((subform.asset.asset && subform.asset.asset.creation) || (subform.asset.file && subform.asset.file.length > 0)));
+				if (subform.form.$dirty) {
+					if (subform.asset.asset && subform.asset.asset.creation) {
+						return false;
+					} else if (!subform.asset.file || subform.asset.file.length === 0) {
+						form.clean(subform);
+					} else {
+						return false;
+					}
+				}
+
+				return true;
 			};
 
 			//
@@ -294,6 +304,14 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.reset = function (subform) {
 				subform.asset = backup[subform.$id];
+
+				page.models.Asset.get({
+					creation: '',
+					id: subform.asset.asset.id
+				}, function (res) {
+					subform.asset.asset.creation = res.creation;
+				});
+
 				form.store(subform);
 				form.clean(subform);
 			};
