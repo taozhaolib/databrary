@@ -23,6 +23,7 @@ private[models] abstract class GenericId[I,+T](val unId : I) {
   override def hashCode = unId.hashCode
   override def toString = unId.toString
 }
+
 /** GenericId specific to integers.  The most common (only?) type of identifier we have. */
 final class IntId[+T] private (unId : Int) extends GenericId[Int,T](unId) {
   def ===[X >: T](i : GenericId[Int,X]) = unId == i.unId
@@ -54,3 +55,27 @@ private[models] trait HasId[+T] {
   def asId(i : Int) : Id = IntId[T](i)
 }
 
+/** GenericId specific to longs. */
+final class LongId[+T] private (unId : Long) extends GenericId[Long,T](unId) {
+  def ===[X >: T](i : GenericId[Long,X]) = unId == i.unId
+  override def hashCode = unId.hashCode
+  /** Forcibly coerce to a different type. */
+  private[models] def coerce[A] = new LongId[A](unId)
+  def formatted(s : String) = unId.formatted(s)
+}
+private[models] object LongId {
+  private[models] def apply[T](i : Long) = new LongId[T](i)
+  // The normal family of conversions for database and web i/o:
+  implicit def pathBindable[T] : PathBindable[LongId[T]] = PathBindable.bindableLong.transform(apply[T] _, _.unId)
+  implicit def queryStringBindable[T] : QueryStringBindable[LongId[T]] = QueryStringBindable.bindableLong.transform(apply[T] _, _.unId)
+  implicit def sqlType[T] : SQLType[LongId[T]] = SQLType.transform[Long,LongId[T]]("bigint", classOf[LongId[T]])(i => Some(apply[T](i)), _.unId)
+  implicit def formatter[T] : Formatter[LongId[T]] = new Formatter[LongId[T]] {
+    def bind(key : String, data : Map[String, String]) =
+      Formats.longFormat.bind(key, data).right.map(apply _)
+    def unbind(key : String, value : LongId[T]) =
+      Formats.longFormat.unbind(key, value.unId)
+  }
+  implicit def jsonWrites[T] : json.Writes[LongId[T]] = new json.Writes[LongId[T]] {
+    def writes(i : LongId[T]) = json.JsNumber(i.unId)
+  }
+}

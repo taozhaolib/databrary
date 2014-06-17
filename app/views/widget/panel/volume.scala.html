@@ -1,4 +1,4 @@
-@(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess])(implicit request : SiteRequest[_])
+@(volume : Volume, summary : Volume.Summary, access : Seq[VolumeAccess], funding : Seq[Funding])(implicit request : SiteRequest[_])
 
 @widget.panel.raw("overview", "panel_volume")(Messages("volume.overview.title")){
     <div class="col-full panel_overview_actions">
@@ -32,14 +32,12 @@
 	}
     }
 
-@defining(access.filter(_.funding.isDefined)) { funding =>
 @if(funding.nonEmpty) {
     @widget.frame.raw("funding", "")(Messages("volume.funding.title")) {
         @funding.map { f =>
-            @widget.portrait.verticalSmallExtra(f.party, Html(f.funding.getOrElse("")))
+            @f.funder @f.awards.mkString(", ")
         }
     }
-}
 }
 
 @widget.frame.raw("volume", "")(Messages("volume.metadata.title")) {

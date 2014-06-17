@@ -23,6 +23,7 @@ duns.invalid=Invalid D-U-N-S
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
 object.invalid=Invalid {0} specified
+funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
 url.invalid=Invalid URL (should start with http or doi:)
