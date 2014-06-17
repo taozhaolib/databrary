@@ -55,7 +55,7 @@ object Funder extends Table[Funder]("funder") {
 
 final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = IndexedSeq.empty) {
   def json = JsonObject(
-    'funder -> funder.name,
+    'funder -> funder.json,
     'awards -> awards
   )
 }
