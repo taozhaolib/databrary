@@ -76,11 +76,11 @@
       </div>
 
       <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
-        <div class="row">
-          <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6" ng-init="party = funding.party">
-            <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
-          </div>
-        </div>
+        <ul class="comma">
+          <li ng-repeat="funding in volume.funding">
+            {{funding.funder.name}} {{funding.awards.join(', ')}}
+          </li>
+        </ul>
       </div>
 
       <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
