@@ -10,6 +10,11 @@ import site._
 final case class Funder(val id : Funder.Id, val name : String) extends TableRow {
   private[models] def sqlKey = SQLTerms('fundref_id -> id)
   private[models] def sqlArgs = sqlKey ++ SQLTerms('name -> name)
+
+  def json = JsonObject(
+    'id -> id,
+    'name -> name
+  )
 }
 
 object Funder extends Table[Funder]("funder") {
@@ -43,6 +48,9 @@ object Funder extends Table[Funder]("funder") {
       fundrefId(id).andThen {
 	case scala.util.Success(Some(f)) => INSERT(f.sqlArgs)
       }))
+
+  def search(query : String) : Future[Seq[Funder]] =
+    row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
 }
 
 final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = IndexedSeq.empty) {

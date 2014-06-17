@@ -282,6 +282,11 @@ object VolumeApi extends VolumeController with ApiController {
     val awards = Field(Forms.seq(Mappings.nonEmptyText))
   }
 
+  def funderSearch(query : String) =
+    SiteAction.async { implicit request =>
+      Funder.search(query).map(r => Ok(JsonArray.map[Funder,JsonObject](_.json)(r)))
+    }
+
   def fundingChange(volumeId : Volume.Id, funderId : Funder.Id) =
     Action(volumeId, Permission.EDIT).async { implicit request =>
       val form = new FundingForm(funderId)._bind
