@@ -42,11 +42,9 @@ module.directive('volumeEditOverviewForm', [
 					form.data.citation = {};
 				}
 
-				if (form.authors.length > 0) {
-					form.data.citation.authors = form.authors.map(function (author) {
-						return author.name;
-					});
-				}
+				form.data.citation.authors = form.authors.map(function (author) {
+					return author.name;
+				});
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
@@ -112,6 +110,15 @@ module.directive('volumeEditOverviewForm', [
 					form.resetFn(form);
 
 				form.data = $.extend(true, {}, backup);
+
+				if (form.data.citation && form.data.citation.authors) {
+					form.authors = form.data.citation.authors.map(function (author) {
+						return {
+							name: author,
+						};
+					});
+				}
+
 				form.$setPristine();
 			};
 
@@ -232,6 +239,8 @@ module.directive('volumeEditOverviewForm', [
 				if (i > -1) {
 					form.authors.splice(i, 1);
 				}
+
+				form.$setDirty();
 			};
 
 			//
