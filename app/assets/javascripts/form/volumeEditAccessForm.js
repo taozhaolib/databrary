@@ -60,12 +60,6 @@ module.directive('volumeEditAccessForm', [
 				form.$setPristine();
 			};
 
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
-			};
-
 			//
 
 			page.events.talk('volumeEditAccessForm-init', form, $scope);
