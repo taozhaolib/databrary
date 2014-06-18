@@ -14,6 +14,13 @@ module.directive('form', [
 				form.validators = {};
 				form.validator = {
 					server: function (res, replace) {
+						if (!angular.isObject(res.data)) {
+							form.messages.addError({
+								body: page.constants.message('error.generic'),
+								report: res,
+							});
+						}
+
 						for (var name in res.data) {
 							if (res.data.hasOwnProperty(name) && form.validators[name]) {
 								form.validators[name].server(res.data[name], replace);

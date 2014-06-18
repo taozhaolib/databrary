@@ -6,37 +6,39 @@ module.directive('validator', [
 		};
 
 		var post = function ($scope, $element, $attrs) {
-			$scope.validator.form = $scope[$attrs.form];
-			$scope.validator.name = $scope[$attrs.form][$attrs.name];
-			$scope.validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
-			$scope.validator.changed = false;
-			$scope.validator.focus = false;
-			$scope.validator.serverErrors = [];
-			$scope.validator.clientErrors = [];
-			$scope.validator.clientTips = [];
+			var validator = $scope.validator;
 
-			$scope.validator.$element.focus(function () {
+			validator.form = $scope[$attrs.form];
+			validator.name = $scope[$attrs.form][$attrs.name];
+			validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
+			validator.changed = false;
+			validator.focus = false;
+			validator.serverErrors = [];
+			validator.clientErrors = [];
+			validator.clientTips = [];
+
+			validator.$element.focus(function () {
 				$scope.$apply(function () {
-					$scope.validator.focus = true;
+					validator.focus = true;
 				});
 			}).blur(function () {
 				$scope.$apply(function () {
-					$scope.validator.focus = false;
+					validator.focus = false;
 				});
 			});
 
-			$scope.validator.iconClasses = function () {
+			validator.iconClasses = function () {
 				var cls = [];
 
-				if (!$scope.validator.name) {
+				if (!validator.name) {
 					return cls;
 				}
 
-				if ($scope.validator.name.$dirty) {
+				if (validator.name.$dirty) {
 					cls.push('show');
 				}
 
-				if ($scope.validator.name.$valid) {
+				if (validator.name.$valid) {
 					cls.push('valid');
 				} else {
 					cls.push('invalid');
@@ -47,54 +49,58 @@ module.directive('validator', [
 
 			//
 
-			$scope.validator.show = function () {
-				return $scope.validator.showClientErrors() || $scope.validator.showClientTips() || $scope.validator.showServerErrors();
+			validator.show = function () {
+				return validator.showClientErrors() || validator.showClientTips() || validator.showServerErrors();
 			};
 
-			$scope.validator.showServerErrors = function () {
-				return $scope.validator.serverErrors.length > 0 && !$scope.validator.changed;
+			validator.showServerErrors = function () {
+				return validator.serverErrors.length > 0 && !validator.changed;
 			};
 
-			$scope.validator.showClientErrors = function () {
-				return $scope.validator.clientErrors.length > 0 && $scope.validator.name.$invalid && $scope.validator.focus;
+			validator.showClientErrors = function () {
+				return validator.clientErrors.length > 0 && validator.name.$invalid && validator.focus;
 			};
 
-			$scope.validator.showClientTips = function () {
-				return $scope.validator.clientTips.length > 0 && !$scope.validator.name.$invalid && $scope.validator.focus;
+			validator.showClientTips = function () {
+				return validator.clientTips.length > 0 && !validator.name.$invalid && validator.focus;
 			};
 
 			//
 
 			var changeWatch = function () {
-				$scope.validator.changed = true;
-				$scope.validator.$element.off('change.validator');
+				validator.changed = true;
+				validator.$element.off('keypress.validator');
+				validator.name.$setValidity('serverResponse', true);
 			};
 
-			$scope.validator.server = function (data, replace) {
+			validator.server = function (data, replace) {
 				if (replace !== false) {
-					$scope.validator.serverErrors = [];
-					$scope.validator.$element.off('change.validator');
+					validator.changed = false;
+					validator.serverErrors = [];
+					validator.$element.off('keypress.validator');
+					validator.name.$setValidity('serverResponse', true);
 				}
 
 				if (!data) {
 					return;
 				}
 
-				$scope.validator.$element.on('change.validator', changeWatch);
+				validator.$element.on('keypress.validator', changeWatch);
+				validator.name.$setValidity('serverResponse', false);
 
 				if (angular.isString(data)) {
 					data = [data];
 				}
 
 				angular.forEach(data, function (error) {
-					$scope.validator.serverErrors.push(error);
+					validator.serverErrors.push(error);
 				});
 			};
 
-			$scope.validator.client = function (data, replace) {
+			validator.client = function (data, replace) {
 				if (replace) {
-					$scope.validator.clientErrors = [];
-					$scope.validator.clientTips = [];
+					validator.clientErrors = [];
+					validator.clientTips = [];
 				}
 
 				if (!data) {
@@ -117,25 +123,25 @@ module.directive('validator', [
 
 				if (angular.isArray(data.errors)) {
 					angular.forEach(data.errors, function (error) {
-						$scope.validator.clientErrors.push(error);
+						validator.clientErrors.push(error);
 					});
 				}
 
 				if (angular.isArray(data.tips)) {
 					angular.forEach(data.tips, function (tip) {
-						$scope.validator.clientTips.push(tip);
+						validator.clientTips.push(tip);
 					});
 				}
 			};
 
 			//
 
-			if ($scope.validator.form && $scope.validator.form.validator) {
-				$scope.validator.form.validator.add($attrs.name, $scope.validator);
+			if (validator.form && validator.form.validator) {
+				validator.form.validator.add($attrs.name, validator);
 			}
 
-			if ($scope.validator.name) {
-				$scope.validator.name.validator = $scope.validator;
+			if (validator.name) {
+				validator.name.validator = validator;
 			}
 		};
 
