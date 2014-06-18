@@ -466,7 +466,7 @@ volume.edit.error=Unable to save volume.
 
 wizard.volume_edit_overview.name=Citation
 wizard.volume_edit_overview.description=Edit citation and description.
-wizard.volume_edit_overview.instructions=First, provide basic information about the paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
+wizard.volume_edit_overview.instructions=First, provide basic information about the published paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
 
 volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper.  A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal's website.  If you do not have a DOI, you can fill out the information manually.
 volume.edit.autodoi=DOI or URL
