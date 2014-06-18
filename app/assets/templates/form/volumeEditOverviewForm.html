@@ -2,18 +2,17 @@
   <messages form="volumeEditOverviewForm"></messages>
 
   <fieldset>
-    <legend bo-html="'volume.edit.autodoi.title' | message"></legend>
-    <div bo-html="'volume.edit.autodoi.instructions' | message | format"></div>
+    <div bo-html="'volume.edit.autodoi.instructions' | message"></div>
 
     <validator form="volumeEditOverviewForm" name="citation.url" label="'volume.edit.autodoi' | message">
       <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url">
     </validator>
 
-    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'lookup' | message"></button>
-    <button class="yellow" ng-click="volumeEditOverviewForm.automatic = false" bo-html="'donthave' | message"></button>
+    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'volume.edit.autodoi.lookup' | message"></button>
+    <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-html="'volume.edit.autodoi.donthave' | message"></button>
   </fieldset>
 
-  <fieldset class="clean skinny" ng-disabled="volumeEditOverviewForm.automatic">
+  <fieldset class="clean skinny" ng-if="!volumeEditOverviewForm.automatic">
     <validator form="volumeEditOverviewForm" name="citation.head" label="'citation.head' | message">
       <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head">
     </validator>

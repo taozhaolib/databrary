@@ -168,15 +168,6 @@ module.controller('VolumeEditView', [
 				forms.overview.form.cancelFn = cancelFn;
 			},
 
-			'volume_edit_citations': function (step) {
-				forms.citations = {
-					step: step,
-					form: step.volumeEditCitationsForm,
-				};
-				forms.citations.form.volume = volume;
-				forms.citations.form.cancelFn = cancelFn;
-			},
-
 			'volume_edit_excerpts': function (step) {
 				forms.excerpts = {
 					step: step,
