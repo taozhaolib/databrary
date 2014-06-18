@@ -110,8 +110,8 @@ object LoginController extends LoginController {
       routes.LoginHtml.post,
       views.html.party.login(_)) {
     val email = Field(Forms.optional(Forms.email))
-    val password = Field(Forms.text)
-    val openid = Field(Forms.text(0, 256))
+    val password = Field(Forms.default(Forms.text, ""))
+    val openid = Field(Forms.default(Forms.text(0, 256), ""))
     _mapping.verifying("login.bad", self =>
       (self.email.get.isDefined && self.password.get.nonEmpty) || self.openid.get.nonEmpty)
     private[controllers] def _fill(em : Option[String], op : String = "") : this.type = {
@@ -135,7 +135,7 @@ object LoginController extends LoginController {
 
   trait AuthForm extends StructForm {
     def account : Account
-    val auth = Field(Forms.text.verifying("password.incorrect",
+    val auth = Field(Forms.default(Forms.text, "").verifying("password.incorrect",
       s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
     def _authorized = !hasErrors && (auth.get.nonEmpty || !Play.isProd)
   }
@@ -150,9 +150,9 @@ object LoginController extends LoginController {
     protected def passwordInputMapping : Mapping[Option[String]] =
       Forms.tuple(
 	"once" -> passwordOnceMapping,
-	"again" -> Forms.text
-      ).verifying("password.match", pa => pa._1.forall(_ == pa._2))
-      .transform[Option[String]](_._1, p => (p, p.getOrElse("")))
+	"again" -> passwordOnceMapping
+      ).verifying("password.match", pa => pa._1 == pa._2)
+      .transform[Option[String]](_._1, p => (p, p))
     protected final def passwordMapping : Mapping[Option[String]] =
       passwordInputMapping
       .transform[Option[String]](identity, _.map(_ => ""))

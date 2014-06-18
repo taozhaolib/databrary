@@ -14,11 +14,19 @@ module.directive('volumeEditOverviewForm', [
 			form.cancelFn = undefined;
 
 			//
+			form.setAutomatic = function (auto) {
+				form.automatic = auto;
+				form.validator.client({
+					'citation.url': {
+						tips: page.constants.message('volume.edit.citation.' + (form.automatic ? 'doi' : 'url') + '.help')
+					}
+				}, true);
+			}
 
 			form.init = function (data, volume) {
 				form.data = data;
 				form.volume = form.volume || volume;
-				form.automatic = !form.volume;
+				form.setAutomatic(!form.volume);
 
 				if (!form.data.citation) {
 					form.data.citation = {};
@@ -181,7 +189,7 @@ module.directive('volumeEditOverviewForm', [
 								});
 							}
 
-							form.automatic = false;
+							form.setAutomatic(false);
 
 							form.messages.add({
 								type: 'green',
@@ -207,7 +215,7 @@ module.directive('volumeEditOverviewForm', [
 							form.data.citation.url = 'doi:' + doi[1];
 							form.data.citation.head = res;
 
-							form.automatic = false;
+							form.setAutomatic(false);
 
 							form.messages.add({
 								type: 'green',
