@@ -48,6 +48,7 @@ object SiteApi extends SiteController {
     , 'classification -> json.Json.toJson(Classification.values.toSeq.map(_.toString))
     , 'category -> JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll)
     , 'format -> JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll)
+    , 'party -> JsonObject('NOBODY->Party.NOBODY,'ROOT->Party.ROOT)
     , 'mode -> json.JsString(current.mode.toString)
     , 'version -> json.JsString(site.Site.version)
     ).js
