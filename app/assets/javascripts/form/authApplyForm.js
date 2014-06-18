@@ -32,6 +32,8 @@ module.directive('authApplyForm', [
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
+					form.validator.server({});
+
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
@@ -54,6 +56,8 @@ module.directive('authApplyForm', [
 					name: form.notFound.query,
 					info: form.notFound.info
 				}, function (res) {
+					form.validator.server({});
+
 					form.messages.add({
 						type: 'green',
 						countdown: 3000,

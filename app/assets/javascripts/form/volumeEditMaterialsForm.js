@@ -209,6 +209,7 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.replace = function (subform) {
 				delete subform.asset.asset.creation;
+				form.$setDirty();
 			};
 
 			form.remove = function (subform) {

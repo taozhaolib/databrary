@@ -18,7 +18,9 @@ module.directive('authSearchForm', [
 			var recentSearch = undefined;
 			var sentSearch = undefined;
 
-			var fin = function () {
+			var fin = function (res) {
+				form.validator.server(res || {});
+
 				sentSearch = undefined;
 
 				if (recentSearch) {
@@ -45,9 +47,7 @@ module.directive('authSearchForm', [
 
 						fin();
 					}, function (res) {
-						form.validator.server(res);
-
-						fin();
+						fin(res);
 					});
 				}
 			};

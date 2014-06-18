@@ -61,6 +61,8 @@ module.directive('volumeEditOverviewForm', [
 				if (form.volume) {
 					page.models.Volume.save(form.data,
 						function (res) {
+							form.validator.server({});
+
 							form.messages.add({
 								type: 'green',
 								countdown: 3000,
@@ -76,7 +78,7 @@ module.directive('volumeEditOverviewForm', [
 							form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
-							form.validator.server(res, true);
+							form.validator.server(res);
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);
@@ -88,6 +90,8 @@ module.directive('volumeEditOverviewForm', [
 					volume.$save({
 						owner: page.auth.user.id
 					}, function (res) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
@@ -104,7 +108,7 @@ module.directive('volumeEditOverviewForm', [
 						page.models.Volume.$cache.removeAll();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
-						form.validator.server(res, true);
+						form.validator.server(res);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);

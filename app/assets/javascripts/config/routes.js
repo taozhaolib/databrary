@@ -30,7 +30,7 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if(page.auth.isAuthorized()) {
+						if (page.auth.isAuthorized()) {
 							page.models.Volume.get({
 								id: 8,
 								access: ''
@@ -226,6 +226,33 @@ module.config([
 
 		$routeProvider.when('/party/:id', partyView);
 		$routeProvider.when('/profile', partyView);
+
+		//
+
+		$routeProvider.when('/party/:id/edit', {
+			controller: 'PartyEditView',
+			templateUrl: 'partyEditView.html',
+			resolve: {
+				party: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						page.models.Party.get({
+							id: page.$route.current.params.id,
+							duns: '',
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
+						});
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: true
+		});
 
 		//
 

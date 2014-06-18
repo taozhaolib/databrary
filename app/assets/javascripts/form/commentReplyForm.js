@@ -27,7 +27,10 @@ module.directive('commentReplyForm', [
 
 				form.comment = new page.models.Comment();
 
-				form.comment.$save(form.data, function () {
+				form.comment.$save(form.data,
+					function () {
+					form.validator.server({});
+
 					form.messages.add({
 						body: page.constants.message('comments.add.success'),
 						type: 'green',

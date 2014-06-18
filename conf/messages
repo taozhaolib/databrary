@@ -146,7 +146,7 @@ page.title.error=There''s been an Error!
 
 # party, auth pages
 email=Email
-password=Password
+password.once=Password
 password.again=Password (again)
 password.current=Current Password
 password.new=New Password
@@ -158,7 +158,7 @@ openid=OpenID
 orcid=ORCiD
 fullname=Full Name
 duns=D-U-N-S
-avatar=Avatar
+avatar=avatar
 affiliation=Affiliation
 
 logout.success=You are logged out.
@@ -175,12 +175,6 @@ welcome.body=Databrary is currently in private beta. For more information, pleas
 
 party.overview.title=Overview
 party.contact.title=Contact
-party.edit=update profile
-
-party.edit.personal=Personal Info
-party.edit.admin=Administration
-party.edit.success=Profile saved successfully!
-party.edit.error=Unable to save profile.
 
 network.title=Authorizations
 network.authquery.error=Could not retrieve your authorizing agents and affiliates.
@@ -205,6 +199,55 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
+
+# --- Party edit
+page.title.party.edit=Edit Party
+party.edit=update profile
+party.view=view profile
+
+party.edit.personal=Personal Info
+party.edit.extended=Additional Info
+party.edit.account=Login Data
+party.edit.confirm=Confirm Access
+
+party.edit.name.title=Full name
+party.edit.name.help=Enter your full name.
+
+party.edit.affiliation.title=Affiliation
+party.edit.affiliation.help=Specify your institutional affiliation.
+
+party.edit.orcid.title=ORCiD
+party.edit.orcid.help=Enter your ORCiD.
+
+party.edit.duns.title=D-U-N-S
+party.edit.duns.help=Enter this affiliation's D-U-N-S.
+
+party.edit.email.title=Email
+party.edit.email.help=Enter a valid email address.
+
+party.edit.password.title=New password
+party.edit.password.help=Enter a new, secure password.
+
+party.edit.password.again.title=New password (again)
+party.edit.password.again.help=Enter your new password again.
+
+party.edit.auth.title=Current password
+party.edit.auth.help=Enter your current password to save changes.
+
+party.edit.avatar.title=Avatar
+party.edit.avatar.exists=Avatar set
+
+party.edit.avatar.upload=Saving data and uploading your avatar now.
+party.edit.profile.success=Profile saved successfully!
+party.edit.account.success=Account updated successfully!
+
+wizard.party_edit_profile.name=Profile
+wizard.party_edit_profile.description=Modify publicly visible info.
+wizard.party_edit_profile.instructions=
+
+wizard.party_edit_account.name=Account
+wizard.party_edit_account.description=Update email address and password.
+wizard.party_edit_account.instructions=
 
 # --- Auth search
 auth.search=Search for a user or institution...

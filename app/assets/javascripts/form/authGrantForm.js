@@ -60,6 +60,8 @@ module.directive('authGrantForm', [
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
+					form.validator.server({});
+
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
@@ -89,6 +91,8 @@ module.directive('authGrantForm', [
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
+					form.validator.server({});
+
 					if (angular.isFunction(form.denySuccessFn)) {
 						form.denySuccessFn(form, arguments);
 					}

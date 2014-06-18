@@ -58,11 +58,11 @@ module.directive('validator', [
 			};
 
 			validator.showClientErrors = function () {
-				return validator.clientErrors.length > 0 && validator.name.$invalid && validator.focus;
+				return validator.clientErrors.length > 0 && validator.name && validator.name.$invalid && validator.focus;
 			};
 
 			validator.showClientTips = function () {
-				return validator.clientTips.length > 0 && !validator.name.$invalid && validator.focus;
+				return validator.clientTips.length > 0 && validator.name && !validator.name.$invalid && validator.focus;
 			};
 
 			//
@@ -70,23 +70,32 @@ module.directive('validator', [
 			var changeWatch = function () {
 				validator.changed = true;
 				validator.$element.off('keypress.validator');
-				validator.name.$setValidity('serverResponse', true);
+
+				if (validator.name) {
+					validator.name.$setValidity('serverResponse', true);
+				}
 			};
 
 			validator.server = function (data, replace) {
 				if (replace !== false) {
 					validator.changed = false;
-					validator.serverErrors = [];
+					validator.serverErrors.splice(0, validator.serverErrors.length);
 					validator.$element.off('keypress.validator');
-					validator.name.$setValidity('serverResponse', true);
+
+					if (validator.name) {
+						validator.name.$setValidity('serverResponse', true);
+					}
 				}
 
-				if (!data) {
+				if (!data || $.isEmptyObject(data)) {
 					return;
 				}
 
 				validator.$element.on('keypress.validator', changeWatch);
-				validator.name.$setValidity('serverResponse', false);
+
+				if (validator.name) {
+					validator.name.$setValidity('serverResponse', false);
+				}
 
 				if (angular.isString(data)) {
 					data = [data];

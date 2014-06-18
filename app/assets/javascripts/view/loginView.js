@@ -43,6 +43,8 @@ module.controller('LoginView', [
 				password: '',
 				openid: '',
 			}, $scope.loginData), function (data) {
+				form.validator.server({});
+
 				page.auth.parseUser(data);
 
 				if (page.auth.next) {

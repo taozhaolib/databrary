@@ -30,6 +30,8 @@ module.directive('volumeEditAccessForm', [
 
 				page.models.VolumeAccess.save(form.data,
 					function (res) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,

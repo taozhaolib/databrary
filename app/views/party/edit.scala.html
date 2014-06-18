@@ -5,7 +5,7 @@
 }
 
 @defining(cast[PartyController.EditForm](form).map(_.party)) { party =>
-@template.form(party, form.formName) {
+@template.form(party, form.formName, angular = Some(RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.json.js).getOrElse(play.api.libs.json.JsNull))) {
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))

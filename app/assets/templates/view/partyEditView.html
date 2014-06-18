@@ -1,0 +1,22 @@
+<article class="article article_crud article_volume article_edit panel" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col-full">
+        <h1 class="panel_context" bo-html="'edit' | message"></h1>
+        <h2 class="panel_title with_context" bo-text="party.name"></h2>
+      </hgroup>
+
+      <div class="col-full">
+        <wizard retrieve="retrieveWizard" update="updateWizard">
+          <wizard-step id="party_edit_profile">
+            <party-edit-profile-form></party-edit-profile-form>
+          </wizard-step>
+
+          <wizard-step id="party_edit_account">
+            <party-edit-account-form></party-edit-account-form>
+          </wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>

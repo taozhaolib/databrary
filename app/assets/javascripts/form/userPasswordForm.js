@@ -34,6 +34,8 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
@@ -70,6 +72,8 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
@@ -115,7 +119,7 @@ module.directive('userPasswordForm', [
 				email: {
 					tips: page.constants.message('reset.email.help'),
 				},
-				password: {
+				'password.once': {
 					tips: page.constants.message('reset.once.help'),
 				},
 				'password.again': {

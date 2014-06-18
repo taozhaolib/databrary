@@ -14,18 +14,32 @@ module.directive('form', [
 				form.validators = {};
 				form.validator = {
 					server: function (res, replace) {
-						if (!angular.isObject(res.data)) {
+						if ($.isEmptyObject(res)) {
+							res.data = {};
+						} else if (!angular.isObject(res.data)) {
 							form.messages.addError({
 								body: page.constants.message('error.generic'),
 								report: res,
 							});
 						}
 
+						for (var name in form.validators) {
+							if (form.validators.hasOwnProperty(name)) {
+								form.validators[name].server(res.data[name] || {}, replace);
+							} else if (form.messages) {
+								form.messages.add({
+									type: 'red',
+									closeable: true,
+									body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+								});
+							}
+						}
+
 						for (var name in res.data) {
 							if (res.data.hasOwnProperty(name) && form.validators[name]) {
 								form.validators[name].server(res.data[name], replace);
 							} else if (form.messages) {
-								var d = form.messages.add({
+								form.messages.add({
 									type: 'red',
 									closeable: true,
 									body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
