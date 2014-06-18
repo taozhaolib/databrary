@@ -336,7 +336,7 @@ volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 volume.body=Description
-
+volume.body=Description
 
 browser.title=Data
 browser.group=+
