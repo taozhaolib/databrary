@@ -323,22 +323,7 @@ volume.reuse.consumes=These data were originally collected as part of...
 
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
-<<<<<<< HEAD
-volume.body=Abstract
-volume.edit=edit volume
-volume.edit.create=create new volume
-volume.edit.exit=view volume
-volume.edit.success=Volume saved successfully!
-volume.edit.error=Unable to save volume.
-volume.edit.autodoi=Enter the DOI or URL of any corresponding publication
-volume.edit.autodoi.instructions=Enter the DOI of your publication here.
-volume.edit.autodoi.name.success=Title retrieved from DOI.
-volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
-volume.edit.autodoi.citation.success=Citation retrieved from DOI.
-volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
-=======
 volume.body=Description
->>>>>>> d0f5dd7cb04f5a4c774a3c5a04546dd170c76b41
 
 browser.title=Data
 browser.group=+
