@@ -3,7 +3,7 @@ module.factory('constantService', [
 		var constants = {
 			data: constantData,
 			regex: {
-				doi: /^(?:doi:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
+				doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
 			},
 		};
 
