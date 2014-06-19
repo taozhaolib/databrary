@@ -218,8 +218,8 @@ module.directive('volumeEditMaterialsForm', [
 				}
 
 				if (!subform.asset.asset) {
+					form.clean(subform);
 					form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
-					form.clean();
 				} else {
 					var newAsset = new page.models.Asset();
 
@@ -288,8 +288,6 @@ module.directive('volumeEditMaterialsForm', [
 			form.store = function (subform) {
 				backup[subform.$id] = $.extend(true, {}, subform.asset);
 
-				//
-
 				var subwatch = subform.$watch('form.name.validator', function (val) {
 					if (!val) {
 						return;
@@ -306,12 +304,14 @@ module.directive('volumeEditMaterialsForm', [
 			form.reset = function (subform) {
 				subform.asset = backup[subform.$id];
 
-				page.models.Asset.get({
-					creation: '',
-					id: subform.asset.asset.id
-				}, function (res) {
-					subform.asset.asset.creation = res.creation;
-				});
+				if (subform.asset.asset) {
+					page.models.Asset.get({
+						creation: '',
+						id: subform.asset.asset.id
+					}, function (res) {
+						subform.asset.asset.creation = res.creation;
+					});
+				}
 
 				form.store(subform);
 				form.clean(subform);
@@ -320,6 +320,7 @@ module.directive('volumeEditMaterialsForm', [
 			form.resetAll = function () {
 				angular.forEach(form, function (subform, id) {
 					if (id.indexOf('asset-') === 0 && form[id].$dirty) {
+						console.log(subform);
 						form.reset(subform.subform);
 					}
 				});
