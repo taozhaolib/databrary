@@ -9,6 +9,7 @@ module.controller('LoginView', [
 			form.validator.client({
 				email: {
 					tips: page.constants.message('login.email.help'),
+					errors: page.constants.message('login.email.error'),
 				},
 				password: {
 					tips: page.constants.message('login.password.help'),

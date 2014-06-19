@@ -121,6 +121,7 @@ login.expired=Your session has expired. Please login again.
 login.error=Unable to log in with those credentials.
 
 login.email.help=Enter the email address you used to register.
+login.email.error=This email address is invalid.
 login.password.help=Enter your password.
 
 # --- Reset page
@@ -453,12 +454,12 @@ register.register=Agree and register
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
-register.name.help=<strong>Name</strong>: Provide your full name.
+register.name.help=Provide your full name.
 
-register.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
-register.email.error=<strong>Email</strong>: This email address is invalid.
+register.email.help=We recommend using your institutional email address. You can change it later.
+register.email.error=This email address is invalid.
 
-register.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
+register.affiliation.help=Enter your affiliation as you wish it to display on your profile.
 
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.
