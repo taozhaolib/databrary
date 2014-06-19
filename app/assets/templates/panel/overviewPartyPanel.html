@@ -9,6 +9,9 @@
 				<div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
 					<div class="metadata">
 						<dl class="flat">
+							<dt bo-if="party.affiliation" bo-html="'affiliation' | message"/>
+							<dd bo-if="party.affiliation" bo-text="party.affiliation"></dd>
+
 							<dt bo-if="party.email" bo-html="'email' | message"/>
 							<dd bo-if="party.email"><a bo-href="'mailto:'+party.email">{{party.email}}</a></dd>
 
