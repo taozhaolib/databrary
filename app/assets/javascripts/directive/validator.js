@@ -63,7 +63,7 @@ module.directive('validator', [
 			};
 
 			validator.showClientTips = function () {
-				return validator.clientTips.length > 0 && validator.name && (!validator.name.$invalid || validator.serverErrors.length === 0) && validator.focus;
+				return validator.clientTips.length > 0 && validator.name && (!validator.name.$invalid || (validator.clientErrors.length === 0 && validator.serverErrors.length === 0)) && validator.focus;
 			};
 
 			//
