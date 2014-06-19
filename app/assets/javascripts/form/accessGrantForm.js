@@ -15,12 +15,13 @@ module.directive('accessGrantForm', [
 			if (form.access.funding) {
 				form.data.funding = form.access.funding;
 			}
+
+			var backup = $.extend(true, {}, form.data);
+
 			//
 
 			form.extend = function () {
 				form.data.inherit = form.data.access === form.data.inherit ? 0 : Math.min(form.data.access, page.permission.CONTRIBUTE);
-
-				form.save();
 			};
 
 			//
@@ -47,6 +48,13 @@ module.directive('accessGrantForm', [
 						form.successFn(form, arguments);
 					}
 
+						form.messages.add({
+							body: page.constants.message('access.grant.save.success'),
+							type: 'green',
+							countdown: 3000,
+						});
+
+					backup = $.extend(true, {}, form.data);
 					form.$setPristine();
 				}, function (res) {
 					form.messages.addError({
@@ -58,6 +66,17 @@ module.directive('accessGrantForm', [
 						form.errorFn(form, arguments);
 					}
 				});
+			};
+
+			form.resetFn = undefined;
+
+			form.reset = function () {
+				if (angular.isFunction(form.resetFn)) {
+					form.resetFn(form);
+				}
+
+				form.data = $.extend(true, {}, backup);
+				form.$setPristine();
 			};
 
 			//
@@ -81,6 +100,12 @@ module.directive('accessGrantForm', [
 						if (angular.isFunction(form.removeSuccessFn)) {
 							form.removeSuccessFn(form, arguments, form.access);
 						}
+
+						form.messages.add({
+							body: page.constants.message('access.grant.remove.success'),
+							type: 'green',
+							countdown: 3000,
+						});
 
 						form.$setPristine();
 					}, function (res) {

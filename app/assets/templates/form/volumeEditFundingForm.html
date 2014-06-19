@@ -41,6 +41,7 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditFundingForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditFundingForm.volume"></button>
+    <button ng-click="volumeEditFundingForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
   </fieldset>
 </form>
