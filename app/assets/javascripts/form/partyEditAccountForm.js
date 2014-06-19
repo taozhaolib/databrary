@@ -68,7 +68,7 @@ module.directive('partyEditAccountForm', [
 			};
 
 			form.ready = function () {
-				return form.$dirty && form.$valid && form.data.password.once &&
+				return form.$dirty && form.$valid && form.data.password && form.data.password.once &&
 						form.data.password.once == form.data.password.again;
 			};
 
@@ -76,16 +76,17 @@ module.directive('partyEditAccountForm', [
 
 			form.validator.client({
 				email: {
-					tips: page.constants.message('party.edit.email.help')
+					tips: page.constants.message('party.edit.email.help'),
+					errors: page.constants.message('login.email.error'),
 				},
 				password: {
-					tips: page.constants.message('party.edit.password.help')
+					tips: page.constants.message('party.edit.password.help'),
 				},
 				'password.again': {
-					tips: page.constants.message('party.edit.password.again.help')
+					tips: page.constants.message('party.edit.password.again.help'),
 				},
 				auth: {
-					tips: page.constants.message('party.edit.auth.help')
+					tips: page.constants.message('party.edit.auth.help'),
 				},
 			}, true);
 

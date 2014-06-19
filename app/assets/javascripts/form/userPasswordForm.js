@@ -118,6 +118,7 @@ module.directive('userPasswordForm', [
 			form.validator.client({
 				email: {
 					tips: page.constants.message('reset.email.help'),
+					errors: page.constants.message('login.email.error'),
 				},
 				'password.once': {
 					tips: page.constants.message('reset.once.help'),
