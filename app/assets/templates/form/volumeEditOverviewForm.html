@@ -26,7 +26,7 @@
     <div ng-repeat="author in volumeEditOverviewForm.authors">
       <validator form="volumeEditOverviewForm" name="citation.authors[{{$index}}]">
         <input type="text" name="citation.authors[{{$index}}]" ng-model="author.name">
-        <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="yellow mini pull"></button>
+        <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
     <button ng-click="volumeEditOverviewForm.addAuthor()" bo-html="'add' | message" class="yellow add_f2"></button>
@@ -48,7 +48,7 @@
 
   <fieldset class="clean">
     <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
-    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-if="volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
   </fieldset>
 </form>
 

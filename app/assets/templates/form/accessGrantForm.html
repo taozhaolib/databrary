@@ -3,13 +3,13 @@
 
   <fieldset class="clean cut_f" ng-if="accessGrantForm.funding">
     <validator form="accessGrantForm" name="funding" label="'access.grant.funding' | message">
-      <input name="funding" type="text" ng-model="accessGrantForm.data.funding" idle="accessGrantForm.save()" ng-blur="accessGrantForm.save()">
+      <input name="funding" type="text" ng-model="accessGrantForm.data.funding">
     </validator>
   </fieldset>
 
 	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
     <div ng-repeat="permission in page.constants.data.permission">
-      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
+      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access">
       <label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
     </div>
 
@@ -20,6 +20,8 @@
 	</fieldset>
 
   <fieldset class="clean">
-    <button ng-click="accessGrantForm.remove()" class="orange" bo-html="'access.remove' | message"></button>
+    <button ng-click="accessGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>
+    <button ng-click="accessGrantForm.reset()" class="yellow" bo-html="'revert' | message" ng-disabled="!accessGrantForm.$dirty"></button>
+    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'access.remove' | message"></button>
   </fieldset>
 </form>
