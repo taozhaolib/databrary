@@ -85,6 +85,7 @@ module.directive('authSearchForm', [
 			form.validator.client({
 				name: {
 					tips: page.constants.message('auth.search.name.help'),
+					errors: page.constants.message('auth.search.name.error'),
 				},
 			}, true);
 

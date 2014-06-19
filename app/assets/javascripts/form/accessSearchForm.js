@@ -94,6 +94,7 @@ module.directive('accessSearchForm', [
 			form.validator.client({
 				name: {
 					tips: page.constants.message('access.search.name.help'),
+					errors: page.constants.message('access.search.name.error'),
 				},
 			}, true);
 

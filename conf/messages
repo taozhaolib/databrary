@@ -257,6 +257,7 @@ auth.search.affiliate=Search for your sponsoring PI...
 auth.search.error=Could not retrieve any users or institutions.
 
 auth.search.name.help=Enter your institution or PI.
+auth.search.name.error=Enter at least 3 characters for auto-search to begin.
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}
@@ -273,6 +274,7 @@ auth.request.info.help=Enter contact information (name, email, phone number) for
 # Access
 access.search=Search for a user, group, or institution...
 access.search.name.help=Enter to whom you want to grant access.
+access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
 access.grant.funding=Grant #
@@ -421,6 +423,7 @@ comments.add.error=Error while posting comment.
 
 comments.text.title=Comment
 comments.text.help=Comment on the content of this page.
+comments.text.error=Must be at least 3 characters long.
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.

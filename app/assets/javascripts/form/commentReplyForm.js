@@ -88,6 +88,7 @@ module.directive('commentReplyForm', [
 			form.validator.client({
 				text: {
 					tips: page.constants.message('comments.text.help'),
+					errors: page.constants.message('comments.text.error'),
 				}
 			}, true);
 
