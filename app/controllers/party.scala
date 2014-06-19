@@ -65,7 +65,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	form.orThrow.account.change(
 	  email = form.email.get,
 	  password = form.cryptPassword,
-	  openid = form.openid.get.map(Maybe(_).opt))
+	  openid = form.openid.get)
       }
       _ <- form.avatar.get foreachAsync { file : form.FilePart =>
 	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
@@ -87,7 +87,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	Account.create(p,
 	  email = form.email.get.get,
 	  password = form.cryptPassword,
-	  openid = form.openid.get)
+	  openid = form.openid.get.flatten)
       )
       s <- p.perSite
     } yield (result(s))
@@ -188,7 +188,7 @@ object PartyController extends PartyController {
     override def formName : String = actionName + " Account"
     val email : Field[Option[String]]
     val password = passwordField.fill(None)
-    val openid = Field(OptionMapping(Forms.text(0,256)))
+    val openid = Field(OptionMapping(Forms.optional(Forms.of[java.net.URL])))
   }
 
   abstract sealed class EditForm(implicit request : Request[_])
@@ -208,11 +208,11 @@ object PartyController extends PartyController {
   }
   final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
     def accountForm = if (_authorized || request.superuser) Some(this)
-      else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid.getOrElse(""))))
+      else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid)))
 	Some(this.auth.withError("error.required"))
       else None
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
-    openid.fill(account.openid)
+    openid.fill(Some(account.openid))
   }
 
   abstract sealed class CreateForm(implicit request : SiteRequest[_])

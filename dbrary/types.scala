@@ -126,6 +126,9 @@ object SQLType {
 
   implicit object bytea extends SQLDBType[Array[Byte]]("bytea", classOf[Array[Byte]], db.postgresql.column.ByteArrayEncoderDecoder)
 
+  implicit val url : SQLType[java.net.URL] =
+    string.transform("text", classOf[java.net.URL])(dbrary.url.parse, _.toString)
+
   implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] =
     new SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
       /* TODO: */
