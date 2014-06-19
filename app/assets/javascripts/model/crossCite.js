@@ -8,7 +8,6 @@ module.factory('CrossCite', [
 				var deferred = $q.defer();
 
 				$http.get(url + encodeURIComponent(doi), {
-					cache: false,
 					headers: {
 						Accept: 'text/x-bibliography;style=apa',
 					},
@@ -29,7 +28,6 @@ module.factory('CrossCite', [
 				var deferred = $q.defer();
 
 				$http.get(url + encodeURIComponent(doi), {
-					cache: false,
 					headers: {
 						Accept: 'application/vnd.citationstyles.csl+json',
 					},
@@ -49,14 +47,8 @@ module.factory('CrossCite', [
 			searchFunding: function (query) {
 				var deferred = $q.defer();
 
-				$http.get(fundingUrl + encodeURIComponent(query), {
-					query: query,
-				}, {
-					cache: false,
-					headers: {
-						Accept: 'application/vnd.citationstyles.csl+json',
-					},
-				}).success(function (res) {
+				$http.get(fundingUrl + encodeURIComponent(query))
+				.success(function (res) {
 					deferred.resolve(res);
 				}).error(function () {
 					deferred.reject(arguments);
