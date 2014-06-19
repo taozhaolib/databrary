@@ -32,11 +32,9 @@ module.directive('accessSearchForm', [
 			form.search = function () {
 				if (!form.nameVal || form.nameVal.length < 3) {
 					form.found = [];
-				}
-				else if (sentSearch) {
+				} else if (sentSearch) {
 					recentSearch = form.nameVal;
-				}
-				else {
+				} else {
 					sentSearch = page.models.VolumeAccess.search({
 						id: form.id,
 						name: form.nameVal,
@@ -94,7 +92,6 @@ module.directive('accessSearchForm', [
 			form.validator.client({
 				name: {
 					tips: page.constants.message('access.search.name.help'),
-					errors: page.constants.message('access.search.name.error'),
 				},
 			}, true);
 

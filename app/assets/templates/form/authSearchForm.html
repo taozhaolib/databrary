@@ -2,7 +2,7 @@
   <messages form="authSearchForm"></messages>
 
   <validator form="authSearchForm" name="name">
-    <input type="search" name="name" placeholder="{{'auth.search.'+(authSearchForm.principal?'principal':'affiliate') | message}}" ng-model="authSearchForm.name" ng-change="authSearchForm.search()" ng-minlength="3">
+    <input type="search" name="name" placeholder="{{'auth.search.'+(authSearchForm.principal?'principal':'affiliate') | message}}" ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
   </validator>
 
   <ul ng-if="authSearchForm.found" class="flat auth-found-list">
