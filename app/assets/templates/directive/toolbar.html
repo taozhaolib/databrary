@@ -1,19 +1,19 @@
 <section id="toolbar" class="toolbar cf" bindonce="page.constants.data.messages">
 	<div class="wrap">
 		<div class="row">
-			<div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-2">
+			<div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
 				<h1 class="toolbar_h1">
 					<a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
 				</h1>
 
-				<nav class="toolbar_nav cf hide-mobile">
+				<nav class="toolbar_nav cf">
 					<ul class="toolbar_nav_ul inline-block flat cf">
 						<li ng-repeat="link in toolbar.links()" bindonce><a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target"><span bo-if="link.icon" class="icon" bo-class="link.icon"></span> <span class="text" bo-html="link.html"></span></a></li>
 					</ul>
 				</nav>
 			</div>
 
-			<div class="toolbar_user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-4">
+			<div class="toolbar_user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-2">
 				<span ng-if="!page.auth.hasAuth('NONE')">
 					<a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
 
@@ -24,7 +24,8 @@
 
 				<span ng-if="page.auth.hasAuth('NONE')">
 					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
-						<span class="username" bo-text="page.auth.user.name.split(' ').shift()"></span>
+						<span class="username hide-mobile" bo-text="page.auth.user.name.split(' ').shift()"></span>
+						<span class="username show-mobile" bo-text="'me' | message"></span>
 						<img bo-src="page.auth.user.avatar" class="avatar">
 					</a>
 				</span>

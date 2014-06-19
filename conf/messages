@@ -95,6 +95,7 @@ create=Create
 file=file
 account=Account
 password=Password
+me=Me
 
 toolbar.login=login
 toolbar.logout=logout
