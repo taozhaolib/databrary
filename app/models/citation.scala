@@ -27,7 +27,7 @@ final case class Citation(val head : String, val title : Option[String] = None, 
   def json = JsonObject.flatten(
     Some('head -> head),
     Some('title -> title),
-    url.map(u => ('url, u.toString)),
+    url.map('url -> _),
     authors.map('authors -> _),
     year.map('year -> _)
   )
@@ -82,11 +82,11 @@ object Citation {
 object VolumeCitation extends Table[Citation]("volume_citation") {
   private val columns = Columns(
       SelectColumn[String]("head")
-    , SelectColumn[Option[String]]("url")
+    , SelectColumn[Option[URL]]("url")
     , SelectColumn[Option[IndexedSeq[String]]]("authors")
     , SelectColumn[Option[Short]]("year")
     ).map { (head, url, authors, year) =>
-      new Citation(head = head, url = url.flatMap(dbrary.url.parse _), authors = authors, year = year)
+      new Citation(head = head, url = url, authors = authors, year = year)
     }
 
   private[models] def get(vol : Volume) : Future[Option[Citation]] =
@@ -98,7 +98,7 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
     implicit val site = vol.site
     cite.fold(
       Audit.remove("volume_citation", SQLTerms('volume -> vol.id))) { cite =>
-      Audit.changeOrAdd("volume_citation", SQLTerms('head -> cite.head, 'url -> cite.url.map(_.toString), 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
+      Audit.changeOrAdd("volume_citation", SQLTerms('head -> cite.head, 'url -> cite.url, 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
     }.execute
   }
 }

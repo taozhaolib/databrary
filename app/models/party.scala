@@ -3,6 +3,7 @@ package models
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsNull}
+import java.net.URL
 import macros._
 import dbrary._
 import site._
@@ -116,7 +117,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[String]) extends TableRowId[Party] {
+final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[URL]) extends TableRowId[Party] {
   def ===(a : Party) = party === a
 
   party._account = Some(this)
@@ -131,7 +132,7 @@ final class Account protected (val party : Party, email_ : String, password_ : S
   def openid = _openid
 
   /** Update the given values in the database and this object in-place. */
-  def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[String]] = None)(implicit site : Site) : Future[Boolean] = {
+  def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[URL]] = None)(implicit site : Site) : Future[Boolean] = {
     (if (password.exists(!_.equals(_password)))
       clearTokens(cast[AuthSite](site).map(_.token))
     else async(false)).flatMap { _ =>
@@ -266,7 +267,7 @@ object Account extends Table[Account]("account") {
   private[models] val columns = Columns(
       SelectColumn[String]("email")
     , SelectColumn[Option[String]]("password")
-    , SelectColumn[Option[String]]("openid")
+    , SelectColumn[Option[URL]]("openid")
     ).map { (email, password, openid) =>
       (party : Party) => new Account(party, email, password.getOrElse(""), openid)
     }
@@ -290,7 +291,7 @@ object Account extends Table[Account]("account") {
   def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
     row.SELECT("WHERE openid = ? AND coalesce(email = ?, 't') LIMIT 1").apply(openid, email).singleOpt
 
-  def create(party : Party, email : String, password : Option[String] = None, openid : Option[String] = None)(implicit site : Site) : Future[Account] =
+  def create(party : Party, email : String, password : Option[String] = None, openid : Option[URL] = None)(implicit site : Site) : Future[Account] =
     Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>
       new Account(party, email, password.getOrElse(""), openid)
     }

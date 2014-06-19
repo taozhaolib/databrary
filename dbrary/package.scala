@@ -12,13 +12,11 @@ package object dbrary {
   import play.api.libs.json
   implicit val timestampJson : json.Format[Timestamp] = new json.Format[Timestamp] {
     def writes(t : Timestamp) = json.JsNumber(t./*getLocalMillis*/toDateTime.getMillis)
-    def reads(j : json.JsValue) = j match {
-      case json.JsNumber(t) if t.isValidLong => json.JsSuccess(new Timestamp(t.toLong))
-      case _ => json.JsError("error.expected.jsnumber")
-    }
+    def reads(j : json.JsValue) = j.validate[Long].map(new Timestamp(_))
   }
 
   implicit def urlFormatter : play.api.data.format.Formatter[java.net.URL] = url.formatter
+  implicit def urlJson : json.Format[java.net.URL] = url.jsonFormat
 
   def init() {}
 }

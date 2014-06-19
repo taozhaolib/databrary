@@ -9,6 +9,7 @@ import          libs.concurrent._
 import                          Execution.Implicits.defaultContext
 import          i18n.Messages
 import scala.concurrent.Future
+import java.net.URL
 import org.mindrot.jbcrypt.BCrypt
 import macros._
 import macros.async._
@@ -41,12 +42,11 @@ private[controllers] sealed class LoginController extends SiteController {
 	  else
 	    acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
 	}
-      } else if (!form.openid.get.isEmpty)
-	OpenID.redirectURL(form.openid.get, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(Play.isProd), realm = Some("http://" + request.host))
+      } else form.openid.get.fold(bad) { openid =>
+	OpenID.redirectURL(openid.toString, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(Play.isProd), realm = Some("http://" + request.host))
 	  .map(Redirect(_))
 	  .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
-      else
-	bad
+      }
     }
   }
 
@@ -111,10 +111,10 @@ object LoginController extends LoginController {
       views.html.party.login(_)) {
     val email = Field(Forms.optional(Forms.email))
     val password = Field(Forms.default(Forms.text, ""))
-    val openid = Field(Forms.default(Forms.text(0, 256), ""))
+    val openid = Field(Forms.optional(Forms.of[URL]))
     _mapping.verifying("login.bad", self =>
       (self.email.get.isDefined && self.password.get.nonEmpty) || self.openid.get.nonEmpty)
-    private[controllers] def _fill(em : Option[String], op : String = "") : this.type = {
+    private[controllers] def _fill(em : Option[String], op : Option[URL] = None) : this.type = {
       email.fill(em)
       openid.fill(op)
       this
@@ -199,7 +199,7 @@ object LoginHtml extends LoginController with HtmlController {
       info <- OpenID.verifiedId
       acct <- Account.getOpenid(info.id, em)
       r <- acct.fold {
-	new LoginForm()._fill(em, info.id).openid.withError("login.openID.notFound").Bad
+	new LoginForm()._fill(em, url.parse(info.id)).openid.withError("login.openID.notFound").Bad
       } (login)
     } yield (r))
     .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
