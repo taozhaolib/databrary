@@ -253,12 +253,13 @@ wizard.party_edit_account.instructions=
 
 # --- Auth search
 auth.search=Search for a user or institution...
-auth.search.principal=Search for your institution...
-auth.search.affiliate=Search for your sponsoring PI...
-auth.search.error=Could not retrieve any users or institutions.
-
 auth.search.name.help=Enter your institution or PI.
 auth.search.name.error=Enter at least 3 characters for auto-search to begin.
+auth.search.principal=Search for your institution...
+auth.search.principal.help=Enter your institution.
+auth.search.affiliate=Search for your sponsoring PI...
+auth.search.affiliate.help=Enter your sponsoring PI.
+auth.search.error=Could not retrieve any users or institutions.
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}
