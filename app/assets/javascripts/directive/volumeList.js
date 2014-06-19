@@ -34,6 +34,10 @@ module.directive('volumeList', [
 				return cls;
 			};
 
+			$scope.name = function(volume) {
+				return volume.alias && page.$location.path() === '/profile' ? volume.alias : volume.name;
+			};
+
 			//
 
 			var tips = {};

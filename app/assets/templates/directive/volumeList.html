@@ -4,7 +4,7 @@
       <article class="search_result cf" bo-class="volumeClasses(v)">
         <img class="thumb" bo-src="page.router.volumeThumb(v)" bo-if="page.$location.path() !== '/profile'">
 
-        <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-text="v.name"></a></h1>
+        <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-text="name(v)"></a></h1>
 
         <div class="investigators" bo-if="page.$location.path() !== '/profile'">
           <strong>Investigators:</strong>
