@@ -1,6 +1,6 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
   <div class="row">
-    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+    <div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
         <h1 class="panel_title">{{party.name}}</h1>
       </hgroup>
@@ -23,7 +23,7 @@
 			</div>
     </div>
 
-    <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6 col-cell">
+    <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6 col-cell">
       <div class="panel_overview_thumbnail_wrap">
         <img class="panel_overview_thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
       </div>
