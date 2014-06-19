@@ -37,6 +37,9 @@ module.directive('partyEditProfileForm', [
 				if (angular.isObject(form.data.avatar)) {
 					var fd = new FormData();
 
+					fd.append('avatar', form.data.avatar[0]);
+					form.data.avatar = undefined;
+
 					for (var prop in form.data) {
 						if (form.data.hasOwnProperty(prop) && angular.isDefined(form.data[prop]) && form.data[prop] !== null) {
 							fd.append(prop, form.data[prop]);
@@ -49,7 +52,7 @@ module.directive('partyEditProfileForm', [
 					});
 
 					page.models.Party.upload(form.party, fd)
-						.then(function (res) { console.log(res);
+						.then(function (res) {
 							form.validator.server({});
 
 							form.messages.add({
@@ -57,6 +60,8 @@ module.directive('partyEditProfileForm', [
 								countdown: 3000,
 								body: page.constants.message('party.edit.profile.success'),
 							});
+
+							form.data.avatar = res.data.avatar;
 
 							backup = $.extend(true, {}, form.data);
 

@@ -67,6 +67,11 @@ module.directive('partyEditAccountForm', [
 				form.$setPristine();
 			};
 
+			form.ready = function () {
+				return form.$dirty && form.$valid && form.data.password.once &&
+						form.data.password.once == form.data.password.again;
+			};
+
 			//
 
 			form.validator.client({

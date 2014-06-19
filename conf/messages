@@ -94,6 +94,7 @@ edit=Edit
 create=Create
 file=file
 account=Account
+password=Password
 
 toolbar.login=login
 toolbar.logout=logout
