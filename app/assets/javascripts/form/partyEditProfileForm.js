@@ -133,7 +133,7 @@ module.directive('partyEditProfileForm', [
 			//
 
 			form.validator.client({
-				fullname: {
+				name: {
 					tips: page.constants.message('party.edit.name.help')
 				},
 				affiliation: {
