@@ -123,6 +123,8 @@ module.directive('volumeEditOverviewForm', [
 
 				form.data = $.extend(true, {}, backup);
 
+				form.validator.clearServer();
+
 				if (form.data.citation && form.data.citation.authors) {
 					form.authors = form.data.citation.authors.map(function (author) {
 						return {
@@ -271,7 +273,7 @@ module.directive('volumeEditOverviewForm', [
 					tips: page.constants.message('volume.edit.citation.head.help')
 				},
 				'citation.url': {
-					tips: page.constants.message('volume.edit.citation.url.help')
+					tips: page.constants.message('volume.edit.citation.url.help'),
 				},
 				'citation.year': {
 					tips: page.constants.message('volume.edit.citation.year.help')

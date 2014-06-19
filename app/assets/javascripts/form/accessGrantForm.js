@@ -75,6 +75,8 @@ module.directive('accessGrantForm', [
 					form.resetFn(form);
 				}
 
+				form.validator.clearServer();
+
 				form.data = $.extend(true, {}, backup);
 				form.$setPristine();
 			};

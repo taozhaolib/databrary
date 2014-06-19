@@ -48,6 +48,12 @@ module.directive('form', [
 						}
 					},
 
+					clearServer: function () {
+						angular.forEach(form.validators, function (validator) {
+							validator.server({}, true);
+						});
+					},
+
 					client: function (data, replace) {
 						for (var name in data) {
 							if (!data.hasOwnProperty(name)){
