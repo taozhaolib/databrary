@@ -3,6 +3,7 @@ module.directive('validator', [
 		var pre = function ($scope, $element, $attrs) {
 			$scope.validator = {};
 			$scope.validator.label = $attrs.label ? page.$parse($attrs.label)($scope) : undefined;
+			$scope.validator.prefix = $scope.validator.label ? '<strong>' + $scope.validator.label + ':</strong> ' : '';
 		};
 
 		var post = function ($scope, $element, $attrs) {
@@ -102,7 +103,7 @@ module.directive('validator', [
 				}
 
 				angular.forEach(data, function (error) {
-					validator.serverErrors.push(error);
+					validator.serverErrors.push(validator.prefix + error);
 				});
 			};
 
@@ -132,13 +133,13 @@ module.directive('validator', [
 
 				if (angular.isArray(data.errors)) {
 					angular.forEach(data.errors, function (error) {
-						validator.clientErrors.push(error);
+						validator.clientErrors.push(validator.prefix + error);
 					});
 				}
 
 				if (angular.isArray(data.tips)) {
 					angular.forEach(data.tips, function (tip) {
-						validator.clientTips.push(tip);
+						validator.clientTips.push(validator.prefix + tip);
 					});
 				}
 			};

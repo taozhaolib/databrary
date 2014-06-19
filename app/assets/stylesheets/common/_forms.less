@@ -282,7 +282,6 @@ th, td {
 
 .validator_messages {
 	position: relative;
-	top: -@b2;
 }
 
 .validator_message {
@@ -290,7 +289,7 @@ th, td {
 	background-color: @white;
 	left: 0;
 	right: 0;
-	top: @b3;
+	bottom: @b3;
 	.border-radius(@b6);
 	.box-shadow();
 	.padding(0, @f6);
@@ -302,19 +301,19 @@ th, td {
 		content: "";
 		.size(0);
 		left: @b1 + @b12;
-		top: -@b2;
 		border: @b4 solid transparent;
 		position: absolute;
 		pointer-events: none;
 	}
 
 	&:after {
-		border-bottom-color: @white;
+		border-top-color: @white;
+		bottom: -@b2;
 	}
 
 	&:before {
-		border-bottom-color: @gray;
-		top: -@b2 - 1px;
+		border-top-color: @gray;
+		bottom: -@b2 - 1px;
 	}
 }
 

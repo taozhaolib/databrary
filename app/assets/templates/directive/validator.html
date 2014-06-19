@@ -3,8 +3,6 @@
 
   <div class="validator_input">
     <div class="field">
-      <div ng-transclude></div>
-
       <aside class="validator_messages">
         <div class="validator_message" ng-show="validator.show()">
           <div ng-if="validator.showServerErrors()">
@@ -20,6 +18,8 @@
           </div>
         </div>
       </aside>
+
+      <div ng-transclude></div>
     </div>
 
     <div class="indicator" ng-class="validator.iconClasses()">
