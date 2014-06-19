@@ -274,7 +274,7 @@ module.config([
 								citation: '',
 								top: '',
 								excerpts: '',
-								funding: ''
+								funding: '',
 							}, function (res) {
 								deferred.resolve(res);
 							}, function (res) {

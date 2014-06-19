@@ -10,8 +10,24 @@ module.factory('VolumeAccess', [
 		}, {
 			search: {
 				method: 'GET',
-				url: '/api/volume/:id/access/:partyId/search'
-			}
+				url: '/api/volume/:id/access/:partyId/search',
+			},
+
+			createFunding: {
+				method: 'POST',
+				url: '/api/volume/:id/funding/:partyId',
+			},
+
+			deleteFunding: {
+				method: 'DELETE',
+				url: '/api/volume/:id/funding/:partyId',
+			},
+
+			searchFunding: {
+				method: 'GET',
+				url: '/api/funder',
+				isArray: true,
+			},
 		}, 'volumeAccess');
 	}
 ]);
