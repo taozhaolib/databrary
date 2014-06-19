@@ -519,6 +519,7 @@ wizard.volume_edit_overview.instructions=First, provide basic information about 
 
 volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
 volume.edit.autodoi=DOI or URL
+volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Lookup".
 volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this study represents.
 volume.edit.autodoi.lookup=Lookup
 volume.edit.autodoi.donthave=I don''t have one
