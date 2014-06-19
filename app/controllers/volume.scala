@@ -64,11 +64,10 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
       via <- request.obj.adminAccessVia
       form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
-      viaa <- via.mapAsync(_.party.access.map(_.group))
       _ <- if (form.delete.get)
 	  VolumeAccess.delete(request.obj, e)
 	else
-	  (if (form.isRestricted)
+	  (if (!request.superuser && form.isRestricted)
 	    via.mapAsync(_.party.access.map(_.group))
 	  else async(Seq(Permission.ADMIN))).flatMap { viaa =>
 	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))

@@ -11,6 +11,11 @@ module.directive('authSearchForm', [
 			$attrs.$observe('principal', function (principal) {
 				form.name = '';
 				form.found = [];
+				form.validator.client({
+					name: {
+						tips: page.constants.message('auth.search.' + (form.principal ? 'principal' : 'affiliate') + '.help')
+					}
+				}, true);
 			});
 
 			//
