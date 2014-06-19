@@ -41,17 +41,9 @@
           </div>
         </div>
 
-        <div class="party_row row" ng-repeat="row in rows">
-          <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-repeat="party in row" bindonce>
-            <article class="home_party">
-              <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
-
-              <div class="info">
-                <h1><a bo-href="page.router.party(party)" bo-text="party.name"></a></h1>
-
-                <div class="affiliation" bo-if="party.affiliation" bo-text="party.affiliation"></div>
-              </div>
-            </article>
+        <div class="party_row row">
+          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties" bindonce>
+            <portrait class="portrait_vertical portrait_small"></portrait>
           </div>
         </div>
       </div>
