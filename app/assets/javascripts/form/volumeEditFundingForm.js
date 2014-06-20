@@ -62,48 +62,40 @@ module.directive('volumeEditFundingForm', [
 
 			//
 
-			$scope.$on('accessGrantForm-init', function (event, grantForm) {
+			$scope.$on('fundingGrantForm-init', function (event, grantForm) {
+				grantForm.volume = form.volume;
+				if (grantForm.data.new) {
+					grantForm.$setDirty();
+				}
 				subforms.push(grantForm);
 
-				grantForm.successFn = function (grantForm) {
-					form.messages.add({
-						body: page.constants.message('access.grant.funding.save.success'),
-						type: 'green',
-						countdown: 3000,
-					});
-				};
-
-				grantForm.removeSuccessFn = function (grantForm, args, access) {
-					form.messages.add({
-						body: page.constants.message('access.grant.funding.remove.success'),
-						type: 'green',
-						countdown: 3000,
-					});
-
-					form.data.access.splice(form.data.access.indexOf(access), 1);
+				grantForm.removeSuccessFn = function (grantForm, args, funder) {
+					form.data.splice(form.data.indexOf(funder), 1);
 				};
 
 				event.stopPropagation();
 			});
 
-			$scope.$on('accessSearchForm-init', function (event, searchForm) {
+			$scope.$on('fundingSearchForm-init', function (event, searchForm) {
+				searchForm.volume = form.volume;
+
 				searchForm.selectFn = function (found) {
 					var present = false;
 
-					angular.forEach(form.data.access, function (access, i) {
-						if (access.party.id === found.id) {
-							var el = form.data.access.splice(i, 1)[0];
-							form.data.access.push(el);
+					angular.forEach(form.data, function (funder, i) {
+						if (funder.funder === found.id) {
+							var el = form.data.splice(i, 1)[0];
+							form.data.push(el);
 							present = true;
 							return false;
 						}
 					});
 
 					if (!present) {
-						form.data.access.push({
-							party: found,
-							access: 0,
-							inherit: 0,
+						form.data.push({
+							funder: found,
+							awards: [],
+							new: true,
 						});
 					}
 				};

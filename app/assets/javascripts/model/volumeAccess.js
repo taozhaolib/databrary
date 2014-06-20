@@ -13,14 +13,14 @@ module.factory('VolumeAccess', [
 				url: '/api/volume/:id/access/:partyId/search',
 			},
 
-			createFunding: {
+			saveFunding: {
 				method: 'POST',
-				url: '/api/volume/:id/funding/:partyId',
+				url: '/api/volume/:id/funding/:funderId',
 			},
 
 			deleteFunding: {
 				method: 'DELETE',
-				url: '/api/volume/:id/funding/:partyId',
+				url: '/api/volume/:id/funding/:funderId',
 			},
 
 			searchFunding: {

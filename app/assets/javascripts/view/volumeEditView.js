@@ -22,21 +22,6 @@ module.controller('VolumeEditView', [
 
 		$scope.volume = volume;
 
-		$scope.funding = [];
-		$scope.granted = [];
-
-		if (volume && volume.access) {
-			angular.forEach(volume.access, function (access) {
-				if (access.hasOwnProperty('funding')) {
-					$scope.funding.push(access);
-				}
-
-				if (access.access) {
-					$scope.granted.push(access);
-				}
-			});
-		}
-
 		//
 
 		var updateQuery = false;
@@ -195,7 +180,7 @@ module.controller('VolumeEditView', [
 					step: step,
 					form: step.volumeEditFundingForm,
 				};
-				forms.funding.form.volume = volume;
+				forms.funding.form.init(volume.funding, volume);
 				forms.funding.form.cancelFn = cancelFn;
 			},
 
@@ -269,14 +254,12 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_funding': function (step) {
-				forms.funding.form.data = {
-					access: $scope.funding,
-				};
+				forms.funding.form.init(volume.funding, volume);
 			},
 
 			'volume_edit_access': function (step) {
 				forms.access.form.data = {
-					access: $scope.granted,
+					access: volume.access,
 				};
 			},
 		};

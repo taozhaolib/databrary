@@ -16,14 +16,17 @@
 .network-auth-username {
 	.font-line(1.5);
 
-	&:link,
-	&:visited {
-		color: inherit;
+	a& {
+		&:link,
+		&:visited {
+			color: inherit;
+		}
+
+		&:hover {
+			color: @gray;
+		}
 	}
 
-	&:hover {
-		color: @gray;
-	}
 }
 
 .network-auth-email {

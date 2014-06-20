@@ -23,15 +23,22 @@ module.directive('fundingSearchForm', [
 				}
 			};
 
-			form.search = function () {
-				if (!form.nameVal || form.nameVal.length < 3) {
+			form.search = function (all) {
+				var data = {
+					query: form.nameVal,
+				};
+
+				if (all) {
+					data.all = 'true';
+				}
+
+				if (!all && (!form.nameVal || form.nameVal.length < 3)) {
 					form.found = [];
 				} else if (sentSearch) {
 					recentSearch = form.nameVal;
 				} else {
-					sentSearch = page.models.VolumeAccess.searchFunding({
-						query: form.nameVal,
-					}, function (data) {
+					sentSearch = page.models.VolumeAccess.searchFunding(data,
+						function (data) {
 							form.found = data;
 
 							fin();
@@ -52,6 +59,20 @@ module.directive('fundingSearchForm', [
 				if (angular.isFunction(form.selectFn)) {
 					form.selectFn(found, form);
 				}
+
+				form.$setPristine();
+			};
+
+			//
+
+			form.notFoundFn = undefined;
+
+			form.notFound = function (found) {
+				if (angular.isFunction(form.notFoundFn)) {
+					form.notFoundFn(found, form);
+				}
+
+				form.search(true);
 
 				form.$setPristine();
 			};

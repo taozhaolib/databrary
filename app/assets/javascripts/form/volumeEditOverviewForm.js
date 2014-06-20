@@ -21,7 +21,7 @@ module.directive('volumeEditOverviewForm', [
 						tips: page.constants.message('volume.edit.citation.' + (form.automatic ? 'doi' : 'url') + '.help')
 					}
 				}, true);
-			}
+			};
 
 			form.init = function (data, volume) {
 				form.data = data;

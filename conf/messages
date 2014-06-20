@@ -293,8 +293,14 @@ access.grant.restricted=You are not authorized to share data with {0}.
 
 # Funding
 funding.save.success=Funding source updated.
+funding.save.error=Could not update funding agency at this time.
 funding.remove.success=Funding source removed.
-funding.funding=Grant #
+funding.remove.error=Could not remove funding agency at this time.
+
+funding.awards=Awards
+funding.search.legend=Search Funding Agencies
+funding.search.placeholder=Search for a funding agency...
+funding.search.more=Find more...
 
 funding.search.name.help=Start typing the name of the desired funding agency.
 
