@@ -7,7 +7,7 @@ import macros.async._
 import dbrary._
 import site._
 
-final case class Funder(val id : Funder.Id, val name : String) extends TableRow {
+final class Funder(val id : Funder.Id, val name : String) extends TableRow {
   private[models] def sqlKey = SQLTerms('fundref_id -> id)
   private[models] def sqlArgs = sqlKey ++ SQLTerms('name -> name)
 
@@ -30,6 +30,23 @@ object Funder extends Table[Funder]("funder") {
   private val fundRefDOI = "10.13039/"
   private val fundRefId = "http://data.fundref.org/fundref/funder/" + fundRefDOI
 
+  def apply(id : Id, name : String, aliases : Seq[String] = Nil, country : Option[String] = None) = {
+    import org.apache.commons.lang3.StringUtils.containsIgnoreCase
+    val (names, alts) = aliases.filterNot(containsIgnoreCase(name, _))
+      .partition(containsIgnoreCase(_, name))
+    val n = new StringBuilder(if (names.nonEmpty) names.maxBy(_.length) else name)
+    if (alts.nonEmpty)
+      n ++= alts.mkString(" (", ", ", ")")
+    country.filterNot(c => c.equalsIgnoreCase("United States") || containsIgnoreCase(n.toString, c)).foreach { c =>
+      n ++= ", "
+      n ++= c
+    }
+    new Funder(id, n.toString)
+  }
+
+  import play.api.libs.json
+  private def fundLabel(j : json.JsValue) : Option[String] =
+    (j \ "Label" \ "literalForm" \ "content").asOpt[String]
   private def fundrefId(id : Id) : Future[Option[Funder]] =
     play.api.libs.ws.WS.url(fundRefId + id)
     .get.map { r =>
@@ -39,8 +56,10 @@ object Funder extends Table[Funder]("funder") {
 	j = r.json
 	doi <- (j \ "id").asOpt[String]
 	id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
-	name <- (j \ "prefLabel" \ "Label" \ "literalForm" \ "content").asOpt[String]
-      } yield (new Funder(asId(id), name))
+	name <- fundLabel(j \ "prefLabel")
+	alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[json.JsValue]](Nil)(_.value).flatMap(fundLabel(_))
+	country = (j \ "country").asOpt[String]
+      } yield (Funder(asId(id), name, alts, country))
     }
 
   private[models] def get(id : Id) : Future[Option[Funder]] =
