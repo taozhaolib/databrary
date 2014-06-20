@@ -66,7 +66,7 @@ object Funder extends Table[Funder]("funder") {
     }
 
   private[models] def get(id : Id) : Future[Option[Funder]] =
-    row.SELECT("WHERE id = ?").apply(id).singleOpt.flatMap(_.orElseAsync(
+    row.SELECT("WHERE fundref_id = ?").apply(id).singleOpt.flatMap(_.orElseAsync(
       fundrefId(id).andThen {
 	case scala.util.Success(Some(f)) => INSERT(f.sqlArgs)
       }))
