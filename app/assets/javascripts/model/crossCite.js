@@ -1,7 +1,6 @@
 module.factory('CrossCite', [
 	'$http', '$q', function ($http, $q) {
 		var url = 'http://data.crossref.org/';
-		var fundingUrl = 'http://search.crossref.org/funders?q=';
 
 		return {
 			apa: function (doi) {
@@ -37,19 +36,6 @@ module.factory('CrossCite', [
 					} else {
 						deferred.resolve(res);
 					}
-				}).error(function () {
-					deferred.reject(arguments);
-				});
-
-				return deferred.promise;
-			},
-
-			searchFunding: function (query) {
-				var deferred = $q.defer();
-
-				$http.get(fundingUrl + encodeURIComponent(query))
-				.success(function (res) {
-					deferred.resolve(res);
 				}).error(function () {
 					deferred.reject(arguments);
 				});
