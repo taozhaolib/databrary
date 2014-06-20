@@ -279,12 +279,9 @@ access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
 access.notfound=None of these
-access.grant.funding=Grant #
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.funding.save.success=Funding source updated.
-access.grant.funding.remove.success=Funding source removed.
 access.grant.access.save.success=Access record updated.
 access.grant.access.remove.success=Access record removed.
 access.grant.save.success=Access updated successfully.
@@ -293,6 +290,13 @@ access.grant.remove.success=Access removed successfully.
 access.grant.remove.error=Could not remove access at this time.
 access.delete.self=You cannot remove your own access to a volume.
 access.grant.restricted=You are not authorized to share data with {0}.
+
+# Funding
+funding.save.success=Funding source updated.
+funding.remove.success=Funding source removed.
+funding.funding=Grant #
+
+funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
 auth.inherit.NONE=No access.

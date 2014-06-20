@@ -1,0 +1,13 @@
+<form name="fundingSearchForm" novalidate>
+  <messages form="fundingSearchForm"></messages>
+
+  <validator class="auth-search" form="fundingSearchForm" name="name">
+    <input type="search" name="name" placeholder="{{'access.search' | message}}" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()">
+  </validator>
+
+  <ul ng-if="fundingSearchForm.found" class="flat auth-found-list">
+    <li ng-repeat="found in fundingSearchForm.found">
+      <a href="" class="auth-found" ng-click="fundingSearchForm.select(found)">{{found.name}}</a>
+    </li>
+  </ul>
+</form>
