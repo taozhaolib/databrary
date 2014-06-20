@@ -170,7 +170,7 @@ DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                 
 
 # volume funding
 # SEARCH (see also search.crossref.org/funders?q=)
-GET     /api/funder                                                                               controllers.VolumeApi.funderSearch(query : String)
+GET     /api/funder                                                                               controllers.VolumeApi.funderSearch(query : String, all : Boolean ?= false)
 # ADD/UPDATE awards=[]
 POST    /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingChange(volumeId : models.Volume.Id, funderId : models.Funder.Id)
 # DELETE

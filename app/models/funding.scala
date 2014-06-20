@@ -27,8 +27,12 @@ object Funder extends Table[Funder]("funder") {
       new Funder(asId(id), name)
     }
 
+  import play.api.libs.json
+  import play.api.libs.ws.WS
+
   private val fundRefDOI = "10.13039/"
   private val fundRefId = "http://data.fundref.org/fundref/funder/" + fundRefDOI
+  private val fundRefSearch = WS.url("http://search.crossref.org/funders")
 
   def apply(id : Id, name : String, aliases : Seq[String] = Nil, country : Option[String] = None) = {
     import org.apache.commons.lang3.StringUtils.containsIgnoreCase
@@ -44,11 +48,10 @@ object Funder extends Table[Funder]("funder") {
     new Funder(id, n.toString)
   }
 
-  import play.api.libs.json
   private def fundLabel(j : json.JsValue) : Option[String] =
     (j \ "Label" \ "literalForm" \ "content").asOpt[String]
   private def fundrefId(id : Id) : Future[Option[Funder]] =
-    play.api.libs.ws.WS.url(fundRefId + id)
+    WS.url(fundRefId + id)
     .get.map { r =>
       for {
 	ct <- r.header("Content-Type")
@@ -57,7 +60,7 @@ object Funder extends Table[Funder]("funder") {
 	doi <- (j \ "id").asOpt[String]
 	id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
 	name <- fundLabel(j \ "prefLabel")
-	alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[json.JsValue]](Nil)(_.value).flatMap(fundLabel(_))
+	alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
 	country = (j \ "country").asOpt[String]
       } yield (Funder(asId(id), name, alts, country))
     }
@@ -68,8 +71,26 @@ object Funder extends Table[Funder]("funder") {
 	case scala.util.Success(Some(f)) => INSERT(f.sqlArgs)
       }))
 
-  def search(query : String) : Future[Seq[Funder]] =
-    row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
+  def search(query : String, all : Boolean = false) : Future[Seq[Funder]] =
+    if (all)
+      fundRefSearch.withQueryString("q" -> query)
+      .get.map { r =>
+	(for {
+	  ct <- r.header("Content-Type")
+	  if r.status == 200 && ct.startsWith("application/json")
+	  j <- r.json.asOpt[json.JsArray]
+	} yield j.value.flatMap { j =>
+	  for {
+	    ids <- (j \ "id").asOpt[String]
+	    id <- Maybe.toLong(ids)
+	    name <- (j \ "value").asOpt[String]
+	    alts = (j \ "other_names").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(_.asOpt[String]))
+	    country = (j \ "country").asOpt[String]
+	  } yield (Funder(asId(id), name, alts, country))
+	}).getOrElse(Nil)
+      }
+    else
+      row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
 }
 
 final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = IndexedSeq.empty) {
