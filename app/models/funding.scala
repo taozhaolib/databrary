@@ -31,8 +31,14 @@ object Funder extends Table[Funder]("funder") {
   import play.api.libs.ws.WS
 
   private val fundRefDOI = "10.13039/"
-  private val fundRefId = "http://data.fundref.org/fundref/funder/" + fundRefDOI
-  private val fundRefSearch = WS.url("http://search.crossref.org/funders")
+  private def fundRefId(id : Id) =
+    WS.url("http://data.fundref.org/fundref/funder/" + fundRefDOI + id)
+  private def fundRefSearch(query : String) =
+    WS.url("http://search.crossref.org/funders").withQueryString("q" -> query)
+  private val geoNamesRes = "http://sws\\.geonames\\.org/([0-9]*)/".r
+  private val geoNamesUS = "6252001"
+  private def geoNamesId(id : String) =
+    WS.url("http://api.geonames.org/getJSON").withQueryString("geonameId" -> id, "username" -> "databrary")
 
   def apply(id : Id, name : String, aliases : Seq[String] = Nil, country : Option[String] = None) = {
     import org.apache.commons.lang3.StringUtils.containsIgnoreCase
@@ -48,38 +54,43 @@ object Funder extends Table[Funder]("funder") {
     new Funder(id, n.toString)
   }
 
+  private def getJson(r : WS.WSRequestHolder) : Future[Option[json.JsValue]] =
+    r.get.map { r =>
+      if (r.status == 200 && r.header("Content-Type").exists(_.startsWith("application/json")))
+	Some(r.json)
+      else
+	None
+    }
+
   private def fundLabel(j : json.JsValue) : Option[String] =
     (j \ "Label" \ "literalForm" \ "content").asOpt[String]
   private def fundrefId(id : Id) : Future[Option[Funder]] =
-    WS.url(fundRefId + id)
-    .get.map { r =>
-      for {
-	ct <- r.header("Content-Type")
-	if r.status == 200 && ct.startsWith("application/json")
-	j = r.json
+    getJson(fundRefId(id)).flatMap { r =>
+      (for {
+	j <- r
 	doi <- (j \ "id").asOpt[String]
 	id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
 	name <- fundLabel(j \ "prefLabel")
-	alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
-	country = (j \ "country").asOpt[String]
-      } yield (Funder(asId(id), name, alts, country))
+      } yield ((j, id, name))).mapAsync { case (j, id, name) =>
+	val alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
+	val country = (j \ "country" \ "resource").asOpt[String].flatMap {
+	  case geoNamesRes(r) if !r.equals(geoNamesUS) => Some(r)
+	  case _ => None
+	}
+	country.flatMapAsync(cid => getJson(geoNamesId(cid)).map(_.flatMap(_.\("name").asOpt[String])))
+	  .map(Funder(asId(id), name, alts, _))
+      }
     }
 
   private[models] def get(id : Id) : Future[Option[Funder]] =
     row.SELECT("WHERE fundref_id = ?").apply(id).singleOpt.flatMap(_.orElseAsync(
-      fundrefId(id).andThen {
-	case scala.util.Success(Some(f)) => INSERT(f.sqlArgs)
-      }))
+      fundrefId(id).flatMap(_.filterAsync(f => INSERT(f.sqlArgs).execute))))
 
   def search(query : String, all : Boolean = false) : Future[Seq[Funder]] =
     if (all)
-      fundRefSearch.withQueryString("q" -> query)
-      .get.map { r =>
-	(for {
-	  ct <- r.header("Content-Type")
-	  if r.status == 200 && ct.startsWith("application/json")
-	  j <- r.json.asOpt[json.JsArray]
-	} yield j.value.flatMap { j =>
+      getJson(fundRefSearch(query)).map(_
+	.flatMap(_.asOpt[json.JsArray])
+	.fold[Seq[Funder]](Nil)(_.value.flatMap { j =>
 	  for {
 	    ids <- (j \ "id").asOpt[String]
 	    id <- Maybe.toLong(ids)
@@ -87,8 +98,7 @@ object Funder extends Table[Funder]("funder") {
 	    alts = (j \ "other_names").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(_.asOpt[String]))
 	    country = (j \ "country").asOpt[String]
 	  } yield (Funder(asId(id), name, alts, country))
-	}).getOrElse(Nil)
-      }
+	}))
     else
       row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
 }
