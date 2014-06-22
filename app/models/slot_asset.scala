@@ -8,9 +8,21 @@ import macros.async._
 import dbrary._
 import site._
 
+final class Excerpt (val segment : Section, val classification : Classification.Value) extends TableRow {
+}
+
+object Excerpt extends Table[Excerpt]("excerpt") {
+  private val row = Columns(
+      SelectColumn[Section]("segment")
+    , SelectColumn[Classification.Value]("classification")
+    ).map { (segment, classification) =>
+      new Excerpt(segment, classification)
+    }
+}
+
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, excerpt_segment : Option[Segment]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, _excerpt : Option[Excerpt]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
   private[models] def sqlKey = asset.sqlKey
   final val segment = slot.segment * asset_segment
   final def context = slot.context
@@ -22,24 +34,25 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   def entire = slot.segment @> asset_segment
   /** Segment occupied by asset wrt slot position. */
   final def relativeSegment = segment.map(_ - slot.position)
-  require(excerpt_segment.forall(_ @> segment))
-  final def excerpt = excerpt_segment.isDefined
+  private val excerptSegment = for {
+    e <- excerpt
+    l <- asset_segment.lowerBound
+  } yield (excerpt.segment.map(_ + l))
+  require(excerptSegment.forall(_ @> segment))
+  final def excerpt = _excerpt.isDefined
 
-  final def classification = asset.classification match {
-    case Classification.IDENTIFIED if excerpt => Classification.EXCERPT
-    case c => c
-  }
+  final def classification = _excerpt.fold(asset.classification)(_.classification)
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   final override val permission : Permission.Value =
-    Permission.data(asset.permission, consent, classification, top = container.top).permission
+    slot.dataPermission(classification).permission
 
   final private def in(s : Slot) =
     if (slot === s)
       this
     else
-      SlotAsset.make(asset, asset_segment, s, excerpt_segment.filter(s.segment @> _))
+      SlotAsset.make(asset, asset_segment, s, if (excerptSegment.exists(_ @> s)) Some(_excerpt) else None)
   /** "Expand" this slot asset to a larger one with equivalent permissions.
     * This determines what segment should be shown to users when they request a smaller one.
     */

@@ -15,10 +15,10 @@ import site._
   * @constructor create an access object, not (yet) persisted to the database
   * @param volume the volume to which access is being granted; the target
   * @param party the party being granted the access; the user
-  * @param access the level of permission granted directly to the party. Levels at or above [[Permission.EDIT]] are considered volume "membership."
-  * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
+  * @param individual the level of permission granted directly to the party.
+  * @param children the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
   */
-final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
+final class VolumeAccess(val volume : Volume, val party : Party, val individual : Permission.Value, val children : Permission.Value) extends TableRow with InVolume {
   private[models] def sqlKey = SQLTerms('volume -> volumeId, 'party -> partyId)
 
   def partyId = party.id
@@ -26,18 +26,18 @@ final class VolumeAccess(val volume : Volume, val party : Party, val access : Pe
   def json = JsonObject.flatten(
     Some('volume -> volume.json),
     Some('party -> party.json),
-    Maybe(access).opt.map('access -> _),
-    Maybe(inherit).opt.map('inherit -> _)
+    Maybe(individual).opt.map('individual -> _),
+    Maybe(children).opt.map('children -> _)
   )
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private val columns = Columns(
-      SelectColumn[Permission.Value]("access")
-    , SelectColumn[Permission.Value]("inherit")
-    ).map { (access, inherit) =>
+      SelectColumn[Permission.Value]("individual")
+    , SelectColumn[Permission.Value]("children")
+    ).map { (individual, children) =>
       (volume : Volume) => (party : Party) =>
-	new VolumeAccess(volume, party, access, inherit)
+	new VolumeAccess(volume, party, individual, children)
     }
   private def row(volume : Selector[Volume], party : Selector[Party]) = columns
     .join(volume, "volume_access.volume = volume.id").map(tupleApply)
@@ -58,8 +58,8 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     * If an access for the volume and party already exist, it is changed to match this.
     * Otherwise, a new one is added.
     * This may invalidate volume.access. */
-  def set(volume : Volume, party : Party.Id, access : Permission.Value = Permission.NONE, inherit : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Boolean] =
-    Audit.changeOrAdd("volume_access", SQLTerms('access -> access, 'inherit -> inherit), SQLTerms('volume -> volume.id, 'party -> party)).execute
+  def set(volume : Volume, party : Party.Id, individual : Permission.Value = Permission.NONE, children : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Boolean] =
+    Audit.changeOrAdd("volume_access", SQLTerms('individual -> individual, 'children -> children), SQLTerms('volume -> volume.id, 'party -> party)).execute
   /** Remove a particular volume access from the database.
     * @return true if a matching volume access was found and deleted
     */

@@ -43,17 +43,17 @@ trait Slot extends TableRow with InVolume with SiteObject {
 	}
   }
 
-  /** The permisison level granted to identifiable data within this slot. */
-  final def dataPermission : HasPermission =
-    Permission.data(permission, consent, Classification.IDENTIFIED)
-  /** Whether the current user may download identifiable data within this slot. */
-  final lazy val downloadable : Boolean =
-    dataPermission.checkPermission(Permission.DOWNLOAD)
+  /** The permisison level granted to restricted data within this slot. */
+  final def dataPermission(classification : Classification.Value) : HasPermission =
+    dataPermission(classification, consent)
+  /** Whether the current user may not download restricted data within this slot. */
+  final lazy val restricted : Boolean =
+    dataPermission(Classification.RESTRICTED).checkPermission(Permission.READ)
 
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
-      if (downloadable) date
-      else new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
+      if (restricted) new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
+      else date
     }
 
   /** List of asset that overlap with this slot. */
