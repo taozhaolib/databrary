@@ -22,7 +22,7 @@ module.directive('accessGrantForm', [
 
 			form.save = function () {
 				form.data.inherit = form.data.extend ? form.data.access : 0;
-				
+
 				form.volumeAccess = new page.models.VolumeAccess(form.data);
 
 				if (angular.isFunction(form.saveFn)) {
