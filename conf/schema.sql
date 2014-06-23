@@ -420,9 +420,6 @@ ALTER TABLE audit."asset" ALTER "sha1" DROP NOT NULL;
 
 CREATE INDEX "asset_creation_idx" ON audit."asset" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of asset creation information, specifically date.';
--- TODO unused remove:
-CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
-	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
 CREATE TABLE "slot_asset" (
 	"asset" integer NOT NULL Primary Key References "asset",
@@ -469,7 +466,7 @@ CREATE TABLE "excerpt" (
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
-COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within asset space (not slot).';
+COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
 
 SELECT audit.CREATE_TABLE ('excerpt');
 

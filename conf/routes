@@ -58,7 +58,6 @@ GET     /volume/$vID<[0-9]+>/slot/container                                     
 GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Container.Id, segment : dbrary.Segment)
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Container.Id, segment : dbrary.Segment)
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Container.Id, segment : dbrary.Segment)
-GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Container.Id, segment : dbrary.Segment)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.create(vID : models.Volume.Id, container : Option[models.Container.Id] ?= None, position : Option[dbrary.Offset] ?= None)
