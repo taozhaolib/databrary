@@ -21,9 +21,19 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
       context : ContextSlot => new Excerpt(segment, classification, context)
     }
 
-  def rowVolume(volume : Selector[Volume]) =
+  private[models] def rowVolume(volume : Selector[Volume]) =
     columnsSlot(columns, Container.columnsVolume(volume)) from
     "(SELECT container, excerpt.segment, excerpt.classification, slot_asset.segment AS asset_segment FROM slot_asset JOIN excerpt USING (asset)) AS excerpt"
+
+  def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
+    implicit val site = asset.site
+    val key = SQLTerms('asset -> asset.id, 'segment -> segment)
+    classification.fold {
+      Audit.remove("excerpt", key)
+    } { classification =>
+      Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key)
+    }.execute
+  }
 }
 
 /** A segment of an asset as used in a slot.
