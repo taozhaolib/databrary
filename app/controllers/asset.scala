@@ -59,7 +59,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	form.container.withError("object.invalid", "container")._throw))
       _ <- asset.change(name = form.name.get, classification = form.classification.get)
       sa <- container.mapAsync(asset.link(_, form.position.get))
-      _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _))
+      _ <- form.excerpt.get.foreachAsync { c =>
+	if (c.exists(_ < asset.classification)) form.excerpt.withError("asset.excerpt.invalid")._throw
+	else Excerpt.set(asset, Range.full, c)
+      }
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
 
   def update(o : models.Asset.Id) =

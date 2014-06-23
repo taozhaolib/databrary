@@ -354,6 +354,7 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: always shared with authorized users, but never with the public.
 classification.PUBLIC=Public: available to everyone with access, including anonymous users.
 
+asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
 asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
 
 # objects
