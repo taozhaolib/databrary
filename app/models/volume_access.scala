@@ -16,7 +16,7 @@ import site._
   * @param volume the volume to which access is being granted; the target
   * @param party the party being granted the access; the user
   * @param individual the level of permission granted directly to the party.
-  * @param children the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
+  * @param children the level of permission granted to all descendents/members of the party
   */
 final class VolumeAccess(val volume : Volume, val party : Party, val individual : Permission.Value, val children : Permission.Value) extends TableRow with InVolume {
   private[models] def sqlKey = SQLTerms('volume -> volumeId, 'party -> partyId)

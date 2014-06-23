@@ -156,10 +156,10 @@ object VolumeController extends VolumeController {
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party.id.unId <= 0
     val individual = Field(Mappings.enum(Permission,
-      maxId = Some((if (isGroup) Permission.SHARED else Permission.ADMIN).id),
+      maxId = if (isGroup) Some(Permission.SHARED.id) else None,
       minId = (if (own) Permission.ADMIN else Permission.NONE).id))
     val children = Field(Mappings.enum(Permission,
-      maxId = Some((if (isGroup) Permission.SHARED else Permission.EDIT).id)))
+      maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)

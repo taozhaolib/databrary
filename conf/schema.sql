@@ -226,7 +226,7 @@ CREATE TABLE "volume_access" (
 	"volume" integer NOT NULL References "volume",
 	"party" integer NOT NULL References "party",
 	"individual" permission NOT NULL DEFAULT 'NONE',
-	"children" permission NOT NULL DEFAULT 'NONE' Check ("children" < 'ADMIN'),
+	"children" permission NOT NULL DEFAULT 'NONE',
 	Check ("individual" >= "children"),
 	Primary Key ("volume", "party")
 );
