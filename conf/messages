@@ -278,6 +278,7 @@ access.search=Search for a user, group, or institution...
 access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
+access.search.repeat={0} has already been added.
 access.notfound=None of these
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
@@ -301,6 +302,7 @@ funding.awards=Awards
 funding.search.legend=Search Funding Agencies
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
+funding.search.repeat={0} has already been added.
 
 funding.search.name.help=Start typing the name of the desired funding agency.
 

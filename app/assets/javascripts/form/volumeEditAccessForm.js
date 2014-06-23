@@ -105,6 +105,12 @@ module.directive('volumeEditAccessForm', [
 							access: 0,
 							inherit: 0,
 						});
+					} else {
+						searchForm.messages.add({
+							type: 'yellow',
+							countdown: 3000,
+							body: page.constants.message('access.search.repeat', found.name),
+						});
 					}
 				};
 
