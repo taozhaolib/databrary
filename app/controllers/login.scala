@@ -209,8 +209,8 @@ object LoginHtml extends LoginController with HtmlController {
     SiteAction.Unlocked.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
 	async(Found((
-	  if (request.access.group == Permission.NONE)
-	    routes.PartyHtml.view(request.identity.id)
+	  if (request.access.site == Permission.NONE)
+	    routes.PartyHtml.profile
 	  else
 	    routes.Site.start).url))
       else

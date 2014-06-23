@@ -84,6 +84,8 @@ object Authorize extends Table[Authorize]("authorize") {
     .SELECT("ORDER BY parent.id, site")
     .apply().list
 
+  def apply(child : Party.Id, parent : Party.Id)(implicit request : Site) : Future[Boolean] =
+    Audit.add(Authorize.table, SQLTerms('child -> child, 'parent -> parent)).execute
   /** Update or add a specific authorization in the database.
     * If an authorization for the child and parent already exist, it is changed to match this.
     * Otherwise, a new one is added.

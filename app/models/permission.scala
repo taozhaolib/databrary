@@ -11,6 +11,8 @@ import site._
 object Permission extends PGEnum("permission") {
   val NONE, PUBLIC, SHARED, READ, EDIT, ADMIN = Value
   // aliases or equivalent permissions (do not use val here)
+  /** Level at which things become visible. */
+  def VIEW = PUBLIC
   /** Alias for EDIT. */
   def CONTRIBUTE = EDIT
   /** Alias for READ. Grants full access to private data, bypassing consent permissions. */

@@ -58,7 +58,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	name = form.name.get,
 	orcid = form.orcid.get,
 	affiliation = form.affiliation.get,
-	duns = form.duns.get.filter(_ => request.access.direct == Permission.ADMIN),
+	duns = form.duns.get.filter(_ => request.access.member == Permission.ADMIN),
 	url = form.url.get
       )
       _ <- form.accountForm foreachAsync { form =>
@@ -105,12 +105,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	else for {
 	  c <- Authorize.get(child, request.obj.party)
 	  _ <- Authorize.set(childId, id,
-	    form.inherit.get,
-	    form.direct.get,
-	    if (form.pending.get) None else Some(new Timestamp),
+	    form.site.get,
+	    form.member.get,
 	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
-	  _ <- async.when(Play.isProd && !form.pending.get && !c.exists(_.authorized.isDefined),
+	  _ <- async.when(Play.isProd && !c.exists(_.authorized),
 	    Mail.send(
 	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
 	      subject = Messages("mail.authorized.subject"),
@@ -128,16 +127,16 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   }
 
   private def delegates(party : Party) : Future[Seq[Account]] =
-    party.authorizeChildren().map(_.filter(_.direct >= Permission.ADMIN).flatMap(_.child.account)
+    party.authorizeChildren().map(_.filter(_.permission >= Permission.ADMIN).flatMap(_.child.account)
       ++ party.account)
 
   def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
     models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
     val form = new PartyController.AuthorizeApplyForm(parent)._bind
     for {
-      dl <- delegates(parent)
-      _ <- Authorize.set(id, parentId, form.inherit.get, Permission.NONE, None, None)
+      _ <- Authorize.apply(id, parentId)
       _ <- Authorize.Info.set(id, parentId, form.info.get)
+      dl <- delegates(parent)
       _ <- async.when(Play.isProd, Mail.send(
 	to = dl.map(_.email) :+ Mail.authorizeAddr,
 	subject = Messages("mail.authorize.subject"),
@@ -229,24 +228,21 @@ object PartyController extends PartyController {
     val email = Field(Mappings.some(Forms.email))
   }
   sealed trait AuthorizeBaseForm extends StructForm {
-    val inherit = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val info = Field(Forms.optional(Forms.nonEmptyText)).fill(None)
     def copyFrom(f : AuthorizeForm) : this.type = {
-      inherit.fill(f.inherit.get)
       info.fill(f.info.get)
       this
     }
   }
 
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
-    val direct = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
-    val pending = Field(Forms.boolean)
+    val site = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
+    val member = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val delete = Field(Forms.boolean).fill(false)
     val expires = Field(Forms.optional(Forms.jodaLocalDate))
     private[controllers] def _fill(auth : Authorize) : this.type = {
-      inherit.fill(auth.inherit)
-      direct.fill(auth.direct)
-      pending.fill(auth.authorized.isEmpty)
+      site.fill(auth.site)
+      member.fill(auth.member)
       expires.fill(auth.expires.map(_.toLocalDate))
       info.fill(auth.info)
       this
@@ -347,8 +343,8 @@ object PartyHtml extends PartyController with HtmlController {
   def authorizeAdmin = SiteAction.rootAccess().async { implicit request =>
     for {
       all <- Authorize.getAll
-      (pend, rest) = all.span(_.authorized.isEmpty)
-      (exp, act) = rest.span(!_.valid)
+      (rest, pend) = all.partition(_.authorized)
+      (act, exp) = rest.partition(_.valid)
       part <- Party.getAll
     } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }

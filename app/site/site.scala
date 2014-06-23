@@ -54,7 +54,7 @@ trait Site {
   final def json =
     identity.json(this) ++
     JsonObject.flatten(
-      Some('access -> access.group),
+      Some('access -> access.site),
       if (access.isAdmin) Some('superuser -> superuser) else None
     )
 }
