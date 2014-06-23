@@ -65,7 +65,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.get(this)
   /** Email, if accessible, for convenience. */
   def email(implicit site : Site) : Option[String] =
-    account.filter(_ => site.access.group >= Permission.VIEW).map(_.email)
+    account.filter(_ => site.access.site >= Permission.SHARED).map(_.email)
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id
@@ -86,7 +86,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = max(access.permission, min(site.access.group, Permission.DOWNLOAD))
+  def permission = max(access.permission, min(site.access.site, Permission.READ))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
@@ -94,7 +94,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def avatar : Future[Option[Asset]] = Asset.getAvatar(party)
   def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[Asset] =
     for {
-      asset <- Asset.create(Volume.Core, format, Classification.MATERIAL, name, file)
+      asset <- Asset.create(Volume.Core, format, Classification.PUBLIC, name, file)
       _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
     } yield (asset)
 
@@ -113,14 +113,14 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
     , "children" -> (opt => party.authorizeChildren()
         .map(JsonRecord.map(_.child.json))
       )
-    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else async(JsNull))
+    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.site)) else async(JsNull))
     , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))
     , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )
     , "openid" -> (opt => async(if (party === site.identity || site.superuser)
 	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
-    , "duns" -> (opt => async(if (site.access.direct == Permission.ADMIN)
+    , "duns" -> (opt => async(if (site.access.member >= Permission.ADMIN)
 	Json.toJson(party.duns.map(_.duns)) else JsNull))
     )
 }
@@ -213,13 +213,13 @@ object Party extends TableId[Party]("party") {
     .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, duns, url))
 
   private def byName(implicit site : Site) =
-    if (site.access.group >= Permission.VIEW)
+    if (site.access.site >= Permission.SHARED)
       "(name ILIKE ? OR email ILIKE ?)"
     else
       "name ILIKE ?"
   private def byNameArgs(name : String)(implicit site : Site) =
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
-      (if (site.access.group >= Permission.VIEW) 2 else 1)
+      (if (site.access.site >= Permission.SHARED) 2 else 1)
 
   def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
@@ -269,7 +269,7 @@ object SiteParty {
 
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
     if (p.id === Party.ROOT) async(new SiteParty(site.access))
-    else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
+    else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.site, Permission.NONE)))
     else Authorization.get(site.identity, p).map(new SiteParty(_))
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =

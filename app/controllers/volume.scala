@@ -53,7 +53,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     PartyController.Action(e, Some(Permission.CONTRIBUTE)) ~>
       new ActionHandler[PartyController.Request] {
         protected def handle[A](request : PartyController.Request[A]) =
-	  request.obj.party.access.map(a => if (a.group < Permission.VIEW) Some(Forbidden) else None)
+	  request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
       }
 
   protected def accessForm(access : VolumeAccess)(implicit request : Request[_]) =
@@ -68,12 +68,12 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 	  VolumeAccess.delete(request.obj, e)
 	else
 	  (if (!request.superuser && form.isRestricted)
-	    via.mapAsync(_.party.access.map(_.group))
+	    via.mapAsync(_.party.access.map(_.site))
 	  else async(Seq(Permission.ADMIN))).flatMap { viaa =>
 	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))
 	      form.withGlobalError("access.grant.restricted", form.party.name)._throw
 	    else
-	      VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get)
+	      VolumeAccess.set(request.obj, e, individual = max(form.individual.get, form.children.get), children = form.children.get)
 	  }
     } yield (result(request.obj))
   }
@@ -155,21 +155,21 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party.id.unId <= 0
-    val access = Field(Mappings.enum(Permission,
-      maxId = Some((if (isGroup) Permission.DOWNLOAD else Permission.ADMIN).id),
+    val individual = Field(Mappings.enum(Permission,
+      maxId = Some((if (isGroup) Permission.SHARED else Permission.ADMIN).id),
       minId = (if (own) Permission.ADMIN else Permission.NONE).id))
-    val inherit = Field(Mappings.enum(Permission,
-      maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
+    val children = Field(Mappings.enum(Permission,
+      maxId = Some((if (isGroup) Permission.SHARED else Permission.EDIT).id)))
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
-      access.fill(a.access)
-      inherit.fill(a.inherit)
+      individual.fill(a.individual)
+      children.fill(a.children)
       this
     }
     /** Does granting this access level require CONTRIBUTE-level authorization? */
     def isRestricted : Boolean =
-      isGroup && inherit.get > Permission.NONE
+      isGroup && children.get > Permission.NONE
   }
 
   final class AccessSearchForm(implicit request : Request[_])

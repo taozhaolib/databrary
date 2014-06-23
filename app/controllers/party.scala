@@ -203,7 +203,7 @@ object PartyController extends PartyController {
     val avatar = OptionalFile()
     orcid.fill(Some(party.orcid))
     affiliation.fill(Some(party.affiliation))
-    duns.fill(Some(party.duns))
+    duns.fill(if (request.access.member >= Permission.ADMIN) Some(party.duns) else None)
     url.fill(Some(party.url))
   }
   final class PartyEditForm(implicit request : Request[_]) extends EditForm {

@@ -147,7 +147,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[SimpleResult]) = {
     val action : SiteRequest.Base[A] => Future[SimpleResult] =
       if (Site.locked) { request =>
-	if (request.access.group == Permission.NONE)
+	if (request.access.site == Permission.NONE)
 	  macros.async(if (request.isApi) Results.Forbidden
 	    else Results.TemporaryRedirect(routes.Site.start.url))
 	else block(request)
@@ -171,7 +171,7 @@ object SiteAction extends ActionCreator[SiteRequest.Base] {
     }
   }
 
-  case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.group >= access)
+  case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.site >= access)
   case class RootAccess[R[_] <: SiteRequest[_]](permission : Permission.Value = Permission.ADMIN) extends AccessCheck[R](_.permission >= permission)
 
   def access(access : Permission.Value) = auth ~> Access[SiteRequest.Auth](access)
@@ -208,7 +208,7 @@ object Site extends SiteController {
   val locked = current.configuration.getBoolean("site.locked").getOrElse(false)
 
   def start = SiteAction.Unlocked.async { implicit request =>
-    if (locked && request.access.group == Permission.NONE)
+    if (locked && request.access.site == Permission.NONE)
       AOk(views.html.welcome(request))
     else
       VolumeHtml.viewSearch(request)
@@ -218,7 +218,7 @@ object Site extends SiteController {
     MovedPermanently("/" + prefix + "/" + path)
   }
 
-  def untrail(path : String) = Action {
+  def moved(path : String) = Action {
     MovedPermanently("/" + path)
   }
 

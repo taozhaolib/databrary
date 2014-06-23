@@ -253,7 +253,7 @@ object Volume extends TableId[Volume]("volume") {
   /** The "core" volume, containing site-wide "global" assets.
     * We ignore any access rules here and grant everyone DOWNLOAD. */
   final def Core(implicit site : Site) : Volume =
-    new Volume(CORE, "core", None, None, models.Permission.DOWNLOAD, defaultCreation)
+    new Volume(CORE, "core", None, None, models.Permission.SHARED, defaultCreation)
 
   case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
     lazy val json = JsonObject(
