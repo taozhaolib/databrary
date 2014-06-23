@@ -150,9 +150,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   /** List of parties through whom the current user has the given access to this volume. */
   def adminAccessVia : Future[Seq[SiteParty]] =
-    SiteParty.row.SELECT(
-      """JOIN volume_access ON party.id = volume_access.party
-        WHERE authorize_view.direct = 'ADMIN' AND volume_access.access = 'ADMIN' AND volume_access.volume = ?""")
+    SiteParty.row
+    .SELECT("JOIN volume_access ON party.id = volume_access.party",
+      "WHERE volume_access.volume = ? AND authorize_view.member = 'ADMIN' AND volume_access.individual = 'ADMIN' AND (authorize_view.site = 'ADMIN' OR volume_access.children = 'ADMIN')")
     .apply(id).list
 
   def pageName = alias.getOrElse(name)
@@ -207,7 +207,7 @@ object Volume extends TableId[Volume]("volume") {
     def row(implicit site : Site) =
       columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
     def condition =
-      "(" + table + ".permission >= 'VIEW'::permission OR " + table + ".superuser)"
+      "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
   private[models] val condition = Permission.condition
 
@@ -234,7 +234,7 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(
       party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
       "WHERE volume.id > 0 AND",
-      party.fold("")(_ => "volume_access.party = ? AND volume_access.access >= 'CONTRIBUTE' AND"),
+      party.fold("")(_ => "volume_access.party = ? AND volume_access.individual >= 'EDIT' AND"),
       query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
       condition,
       "ORDER BY",

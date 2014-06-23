@@ -20,10 +20,11 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
     ).map { (segment, classification) =>
       context : ContextSlot => new Excerpt(segment, classification, context)
     }
+  private[models] val columnsContext = columns from
+    "(SELECT asset, container, excerpt.segment, excerpt.classification, slot_asset.segment AS asset_segment FROM slot_asset JOIN excerpt USING (asset)) AS excerpt"
 
   private[models] def rowVolume(volume : Selector[Volume]) =
-    columnsSlot(columns, Container.columnsVolume(volume)) from
-    "(SELECT container, excerpt.segment, excerpt.classification, slot_asset.segment AS asset_segment FROM slot_asset JOIN excerpt USING (asset)) AS excerpt"
+    columnsSlot(columnsContext, Container.columnsVolume(volume))
 
   def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
     implicit val site = asset.site
@@ -184,7 +185,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private def excerpts(volume : Volume) = 
     Excerpt.rowVolume(Volume.fixed(volume))
     .~(SelectColumn[Segment]("excerpt", "asset_segment"))
-    .join(Asset.columns, "slot_asset.asset = asset.id AND container.volume = asset.volume")
+    .join(Asset.columns, "excerpt.asset = asset.id AND container.volume = asset.volume")
     .map { case ((excerpt, segment), asset) =>
       make(asset(volume), segment, excerpt, Some(excerpt))
     }
@@ -192,13 +193,13 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all readable excerpts. */
   private[models] def getExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, slot_consent.consent)")
+    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, excerpt_consent.consent)")
     .apply(volume.permission).list
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, slot_consent.consent)",
+    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, excerpt_consent.consent)",
       "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt

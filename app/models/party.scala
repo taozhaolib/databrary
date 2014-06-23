@@ -225,7 +225,7 @@ object Party extends TableId[Party]("party") {
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
       "WHERE id > 0",
       if (query.nonEmpty) "AND " + byName else "",
-      if (access.nonEmpty) "AND inherit = ?" else "")
+      if (access.nonEmpty) "AND site = ?" else "")
     .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)))
     .list
 
