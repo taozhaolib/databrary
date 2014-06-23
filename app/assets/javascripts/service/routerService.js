@@ -116,19 +116,6 @@ module.factory('routerService', [
 			return router.makeUrl('/volume/:id/thumb', data);
 		};
 
-		router.slotThumb = function (data) {
-			if (!type.isSession(data)) {
-				throw new Error('routerService.slotThumb() requires Slot as first argument');
-			}
-
-			data = {
-				id: data.id,
-				segment: type.segmentString(data)
-			};
-
-			return router.makeUrl('/slot/:id/thumb', data);
-		};
-
 		router.assetThumb = function (data) {
 			if (!type.isAsset(data)) {
 				throw new Error('routerService.assetThumb() requires Asset as first argument');
