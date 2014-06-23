@@ -232,6 +232,7 @@ party.edit.password.help=Enter a new, secure password.
 
 party.edit.password.again.title=New password (again)
 party.edit.password.again.help=Enter your new password again.
+party.edit.password.again.error=Passwords do not match.
 
 party.edit.auth.title=Current password
 party.edit.auth.help=Enter your current password to save changes.
