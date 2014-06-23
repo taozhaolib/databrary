@@ -27,7 +27,7 @@
     }
 
     @widget.frame.raw("people", "")(Messages("volume.contributors.title")) {
-	@access.takeWhile(_.access >= Permission.EDIT).map { a =>
+	@access.takeWhile(_.individual >= Permission.ADMIN).map { a =>
 	    @widget.portrait.verticalSmall(a.party)
 	}
     }
@@ -64,7 +64,7 @@
     @widget.frame.raw("citation", "")(Messages("volume.link.title")) {
 	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
 	    <p>
-	    @access.takeWhile(_.access >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+	    @access.takeWhile(_.individual >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
 	    @display.dateFmtY.print(volume.creation).
 	    @volume.name.
 	    <em>Databrary</em>.

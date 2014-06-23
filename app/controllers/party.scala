@@ -240,6 +240,7 @@ object PartyController extends PartyController {
     val member = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val delete = Field(Forms.boolean).fill(false)
     val expires = Field(Forms.optional(Forms.jodaLocalDate))
+    def pending = site.get != Permission.NONE || member.get != Permission.NONE
     private[controllers] def _fill(auth : Authorize) : this.type = {
       site.fill(auth.site)
       member.fill(auth.member)

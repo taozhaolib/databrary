@@ -185,8 +185,8 @@ network.remote.apply=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
-auth.inherit=Access to Databrary
-auth.direct=Access to {0} data
+auth.site=Access to Databrary
+auth.member=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.

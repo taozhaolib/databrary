@@ -10,7 +10,7 @@
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
                 @widget.tag.inputText(form.affiliation(), ('placeholder,"Affiliation"))
-		@if(request.access.direct == Permission.ADMIN) {
+		@if(request.access.member == Permission.ADMIN) {
                     @widget.tag.inputText(form.duns(), ('placeholder, "DUNS"))
 		}
 

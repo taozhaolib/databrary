@@ -5,11 +5,11 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.isContributor = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access >= page.permission.CONTRIBUTE;
+			return volumeAccess.access && volumeAccess.access >= page.permission.ADMIN;
 		};
 
 		$scope.isShared = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access < page.permission.CONTRIBUTE;
+			return volumeAccess.access && volumeAccess.access < page.permission.ADMIN;
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
