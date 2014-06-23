@@ -305,17 +305,19 @@ funding.search.more=Find more...
 funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
-auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to deidentified Databrary data.
-auth.inherit.DOWNLOAD=Access to identifiable Databrary data.
-auth.inherit.CONTRIBUTE=Can create and share Databrary data.
-auth.inherit.ADMIN=Can authorize users on {0} behalf.
+auth.site.NONE=No access to Databray data.
+auth.site.PUBLIC=Authorized to use Databrary, browse Databrary studies and volumes, but only to view public data.
+auth.site.SHARED=Access to all shared Databrary data except private data.
+auth.site.READ=Access to all shared Databrary data except private data.
+auth.site.EDIT=Can share data with Databrary and the public.
+auth.site.ADMIN=Can authorize users on {0} behalf.
 
-auth.direct.NONE=No access.
-auth.direct.VIEW=Access to {0} deidentified data.
-auth.direct.DOWNLOAD=Access to {0} identifiable data.
-auth.direct.CONTRIBUTE=Can edit {0} data.
-auth.direct.ADMIN=Can share {0} data.
+auth.member.NONE=No access to {0} group data.
+auth.member.PUBLIC=Can browse {0} studies and volumes, but only view public data.
+auth.member.SHARED=Read-only access to {0} group data except private data.
+auth.member.READ=Read-only access to all {0} group data.
+auth.member.EDIT=Can access and edit all {0} group data.
+auth.member.ADMIN=Can access and change permisions on all {0} data.
 
 # presents: auth.preset.<inherit>.<direct>
 # for ADMIN parents:
@@ -335,10 +337,11 @@ auth.preset.ADMIN.ADMIN.title=Delegated Proxy
 auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing controls, as well as above privileges.
 
 # note: {0} may be name or "You"
-access.NONE={0} cannot access this data.
-access.VIEW={0} can access only unrestricted data.
-access.DOWNLOAD={0} can access all released, restricted data.
-access.CONTRIBUTE={0} can access and edit all released and unreleased data.
+access.NONE={0} cannot access these data.
+access.PUBLIC={0} can access only public data.
+access.SHARED={0} can access only shared data.
+access.READ={0} can fully access all data.
+access.EDIT={0} can fully access and edit all data.
 access.ADMIN={0}, as the owner of these data, can fully edit and share them.
 
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
@@ -346,12 +349,10 @@ consent.SHARED=The identifying data in this session have been released for shari
 consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
 consent.PUBLIC=The identifying data in this session have been released publicly.
 
-classification.IDENTIFIED=This file contains identifying information.
-classification.EXCERPT=This file, containing identifying information, has been chosen as a publicly-releasable excerpt.
-classification.DEIDENTIFIED=This data in this file have been deidentified, and contain no identifying information.
-classification.ANALYSIS=This data in this file are summarized, aggregated, or otherwise anonymized.
-classification.PRODUCT=This file contains research products, such as figures or manuscripts.
-classification.MATERIAL=This file contains no data but may have been used to collect data, such as proposals, protocols, stimuli, or blank forms.
+classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
+classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate release.
+classification.SHARED=Shared: always shared with authorized users, but never with the public.
+classification.PUBLIC=Public: available to everyone with access, including anonymous users.
 
 asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
 
