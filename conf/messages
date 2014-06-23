@@ -204,7 +204,7 @@ auth.notfound=None of these
 
 # --- Party edit
 page.title.party.edit=Edit Party
-party.edit=update profile
+party.edit=edit profile
 party.view=view profile
 
 party.edit.personal=Personal Info
