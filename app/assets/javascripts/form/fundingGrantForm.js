@@ -92,6 +92,8 @@ module.directive('fundingGrantForm', [
 
 				if (!form.data.new) {
 					form.$setPristine();
+				} else {
+					form.remove();
 				}
 			};
 
