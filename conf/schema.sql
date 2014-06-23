@@ -139,7 +139,7 @@ $$;
 COMMENT ON FUNCTION "read_permission" (classification, consent) IS 'Necessary permission level to read a data object with the given classification, in a slot with the given consent.';
 
 CREATE FUNCTION "check_permission" ("p" permission, "t" classification, "c" consent) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$
-	SELECT p >= read_permission(t, c);
+	SELECT p >= read_permission(t, c)
 $$;
 COMMENT ON FUNCTION "check_permission" (permission, classification, consent) IS 'Effective permission level on a data object with the given access level and classification, in a slot with the given consent.';
 
@@ -461,7 +461,7 @@ END; $$;
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	"classification" classification NOT NULL Check ("classification" >= 'SHARED'),
+	"classification" classification NOT NULL Check ("classification" >= 'RESTRICTED'), -- should be >= asset.classification
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
