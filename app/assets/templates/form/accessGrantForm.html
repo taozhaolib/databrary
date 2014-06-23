@@ -14,7 +14,7 @@
     </div>
 
 		<div ng-if="!access.party.institution">
-			<input type="checkbox" ng-checked="accessGrantForm.data.inherit != 0" ng-model="accessGrantForm.extending" ng-change="accessGrantForm.extend()">
+			<input type="checkbox" ng-model="accessGrantForm.data.extend">
 			<label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
 		</div>
 	</fieldset>

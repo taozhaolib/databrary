@@ -101,6 +101,7 @@ module.directive('volumeEditAccessForm', [
 
 					if (!present) {
 						form.data.access.push({
+							new: true,
 							party: found,
 							access: 0,
 							inherit: 0,
