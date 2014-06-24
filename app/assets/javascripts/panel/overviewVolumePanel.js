@@ -5,15 +5,15 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.isContributor = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access >= page.permission.ADMIN;
+			return volumeAccess.individual && volumeAccess.individual >= page.permission.ADMIN;
 		};
 
 		$scope.isShared = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access < page.permission.ADMIN;
+			return volumeAccess.individual && volumeAccess.individual < page.permission.ADMIN;
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
-			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access], volumeAccess.party.name);
+			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.individual], volumeAccess.party.name);
 		};
 
 		$scope.ageSummary = function (summary) {
