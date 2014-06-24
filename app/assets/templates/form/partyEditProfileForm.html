@@ -35,7 +35,7 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="partyEditProfileForm.save()" bo-html="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty"></button>
+    <button ng-click="partyEditProfileForm.save()" bo-html="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
     <button ng-click="partyEditProfileForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
   </fieldset>
 </form>
