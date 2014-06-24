@@ -199,6 +199,7 @@ auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
+auth.pending.notice=You have a pending authorization request from {0}.
 
 # --- Party edit
 page.title.party.edit=Edit Party
