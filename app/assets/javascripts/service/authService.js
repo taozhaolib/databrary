@@ -156,7 +156,7 @@ module.factory('authService', [
 		};
 
 		auth.isAuthorized = function () {
-			return auth.isLoggedIn() && auth.hasAuth('VIEW');
+			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
 		};
 
 		//

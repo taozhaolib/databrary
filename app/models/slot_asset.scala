@@ -200,7 +200,6 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
     excerpts(volume)
     .SELECT("WHERE excerpt.classification >= read_classification(?::permission, excerpt_consent.consent)",
-      "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt
 

@@ -78,7 +78,7 @@ module.factory('constantService', [
 			constants.data.categoryName = invertBy(constants.data.category, "name");
 
 			/* convenient aliases: */
-			constants.data.permissionName.EDIT = constants.data.permissionName.CONTRIBUTE;
+			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
 			constants.data.permissionName.SUPER = constants.data.permission.length;
 
 			addPresets(constants.data);
