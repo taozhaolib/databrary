@@ -27,50 +27,6 @@ module.factory('constantService', [
 			return r;
 		};
 
-		var addPresets = function(data) {
-			data.preset = {
-				institution: [
-					{
-						inherit: data.permissionName.DOWNLOAD,
-						direct: 0
-					},
-					{
-						inherit: data.permissionName.CONTRIBUTE,
-						direct: 0
-					},
-					{
-						inherit: data.permissionName.ADMIN,
-						direct: 0
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				],
-
-				individual: [
-					{
-						inherit: data.permissionName.DOWNLOAD,
-						direct: data.permissionName.DOWNLOAD
-					},
-					{
-						inherit: data.permissionName.CONTRIBUTE,
-						direct: data.permissionName.CONTRIBUTE
-					},
-					{
-						inherit: data.permissionName.ADMIN,
-						direct: data.permissionName.ADMIN
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				]
-			};
-		};
-
 		constants.update = function () {
 			constants.data.permissionName = invertArray(constants.data.permission);
 			constants.data.classificationName = invertArray(constants.data.classification);
@@ -80,8 +36,6 @@ module.factory('constantService', [
 			/* convenient aliases: */
 			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
 			constants.data.permissionName.SUPER = constants.data.permission.length;
-
-			addPresets(constants.data);
 		};
 
 		constants.message = function (key /*, args...*/) {

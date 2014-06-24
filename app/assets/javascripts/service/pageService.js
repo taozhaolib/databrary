@@ -3,7 +3,6 @@ module.factory('pageService', [
 		var page = {
 			analytics: $injector.get('analyticService'),
 			auth: $injector.get('authService'),
-			authPresets: $injector.get('authPresetService'),
 			browser: $injector.get('browserService'),
 			constants: $injector.get('constantService'),
 			display: $injector.get('displayService'),

@@ -19,24 +19,24 @@
 
             <div ng-if="showExtended(true, parent)">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="network-auth-heading" bo-html="'auth.inherit' | message:'Their'"></div>
-                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[parent.inherit] | message:'their'"></div>
+                <div class="network-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
+                <div class="network-auth-site" ng-bind-html="'auth.site.'+page.constants.data.permission[parent.site] | message:'their'"></div>
               </div>
 
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.direct !== 0">
-                <div class="network-auth-heading" bo-html="'auth.direct' | message:'Their'"></div>
-                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[parent.direct] | message:'their'"></div>
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.member !== 0">
+                <div class="network-auth-heading" bo-html="'auth.member' | message:'Their'"></div>
+                <div class="network-auth-member" ng-bind-html="'auth.member.'+page.constants.data.permission[parent.member] | message:'their'"></div>
               </div>
 
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.direct === 0">
+              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.member === 0">
                 &nbsp;
               </div>
 
               <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
                 <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
                 <div class="network-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                <div class="network-auth-expiration" ng-if="!parent.expires && parent.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
-                <div class="network-auth-expiration" ng-if="!parent.authorized" ng-bind-html="'auth.pending' | message"></div>
+                <div class="network-auth-expiration" ng-if="!parent.expires" ng-bind-html="'auth.expiration.none' | message"></div>
+                <div class="network-auth-expiration" ng-if="!parent.member && !parent.site" ng-bind-html="'auth.pending' | message"></div>
               </div>
             </div>
 
@@ -98,20 +98,20 @@
 
             <div ng-if="showExtended(false, child)">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="network-auth-heading" bo-html="'auth.direct' | possessive:party"></div>
-                <div class="network-auth-direct" ng-bind-html="'auth.direct.'+page.constants.data.permission[child.direct] | possessive:party"></div>
+                <div class="network-auth-heading" bo-html="'auth.site' | possessive:party"></div>
+                <div class="network-auth-site" ng-bind-html="'auth.site.'+page.constants.data.permission[child.site] | possessive:party"></div>
               </div>
 
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="network-auth-heading" bo-html="'auth.inherit' | possessive:party"></div>
-                <div class="network-auth-inherit" ng-bind-html="'auth.inherit.'+page.constants.data.permission[child.inherit] | possessive:party"></div>
+                <div class="network-auth-heading" bo-html="'auth.member' | possessive:party"></div>
+                <div class="network-auth-member" ng-bind-html="'auth.member.'+page.constants.data.permission[child.member] | possessive:party"></div>
               </div>
 
               <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
                 <div class="network-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
                 <div class="network-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                <div class="network-auth-expiration" ng-if="!child.expires && child.authorized" ng-bind-html="'auth.expiration.none' | message"></div>
-                <div class="network-auth-expiration" ng-if="!child.authorized" ng-bind-html="'auth.pending' | message"></div>
+                <div class="network-auth-expiration" ng-if="!child.expires" ng-bind-html="'auth.expiration.none' | message"></div>
+                <div class="network-auth-expiration" ng-if="!child.member && !child.site" ng-bind-html="'auth.pending' | message"></div>
               </div>
             </div>
 

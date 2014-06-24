@@ -13,6 +13,7 @@ format.url=URL or DOI
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
+error.date=
 citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format ''{0}'' is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
@@ -82,6 +83,7 @@ navigation.confirmation=Do you want to abandon all unsaved changes?
 
 save=Save
 save.all=Save All
+clear=Clear
 cancel=Cancel
 reset=Reset
 replace=Replace
@@ -191,16 +193,22 @@ auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.apply.error=Could not submit your request.
-auth.grant.title=Grant {0} the following capabilities:
-auth.grant.save.error=Could not save this authorization.
-auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
+
+# --- Auth grant
+auth.grant.title=Grant {0} the following capabilities:
+auth.grant.save.error=Could not save this authorization.
+auth.grant.deny.error=Could not deny this authorization.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.expires.help=Select a date within the next two years.
+auth.grant.expires.error=The date selected is not within the next two years.
 
 # --- Party edit
 page.title.party.edit=Edit Party
@@ -309,7 +317,7 @@ funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
 auth.site.NONE=No access to Databray data.
-auth.site.PUBLIC=Authorized to use Databrary, browse Databrary studies and volumes, but only to view public data.
+auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
 auth.site.SHARED=Access to all shared Databrary data except private data.
 auth.site.READ=Access to all shared Databrary data except private data.
 auth.site.EDIT=Can share data with Databrary and the public.
