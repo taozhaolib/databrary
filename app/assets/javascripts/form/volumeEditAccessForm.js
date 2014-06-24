@@ -17,6 +17,10 @@ module.directive('volumeEditAccessForm', [
 
 			form.init = function (data, volume) {
 				form.data = data;
+				angular.forEach(form.data, function (access) {
+					access.individual = '' + access.individual;
+					access.children = '' + access.children;
+				});
 				form.volume = form.volume || volume;
 				backup = $.extend(true, {}, data);
 			};
@@ -80,7 +84,7 @@ module.directive('volumeEditAccessForm', [
 						countdown: 3000,
 					});
 
-					form.data.access.splice(form.data.access.indexOf(access), 1);
+					form.data.splice(form.data.indexOf(access), 1);
 				};
 
 				event.stopPropagation();
@@ -90,21 +94,21 @@ module.directive('volumeEditAccessForm', [
 				searchForm.selectFn = function (found) {
 					var present = false;
 
-					angular.forEach(form.data.access, function (access, i) {
+					angular.forEach(form.data, function (access, i) {
 						if (access.party.id === found.id) {
-							var el = form.data.access.splice(i, 1)[0];
-							form.data.access.push(el);
+							var el = form.data.splice(i, 1)[0];
+							form.data.push(el);
 							present = true;
 							return false;
 						}
 					});
 
 					if (!present) {
-						form.data.access.push({
+						form.data.push({
 							new: true,
 							party: found,
-							access: 0,
-							inherit: 0,
+							individual: 0,
+							children: 0,
 						});
 					} else {
 						searchForm.messages.add({

@@ -6,11 +6,11 @@ module.directive('accessGrantForm', [
 			form.access = page.$parse($attrs.access)($scope) || undefined;
 
 			form.data = {
-				access: form.access.access || 0,
-				inherit: form.access.inherit || 0,
+				individual: form.access.individual || 0,
+				children: form.access.children || 0,
 			};
 
-			form.data.extend = form.data.inherit !== 0;
+			form.data.extend = form.data.children !== 0;
 
 			var backup = $.extend(true, {}, form.data);
 
@@ -21,7 +21,7 @@ module.directive('accessGrantForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				form.data.inherit = form.data.extend ? form.data.access : 0;
+				form.data.children = form.data.extend ? form.data.individual : 0;
 
 				form.volumeAccess = new page.models.VolumeAccess(form.data);
 
