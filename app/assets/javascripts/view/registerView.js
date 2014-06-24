@@ -337,7 +337,6 @@ module.controller('RegisterView', [
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
-						inherit: step.principal ? page.permission.CONTRIBUTE : page.permission.DOWNLOAD
 					};
 				}
 			},
