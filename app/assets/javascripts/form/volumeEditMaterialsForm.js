@@ -319,6 +319,8 @@ module.directive('volumeEditMaterialsForm', [
 					}, function (res) {
 						subform.asset.asset.creation = res.creation;
 					});
+				} else {
+					form.remove(subform);
 				}
 
 				form.store(subform);
@@ -328,7 +330,6 @@ module.directive('volumeEditMaterialsForm', [
 			form.resetAll = function () {
 				angular.forEach(form, function (subform, id) {
 					if (id.indexOf('asset-') === 0 && form[id].$dirty) {
-						console.log(subform);
 						form.reset(subform.subform);
 					}
 				});

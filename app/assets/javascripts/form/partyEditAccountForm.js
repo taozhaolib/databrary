@@ -23,6 +23,10 @@ module.directive('partyEditAccountForm', [
 				backup = $.extend(true, {}, form.data);
 			};
 
+			$scope.$watch('partyEditAccountForm.data.password.again', function () {
+				form['password.again'].$setValidity('match', form.data.password && form.data.password.once == form.data.password.again);
+			});
+
 			//
 
 			form.save = function () {
@@ -70,8 +74,7 @@ module.directive('partyEditAccountForm', [
 			};
 
 			form.ready = function () {
-				return form.$dirty && form.$valid && form.data.password && form.data.password.once &&
-						form.data.password.once == form.data.password.again;
+				return form.$dirty && form.$valid && form.data.auth && ((form.data.password && !form.data.password.once) || form.data.password.once == form.data.password.again);
 			};
 
 			//
@@ -86,6 +89,7 @@ module.directive('partyEditAccountForm', [
 				},
 				'password.again': {
 					tips: page.constants.message('party.edit.password.again.help'),
+					errors: page.constants.message('party.edit.password.again.error'),
 				},
 				auth: {
 					tips: page.constants.message('party.edit.auth.help'),

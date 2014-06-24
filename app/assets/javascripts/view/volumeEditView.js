@@ -154,6 +154,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_excerpts': function (step) {
+				if(!volume)
+					return;
+
 				forms.excerpts = {
 					step: step,
 					form: step.volumeEditMaterialsForm,
@@ -164,6 +167,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_materials': function (step) {
+				if(!volume)
+					return;
+
 				forms.materials = {
 					step: step,
 					form: step.volumeEditMaterialsForm,
@@ -176,6 +182,9 @@ module.controller('VolumeEditView', [
 			'volume_edit_funding': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
 
+				if(!volume)
+					return;
+
 				forms.funding = {
 					step: step,
 					form: step.volumeEditFundingForm,
@@ -186,6 +195,9 @@ module.controller('VolumeEditView', [
 
 			'volume_edit_access': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
+
+				if(!volume)
+					return;
 
 				forms.access = {
 					step: step,
@@ -213,6 +225,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_citations': function (step) {
+				if(!volume)
+					return;
+
 				var study, citations = [];
 
 				if (volume) {
@@ -232,6 +247,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_excerpts': function (step) {
+				if(!volume)
+					return;
+
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
@@ -242,6 +260,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_materials': function (step) {
+				if(!volume)
+					return;
+
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
@@ -252,10 +273,16 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_funding': function (step) {
+				if(!volume)
+					return;
+
 				forms.funding.form.init(volume.funding, volume);
 			},
 
 			'volume_edit_access': function (step) {
+				if(!volume)
+					return;
+
 				forms.access.form.data = {
 					access: volume.access,
 				};

@@ -369,5 +369,15 @@ module.controller('NetworkPanel', [
 		$scope.showSearch = function () {
 			return isAdmin();
 		};
+
+		//
+
+		$scope.presetName = function (type, name, party) {
+			if (angular.isString(party)) {
+				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
+			} else {
+				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
+			}
+		};
 	}
 ]);

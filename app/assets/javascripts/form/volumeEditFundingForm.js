@@ -83,7 +83,7 @@ module.directive('volumeEditFundingForm', [
 					var present = false;
 
 					angular.forEach(form.data, function (funder, i) {
-						if (funder.funder === found.id) {
+						if (funder.funder.id === found.id) {
 							var el = form.data.splice(i, 1)[0];
 							form.data.push(el);
 							present = true;
@@ -96,6 +96,12 @@ module.directive('volumeEditFundingForm', [
 							funder: found,
 							awards: [],
 							new: true,
+						});
+					} else {
+						searchForm.messages.add({
+							type: 'yellow',
+							countdown: 3000,
+							body: page.constants.message('funding.search.repeat', found.name),
 						});
 					}
 				};

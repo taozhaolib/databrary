@@ -13,7 +13,8 @@ format.url=URL or DOI
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
-citation.invalid=Invalid citation
+error.date=
+citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format ''{0}'' is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
@@ -26,7 +27,7 @@ object.invalid=Invalid {0} specified
 funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
-url.invalid=Invalid URL (should start with http or doi:)
+url.invalid=Invalid. Please check your typing.
 
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
@@ -82,6 +83,7 @@ navigation.confirmation=Do you want to abandon all unsaved changes?
 
 save=Save
 save.all=Save All
+clear=Clear
 cancel=Cancel
 reset=Reset
 replace=Replace
@@ -189,10 +191,7 @@ auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.apply.error=Could not submit your request.
-auth.grant.title=Grant {0} the following capabilities:
-auth.grant.save.error=Could not save this authorization.
-auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
@@ -201,9 +200,18 @@ auth.revoke=Revoke
 auth.notfound=None of these
 auth.pending.notice=You have a pending authorization request from {0}.
 
+# --- Auth grant
+auth.grant.title=Grant {0} the following capabilities:
+auth.grant.save.error=Could not save this authorization.
+auth.grant.deny.error=Could not deny this authorization.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.expires.help=Select a date within the next two years.
+auth.grant.expires.error=The date selected is not within the next two years.
+
 # --- Party edit
 page.title.party.edit=Edit Party
-party.edit=update profile
+party.edit=edit profile
 party.view=view profile
 
 party.edit.personal=Personal Info
@@ -231,6 +239,7 @@ party.edit.password.help=Enter a new, secure password.
 
 party.edit.password.again.title=New password (again)
 party.edit.password.again.help=Enter your new password again.
+party.edit.password.again.error=Passwords do not match.
 
 party.edit.auth.title=Current password
 party.edit.auth.help=Enter your current password to save changes.
@@ -277,6 +286,7 @@ access.search=Search for a user, group, or institution...
 access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
+access.search.repeat={0} has already been added.
 access.notfound=None of these
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
@@ -300,15 +310,16 @@ funding.awards=Awards
 funding.search.legend=Search Funding Agencies
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
+funding.search.repeat={0} has already been added.
 
 funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
-auth.site=Authorize for access to other's shared Databrary data
+auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
 auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
 auth.site.PUBLIC.title=Restricted access
-auth.site.PUBLIC=Authorized to use Databrary, browse Databrary studies and volumes, but only to view public data.
+auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
 auth.site.SHARED.title=Provisional access
 auth.site.SHARED=Access to all shared Databrary data.
 auth.site.READ.title=Affiliate Investigator
