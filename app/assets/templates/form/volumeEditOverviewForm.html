@@ -47,8 +47,8 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
-    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
+    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty || !volumeEditOverviewForm.$valid"></button>
+    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty || !volumeEditOverviewForm.$valid"></button>
   </fieldset>
 </form>
 
