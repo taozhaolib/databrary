@@ -64,6 +64,7 @@ module.directive('partyEditProfileForm', [
 							form.data.avatar = res.data.avatar;
 
 							backup = $.extend(true, {}, form.data);
+							page.auth.user.name = res.name;
 
 							form.messages.remove(msg);
 
@@ -96,6 +97,7 @@ module.directive('partyEditProfileForm', [
 							});
 
 							backup = $.extend(true, {}, form.data);
+							page.auth.user.name = res.name;
 
 							if (angular.isFunction(form.successFn)) {
 								form.successFn(form, res);

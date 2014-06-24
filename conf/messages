@@ -13,7 +13,7 @@ format.url=URL or DOI
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
-citation.invalid=Invalid citation
+citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format ''{0}'' is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
@@ -26,7 +26,7 @@ object.invalid=Invalid {0} specified
 funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
-url.invalid=Invalid URL (should start with http or doi:)
+url.invalid=Invalid. Please check your typing.
 
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
@@ -204,7 +204,7 @@ auth.notfound=None of these
 
 # --- Party edit
 page.title.party.edit=Edit Party
-party.edit=update profile
+party.edit=edit profile
 party.view=view profile
 
 party.edit.personal=Personal Info
@@ -232,6 +232,7 @@ party.edit.password.help=Enter a new, secure password.
 
 party.edit.password.again.title=New password (again)
 party.edit.password.again.help=Enter your new password again.
+party.edit.password.again.error=Passwords do not match.
 
 party.edit.auth.title=Current password
 party.edit.auth.help=Enter your current password to save changes.
@@ -278,6 +279,7 @@ access.search=Search for a user, group, or institution...
 access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
+access.search.repeat={0} has already been added.
 access.notfound=None of these
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
@@ -301,6 +303,7 @@ funding.awards=Awards
 funding.search.legend=Search Funding Agencies
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
+funding.search.repeat={0} has already been added.
 
 funding.search.name.help=Start typing the name of the desired funding agency.
 
