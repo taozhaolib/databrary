@@ -151,12 +151,12 @@ module.factory('authService', [
 			return auth.hasToken() && !play.object.reset;
 		};
 
-		auth.isUnauthorized = function () {
-			return !auth.isAuthorized();
-		};
-
 		auth.isAuthorized = function () {
 			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
+		};
+
+		auth.isUnauthorized = function () {
+			return !auth.isAuthorized();
 		};
 
 		//

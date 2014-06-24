@@ -138,7 +138,7 @@ POST    /api/party/$pID<[0-9]+>/password                                        
 # QUERY
 GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
-GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean)
+GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean = false)
 # CHANGE
 POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY

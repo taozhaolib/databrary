@@ -375,7 +375,7 @@ module.run([
 
 					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
 
-					if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
+					if (controller !== 'RegisterView') {
 						page.$location.url(page.router.register());
 					}
 				} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {

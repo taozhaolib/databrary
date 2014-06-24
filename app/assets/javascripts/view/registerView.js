@@ -331,7 +331,7 @@ module.controller('RegisterView', [
 
 				var perm = [];
 
-				step.principal = $scope.authSearchForm.principal;
+				step.authSearchForm = $scope.authSearchForm;
 
 				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other) {
 					$scope.authApplyForm.other = {

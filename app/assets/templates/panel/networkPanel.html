@@ -141,7 +141,7 @@
 
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div ng-if="showSearch()">
-            <auth-search-form child party="{{party.id}}"></auth-search-form>
+            <auth-search-form child principal="child" party="{{party.id}}"></auth-search-form>
           </div>
 
           <div ng-if="!showSearch()">
