@@ -2,20 +2,20 @@
   <messages form="authGrantForm"></messages>
 
   <fieldset class="radio-set">
-    <legend bo-html="'auth.member' | possessive:party"></legend>
+    <legend bo-html="'auth.site' | possessive:party"></legend>
 
-    <div ng-repeat="permission in page.constants.data.permission">
-      <input type="radio" ng-model="authGrantForm.other.member" name="member" ng-value="$index" ng-selected="$index == authGrantForm.other.member">
-      <label bo-html="'auth.member.'+permission | possessive:party" class="option"></label>
+    <div ng-repeat="(val, name) in page.constants.data.authPresets.site">
+      <input type="radio" ng-model="authGrantForm.other.site" name="site" ng-value="val" ng-selected="val == authGrantForm.other.site">
+      <label bo-html="authGrantForm.presetName('site', name, party)" class="option"></label>
     </div>
   </fieldset>
 
   <fieldset class="radio-set">
-    <legend bo-html="'auth.site' | possessive:party"></legend>
+    <legend bo-html="'auth.member' | possessive:party"></legend>
 
-    <div ng-repeat="permission in page.constants.data.permission">
-      <input type="radio" ng-model="authGrantForm.other.site" name="site" ng-value="$index" ng-selected="$index == authGrantForm.other.site">
-      <label bo-html="'auth.site.'+permission | possessive:party" class="option"></label>
+    <div ng-repeat="(val, name) in page.constants.data.authPresets.member">
+      <input type="radio" ng-model="authGrantForm.other.member" name="member" ng-value="val" ng-selected="val == authGrantForm.other.member">
+      <label bo-html="authGrantForm.presetName('member', name, party)" class="option"></label>
     </div>
   </fieldset>
 

@@ -7,10 +7,10 @@
         <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-text="name(v)"></a></h1>
 
         <div class="investigators" bo-if="page.$location.path() !== '/profile'">
-          <strong>Investigators:</strong>
+          <strong>{{'volume.contributors.title' | message}}:</strong>
 
           <ul class="inline-block">
-            <li ng-repeat="access in v.access | filter:{access: page.permission.ADMIN}"><a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
+            <li ng-repeat="access in v.access | filter:{individual: page.permission.ADMIN}"><a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
           </ul>
         </div>
 

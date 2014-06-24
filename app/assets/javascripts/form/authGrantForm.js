@@ -14,6 +14,10 @@ module.directive('authGrantForm', [
 				form.other.site = form.other.site || 0;
 			};
 
+			form.presetName = function (type, name, party) {
+				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
+			};
+
 			//
 
 			form.saveFn = undefined;

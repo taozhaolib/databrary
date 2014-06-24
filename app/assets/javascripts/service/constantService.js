@@ -33,6 +33,22 @@ module.factory('constantService', [
 			constants.data.consentName = invertArray(constants.data.consent);
 			constants.data.categoryName = invertBy(constants.data.category, "name");
 
+			constants.data.authPresets = {
+				site: {},
+				member: {},
+			};
+
+			angular.forEach(constants.data.permission, function (name, val) {
+				switch(name) {
+					case 'NONE':
+					case 'READ':
+						constants.data.authPresets.site[val] = name;
+					case 'EDIT':
+					case 'ADMIN':
+						constants.data.authPresets.member[val] = name;
+				}
+			});
+
 			/* convenient aliases: */
 			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
 			constants.data.permissionName.SUPER = constants.data.permission.length;
