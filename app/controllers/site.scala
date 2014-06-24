@@ -224,7 +224,13 @@ object Site extends SiteController {
 
   def favicon =
     Assets.at("/public/icons", "favicon.ico")
+
+  def formats = SiteAction.Unlocked {implicit request =>
+	  Ok(views.html.formats(AssetFormat.getAll.
+		  toSeq.sortBy(x => x.mimetype)))
+  }
 }
+
 
 trait ApiController extends SiteController
 trait HtmlController extends SiteController
