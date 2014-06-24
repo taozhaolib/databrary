@@ -1062,29 +1062,19 @@ module.factory('browserService', [
 		var tips = {};
 
 		var bindTooltips = function (tips) {
-			tips = {
-				'.bb.icon.public': constants.message('consent.PUBLIC'),
-				'.bb.icon.excerpts': constants.message('consent.EXCERPTS'),
-				'.bb.icon.shared': constants.message('consent.SHARED'),
-				'.bb.icon.private': constants.message('consent.PRIVATE'),
-
-				'.bb.icon.admin': constants.message('access.ADMIN', 'You'),
-				'.bb.icon.contribute': constants.message('access.CONTRIBUTE', 'You'),
-				'.bb.icon.download': constants.message('access.DOWNLOAD', 'You'),
-				'.bb.icon.view': constants.message('access.VIEW', 'You'),
-				'.bb.icon.none': constants.message('access.NONE', 'You'),
-
-				'.bb.icon.excerpt': constants.message('classification.EXCERPT'),
-				'.bb.icon.identified': constants.message('classification.IDENTIFIED'),
-				'.bb.icon.deidentified': constants.message('classification.DEIDENTIFIED'),
-				'.bb.icon.material': constants.message('classification.MATERIAL'),
-
-				'.browser_dataset .browser_icon': constants.message('object.tip.dataset'),
-				'.browser_study .browser_icon': constants.message('object.tip.study'),
-				'.browser_record .browser_icon': constants.message('object.tip.record'),
-				'.browser_session .browser_icon': constants.message('object.tip.session'),
-				'.browser_asset .browser_icon': constants.message('object.tip.asset')
-			};
+			tips = {};
+			angular.forEach(constants.data.permission, function (a) {
+				tips['.bb.icon.access.'+a.toLowerCase()] = constants.message('access.' + a, 'You');
+			});
+			angular.forEach(constants.data.consent, function (a) {
+				tips['.bb.icon.consent.'+a.toLowerCase()] = constants.message('consent.' + a);
+			});
+			angular.forEach(constants.data.classification, function (a) {
+				tips['.bb.icon.classification.'+a.toLowerCase()] = constants.message('classification.' + a);
+			});
+			angular.forEach(['dataset','study','record','session','asset'], function (a) {
+				tips['.browser_dataset .browser_icon'] = constants.message('object.tip.' + a);
+			});
 
 			angular.forEach(tips, function (message, target) {
 				tips[target] = tooltips.add({
