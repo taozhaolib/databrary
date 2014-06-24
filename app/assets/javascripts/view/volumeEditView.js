@@ -235,7 +235,6 @@ module.controller('VolumeEditView', [
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = '' + asset.asset.classification;
 					});
 
 					forms.excerpts.form.init(slot);
@@ -246,7 +245,6 @@ module.controller('VolumeEditView', [
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = '' + asset.asset.classification;
 					});
 
 					forms.materials.form.init(slot);

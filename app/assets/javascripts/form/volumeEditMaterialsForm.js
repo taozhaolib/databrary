@@ -33,7 +33,10 @@ module.directive('volumeEditMaterialsForm', [
 				}
 
 				return page.$filter('filter')(form.slot.assets, function (asset) {
-					return form.excerptsMode ? asset.classification == 1 : asset.classification != 1;
+					var e = angular.isDefined(asset.excerpt);
+					if (!asset.classification)
+						asset.classification = page.constants.data.classification[e ? asset.excerpt : asset.asset.classification];
+					return e === form.excerptsMode;
 				});
 			};
 
@@ -62,11 +65,14 @@ module.directive('volumeEditMaterialsForm', [
 					form.saveFn(form, subform);
 				}
 
+				var classification = page.classification[form.excerptsMode ? 'RESTRICTED' : subform.asset.classification];
+				var excerpt = form.excerptsMode ? page.classification[subform.asset.classification] : '';
 				if (subform.asset.file) {
 					var fd = new FormData();
 					fd.append('file', subform.asset.file[0]);
 					fd.append('name', subform.asset.name || '');
-					fd.append('classification', form.excerptsMode ? 1 : subform.asset.classification);
+					fd.append('classification', classification);
+					fd.append('excerpt', excerpt);
 					fd.append('container', form.slot.container.id);
 
 					var msg = subform.messages.add({
@@ -164,7 +170,8 @@ module.directive('volumeEditMaterialsForm', [
 				} else {
 					var newAsset = new page.models.Asset({
 						name: subform.asset.name || '',
-						classification: subform.asset.classification,
+						classification: classification,
+						excerpt: excerpt,
 					});
 
 					newAsset.$save({
@@ -262,7 +269,8 @@ module.directive('volumeEditMaterialsForm', [
 				}
 
 				return form.data.assets.push({
-					classification: form.excerptsMode ? '1' : '5',
+					classification: 'SHARED',
+				        excerpt: form.excerptsMode ? page.classification.SHARED : undefined
 				});
 			};
 
