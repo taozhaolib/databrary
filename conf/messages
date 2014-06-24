@@ -310,7 +310,7 @@ funding.save.error=Could not update funding agency at this time.
 funding.remove.success=Funding source removed.
 funding.remove.error=Could not remove funding agency at this time.
 
-funding.awards=Awards
+funding.awards=Grant #
 funding.search.legend=Search Funding Agencies
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
@@ -366,9 +366,10 @@ auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing co
 access.NONE={0} cannot access these data.
 access.PUBLIC={0} can access only public data.
 access.SHARED={0} can access only shared data.
-access.READ={0} can fully access all data.
-access.EDIT={0} can fully access and edit all data.
-access.ADMIN={0}, as the owner of these data, can fully edit and share them.
+# TODO tooltips
+access.READ={0} has read-only access (for people you'd like to view but not edit the data)
+access.EDIT={0} has read-write access (for people you trust to change, add, and remove data)
+access.ADMIN={0}, as an investigator on these data, can fully edit and share them.
 
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
 consent.SHARED=The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
@@ -377,8 +378,9 @@ consent.PUBLIC=The identifying data in this session have been released publicly.
 
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
 classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate release.
-classification.SHARED=Shared: always shared with authorized users, but never with the public.
-classification.PUBLIC=Public: available to everyone with access, including anonymous users.
+# TODO: this is only for excerpts?
+classification.SHARED=Shared: shared only with authorized Databrary users for educational and research purposes.
+classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
 asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
@@ -411,7 +413,7 @@ volume.reuse.consumes=These data were originally collected as part of...
 
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
-volume.body=Description
+volume.body=Abstract
 
 browser.title=Data
 browser.group=+
@@ -572,7 +574,7 @@ volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI
 volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format: "Last, F. (Year). Title...".
 volume.edit.name.help=Enter the title of the paper or study.
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
-volume.edit.body.help=Enter the abstract of the associated paper or other summary description.
+volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
 volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
 
 volume.edit.overview.success=Volume saved successfully.
@@ -580,11 +582,11 @@ volume.edit.overview.error=Unable to save volume.
 
 wizard.volume_edit_excerpts.name=Excerpts
 wizard.volume_edit_excerpts.description=Upload representative videos and images.
-wizard.volume_edit_excerpts.instructions=Provide any excerpts related to this study.  Excerpts are any video clips or still images that contain identifying information (such as faces) which have explicitly been consented to be released by the depicted individuals. You may also indicate whether these excerpts may be released to the public without restriction, or only shared for research and educational purposes with other Databrary investigators.\n\nIf you wish to share other files which do not contain identifying information, you may do so in the Materials section.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
+wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide any other files related to this study that you wish to share, such as stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or non-data files that do not contain identifying information.  You may also indicate whether you wish to share these files with public users on the site or only with other researchers.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
 
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
@@ -599,7 +601,7 @@ volume.edit.materials.refresh.error=Could not update materials display. Please r
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
-wizard.volume_edit_funding.instructions=Specify any sources of funding that may have supported this research along with the grant numbers.  If your funding agency is not listed, contact us to add it.
+wizard.volume_edit_funding.instructions=Sources of funding that supported this research.
 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set access and sharing levels.
