@@ -8,9 +8,9 @@
   </fieldset>
 
 	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
-    <div ng-repeat="permission in page.constants.data.permission">
-      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access">
-      <label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
+    <div ng-repeat="(val, name) in page.constants.data.accessPresets">
+      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="val" ng-selected="val == accessGrantForm.data.individual">
+      <label bo-html="'access.'+name | message:access.party.name" class="option"></label>
     </div>
 
 		<div ng-if="!access.party.institution">
@@ -22,6 +22,6 @@
   <fieldset class="clean">
     <button ng-click="accessGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>
     <button ng-click="accessGrantForm.reset()" class="yellow" bo-html="'revert' | message" ng-disabled="!accessGrantForm.$dirty"></button>
-    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'access.remove' | message"></button>
+    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'remove' | message"></button>
   </fieldset>
 </form>

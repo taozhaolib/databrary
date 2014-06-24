@@ -37,6 +37,7 @@ module.factory('constantService', [
 				site: {},
 				member: {},
 			};
+			constants.data.accessPresets = {};
 
 			angular.forEach(constants.data.permission, function (name, val) {
 				switch(name) {
@@ -46,6 +47,7 @@ module.factory('constantService', [
 					case 'EDIT':
 					case 'ADMIN':
 						constants.data.authPresets.member[val] = name;
+						constants.data.accessPresets[val] = name;
 				}
 			});
 
