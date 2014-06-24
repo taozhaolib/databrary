@@ -185,8 +185,6 @@ network.remote.apply=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
-auth.site=Access to Databrary
-auth.member=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
@@ -305,18 +303,30 @@ funding.search.more=Find more...
 funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
-auth.site.NONE=No access to Databray data.
+auth.site=Authorize for access to other's shared Databrary data
+auth.site.NONE.title=No access
+auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
+auth.site.PUBLIC.title=Restricted access
 auth.site.PUBLIC=Authorized to use Databrary, browse Databrary studies and volumes, but only to view public data.
+auth.site.SHARED.title=Provisional access
 auth.site.SHARED=Access to all shared Databrary data except private data.
-auth.site.READ=Access to all shared Databrary data except private data.
-auth.site.EDIT=Can share data with Databrary and the public.
+auth.site.READ.title=Affiliate Investigator
+auth.site.READ=Access all shared Databrary data except private data.
+auth.site.EDIT.title=Principal Investigator
+auth.site.EDIT=Share data with Databrary and the public.
+auth.site.ADMIN.title=Administrative access
 auth.site.ADMIN=Can authorize users on {0} behalf.
 
-auth.member.NONE=No access to {0} group data.
+auth.member=Access to {0} group/lab data
+auth.member.NONE.title=No access
+auth.member.NONE=Cannot access {0} data (except as granted through Databrary authorization).
 auth.member.PUBLIC=Can browse {0} studies and volumes, but only view public data.
 auth.member.SHARED=Read-only access to {0} group data except private data.
-auth.member.READ=Read-only access to all {0} group data.
+auth.member.READ.title=Read-only access
+auth.member.READ=Full view access to all {0} group data.
+auth.member.EDIT.title=Editor
 auth.member.EDIT=Can access and edit all {0} group data.
+auth.member.ADMIN.title=Manager
 auth.member.ADMIN=Can access and change permisions on all {0} data.
 
 # presents: auth.preset.<inherit>.<direct>
