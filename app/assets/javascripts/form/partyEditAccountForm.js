@@ -24,7 +24,7 @@ module.directive('partyEditAccountForm', [
 			};
 
 			$scope.$watch('partyEditAccountForm.data.password.again', function () {
-				form['password.again'].$setValidity('match', form.data.password && form.data.password.once == form.data.password.again);
+				form['password.again'].$setValidity('match', !form.data.password || form.data.password.once == form.data.password.again);
 			});
 
 			//

@@ -214,9 +214,9 @@ page.title.party.edit=Edit Party
 party.edit=edit profile
 party.view=view profile
 
-party.edit.personal=Personal Info
+party.edit.personal=Personal Information
 party.edit.extended=Additional Info
-party.edit.account=Login Data
+party.edit.account=Login Information
 party.edit.confirm=Confirm Access
 
 party.edit.name.title=Full name
@@ -228,8 +228,8 @@ party.edit.affiliation.help=Specify your institutional affiliation.
 party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
 
-party.edit.duns.title=D-U-N-S
-party.edit.duns.help=Enter this affiliation's D-U-N-S.
+party.edit.duns.title=DUNS
+party.edit.duns.help=Enter this institution''s DUNS.
 
 party.edit.email.title=Email
 party.edit.email.help=Enter a valid email address.
@@ -245,11 +245,11 @@ party.edit.auth.title=Current password
 party.edit.auth.help=Enter your current password to save changes.
 
 party.edit.avatar.title=Avatar
-party.edit.avatar.exists=Avatar set
+party.edit.avatar.exists=Choose a new profile image
 
 party.edit.avatar.upload=Saving data and uploading your avatar now.
-party.edit.profile.success=Profile saved successfully!
-party.edit.account.success=Account updated successfully!
+party.edit.profile.success=Profile saved successfully.
+party.edit.account.success=Account updated successfully.
 
 wizard.party_edit_profile.name=Profile
 wizard.party_edit_profile.description=Modify publicly visible info.
@@ -550,7 +550,7 @@ volume.edit=edit study
 volume.edit.exit=view study
 
 volume.edit.title.sub=New Study
-volume.edit.success=Volume saved successfully!
+volume.edit.success=Volume saved successfully.
 volume.edit.error=Unable to save volume.
 
 wizard.volume_edit_overview.name=Citation
