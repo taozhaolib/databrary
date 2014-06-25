@@ -14,6 +14,7 @@ format.list.video=video
 format.list.image=images
 format.list.audio=audio
 format.list.note=
+format.list.link=Click here to see list of supported file formats
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
