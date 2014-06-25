@@ -382,6 +382,7 @@ access.READ={0} has read-only access (for people you'd like to view but not edit
 access.EDIT={0} has read-write access (for people you trust to change, add, and remove data)
 access.ADMIN={0}, as an investigator on these data, can fully edit and share them.
 
+consent.NONE=There is no conset on this session.
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
 consent.SHARED=The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
 consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.

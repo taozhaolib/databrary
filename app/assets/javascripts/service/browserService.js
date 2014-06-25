@@ -80,10 +80,6 @@ module.factory('browserService', [
 		browserService.initialize = function (newContext, newData) {
 			browserService.query = '';
 
-			if (angular.isUndefined(browserService.context)) {
-				bindTooltips(tips);
-			}
-
 			newData.$promise.then(function (newData) {
 				initialize(newContext, newData);
 			});
@@ -1056,34 +1052,6 @@ module.factory('browserService', [
 		}, function () {
 			browserService.updateCategories();
 		});
-
-		//
-
-		var tips = {};
-
-		var bindTooltips = function (tips) {
-			tips = {};
-			angular.forEach(constants.data.permission, function (a) {
-				tips['.bb.icon.access.'+a.toLowerCase()] = constants.message('access.' + a, 'You');
-			});
-			angular.forEach(constants.data.consent, function (a) {
-				tips['.bb.icon.consent.'+a.toLowerCase()] = constants.message('consent.' + a);
-			});
-			angular.forEach(constants.data.classification, function (a) {
-				tips['.bb.icon.classification.'+a.toLowerCase()] = constants.message('classification.' + a);
-			});
-			angular.forEach(['dataset','study','record','session','asset'], function (a) {
-				tips['.browser_dataset .browser_icon'] = constants.message('object.tip.' + a);
-			});
-
-			angular.forEach(tips, function (message, target) {
-				tips[target] = tooltips.add({
-					live: true,
-					$target: target,
-					message: message
-				});
-			});
-		};
 
 		//
 

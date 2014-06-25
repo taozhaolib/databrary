@@ -2,7 +2,7 @@
   <div class="browser_item_content">
     <div class="cf">
       <footer>
-        <div class="item_meta access icon bb" bo-class="page.constants.data.permission[data.object.permission].toLowerCase()" bo-if="data.object.permission"></div>
+        <div class="item_meta access icon bb" bo-class="page.constants.data.permission[data.object.permission].toLowerCase()" hint="permission-{{page.constants.data.permission[data.object.permission]}}" bo-if="data.object.permission"></div>
 
         <div class="item_meta sep"
              bo-if="page.auth.hasAccess('CONTRIBUTE', data) && data.object.permission">|
