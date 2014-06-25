@@ -5,7 +5,7 @@
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
     <validator form="form" name="name" label="'material.name' | message">
-      <input type="text" name="name" ng-model="asset.name" placeholder="{{'volume.edit.material.name.placeholder' | message}}">
+      <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">

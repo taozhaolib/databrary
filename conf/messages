@@ -210,7 +210,7 @@ auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
 
 # --- Party edit
-page.title.party.edit=Edit Party
+page.title.party.edit=Edit Profile
 party.edit=edit profile
 party.view=view profile
 
@@ -269,8 +269,8 @@ auth.search.affiliate=Search for your sponsoring PI...
 auth.search.affiliate.help=Enter your sponsoring PI.
 auth.search.placeholder=Search for your sponsoring PI or institution...
 auth.search.placeholder.help=Enter your sponsoring PI or institution.
-auth.search.child=Search for the party you wish to sponsor...
-auth.search.child.help=Enter the party you wish to sponsor.
+auth.search.child=Search for the person you wish to sponsor...
+auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
 
 # --- Auth apply
@@ -291,15 +291,15 @@ access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
 access.search.repeat={0} has already been added.
-access.search.legend=Search Databrary Parties
+access.search.legend=Search Databrary investigators
 
 access.notfound=None of these
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.access.save.success=Access record updated.
-access.grant.access.remove.success=Access record removed.
-access.grant.save.success=Access updated successfully.
+access.grant.access.save.success=Access changed.
+access.grant.access.remove.success=Access removed.
+access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
 access.grant.remove.success=Access removed successfully.
 access.grant.remove.error=Could not remove access at this time.
@@ -596,7 +596,7 @@ material.file=File
 material.file.help=Select the file you wish to upload.
 material.name=Caption
 material.name.help=You may optionally provide a brief description of this file for other users.
-volume.edit.materials.name.placeholder=
+material.name.placeholder=
 material.classification=Classification
 
 volume.edit.materials.update.success=Updated {0} successfully.
