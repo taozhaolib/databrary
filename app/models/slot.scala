@@ -17,6 +17,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   def consent : Consent.Value = context.consent
 
   final def ===(a : Slot) : Boolean = containerId === a.containerId && segment === a.segment
+  final def @>(a : Slot) : Boolean = containerId === a.containerId && segment @> a.segment
   private[models] def slotSql : SQLTerms = SQLTerms('container -> containerId, 'segment -> segment)
 
   final def containerId : Container.Id = container.id
@@ -43,24 +44,21 @@ trait Slot extends TableRow with InVolume with SiteObject {
 	}
   }
 
-  /** The permisison level granted to identifiable data within this slot. */
-  final def dataPermission : HasPermission =
-    Permission.data(permission, consent, Classification.IDENTIFIED)
-  /** Whether the current user may download identifiable data within this slot. */
-  final lazy val downloadable : Boolean =
-    dataPermission.checkPermission(Permission.DOWNLOAD)
+  /** The permisison level granted to restricted data within this slot. */
+  final def dataPermission(classification : Classification.Value) : HasPermission =
+    dataPermission(classification, consent)
+  /** Whether the current user may not download restricted data within this slot. */
+  final def restricted : Boolean =
+    dataPermission(Classification.RESTRICTED).checkPermission(Permission.READ)
 
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
-      if (downloadable) date
-      else new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
+      if (restricted) new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
+      else date
     }
 
   /** List of asset that overlap with this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
-
-  /** An image-able "asset" that may be used as the slot's thumbnail. */
-  final def thumb : Future[Option[SlotAsset]] = SlotAsset.getThumb(this)
 
   private[models] val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
   /** The list of records that apply to this slot. */
@@ -99,25 +97,25 @@ trait Slot extends TableRow with InVolume with SiteObject {
     else
       "Slot"
   }
-  override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
+  override final def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
   def pageURL = controllers.routes.SlotHtml.view(containerId, segment)
 
-  lazy val slotJson : JsonObject = JsonObject.flatten(
+  final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
     Maybe(consent).opt.map('consent -> _)
   )
   def json : JsonValue = slotJson
 
-  def slotJson(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(slotJson.obj, options,
-      "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container"))),
-      "records" -> (opt => records.map(JsonRecord.map { r =>
+  final def slotJson(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(slotJson.obj, options
+    , "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container")))
+    , "records" -> (opt => records.map(JsonRecord.map { r =>
         r.json ++ JsonObject.flatten(r.age(this).map('age -> _))
-      })),
-      "tags" -> (opt => tags.map(JsonRecord.map(_.json))),
-      "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
+      }))
+    , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
+    , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     )
 }
 
@@ -162,7 +160,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
     * @param columns base selector requiring a ContextSlot to produce the final type
     * @param container container selector to use
     * @param consent determine applicable consent level, or just use container context
-    */
+   */
   protected final def columnsSlot(columns : Selector[ContextSlot => A], container : Selector[Container], consent : Boolean = true) : Selector[A] = {
     val base = columns
       .join(container, table + ".container = container.id")

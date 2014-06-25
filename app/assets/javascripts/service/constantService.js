@@ -12,8 +12,9 @@ module.factory('constantService', [
 		var invertArray = function (data) {
 			var r = {};
 			for (var id in data) {
-				if (data.hasOwnProperty(id))
+				if (data.hasOwnProperty(id)) {
 					r[data[id]] = id;
+				}
 			}
 			return r;
 		};
@@ -21,74 +22,62 @@ module.factory('constantService', [
 		var invertBy = function (data, field) {
 			var r = {};
 			for (var id in data) {
-				if (data.hasOwnProperty(id) && field in data[id])
+				if (data.hasOwnProperty(id) && field in data[id]) {
 					r[data[id][field]] = data[id];
+				}
 			}
 			return r;
 		};
 
-		var addPresets = function(data) {
-			data.preset = {
-				institution: [
-					{
-						inherit: data.permissionName.DOWNLOAD,
-						direct: 0
-					},
-					{
-						inherit: data.permissionName.CONTRIBUTE,
-						direct: 0
-					},
-					{
-						inherit: data.permissionName.ADMIN,
-						direct: 0
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				],
-
-				individual: [
-					{
-						inherit: data.permissionName.DOWNLOAD,
-						direct: data.permissionName.DOWNLOAD
-					},
-					{
-						inherit: data.permissionName.CONTRIBUTE,
-						direct: data.permissionName.CONTRIBUTE
-					},
-					{
-						inherit: data.permissionName.ADMIN,
-						direct: data.permissionName.ADMIN
-					},
-					{
-						inherit: undefined,
-						direct: undefined,
-						custom: true
-					}
-				]
+		var makePresets = function () {
+			constants.data.accessPreset = {};
+			constants.data.authPreset = {
+				site: {},
+				member: {},
 			};
+
+			angular.forEach(constants.data.permission, function (name, val) {
+				switch (name) {
+					case 'NONE':
+					case 'READ':
+						constants.data.authPreset.site[val] = name;
+					case 'EDIT':
+					case 'ADMIN':
+						constants.data.authPreset.member[val] = name;
+						constants.data.accessPreset[val] = name;
+				}
+			});
+
+			//
+
+			constants.data.accessGlobal = [
+				['NONE','NONE'],
+				['NONE','SHARED'],
+				['PUBLIC','SHARED']
+			];
+			constants.data.accessGlobal.parties = [constants.data.party.NOBODY, constants.data.party.ROOT];
 		};
 
-		constants.update = function () {
+		var update = function () {
 			constants.data.permissionName = invertArray(constants.data.permission);
 			constants.data.classificationName = invertArray(constants.data.classification);
 			constants.data.consentName = invertArray(constants.data.consent);
 			constants.data.categoryName = invertBy(constants.data.category, "name");
 
 			/* convenient aliases: */
-			constants.data.permissionName.EDIT = constants.data.permissionName.CONTRIBUTE;
+			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
 			constants.data.permissionName.SUPER = constants.data.permission.length;
 
-			addPresets(constants.data);
+			makePresets();
+
+			Object.freeze(constants.data);
 		};
 
 		constants.message = function (key /*, args...*/) {
 			var msg = constants.data.messages[key];
 
-			if (!msg) {
-				$log.info('Message key ['+key+'] is undefined.');
+			if (!angular.isDefined(msg)) {
+				$log.info('Message key [' + key + '] is undefined.');
 				return '[' + key + ']';
 			}
 
@@ -101,7 +90,7 @@ module.factory('constantService', [
 
 		//
 
-		constants.update();
+		update();
 
 		return constants;
 	}

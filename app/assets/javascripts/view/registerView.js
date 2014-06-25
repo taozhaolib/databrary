@@ -331,13 +331,12 @@ module.controller('RegisterView', [
 
 				var perm = [];
 
-				step.principal = $scope.authSearchForm.principal;
+				step.authSearchForm = $scope.authSearchForm;
 
 				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other) {
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
-						inherit: step.principal ? page.permission.CONTRIBUTE : page.permission.DOWNLOAD
 					};
 				}
 			},

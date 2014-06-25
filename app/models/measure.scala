@@ -113,26 +113,26 @@ object Metric extends TableId[Metric[_]]("metric") {
 
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
     * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
-  final val Ident       = new Metric[String](IDENT, "ident", Classification.DEIDENTIFIED)
-  final val Reason      = new Metric[String](REASON, "reason", Classification.DEIDENTIFIED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
-  final val Summary     = new Metric[String](SUMMARY, "summary", Classification.MATERIAL)
-  final val Description = new Metric[String](DESCRIPTION, "description", Classification.MATERIAL) {
+  final val Ident       = new Metric[String](IDENT, "ident", Classification.SHARED)
+  final val Reason      = new Metric[String](REASON, "reason", Classification.SHARED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
+  final val Summary     = new Metric[String](SUMMARY, "summary", Classification.PUBLIC)
+  final val Description = new Metric[String](DESCRIPTION, "description", Classification.PUBLIC) {
     override val long = true
   }
   /** Date of birth for any records representing organisms or other entities with dates of origination.
     * These are treated specially in combination with [[Container.date]] to compute ages.
-    * [[Classification.IDENTIFIED]] implies all authorized researchers get full access to these. */
-  final val Birthdate   = new Metric[Date](BIRTHDATE, "birthdate", Classification.IDENTIFIED)
+    * [[Classification.RESTRICTED]] implies all authorized researchers get full access to these. */
+  final val Birthdate   = new Metric[Date](BIRTHDATE, "birthdate", Classification.RESTRICTED)
   /** Gender is treated as a text enumeration. */
-  final val Gender      = new Metric[String](GENDER, "gender", Classification.DEIDENTIFIED, IndexedSeq[String]("Female", "Male"))
-  final val Race        = new Metric[String](RACE, "race", Classification.DEIDENTIFIED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
-  final val Ethnicity   = new Metric[String](ETHNICITY, "ethnicity", Classification.DEIDENTIFIED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
-  final val Disability  = new Metric[String](DISABILITY, "disability", Classification.IDENTIFIED)
-  final val Language    = new Metric[String](LANGUAGE, "language", Classification.DEIDENTIFIED)
-  final val Setting     = new Metric[String](SETTING, "setting", Classification.MATERIAL, IndexedSeq("Lab","Home","Classroom","Outdoor","Clinic"))
-  final val Country     = new Metric[String](COUNTRY, "country", Classification.DEIDENTIFIED)
-  final val State       = new Metric[String](STATE, "state", Classification.DEIDENTIFIED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
-  final val Info        = new Metric[String](INFO, "info", Classification.MATERIAL)
+  final val Gender      = new Metric[String](GENDER, "gender", Classification.SHARED, IndexedSeq[String]("Female", "Male"))
+  final val Race        = new Metric[String](RACE, "race", Classification.SHARED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
+  final val Ethnicity   = new Metric[String](ETHNICITY, "ethnicity", Classification.SHARED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
+  final val Disability  = new Metric[String](DISABILITY, "disability", Classification.RESTRICTED)
+  final val Language    = new Metric[String](LANGUAGE, "language", Classification.SHARED)
+  final val Setting     = new Metric[String](SETTING, "setting", Classification.PUBLIC, IndexedSeq("Lab","Home","Classroom","Outdoor","Clinic"))
+  final val Country     = new Metric[String](COUNTRY, "country", Classification.SHARED)
+  final val State       = new Metric[String](STATE, "state", Classification.SHARED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
+  final val Info        = new Metric[String](INFO, "info", Classification.PUBLIC)
 }
 
 /** A measurement value with a specific (unconverted) type.

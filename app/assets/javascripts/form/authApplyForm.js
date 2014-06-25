@@ -21,9 +21,6 @@ module.directive('authApplyForm', [
 			var saveAuth = function () {
 				form.partyAuthorize = new page.models.PartyAuthorize();
 
-				form.partyAuthorize.direct = form.other.direct;
-				form.partyAuthorize.inherit = form.other.inherit;
-
 				if (form.notFound.info) {
 					form.partyAuthorize.info = form.notFound.info;
 				}
@@ -96,11 +93,6 @@ module.directive('authApplyForm', [
 			form.cancel = function () {
 				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
-				}
-
-				if (form.other) {
-					form.other.inherit = 0;
-					form.other.direct = 0;
 				}
 			};
 

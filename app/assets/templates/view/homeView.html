@@ -24,7 +24,7 @@
 
             <div class="investigators">
               <ul class="inline-block flat">
-                <li ng-repeat="access in volume.access | filter:{access: page.permission.ADMIN}">
+                <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
                   <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
               </ul>
             </div>

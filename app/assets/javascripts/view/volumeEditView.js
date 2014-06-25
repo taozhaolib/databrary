@@ -203,7 +203,7 @@ module.controller('VolumeEditView', [
 					step: step,
 					form: step.volumeEditAccessForm,
 				};
-				forms.access.form.volume = volume;
+				forms.access.form.init(volume.access, volume);
 				forms.access.form.cancelFn = cancelFn;
 			},
 		};
@@ -253,7 +253,6 @@ module.controller('VolumeEditView', [
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = '' + asset.asset.classification;
 					});
 
 					forms.excerpts.form.init(slot);
@@ -267,7 +266,6 @@ module.controller('VolumeEditView', [
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
 						asset.name = asset.asset.name;
-						asset.classification = '' + asset.asset.classification;
 					});
 
 					forms.materials.form.init(slot);
@@ -285,9 +283,7 @@ module.controller('VolumeEditView', [
 				if(!volume)
 					return;
 
-				forms.access.form.data = {
-					access: volume.access,
-				};
+				forms.access.form.init(volume.access, volume);
 			},
 		};
 	}

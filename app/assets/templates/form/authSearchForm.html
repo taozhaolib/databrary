@@ -1,20 +1,17 @@
-<form name="authSearchForm" novalidate class="auth-search">
+<form name="authSearchForm" novalidate class="auth-search" bindonce>
   <messages form="authSearchForm"></messages>
 
   <validator form="authSearchForm" name="name">
-    <input type="search" name="name" placeholder="{{'auth.search.'+(authSearchForm.principal?'principal':'affiliate') | message}}" ng-model="authSearchForm.name" ng-change="authSearchForm.search()">
+    <input type="search" name="name" placeholder="{{'auth.search.' + (authSearchForm.principal ? authSearchForm.principal : 'placeholder') | message}}" ng-model="authSearchForm.nameVal" ng-change="authSearchForm.search()">
   </validator>
 
   <ul ng-if="authSearchForm.found" class="flat auth-found-list">
     <li ng-repeat="found in authSearchForm.found">
-      <a href="" class="auth-found" ng-click="authSearchForm.select(found)">{{found.name}}</a>
+      <a href="" class="auth-found" ng-click="authSearchForm.select(found)" bo-text="found.name"></a>
     </li>
 
     <li>
-      <a href="" class="auth-found" ng-click="authSearchForm.notFound()">{{"auth.notfound" | message}}</a>
+      <a href="" class="auth-found" ng-click="authSearchForm.notFound()" bo-text="'auth.notfound' | message"></a>
     </li>
   </ul>
 </form>
-
-
-

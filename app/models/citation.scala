@@ -96,8 +96,9 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
 
   private[models] def set(vol : Volume, cite : Option[Citation]) : Future[Boolean] = {
     implicit val site = vol.site
-    cite.fold(
-      Audit.remove("volume_citation", SQLTerms('volume -> vol.id))) { cite =>
+    cite.fold {
+      Audit.remove("volume_citation", SQLTerms('volume -> vol.id))
+    } { cite =>
       Audit.changeOrAdd("volume_citation", SQLTerms('head -> cite.head, 'url -> cite.url, 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
     }.execute
   }

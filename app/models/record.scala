@@ -88,7 +88,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
   /** The set of measures on the current volume readable by the current user. */
   lazy val measures : Measures =
-    Classification.download(volume.permission, consent).fold[Measures](Measures.empty)(measures_.filter _)
+    Classification.read(volume.permission, consent).fold[Measures](Measures.empty)(measures_.filter _)
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
@@ -110,7 +110,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** The age at test during a specific slot, with privacy limits applied. */
   def age(slot : Slot) : Option[Age] =
     slot.container.date.flatMap(age(_).map { a =>
-      if (a > Age.LIMIT && !slot.downloadable) Age.LIMIT
+      if (a > Age.LIMIT && slot.restricted) Age.LIMIT
       else a
     })
 

@@ -19,6 +19,7 @@ format.list.note=
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
+error.date=
 citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format ''{0}'' is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
@@ -88,6 +89,7 @@ navigation.confirmation=Do you want to abandon all unsaved changes?
 
 save=Save
 save.all=Save All
+clear=Clear
 cancel=Cancel
 reset=Reset
 replace=Replace
@@ -191,25 +193,30 @@ network.remote.apply=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
-auth.inherit=Access to Databrary
-auth.direct=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
 auth.apply.error=Could not submit your request.
-auth.grant.title=Grant {0} the following capabilities:
-auth.grant.save.error=Could not save this authorization.
-auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
+auth.pending.notice=You have a pending authorization request from {0}.
+
+# --- Auth grant
+auth.grant.title=Grant {0} the following capabilities:
+auth.grant.save.error=Could not save this authorization.
+auth.grant.deny.error=Could not deny this authorization.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.expires.help=Select a date within the next two years.
+auth.grant.expires.error=The date selected is not within the next two years.
 
 # --- Party edit
-page.title.party.edit=Edit Party
+page.title.party.edit=Edit Profile
 party.edit=edit profile
 party.view=view profile
 
@@ -266,6 +273,10 @@ auth.search.principal=Search for your institution...
 auth.search.principal.help=Enter your institution.
 auth.search.affiliate=Search for your sponsoring PI...
 auth.search.affiliate.help=Enter your sponsoring PI.
+auth.search.placeholder=Search for your sponsoring PI or institution...
+auth.search.placeholder.help=Enter your sponsoring PI or institution.
+auth.search.child=Search for the person you wish to sponsor...
+auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
 
 # --- Auth apply
@@ -281,23 +292,34 @@ auth.request.info.title=More Info
 auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
+access.global.legend=Share this study
+access.global.save.success=Sharing settings updated.
+access.global.save.error=Unable to update sharing settings.
+access.global.NONE.NONE=Share only with those collaborators I specify below.
+access.global.NONE.SHARED=Share with all authorized Databrary investigators.
+access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
+access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
+
+access.remove=Remove
+access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
+access.grant.inherit=Extend access to those in {0}''s lab/group.
+access.grant.access.save.success=Access changed.
+access.grant.access.remove.success=Access removed.
+access.grant.save.success=Access changed successfully.
+access.grant.save.error=Could not update access at this time.
+access.grant.remove.success=Access removed successfully.
+access.grant.remove.error=Could not remove access at this time.
+access.delete.self=You cannot remove your own access to a volume.
+access.grant.restricted=You are not authorized to share data with {0}.
+access.grant.special.legend=Collaborators
+
+access.search.legend=Add another collaborator
 access.search=Search for a user, group, or institution...
 access.search.name.help=Enter to whom you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
 access.search.repeat={0} has already been added.
 access.notfound=None of these
-access.remove=Remove
-access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
-access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.access.save.success=Access record updated.
-access.grant.access.remove.success=Access record removed.
-access.grant.save.success=Access updated successfully.
-access.grant.save.error=Could not update access at this time.
-access.grant.remove.success=Access removed successfully.
-access.grant.remove.error=Could not remove access at this time.
-access.delete.self=You cannot remove your own access to a volume.
-access.grant.restricted=You are not authorized to share data with {0}.
 
 # Funding
 funding.save.success=Funding source updated.
@@ -305,7 +327,8 @@ funding.save.error=Could not update funding agency at this time.
 funding.remove.success=Funding source removed.
 funding.remove.error=Could not remove funding agency at this time.
 
-funding.awards=Awards
+funding.awards=Grant #
+funding.awards.placeholder=XXX-XXXXXX-XX
 funding.search.legend=Search Funding Agencies
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
@@ -314,54 +337,63 @@ funding.search.repeat={0} has already been added.
 funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
-auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to deidentified Databrary data.
-auth.inherit.DOWNLOAD=Access to identifiable Databrary data.
-auth.inherit.CONTRIBUTE=Can create and share Databrary data.
-auth.inherit.ADMIN=Can authorize users on {0} behalf.
+auth.site=Access to others'' shared Databrary data
+auth.site.NONE.title=No access
+auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
+auth.site.PUBLIC.title=Restricted access
+auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
+auth.site.SHARED.title=Provisional access
+auth.site.SHARED=Access to all shared Databrary data.
+auth.site.READ.title=Affiliate Investigator
+auth.site.READ=Access all shared Databrary data.
+auth.site.EDIT.title=Principal Investigator
+auth.site.EDIT=Share data with Databrary and the public.
+auth.site.ADMIN.title=Administrative access
+auth.site.ADMIN=Can authorize users on {0} behalf.
 
-auth.direct.NONE=No access.
-auth.direct.VIEW=Access to {0} deidentified data.
-auth.direct.DOWNLOAD=Access to {0} identifiable data.
-auth.direct.CONTRIBUTE=Can edit {0} data.
-auth.direct.ADMIN=Can share {0} data.
-
-# presents: auth.preset.<inherit>.<direct>
-# for ADMIN parents:
-auth.preset.DOWNLOAD.NONE.title=Affiliate Investigator
-auth.preset.DOWNLOAD.NONE=Access to shared Databrary data.
-auth.preset.CONTRIBUTE.NONE.title=Principal Investigator
-auth.preset.CONTRIBUTE.NONE=Researchers eligible for PI status may access and share Databrary data, and authorize affiliates.
-auth.preset.ADMIN.NONE.title=Administrator
-auth.preset.ADMIN.NONE=Authorize Principal Investigators on {0} behalf.
-
-# for CONTRIBUTE parents:
-auth.preset.DOWNLOAD.DOWNLOAD.title=Restricted Affiliate
-auth.preset.DOWNLOAD.DOWNLOAD=View-only access to shared Databrary data and all {0} private data.
-auth.preset.CONTRIBUTE.CONTRIBUTE.title=Affiliate Investigator
-auth.preset.CONTRIBUTE.CONTRIBUTE=Access to create and modify {0} datasets and studies, as well as above privileges.
-auth.preset.ADMIN.ADMIN.title=Delegated Proxy
-auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing controls, as well as above privileges.
+auth.member=Access to {0} group/lab data
+auth.member.NONE.title=No access
+auth.member.NONE=Cannot access {0} data (except as granted through Databrary authorization).
+auth.member.PUBLIC=Can browse {0} studies and volumes, but only view public data.
+auth.member.SHARED=Read-only access to {0} group data except private data.
+auth.member.READ.title=Read-only access
+auth.member.READ=Full view access to all {0} group data.
+auth.member.EDIT.title=Read/write access
+auth.member.EDIT=Can access and edit all {0} group data.
+auth.member.ADMIN.title=Manager
+auth.member.ADMIN=Can access and change permisions on all {0} group data.
 
 # note: {0} may be name or "You"
-access.NONE={0} cannot access this data.
-access.VIEW={0} can access only unrestricted data.
-access.DOWNLOAD={0} can access all released, restricted data.
-access.CONTRIBUTE={0} can access and edit all released and unreleased data.
-access.ADMIN={0}, as the owner of these data, can fully edit and share them.
+access.NONE={0} cannot access these data.
+access.PUBLIC={0} can access only public data.
+access.SHARED={0} can access only shared data.
+access.READ={0} has read-only access.
+access.EDIT={0} has read-write access.
+access.ADMIN={0}, as an investigator on these data, can fully edit and share them.
 
+access.edit.NONE=No access
+access.edit.PUBLIC=Access only public data
+access.edit.SHARED=Access only shared data
+access.edit.READ=Read-only access
+access.edit.EDIT=Read/write access
+access.edit.ADMIN=Investigator (read/write/share access)
+
+access.edit.READ.who=For those you trust to view all data.
+access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
+access.edit.ADMIN.who=For fellow study investigators only.
+
+consent.NONE=There is no release for this session.
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
 consent.SHARED=The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
 consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
 consent.PUBLIC=The identifying data in this session have been released publicly.
 
-classification.IDENTIFIED=This file contains identifying information.
-classification.EXCERPT=This file, containing identifying information, has been chosen as a publicly-releasable excerpt.
-classification.DEIDENTIFIED=This data in this file have been deidentified, and contain no identifying information.
-classification.ANALYSIS=This data in this file are summarized, aggregated, or otherwise anonymized.
-classification.PRODUCT=This file contains research products, such as figures or manuscripts.
-classification.MATERIAL=This file contains no data but may have been used to collect data, such as proposals, protocols, stimuli, or blank forms.
+classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
+classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
+classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
+classification.PUBLIC=Public: available to anybody for unrestricted use.
 
+asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
 asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
 
 # objects
@@ -377,7 +409,6 @@ volume.overview.title=Overview
 volume.authors.title=Original Authors
 volume.contributors.title=Investigators
 volume.funding.title=Funding
-volume.metadata.title=Description
 volume.creation.title=Shared on
 volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
@@ -393,6 +424,7 @@ volume.reuse.consumes=These data were originally collected as part of...
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
 volume.body=Description
+study.body=Abstract
 
 browser.title=Data
 browser.group=+
@@ -416,13 +448,6 @@ player.close=Close the media player.
 
 materials.title=Materials
 materials.empty=There are no files here.
-
-material.file=File
-material.name=Caption
-material.classification=Classification
-
-material.file.help=Select the file you wish to upload.
-material.name.help=You may optionally provide a brief description of this file for other users.
 
 citations.title=Citations
 citations.study.title=Corresponding Publication
@@ -540,6 +565,7 @@ wizard.volume_edit_overview.instructions=First, provide basic information about 
 
 volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
 volume.edit.autodoi=DOI or URL
+volume.edit.autodoi.placeholder=10.XXXX/XXXXXXXX
 volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Lookup".
 volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this study represents.
 volume.edit.autodoi.lookup=Lookup
@@ -550,22 +576,35 @@ volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 
-volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format: "Last, F. (Year). Title...".
+volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format.
+volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
+volume.edit.name.placeholder=Title
+volume.edit.citation.author.placeholder=Last, First
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
-volume.edit.body.help=Enter the abstract of the associated paper or other summary description.
+volume.edit.citation.year.placeholder=2014
+volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
+volume.edit.body.placeholder=
 volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
+volume.edit.alias.placeholder=
 
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
 
 wizard.volume_edit_excerpts.name=Excerpts
 wizard.volume_edit_excerpts.description=Upload representative videos and images.
-wizard.volume_edit_excerpts.instructions=Provide any excerpts related to this study, which may be video clips, still images, or other identifying data that has been consented to be shared without restriction.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
+wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide any other files related to this study that you wish to share, such as stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or non-data files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading restricted participant data or metadata, and you should not upload files that have been previously copyrighted.
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
+
+material.file=File
+material.file.help=Select the file you wish to upload.
+material.name=Caption
+material.name.help=You may optionally provide a brief description of this file for other users.
+material.name.placeholder=
+material.classification=Classification
 
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
@@ -580,7 +619,7 @@ volume.edit.materials.refresh.error=Could not update materials display. Please r
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
-wizard.volume_edit_funding.instructions=Specify any sources of funding that may have supported this research along with the grant numbers.  If your funding agency is not listed, contact us to add it.
+wizard.volume_edit_funding.instructions=Sources of funding that supported this research.
 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set access and sharing levels.

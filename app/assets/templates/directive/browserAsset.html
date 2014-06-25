@@ -4,10 +4,9 @@
       <footer>
         <div class="item_meta permission" bo-if="data.object.asset.duration" bo-text="data.object.asset.duration | timecode"></div>
 
-        <div class="item_meta sep" bo-if="data.object.asset.duration">|
-        </div>
+        <div class="item_meta sep" bo-if="data.object.asset.duration">|</div>
 
-        <div class="item_meta icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].toLowerCase()"></div>
+        <div class="item_meta classification icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[data.object.asset.classification]}}"></div>
 
         <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|
         </div>
