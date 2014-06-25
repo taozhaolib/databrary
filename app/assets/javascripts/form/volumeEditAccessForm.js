@@ -127,6 +127,7 @@ module.directive('volumeEditAccessForm', [
 					backup = $.extend(true, {}, form.global);
 					form.accessGlobalDirty = false;
 					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.global.save.error'),
