@@ -2,11 +2,18 @@ module.directive('hint', [
 	'pageService', function (page) {
 		var hints = {};
 
-		angular.forEach(page.constants.data.permission, function (a) {
+		angular.forEach(page.constants.data.permission, function (a, i) {
 			hints['permission-' + a.toLowerCase()] = {
 				class: 'hint-permission-' + a.toLowerCase(),
 				message: page.constants.message('access.' + a, 'You'),
 			};
+
+			if (i >= 3) {
+				hints['access-edit-' + a.toLowerCase()] = {
+				class: 'hint-access-edit-' + a.toLowerCase(),
+				message: page.constants.message('access.edit.' + a + '.who', 'You'),
+			};
+			}
 		});
 
 		angular.forEach(page.constants.data.consent, function (a) {

@@ -4,7 +4,7 @@
 	<fieldset class="clean radio-set">
     <div ng-repeat="(val, name) in page.constants.data.accessPreset">
       <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val" >
-      <label bo-html="'access.'+name | message:access.party.name" class="option"></label>
+      <label bo-html="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
     </div>
 
 		<div ng-if="!access.party.institution">
