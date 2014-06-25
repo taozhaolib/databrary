@@ -351,49 +351,31 @@ auth.member.PUBLIC=Can browse {0} studies and volumes, but only view public data
 auth.member.SHARED=Read-only access to {0} group data except private data.
 auth.member.READ.title=Read-only access
 auth.member.READ=Full view access to all {0} group data.
-auth.member.EDIT.title=Editor
+auth.member.EDIT.title=Read/write access
 auth.member.EDIT=Can access and edit all {0} group data.
 auth.member.ADMIN.title=Manager
-auth.member.ADMIN=Can access and change permisions on all {0} data.
-
-# presents: auth.preset.<inherit>.<direct>
-# for ADMIN parents:
-auth.preset.DOWNLOAD.NONE.title=Affiliate Investigator
-auth.preset.DOWNLOAD.NONE=Access to shared Databrary data.
-auth.preset.CONTRIBUTE.NONE.title=Principal Investigator
-auth.preset.CONTRIBUTE.NONE=Researchers eligible for PI status may access and share Databrary data, and authorize affiliates.
-auth.preset.ADMIN.NONE.title=Administrator
-auth.preset.ADMIN.NONE=Authorize Principal Investigators on {0} behalf.
-
-# for CONTRIBUTE parents:
-auth.preset.DOWNLOAD.DOWNLOAD.title=Restricted Affiliate
-auth.preset.DOWNLOAD.DOWNLOAD=View-only access to shared Databrary data and all {0} private data.
-auth.preset.CONTRIBUTE.CONTRIBUTE.title=Affiliate Investigator
-auth.preset.CONTRIBUTE.CONTRIBUTE=Access to create and modify {0} datasets and studies, as well as above privileges.
-auth.preset.ADMIN.ADMIN.title=Delegated Proxy
-auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing controls, as well as above privileges.
+auth.member.ADMIN=Can access and change permisions on all {0} group data.
 
 # note: {0} may be name or "You"
 access.NONE={0} cannot access these data.
 access.PUBLIC={0} can access only public data.
 access.SHARED={0} can access only shared data.
-# TODO tooltips
 access.READ={0} has read-only access.
 access.EDIT={0} has read-write access.
 access.ADMIN={0}, as an investigator on these data, can fully edit and share them.
 
-access.edit.NONE=No access.
-access.edit.PUBLIC=Access only public data.
-access.edit.SHARED=Access only shared data.
-access.edit.READ=Read-only access.
-access.edit.EDIT=Read/write access.
-access.edit.ADMIN=Read/write/share (full investigator) access.
+access.edit.NONE=No access
+access.edit.PUBLIC=Access only public data
+access.edit.SHARED=Access only shared data
+access.edit.READ=Read-only access
+access.edit.EDIT=Read/write access
+access.edit.ADMIN=Investigator (read/write/share access)
 
-access.edit.READ.who=For those you trust to view all study data.
-access.edit.EDIT.who=For those you trust to edit all study data.
+access.edit.READ.who=For those you trust to view all data.
+access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
 access.edit.ADMIN.who=For fellow study investigators only.
 
-consent.NONE=There is no conset on this session.
+consent.NONE=There is no release for this session.
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
 consent.SHARED=The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
 consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
@@ -459,13 +441,6 @@ player.close=Close the media player.
 
 materials.title=Materials
 materials.empty=There are no files here.
-
-material.file=File
-material.name=Caption
-material.classification=Classification
-
-material.file.help=Select the file you wish to upload.
-material.name.help=You may optionally provide a brief description of this file for other users.
 
 citations.title=Citations
 citations.study.title=Corresponding Publication
@@ -583,7 +558,7 @@ wizard.volume_edit_overview.instructions=First, provide basic information about 
 
 volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
 volume.edit.autodoi=DOI or URL
-volume.edit.autodoi.placeholder=10.XXXX.XXXX.XXX/XXXXXXXX
+volume.edit.autodoi.placeholder=10.XXXX/XXXXXXXX
 volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Lookup".
 volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this study represents.
 volume.edit.autodoi.lookup=Lookup
@@ -594,17 +569,17 @@ volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 
-volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format: "Last, F. (Year). Title...".
+volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format.
+volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
-volume.edit.name.placeholder=Pushing Babies Off Ledges for Fun and Science
-volume.edit.citation.head.placeholder=Researchman, S. Pushing Babies Off Ledges for Fun and Science. XXXX.
-volume.edit.citation.author.placeholder=Sarah Researchman
-volume.edit.citation.year.placeholder=XXXX
+volume.edit.name.placeholder=Title
+volume.edit.citation.author.placeholder=Last, First
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
+volume.edit.citation.year.placeholder=2014
 volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
-volume.edit.body.placeholder=A study in which babies are pushed off ledges to prove or disprove the theory that babies are fearful of developmental scientists.
+volume.edit.body.placeholder=
 volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
-volume.edit.alias.placeholder=BABYPUSH
+volume.edit.alias.placeholder=
 
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
@@ -617,7 +592,13 @@ wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
 wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
 
-volume.edit.material.name.placeholder=Redheaded baby being pushed off ledge
+material.file=File
+material.file.help=Select the file you wish to upload.
+material.name=Caption
+material.name.help=You may optionally provide a brief description of this file for other users.
+volume.edit.materials.name.placeholder=
+material.classification=Classification
+
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
 volume.edit.materials.create=Upload of {0} in progress.  Please wait.
