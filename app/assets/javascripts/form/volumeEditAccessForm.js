@@ -4,13 +4,10 @@ module.directive('volumeEditAccessForm', [
 			var form = $scope.volumeEditAccessForm;
 
 			form.data = [];
-			form.global = {
-				'-1': 0,
-				'0': 0,
-			};
+			form.global = angular.copy(page.constants.data.accessGlobal[0]);
 
 			form.volume = undefined;
-			var backup = {};
+			var backup = [];
 
 			form.saveFn = undefined;
 			form.successFn = undefined;
@@ -23,16 +20,17 @@ module.directive('volumeEditAccessForm', [
 			form.init = function (data, volume) {
 				if (form.data.length === 0) {
 					angular.forEach(data, function (access) {
-						if (access.party.id > 0) {
-							form.data.push(access);
+						var i = page.constants.data.accessGlobal.parties.indexOf(access.party.id);
+						if (i >= 0) {
+							form.global[i] = page.constants.data.permission[access.children || 0];
 						} else {
-							form.global[access.party.id] = access.individual || 0;
+							form.data.push(access);
 						}
 					});
 					form.calcGlobalVal();
 
 					form.volume = form.volume || volume;
-					backup = $.extend(true, {}, form.global);
+					angular.copy(form.global, backup);
 				}
 			};
 
@@ -40,7 +38,7 @@ module.directive('volumeEditAccessForm', [
 				form.globalVal = undefined;
 
 				angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
-					if (preset['-1'] == form.global['-1'] && preset['0'] == form.global['0']) {
+					if (preset.every(function (x, i) { return form.global[i] === x; })) {
 						form.globalVal = i;
 						return false;
 					}
@@ -48,6 +46,7 @@ module.directive('volumeEditAccessForm', [
 			};
 
 			form.changeAccessGlobal = function () {
+				angular.copy(page.constants.data.accessGlobal[form.globalVal], form.global);
 				form.accessGlobalDirty = true;
 				form.$setDirty();
 			};
@@ -98,22 +97,16 @@ module.directive('volumeEditAccessForm', [
 					form.saveGlobalFn(form);
 				}
 
-				page.$q.all([
+				page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
+					var p = page.constants.data.permissionName[form.global[i]];
 					page.models.VolumeAccess.save({
 						id: form.volume.id,
-						partyId: page.constants.data.partyName['Everybody'].id,
+						partyId: party
 					}, {
-						individual: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Everybody'].id],
-						children: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Everybody'].id],
-					}),
-					page.models.VolumeAccess.save({
-						id: form.volume.id,
-						partyId: page.constants.data.partyName['Databrary'].id,
-					}, {
-						individual: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Databrary'].id],
-						children: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Databrary'].id],
-					}),
-				]).then(function (res) {
+						individual: p,
+						children: p,
+					})
+				})).then(function (res) {
 					if (angular.isFunction(form.successGlobalFn)) {
 						form.successGlobalFn(form, arguments);
 					}
@@ -124,7 +117,7 @@ module.directive('volumeEditAccessForm', [
 						countdown: 3000,
 					});
 
-					backup = $.extend(true, {}, form.global);
+					angular.copy(form.global, backup);
 					form.accessGlobalDirty = false;
 					form.$setPristine();
 					page.models.Volume.$cache.removeAll();
@@ -147,7 +140,7 @@ module.directive('volumeEditAccessForm', [
 					form.resetGlobalFn(form);
 				}
 
-				form.global = $.extend(true, {}, backup);
+				angular.copy(backup, form.global);
 				form.calcGlobalVal();
 				form.accessGlobalDirty = false;
 				form.$setPristine();

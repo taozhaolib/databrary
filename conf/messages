@@ -286,14 +286,13 @@ auth.request.info.title=More Info
 auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
-access.search=Search for a user, group, or institution...
-access.search.name.help=Enter to whom you want to grant access.
-access.search.name.error=Enter at least 3 characters for auto-search to begin.
-access.search.error=Could not retrieve any users or institutions.
-access.search.repeat={0} has already been added.
-access.search.legend=Search Databrary investigators
+access.grant.global.legend=Share this study
+access.global.save.success=Sharing settings updated.
+access.global.save.error=Unable to update sharing settings.
+access.global.NONE.NONE=Share only with those collaborators I specify below.
+access.global.NONE.SHARED=Share with all authorized Databrary investigators.
+access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
 
-access.notfound=None of these
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
@@ -305,14 +304,15 @@ access.grant.remove.success=Access removed successfully.
 access.grant.remove.error=Could not remove access at this time.
 access.delete.self=You cannot remove your own access to a volume.
 access.grant.restricted=You are not authorized to share data with {0}.
-access.grant.special.legend=Individual Access Records
-access.grant.global.legend=Who Can View this Study?
+access.grant.special.legend=Collaborators
 
-access.global.save.success=Access records updated.
-access.global.save.error=Unable to update access records.
-access.global.0.0=Only those I specify below.
-access.global.0.2=Databrary investigators and those I specify below.
-access.global.2.2=The public and those I specify below.
+access.search.legend=Add another collaborator
+access.search=Search for a user, group, or institution...
+access.search.name.help=Enter to whom you want to grant access.
+access.search.name.error=Enter at least 3 characters for auto-search to begin.
+access.search.error=Could not retrieve any users or institutions.
+access.search.repeat={0} has already been added.
+access.notfound=None of these
 
 # Funding
 funding.save.success=Funding source updated.

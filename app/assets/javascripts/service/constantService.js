@@ -51,22 +51,11 @@ module.factory('constantService', [
 			//
 
 			constants.data.accessGlobal = [
-				{},
-				{},
-				{},
+				['NONE','NONE'],
+				['NONE','SHARED'],
+				['PUBLIC','SHARED']
 			];
-			constants.data.accessGlobal[0][constants.data.partyName['Everybody'].id] =
-				constants.data.permissionName['NONE'];
-			constants.data.accessGlobal[0][constants.data.partyName['Databrary'].id] =
-				constants.data.permissionName['NONE'];
-			constants.data.accessGlobal[1][constants.data.partyName['Everybody'].id] =
-				constants.data.permissionName['NONE'];
-			constants.data.accessGlobal[1][constants.data.partyName['Databrary'].id] =
-				constants.data.permissionName['SHARED'];
-			constants.data.accessGlobal[2][constants.data.partyName['Everybody'].id] =
-				constants.data.permissionName['SHARED'];
-			constants.data.accessGlobal[2][constants.data.partyName['Databrary'].id] =
-				constants.data.permissionName['SHARED'];
+			constants.data.accessGlobal.parties = [constants.data.party.NOBODY, constants.data.party.ROOT];
 		};
 
 		constants.update = function () {
@@ -75,23 +64,11 @@ module.factory('constantService', [
 			constants.data.consentName = invertArray(constants.data.consent);
 			constants.data.categoryName = invertBy(constants.data.category, "name");
 
-			constants.data.party = {
-				'-1': {
-					id: -1,
-					name: 'Everybody',
-				},
-				'0': {
-					id: 0,
-					name: 'Databrary',
-				},
-			};
-			constants.data.partyName = invertBy(constants.data.party, 'name');
-
-			makePresets();
-
 			/* convenient aliases: */
 			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
 			constants.data.permissionName.SUPER = constants.data.permission.length;
+
+			makePresets();
 		};
 
 		constants.message = function (key /*, args...*/) {
