@@ -286,12 +286,13 @@ auth.request.info.title=More Info
 auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
-access.grant.global.legend=Share this study
+access.global.legend=Share this study
 access.global.save.success=Sharing settings updated.
 access.global.save.error=Unable to update sharing settings.
 access.global.NONE.NONE=Share only with those collaborators I specify below.
 access.global.NONE.SHARED=Share with all authorized Databrary investigators.
 access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
+access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
