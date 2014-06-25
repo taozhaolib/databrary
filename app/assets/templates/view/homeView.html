@@ -42,7 +42,7 @@
         </div>
 
         <div class="party_row row">
-          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties" bindonce>
+          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'name'" bindonce>
             <portrait class="portrait_vertical portrait_small"></portrait>
           </div>
         </div>

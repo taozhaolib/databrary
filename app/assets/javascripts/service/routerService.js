@@ -175,6 +175,7 @@ module.factory('routerService', [
 
 		router.partyAvatar = function (data, size) {
 			if (!type.isParty(data)) {
+				console.log(data);
 				throw new Error('routerService.partyAvatar() requires Party as first argument');
 			}
 
