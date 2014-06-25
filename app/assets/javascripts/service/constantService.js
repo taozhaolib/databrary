@@ -97,7 +97,7 @@ module.factory('constantService', [
 		constants.message = function (key /*, args...*/) {
 			var msg = constants.data.messages[key];
 
-			if (!msg) {
+			if (!angular.isDefined(msg)) {
 				$log.info('Message key [' + key + '] is undefined.');
 				return '[' + key + ']';
 			}
