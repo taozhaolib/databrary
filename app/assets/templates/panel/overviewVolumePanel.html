@@ -15,7 +15,7 @@
           </p>
         </div>
 
-        <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
+        <div frame id="frame_metadata" frame-title="{{volumeMessage('body')}}" fold>
           <div class="description" ng-bind-html="volume.body | format"></div>
 
           <div class="metadata">

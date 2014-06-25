@@ -409,7 +409,6 @@ volume.overview.title=Overview
 volume.authors.title=Original Authors
 volume.contributors.title=Investigators
 volume.funding.title=Funding
-volume.metadata.title=Description
 volume.creation.title=Shared on
 volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
@@ -424,7 +423,8 @@ volume.reuse.consumes=These data were originally collected as part of...
 
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
-volume.body=Abstract
+volume.body=Description
+study.body=Abstract
 
 browser.title=Data
 browser.group=+
