@@ -3,17 +3,20 @@ module.directive('authSearchForm', [
 		var link = function ($scope, $element, $attrs) {
 			var form = $scope.authSearchForm;
 
-			form.name = '';
+			form.nameVal = '';
 			form.found = [];
 			form.id = $attrs.party || undefined;
-			form.apply = angular.isDefined($attrs.child);
 
-			$attrs.$observe('principal', function (principal) {
-				form.name = '';
+			form.principal = $attrs.principal;
+
+			$scope.$watch(function () {
+				return form.principal
+			}, function (principal) {
+				form.nameVal = '';
 				form.found = [];
 				form.validator.client({
 					name: {
-						tips: page.constants.message('auth.search.' + (form.principal ? 'principal' : 'affiliate') + '.help')
+						tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
 					}
 				}, true);
 			});
@@ -24,8 +27,6 @@ module.directive('authSearchForm', [
 			var sentSearch = undefined;
 
 			var fin = function (res) {
-				form.validator.server(res || {});
-
 				sentSearch = undefined;
 
 				if (recentSearch) {
@@ -35,18 +36,16 @@ module.directive('authSearchForm', [
 			};
 
 			form.search = function () {
-				if (!form.name || form.name.length < 3) {
+				if (!form.nameVal || form.nameVal.length < 3) {
 					form.found = [];
-				}
-				else if (sentSearch) {
-					recentSearch = form.name;
-				}
-				else {
+				} else if (sentSearch) {
+					recentSearch = form.nameVal;
+				} else {
 					sentSearch = page.models.PartyAuthorize.search({
 						id: form.id || page.auth.user.id,
-						apply: form.apply,
-						name: form.name,
-						institution: $element.attr('principal') ? $element.attr('principal') === 'true' : undefined
+						name: form.nameVal,
+						institution: form.principal === 'principal' ? true :
+							form.principal === 'affiliate' ? false : undefined,
 					}, function (data) {
 						form.found = data;
 
@@ -62,7 +61,7 @@ module.directive('authSearchForm', [
 			form.selectFn = undefined;
 
 			form.select = function (found) {
-				form.name = '';
+				form.nameVal = '';
 				form.search();
 
 				if (angular.isFunction(form.selectFn)) {
@@ -75,9 +74,9 @@ module.directive('authSearchForm', [
 			form.notFoundFn = undefined;
 
 			form.notFound = function () {
-				var query = form.name;
+				var query = form.nameVal;
 
-				form.name = '';
+				form.nameVal = '';
 				form.search();
 
 				if (angular.isFunction(form.notFoundFn)) {

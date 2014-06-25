@@ -3,7 +3,7 @@
     <div class="cf">
       <footer>
                 <span bo-if="data.object.consent">
-                    <div class="item_meta icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()"></div>
+                    <div class="item_meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
 
                     <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|</div>
                 </span>

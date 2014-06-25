@@ -11,8 +11,8 @@
 	    <th>Parent</th>
 	    <th>Child</th>
 	    <th>Info</th>
-	    <th>Inherit</th>
-	    <th>Direct</th>
+	    <th>Site</th>
+	    <th>Member</th>
 	    <th>Expires</th>
 	</tr>
     </thead>
@@ -27,8 +27,8 @@
 		}
 	    </td>
 	    <td>@authorize.info</td>
-	    <td>@authorize.inherit</td>
-	    <td>@authorize.direct</td>
+	    <td>@authorize.site</td>
+	    <td>@authorize.member</td>
 	    <td>@authorize.expires</td>
 	</tr>
 	}
@@ -52,8 +52,8 @@
 	    <th>Parent</th>
 	    <th>Child</th>
 	    <th>Info</th>
-	    <th>Inherit</th>
-	    <th>Direct</th>
+	    <th>Site</th>
+	    <th>Member</th>
 	    <th>Expires</th>
 	    <th>Action</th>
 	</tr>
@@ -66,13 +66,13 @@
 	    <td>@display(form.authorize.parent)</td>
 	    <td>@display(form.authorize.child)</td>
 	    @widget.tag.inputText(form.info())
-	    @widget.enumSelect(form.inherit(), Permission)
-	    @widget.enumSelect(form.direct(), Permission)
+	    @widget.enumSelect(form.site(), Permission)
+	    @widget.enumSelect(form.member(), Permission)
 	    @widget.tag.inputDate(form.expires())
 	    <td>
 		@widget.formErrors(form)
-		<button type='submit' class="button second">@{if(form.pending.get) "Authorize" else "Update"}</button>
-		<button class="button first" name='delete' value='true'>@{if(form.pending.get) "Deny" else "Revoke"}</button>
+		<button type='submit' class="button second">@{if(form.pending) "Authorize" else "Update"}</button>
+		<button class="button first" name='delete' value='true'>@{if(form.pending) "Deny" else "Revoke"}</button>
 	    </td>
 	</tr>
 	}

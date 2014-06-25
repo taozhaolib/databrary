@@ -7,7 +7,7 @@
 @if(post.nonEmpty || comments.nonEmpty) {
 @widget.panel.raw("comments", "")(title = Messages("comments.title")){
     @post.map { form =>
-        @if(request.access.group >= Permission.VIEW) {
+        @if(request.access.site >= Permission.PUBLIC) {
             <div class="comment col-full">
                 <div class="row">
                     @widget.portrait.maximal(request.identity, "comment_author")
@@ -59,10 +59,6 @@
                                     <div class="inner">
                                         @display(c) <span class="sep">|</span> @display(c.time)
                                     </div>
-                                </div>
-
-                                <div class="comment_location_thumb col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-                                @widget.figure.thumbSlot(c, link = c.pageURL.url)
                                 </div>
                             }
                     }else{

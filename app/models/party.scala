@@ -11,7 +11,7 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], duns_ : Option[DUNS] = None) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], duns_ : Option[DUNS] = None, url_ : Option[URL] = None) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
@@ -20,20 +20,28 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def affiliation = _affiliation
   private[this] var _duns = duns_
   def duns = _duns
+  private[this] var _url = url_
+  def url = _url
 
   private[models] var _account : Option[Account] = None
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], duns : Option[Option[DUNS]])(implicit site : Site) : Future[Boolean] = {
-    Audit.change("party", SQLTerms.flatten(name.map('name -> _), orcid.map('orcid -> _), affiliation.map('affiliation -> _), duns.map('duns -> _)), SQLTerms('id -> id))
-      .execute.andThen { case scala.util.Success(true) =>
-        name.foreach(_name = _)
-        orcid.foreach(_orcid = _)
-        affiliation.foreach(_affiliation = _)
-        duns.foreach(_duns = _)
-      }
-  }
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], duns : Option[Option[DUNS]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
+    Audit.change("party", SQLTerms.flatten(
+      name.map('name -> _),
+      orcid.map('orcid -> _),
+      affiliation.map('affiliation -> _),
+      duns.map('duns -> _),
+      url.map('url -> _)),
+      SQLTerms('id -> id))
+    .execute.andThen { case scala.util.Success(true) =>
+      name.foreach(_name = _)
+      orcid.foreach(_orcid = _)
+      affiliation.foreach(_affiliation = _)
+      duns.foreach(_duns = _)
+      url.foreach(_url = _)
+    }
 
   /** List of authorizations granted to this user.
     * @param all include inactive authorizations */
@@ -57,7 +65,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.get(this)
   /** Email, if accessible, for convenience. */
   def email(implicit site : Site) : Option[String] =
-    account.filter(_ => site.access.group >= Permission.VIEW).map(_.email)
+    account.filter(_ => site.access.site >= Permission.SHARED).map(_.email)
 
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id
@@ -66,6 +74,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
     , if (duns.isDefined) Some('institution -> true) else None
+    , url.map(('url, _))
     , Some('avatar -> views.html.display.avatar(this).url)
     )
 }
@@ -77,7 +86,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = max(access.permission, min(site.access.group, Permission.DOWNLOAD))
+  def permission = max(access.permission, min(site.access.site, Permission.READ))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
@@ -85,7 +94,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def avatar : Future[Option[Asset]] = Asset.getAvatar(party)
   def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[Asset] =
     for {
-      asset <- Asset.create(Volume.Core, format, Classification.MATERIAL, name, file)
+      asset <- Asset.create(Volume.Core, format, Classification.PUBLIC, name, file)
       _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
     } yield (asset)
 
@@ -104,14 +113,14 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
     , "children" -> (opt => party.authorizeChildren()
         .map(JsonRecord.map(_.child.json))
       )
-    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.group)) else async(JsNull))
+    , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.site)) else async(JsNull))
     , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))
     , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)
         .map(JsonArray.map(c => c.json - "who" + ('volume -> c.volume.json)))
       )
     , "openid" -> (opt => async(if (party === site.identity || site.superuser)
 	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
-    , "duns" -> (opt => async(if (site.access.direct == Permission.ADMIN)
+    , "duns" -> (opt => async(if (site.access.member >= Permission.ADMIN)
 	Json.toJson(party.duns.map(_.duns)) else JsNull))
     )
 }
@@ -164,8 +173,9 @@ object Party extends TableId[Party]("party") {
     , SelectColumn[Option[Orcid]]("orcid")
     , SelectColumn[Option[String]]("affiliation")
     , SelectColumn[Option[DUNS]]("duns")
-    ).map { (id, name, orcid, affiliation, duns) =>
-      new Party(id, name, orcid, affiliation, duns)
+    , SelectColumn[Option[URL]]("url")
+    ).map { (id, name, orcid, affiliation, duns, url) =>
+      new Party(id, name, orcid, affiliation, duns, url)
     }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id)
@@ -192,24 +202,30 @@ object Party extends TableId[Party]("party") {
     row.SELECT("ORDER BY id").apply().list
 
   /** Create a new party. */
-  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None)(implicit site : Site) : Future[Party] =
-    Audit.add("party", SQLTerms('name -> name, 'orcid -> orcid, 'affiliation -> affiliation, 'duns -> duns), "id").single(SQLCols[Id])
-      .map(new Party(_, name, orcid, affiliation, duns))
+  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
+    Audit.add("party", SQLTerms(
+      'name -> name,
+      'orcid -> orcid,
+      'affiliation -> affiliation,
+      'duns -> duns,
+      'url -> url),
+      "id")
+    .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, duns, url))
 
   private def byName(implicit site : Site) =
-    if (site.access.group >= Permission.VIEW)
+    if (site.access.site >= Permission.SHARED)
       "(name ILIKE ? OR email ILIKE ?)"
     else
       "name ILIKE ?"
   private def byNameArgs(name : String)(implicit site : Site) =
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
-      (if (site.access.group >= Permission.VIEW) 2 else 1)
+      (if (site.access.site >= Permission.SHARED) 2 else 1)
 
   def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
       "WHERE id > 0",
       if (query.nonEmpty) "AND " + byName else "",
-      if (access.nonEmpty) "AND inherit = ?" else "")
+      if (access.nonEmpty) "AND site = ?" else "")
     .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)))
     .list
 
@@ -253,7 +269,7 @@ object SiteParty {
 
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
     if (p.id === Party.ROOT) async(new SiteParty(site.access))
-    else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.group, Permission.NONE)))
+    else if (p.id == Party.NOBODY) async(new SiteParty(new Authorization(site.identity, Party.Nobody, site.access.site, Permission.NONE)))
     else Authorization.get(site.identity, p).map(new SiteParty(_))
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =

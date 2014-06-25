@@ -19,8 +19,8 @@
 	    <th rowspan=2>Action</th>
 	</tr>
 	<tr>
-	    <th>@Messages("auth.inherit", whose)</th>
-	    <th>@Messages("auth.direct", whose)</th>
+	    <th>@Messages("auth.site", whose)</th>
+	    <th>@Messages("auth.member", whose)</th>
 	</tr>
     </thead>
 
@@ -29,10 +29,10 @@
     @authorizeParents.map { t =>
 	<tr>
 	    <td>@display(t.parent)</td>
-	    <td>@Permission.message(t.inherit, "inherit", whose)</td>
-	    <td>@Permission.message(t.direct, "direct", whose)</td>
+	    <td>@Permission.message(t.site, "site", whose)</td>
+	    <td>@Permission.message(t.member, "member", whose)</td>
 	    <td>@t.expires.fold(Messages("auth.expiration.none"))( e => display.dateFmtYMD.print(e) )</td>
-	    <td>@{if(t.authorized.isEmpty) Messages("auth.pending")}</td>
+	    <td>@{if(!t.authorized) Messages("auth.pending")}</td>
 	</tr>
     }
     }
@@ -56,20 +56,16 @@
 		}
 		}
 
-		@widget.tag.select(form.inherit(), Permission.values.toSeq.flatMap(p => Permission.message(p, "inherit", whose).map((p.id.toString, _))))
-
 		@form match {
 		case form : AuthorizeChildForm => {
-		    @widget.tag.select(form.direct(), Permission.values.toSeq.flatMap(p => Permission.message(p, "direct", whose).map((p.id.toString, _))))
+                    @widget.tag.select(form.site(), Permission.values.toSeq.flatMap(p => Permission.message(p, "site", whose).map((p.id.toString, _))))
+
+		    @widget.tag.select(form.member(), Permission.values.toSeq.flatMap(p => Permission.message(p, "member", whose).map((p.id.toString, _))))
 
 		    @widget.tag.inputDate(form.expires(), 'placeholder -> Messages("auth.expiration"), 'class -> "half")
 		}
 		case _ => {
-		@if(form.inherit.get == Permission.CONTRIBUTE) {
-		    @widget.tag.inputText(form.info(), 'placeholder -> Messages("auth.info.prompt"), '_colspan -> 2)
-	        } else {
-		    <td colspan="2"/>
-		}
+		    @widget.tag.inputText(form.info(), 'placeholder -> Messages("auth.info.prompt"), '_colspan -> 3)
 		}
 		}
 
@@ -79,7 +75,7 @@
 		case form : AuthorizeSearchForm => {
 		    <input type='hidden' name='pending' value='true'/>
 		    <button type='submit' class="button third">Search</button>
-		@if(form.inherit.get == Permission.CONTRIBUTE && form.name.get.nonEmpty) {
+		@if(form.name.get.nonEmpty) {
 		    <button type='submit' class="button first" name='notfound' value='true'>@Messages("auth.notfound")</button>
 		}
 		}
@@ -87,8 +83,8 @@
 		    <button type='submit' class="button">@Messages("auth.request")</button>
 		}
 		case form : AuthorizeChildForm => {
-		    <button type='submit' class="button second">@Messages(if(form.pending.get) "auth.authorize" else "auth.update")</button>
-		    <button type='submit' class="button first" name='delete' value='true'>@Messages(if(form.pending.get) "auth.deny" else "auth.revoke")</button>
+		    <button type='submit' class="button second">@Messages(if(form.pending) "auth.authorize" else "auth.update")</button>
+		    <button type='submit' class="button first" name='delete' value='true'>@Messages(if(form.pending) "auth.deny" else "auth.revoke")</button>
 		}
 		}
 		</td>

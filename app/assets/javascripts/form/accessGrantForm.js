@@ -6,11 +6,11 @@ module.directive('accessGrantForm', [
 			form.access = page.$parse($attrs.access)($scope) || undefined;
 
 			form.data = {
-				access: form.access.access || 0,
-				inherit: form.access.inherit || 0,
+				individual: form.access.individual || 0,
+				children: form.access.children || 0,
 			};
 
-			form.data.extend = form.data.inherit !== 0;
+			form.data.extend = form.data.children !== 0;
 
 			var backup = $.extend(true, {}, form.data);
 
@@ -21,18 +21,16 @@ module.directive('accessGrantForm', [
 			form.errorFn = undefined;
 
 			form.save = function () {
-				form.data.inherit = form.data.extend ? form.data.access : 0;
-
-				form.volumeAccess = new page.models.VolumeAccess(form.data);
+				form.data.children = form.data.extend ? form.data.individual : 0;
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
 
-				form.volumeAccess.$save({
+				page.models.VolumeAccess.save({
 					id: form.id,
 					partyId: form.access.party.id,
-				}, function () {
+				}, form.data, function () {
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
@@ -45,6 +43,7 @@ module.directive('accessGrantForm', [
 
 					backup = $.extend(true, {}, form.data);
 					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.grant.save.error'),
@@ -82,16 +81,14 @@ module.directive('accessGrantForm', [
 			form.removeErrorFn = undefined;
 
 			form.remove = function () {
-				form.volumeAccess = new page.models.VolumeAccess();
-
 				if (angular.isFunction(form.removeFn)) {
 					form.removeFn(form);
 				}
 
-				form.volumeAccess.$delete({
+				page.models.VolumeAccess.delete({
 					id: form.id,
 					partyId: form.access.party.id,
-				}, function () {
+				}, {}, function () {
 					if (angular.isFunction(form.removeSuccessFn)) {
 						form.removeSuccessFn(form, arguments, form.access);
 					}

@@ -5,7 +5,6 @@
 
 # static
 GET     /                                                                                         controllers.Site.start
-GET     /home                                                                                     controllers.Site.start
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view
@@ -58,7 +57,6 @@ GET     /volume/$vID<[0-9]+>/slot/container                                     
 GET     /slot/$id<[0-9]+>                                                                         controllers.SlotHtml.view(   id : models.Container.Id, segment : dbrary.Segment)
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(  sID : models.Container.Id, segment : dbrary.Segment)
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Container.Id, segment : dbrary.Segment)
-GET     /slot/$sID<[0-9]+>/thumb                                                                  controllers.SlotHtml.thumb( sID : models.Container.Id, segment : dbrary.Segment)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.create(vID : models.Volume.Id, container : Option[models.Container.Id] ?= None, position : Option[dbrary.Offset] ?= None)
@@ -140,7 +138,7 @@ POST    /api/party/$pID<[0-9]+>/password                                        
 # QUERY
 GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
-GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean)
+GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean = false)
 # CHANGE
 POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 # APPLY
@@ -246,7 +244,8 @@ GET     /favicon.ico                                                            
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
 
-GET     /error                                                                                  controllers.Site.untrail(path: String = "")
-GET     /loading                                                                                  controllers.Site.untrail(path: String = "")
+GET     /error                                                                                    controllers.Site.moved(path: String = "")
+GET     /loading                                                                                  controllers.Site.moved(path: String = "")
+GET     /home                                                                                     controllers.Site.moved(path: String = "")
 
-GET     /*path/                                                                                   controllers.Site.untrail(path: String)
+GET     /*path/                                                                                   controllers.Site.moved(path: String)

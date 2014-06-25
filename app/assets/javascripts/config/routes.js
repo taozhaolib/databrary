@@ -273,7 +273,6 @@ module.config([
 								access: '',
 								citation: '',
 								top: '',
-								excerpts: '',
 								funding: '',
 							}, function (res) {
 								deferred.resolve(res);
@@ -297,7 +296,6 @@ module.config([
 							volumeEditVolume.then(function (volume) {
 								page.models.Slot.get({
 									id: volume.top.id,
-									segment: ',',
 									assets: '',
 								}, function (res) {
 									deferred.resolve(res);
@@ -375,7 +373,7 @@ module.run([
 
 					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
 
-					if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
+					if (controller !== 'RegisterView') {
 						page.$location.url(page.router.register());
 					}
 				} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {

@@ -15,10 +15,10 @@ import site._
   * @constructor create an access object, not (yet) persisted to the database
   * @param volume the volume to which access is being granted; the target
   * @param party the party being granted the access; the user
-  * @param access the level of permission granted directly to the party. Levels at or above [[Permission.EDIT]] are considered volume "membership."
-  * @param inherit the level of permission granted to all descendents/members of the party, which cannot be [[Permission.ADMIN]]
+  * @param individual the level of permission granted directly to the party.
+  * @param children the level of permission granted to all descendents/members of the party
   */
-final class VolumeAccess(val volume : Volume, val party : Party, val access : Permission.Value, val inherit : Permission.Value) extends TableRow with InVolume {
+final class VolumeAccess(val volume : Volume, val party : Party, val individual : Permission.Value, val children : Permission.Value) extends TableRow with InVolume {
   private[models] def sqlKey = SQLTerms('volume -> volumeId, 'party -> partyId)
 
   def partyId = party.id
@@ -26,18 +26,18 @@ final class VolumeAccess(val volume : Volume, val party : Party, val access : Pe
   def json = JsonObject.flatten(
     Some('volume -> volume.json),
     Some('party -> party.json),
-    Maybe(access).opt.map('access -> _),
-    Maybe(inherit).opt.map('inherit -> _)
+    Maybe(individual).opt.map('individual -> _),
+    Maybe(children).opt.map('children -> _)
   )
 }
 
 object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   private val columns = Columns(
-      SelectColumn[Permission.Value]("access")
-    , SelectColumn[Permission.Value]("inherit")
-    ).map { (access, inherit) =>
+      SelectColumn[Permission.Value]("individual")
+    , SelectColumn[Permission.Value]("children")
+    ).map { (individual, children) =>
       (volume : Volume) => (party : Party) =>
-	new VolumeAccess(volume, party, access, inherit)
+	new VolumeAccess(volume, party, individual, children)
     }
   private def row(volume : Selector[Volume], party : Selector[Party]) = columns
     .join(volume, "volume_access.volume = volume.id").map(tupleApply)
@@ -46,25 +46,24 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   /** Retrieve the access entries for a volume. */
   private[models] def getParties(volume : Volume, access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] =
     row(Volume.fixed(volume), Party.row)
-    .SELECT("WHERE access >= ? ORDER BY access DESC")
+    .SELECT("WHERE individual >= ? ORDER BY individual DESC")
     .apply(access).list
-  /** Retrieve the volume access entries granted to a party for (at least) CONTRIBUTE. */ 
+  /** Retrieve the volume access entries granted to a party for (at least) READ. */ 
   private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     row(Volume.row, Party.fixed(party))
-    .SELECT("WHERE access >= 'CONTRIBUTE' AND", Volume.condition, "ORDER BY access DESC")
+    .SELECT("WHERE individual >= 'READ' AND", Volume.condition, "ORDER BY individual DESC")
     .apply().list
 
   /** Update or add volume access in the database.
-    * If an access for the volume and party already exist, it is changed to match this.
+    * If an access for the volume and party already exists, it is changed to match this.
     * Otherwise, a new one is added.
+    * If access is NONE, it is removed.
     * This may invalidate volume.access. */
-  def set(volume : Volume, party : Party.Id, access : Permission.Value = Permission.NONE, inherit : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Boolean] =
-    Audit.changeOrAdd("volume_access", SQLTerms('access -> access, 'inherit -> inherit), SQLTerms('volume -> volume.id, 'party -> party)).execute
-  /** Remove a particular volume access from the database.
-    * @return true if a matching volume access was found and deleted
-    */
-  def delete(volume : Volume, party : Party.Id)(implicit site : Site) : Future[Boolean] =
-    Audit.remove("volume_access", SQLTerms('volume -> volume.id, 'party -> party)).execute
+  def set(volume : Volume, party : Party.Id, individual : Permission.Value = Permission.NONE, children : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Boolean] =
+    if (individual == Permission.NONE && children == Permission.NONE)
+      Audit.remove("volume_access", SQLTerms('volume -> volume.id, 'party -> party)).execute
+    else
+      Audit.changeOrAdd("volume_access", SQLTerms('individual -> individual, 'children -> children), SQLTerms('volume -> volume.id, 'party -> party)).execute
 
   /** Determine what permission level the party has over the volume.
     * This takes into account full permission semantics including inheritance.

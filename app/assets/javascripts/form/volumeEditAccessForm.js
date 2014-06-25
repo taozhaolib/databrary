@@ -3,9 +3,11 @@ module.directive('volumeEditAccessForm', [
 		var link = function ($scope) {
 			var form = $scope.volumeEditAccessForm;
 
-			form.data = {};
+			form.data = [];
+			form.global = angular.copy(page.constants.data.accessGlobal[0]);
+
 			form.volume = undefined;
-			var backup = {};
+			var backup = [];
 
 			form.saveFn = undefined;
 			form.successFn = undefined;
@@ -16,9 +18,54 @@ module.directive('volumeEditAccessForm', [
 			//
 
 			form.init = function (data, volume) {
-				form.data = data;
-				form.volume = form.volume || volume;
-				backup = $.extend(true, {}, data);
+				if (form.data.length === 0) {
+					angular.forEach(data, function (access) {
+						var i = page.constants.data.accessGlobal.parties.indexOf(access.party.id);
+						if (i >= 0) {
+							form.global[i] = page.constants.data.permission[access.children || 0];
+						} else {
+							form.data.push(access);
+						}
+					});
+					form.calcGlobalVal();
+
+					form.volume = form.volume || volume;
+					angular.copy(form.global, backup);
+				}
+			};
+
+			var disabledMsg;
+
+			$scope.$watch(function () {
+				return page.auth.hasAuth('EDIT');
+			}, function (val) {
+				if (val) {
+					if (disabledMsg) {
+						form.messages.remove(disabledMsg);
+					}
+				} else {
+					disabledMsg = form.messages.add({
+						type: 'yellow',
+						body: page.constants.message('access.global.restricted'),
+					});
+				}
+			});
+
+			form.calcGlobalVal = function () {
+				form.globalVal = undefined;
+
+				angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
+					if (preset.every(function (x, i) { return form.global[i] === x; })) {
+						form.globalVal = i;
+						return false;
+					}
+				});
+			};
+
+			form.changeAccessGlobal = function () {
+				angular.copy(page.constants.data.accessGlobal[form.globalVal], form.global);
+				form.accessGlobalDirty = true;
+				form.$setDirty();
 			};
 
 			//
@@ -58,6 +105,66 @@ module.directive('volumeEditAccessForm', [
 
 			//
 
+			form.saveGlobalFn = undefined;
+			form.errorGlobalFn = undefined;
+			form.successGlobalFn = undefined;
+
+			form.saveGlobal = function () {
+				if (angular.isFunction(form.saveGlobalFn)) {
+					form.saveGlobalFn(form);
+				}
+
+				page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
+					var p = page.constants.data.permissionName[form.global[i]];
+					page.models.VolumeAccess.save({
+						id: form.volume.id,
+						partyId: party
+					}, {
+						individual: p,
+						children: p,
+					})
+				})).then(function (res) {
+					if (angular.isFunction(form.successGlobalFn)) {
+						form.successGlobalFn(form, arguments);
+					}
+
+					form.messages.add({
+						body: page.constants.message('access.global.save.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					angular.copy(form.global, backup);
+					form.accessGlobalDirty = false;
+					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
+				}, function (res) {
+					form.messages.addError({
+						body: page.constants.message('access.global.save.error'),
+						report: res,
+					});
+
+					if (angular.isFunction(form.errorGlobalFn)) {
+						form.errorGlobalFn(form, arguments);
+					}
+				});
+			};
+
+			form.resetGlobalFn = undefined;
+
+			form.resetGlobal = function () {
+				if (angular.isFunction(form.resetGlobalFn)) {
+					form.resetGlobalFn(form);
+				}
+
+				angular.copy(backup, form.global);
+				form.calcGlobalVal();
+				form.accessGlobalDirty = false;
+				form.$setPristine();
+			};
+
+			//
+
 			page.events.talk('volumeEditAccessForm-init', form, $scope);
 
 			//
@@ -80,7 +187,7 @@ module.directive('volumeEditAccessForm', [
 						countdown: 3000,
 					});
 
-					form.data.access.splice(form.data.access.indexOf(access), 1);
+					form.data.splice(form.data.indexOf(access), 1);
 				};
 
 				event.stopPropagation();
@@ -90,21 +197,21 @@ module.directive('volumeEditAccessForm', [
 				searchForm.selectFn = function (found) {
 					var present = false;
 
-					angular.forEach(form.data.access, function (access, i) {
+					angular.forEach(form.data, function (access, i) {
 						if (access.party.id === found.id) {
-							var el = form.data.access.splice(i, 1)[0];
-							form.data.access.push(el);
+							var el = form.data.splice(i, 1)[0];
+							form.data.push(el);
 							present = true;
 							return false;
 						}
 					});
 
 					if (!present) {
-						form.data.access.push({
+						form.data.push({
 							new: true,
 							party: found,
-							access: 0,
-							inherit: 0,
+							individual: 0,
+							children: 0,
 						});
 					} else {
 						searchForm.messages.add({
