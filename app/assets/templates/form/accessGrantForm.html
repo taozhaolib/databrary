@@ -1,15 +1,9 @@
 <form name="accessGrantForm" bindonce novalidate>
   <messages form="accessGrantForm"></messages>
 
-  <fieldset class="clean cut_f" ng-if="accessGrantForm.funding">
-    <validator form="accessGrantForm" name="funding" label="'access.grant.funding' | message">
-      <input name="funding" type="text" ng-model="accessGrantForm.data.funding">
-    </validator>
-  </fieldset>
-
-	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
-    <div ng-repeat="(val, name) in page.constants.data.accessPresets">
-      <input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="val" ng-selected="val == accessGrantForm.data.individual">
+	<fieldset class="clean radio-set">
+    <div ng-repeat="(val, name) in page.constants.data.accessPreset">
+      <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val" >
       <label bo-html="'access.'+name | message:access.party.name" class="option"></label>
     </div>
 

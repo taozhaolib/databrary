@@ -3,7 +3,12 @@ module.directive('volumeEditAccessForm', [
 		var link = function ($scope) {
 			var form = $scope.volumeEditAccessForm;
 
-			form.data = {};
+			form.data = [];
+			form.global = {
+				'-1': 0,
+				'0': 0,
+			};
+
 			form.volume = undefined;
 			var backup = {};
 
@@ -16,13 +21,35 @@ module.directive('volumeEditAccessForm', [
 			//
 
 			form.init = function (data, volume) {
-				form.data = data;
-				angular.forEach(form.data, function (access) {
-					access.individual = '' + access.individual;
-					access.children = '' + access.children;
+				if (form.data.length === 0) {
+					angular.forEach(data, function (access) {
+						if (access.party.id > 0) {
+							form.data.push(access);
+						} else {
+							form.global[access.party.id] = access.individual || 0;
+						}
+					});
+					form.calcGlobalVal();
+
+					form.volume = form.volume || volume;
+					backup = $.extend(true, {}, form.global);
+				}
+			};
+
+			form.calcGlobalVal = function () {
+				form.globalVal = undefined;
+
+				angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
+					if (preset['-1'] == form.global['-1'] && preset['0'] == form.global['0']) {
+						form.globalVal = i;
+						return false;
+					}
 				});
-				form.volume = form.volume || volume;
-				backup = $.extend(true, {}, data);
+			};
+
+			form.changeAccessGlobal = function () {
+				form.accessGlobalDirty = true;
+				form.$setDirty();
 			};
 
 			//
@@ -58,6 +85,71 @@ module.directive('volumeEditAccessForm', [
 						subform.reset();
 					}
 				});
+			};
+
+			//
+
+			form.saveGlobalFn = undefined;
+			form.errorGlobalFn = undefined;
+			form.successGlobalFn = undefined;
+
+			form.saveGlobal = function () {
+				if (angular.isFunction(form.saveGlobalFn)) {
+					form.saveGlobalFn(form);
+				}
+
+				page.$q.all([
+					page.models.VolumeAccess.save({
+						id: form.volume.id,
+						partyId: page.constants.data.partyName['Everybody'].id,
+					}, {
+						individual: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Everybody'].id],
+						children: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Everybody'].id],
+					}),
+					page.models.VolumeAccess.save({
+						id: form.volume.id,
+						partyId: page.constants.data.partyName['Databrary'].id,
+					}, {
+						individual: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Databrary'].id],
+						children: page.constants.data.accessGlobal[form.globalVal][page.constants.data.partyName['Databrary'].id],
+					}),
+				]).then(function (res) {
+					if (angular.isFunction(form.successGlobalFn)) {
+						form.successGlobalFn(form, arguments);
+					}
+
+					form.messages.add({
+						body: page.constants.message('access.global.save.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					backup = $.extend(true, {}, form.global);
+					form.accessGlobalDirty = false;
+					form.$setPristine();
+				}, function (res) {
+					form.messages.addError({
+						body: page.constants.message('access.global.save.error'),
+						report: res,
+					});
+
+					if (angular.isFunction(form.errorGlobalFn)) {
+						form.errorGlobalFn(form, arguments);
+					}
+				});
+			};
+
+			form.resetGlobalFn = undefined;
+
+			form.resetGlobal = function () {
+				if (angular.isFunction(form.resetGlobalFn)) {
+					form.resetGlobalFn(form);
+				}
+
+				form.global = $.extend(true, {}, backup);
+				form.calcGlobalVal();
+				form.accessGlobalDirty = false;
+				form.$setPristine();
 			};
 
 			//
