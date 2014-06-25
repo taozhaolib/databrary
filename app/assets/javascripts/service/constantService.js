@@ -58,7 +58,7 @@ module.factory('constantService', [
 			constants.data.accessGlobal.parties = [constants.data.party.NOBODY, constants.data.party.ROOT];
 		};
 
-		constants.update = function () {
+		var update = function () {
 			constants.data.permissionName = invertArray(constants.data.permission);
 			constants.data.classificationName = invertArray(constants.data.classification);
 			constants.data.consentName = invertArray(constants.data.consent);
@@ -69,6 +69,8 @@ module.factory('constantService', [
 			constants.data.permissionName.SUPER = constants.data.permission.length;
 
 			makePresets();
+
+			Object.freeze(constants.data);
 		};
 
 		constants.message = function (key /*, args...*/) {
@@ -88,7 +90,7 @@ module.factory('constantService', [
 
 		//
 
-		constants.update();
+		update();
 
 		return constants;
 	}
