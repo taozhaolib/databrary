@@ -2,7 +2,7 @@
   <messages form="fundingSearchForm"></messages>
 
   <validator class="auth-search" form="fundingSearchForm" name="name">
-    <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()">
+    <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()" placeholder="{{'funding.search.placeholder' | message}}">
   </validator>
 
   <ul ng-if="fundingSearchForm.nameVal" class="flat auth-found-list">

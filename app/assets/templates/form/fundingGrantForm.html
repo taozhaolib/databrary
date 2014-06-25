@@ -6,7 +6,7 @@
 
     <div ng-repeat="award in fundingGrantForm.awards">
       <validator form="fundingGrantForm" name="funding.awards[{{$index}}]">
-        <input type="text" name="funding.awards[{{$index}}]" ng-model="award.val">
+        <input type="text" name="funding.awards[{{$index}}]" ng-model="award.val" placeholder="{{'funding.awards.placeholder' | message}}">
         <button ng-click="fundingGrantForm.removeAward(award)" bo-html="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
