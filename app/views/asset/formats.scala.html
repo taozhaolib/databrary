@@ -1,0 +1,21 @@
+@(assets : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
+
+@template.crud("Supported formats") {
+	<div class="col-full">
+	<h3>File formats supported by Databrary</h3>
+	@assets.map{case(k,v) =>
+		<div class="metadata">
+			<h3 class="col-full">@Messages("format.list."+k)</h2>
+
+			<dl class="flat">
+			@v.map{af =>
+					<dt>@af.extension:</dt>
+					<dd>@af.name</dd>
+			}
+			</dl>
+
+		</div>
+	}
+	<span>@Messages("format.list.note")</span>
+	</div>
+}

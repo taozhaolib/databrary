@@ -212,6 +212,8 @@ POST    /api/asset/$assetId<[0-9]+>                                             
 POST    /api/asset/$assetId<[0-9]+>/replace                                                       controllers.AssetApi.replace(assetId : models.Asset.Id)
 # DELETE
 DELETE  /api/asset/$aID<[0-9]+>                                                                   controllers.AssetApi.remove(aID : models.Asset.Id)
+# List of supported formats
+GET     /formats	                                                                          controllers.AssetHtml.formats
 
 # ----- SLOT ASSET ----- #
 # QUERY     ?volume=ID;segment=
@@ -239,7 +241,6 @@ POST    /transcoded/:id                                                         
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
 GET     /favicon.ico                                                                              controllers.Site.favicon
-GET     /formats	                                                                          controllers.Site.formats
 
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)

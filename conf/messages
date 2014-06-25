@@ -8,6 +8,12 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
+format.list.text=text files
+format.list.application=documents
+format.list.video=video
+format.list.image=images
+format.list.audio=audio
+format.list.note=
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified

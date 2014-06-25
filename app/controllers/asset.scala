@@ -222,6 +222,11 @@ object AssetHtml extends AssetController with HtmlController {
       else      store.Transcode.start(request.obj)
       Ok("transcoding")
     }
+
+  def formats = SiteAction.Unlocked {implicit request =>
+		  Ok(views.html.asset.formats(
+		  AssetFormat.getAll.toSeq.groupBy(_.mimeSubTypes._1)))
+  }
 }
 
 object AssetApi extends AssetController with ApiController {
