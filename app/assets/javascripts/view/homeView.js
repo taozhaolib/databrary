@@ -11,7 +11,7 @@ module.controller('HomeView', [
 		angular.forEach(parties, function(v,k){
 			v.lastName = lastName(v.name);
 		});
-		$scope.parties = parties;
+		$scope.parties = page.$filter('toArray')(parties, 'lastName');
 		$scope.volume = volume;
 
 	}
