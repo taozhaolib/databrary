@@ -9,7 +9,6 @@
 			<label bo-html="'access.global.'+perms.join('.') | message" class="option"></label>
 		</div>
   </fieldset>
-  <div ng-if="!page.auth.hasAuth('EDIT')" bo-html="'access.global.restricted' | message"></div>
 
   <fieldset class="clean" ng-if="page.auth.hasAuth('EDIT')">
     <button ng-click="volumeEditAccessForm.saveGlobal()" class="green" bo-html="'save' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
