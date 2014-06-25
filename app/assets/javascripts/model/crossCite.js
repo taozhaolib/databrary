@@ -10,6 +10,7 @@ module.factory('CrossCite', [
 					headers: {
 						Accept: 'text/x-bibliography;style=apa',
 					},
+					cache: false
 				}).success(function (res) {
 					if (res.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);
@@ -30,6 +31,7 @@ module.factory('CrossCite', [
 					headers: {
 						Accept: 'application/vnd.citationstyles.csl+json',
 					},
+					cache: false
 				}).success(function (res) {
 					if (res.title.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);
