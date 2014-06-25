@@ -55,16 +55,15 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     .apply().list
 
   /** Update or add volume access in the database.
-    * If an access for the volume and party already exist, it is changed to match this.
+    * If an access for the volume and party already exists, it is changed to match this.
     * Otherwise, a new one is added.
+    * If access is NONE, it is removed.
     * This may invalidate volume.access. */
   def set(volume : Volume, party : Party.Id, individual : Permission.Value = Permission.NONE, children : Permission.Value = Permission.NONE)(implicit site : Site) : Future[Boolean] =
-    Audit.changeOrAdd("volume_access", SQLTerms('individual -> individual, 'children -> children), SQLTerms('volume -> volume.id, 'party -> party)).execute
-  /** Remove a particular volume access from the database.
-    * @return true if a matching volume access was found and deleted
-    */
-  def delete(volume : Volume, party : Party.Id)(implicit site : Site) : Future[Boolean] =
-    Audit.remove("volume_access", SQLTerms('volume -> volume.id, 'party -> party)).execute
+    if (individual == Permission.NONE && children == Permission.NONE)
+      Audit.remove("volume_access", SQLTerms('volume -> volume.id, 'party -> party)).execute
+    else
+      Audit.changeOrAdd("volume_access", SQLTerms('individual -> individual, 'children -> children), SQLTerms('volume -> volume.id, 'party -> party)).execute
 
   /** Determine what permission level the party has over the volume.
     * This takes into account full permission semantics including inheritance.

@@ -65,7 +65,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       via <- request.obj.adminAccessVia
       form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
       _ <- if (form.delete.get)
-	  VolumeAccess.delete(request.obj, e)
+	  VolumeAccess.set(request.obj, e)
 	else
 	  (if (!request.superuser && form.isRestricted)
 	    via.mapAsync(_.party.access.map(_.site))
@@ -270,7 +270,7 @@ object VolumeApi extends VolumeController with ApiController {
   def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
     Action(volumeId, Permission.ADMIN).async { implicit request =>
       (if (!(partyId === request.identity.id))
-	VolumeAccess.delete(request.obj, partyId)
+	VolumeAccess.set(request.obj, partyId)
       else macros.async(false)).map { _ =>
 	result(request.obj)
       }
