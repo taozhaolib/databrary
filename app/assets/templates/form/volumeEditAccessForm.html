@@ -2,13 +2,14 @@
   <messages form="volumeEditAccessForm"></messages>
 
   <fieldset class="clean radio-set" ng-disabled="!page.auth.hasAuth('EDIT')" ng-form="accessGlobalForm">
-    <legend bo-html="'access.grant.global.legend' | message"></legend>
+    <legend bo-html="'access.global.legend' | message"></legend>
 
 		<div ng-repeat="(val, perms) in page.constants.data.accessGlobal">
 			<input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
 			<label bo-html="'access.global.'+perms.join('.') | message" class="option"></label>
 		</div>
   </fieldset>
+  <div ng-if="!page.auth.hasAuth('EDIT')" bo-html="'access.global.restricted' | message"></div>
 
   <fieldset class="clean" ng-if="page.auth.hasAuth('EDIT')">
     <button ng-click="volumeEditAccessForm.saveGlobal()" class="green" bo-html="'save' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
