@@ -83,16 +83,14 @@ module.directive('accessGrantForm', [
 			form.removeErrorFn = undefined;
 
 			form.remove = function () {
-				form.volumeAccess = new page.models.VolumeAccess();
-
 				if (angular.isFunction(form.removeFn)) {
 					form.removeFn(form);
 				}
 
-				form.volumeAccess.$delete({
+				page.models.VolumeAccess.delete({
 					id: form.id,
 					partyId: form.access.party.id,
-				}, function () {
+				}, {}, function () {
 					if (angular.isFunction(form.removeSuccessFn)) {
 						form.removeSuccessFn(form, arguments, form.access);
 					}
