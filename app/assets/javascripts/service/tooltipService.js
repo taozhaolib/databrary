@@ -7,7 +7,8 @@ module.factory('tooltipService', [
 
 		tooltips.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
-		var pad = 10;
+		var padW = 20;
+		var padH = 15;
 
 		//
 
@@ -123,18 +124,18 @@ module.factory('tooltipService', [
 			tooltip.position = [];
 
 			if (center.left > center.right) {
-				tooltip.style.left = (loc[0] + $(window).scrollLeft() - $e.outerWidth() - pad) + 'px';
+				tooltip.style.left = (loc[0] + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
 				tooltip.position.push('left');
 			} else {
-				tooltip.style.left = (loc[0] + $(window).scrollLeft() + pad) + 'px';
+				tooltip.style.left = (loc[0] + $(window).scrollLeft() - padW) + 'px';
 				tooltip.position.push('right');
 			}
 
 			if (center.top > center.bottom) {
-				tooltip.style.top = (loc[1] + $(window).scrollTop() - $e.outerHeight() - pad) + 'px';
+				tooltip.style.top = (loc[1] + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
 				tooltip.position.push('top');
 			} else {
-				tooltip.style.top = (loc[1] + $(window).scrollTop() + pad) + 'px';
+				tooltip.style.top = (loc[1] + $(window).scrollTop() + padH) + 'px';
 				tooltip.position.push('bottom');
 			}
 		};
