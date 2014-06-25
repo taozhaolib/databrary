@@ -199,7 +199,7 @@ COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclas
 ALTER TABLE audit."excerpt" ADD "classification" classification NOT NULL DEFAULT 'SHARED';
 ALTER TABLE audit."excerpt" ALTER "classification" DROP DEFAULT;
 
-INSERT INTO excerpt SELECT id, '(,)', 'SHARED' FROM asset WHERE classification = 'EXCERPT';
+INSERT INTO excerpt SELECT id, '(,)', 'SHARED' FROM asset JOIN slot_asset ON id = asset WHERE classification = 'EXCERPT';
 
 ALTER TABLE "asset"
 	ALTER "classification" TYPE classification USING CASE

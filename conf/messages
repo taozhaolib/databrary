@@ -388,9 +388,8 @@ consent.EXCERPTS=The identifying data in this session have been released for sha
 consent.PUBLIC=The identifying data in this session have been released publicly.
 
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
-classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate release.
-# TODO: this is only for excerpts?
-classification.SHARED=Shared: shared only with authorized Databrary users for educational and research purposes.
+classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
+classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
