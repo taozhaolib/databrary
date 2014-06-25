@@ -23,16 +23,14 @@ module.directive('accessGrantForm', [
 			form.save = function () {
 				form.data.children = form.data.extend ? form.data.individual : 0;
 
-				form.volumeAccess = new page.models.VolumeAccess(form.data);
-
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
 
-				form.volumeAccess.$save({
+				page.models.VolumeAccess.save({
 					id: form.id,
 					partyId: form.access.party.id,
-				}, function () {
+				}, form.data, function () {
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
