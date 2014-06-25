@@ -34,6 +34,23 @@ module.directive('volumeEditAccessForm', [
 				}
 			};
 
+			var disabledMsg;
+
+			$scope.$watch(function () {
+				return page.auth.hasAuth('EDIT');
+			}, function (val) {
+				if (val) {
+					if (disabledMsg) {
+						form.messages.remove(disabledMsg);
+					}
+				} else {
+					disabledMsg = form.messages.add({
+						type: 'yellow',
+						body: page.constants.message('access.global.restricted'),
+					});
+				}
+			});
+
 			form.calcGlobalVal = function () {
 				form.globalVal = undefined;
 
