@@ -89,8 +89,6 @@ module.directive('volumeEditMaterialsForm', [
 									body: page.constants.message('volume.edit.materials.replace.success', subform.asset.name || page.constants.message('file')),
 								});
 
-								subform.messages.remove(msg);
-
 								if (angular.isFunction(form.successFn)) {
 									form.successFn(form, res);
 								}
@@ -106,7 +104,6 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
-								form.clean(subform);
 								page.models.Slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
@@ -118,11 +115,11 @@ module.directive('volumeEditMaterialsForm', [
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
 								}
-
-								subform.messages.remove(msg);
-
-								form.clean(subform);
-						page.display.scrollTo(subform.$element);
+							})
+							['finally'](function(res){
+									subform.messages.remove(msg);
+									form.clean(subform); 
+									page.display.scrollTo(subform.$element);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
