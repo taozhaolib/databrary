@@ -18,15 +18,25 @@ module.directive('validator', [
 			validator.clientErrors = [];
 			validator.clientTips = [];
 
-			validator.$element.focus(function () {
+			var on = function () {
 				$scope.$apply(function () {
 					validator.focus = true;
 				});
-			}).blur(function () {
+			};
+
+			var off = function () {
 				$scope.$apply(function () {
-					validator.focus = false;
+					if (!validator.$element.is(":focus")) {
+						validator.focus = false;
+					}
 				});
-			});
+			};
+
+			validator.$element
+				.focus(on)
+				.blur(off)
+				.mouseenter(on)
+				.mouseleave(off);
 
 			validator.iconClasses = function () {
 				var cls = [];
