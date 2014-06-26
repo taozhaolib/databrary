@@ -4,7 +4,7 @@ module.controller('CommentsPanel', [
 		page.events.listen($scope, 'commentReplyForm-init', function (event, commentForm) {
 			form = commentForm;
 		});
-		
+
 		var DEFAULT_MESSAGE = {
 			type: 'blue',
 			countdown: 3000

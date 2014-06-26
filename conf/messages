@@ -192,6 +192,11 @@ network.authquery.error=Could not retrieve your authorizing agents and affiliate
 network.remote.grant=Grant authorization to {0}
 network.remote.apply=Apply for authorization from {0}
 
+network.apply.local=Apply for authorization
+network.apply.foreign=Grant {0} authorization
+network.grant.local=Grant others authorization
+network.grant.foreign=Apply for {0} authorization
+
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
 auth.expiration=Expiration
@@ -266,6 +271,14 @@ wizard.party_edit_account.name=Account
 wizard.party_edit_account.description=Update email address and password.
 wizard.party_edit_account.instructions=
 
+wizard.party_edit_apply.name=Request Authorization
+wizard.party_edit_apply.description=View and add new authorizations.
+wizard.party_edit_apply.instructions=
+
+wizard.party_edit_grant.name=Grant Authorization
+wizard.party_edit_grant.description=Update authorization you grant to others.
+wizard.party_edit_grant.instructions=
+
 # --- Auth search
 auth.search=Search for a user or institution...
 auth.search.name.help=Enter your institution or PI.
@@ -279,6 +292,11 @@ auth.search.placeholder.help=Enter your sponsoring PI or institution.
 auth.search.child=Search for the person you wish to sponsor...
 auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
+
+auth.apply.legend=Sponsors
+auth.search.apply.legend=Search for Sponsors
+auth.grant.legend=Affiliates
+auth.search.grant.legend=Search for Affiliates
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}

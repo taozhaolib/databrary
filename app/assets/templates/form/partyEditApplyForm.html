@@ -1,0 +1,40 @@
+<form name="partyEditApplyForm" bindonce novalidate>
+  <messages form="partyEditApplyForm"></messages>
+
+  <fieldset ng-if="partyEditApplyForm.data.length > 0">
+    <legend bo-html="'auth.apply.legend' | message"></legend>
+    <article ng-repeat="other in partyEditApplyForm.data">
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent)">
+            <figmedia><img bo-src="other.avatar"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+          <div class="row">
+            <div class="network-heading col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <a bo-href="page.router.party(other)" class="network-auth-username" bo-text="other.name"></a>
+              <span class="network-auth-email" bo-if="other.email" bo-text="other.email"></span>
+            </div>
+
+            <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <auth-apply-form></auth-apply-form>
+            </div>
+           </div>
+        </div>
+      </div>
+    </article>
+  </fieldset>
+
+	<fieldset scope>
+    <legend bo-html="'auth.search.apply.legend' | message"></legend>
+		<auth-search-form party="{{party.id}}"></auth-search-form>
+	</fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="partyEditApplyForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
+    <button ng-click="partyEditApplyForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
+  </fieldset>
+</form>
+

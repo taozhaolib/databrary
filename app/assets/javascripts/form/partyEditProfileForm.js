@@ -118,8 +118,9 @@ module.directive('partyEditProfileForm', [
 			};
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
 				form.validator.clearServer();
 

@@ -108,7 +108,7 @@ module.controller('VolumeEditView', [
 		};
 
 		page.display.navigationFn = function (event, val) {
-			if (!volume || val.indexOf('/volume/'+volume.id+'/edit') > -1) {
+			if (!volume || val.indexOf('/volume/' + volume.id + '/edit') > -1) {
 				return;
 			}
 
@@ -154,8 +154,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_excerpts': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.excerpts = {
 					step: step,
@@ -167,8 +168,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_materials': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.materials = {
 					step: step,
@@ -182,8 +184,9 @@ module.controller('VolumeEditView', [
 			'volume_edit_funding': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
 
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.funding = {
 					step: step,
@@ -196,8 +199,9 @@ module.controller('VolumeEditView', [
 			'volume_edit_access': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', volume);
 
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.access = {
 					step: step,
@@ -225,8 +229,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_citations': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				var study, citations = [];
 
@@ -247,8 +252,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_excerpts': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
@@ -260,8 +266,9 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_materials': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				if (slot) {
 					angular.forEach(slot.assets, function (asset) {
@@ -273,15 +280,17 @@ module.controller('VolumeEditView', [
 			},
 
 			'volume_edit_funding': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.funding.form.init(volume.funding, volume);
 			},
 
 			'volume_edit_access': function (step) {
-				if(!volume)
+				if (!volume) {
 					return;
+				}
 
 				forms.access.form.init(volume.access, volume);
 			},

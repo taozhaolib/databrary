@@ -1,10 +1,10 @@
 module.directive('authGrantForm', [
 	'pageService', function (page) {
-		var link = function ($scope) {
+		var link = function ($scope, $element, $attrs) {
 			var form = $scope.authGrantForm;
 
-			form.party = $scope.party || page.auth.user;
-			form.other = undefined;
+			form.party = page.$parse($attrs.party)($scope) || undefined;
+			form.other = page.$parse($attrs.other)($scope) || undefined;
 
 			//
 

@@ -29,26 +29,26 @@ module.directive('commentReplyForm', [
 
 				form.comment.$save(form.data,
 					function () {
-					form.validator.server({});
+						form.validator.server({});
 
-					form.messages.add({
-						body: page.constants.message('comments.add.success'),
-						type: 'green',
-						countdown: 3000
+						form.messages.add({
+							body: page.constants.message('comments.add.success'),
+							type: 'green',
+							countdown: 3000
+						});
+
+						if (angular.isFunction(form.successFn)) {
+							form.successFn(form, arguments);
+						}
+
+						form.cancel();
+					}, function (res) {
+						form.validator.server(res);
+
+						if (angular.isFunction(form.errorFn)) {
+							form.errorFn(form, arguments);
+						}
 					});
-
-					if (angular.isFunction(form.successFn)) {
-						form.successFn(form, arguments);
-					}
-
-					form.cancel();
-				}, function (res) {
-					form.validator.server(res);
-
-					if (angular.isFunction(form.errorFn)) {
-						form.errorFn(form, arguments);
-					}
-				});
 			};
 
 			//

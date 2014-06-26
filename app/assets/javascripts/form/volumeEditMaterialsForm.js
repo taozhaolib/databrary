@@ -34,8 +34,9 @@ module.directive('volumeEditMaterialsForm', [
 
 				return page.$filter('filter')(form.slot.assets, function (asset) {
 					var e = angular.isDefined(asset.excerpt);
-					if (!asset.classification)
+					if (!asset.classification) {
 						asset.classification = page.constants.data.classification[e ? asset.excerpt : asset.asset.classification];
+					}
 					return e === form.excerptsMode;
 				});
 			};
@@ -122,7 +123,7 @@ module.directive('volumeEditMaterialsForm', [
 								subform.messages.remove(msg);
 
 								form.clean(subform);
-						page.display.scrollTo(subform.$element);
+								page.display.scrollTo(subform.$element);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
@@ -166,7 +167,7 @@ module.directive('volumeEditMaterialsForm', [
 								subform.messages.remove(msg);
 
 								form.clean(subform);
-						page.display.scrollTo(subform.$element);
+								page.display.scrollTo(subform.$element);
 							});
 					}
 				} else {
@@ -274,7 +275,7 @@ module.directive('volumeEditMaterialsForm', [
 
 				return form.data.assets.push({
 					classification: 'SHARED',
-				        excerpt: form.excerptsMode ? page.classification.SHARED : undefined
+					excerpt: form.excerptsMode ? page.classification.SHARED : undefined
 				});
 			};
 

@@ -130,6 +130,26 @@ module.controller('PartyEditView', [
 				};
 				forms.account.form.init(party);
 			},
+
+			'party_edit_apply': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.apply = {
+					step: step,
+					form: step.partyEditApplyForm,
+				};
+				forms.apply.form.init(party);
+			},
+
+			'party_edit_grant': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.grant = {
+					step: step,
+					form: step.partyEditGrantForm,
+				};
+				forms.grant.form.init(party);
+			},
 		};
 
 		//
@@ -141,6 +161,14 @@ module.controller('PartyEditView', [
 
 			'party_edit_account': function (step) {
 				forms.account.form.init(party);
+			},
+
+			'party_edit_apply': function (step) {
+				forms.apply.form.init(party);
+			},
+
+			'party_edit_grant': function (step) {
+				forms.grant.form.init(party);
 			},
 		};
 	}

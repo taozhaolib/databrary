@@ -25,7 +25,7 @@ module.controller('ExcerptsPanel', [
 			return type == 'text' ? mimetype[1] : type;
 		};
 
-		$scope.hasThumbnail = function(asset){
+		$scope.hasThumbnail = function (asset) {
 			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
 		}
 
