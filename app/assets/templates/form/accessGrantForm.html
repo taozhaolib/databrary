@@ -1,12 +1,14 @@
 <form name="accessGrantForm" bindonce novalidate>
   <messages form="accessGrantForm"></messages>
 
-	<fieldset class="clean radio-set">
+	<fieldset class="clean radio-set" ng-disabled="!accessGrantForm.canChange()">
     <div ng-repeat="(val, name) in page.constants.data.accessPreset">
-      <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val" >
+      <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
       <label bo-html="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
     </div>
+	</fieldset>
 
+	<fieldset class="clean radio-set">
 		<div ng-if="!access.party.institution">
 			<input type="checkbox" ng-model="accessGrantForm.data.extend">
 			<label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
@@ -16,6 +18,6 @@
   <fieldset class="clean">
     <button ng-click="accessGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>
     <button ng-click="accessGrantForm.reset()" class="yellow" bo-html="'revert' | message" ng-disabled="!accessGrantForm.$dirty"></button>
-    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'remove' | message"></button>
+    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'remove' | message" ng-if="accessGrantForm.canChange()"></button>
   </fieldset>
 </form>
