@@ -76,6 +76,7 @@ module.directive('partyEditProfileForm', [
 							page.models.Party.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
+							page.display.scrollTo(form.$element);
 
 							form.messages.remove(msg);
 
@@ -107,6 +108,7 @@ module.directive('partyEditProfileForm', [
 							page.models.Party.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
+							page.display.scrollTo(form.$element);
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);

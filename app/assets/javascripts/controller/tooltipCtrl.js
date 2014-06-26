@@ -34,27 +34,5 @@ module.controller('TooltipCtrl', [
 
 			return classes;
 		};
-
-		//
-
-		$scope.updateHeight = function () {
-			var $window = $(window),
-				$main = $('#main');
-
-			var padding = 0;
-
-			angular.forEach($scope.tooltips, function (tooltip) {
-				if (tooltip.enabled) {
-					padding += $('#' + tooltip.id).outerHeight();
-				}
-			});
-
-			$window.scrollTop($window.scrollTop() + padding - parseInt($main.css('padding-top')));
-			$main.css('padding-top', padding);
-		};
-
-		$scope.$watch('tooltips', function () {
-			$scope.updateHeight();
-		});
 	}
 ]);

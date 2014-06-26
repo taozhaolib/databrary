@@ -126,6 +126,7 @@ module.directive('volumeEditAccessForm', [
 						body: page.constants.message('access.global.save.error'),
 						report: res,
 					});
+					page.display.scrollTo(form.$element);
 
 					if (angular.isFunction(form.errorGlobalFn)) {
 						form.errorGlobalFn(form, arguments);

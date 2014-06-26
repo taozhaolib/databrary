@@ -7,7 +7,8 @@ module.factory('browserService', [
 	'constantService',
 	'tooltipService',
 	'$timeout',
-	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout) {
+	'displayService',
+	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout, display) {
 		var browserService = {};
 
 		//
@@ -1020,11 +1021,7 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			$timeout(function () {
-				$('html,body').animate({
-					scrollTop: $('#' + data.parent.id).find('.browser_controller').offset().top - 72
-				}, 250);
-			}, 1);
+			display.scrollTo($('#' + data.parent.id).find('.browser_controller'));
 
 			return browserService.player;
 		};

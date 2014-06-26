@@ -63,7 +63,7 @@ module.controller('ExcerptsPanel', [
 				return addTo(found, asset);
 			}
 
-			$(window).scrollTop($item.offset().top - 76);
+			page.display.scrollTo($item);
 			page.browser.setItemExpand(found, true);
 		};
 

@@ -63,7 +63,7 @@ module.factory('displayService', [
 			$timeout(function () {
 				$scroll.animate({
 					scrollTop: target
-				}, 550);
+				}, 500);
 			}, 1);
 		};
 
