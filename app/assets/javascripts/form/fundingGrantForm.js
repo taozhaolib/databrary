@@ -6,7 +6,11 @@ module.directive('fundingGrantForm', [
 
 			form.volume = page.$parse($attrs.volume)($scope) || undefined;
 			form.data = page.$parse($attrs.funder)($scope) || {};
-			form.awards = [];
+			form.awards = [
+				{
+					val: '',
+				}
+			];
 
 			var backup = $.extend(true, {}, form.data);
 
@@ -16,6 +20,12 @@ module.directive('fundingGrantForm', [
 						val: award,
 					};
 				});
+
+				if (form.awards.length === 0) {
+					form.awards.push({
+						val: '',
+					});
+				}
 			}
 
 			//
@@ -32,8 +42,11 @@ module.directive('fundingGrantForm', [
 
 			form.save = function () {
 				form.data.awards = form.awards.map(function (award) {
-					return award.val;
+					return award.val.trim();
+				}).filter(function (author) {
+					return author != '';
 				});
+				;
 
 				form.volumeAccess = new page.models.VolumeAccess(form.data);
 

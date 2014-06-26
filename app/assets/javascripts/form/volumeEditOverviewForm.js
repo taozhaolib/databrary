@@ -4,7 +4,11 @@ module.directive('volumeEditOverviewForm', [
 			var form = $scope.volumeEditOverviewForm;
 
 			form.data = {};
-			form.authors = [];
+			form.authors = [
+				{
+					name: '',
+				}
+			];
 			var backup = {};
 
 			form.saveFn = undefined;
@@ -38,6 +42,12 @@ module.directive('volumeEditOverviewForm', [
 							name: author,
 						};
 					});
+
+					if (form.authors.length === 0) {
+						form.authors.push({
+							name: '',
+						});
+					}
 				}
 
 				backup = $.extend(true, {}, data);
@@ -51,7 +61,9 @@ module.directive('volumeEditOverviewForm', [
 				}
 
 				form.data.citation.authors = form.authors.map(function (author) {
-					return author.name;
+					return author.name.trim();
+				}).filter(function (author) {
+					return author != '';
 				});
 
 				if (angular.isFunction(form.saveFn)) {
@@ -79,6 +91,7 @@ module.directive('volumeEditOverviewForm', [
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
+							page.display.scrollTo(form.$element);
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);
@@ -118,8 +131,9 @@ module.directive('volumeEditOverviewForm', [
 			};
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
 				form.data = $.extend(true, {}, backup);
 
