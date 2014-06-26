@@ -15,8 +15,8 @@
 		padding-left: 24px;
 	}
 
-	&.identified,
-	&.deidentified {
+	&.classification.restricted,
+	&.classification.shared {
 		padding-left: 22px;
 	}
 
@@ -64,13 +64,13 @@
 			background-position: 2px 4px;
 		}
 
-		&.excerpts {
+		&.consent.excerpts {
 			padding-left: @b1 + 2px;
 			background-position: 1px 4px;
 		}
 
-		&.identified,
-		&.deidentified {
+		&.classification.restricted,
+		&.classification.shared {
 			background-position: 1px 4px;
 		}
 	}
