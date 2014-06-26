@@ -21,9 +21,6 @@ module.directive('authApplyForm', [
 			var saveAuth = function () {
 				form.partyAuthorize = new page.models.PartyAuthorize();
 
-				form.partyAuthorize.direct = form.other.direct;
-				form.partyAuthorize.inherit = form.other.inherit;
-
 				if (form.notFound.info) {
 					form.partyAuthorize.info = form.notFound.info;
 				}
@@ -32,14 +29,13 @@ module.directive('authApplyForm', [
 					id: form.party.id,
 					partyId: form.other.party.id
 				}, function () {
+					form.validator.server({});
+
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('auth.apply.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -57,6 +53,8 @@ module.directive('authApplyForm', [
 					name: form.notFound.query,
 					info: form.notFound.info
 				}, function (res) {
+					form.validator.server({});
+
 					form.messages.add({
 						type: 'green',
 						countdown: 3000,
@@ -67,10 +65,7 @@ module.directive('authApplyForm', [
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('error.generic'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -99,12 +94,15 @@ module.directive('authApplyForm', [
 				if (angular.isFunction(form.cancelFn)) {
 					form.cancelFn(form);
 				}
-
-				if (form.other) {
-					form.other.inherit = 0;
-					form.other.direct = 0;
-				}
 			};
+
+			//
+
+			form.validator.client({
+				info: {
+					tips: page.constants.message('auth.request.info.help'),
+				},
+			}, true);
 
 			//
 

@@ -1,14 +1,24 @@
 module.directive('authSearchForm', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
-			$scope.authSearchForm.name = '';
-			$scope.authSearchForm.found = [];
-			$scope.authSearchForm.id = $attrs.party || undefined;
-			$scope.authSearchForm.apply = angular.isDefined($attrs.child);
+			var form = $scope.authSearchForm;
 
-			$attrs.$observe('principal', function (principal) {
-				$scope.authSearchForm.name = '';
-				$scope.authSearchForm.found = [];
+			form.nameVal = '';
+			form.found = [];
+			form.id = $attrs.party || undefined;
+
+			form.principal = $attrs.principal;
+
+			$scope.$watch(function () {
+				return form.principal
+			}, function (principal) {
+				form.nameVal = '';
+				form.found = [];
+				form.validator.client({
+					name: {
+						tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
+					}
+				}, true);
 			});
 
 			//
@@ -16,74 +26,75 @@ module.directive('authSearchForm', [
 			var recentSearch = undefined;
 			var sentSearch = undefined;
 
-			var fin = function () {
+			var fin = function (res) {
 				sentSearch = undefined;
 
 				if (recentSearch) {
 					recentSearch = undefined;
-					$scope.authSearchForm.search();
+					form.search();
 				}
 			};
 
-			$scope.authSearchForm.search = function () {
-				if (!$scope.authSearchForm.name || $scope.authSearchForm.name.length < 3) {
-					$scope.authSearchForm.found = [];
-				}
-				else if (sentSearch) {
-					recentSearch = $scope.authSearchForm.name;
-				}
-				else {
+			form.search = function () {
+				if (!form.nameVal || form.nameVal.length < 3) {
+					form.found = [];
+				} else if (sentSearch) {
+					recentSearch = form.nameVal;
+				} else {
 					sentSearch = page.models.PartyAuthorize.search({
-						id: $scope.authSearchForm.id || page.auth.user.id,
-						apply: $scope.authSearchForm.apply,
-						name: $scope.authSearchForm.name,
-						institution: $element.attr('principal') ? $element.attr('principal') === 'true' : undefined
+						id: form.id || page.auth.user.id,
+						name: form.nameVal,
+						institution: form.principal === 'principal' ? true :
+							form.principal === 'affiliate' ? false : undefined,
 					}, function (data) {
-						$scope.authSearchForm.found = data;
+						form.found = data;
 
 						fin();
 					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('auth.search.error'),
-							report: res,
-						});
-
-						fin();
+						fin(res);
 					});
 				}
 			};
 
 			//
 
-			$scope.authSearchForm.selectFn = undefined;
+			form.selectFn = undefined;
 
-			$scope.authSearchForm.select = function (found) {
-				$scope.authSearchForm.name = '';
-				$scope.authSearchForm.search();
+			form.select = function (found) {
+				form.nameVal = '';
+				form.search();
 
-				if (angular.isFunction($scope.authSearchForm.selectFn)) {
-					$scope.authSearchForm.selectFn(found, $scope.authSearchForm);
+				if (angular.isFunction(form.selectFn)) {
+					form.selectFn(found, form);
 				}
 			};
 
 			//
 
-			$scope.authSearchForm.notFoundFn = undefined;
+			form.notFoundFn = undefined;
 
-			$scope.authSearchForm.notFound = function () {
-				var query = $scope.authSearchForm.name;
+			form.notFound = function () {
+				var query = form.nameVal;
 
-				$scope.authSearchForm.name = '';
-				$scope.authSearchForm.search();
+				form.nameVal = '';
+				form.search();
 
-				if (angular.isFunction($scope.authSearchForm.notFoundFn)) {
-					$scope.authSearchForm.notFoundFn(query, $scope.authSearchForm);
+				if (angular.isFunction(form.notFoundFn)) {
+					form.notFoundFn(query, form);
 				}
 			};
 
 			//
 
-			page.events.talk('authSearchForm-init', $scope.authSearchForm);
+			form.validator.client({
+				name: {
+					tips: page.constants.message('auth.search.name.help'),
+				},
+			}, true);
+
+			//
+
+			page.events.talk('authSearchForm-init', form);
 		};
 
 		//

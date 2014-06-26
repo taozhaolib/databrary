@@ -11,7 +11,6 @@ module.controller('PartyView', [
 				url: page.router.partyEdit(party),
 				access: 'CONTRIBUTE',
 				object: party,
-				target: '_top',
 			},
 		];
 	}

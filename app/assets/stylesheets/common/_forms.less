@@ -61,21 +61,32 @@ select {
 		line-height: .9;
 		.font-size(.75);
 		.padding-width(@f8);
+
+		&.supermini{
+			width: 50px;
+		}
 	}
 
-	&.ng-dirty {
-		border-color: @green;
-		.input-shadow(@green);
+	&.half {
+		width: 50%;
 	}
 
-	&.ng-invalid:not(.ng-pristine) {
-		border-color: @red;
-		.input-shadow(@red);
+	&.third {
+		width: 100% / 3;
+	}
+
+	&.quarter {
+		width: 25%;
 	}
 
 	&:focus {
 		border-color: @green;
 		.input-shadow(@green);
+
+		&.ng-invalid:not(.ng-pristine) {
+			border-color: @red;
+			.input-shadow(@red);
+		}
 	}
 }
 
@@ -123,7 +134,7 @@ fieldset {
 	&:disabled {
 		border-color: @pale;
 		color: @pale;
-		cursor: not-allowed;
+		cursor: default;
 	}
 }
 
@@ -143,7 +154,11 @@ fieldset, .fieldset {
 
 	&.clean {
 		border: 0;
-		.padding-height(0)
+		.padding-height(0);
+
+		&.skinny {
+			.margin-bottom(0);
+		}
 	}
 
 	&.boxed {
@@ -229,9 +244,48 @@ th, td {
 
 //
 
-.validator {
+.validator_input {
 	position: relative;
-	top: -@b2;
+
+	.field {
+		.margin-right(1);
+	}
+
+	.indicator {
+		position: absolute;
+		.size(@b3 * 2);
+		top: @b3 + @b12;
+		right: @b8;
+		display: none;
+
+		img {
+			display: none;
+		}
+
+		&.show {
+			display: block;
+
+			&.invalid {
+				background-color: @red;
+
+				img.invalid {
+					display: block;
+				}
+			}
+
+			&.valid {
+				background-color: @green;
+
+				img.valid {
+					display: block;
+				}
+			}
+		}
+	}
+}
+
+.validator_messages {
+	position: relative;
 }
 
 .validator_message {
@@ -239,11 +293,12 @@ th, td {
 	background-color: @white;
 	left: 0;
 	right: 0;
-	top: @b3;
+	bottom: @b3;
 	.border-radius(@b6);
 	.box-shadow();
-	.padding(0, @f6);
-	.font-line(.75);
+	.padding(@f6);
+	.font-size(.75);
+	.line-height(.75);
 	z-index: 2000;
 
 	&:after,
@@ -251,19 +306,19 @@ th, td {
 		content: "";
 		.size(0);
 		left: @b1 + @b12;
-		top: -@b2;
 		border: @b4 solid transparent;
 		position: absolute;
 		pointer-events: none;
 	}
 
 	&:after {
-		border-bottom-color: @white;
+		border-top-color: @white;
+		bottom: -@b2;
 	}
 
 	&:before {
-		border-bottom-color: @gray;
-		top: -@b2 - 1px;
+		border-top-color: @gray;
+		bottom: -@b2 - 1px;
 	}
 }
 

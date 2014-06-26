@@ -196,10 +196,7 @@ object Adolph extends Ingest {
 	  ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
 	    ingest.Asset.fileInfo(origFile))
 	case None =>
-	  val info = ingest.Asset.fileInfo(file)
-	  if (info.format.isTranscodable)
-	    fail("untranscoded file: " + file)
-	  info
+	  ingest.Asset.fileInfo(file)
 	case _ => fail("no original file: " + file)
       }
     }
@@ -254,7 +251,7 @@ object Adolph extends Ingest {
     def withAsset(a : Asset) =
       copy(assets = assets :+ a)
 
-    def populate(volume : Volume)(implicit site : Site) : Future[Container] =
+    def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
 	pr <- records(RecordCategory.Participant.id.unId).populate(volume)
 	ms <- pr.slots
@@ -282,12 +279,12 @@ object Adolph extends Ingest {
 		PopulateException("existing session for " + pr + " with different consent", s))
 	  } yield (c)
 	}
-	_ <- assets zip Asset.positions(assets) foreachAsync { case (a, o) =>
+	_ <- assets zip Asset.positions(assets) foreachAsync { case (i, o) =>
 	  for {
-	    a <- a.populate(volume)
+	    a <- i.populate(volume)
 	    as <- a.slot
 	    _ <- as.fold[Future[Any]] {
-	      a.link(c, Some(o), a.duration)
+	      a.link(c, Some(o), i.info.duration)
 	    } { as =>
 	      check(as.container === c,
 		PopulateException("existing asset in different container", as))
@@ -365,7 +362,7 @@ object Adolph extends Ingest {
   def parse(s : File, p : File) : Future[Int] =
     Sessions.parseCSV(s, p).map(_.length)
 
-  def process(volume : Volume, s : File, p : File)(implicit site : Site) : Future[Seq[Container]] =
+  def process(volume : Volume, s : File, p : File)(implicit request : controllers.SiteRequest[_]) : Future[Seq[Container]] =
     Sessions.parseCSV(s, p).flatMap(_.mapAsync(_.populate(volume)))
 
 }

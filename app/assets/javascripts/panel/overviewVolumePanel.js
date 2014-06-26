@@ -5,19 +5,15 @@ module.controller('OverviewVolumePanel', [
 		};
 
 		$scope.isContributor = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access >= page.permission.CONTRIBUTE;
+			return volumeAccess.individual && volumeAccess.individual >= page.permission.ADMIN;
 		};
 
 		$scope.isShared = function (volumeAccess) {
-			return volumeAccess.access && volumeAccess.access < page.permission.CONTRIBUTE;
-		};
-
-		$scope.isFunding = function (volumeAccess) {
-			return !!volumeAccess.funding;
+			return volumeAccess.individual && volumeAccess.individual < page.permission.ADMIN;
 		};
 
 		$scope.shareMessage = function (volumeAccess) {
-			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.access], volumeAccess.party.name);
+			return page.constants.message('access.' + page.constants.data.permission[volumeAccess.individual], volumeAccess.party.name);
 		};
 
 		$scope.ageSummary = function (summary) {
@@ -46,12 +42,5 @@ module.controller('OverviewVolumePanel', [
 
 			return false;
 		};
-
-		for (var cite in $scope.volume.citations) {
-			if ($scope.volume.citations.hasOwnProperty(cite) && $scope.volume.citations[cite].study) {
-				$scope.primaryStudy = $scope.volume.citations[cite];
-				break;
-			}
-		}
 	}
 ]);

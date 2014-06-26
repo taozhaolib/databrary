@@ -2,7 +2,7 @@
   <div class="browser_item_content">
     <div class="cf">
       <footer>
-        <div class="item_meta icon bb" bo-class="page.constants.data.permission[data.object.permission].toLowerCase()" bo-if="data.object.permission"></div>
+        <div class="item_meta access icon bb" bo-class="page.constants.data.permission[data.object.permission].toLowerCase()" hint="permission-{{page.constants.data.permission[data.object.permission]}}" bo-if="data.object.permission"></div>
 
         <div class="item_meta sep"
              bo-if="page.auth.hasAccess('CONTRIBUTE', data) && data.object.permission">|
@@ -15,7 +15,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1>
-          <a bo-href="page.router.volume({id: data.object.id})" bo-html="getName(data) | escape"></a>
+          <a bo-href="page.router.volume({id: data.object.id})" bo-text="getName(data)"></a>
         </h1>
       </header>
     </div>

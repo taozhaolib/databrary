@@ -22,17 +22,6 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  def update(o : models.Asset.Id) =
-    Action(o, Permission.EDIT).async { implicit request =>
-      val form = new AssetController.ChangeForm()._bind
-      for {
-	container <- form.container.get.mapAsync(
-	  Container.get(_).map(_.getOrElse(form.container.withError("Invalid container ID")._throw)))
-	_ <- request.obj.change(classification = form.classification.get, name = form.name.get)
-	_ <- container.foreachAsync(request.obj.link(_, form.position.get))
-      } yield (result(request.obj))
-    }
-
   private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
     val tag = asset.etag
     /* Assuming assets are immutable, any if-modified-since header is good enough */
@@ -63,6 +52,24 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           body = subdata)
       }
   }
+
+  private def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
+    for {
+      container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
+	form.container.withError("object.invalid", "container")._throw))
+      _ <- asset.change(name = form.name.get, classification = form.classification.get)
+      sa <- container.mapAsync(asset.link(_, form.position.get))
+      _ <- form.excerpt.get.foreachAsync { c =>
+	if (c.exists(_ < asset.classification)) form.excerpt.withError("asset.excerpt.invalid")._throw
+	else Excerpt.set(asset, Range.full, c)
+      }
+    } yield (sa.fold(result(asset))(SlotAssetController.result _))
+
+  def update(o : models.Asset.Id) =
+    Action(o, Permission.EDIT).async { implicit request =>
+      val form = new AssetController.ChangeForm()._bind
+      set(request.obj, form)
+    }
 
   private def create(form : AssetController.AssetUploadForm) : Future[Asset] = {
     implicit val request = form.request
@@ -97,8 +104,6 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	  }
 	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
       }
-      // we do this separately in order to preserve the original "upload" filename audit:
-      _ <- form.name.get.foreachAsync(name => asset.change(name = Some(name)))
       _ = if (fmt.isTranscodable && !form.timeseries.get)
 	store.Transcode.start(asset)
     } yield (asset)
@@ -107,24 +112,19 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   def upload(v : models.Volume.Id) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.UploadForm()._bind
-      for {
-	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	  form.container.withError("Invalid container ID")._throw))
-	asset <- create(form)
-	sa <- container.mapAsync(asset.link(_, form.position.get))
-      } yield (sa.fold(result(asset))(SlotAssetController.result _))
+      create(form).flatMap(set(_, form))
     }
 
   def replace(o : models.Asset.Id) =
     Action(o, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.ReplaceForm()._bind
       for {
-	container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	  form.container.withError("Invalid container ID")._throw))
+	done <- request.obj.isSuperseded
+	_ = if (done) form.withGlobalError("file.superseded")._throw
 	asset <- create(form)
-	_ <- request.obj.supersede(asset)
-	sa <- container.mapAsync(asset.link(_, form.position.get))
-      } yield (sa.fold(result(asset))(SlotAssetController.result _))
+	_ <- asset.supersede(request.obj)
+	r <- set(asset, form)
+      } yield (r)
     }
 
   def remove(a : models.Asset.Id) = Action(a, Permission.EDIT).async { implicit request =>
@@ -146,6 +146,7 @@ object AssetController extends AssetController {
     val classification = Field(OptionMapping(Mappings.enum(Classification)))
     val container = Field(Forms.optional(Forms.of[Container.Id]))
     val position = Field(Forms.optional(Forms.of[Offset]))
+    val excerpt = Field(OptionMapping(Forms.optional(Mappings.enum(Classification))))
   }
 
   sealed trait AssetUpdateForm extends AssetForm {
@@ -220,6 +221,11 @@ object AssetHtml extends AssetController with HtmlController {
       else      store.Transcode.start(request.obj)
       Ok("transcoding")
     }
+
+  def formats = SiteAction.Unlocked {implicit request =>
+		  Ok(views.html.asset.formats(
+		  AssetFormat.getAll.toSeq.groupBy(_.mimeSubTypes._1)))
+  }
 }
 
 object AssetApi extends AssetController with ApiController {

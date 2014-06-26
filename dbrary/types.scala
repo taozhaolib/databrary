@@ -77,6 +77,17 @@ object SQLType {
     override def escaped(a : Boolean) = show(a)
   }
 
+  implicit object short extends SQLDBType[Short]("smallint", classOf[Short], db.column.ShortEncoderDecoder) {
+    override def get(x : Any, where : String = "") : Short = x match {
+      case null => throw new SQLUnexpectedNull(this, where)
+      case i : Short => i
+      case i : java.lang.Short => i
+      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
+      case _ => throw new SQLTypeMismatch(x, this, where)
+    }
+    override def escaped(a : Short) = show(a)
+  }
+
   implicit object int extends SQLDBType[Int]("integer", classOf[Int], db.column.IntegerEncoderDecoder) {
     override def get(x : Any, where : String = "") : Int = x match {
       case null => throw new SQLUnexpectedNull(this, where)
@@ -114,6 +125,9 @@ object SQLType {
   implicit object numeric extends SQLDBType[BigDecimal]("numeric", classOf[BigDecimal], db.column.BigDecimalEncoderDecoder)
 
   implicit object bytea extends SQLDBType[Array[Byte]]("bytea", classOf[Array[Byte]], db.postgresql.column.ByteArrayEncoderDecoder)
+
+  implicit val url : SQLType[java.net.URL] =
+    string.transform("text", classOf[java.net.URL])(dbrary.url.parse, _.toString)
 
   implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] =
     new SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {

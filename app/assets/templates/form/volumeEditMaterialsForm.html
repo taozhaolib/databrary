@@ -1,26 +1,36 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate>
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}">
-    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; volumeEditMaterialsForm.store(this)"></messages>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filterAssets() | orderBy:'asset.id'" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
+    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
-    <div ng-if="!asset.asset">
-      <label bo-html="'material.file' | message"></label>
-      <input type="file" name="file" file-model="asset.file">
-    </div>
+    <validator form="form" name="file" label="'material.file' | message">
+      <input type="file" name="file" file-model="asset.file" file-model-form="form" ng-if="!asset.asset.creation">
 
-    <label bo-html="'material.name' | message"></label>
-    <input type="text" name="name" ng-model="asset.name">
+      <div ng-if="asset.asset.creation">
+        <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
+        <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
+      </div>
+    </validator>
 
-    <label bo-html="'material.classification' | message"></label>
-    <select name="classification" ng-model="asset.classification" ng-options="id as 'classification.'+name | message for (id, name) in page.constants.data.classification" ng-required></select>
+    <validator form="form" name="classification" label="'material.classification' | message">
+      <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in ['SHARED','PUBLIC']" ng-required></select>
+    </validator>
 
-    <button ng-click="volumeEditMaterialsForm.save(this)" bo-html="'save' | message" class="green" ng-disabled="!form.$dirty"></button>
+    <validator form="form" name="name" label="'material.name' | message">
+      <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
+    </validator>
+
+    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
+    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="yellow" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
-    <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="orange"></button>
   </fieldset>
 
 	<fieldset class="clean">
-    <button ng-click="volumeEditMaterialsForm.add()" bo-html="'add' | message" class="yellow"></button>
+    <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="yellow" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+    <button ng-click="volumeEditMaterialsForm.add()" bo-html="'add' | message" class="orange"></button>
 	</fieldset>
+
+	<a href="/formats" target="_blank" bo-text="'format.list.link' | message"></a>
 </form>

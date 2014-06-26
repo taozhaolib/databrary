@@ -31,11 +31,11 @@ trait Access {
   /** The user granted this access level.  The "child" in the authorization relationship. */
   def identity : Party
   /** The inherited level of group access within target ("site" access when target == Root). */
-  val group : Permission.Value
+  val site : Permission.Value
   /** The direct level of access granted to target's data. */
-  val direct : Permission.Value
+  val member : Permission.Value
   /** The level of delegated access identity has over the target party itself. */
-  def permission = min(group, direct)
+  def permission = min(site, member)
   def isAdmin = permission == Permission.ADMIN
 }
 
@@ -54,7 +54,7 @@ trait Site {
   final def json =
     identity.json(this) ++
     JsonObject.flatten(
-      Some('access -> access.group),
+      Some('access -> access.site),
       if (access.isAdmin) Some('superuser -> superuser) else None
     )
 }

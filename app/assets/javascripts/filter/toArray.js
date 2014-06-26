@@ -8,8 +8,10 @@ module.filter('toArray', [
 			var output = [];
 
 			angular.forEach(input, function (item, key) {
-				item['key'] = key;
-				output.push(item);
+				if(key != '$promise' && key != '$resolved'){
+					item['key'] = key;
+					output.push(item);
+				}
 			});
 
 			if (angular.isDefined(expression)) {

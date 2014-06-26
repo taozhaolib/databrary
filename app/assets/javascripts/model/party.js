@@ -1,6 +1,6 @@
 module.factory('Party', [
-	'resourceFactory', '$route', function (resource, $route) {
-		return resource('/api/party/:id', {
+	'resourceFactory', '$route', '$http', function (resource, $route, $http) {
+		var party = resource('/api/party/:id', {
 			id: function () {
 				return ($route.current && $route.current.params.id) || undefined;
 			}
@@ -38,5 +38,16 @@ module.factory('Party', [
 				url: '/api/user/superuser/off'
 			}
 		}, 'party');
+
+		party.upload = function (party, fd) {
+			return $http.post('/api/party/' + party.id, fd, {
+				transformRequest: angular.identity,
+				headers: {
+					'Content-Type': undefined
+				},
+			});
+		};
+
+		return party;
 	}
 ]);

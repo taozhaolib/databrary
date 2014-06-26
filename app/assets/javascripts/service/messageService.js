@@ -22,10 +22,25 @@ module.factory('messageService', [
 		};
 
 		var validateFn = function (message) {
-			return angular.isObject(message) &&
+			if (angular.isObject(message) &&
 				message.id && message.type &&
 				angular.isDefined(message.body) &&
-				message.body.length > 0 ? message : false;
+				message.body.length > 0) {
+				var exists;
+
+				angular.forEach(this, function (thisMessage) {
+					if (message.body === thisMessage.body) {
+						exists = true;
+						return false;
+					}
+				});
+
+				if (!exists) {
+					return message;
+				}
+			}
+
+			return false;
 		};
 
 		var orderFn = function (a, b) {

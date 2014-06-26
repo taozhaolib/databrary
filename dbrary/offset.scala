@@ -82,10 +82,7 @@ object Offset {
 
   implicit val jsonFormat : json.Format[Offset] = new json.Format[Offset] {
     def writes(o : Offset) = json.JsNumber(o.millis)
-    def reads(j : json.JsValue) = j match {
-      case json.JsNumber(s) => json.JsSuccess(new Offset(s.toLong))
-      case _ => json.JsError("error.expected.jsnumber")
-    }
+    def reads(j : json.JsValue) = j.validate[Long].map(new Offset(_))
   }
 }
 

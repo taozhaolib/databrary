@@ -62,7 +62,8 @@ CREATE TABLE "party" (
 	"name" text NOT NULL,
 	"orcid" char(16),
 	"affiliation" text,
-	"duns" numeric(9)
+	"duns" numeric(9),
+	"url" text
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
@@ -88,53 +89,89 @@ SELECT audit.CREATE_TABLE ('account');
 ----------------------------------------------------------- permissions
 
 CREATE TYPE permission AS ENUM ('NONE',
-	'VIEW', -- list view, but no access to protected data (PUBLIC access)
-	'DOWNLOAD', -- full read access to shared data (BROWSE access)
-	'CONTRIBUTE', -- create and edit data of own/target (FULL access)
-	'ADMIN' -- perform administrative tasks on site/target such as changing permissions
+	'PUBLIC', 	-- read access to metadata and PUBLIC data
+	'SHARED',	-- read access to SHARED data
+	'READ', 	-- full read access to all data
+	'EDIT', 	-- view and edit all data
+	'ADMIN' 	-- perform administrative tasks on site/target such as changing permissions
 );
 COMMENT ON TYPE permission IS 'Levels of access parties can have to the site data.';
 
 CREATE TYPE consent AS ENUM (
-	-- 		permission required
-	'PRIVATE', 	-- CONTRIBUTE	did not consent to any sharing
-	'SHARED', 	-- DOWNLOAD	consented to share on databrary
-	'EXCERPTS', 	-- DOWNLOAD	SHARED, but consented that excerpts may be PUBLIC
-	'PUBLIC' 	-- VIEW		consented to share openly
+	'PRIVATE', 	-- did not consent to any sharing
+	'SHARED', 	-- consented to share on databrary
+	'EXCERPTS', 	-- SHARED, but consented that excerpts may be "PUBLIC"
+	'PUBLIC' 	-- consented to share openly
 );
 COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
+
+CREATE TYPE classification AS ENUM (
+	'PRIVATE',	-- private data, never shared beyond those with full access
+	'RESTRICTED', 	-- data containing HIPPA identifiers, requiring appropriate consent and authorization
+	'SHARED',	-- available with any SHARED access
+	'PUBLIC' 	-- available with any PUBLIC access
+);
+COMMENT ON TYPE classification IS 'Data (file or measure)-level settings affecting permissions.';
+
+CREATE FUNCTION "read_classification" ("p" permission, "c" consent) RETURNS classification LANGUAGE sql IMMUTABLE AS $$
+	SELECT CASE
+		WHEN p >= 'READ' THEN 'PRIVATE'::classification
+		WHEN p >= 'SHARED' THEN CASE
+			WHEN c >= 'SHARED' THEN 'RESTRICTED'::classification
+			ELSE 'SHARED'::classification
+		END
+		WHEN p >= 'PUBLIC' THEN CASE
+			WHEN c >= 'PUBLIC' THEN 'RESTRICTED'::classification
+			ELSE 'PUBLIC'::classification
+		END
+	END
+$$;
+COMMENT ON FUNCTION "read_classification" (permission, consent) IS 'Minimum classification level readable at the given permission level, in a slot with the given consent.';
+
+CREATE FUNCTION "read_permission" ("t" classification, "c" consent) RETURNS permission LANGUAGE sql IMMUTABLE AS $$
+	SELECT CASE
+		WHEN t = 'PRIVATE' THEN 'READ'::permission
+		WHEN t = 'PUBLIC' OR c >= 'PUBLIC' THEN 'PUBLIC'::permission
+		WHEN t = 'SHARED' OR c >= 'SHARED' THEN 'SHARED'::permission
+		ELSE 'READ'::permission
+	END
+$$;
+COMMENT ON FUNCTION "read_permission" (classification, consent) IS 'Necessary permission level to read a data object with the given classification, in a slot with the given consent.';
+
+CREATE FUNCTION "check_permission" ("p" permission, "t" classification, "c" consent) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$
+	SELECT p >= read_permission(t, c)
+$$;
+COMMENT ON FUNCTION "check_permission" (permission, classification, consent) IS 'Effective permission level on a data object with the given access level and classification, in a slot with the given consent.';
 
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "party" ON DELETE CASCADE,
 	"parent" integer NOT NULL References "party",
-	"inherit" permission NOT NULL DEFAULT 'NONE',
-	"direct" permission NOT NULL DEFAULT 'NONE',
-	"authorized" timestamp DEFAULT CURRENT_TIMESTAMP,
+	"site" permission NOT NULL DEFAULT 'NONE',
+	"member" permission NOT NULL DEFAULT 'NONE',
 	"expires" timestamp,
 	Primary Key ("parent", "child"),
-	Check ("child" <> "parent" AND "child" > 0)
+	Check ("child" <> "parent" AND "child" > 0 AND "parent" >= 0)
 );
 COMMENT ON TABLE "authorize" IS 'Relationships and permissions granted between parties';
 COMMENT ON COLUMN "authorize"."child" IS 'Party granted permissions';
 COMMENT ON COLUMN "authorize"."parent" IS 'Party granting permissions';
-COMMENT ON COLUMN "authorize"."inherit" IS 'Level of site/group access granted to child, inherited (but degraded) from parent';
-COMMENT ON COLUMN "authorize"."direct" IS 'Permissions that child is granted directly on parent''s data';
+COMMENT ON COLUMN "authorize"."site" IS 'Level of site access granted to child, inherited (but degraded) from parent';
+COMMENT ON COLUMN "authorize"."member" IS 'Level of permission granted to the child as a member of the parent''s group';
 
 SELECT audit.CREATE_TABLE ('authorize');
 
 CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
-		SELECT * FROM authorize WHERE authorized IS NOT NULL
+		SELECT * FROM authorize
 		UNION
-		SELECT a.child, aa.parent, LEAST(a.inherit,
-			CASE WHEN aa.child <= 0 THEN aa.inherit
-			     WHEN aa.inherit = 'ADMIN' THEN 'CONTRIBUTE'
-			     WHEN aa.inherit = 'CONTRIBUTE' THEN 'DOWNLOAD'
-			     ELSE 'NONE' END), NULL, GREATEST(a.authorized, aa.authorized), LEAST(a.expires, aa.expires)
-	          FROM aa JOIN authorize a ON aa.child = a.parent WHERE a.authorized IS NOT NULL
+		SELECT a.child, aa.parent, LEAST(a.site,
+			CASE WHEN aa.site = 'ADMIN' THEN 'EDIT'::permission
+			     WHEN aa.site = 'EDIT' THEN 'READ'::permission
+			END), NULL, LEAST(a.expires, aa.expires)
+	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa
-	UNION ALL SELECT id, id, enum_last(NULL::permission), enum_last(NULL::permission), NULL, NULL FROM party WHERE id >= 0
-	UNION ALL SELECT id, -1, enum_last(NULL::permission), NULL, NULL, NULL FROM party WHERE id >= 0;
+	UNION ALL SELECT id, id, 'ADMIN', 'ADMIN', NULL FROM party WHERE id >= 0
+	UNION ALL SELECT id, -1, 'ADMIN', 'NONE', NULL FROM party WHERE id >= 0;
 COMMENT ON MATERIALIZED VIEW "authorize_inherit" IS 'Transitive inheritance closure of authorize.';
 CREATE INDEX ON "authorize_inherit" ("parent", "child");
 
@@ -146,13 +183,13 @@ CREATE TRIGGER "authorize_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE 
 CREATE TRIGGER "party_created" AFTER INSERT ON "party" FOR EACH STATEMENT EXECUTE PROCEDURE "authorize_refresh" ();
 
 CREATE VIEW "authorize_valid" AS
-	SELECT * FROM authorize WHERE authorized <= CURRENT_TIMESTAMP AND (expires IS NULL OR expires > CURRENT_TIMESTAMP);
+	SELECT * FROM authorize WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP;
 COMMENT ON VIEW "authorize_valid" IS 'Active records from "authorize"';
 
-CREATE VIEW "authorize_view" ("child", "parent", "inherit", "direct") AS
-	SELECT child, parent, MAX(inherit), MAX(direct)
+CREATE VIEW "authorize_view" ("child", "parent", "site", "member") AS
+	SELECT child, parent, MAX(site), MAX(member)
 	  FROM authorize_inherit
-	 WHERE (authorized IS NULL OR authorized <= CURRENT_TIMESTAMP) AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)
+	 WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP
 	 GROUP BY parent, child;
 COMMENT ON VIEW "authorize_view" IS 'Expanded list of effective, active authorizations.';
 
@@ -188,10 +225,9 @@ CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamp LANGUAGE 
 CREATE TABLE "volume_access" (
 	"volume" integer NOT NULL References "volume",
 	"party" integer NOT NULL References "party",
-	"access" permission NOT NULL DEFAULT 'NONE',
-	"inherit" permission NOT NULL DEFAULT 'NONE' Check ("inherit" < 'ADMIN'),
-	"funding" text,
-	Check ("access" >= "inherit"),
+	"individual" permission NOT NULL DEFAULT 'NONE',
+	"children" permission NOT NULL DEFAULT 'NONE',
+	Check ("individual" >= "children"),
 	Primary Key ("volume", "party")
 );
 COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
@@ -199,34 +235,45 @@ COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.
 SELECT audit.CREATE_TABLE ('volume_access');
 
 CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
-	WITH v AS (
-		SELECT party, access, inherit
-		  FROM volume_access 
-		 WHERE volume = $1
-	)
 	SELECT access FROM (
-		SELECT access 
-		  FROM v
-		 WHERE party = $2
+		SELECT individual AS access
+		  FROM volume_access
+		 WHERE volume = $1 AND party = $2
 	UNION ALL
-		SELECT MAX(GREATEST(LEAST(v.access, a.direct), LEAST(v.inherit, a.inherit)))
-		  FROM v JOIN authorize_view a ON party = parent
-		 WHERE child = $2
+		SELECT MAX(LEAST(children, CASE WHEN children <= 'SHARED' THEN site ELSE member END)) AS access
+		  FROM volume_access JOIN authorize_view ON party = parent
+		 WHERE volume = $1 AND child = $2
 	) a LIMIT 1
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
 CREATE TABLE "volume_citation" (
-	"volume" integer NOT NULL References "volume",
+	"volume" integer NOT NULL Unique References "volume",
 	"head" text NOT NULL,
 	"url" text,
-	"body" text,
-	"study" boolean NOT NULL Default false
+	"authors" text[],
+	"year" smallint Check ("year" BETWEEN 1900 AND 2900)
 );
-CREATE INDEX ON "volume_citation" ("volume");
-CREATE UNIQUE INDEX ON "volume_citation" ("volume") WHERE "study";
-COMMENT ON TABLE "volume_citation" IS 'Quick and dirty citation list.  Not intended to be permanent.  No PK: only updated in bulk on volume.';
-COMMENT ON COLUMN "volume_citation"."study" IS 'Primary external citation associated with each volume, in the case of studies, supplementals, excerpts, or other volumes directly attached to publications.';
+COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
+
+SELECT audit.CREATE_TABLE ('volume_citation');
+
+CREATE TABLE "funder" (
+	"fundref_id" bigint NOT NULL Primary Key,
+	"name" text NOT NULL,
+	"party" integer References "party"
+);
+COMMENT ON TABLE "funder" IS 'Sources of funding, basically a mirror of fundref data, with local party associations (primarily for transition).';
+COMMENT ON COLUMN "funder"."fundref_id" IS 'Identifiers from fundref.org, under the http://dx.doi.org/10.13039/ namespace. Specifications suggest these may not be numeric, but they seem to be.';
+
+CREATE TABLE "volume_funding" (
+	"volume" integer NOT NULL References "volume",
+	"funder" bigint NOT NULL References "funder",
+	"awards" text[] NOT NULL Default '{}',
+	Primary Key ("volume", "funder")
+);
+COMMENT ON TABLE "volume_funding" IS 'Funding sources associated with a volume, based on fundref.org.';
+COMMENT ON COLUMN "volume_funding"."awards" IS 'Individual grant identifiers associated with this funder.';
 
 ----------------------------------------------------------- time intervals
 
@@ -324,34 +371,6 @@ SELECT audit.CREATE_TABLE ('volume_inclusion');
 
 ----------------------------------------------------------- assets
 
-CREATE TYPE classification AS ENUM (
-	'IDENTIFIED', 	-- data containing HIPPA identifiers, requiring appropriate consent and DOWNLOAD permission
-	'EXCERPT', 	-- IDENTIFIED data that has been selected as a releasable excerpt
-	'DEIDENTIFIED', -- "raw" data which has been de-identified, requiring only DOWNLOAD permission
-	'ANALYSIS', 	-- un/de-identified derived, generated, summarized, or aggregated data measures
-	'PRODUCT',	-- research products such as results, summaries, commentaries, discussions, manuscripts, or articles
-	'MATERIAL'	-- materials not derived from data, such as proposals, procedures, stimuli, manuals, (blank) forms, or documentation
-);
-
-CREATE FUNCTION "data_permission" ("p" permission, "c" consent, "t" classification, "a" permission, "excerpt" boolean = false, "top" boolean = false) RETURNS permission LANGUAGE sql IMMUTABLE AS $$
-	SELECT CASE 
-		WHEN p > 'DOWNLOAD' OR p < 'VIEW' OR p IS NULL
-			THEN p
-		WHEN t > 'DEIDENTIFIED' OR p = 'DOWNLOAD' AND t >= CASE
-			WHEN c >= 'PUBLIC'
-				OR c >= 'SHARED' AND a >= 'DOWNLOAD'
-				OR c >= 'EXCERPTS' AND excerpt
-				THEN 'IDENTIFIED'
-			WHEN c IS NULL AND top
-				THEN 'EXCERPT'
-			ELSE 	'DEIDENTIFIED'
-		END::classification
-			THEN 'DOWNLOAD'
-		ELSE	'VIEW'
-	END
-$$;
-COMMENT ON FUNCTION "data_permission" (permission, consent, classification, permission, boolean, boolean) IS 'Effective permission level on a data object in a volume with the given permission, in a slot with the given consent, having the given classification, when the user has the given access permission level, when it''s marked as an excerpt, when it''s in a top container.';
-
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL Unique,
@@ -401,9 +420,6 @@ ALTER TABLE audit."asset" ALTER "sha1" DROP NOT NULL;
 
 CREATE INDEX "asset_creation_idx" ON audit."asset" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."asset_creation_idx" IS 'Allow efficient retrieval of asset creation information, specifically date.';
--- TODO unused remove:
-CREATE FUNCTION "asset_creation" ("asset" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
-	$$ SELECT max("audit_time") FROM audit."asset" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
 CREATE TABLE "slot_asset" (
 	"asset" integer NOT NULL Primary Key References "asset",
@@ -416,6 +432,7 @@ COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case
 SELECT audit.CREATE_TABLE ('slot_asset');
 
 CREATE TABLE "asset_revision" (
+	-- consider uniques on these
 	"prev" integer NOT NULL References "asset",
 	"next" integer NOT NULL References "asset",
 	Primary Key ("next", "prev")
@@ -444,10 +461,11 @@ END; $$;
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
+	"classification" classification NOT NULL Check ("classification" >= 'RESTRICTED'), -- should be >= asset.classification
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
-COMMENT ON TABLE "excerpt" IS 'Slot asset segments that have been selected for possible public release and top-level display.';
+COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
 COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
 
 SELECT audit.CREATE_TABLE ('excerpt');
@@ -569,20 +587,20 @@ CREATE TABLE "metric" (
 	"options" text[] -- (suggested) options for text enumerations, not enforced
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'DEIDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'IDENTIFIED', 'date');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'DEIDENTIFIED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'DEIDENTIFIED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-510, 'language', 'DEIDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-580, 'gender', 'DEIDENTIFIED', 'text', ARRAY['Female','Male']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'IDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'DEIDENTIFIED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'DEIDENTIFIED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'MATERIAL', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'MATERIAL', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'MATERIAL', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'DEIDENTIFIED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'MATERIAL', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'SHARED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'RESTRICTED', 'date');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'SHARED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-510, 'language', 'SHARED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-580, 'gender', 'SHARED', 'text', ARRAY['Female','Male']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'RESTRICTED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'SHARED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'SHARED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'SHARED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
+INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'PUBLIC', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
@@ -802,28 +820,28 @@ INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
-INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (1, 0, 'ADMIN', 'ADMIN', '2013-3-1');
-INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (2, 0, 'ADMIN', 'ADMIN', '2013-8-1');
-INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (3, 0, 'CONTRIBUTE', 'NONE', '2013-4-1');
-INSERT INTO authorize (child, parent, inherit, direct, authorized) VALUES (4, 0, 'CONTRIBUTE', 'NONE', '2013-9-1');
+INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
+INSERT INTO authorize (child, parent, site, member) VALUES (2, 0, 'ADMIN', 'ADMIN');
+INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'EDIT', 'NONE');
+INSERT INTO authorize (child, parent, site, member) VALUES (4, 0, 'EDIT', 'NONE');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
 The Databrary project is dedicated to transforming the culture of developmental science by building a community of researchers committed to open video data sharing, training a new generation of developmental scientists and empowering them with an unprecedented set of tools for discovery, and raising the profile of behavioral science by bolstering interest in and support for scientific research among the general public.');
 SELECT setval('volume_id_seq', 1);
 
-INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, -1, 'DOWNLOAD', 'DOWNLOAD');
-INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO volume_access (volume, party, access, inherit) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
 
-INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'MATERIAL', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
+INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
 INSERT INTO slot_asset VALUES (1, '[0,40)'::segment, 1);
 SELECT setval('asset_id_seq', 1);
 SELECT setval('container_id_seq', 2);
 
 -- special volumes (SERIAL starts at 1), done after container triggers:
 INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
-INSERT INTO "volume_access" VALUES (0, -1, 'DOWNLOAD', 'DOWNLOAD');
+INSERT INTO "volume_access" VALUES (0, -1, 'PUBLIC', 'PUBLIC');
 
 
 ----------------------------------------------------------- ingest logs

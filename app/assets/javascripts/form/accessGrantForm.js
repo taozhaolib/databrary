@@ -2,25 +2,24 @@ module.directive('accessGrantForm', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
 			var form = $scope.accessGrantForm;
-			form.funding = angular.isDefined($attrs.funding);
-
-			form.id = $attrs.volume || undefined;
+			form.volume = page.$parse($attrs.volume)($scope) || undefined;
 			form.access = page.$parse($attrs.access)($scope) || undefined;
 
 			form.data = {
-				access: form.access.access || 0,
-				inherit: form.access.inherit || 0,
+				individual: form.access.individual || 0,
+				children: form.access.children || 0,
 			};
 
-			if (form.access.funding) {
-				form.data.funding = form.access.funding;
-			}
+			form.data.extend = form.data.children !== 0;
+
+			var backup = $.extend(true, {}, form.data);
+
 			//
 
-			form.extend = function () {
-				form.data.inherit = form.data.access === form.data.inherit ? 0 : Math.min(form.data.access, page.permission.CONTRIBUTE);
-
-				form.save();
+			form.canChange = function () {
+				return form.access.individual != 5 || (form.access.party.id != page.auth.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
+					return access.individual == 5;
+				}).length >= 2);
 			};
 
 			//
@@ -29,25 +28,30 @@ module.directive('accessGrantForm', [
 			form.successFn = undefined;
 			form.errorFn = undefined;
 
-			form.save = function () {
-				form.volumeAccess = new page.models.VolumeAccess(form.data);
-
-				if (form.data.inherit > form.data.access)
-					form.data.inherit = form.data.access;
+			form.save = function (scroll) {
+				form.data.children = form.data.extend ? form.data.individual : 0;
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
 
-				form.volumeAccess.$save({
-					id: form.id,
+				page.models.VolumeAccess.save({
+					id: form.volume.id,
 					partyId: form.access.party.id,
-				}, function () {
+				}, form.data, function () {
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
 
+					form.messages.add({
+						body: page.constants.message('access.grant.save.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					backup = $.extend(true, {}, form.data);
 					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.grant.save.error'),
@@ -57,7 +61,27 @@ module.directive('accessGrantForm', [
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
 					}
+
+					page.display.scrollTo(form.$element);
 				});
+			};
+
+			form.resetFn = undefined;
+
+			form.reset = function () {
+				if (angular.isFunction(form.resetFn)) {
+					form.resetFn(form);
+				}
+
+				form.validator.clearServer();
+
+				form.data = $.extend(true, {}, backup);
+
+				if (form.access.new) {
+					form.remove();
+				} else {
+					form.$setPristine();
+				}
 			};
 
 			//
@@ -67,66 +91,38 @@ module.directive('accessGrantForm', [
 			form.removeErrorFn = undefined;
 
 			form.remove = function () {
-				if ((form.funding && !form.data.access) || (!form.funding && !form.data.funding)) {
-					form.volumeAccess = new page.models.VolumeAccess();
-
-					if (angular.isFunction(form.removeFn)) {
-						form.removeFn(form);
-					}
-
-					form.volumeAccess.$delete({
-						id: form.id,
-						partyId: form.access.party.id,
-					}, function () {
-						if (angular.isFunction(form.removeSuccessFn)) {
-							form.removeSuccessFn(form, arguments, form.access);
-						}
-
-						form.$setPristine();
-					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('access.grant.remove.error'),
-							report: res,
-						});
-
-						if (angular.isFunction(form.removeErrorFn)) {
-							form.removeErrorFn(form, arguments, form.access);
-						}
-					});
-				} else {
-					if (form.funding) {
-						delete form.data.funding;
-					} else {
-						delete form.data.access;
-						delete form.data.inherit;
-					}
-
-					form.volumeAccess = new page.models.VolumeAccess(form.data);
-
-					if (angular.isFunction(form.removeFn)) {
-						form.removeFn(form);
-					}
-
-					form.volumeAccess.$save({
-						id: form.id,
-						partyId: form.access.party.id,
-					}, function () {
-						if (angular.isFunction(form.successFn)) {
-							form.removeSuccessFn(form, arguments, form.access);
-						}
-
-						form.$setPristine();
-					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('access.grant.save.error'),
-							report: res,
-						});
-
-						if (angular.isFunction(form.errorFn)) {
-							form.removeErrorFn(form, arguments, form.access);
-						}
-					});
+				if (angular.isFunction(form.removeFn)) {
+					form.removeFn(form);
 				}
+
+				page.models.VolumeAccess.delete({
+					id: form.volume.id,
+					partyId: form.access.party.id,
+				}, {}, function () {
+					if (angular.isFunction(form.removeSuccessFn)) {
+						form.removeSuccessFn(form, arguments, form.access);
+					}
+
+					form.messages.add({
+						body: page.constants.message('access.grant.remove.success'),
+						type: 'green',
+						countdown: 3000,
+					});
+
+					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
+				}, function (res) {
+					form.messages.addError({
+						body: page.constants.message('access.grant.remove.error'),
+						report: res,
+					});
+
+					if (angular.isFunction(form.removeErrorFn)) {
+						form.removeErrorFn(form, arguments, form.access);
+					}
+
+					page.display.scrollTo(form.$element);
+				});
 			};
 
 			//

@@ -8,17 +8,6 @@ module.directive('panel', [
 
 			//
 
-			$scope.isCurrent = function () {
-				var $w = $(window),
-					$m = $('#main');
-
-				var eTop = $element.offset().top,
-					eBottom = eTop + $element.outerHeight(),
-					pTop = $w.scrollTop() + parseFloat($m.css('margin-top'));
-
-				return eTop - pTop <= 0 && eBottom - pTop >= 0;
-			};
-
 			$scope.getPanelClasses = function () {
 				var classes = {};
 

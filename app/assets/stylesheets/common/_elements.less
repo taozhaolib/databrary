@@ -331,15 +331,41 @@ ul {
 	> li {
 		&:before {
 			content: "";
-			border-color: transparent;
-			border-style: solid;
-			border-left-color: @blue;
-			border-width: @b6;
-			width: 0;
-			height: 0;
-			top: @b3;
+			background-color: @blue;
+			.border-radius(@b1);
+			.size(@b4);
+			top: @b4 + @b6;
 			left: -@b6;
 			margin-left: -@b3;
+		}
+	}
+}
+
+ol, ul {
+	&.comma {
+		.margin-bottom(@f1);
+		.padding-left(0);
+
+		> li {
+			display: inline;
+			.margin(0);
+			.padding(0);
+
+			&:before {
+				position: inherit;
+				float: none;
+				display: inline;
+				.margin(0);
+				.padding(0);
+				content: ", ";
+				background-color: inherit;
+			}
+
+			&:first-child {
+				&:before {
+					content: "";
+				}
+			}
 		}
 	}
 }

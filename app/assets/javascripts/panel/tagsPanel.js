@@ -34,7 +34,7 @@ module.controller('TagsPanel', [
 					$scope.target.segment = ',';
 					$scope.enabled = true;
 
-					$scope.enabled = $scope.tags.length > 0 || $scope.auth.isLoggedIn();
+					$scope.enabled = $scope.tags.length > 0 || page.auth.isLoggedIn();
 					break;
 
 				case 'PartyView':

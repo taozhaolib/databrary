@@ -6,6 +6,7 @@ import play.api.data.validation._
 import macros._
 
 object Mappings {
+  def option[A](map : Mapping[A]) : OptionMapping[A] = OptionMapping[A](map)
   def some[A](map : Mapping[A], default : A = "") : Mapping[Option[A]] =
     map.transform[Option[A]](Some(_), _.getOrElse(default))
   def enum(enum : Enumeration, maxId : Option[Int] = None, minId : Int = 0) =

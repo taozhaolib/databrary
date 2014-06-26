@@ -27,7 +27,10 @@ module.directive('commentReplyForm', [
 
 				form.comment = new page.models.Comment();
 
-				form.comment.$save(form.data, function () {
+				form.comment.$save(form.data,
+					function () {
+					form.validator.server({});
+
 					form.messages.add({
 						body: page.constants.message('comments.add.success'),
 						type: 'green',
@@ -40,10 +43,7 @@ module.directive('commentReplyForm', [
 
 					form.cancel();
 				}, function (res) {
-					form.messages.addError({
-						body: page.constants.message('comments.add.error'),
-						report: res,
-					});
+					form.validator.server(res);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -82,6 +82,15 @@ module.directive('commentReplyForm', [
 			form.ready = function () {
 				return form.$dirty && form.$valid && form.data.text;
 			};
+
+			//
+
+			form.validator.client({
+				text: {
+					tips: page.constants.message('comments.text.help'),
+					errors: page.constants.message('comments.text.error'),
+				}
+			}, true);
 
 			//
 

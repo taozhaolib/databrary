@@ -3,9 +3,11 @@ module.directive('volumeEditAccessForm', [
 		var link = function ($scope) {
 			var form = $scope.volumeEditAccessForm;
 
-			form.data = {};
+			form.data = [];
+			form.global = angular.copy(page.constants.data.accessGlobal[0]);
+
 			form.volume = undefined;
-			var backup = {};
+			var backup = [];
 
 			form.saveFn = undefined;
 			form.successFn = undefined;
@@ -16,57 +18,133 @@ module.directive('volumeEditAccessForm', [
 			//
 
 			form.init = function (data, volume) {
-				form.data = data;
-				form.volume = form.volume || volume;
-				backup = $.extend(true, {}, data);
+				if (form.data.length === 0) {
+					angular.forEach(data, function (access) {
+						var i = page.constants.data.accessGlobal.parties.indexOf(access.party.id);
+						if (i >= 0) {
+							form.global[i] = page.constants.data.permission[access.children || 0];
+						} else {
+							form.data.push(access);
+						}
+					});
+					form.calcGlobalVal();
+
+					form.volume = form.volume || volume;
+					angular.copy(form.global, backup);
+				}
+			};
+
+			form.calcGlobalVal = function () {
+				form.globalVal = undefined;
+
+				angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
+					if (preset.every(function (x, i) { return form.global[i] === x; })) {
+						form.globalVal = i;
+						return false;
+					}
+				});
+			};
+
+			form.changeAccessGlobal = function () {
+				angular.copy(page.constants.data.accessGlobal[form.globalVal], form.global);
+				form.accessGlobalDirty = true;
+				form.$setDirty();
 			};
 
 			//
 
-			form.save = function () {
-				if (angular.isFunction(form.saveFn)) {
-					form.saveFn(form);
+			var subforms = [];
+
+			$scope.$watch(function () {
+				var clean = true;
+
+				angular.forEach(subforms, function (subform) {
+					if (subform.$dirty) {
+						clean = false;
+						return false;
+					}
+				});
+
+				if (clean) {
+					form.$setPristine();
+				}
+			});
+
+			form.saveAll = function () {
+				angular.forEach(subforms, function (subform) {
+					if (subform.$dirty) {
+						subform.save(false);
+					}
+				});
+			};
+
+			form.resetAll = function () {
+				angular.forEach(subforms, function (subform, id) {
+					if (subform.$dirty) {
+						subform.reset();
+					}
+				});
+			};
+
+			//
+
+			form.saveGlobalFn = undefined;
+			form.errorGlobalFn = undefined;
+			form.successGlobalFn = undefined;
+
+			form.saveGlobal = function () {
+				if (angular.isFunction(form.saveGlobalFn)) {
+					form.saveGlobalFn(form);
 				}
 
-				page.models.VolumeAccess.save(form.data,
-					function (res) {
-						form.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.access.success'),
-						});
+				page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
+					var p = page.constants.data.permissionName[form.global[i]];
+					page.models.VolumeAccess.save({
+						id: form.volume.id,
+						partyId: party
+					}, {
+						individual: p,
+						children: p,
+					})
+				})).then(function (res) {
+					if (angular.isFunction(form.successGlobalFn)) {
+						form.successGlobalFn(form, arguments);
+					}
 
-						if (angular.isFunction(form.successFn)) {
-							form.successFn(form, res);
-						}
-
-						form.$setPristine();
-						page.models.Volume.$cache.removeAll();
-					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.access.error'),
-							report: res
-						});
-
-						if (angular.isFunction(form.errorFn)) {
-							form.errorFn(form, res);
-						}
+					form.messages.add({
+						body: page.constants.message('access.global.save.success'),
+						type: 'green',
+						countdown: 3000,
 					});
+
+					angular.copy(form.global, backup);
+					form.accessGlobalDirty = false;
+					form.$setPristine();
+					page.models.Volume.$cache.removeAll();
+				}, function (res) {
+					form.messages.addError({
+						body: page.constants.message('access.global.save.error'),
+						report: res,
+					});
+					page.display.scrollTo(form.$element);
+
+					if (angular.isFunction(form.errorGlobalFn)) {
+						form.errorGlobalFn(form, arguments);
+					}
+				});
 			};
 
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
+			form.resetGlobalFn = undefined;
+
+			form.resetGlobal = function () {
+				if (angular.isFunction(form.resetGlobalFn)) {
+					form.resetGlobalFn(form);
 				}
 
-				form.data = $.extend(true, {}, backup);
+				angular.copy(backup, form.global);
+				form.calcGlobalVal();
+				form.accessGlobalDirty = false;
 				form.$setPristine();
-			};
-
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
 			};
 
 			//
@@ -75,26 +153,25 @@ module.directive('volumeEditAccessForm', [
 
 			//
 
-			$scope.$on('accessGrantForm-init', function (event, searchForm) {
-				searchForm.successFn = function (searchForm) {
+			$scope.$on('accessGrantForm-init', function (event, grantForm) {
+				subforms.push(grantForm);
+
+				grantForm.successFn = function (grantForm) {
 					form.messages.add({
 						body: page.constants.message('access.grant.access.save.success'),
 						type: 'green',
 						countdown: 3000,
 					});
-
-					form.$setPristine();
 				};
 
-				searchForm.removeSuccessFn = function (searchForm, args, access) {
+				grantForm.removeSuccessFn = function (grantForm, args, access) {
 					form.messages.add({
 						body: page.constants.message('access.grant.access.remove.success'),
 						type: 'green',
 						countdown: 3000,
 					});
 
-					form.data.access.splice(form.data.access.indexOf(access), 1);
-					form.$setPristine();
+					form.data.splice(form.data.indexOf(access), 1);
 				};
 
 				event.stopPropagation();
@@ -102,12 +179,31 @@ module.directive('volumeEditAccessForm', [
 
 			$scope.$on('accessSearchForm-init', function (event, searchForm) {
 				searchForm.selectFn = function (found) {
-					form.data.access.push({
-						party: found,
-						access: 0,
-						inherit: 0,
+					var present = false;
+
+					angular.forEach(form.data, function (access, i) {
+						if (access.party.id === found.id) {
+							var el = form.data.splice(i, 1)[0];
+							form.data.push(el);
+							present = true;
+							return false;
+						}
 					});
-					form.$setPristine();
+
+					if (!present) {
+						form.data.push({
+							new: true,
+							party: found,
+							individual: 0,
+							children: 0,
+						});
+					} else {
+						searchForm.messages.add({
+							type: 'yellow',
+							countdown: 3000,
+							body: page.constants.message('access.search.repeat', found.name),
+						});
+					}
 				};
 
 				event.stopPropagation();

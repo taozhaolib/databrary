@@ -23,50 +23,37 @@ module.directive('volumeEditFundingForm', [
 
 			//
 
-			form.save = function () {
-				if (angular.isFunction(form.saveFn)) {
-					form.saveFn(form);
+			var subforms = [];
+
+			$scope.$watch(function () {
+				var clean = true;
+
+				angular.forEach(subforms, function (subform) {
+					if (subform.$dirty) {
+						clean = false;
+						return false;
+					}
+				});
+
+				if (clean) {
+					form.$setPristine();
 				}
+			});
 
-				page.models.VolumeAccess.save(form.data,
-					function (res) {
-						form.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.funding.success'),
-						});
-
-						if (angular.isFunction(form.successFn)) {
-							form.successFn(form, res);
-						}
-
-						form.$setPristine();
-						page.models.Volume.$cache.removeAll();
-					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.funding.error'),
-							report: res
-						});
-
-						if (angular.isFunction(form.errorFn)) {
-							form.errorFn(form, res);
-						}
-					});
+			form.saveAll = function () {
+				angular.forEach(subforms, function (subform) {
+					if (subform.$dirty) {
+						subform.save(false);
+					}
+				});
 			};
 
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
-				}
-
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
-			};
-
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
+			form.resetAll = function () {
+				angular.forEach(subforms, function (subform, id) {
+					if (subform.$dirty) {
+						subform.reset();
+					}
+				});
 			};
 
 			//
@@ -75,40 +62,48 @@ module.directive('volumeEditFundingForm', [
 
 			//
 
-			$scope.$on('accessGrantForm-init', function (event, searchForm) {
-				searchForm.successFn = function (searchForm) {
-					form.messages.add({
-						body: page.constants.message('access.grant.funding.save.success'),
-						type: 'green',
-						countdown: 3000,
-					});
+			$scope.$on('fundingGrantForm-init', function (event, grantForm) {
+				grantForm.volume = form.volume;
+				if (grantForm.data.new) {
+					grantForm.$setDirty();
+				}
+				subforms.push(grantForm);
 
-					form.$setPristine();
-				};
-
-				searchForm.removeSuccessFn = function (searchForm, args, access) {
-					form.messages.add({
-						body: page.constants.message('access.grant.funding.remove.success'),
-						type: 'green',
-						countdown: 3000,
-					});
-
-					form.data.access.splice(form.data.access.indexOf(access), 1);
-					form.$setPristine();
+				grantForm.removeSuccessFn = function (grantForm, args, funder) {
+					form.data.splice(form.data.indexOf(funder), 1);
 				};
 
 				event.stopPropagation();
 			});
 
-			$scope.$on('accessSearchForm-init', function (event, searchForm) {
+			$scope.$on('fundingSearchForm-init', function (event, searchForm) {
+				searchForm.volume = form.volume;
+
 				searchForm.selectFn = function (found) {
-					form.data.access.push({
-						party: found,
-						funding: '',
-						access: 0,
-						inherit: 0,
+					var present = false;
+
+					angular.forEach(form.data, function (funder, i) {
+						if (funder.funder.id === found.id) {
+							var el = form.data.splice(i, 1)[0];
+							form.data.push(el);
+							present = true;
+							return false;
+						}
 					});
-					form.$setPristine();
+
+					if (!present) {
+						form.data.push({
+							funder: found,
+							awards: [],
+							new: true,
+						});
+					} else {
+						searchForm.messages.add({
+							type: 'yellow',
+							countdown: 3000,
+							body: page.constants.message('funding.search.repeat', found.name),
+						});
+					}
 				};
 
 				event.stopPropagation();

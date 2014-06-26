@@ -13,23 +13,45 @@ module.directive('form', [
 			if (angular.isDefined($attrs.novalidate)) {
 				form.validators = {};
 				form.validator = {
-					server: function (data, replace) {
-						var formWide;
+					server: function (res, replace) {
+						if ($.isEmptyObject(res)) {
+							res.data = {};
+						} else if (!angular.isObject(res.data)) {
+							form.messages.addError({
+								body: page.constants.message('error.generic'),
+								report: res,
+							});
+						}
 
-						for (var name in data) {
-							if (data.hasOwnProperty(name) && form.validators[name]) {
-								form.validators[name].server(data[name], replace);
+						for (var name in form.validators) {
+							if (form.validators.hasOwnProperty(name)) {
+								form.validators[name].server(res.data[name] || {}, replace);
 							} else if (form.messages) {
 								form.messages.add({
 									type: 'red',
 									closeable: true,
-									body: angular.isArray(data[name]) ? data[name].join(', ') : data[name],
+									body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
 								});
-								formWide = true;
 							}
 						}
 
-						return formWide;
+						for (var name in res.data) {
+							if (res.data.hasOwnProperty(name) && form.validators[name]) {
+								form.validators[name].server(res.data[name], replace);
+							} else if (form.messages) {
+								form.messages.add({
+									type: 'red',
+									closeable: true,
+									body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+								});
+							}
+						}
+					},
+
+					clearServer: function () {
+						angular.forEach(form.validators, function (validator) {
+							validator.server({}, true);
+						});
 					},
 
 					client: function (data, replace) {

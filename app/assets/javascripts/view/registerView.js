@@ -120,14 +120,14 @@ module.controller('RegisterView', [
 
 				$scope.registerForm.validator.client({
 					fieldName: {
-						tips: page.constants.message('wizard.register_form.name.help'),
+						tips: page.constants.message('register.name.help'),
 					},
 					fieldEmail: {
-						errors: page.constants.message('wizard.register_form.email.error'),
-						tips: page.constants.message('wizard.register_form.email.help'),
+						errors: page.constants.message('register.email.error'),
+						tips: page.constants.message('register.email.help'),
 					},
 					fieldAffiliation: {
-						tips: page.constants.message('wizard.register_form.affiliation.help'),
+						tips: page.constants.message('register.affiliation.help'),
 					},
 				}, true);
 			},
@@ -200,6 +200,14 @@ module.controller('RegisterView', [
 
 				//
 
+				$scope.infoForm.validator.client({
+					info: {
+						tips: page.constants.message('auth.request.info.help'),
+					},
+				}, true);
+
+				//
+
 				$scope.authApplyForm.successFn = function (form) {
 					$scope.authApplyForm.sent = true;
 					updateUserAuth();
@@ -265,7 +273,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password || !!$scope.registerForm.ready();
+				step.complete = !user.anon || user.password || !!$scope.registerForm.ready() ? true : undefined;
 			},
 
 			'register_agreement': function (step, activate) {
@@ -275,7 +283,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password || !!$scope.registerForm.sent;
+				step.complete = !user.anon || user.password || !!$scope.registerForm.sent ? true : undefined;
 			},
 
 			'register_email': function (step, activate) {
@@ -285,7 +293,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon || user.password;
+				step.complete = !user.anon || user.password ? true : undefined;
 			},
 
 			'register_password': function (step, activate) {
@@ -295,7 +303,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon;
+				step.complete = !user.anon ? true : undefined;
 			},
 
 			'register_agent': function (step, activate) {
@@ -305,7 +313,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party);
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party) ? true : undefined;
 			},
 
 			'register_request': function (step, activate) {
@@ -315,7 +323,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent);
+				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent) ? true : undefined;
 
 				//
 
@@ -323,13 +331,12 @@ module.controller('RegisterView', [
 
 				var perm = [];
 
-				step.principal = $scope.authSearchForm.principal;
+				step.authSearchForm = $scope.authSearchForm;
 
 				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other) {
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,
-						inherit: step.principal ? page.permission.CONTRIBUTE : page.permission.DOWNLOAD
 					};
 				}
 			},
@@ -341,7 +348,7 @@ module.controller('RegisterView', [
 					$scope.wizard.activateStep(step);
 				}
 
-				step.complete = user.auth;
+				step.complete = user.auth ? true : undefined;
 			}
 		};
 	}

@@ -109,7 +109,7 @@ module.controller('CommentsPanel', [
 			}
 
 			if (!isTop) {
-				meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.slotThumb(comment.container) + '"> ' + (comment.container.name || '') + '</a>';
+				meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
 			}
 
 			return meta;

@@ -20,12 +20,12 @@
 
           <div class="info">
             <div class="inner_feature" bo-html="'featured' | message"></div>
-            <h1><a bo-href="page.router.volume({id: volume.id})" ng-bind-html="volume.name"></a></h1>
+            <h1><a bo-href="page.router.volume({id: volume.id})" bo-text="volume.name"></a></h1>
 
             <div class="investigators">
               <ul class="inline-block flat">
-                <li ng-repeat="access in volume.access | filter:{access: page.permission.ADMIN}">
-                  <a bo-href="page.router.party(access.party)" ng-bind-html="access.party.name"></a></li>
+                <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
+                  <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
               </ul>
             </div>
           </div>
@@ -41,17 +41,9 @@
           </div>
         </div>
 
-        <div class="party_row row" ng-repeat="row in rows">
-          <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-3" ng-repeat="party in row" bindonce>
-            <article class="home_party">
-              <img bo-src="page.router.partyAvatar(party, 300)" ng-click="page.$location.url(page.router.party(party))">
-
-              <div class="info">
-                <h1><a bo-href="page.router.party(party)" ng-bind-html="party.name"></a></h1>
-
-                <div class="affiliation" bo-if="party.affiliation" ng-bind-html="party.affiliation"></div>
-              </div>
-            </article>
+        <div class="party_row row">
+          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'lastName'" bindonce>
+            <portrait class="portrait_vertical portrait_small"></portrait>
           </div>
         </div>
       </div>

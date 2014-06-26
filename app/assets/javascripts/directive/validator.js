@@ -1,82 +1,126 @@
 module.directive('validator', [
 	'pageService', function (page) {
-		var controller = function ($scope, $element, $attrs) {
-			if (!$attrs.form || !$attrs.name || !$scope[$attrs.form] || !$scope[$attrs.form][$attrs.name]) {
-				return;
-			}
+		var pre = function ($scope, $element, $attrs) {
+			$scope.validator = {};
+			$scope.validator.label = $attrs.label ? page.$parse($attrs.label)($scope) : undefined;
+			$scope.validator.prefix = $scope.validator.label ? '<strong>' + $scope.validator.label + ':</strong> ' : '';
+		};
 
-			var that = this;
+		var post = function ($scope, $element, $attrs) {
+			var validator = $scope.validator;
 
-			this.form = $scope[$attrs.form];
-			this.name = $scope[$attrs.form][$attrs.name];
-			// TODO: won't work with repeaters
-			this.$element = this.form.$element.find('[name="' + $attrs.name + '"]').first();
-			this.changed = false;
-			this.focus = false;
-			this.serverErrors = [];
-			this.clientErrors = [];
-			this.clientTips = [];
+			validator.form = $scope[$attrs.form];
+			validator.name = $scope[$attrs.form][$attrs.name];
+			validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
+			validator.changed = false;
+			validator.focus = false;
+			validator.serverErrors = [];
+			validator.clientErrors = [];
+			validator.clientTips = [];
 
-			this.$element.focus(function () {
+			var on = function () {
 				$scope.$apply(function () {
-					that.focus = true;
+					validator.focus = true;
 				});
-			}).blur(function () {
+			};
+
+			var off = function () {
 				$scope.$apply(function () {
-					that.focus = false;
+					if (!validator.$element.is(":focus")) {
+						validator.focus = false;
+					}
 				});
-			});
+			};
+
+			validator.$element
+				.focus(on)
+				.blur(off)
+				.mouseenter(on)
+				.mouseleave(off);
+
+			validator.iconClasses = function () {
+				var cls = [];
+
+				if (!validator.name) {
+					return cls;
+				}
+
+				if (validator.name.$dirty) {
+					cls.push('show');
+				}
+
+				if (validator.name.$valid) {
+					cls.push('valid');
+				} else {
+					cls.push('invalid');
+				}
+
+				return cls;
+			};
 
 			//
 
-			this.show = function () {
-				return this.showClientErrors() || this.showClientTips() || this.showServerErrors();
+			validator.show = function () {
+				return validator.showClientErrors() || validator.showClientTips() || validator.showServerErrors();
 			};
 
-			this.showServerErrors = function () {
-				return this.serverErrors.length > 0 && !this.changed;
+			validator.showServerErrors = function () {
+				return validator.serverErrors.length > 0 && !validator.changed;
 			};
 
-			this.showClientErrors = function () {
-				return this.clientErrors.length > 0 && this.name.$invalid && this.focus;
+			validator.showClientErrors = function () {
+				return validator.clientErrors.length > 0 && validator.name && validator.name.$invalid && validator.focus;
 			};
 
-			this.showClientTips = function () {
-				return this.clientTips.length > 0 && this.name.$pristine && this.focus;
+			validator.showClientTips = function () {
+				return validator.clientTips.length > 0 && validator.name && (!validator.name.$invalid || (validator.clientErrors.length === 0 && validator.serverErrors.length === 0)) && validator.focus;
 			};
 
 			//
 
 			var changeWatch = function () {
-				that.changed = true;
-				that.$element.off('change.validator');
+				validator.changed = true;
+				validator.$element.off('keypress.validator');
+
+				if (validator.name) {
+					validator.name.$setValidity('serverResponse', true);
+				}
 			};
 
-			this.server = function (data, replace) {
-				if (replace) {
-					this.serverErrors = [];
-					this.$element.off('change.validator');
+			validator.server = function (data, replace) {
+				if (replace !== false) {
+					validator.changed = false;
+					validator.serverErrors.splice(0, validator.serverErrors.length);
+					validator.$element.off('keypress.validator');
+
+					if (validator.name) {
+						validator.name.$setValidity('serverResponse', true);
+					}
 				}
 
-				if (!data) {
+				if (!data || $.isEmptyObject(data)) {
 					return;
 				}
 
-				this.$element.on('change.validator', changeWatch);
+				validator.$element.on('keypress.validator', changeWatch);
+
+				if (validator.name) {
+					validator.name.$setValidity('serverResponse', false);
+				}
 
 				if (angular.isString(data)) {
 					data = [data];
 				}
 
 				angular.forEach(data, function (error) {
-					that.serverErrors.push(error);
+					validator.serverErrors.push(validator.prefix + error);
 				});
 			};
 
-			this.client = function (data, replace) {
+			validator.client = function (data, replace) {
 				if (replace) {
-					this.clientErrors = [];
-					this.clientTips = [];
+					validator.clientErrors = [];
+					validator.clientTips = [];
 				}
 
 				if (!data) {
@@ -99,21 +143,25 @@ module.directive('validator', [
 
 				if (angular.isArray(data.errors)) {
 					angular.forEach(data.errors, function (error) {
-						that.clientErrors.push(error);
+						validator.clientErrors.push(validator.prefix + error);
 					});
 				}
 
 				if (angular.isArray(data.tips)) {
 					angular.forEach(data.tips, function (tip) {
-						that.clientTips.push(tip);
+						validator.clientTips.push(validator.prefix + tip);
 					});
 				}
 			};
 
 			//
 
-			if ($scope[$attrs.form] && $scope[$attrs.form].validator) {
-				$scope[$attrs.form].validator.add($attrs.name, this);
+			if (validator.form && validator.form.validator) {
+				validator.form.validator.add($attrs.name, validator);
+			}
+
+			if (validator.name) {
+				validator.name.validator = validator;
 			}
 		};
 
@@ -123,9 +171,12 @@ module.directive('validator', [
 			restrict: 'E',
 			replace: true,
 			scope: true,
+			transclude: true,
 			templateUrl: 'validator.html',
-			controller: controller,
-			controllerAs: 'validator',
+			link: {
+				pre: pre,
+				post: post,
+			},
 		};
 	}
 ]);

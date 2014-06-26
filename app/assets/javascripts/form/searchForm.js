@@ -7,11 +7,20 @@ module.directive('searchForm', [
 				query: page.$location.search().query
 			};
 
-			$scope.$watch('searchForm.data.query', function (val, old) {
-				if (page.$location.path() !== '/search' && val !== old) {
+			form.focus = function () {
+				if (page.$location.path() !== '/search') {
 					page.$location.path('/search');
+					page.$sessionStorage.searchFocus = true;
 				}
+			};
 
+			form.blur = function () {
+				if (page.$location.path() === '/search') {
+					page.$sessionStorage.searchFocus = false;
+				}
+			};
+
+			$scope.$watch('searchForm.data.query', function (val, old) {
 				page.$location.search('query', form.data.query || undefined);
 			});
 

@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.{Json,JsObject}
+import play.api.libs.json.{Json,JsValue,JsObject,JsNull}
 import macros._
 import dbrary._
 import site._
@@ -24,7 +24,11 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
-    Audit.change("volume", SQLTerms.flatten(name.map('name -> _), alias.map('alias -> _), body.map('body -> _)), SQLTerms('id -> id))
+    Audit.change("volume", SQLTerms.flatten(
+	name.map('name -> _),
+	alias.map('alias -> _),
+	body.map('body -> _)),
+      sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(_name = _)
         body.foreach(_body = _)
@@ -47,11 +51,16 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     * @return records sorted by category */
   def records(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
 
-  /** List of all citations on this volume. */
-  lazy val citations = VolumeCitation.getVolume(this)
-  def studyCitation = citations.map(_.headOption.filter(_.study))
-  def setCitations(list : Seq[Citation]) = VolumeCitation.setVolume(this, list)
-  def setStudyCitation(cite : Option[Citation]) = VolumeCitation.setVolumeStudy(this, cite)
+  /** Corresponding citation for this volume. */
+  private val _citation : FutureVar[Option[Citation]] =
+    FutureVar(VolumeCitation.get(this))
+  def citation : Future[Option[Citation]] = _citation()
+  def setCitation(cite : Option[Citation]) : Future[Boolean] =
+    VolumeCitation.set(this, cite)
+    .andThen { case scala.util.Success(true) =>
+      _citation.set(cite)
+    }
+  def funding : Future[Seq[Funding]] = VolumeFunding.get(this)
 
   /** The list of comments in this volume. */
   def comments = Comment.getVolume(this)
@@ -141,9 +150,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   /** List of parties through whom the current user has the given access to this volume. */
   def adminAccessVia : Future[Seq[SiteParty]] =
-    SiteParty.row.SELECT(
-      """JOIN volume_access ON party.id = volume_access.party
-        WHERE authorize_view.direct = 'ADMIN' AND volume_access.access = 'ADMIN' AND volume_access.volume = ?""")
+    SiteParty.row
+    .SELECT("JOIN volume_access ON party.id = volume_access.party",
+      "WHERE volume_access.volume = ? AND authorize_view.member = 'ADMIN' AND volume_access.individual = 'ADMIN' AND (authorize_view.site = 'ADMIN' OR volume_access.children = 'ADMIN')")
     .apply(id).list
 
   def pageName = alias.getOrElse(name)
@@ -164,7 +173,8 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("summary", opt => summary.map(_.json.js)),
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
 	.map(JsonArray.map(_.json - "volume"))),
-      ("citations", opt => citations.map(JsonArray.map(_.json))),
+      ("citation", opt => citation.map(_.fold[JsValue](JsNull)(_.json.js))),
+      ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategorySlots.map(l =>
@@ -197,7 +207,7 @@ object Volume extends TableId[Volume]("volume") {
     def row(implicit site : Site) =
       columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
     def condition =
-      "(" + table + ".permission >= 'VIEW'::permission OR " + table + ".superuser)"
+      "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
   private[models] val condition = Permission.condition
 
@@ -224,12 +234,12 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(
       party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
       "WHERE volume.id > 0 AND",
-      party.fold("")(_ => "volume_access.party = ? AND (volume_access.access >= 'CONTRIBUTE' OR funding IS NOT NULL) AND"),
+      party.fold("")(_ => "volume_access.party = ? AND volume_access.individual >= 'EDIT' AND"),
       query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
       condition,
       "ORDER BY",
       query.fold("")(_ => "ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), plainto_tsquery(?)),"),
-      party.fold("")(_ => "access DESC,"),
+      party.fold("")(_ => "individual DESC,"),
       "volume.id")
     .apply(party.fold(SQLArgs())(SQLArgs(_)) ++ query.fold(SQLArgs())(q => SQLArgs(q, q))).list
 
@@ -243,7 +253,7 @@ object Volume extends TableId[Volume]("volume") {
   /** The "core" volume, containing site-wide "global" assets.
     * We ignore any access rules here and grant everyone DOWNLOAD. */
   final def Core(implicit site : Site) : Volume =
-    new Volume(CORE, "core", None, None, models.Permission.DOWNLOAD, defaultCreation)
+    new Volume(CORE, "core", None, None, models.Permission.SHARED, defaultCreation)
 
   case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
     lazy val json = JsonObject(

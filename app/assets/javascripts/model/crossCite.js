@@ -7,10 +7,10 @@ module.factory('CrossCite', [
 				var deferred = $q.defer();
 
 				$http.get(url + encodeURIComponent(doi), {
-					cache: false,
 					headers: {
 						Accept: 'text/x-bibliography;style=apa',
 					},
+					cache: false
 				}).success(function (res) {
 					if (res.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);
@@ -23,14 +23,15 @@ module.factory('CrossCite', [
 
 				return deferred.promise;
 			},
+
 			json: function (doi) {
 				var deferred = $q.defer();
 
 				$http.get(url + encodeURIComponent(doi), {
-					cache: false,
 					headers: {
 						Accept: 'application/vnd.citationstyles.csl+json',
 					},
+					cache: false
 				}).success(function (res) {
 					if (res.title.indexOf('Quagga Mussels') > -1) {
 						deferred.reject(arguments);

@@ -1,6 +1,7 @@
 package dbrary
 
 import java.net._
+import play.api.libs.json
 
 object url extends URLStreamHandlerFactory {
   sealed abstract class TransformedURLHandler extends URLStreamHandler {
@@ -63,5 +64,11 @@ object url extends URLStreamHandlerFactory {
     def bind(key : String, data : Map[String, String]) =
       data.get(key).flatMap(parse _).toRight(Seq(play.api.data.FormError(key, "url.invalid", Nil)))
     def unbind(key : String, value : URL) = Map(key -> value.toString)
+  }
+
+  val jsonFormat : json.Format[URL] = new json.Format[URL] {
+    def writes(u : URL) = json.JsString(u.toString)
+    def reads(j : json.JsValue) = j.validate[String]
+      .flatMap(parse(_).fold[json.JsResult[URL]](json.JsError("url.invalid"))(json.JsSuccess(_)))
   }
 }

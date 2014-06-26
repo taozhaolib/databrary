@@ -2,18 +2,21 @@
   <div class="row">
     <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
       <hgroup>
-        <div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-html="volume.alias"></div>
+        <div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel_title_alias" bo-text="volume.alias"></div>
         <h1 class="panel_title" ng-bind-html="volume.name | format:true"></h1>
       </hgroup>
 
-      <div ng-show="!editMode">
-        <div frame id="frame_metadata" frame-title="{{'volume.metadata.title' | message}}" fold>
-          <div class="description" ng-bind-html="volume.body | format"></div>
+      <div>
+        <div ng-if="volume.citation" frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+          <p class="citation">
+            <a bo-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank">
+              {{volume.citation.head}}
+            </a>
+          </p>
+        </div>
 
-	  <p class="primary_study" ng-if="primaryStudy">
-	    <span class="icon jump" ng-click="page.gui.scrollTo('panel_citations')"></span>
-	    <a href="{{primaryStudy.url | handle}}" target="_blank">{{'volume.citation.study.link' | message}}</a>
-	  </p>
+        <div frame id="frame_metadata" frame-title="{{volumeMessage('body')}}" fold>
+          <div class="description" ng-bind-html="volume.body | format"></div>
 
           <div class="metadata">
             <dl class="flat">
@@ -31,7 +34,7 @@
           </div>
         </div>
 
-        <div frame id="frame_citation" frame-title="{{'volume.citation.title' | message}}" fold>
+        <div frame id="frame_link" frame-title="{{'volume.link.title' | message}}" fold>
           <p ng-bind-html="volume | cite" class="citation"></p>
         </div>
       </div>
@@ -40,6 +43,12 @@
     <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
       <div class="panel_overview_thumbnail_wrap">
         <img class="panel_overview_thumbnail" ng-src="{{page.router.volumeThumb(volume)}}">
+      </div>
+
+      <div ng-if="volume.citation.authors" frame id="frame_authors" frame-title="{{'volume.authors.title' | message}}" fold>
+        <ul class="comma">
+          <li ng-repeat="author in volume.citation.authors">{{author}}</li>
+        </ul>
       </div>
 
       <div frame id="frame_people" frame-title="{{'volume.contributors.title' | message}}" fold>
@@ -59,7 +68,7 @@
               </figure>
 
               <div class="portrait_info">
-                <a class="portrait_name" ng-href="{{page.router.party(party)}}">{{party.name}}<span ng-if="volumeAccess.access == 1" class="icon line view"></span></a>
+                <a class="portrait_name" ng-href="{{page.router.party(party)}}">{{party.name}}</a>
               </div>
             </aside>
           </div>
@@ -67,11 +76,10 @@
       </div>
 
       <div frame id="frame_funding" frame-title="{{'volume.funding.title' | message}}" fold>
-        <div class="row">
-          <div ng-repeat="funding in volume.access | filter:isFunding" class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6" ng-init="party = funding.party">
-            <portrait class="portrait_vertical portrait_small portrait_more" extra="{{funding.funding}}"></portrait>
-          </div>
-        </div>
+        <dl class="fund_list" ng-repeat="funding in volume.funding">
+          <dt bo-text="funding.funder.name"></dt>
+          <dd ng-repeat="award in funding.awards" bo-text="award"></dd>
+        </dl>
       </div>
 
       <div frame id="frame_reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
@@ -83,7 +91,7 @@
               <ul class="reuse_list">
                 <li ng-repeat="ext in volume.consumers">
                   <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-study.png">
-                    <span bo-html="ext.name"></span></a>
+                    <span bo-text="ext.name"></span></a>
                 </li>
               </ul>
             </div>
@@ -94,7 +102,7 @@
               <ul class="reuse_list">
                 <li ng-repeat="ext in volume.providers">
                   <a bo-href="page.router.volume({id: ext.id})"><img src="/public/images/browser/icon-dataset.png">
-                    <span bo-html="ext.name"></span></a>
+                    <span bo-text="ext.name"></span></a>
                 </li>
               </ul>
             </div>

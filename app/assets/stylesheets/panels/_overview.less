@@ -1,6 +1,7 @@
 // STYLES
 
-.panel_overview {
+.panel_overview,
+.panel_edit {
 	.margin-top(3);
 
 	.row_relative {
@@ -26,13 +27,12 @@
 			top: @b4;
 		}
 	}
-}
 
-//
-
-.panel_title_alias {
-	.font-size(1);
-	color: @orange53;
+	.panel_title_alias {
+		.font-line(1);
+		color: @orange53;
+		.margin(0);
+	}
 }
 
 //
@@ -58,4 +58,8 @@
 	text-indent: -@b1 * 2;
 	.margin-bottom(@f2);
 	text-align: left;
+}
+
+dl.fund_list {
+	.margin-bottom(@f2);
 }

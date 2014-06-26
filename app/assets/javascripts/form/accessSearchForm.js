@@ -3,13 +3,13 @@ module.directive('accessSearchForm', [
 		var link = function ($scope, $element, $attrs) {
 			var form = $scope.accessSearchForm;
 
-			form.name = '';
+			form.nameVal = '';
 			form.found = [];
 			form.id = $attrs.volume || undefined;
 			form.institution = $element.attr('institution') === 'true';
 
 			$attrs.$observe('institution', function () {
-				form.name = '';
+				form.nameVal = '';
 				form.found = [];
 			});
 
@@ -18,7 +18,9 @@ module.directive('accessSearchForm', [
 			var recentSearch = undefined;
 			var sentSearch = undefined;
 
-			var fin = function () {
+			var fin = function (res) {
+				form.validator.server(res || {});
+
 				sentSearch = undefined;
 
 				if (recentSearch) {
@@ -28,28 +30,21 @@ module.directive('accessSearchForm', [
 			};
 
 			form.search = function () {
-				if (!form.name || form.name.length < 3) {
+				if (!form.nameVal || form.nameVal.length < 3) {
 					form.found = [];
-				}
-				else if (sentSearch) {
-					recentSearch = form.name;
-				}
-				else {
+				} else if (sentSearch) {
+					recentSearch = form.nameVal;
+				} else {
 					sentSearch = page.models.VolumeAccess.search({
 						id: form.id,
-						name: form.name,
+						name: form.nameVal,
 						institution: form.institution,
 					}, function (data) {
 						form.found = data;
 
 						fin();
 					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('access.search.error'),
-							report: res,
-						});
-
-						fin();
+						fin(res);
 					});
 				}
 			};
@@ -59,7 +54,7 @@ module.directive('accessSearchForm', [
 			form.selectFn = undefined;
 
 			form.select = function (found) {
-				form.name = '';
+				form.nameVal = '';
 				form.search();
 
 				if (angular.isFunction(form.selectFn)) {
@@ -80,9 +75,9 @@ module.directive('accessSearchForm', [
 					body: page.constants.message('access.grant.notfound.message'),
 				});
 
-				var query = form.name;
+				var query = form.nameVal;
 
-				form.name = '';
+				form.nameVal = '';
 				form.search();
 
 				if (angular.isFunction(form.notFoundFn)) {
@@ -91,6 +86,14 @@ module.directive('accessSearchForm', [
 
 				form.$setPristine();
 			};
+
+			//
+
+			form.validator.client({
+				name: {
+					tips: page.constants.message('access.search.name.help'),
+				},
+			}, true);
 
 			//
 

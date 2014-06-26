@@ -2,12 +2,11 @@
   <div class="browser_item_content">
     <div class="cf">
       <footer>
-        <div class="item_meta permission" bo-if="data.object.asset.duration" bo-html="data.object.asset.duration | timecode"></div>
+        <div class="item_meta permission" bo-if="data.object.asset.duration" bo-text="data.object.asset.duration | timecode"></div>
 
-        <div class="item_meta sep" bo-if="data.object.asset.duration">|
-        </div>
+        <div class="item_meta sep" bo-if="data.object.asset.duration">|</div>
 
-        <div class="item_meta icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].name.toLowerCase()"></div>
+        <div class="item_meta classification icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[data.object.asset.classification]}}"></div>
 
         <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|
         </div>
@@ -21,7 +20,7 @@
               <img bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(data.object).extension + '.png'">
           </span>
 
-          <span class="filename" bo-html="page.types.assetDisplayName(data.object) | escape"></span>
+          <span class="filename" bo-text="page.types.assetDisplayName(data.object)"></span>
         </h1>
       </header>
     </div>

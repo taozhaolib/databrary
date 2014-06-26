@@ -180,7 +180,7 @@ object Curated extends Ingest {
     def key = asset.key
     def name = sessionKey + "/" + asset.name
 
-    def populate(session : ModelSession)(implicit site : Site) : Future[models.SlotAsset] = {
+    def populate(session : ModelSession)(implicit request : controllers.SiteRequest[_]) : Future[models.SlotAsset] = {
       val info = asset.info
       val container = session.container
       val pos = (asset.position, session.last) match {
@@ -252,7 +252,7 @@ object Curated extends Ingest {
       data.sessions.size + " sessions: " + data.sessions.keys.mkString(",") + "\n" +
       data.assets.size + " files"
 
-  private def populate(data : Data, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] = for {
+  private def populate(data : Data, volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[(Iterable[Record], Iterable[SlotAsset])] = for {
     subjs <- data.subjects.mapValuesAsync(_.populate(volume))
     sess <- data.sessions.mapValuesAsync(_.populate(volume))
     _ <- data.subjectSessions.foreachAsync(ss =>
@@ -265,6 +265,6 @@ object Curated extends Ingest {
   def preview(f : java.io.File) : String =
     preview(process(CSV.parseFile(f)))
 
-  def populate(f : java.io.File, volume : Volume)(implicit site : Site) : Future[(Iterable[Record], Iterable[SlotAsset])] =
+  def populate(f : java.io.File, volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[(Iterable[Record], Iterable[SlotAsset])] =
     Future(process(CSV.parseFile(f))).flatMap(populate(_, volume))
 }

@@ -101,11 +101,6 @@ module.factory('authService', [
 
 		//
 
-		auth.tryLogin = function () {
-			auth.next = $location.url();
-			$location.url(router.login());
-		};
-
 		auth.logout = function () {
 			Party.logout(function (data) {
 				auth.parseUser(data);
@@ -156,12 +151,12 @@ module.factory('authService', [
 			return auth.hasToken() && !play.object.reset;
 		};
 
-		auth.isUnauthorized = function () {
-			return !auth.isAuthorized();
+		auth.isAuthorized = function () {
+			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
 		};
 
-		auth.isAuthorized = function () {
-			return auth.isLoggedIn() && auth.hasAuth('VIEW');
+		auth.isUnauthorized = function () {
+			return !auth.isAuthorized();
 		};
 
 		//
@@ -206,8 +201,7 @@ module.factory('authService', [
 		auth.toggleSU = function (form) {
 			if (angular.isDefined(form)) {
 				enableSU(form);
-			}
-			else {
+			} else {
 				disableSU();
 			}
 		};

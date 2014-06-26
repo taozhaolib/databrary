@@ -1,29 +1,7 @@
 // STYLES
 
 .portrait {
-	//	background-color: @white;
 	.margin-bottom(1);
-
-	.portrait_institution,
-	.portrait_links {
-		.max-height(0);
-		overflow: hidden;
-	}
-
-	&.hovered {
-		.box-shadow();
-		background-color: @white;
-		position: relative;
-
-		.portrait_info {
-			// background-color: @white;
-		}
-
-		.portrait_institution,
-		.portrait_links {
-			.max-height(5);
-		}
-	}
 }
 
 .portrait_info {
@@ -31,7 +9,7 @@
 }
 
 .portrait_name,
-.portrait_institution {
+.portrait_affiliation {
 	text-align: center;
 	display: block;
 }
@@ -53,30 +31,11 @@
 	}
 }
 
-.portrait_institution {
-	.font(.85, 1);
-
-	&:link, &:visited {
-		color: @gray;
-	}
-
-	&:hover {
-		color: mix(@gray, @pale);
-	}
-
-	&:active {
-		color: mix(@gray, @white);
-	}
-}
-
-.portrait_extra {
+.portrait_affiliation {
 	color: @gray;
 }
 
 //
-
-.portrait_horizontal {
-}
 
 .portrait_vertical {
 	.figure_avatar {
@@ -86,10 +45,9 @@
 
 //
 
-.portrait_large {
-}
-
 .portrait_small {
+	height: @b1 * 2;
+
 	.figure_avatar {
 		width: @b1 * 2;
 		.margin-right(@f4);
@@ -100,17 +58,17 @@
 	}
 
 	.portrait_name,
-	.portrait_institution {
+	.portrait_affiliation {
 		text-align: left;
-	}
-
-	.portrait_name {
-		.font(1, 2);
+		.font-size(1);
 		display: block;
 		.text-overflow();
 		overflow: hidden;
 		white-space: nowrap;
-		.height(2);
+		.height(1);
+	}
+
+	.portrait_name {
 
 		&:link, &:visited {
 			color: @orange;

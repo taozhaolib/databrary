@@ -1,6 +1,7 @@
 module.factory('routerService', [
-	'$rootScope', '$route', '$filter', 'typeService', function ($rootScope, $route, $filter, type) {
+	'$rootScope', '$route', '$filter', '$location', 'typeService', function ($rootScope, $route, $filter, $location, type) {
 		var router = {};
+		var prevUrl = "/"
 
 		router.$route = $route;
 
@@ -52,7 +53,10 @@ module.factory('routerService', [
 		//
 
 		var makeRoute = function (route) {
-			return function (params, stripQuery) {
+			return function (params, stripQuery, setPrev) {
+				if(setPrev){
+					prevUrl = $location.path();
+				}
 				return router.makeUrl(route, params, stripQuery);
 			};
 		};
@@ -71,7 +75,8 @@ module.factory('routerService', [
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
-
+		
+		router.prevUrl = function() {return prevUrl;};
 		//
 
 		router.record = function (data) {
@@ -109,19 +114,6 @@ module.factory('routerService', [
 			};
 
 			return router.makeUrl('/volume/:id/thumb', data);
-		};
-
-		router.slotThumb = function (data) {
-			if (!type.isSession(data)) {
-				throw new Error('routerService.slotThumb() requires Slot as first argument');
-			}
-
-			data = {
-				id: data.id,
-				segment: type.segmentString(data)
-			};
-
-			return router.makeUrl('/slot/:id/thumb', data);
 		};
 
 		router.assetThumb = function (data) {
@@ -170,6 +162,7 @@ module.factory('routerService', [
 
 		router.partyAvatar = function (data, size) {
 			if (!type.isParty(data)) {
+				console.log(data);
 				throw new Error('routerService.partyAvatar() requires Party as first argument');
 			}
 

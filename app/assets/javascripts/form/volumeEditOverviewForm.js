@@ -4,6 +4,11 @@ module.directive('volumeEditOverviewForm', [
 			var form = $scope.volumeEditOverviewForm;
 
 			form.data = {};
+			form.authors = [
+				{
+					name: '',
+				}
+			];
 			var backup = {};
 
 			form.saveFn = undefined;
@@ -13,10 +18,37 @@ module.directive('volumeEditOverviewForm', [
 			form.cancelFn = undefined;
 
 			//
+			form.setAutomatic = function (auto) {
+				form.automatic = auto;
+				form.validator.client({
+					'citation.url': {
+						tips: page.constants.message('volume.edit.citation.' + (form.automatic ? 'doi' : 'url') + '.help')
+					}
+				}, true);
+			};
 
 			form.init = function (data, volume) {
 				form.data = data;
 				form.volume = form.volume || volume;
+				form.setAutomatic(!form.volume);
+
+				if (!form.data.citation) {
+					form.data.citation = {};
+				}
+
+				if (form.data.citation && form.data.citation.authors) {
+					form.authors = form.data.citation.authors.map(function (author) {
+						return {
+							name: author,
+						};
+					});
+
+					if (form.authors.length === 0) {
+						form.authors.push({
+							name: '',
+						});
+					}
+				}
 
 				backup = $.extend(true, {}, data);
 			};
@@ -24,6 +56,16 @@ module.directive('volumeEditOverviewForm', [
 			//
 
 			form.save = function () {
+				if (!form.data.citation) {
+					form.data.citation = {};
+				}
+
+				form.data.citation.authors = form.authors.map(function (author) {
+					return author.name.trim();
+				}).filter(function (author) {
+					return author != '';
+				});
+
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
 				}
@@ -31,6 +73,8 @@ module.directive('volumeEditOverviewForm', [
 				if (form.volume) {
 					page.models.Volume.save(form.data,
 						function (res) {
+							form.validator.server({});
+
 							form.messages.add({
 								type: 'green',
 								countdown: 3000,
@@ -46,12 +90,8 @@ module.directive('volumeEditOverviewForm', [
 							form.$setPristine();
 							page.models.Volume.$cache.removeAll();
 						}, function (res) {
-							if (!form.validator.server(res.data)) {
-								form.messages.addError({
-									body: page.constants.message('volume.edit.overview.error'),
-									report: res
-								});
-							}
+							form.validator.server(res);
+							page.display.scrollTo(form.$element);
 
 							if (angular.isFunction(form.errorFn)) {
 								form.errorFn(form, res);
@@ -63,12 +103,14 @@ module.directive('volumeEditOverviewForm', [
 					volume.$save({
 						owner: page.auth.user.id
 					}, function (res) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
 							body: page.constants.message('volume.edit.overview.success'),
 						});
-						//update backup so a future revert goes to current state, not pageload state
+
 						backup = $.extend(true, {}, form.data);
 
 						if (angular.isFunction(form.successFn)) {
@@ -76,12 +118,10 @@ module.directive('volumeEditOverviewForm', [
 						}
 
 						form.$setPristine();
+						page.models.Volume.$cache.removeAll();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
-						form.messages.addError({
-							body: page.constants.message('volume.edit.overview.error'),
-							report: res
-						});
+						form.validator.server(res);
 
 						if (angular.isFunction(form.errorFn)) {
 							form.errorFn(form, res);
@@ -91,10 +131,22 @@ module.directive('volumeEditOverviewForm', [
 			};
 
 			form.reset = function () {
-				if (angular.isFunction(form.resetFn))
+				if (angular.isFunction(form.resetFn)) {
 					form.resetFn(form);
+				}
 
 				form.data = $.extend(true, {}, backup);
+
+				form.validator.clearServer();
+
+				if (form.data.citation && form.data.citation.authors) {
+					form.authors = form.data.citation.authors.map(function (author) {
+						return {
+							name: author,
+						};
+					});
+				}
+
 				form.$setPristine();
 			};
 
@@ -112,47 +164,78 @@ module.directive('volumeEditOverviewForm', [
 					}
 				}
 
-				var doi = page.constants.regex.doi.exec(form.data.doi);
+				var doi = page.constants.regex.doi.exec(form.data.citation.url);
 
-				if (!form.data.doi || !doi || !doi[1]) {
+				if (!doi || !doi[1]) {
 					return;
 				}
 
-				if (!form.data.name) {
-					page.models.CrossCite
-						.json(doi[1])
-						.then(function (res) {
-							if (!res.title) {
-								form.messages.add({
-									type: 'red',
-									body: page.constants.message('volume.edit.autodoi.name.error'),
-								});
-							} else {
-								form.data.name = res.title;
-
-								form.messages.add({
-									type: 'green',
-									countdown: 3000,
-									body: page.constants.message('volume.edit.autodoi.name.success'),
-								});
-							}
-						}, function (res) {
+				page.models.CrossCite
+					.json(doi[1])
+					.then(function (res) {
+						if (!res.title) {
 							form.messages.add({
 								type: 'red',
 								body: page.constants.message('volume.edit.autodoi.name.error'),
 							});
+						} else {
+							form.data.name = res.title;
+
+							if (!form.data.citation) {
+								form.data.citation = {};
+							}
+
+							if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
+								form.data.citation.year = res.issued['date-parts'][0][0];
+							}
+
+							if (res.author) {
+								var parts = ['given', 'non-dropping-particle', 'family', 'suffix'];
+
+								form.authors = [];
+
+								angular.forEach(res.author, function (author) {
+									var name = '';
+
+									angular.forEach(parts, function (part) {
+										if (author[part]) {
+											name += author[part] + ' ';
+										}
+									});
+
+									name = name.slice(0, -1);
+
+									form.authors.push({name: name});
+								});
+							}
+
+							form.setAutomatic(false);
+
+							form.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.name.success'),
+							});
+						}
+					}, function (res) {
+						form.messages.add({
+							type: 'red',
+							body: page.constants.message('volume.edit.autodoi.name.error'),
 						});
-				}
+					});
 
 				if (!form.hasCitations) {
 					page.models.CrossCite
 						.apa(doi[1])
 						.then(function (res) {
-							form.data.study = {
-								url: 'doi:' + doi[1],
-								head: res,
-								body: '',
-							};
+							if (!form.data.citation) {
+								form.data.citation = {};
+							}
+
+							form.data.citation.url = 'doi:' + doi[1];
+							form.data.citation.head = res;
+
+							form.setAutomatic(false);
 
 							form.messages.add({
 								type: 'green',
@@ -167,6 +250,49 @@ module.directive('volumeEditOverviewForm', [
 						});
 				}
 			};
+
+			//
+
+			form.addAuthor = function () {
+				if (!form.authors) {
+					form.authors = [];
+				}
+
+				form.authors.push({});
+			};
+
+			form.removeAuthor = function (author) {
+				var i = form.authors.indexOf(author);
+
+				if (i > -1) {
+					form.authors.splice(i, 1);
+				}
+
+				form.$setDirty();
+			};
+
+			//
+
+			form.validator.client({
+				name: {
+					tips: page.constants.message('volume.edit.name.help')
+				},
+				body: {
+					tips: page.constants.message('volume.edit.body.help')
+				},
+				alias: {
+					tips: page.constants.message('volume.edit.alias.help')
+				},
+				'citation.head': {
+					tips: page.constants.message('volume.edit.citation.head.help')
+				},
+				'citation.url': {
+					tips: page.constants.message('volume.edit.citation.url.help'),
+				},
+				'citation.year': {
+					tips: page.constants.message('volume.edit.citation.year.help')
+				},
+			}, true);
 
 			//
 

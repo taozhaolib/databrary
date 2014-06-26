@@ -2,6 +2,25 @@ module.controller('LoginView', [
 	'$scope', 'pageService', function ($scope, page) {
 		page.display.title = page.constants.message('page.title.login');
 
+		var form;
+		var loginWatch = $scope.$watch('loginForm', function () {
+			form = $scope.loginForm;
+
+			form.validator.client({
+				email: {
+					tips: page.constants.message('login.email.help'),
+					errors: page.constants.message('login.email.error'),
+				},
+				password: {
+					tips: page.constants.message('login.password.help'),
+				},
+			}, true);
+
+			//
+
+			loginWatch();
+		});
+
 		//
 
 		$scope.method = 'databrary';
@@ -23,8 +42,10 @@ module.controller('LoginView', [
 			page.models.Party.login(angular.extend({
 				email: '',
 				password: '',
-				openid: ''
+				openid: '',
 			}, $scope.loginData), function (data) {
+				form.validator.server({});
+
 				page.auth.parseUser(data);
 
 				if (page.auth.next) {
@@ -34,16 +55,7 @@ module.controller('LoginView', [
 					page.$location.path('/');
 				}
 			}, function (res) {
-				page.auth.parseUser(undefined);
-
-				if(!$scope.loginForm.validator.server(res.data, true)) {
-					$scope.loginForm.messages.add({
-						body: page.constants.message('login.error'),
-						type: 'red',
-						closeable: true,
-						report: res,
-					});
-				}
+				form.validator.server(res, true);
 			});
 		};
 	}

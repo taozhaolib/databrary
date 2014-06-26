@@ -12,9 +12,13 @@
 
           <div ng-switch="method">
             <div ng-switch-default>
-              <input id="loginEmail" name="email" type="email" ng-model="loginData.email" bo-attr bo-attr-placeholder="'email' | message">
-              <input id="loginPassword" name="password" type="password" ng-model="loginData.password" bo-attr bo-attr-placeholder="'password' | message" ng-required>
-              <validator form="loginForm" name="password"></validator>
+              <validator form="loginForm" name="email" label="'email' | message">
+                <input id="loginEmail" name="email" type="email" ng-model="loginData.email">
+              </validator>
+
+              <validator form="loginForm" name="password" label="'password' | message">
+                <input id="loginPassword" name="password" type="password" ng-model="loginData.password" ng-required>
+              </validator>
             </div>
 
             <div ng-switch-when="openid">
@@ -22,7 +26,7 @@
             </div>
           </div>
 
-          <button id="loginSubmit" type="submit" class="button" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
+          <button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
 
           <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-html="'login.method.openid' | message"></a>
           <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-html="'login.method.password' | message"></a>

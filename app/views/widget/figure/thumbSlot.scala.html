@@ -1,5 +1,0 @@
-@(slot : Slot, caption: Html = Html(""), link: String = "", title: String = "", classes: String = "", arbitrary: Html = Html(""))(implicit request : SiteRequest[_])
-
-@widget.figure.raw("slot_"+slot.containerId, ("figure_slot "+classes).trim)(caption, link, title, arbitrary){
-    <div class="image" style="background-image: url('@if(slot.consent == Consent.PRIVATE){@routes.Assets.at("images/draft-lock.png")}else{@routes.SlotHtml.thumb(slot.containerId, slot.segment)}')"></div>
-}

@@ -1,15 +1,11 @@
-@(citations : Seq[Citation])(implicit request : SiteRequest[_])
+@(citation : Option[Citation])(implicit request : SiteRequest[_])
 
-@if(citations.nonEmpty) {
-    @widget.panel.raw("citations", "")(Messages("citations.title")){
-        <div class="citations col-full">
-	    @citations.map { citation =>
+@citation.map { citation =>
+    @widget.panel.raw("citation", "")(Messages("volume.citation.title")){
+        <div class=" col-full">
                 <div class="citation">
-		    <h3>@citation.head @citation.url.map{u => <a href="@dbrary.url.normalize(u)" title="@citation.head" class="cit_link">link</a>}</h3>
-
-                    @citation.body.map(display.plainText _)
+		    <a @citation.url.map{ u => href="dbrary.url.normalize(u)" } title="@citation.title" class="cit_link">@citation.head</a>
                 </div>
-            }
         </div>
     }
 }

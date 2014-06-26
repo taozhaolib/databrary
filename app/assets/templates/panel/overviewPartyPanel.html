@@ -1,73 +1,29 @@
 <panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
   <div class="row">
-    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6 col-cell">
+    <div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
         <h1 class="panel_title">{{party.name}}</h1>
       </hgroup>
 
-			<div ng-show="!editMode">
+			<div>
 				<div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
 					<div class="metadata">
 						<dl class="flat">
+							<dt bo-if="party.affiliation" bo-html="'affiliation' | message"/>
+							<dd bo-if="party.affiliation" bo-text="party.affiliation"></dd>
+
 							<dt bo-if="party.email" bo-html="'email' | message"/>
 							<dd bo-if="party.email"><a bo-href="'mailto:'+party.email">{{party.email}}</a></dd>
 
 							<dt bo-if="party.orcid" bo-html="'orcid' | message"/>
-							<dd bo-if="party.orcid"><a bo-href="party.orcid" bo-html="party.orcid"></a></dd>
+							<dd bo-if="party.orcid"><a bo-href="party.orcid" bo-text="party.orcid"></a></dd>
 						</dl>
 					</div>
 				</div>
 			</div>
-
-			<form name="userEditForm" ng-show="editMode" novalidate>
-        <messages form="userEditForm"></messages>
-
-        <fieldset>
-					<legend bo-html="'party.edit.personal' | message"></legend>
-
-					<label bo-html="'fullname' | message"></label>
-					<input type="text" name="name" ng-model="userEditForm.data.name">
-
-					<label bo-html="'affiliation' | message"></label>
-					<input type="text" name="affiliation" ng-model="userEditForm.data.affiliation">
-
-					<label bo-html="'avatar' | message"></label>
-					<input type="file" name="avatar" ng-model="userEditForm.data.avatar">
-
-					<label bo-html="'orcid' | message"></label>
-					<input type="text" name="orcid" ng-model="userEditForm.data.orcid">
-				</fieldset>
-
-				<fieldset ng-if="page.auth.hasAccess('ADMIN', party)">
-					<legend bo-html="'party.edit.admin' | message"></legend>
-
-					<label bo-html="'email' | message"></label>
-					<input type="text" name="email" ng-model="userEditForm.data.email">
-
-					<label bo-html="'openid' | message"></label>
-					<input type="text" name="openid" ng-model="userEditForm.data.openid">
-
-					<label bo-html="'duns' | message"></label>
-					<input type="text" name="duns" ng-model="userEditForm.data.duns">
-
-					<hr>
-
-					<label bo-html="'password.current' | message"></label>
-					<input type="password" name="auth" ng-model="userEditForm.data.auth">
-
-					<label bo-html="'password.new' | message"></label>
-					<input type="password" name="passwordOnce" ng-model="userEditForm.data.password.once">
-
-					<label bo-html="'password.new.again' | message"></label>
-					<input type="password" name="passwordAgain" ng-model="userEditForm.data.password.again">
-				</fieldset>
-
-				<button ng-click="save()" class="green" bo-html="'save' | message"></button>
-				<button ng-click="cancel()" class="red" bo-html="'cancel' | message"></button>
-			</form>
     </div>
 
-    <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6 col-cell">
+    <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6 col-cell">
       <div class="panel_overview_thumbnail_wrap">
         <img class="panel_overview_thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
       </div>

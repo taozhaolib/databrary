@@ -25,6 +25,10 @@ module.controller('ExcerptsPanel', [
 			return type == 'text' ? mimetype[1] : type;
 		};
 
+		$scope.hasThumbnail = function(asset){
+			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
+		}
+
 		$scope.listClass = function (excerpt) {
 			var cls = [];
 
@@ -59,7 +63,7 @@ module.controller('ExcerptsPanel', [
 				return addTo(found, asset);
 			}
 
-			$(window).scrollTop($item.offset().top - 76);
+			page.display.scrollTo($item);
 			page.browser.setItemExpand(found, true);
 		};
 

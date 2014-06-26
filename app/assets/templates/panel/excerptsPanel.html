@@ -8,6 +8,7 @@
               <a ng-href="{{page.router.assetLink(current, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'excerpts.download' | message}}"></a>
 
               <h1>
+                <img class="icon" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(current).extension + '.png'">
                 <span bo-html="page.types.assetDisplayName(current) | format:true"></span>
               </h1>
             </header>
@@ -41,10 +42,17 @@
               <div class="actions">
                 <a ng-href="" ng-click="jump(excerpt)" class="icon line jump tool" target="_self" tooltip tooltip-message="{{'excerpts.jump' | message}}"></a>
               </div>
-
-              <figure baseline="square" ng-click="setCurrent(excerpt)">
-                <figmedia><img bo-src="page.router.assetThumb(excerpt)"></figmedia>
-              </figure>
+	      <div ng-if="hasThumbnail(excerpt)">
+		<figure baseline="square" ng-click="setCurrent(excerpt)">
+                   <figmedia><img bo-src="page.router.assetThumb(excerpt)"></figmedia>
+		</figure>
+      	      </div>
+	      <div ng-if="!hasThumbnail(excerpt)">
+		<figure baseline="wide" ng-click="setCurrent(excerpt)">
+		   <span bo-text="excerpt.asset.name"></span>
+                   <img class="excerpt_filetype_thumb" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(excerpt).extension + '.png'">
+		</figure>
+	      </div>
             </div>
           </div>
         </div>

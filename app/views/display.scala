@@ -78,14 +78,6 @@ object display {
   def avatar(party : Party, size : Int = 64) =
     routes.PartyHtml.avatar(party.id, size)
 
-  def permissionToRole(permission : models.Permission.Value) = permission match {
-    case Permission.ADMIN => "Investigator"
-    case Permission.CONTRIBUTE => "Editor"
-    case Permission.DOWNLOAD => "Downloader"
-    case Permission.VIEW => "Viewer"
-    case Permission.NONE => "Excluded"
-  }
-
   def citeName(name: String) = {
     val names = name.split(" +")
     names.last + (if (names.length > 1) {

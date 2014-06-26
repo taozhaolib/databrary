@@ -7,7 +7,8 @@ module.factory('displayService', [
 	'constantService',
 	'routerService',
 	'$location',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location) {
+	'$timeout',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout) {
 		var display = {};
 
 		//
@@ -26,7 +27,7 @@ module.factory('displayService', [
 		$rootScope.$on('$routeChangeSuccess', function () {
 			display.loading = false;
 			if (display.toolbarLinks) {
-				display.toolbarLinks = []; 
+				display.toolbarLinks = [];
 			}
 		});
 
@@ -51,6 +52,44 @@ module.factory('displayService', [
 		//
 
 		display.toolbarLinks = [];
+
+		//
+
+		var $scroll = $('html,body');
+
+		display.scrollTo = function (id) {
+			var target = (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
+
+			$timeout(function () {
+				$scroll.animate({
+					scrollTop: target
+				}, 500);
+			}, 1);
+		};
+
+		//
+
+		display.navigationFn = undefined;
+
+		$rootScope.$on('$locationChangeStart', function (event, url) {
+			if (!angular.isFunction(display.navigationFn)) {
+				return;
+			}
+
+			var result = display.navigationFn(event, url);
+
+			if (result === true) {
+				return display.navigationFn = undefined;
+			} else if (angular.isUndefined(result)) {
+				return;
+			}
+
+			if (result === true || confirm(constants.message('navigation.confirmation'))) {
+				return display.navigationFn = undefined;
+			}
+
+			event.preventDefault();
+		});
 
 		//
 

@@ -30,7 +30,7 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if(page.auth.isAuthorized()) {
+						if (page.auth.isAuthorized()) {
 							page.models.Volume.get({
 								id: 8,
 								access: ''
@@ -229,6 +229,33 @@ module.config([
 
 		//
 
+		$routeProvider.when('/party/:id/edit', {
+			controller: 'PartyEditView',
+			templateUrl: 'partyEditView.html',
+			resolve: {
+				party: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						page.models.Party.get({
+							id: page.$route.current.params.id,
+							duns: '',
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
+						});
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: true
+		});
+
+		//
+
 		var volumeEditVolume;
 
 		var volumeEdit = {
@@ -244,10 +271,9 @@ module.config([
 						} else {
 							page.models.Volume.get({
 								access: '',
-								citations: '',
+								citation: '',
 								top: '',
-								excerpts: '',
-								funding: ''
+								funding: '',
 							}, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
@@ -270,8 +296,7 @@ module.config([
 							volumeEditVolume.then(function (volume) {
 								page.models.Slot.get({
 									id: volume.top.id,
-									segment: ',',
-									assets: ''
+									assets: '',
 								}, function (res) {
 									deferred.resolve(res);
 								}, function (res) {
@@ -303,7 +328,8 @@ module.config([
 
 						page.models.Volume.get({
 							access: '',
-							citations: '',
+							citation: '',
+							funding: '',
 							providers: '',
 							consumers: '',
 							top: '',
@@ -313,8 +339,7 @@ module.config([
 							records: '',
 							summary: '',
 							sessions: '',
-							categories: '',
-							funding: ''
+							categories: ''
 						}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
@@ -348,7 +373,7 @@ module.run([
 
 					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
 
-					if (controller !== 'RegisterView' && next.$$route.originalPath !== '/profile') {
+					if (controller !== 'RegisterView') {
 						page.$location.url(page.router.register());
 					}
 				} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {

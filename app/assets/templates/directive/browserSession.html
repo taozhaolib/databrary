@@ -3,7 +3,7 @@
     <div class="cf">
       <footer>
                 <span bo-if="data.object.consent">
-                    <div class="item_meta icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()"></div>
+                    <div class="item_meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
 
                     <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|</div>
                 </span>
@@ -15,7 +15,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1 bo-if="!data.object.top">
-          Session<span bo-if="data.object.name">: <span bo-html="data.object.name | escape"></span></span>
+          Session<span bo-if="data.object.name">: <span bo-text="data.object.name"></span></span>
 
           <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
           <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
@@ -27,14 +27,14 @@
 
     <div class="item_main">
       <dl class="flat_list cf" bindonce ng-repeat="cat in getSessionRecords(data)">
-        <dt bo-html="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
+        <dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
-        <dd ng-repeat="record in cat.records" ng-if="record.id != 0"><span bo-html="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span></dd>
+        <dd ng-repeat="record in cat.records" ng-if="record.id != 0"><span bo-text="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span></dd>
       </dl>
 
       <dl class="flat_list cf" bo-if="data.object.date">
         <dt>Date</dt>
-        <dd bo-html="data.object.date"></dd>
+        <dd bo-text="data.object.date"></dd>
       </dl>
     </div>
   </div>

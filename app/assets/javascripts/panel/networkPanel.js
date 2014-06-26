@@ -31,7 +31,7 @@ module.controller('NetworkPanel', [
 									message: page.messages.add({
 										type: 'yellow',
 										closeable: true,
-										body: page.$compile('<span>' + party.party.name + ' has a pending authorization request. <a href="" ng-click="openMessageChild(' + party.id + ')">Manage</a>.</span>')($scope)
+										body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="" ng-click="openMessageChild(' + party.id + ')">Manage</a>.</span>')($scope)
 									})
 								};
 							}
@@ -112,7 +112,7 @@ module.controller('NetworkPanel', [
 			}
 
 			$scope.currentAuthChild = child;
-			page.gui.scrollTo('network-child-' + child.id);
+			page.display.scrollTo('network-child-' + child.id);
 		};
 
 		$scope.resetAuthChild = function (child) {
@@ -201,7 +201,7 @@ module.controller('NetworkPanel', [
 			}
 
 			$scope.currentAuthParent = parent;
-			page.gui.scrollTo('network-parent-' + parent.id);
+			page.display.scrollTo('network-parent-' + parent.id);
 		};
 
 		//
@@ -368,6 +368,16 @@ module.controller('NetworkPanel', [
 
 		$scope.showSearch = function () {
 			return isAdmin();
+		};
+
+		//
+
+		$scope.presetName = function (type, name, party) {
+			if (angular.isString(party)) {
+				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
+			} else {
+				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
+			}
 		};
 	}
 ]);

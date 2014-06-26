@@ -6,9 +6,8 @@
 
 @accessFields(form : VolumeController.AccessForm)(implicit fieldConstructor : helper.FieldConstructor) = {
 	<td>@display(form.party)</td>
-	@widget.enumSelect(form.access(), Permission)
-	@widget.tag.select(form.inherit(), Permission.values.to(if (form.partyId.unId > 0) Permission.EDIT else Permission.DOWNLOAD).toSeq.map(v => (v.id.toString, v.toString)))
-	@widget.tag.inputText(form.funding())
+	@widget.enumSelect(form.individual(), Permission)
+	@widget.tag.select(form.children(), Permission.values.to(if (form.isGroup) Permission.SHARED else Permission.EDIT).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
 @template.form(Some(volume), "Manage Access") {
@@ -18,7 +17,6 @@
                     <th>Name</th>
                     <th>Individual</th>
                     <th>Group</th>
-                    <th>Funding</th>
                     <th>Action</th>
                 </tr>
             </thead>

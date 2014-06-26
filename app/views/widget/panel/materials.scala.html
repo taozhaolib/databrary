@@ -29,7 +29,7 @@
                 <span ng-init="currentAsset = @assets.head.sourceId.toString"></span>
 
                 @assets.map { link =>
-                    @if(link.checkPermission(Permission.DOWNLOAD)) {
+                    @if(link.checkPermission(Permission.READ)) {
                         <div id="asset_@link.sourceId.toString" ng-show="currentAsset == @link.sourceId" class="panel_materials_frame">
                             <h2>
                                 @link.pageName.@link.format.extension <a href='@routes.SlotAssetHtml.download(link.slot.containerId, link.slot.segment, link.assetId, false)' class="link">download</a>

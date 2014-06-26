@@ -7,7 +7,8 @@ module.factory('browserService', [
 	'constantService',
 	'tooltipService',
 	'$timeout',
-	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout) {
+	'displayService',
+	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout, display) {
 		var browserService = {};
 
 		//
@@ -79,10 +80,6 @@ module.factory('browserService', [
 
 		browserService.initialize = function (newContext, newData) {
 			browserService.query = '';
-
-			if (angular.isUndefined(browserService.context)) {
-				bindTooltips(tips);
-			}
 
 			newData.$promise.then(function (newData) {
 				initialize(newContext, newData);
@@ -1024,11 +1021,7 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			$timeout(function () {
-				$('html,body').animate({
-					scrollTop: $('#' + data.parent.id).find('.browser_controller').offset().top - 72
-				}, 250);
-			}, 1);
+			display.scrollTo($('#' + data.parent.id).find('.browser_controller'));
 
 			return browserService.player;
 		};
@@ -1056,44 +1049,6 @@ module.factory('browserService', [
 		}, function () {
 			browserService.updateCategories();
 		});
-
-		//
-
-		var tips = {};
-
-		var bindTooltips = function (tips) {
-			tips = {
-				'.bb.icon.public': constants.message('consent.PUBLIC'),
-				'.bb.icon.excerpts': constants.message('consent.EXCERPTS'),
-				'.bb.icon.shared': constants.message('consent.SHARED'),
-				'.bb.icon.private': constants.message('consent.PRIVATE'),
-
-				'.bb.icon.admin': constants.message('access.ADMIN', 'You'),
-				'.bb.icon.contribute': constants.message('access.CONTRIBUTE', 'You'),
-				'.bb.icon.download': constants.message('access.DOWNLOAD', 'You'),
-				'.bb.icon.view': constants.message('access.VIEW', 'You'),
-				'.bb.icon.none': constants.message('access.NONE', 'You'),
-
-				'.bb.icon.excerpt': constants.message('classification.EXCERPT'),
-				'.bb.icon.identified': constants.message('classification.IDENTIFIED'),
-				'.bb.icon.deidentified': constants.message('classification.DEIDENTIFIED'),
-				'.bb.icon.material': constants.message('classification.MATERIAL'),
-
-				'.browser_dataset .browser_icon': constants.message('object.tip.dataset'),
-				'.browser_study .browser_icon': constants.message('object.tip.study'),
-				'.browser_record .browser_icon': constants.message('object.tip.record'),
-				'.browser_session .browser_icon': constants.message('object.tip.session'),
-				'.browser_asset .browser_icon': constants.message('object.tip.asset')
-			};
-
-			angular.forEach(tips, function (message, target) {
-				tips[target] = tooltips.add({
-					live: true,
-					$target: target,
-					message: message
-				});
-			});
-		};
 
 		//
 

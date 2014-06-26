@@ -29,13 +29,6 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
 	_ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c))
       } yield (result(request.obj))
     }
-
-  def thumb(i : models.Container.Id, segment : Segment) = Action(i, segment, Permission.VIEW).async { implicit request =>
-    request.obj.thumb.flatMap(_.fold(
-      Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAssetHtml.getFrame(Left(0.25f))(request.withObj(a))))
-  }
-
 }
 
 object SlotController extends SlotController {

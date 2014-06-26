@@ -34,6 +34,8 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
@@ -44,12 +46,10 @@ module.directive('userPasswordForm', [
 							form.resetSuccessFn(form, arguments);
 						}
 					})
-					.error(function (errors, status) {
-						form.messages.addError({
-							closeable: true,
-							body: page.constants.message('reset.request.error'),
-							errors: errors,
-							status: status
+					.error(function (data, status) {
+						form.validator.server({
+							data: data,
+							status: status,
 						});
 
 						if (angular.isFunction(form.resetErrorFn)) {
@@ -72,6 +72,8 @@ module.directive('userPasswordForm', [
 				page.$http
 					.post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
 					.success(function (data) {
+						form.validator.server({});
+
 						form.messages.add({
 							type: 'green',
 							countdown: 3000,
@@ -85,11 +87,10 @@ module.directive('userPasswordForm', [
 						page.$window.$play.object = null;
 						page.auth.updateUser(data);
 					})
-					.error(function (errors, status) {
-						form.messages.add({
-							countdown: 3000,
-							type: 'red',
-							body: angular.isObject(errors) ? (errors['password.once'] || errors['password']).join('. ') + '.' : page.constants.message('error.generic')
+					.error(function (data, status) {
+						form.validator.server({
+							data: data,
+							status: status,
 						});
 
 						if (angular.isFunction(form.saveErrorFn)) {
@@ -111,6 +112,21 @@ module.directive('userPasswordForm', [
 					return form.$dirty && form.$valid && form.data.email;
 				}
 			};
+
+			//
+
+			form.validator.client({
+				email: {
+					tips: page.constants.message('reset.email.help'),
+					errors: page.constants.message('login.email.error'),
+				},
+				'password.once': {
+					tips: page.constants.message('reset.once.help'),
+				},
+				'password.again': {
+					tips: page.constants.message('reset.again.help'),
+				},
+			}, true);
 
 			//
 

@@ -153,7 +153,7 @@ object RecordHtml extends RecordController with HtmlController {
           _ <- r.addSlot(request.obj)
         } yield (Redirect(routes.RecordHtml.edit(r.id)))
       } (models.Record.get(_).flatMap(_
-        .filter(r => r.checkPermission(Permission.DOWNLOAD) && r.volumeId === request.obj.volumeId)
+        .filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
         .fold {
 	  form.record.withError("record.bad").Bad
 	} (_.addSlot(request.obj).map { _ =>

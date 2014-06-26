@@ -28,7 +28,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
     }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
-    Action(s, segment, o, Permission.DOWNLOAD).async { implicit request =>
+    Action(s, segment, o, Permission.READ).async { implicit request =>
       (if (inline) macros.async(None) else for {
 	_ <- request.obj.auditDownload
 	name <- request.obj.fileName
@@ -37,10 +37,10 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
     }
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)
-  def head(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
+  def head(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.READ).async { implicit request =>
     getFrame(Right(Offset.ZERO))
   }
-  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.DOWNLOAD).async { implicit request =>
+  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.READ).async { implicit request =>
     getFrame(Left(0.25f))
   }
 }

@@ -25,57 +25,27 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  protected val citationMapping = Forms.tuple(
-    "head" -> Mappings.maybeText,
-    "url" -> Forms.optional(Forms.of[URL]),
-    "body" -> Mappings.maybeText
-  ).verifying("citation.invalid", _ match {
-    case (None, None, None) => true
-    case (Some(_), _, _) => true
-    case (None, Some(url), _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
-    case _ => false
-  }).transform[Option[Citation]]({
-    case (None, None, None) => None
-    case (head, url, body) => Some(Citation(head.getOrElse(""), url, body))
-  }, {
-    case None => (None, None, None)
-    case Some(Citation(head, url, body, _)) => (Some(head), url, body)
-  })
-  private def citationFill(cite : Citation) : Future[Citation] =
-    if (cite.head.isEmpty) cite.lookup else async(cite)
-  private def citationSet(volume : Volume, form : VolumeController.VolumeForm) = {
-    val cites = form.citation.get
-    for {
-      _ <- async.when(cites.nonEmpty,
-	cites.flatten.mapAsync(citationFill)
-	.flatMap(volume.setCitations _))
-      _ <- form.study.get.foreachAsync(
-	_.mapAsync(citationFill(_))
-	.flatMap(volume.setStudyCitation _))
-    } yield ()
-  }
-
-  protected def editFormFill(implicit request : Request[_]) =
-    request.obj.citations.map(new VolumeController.EditForm(_))
-
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
+    val form = new VolumeController.EditForm(None)._bind
     for {
-      form <- editFormFill
-      _ = form._bind
-      _ <- vol.change(name = form.name.get,
+      cite <- form.getCitation
+      _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
 	alias = form.alias.get.map(Maybe(_).opt),
 	body = form.body.get)
-      _ <- citationSet(vol, form)
+      _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
   }
 
   def create(owner : Option[Party.Id]) = ContributeAction(owner).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
-      vol <- models.Volume.create(form.name.get.get, form.alias.get.flatMap(Maybe(_).opt), form.body.get.flatten)
-      _ <- citationSet(vol, form)
+      cite <- form.getCitation
+      vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
+	alias = form.alias.get.flatMap(Maybe(_).opt),
+	body = form.body.get.flatten)
       _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
+      _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
   }
 
@@ -83,7 +53,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     PartyController.Action(e, Some(Permission.CONTRIBUTE)) andThen
       new ActionFilter[PartyController.Request] {
         protected def filter[A](request : PartyController.Request[A]) =
-	  request.obj.party.access.map(a => if (a.group < Permission.VIEW) Some(Forbidden) else None)
+	  request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
       }
 
   protected def accessForm(access : VolumeAccess)(implicit request : Request[_]) =
@@ -94,17 +64,16 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
       via <- request.obj.adminAccessVia
       form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
-      viaa <- via.mapAsync(_.party.access.map(_.group))
       _ <- if (form.delete.get)
-	  VolumeAccess.delete(request.obj, e)
+	  VolumeAccess.set(request.obj, e)
 	else
-	  (if (form.isRestricted)
-	    via.mapAsync(_.party.access.map(_.group))
+	  (if (!request.superuser && form.isRestricted)
+	    via.mapAsync(_.party.access.map(_.site))
 	  else async(Seq(Permission.ADMIN))).flatMap { viaa =>
 	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))
 	      form.withGlobalError("access.grant.restricted", form.party.name)._throw
 	    else
-	      VolumeAccess.set(request.obj, e, access = max(form.access.get, form.inherit.get), inherit = form.inherit.get, funding = form.funding.get)
+	      VolumeAccess.set(request.obj, e, individual = max(form.individual.get, form.children.get), children = form.children.get)
 	  }
     } yield (result(request.obj))
   }
@@ -130,28 +99,46 @@ object VolumeController extends VolumeController {
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
+  private val citationMapping = Forms.tuple(
+    "head" -> Mappings.maybeText,
+    "url" -> Forms.optional(Forms.of[URL]),
+    "authors" -> Forms.seq(Forms.nonEmptyText),
+    "year" -> Forms.optional(Forms.number(1900, 2900))
+  ).verifying("citation.invalid", _ match {
+    case (None, None, Nil, None) => true
+    case (Some(_), _, _, _) => true
+    case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
+    case _ => false
+  }).transform[Option[Citation]]({
+    case (None, None, Nil, None) => None
+    case (head, url, authors, year) => Some(Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
+  }, {
+    case None => (None, None, Nil, None)
+    case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
+  })
+
   trait VolumeForm extends FormView {
     def actionName : String
     def formName : String = actionName + " Volume"
 
-    val name : Field[Option[String]]
+    val name = Field(OptionMapping(Mappings.nonEmptyText))
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
     val body = Field(OptionMapping(Mappings.maybeText))
-    val study = Field(OptionMapping(citationMapping))
-    val citation = Field(Forms.seq(citationMapping))
+    val citation = Field(OptionMapping(citationMapping))
+    def getCitation : Future[Option[Option[Citation]]] =
+      citation.get.mapAsync(_.mapAsync(_.copy(title = name.get).lookup(false)))
   }
 
-  final class EditForm(cites : Seq[Citation])(implicit request : Request[_])
+  final class EditForm(cite : Option[Citation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Update"
     override def formName = "Edit Volume"
-    val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(request.obj.name))
-    body.fill(Some(request.obj.body))
+    name.fill(Some(request.obj.name))
     alias.fill(Some(request.obj.alias.getOrElse("")))
-    study.fill(Some(cites.headOption.filter(_.study)))
-    citation.fill(cites.dropWhile(_.study).map(Some(_)) :+ None)
+    body.fill(Some(request.obj.body))
+    citation.fill(Some(cite))
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])
@@ -159,7 +146,6 @@ object VolumeController extends VolumeController {
       routes.VolumeHtml.create(Some(request.obj.party.id)),
       views.html.volume.edit(_)) with VolumeForm {
     def actionName = "Create"
-    val name = Field(Mappings.some(Mappings.nonEmptyText))
   }
 
   final class AccessForm(val party : Party, own : Boolean = false)(implicit request : Request[_])
@@ -169,23 +155,21 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party.id.unId <= 0
-    val access = Field(Mappings.enum(Permission,
-      maxId = Some((if (isGroup) Permission.DOWNLOAD else Permission.ADMIN).id),
+    val individual = Field(Mappings.enum(Permission,
+      maxId = if (isGroup) Some(Permission.SHARED.id) else None,
       minId = (if (own) Permission.ADMIN else Permission.NONE).id))
-    val inherit = Field(Mappings.enum(Permission,
-      maxId = Some(if (isGroup) Permission.DOWNLOAD.id else Permission.EDIT.id)))
-    val funding = Field(Mappings.maybeText)
+    val children = Field(Mappings.enum(Permission,
+      maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
     private[controllers] def _fill(a : VolumeAccess) : this.type = {
       assert(a.party === party)
-      access.fill(a.access)
-      inherit.fill(a.inherit)
-      funding.fill(a.funding)
+      individual.fill(a.individual)
+      children.fill(a.children)
       this
     }
     /** Does granting this access level require CONTRIBUTE-level authorization? */
     def isRestricted : Boolean =
-      isGroup && inherit.get > Permission.NONE
+      isGroup && children.get > Permission.NONE
   }
 
   final class AccessSearchForm(implicit request : Request[_])
@@ -214,10 +198,11 @@ object VolumeHtml extends VolumeController with HtmlController {
       sessions <- vol.sessions
       records <- vol.recordCategorySlots
       excerpts <- vol.excerpts
-      citations <- vol.citations
+      citation <- vol.citation
+      funding <- vol.funding
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citations, comments, tags)))
+    } yield (Ok(views.html.volume.view(summary, access, top, sessions, records, excerpts, citation, funding, comments, tags)))
   }
 
   def viewSearch(implicit request : SiteRequest[AnyContent]) = {
@@ -232,7 +217,9 @@ object VolumeHtml extends VolumeController with HtmlController {
   def search = SiteAction.async(viewSearch(_))
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
-    editFormFill.flatMap(_.Ok)
+    request.obj.citation
+    .map(new VolumeController.EditForm(_))
+    .flatMap(_.Ok)
   }
 
   def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>
@@ -273,18 +260,45 @@ object VolumeApi extends VolumeController with ApiController {
     } yield (Ok(JsonArray(vols)))
   }
 
-  def accessGet(volumeId : models.Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
+  def accessGet(volumeId : Volume.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
     for {
       parents <- request.obj.partyAccess()
     } yield (Ok(JsonRecord.map[VolumeAccess](a =>
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
   }
 
-  def accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id) = Action(volumeId, Permission.ADMIN).async { implicit request =>
-    (if (!(partyId === request.identity.id))
-      VolumeAccess.delete(request.obj, partyId)
-    else macros.async(false)).map { _ =>
-      result(request.obj)
+  def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
+    Action(volumeId, Permission.ADMIN).async { implicit request =>
+      (if (!(partyId === request.identity.id))
+	VolumeAccess.set(request.obj, partyId)
+      else macros.async(false)).map { _ =>
+	result(request.obj)
+      }
     }
+
+  final class FundingForm(funderId : Funder.Id)(implicit request : Request[_])
+    extends ApiForm(routes.VolumeApi.fundingChange(request.obj.id, funderId)) {
+    val awards = Field(Forms.seq(Mappings.nonEmptyText))
   }
+
+  def funderSearch(query : String, all : Boolean = false) =
+    SiteAction.async { implicit request =>
+      Funder.search(query, all).map(r => Ok(JsonArray.map[Funder,JsonObject](_.json)(r)))
+    }
+
+  def fundingChange(volumeId : Volume.Id, funderId : Funder.Id) =
+    Action(volumeId, Permission.EDIT).async { implicit request =>
+      val form = new FundingForm(funderId)._bind
+      VolumeFunding.set(request.obj, funderId, Some(form.awards.get.toIndexedSeq)).map { r =>
+	if (r) result(request.obj)
+	else form.withGlobalError("funder.notfound", funderId)._throw
+      }
+    }
+
+  def fundingDelete(volumeId : Volume.Id, funderId : Funder.Id) =
+    Action(volumeId, Permission.EDIT).async { implicit request =>
+      VolumeFunding.set(request.obj, funderId, None).map { _ =>
+	result(request.obj)
+      }
+    }
 }

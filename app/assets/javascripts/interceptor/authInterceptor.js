@@ -2,7 +2,7 @@ module.factory('authInterceptor', [
 	'$rootScope', '$q', '$location', function ($rootScope, $q, $location) {
 		return {
 			responseError: function (response) {
-				if (response.status == 403) {
+				if (response.status === 403 && $location.url() !== '/login') {
 					$location.url('/login');
 				}
 

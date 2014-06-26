@@ -61,28 +61,8 @@ module.directive('messages', [
 
 					return styles;
 				};
-
-				//
-
-				this.updateHeight = function () {
-					var padding = 0;
-
-					angular.forEach(this.messages, function (message) {
-						if (message.enabled) {
-							padding += $('#' + message.id).outerHeight();
-						}
-					});
-
-					page.$w.scrollTop(page.$w.scrollTop() + padding - parseInt(page.$m.css('padding-top')));
-					page.$m.css('padding-top', padding);
-				};
-
-				$scope.$watch(function () {
-					return that.messages;
-				}, function () {
-					that.updateHeight();
-				});
 			};
+
 			Region.prototype = angular.isDefined($attrs.default) ? page.messages : page.messages.region();
 
 			return new Region();
@@ -92,7 +72,6 @@ module.directive('messages', [
 
 		return {
 			restrict: 'E',
-			replace: true,
 			templateUrl: 'messages.html',
 			controller: controller,
 			controllerAs: 'messages',

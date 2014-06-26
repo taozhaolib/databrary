@@ -5,9 +5,11 @@
     <legend class="auth_request">{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
 
     <div ng-if="authApplyForm.other.party.institution">
-      <div class="cut_f" ng-bind-html="'auth.info.prompt' | message | format"></div>
+      <div ng-bind-html="'auth.info.prompt' | message | format"></div>
 
-      <textarea id="field_guess" ng-model="authApplyForm.notFound.info"></textarea>
+      <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
+        <textarea id="field_guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+      </validator>
     </div>
   </fieldset>
 
@@ -16,14 +18,16 @@
 
     <div class="cut_f" ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
 
-    <textarea id="field_info" ng-model="authApplyForm.notFound.info"></textarea>
+    <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
+      <textarea id="field_info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+    </validator>
   </fieldset>
 
   <fieldset class="clean">
     <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
     <button ng-click="authApplyForm.save()" class="green">{{"auth.request" | message}}</button>
-    <button ng-click="authApplyForm.cancel()" class="red">{{"cancel" | message}}</button>
+    <button ng-click="authApplyForm.cancel()" class="yellow">{{"cancel" | message}}</button>
   </fieldset>
 </form>
 

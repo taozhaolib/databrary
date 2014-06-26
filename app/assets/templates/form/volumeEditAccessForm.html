@@ -1,8 +1,25 @@
 <form name="volumeEditAccessForm" bindonce novalidate>
   <messages form="volumeEditAccessForm"></messages>
 
-  <fieldset class="clean">
-    <article ng-repeat="access in volumeEditAccessForm.data.access">
+  <fieldset class="clean radio-set" ng-disabled="!page.auth.hasAuth('EDIT')" ng-form="accessGlobalForm">
+    <legend bo-html="'access.global.legend' | message"></legend>
+
+    <div class="col-full message message_yellow message_content" bo-if="!page.auth.hasAuth('EDIT')" bo-html="'access.global.restricted' | message"></div>
+
+		<div ng-repeat="(val, perms) in page.constants.data.accessGlobal">
+			<input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
+			<label bo-html="'access.global.'+perms.join('.') | message" class="option"></label>
+		</div>
+  </fieldset>
+
+  <fieldset class="clean" ng-if="page.auth.hasAuth('EDIT')">
+    <button ng-click="volumeEditAccessForm.saveGlobal()" class="green" bo-html="'save' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
+    <button ng-click="volumeEditAccessForm.resetGlobal()" class="yellow" bo-html="'revert' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
+  </fieldset>
+
+  <fieldset ng-if="volumeEditAccessForm.data.length > 0">
+    <legend bo-html="'access.grant.special.legend' | message"></legend>
+    <article ng-repeat="access in volumeEditAccessForm.data">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent)">
@@ -18,30 +35,22 @@
             </div>
 
             <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-              <access-grant-form volume="{{volumeEditAccessForm.volume.id}}" access="access"></access-grant-form>
+              <access-grant-form volume="volumeEditAccessForm.volume" access="access"></access-grant-form>
             </div>
            </div>
         </div>
       </div>
     </article>
-
-    <article class="auth-search-add">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure baseline="square" class="figure_avatar">
-            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
-          </figure>
-        </div>
-
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-          <access-search-form volume="{{volumeEditAccessForm.volume.id}}"></access-search-form>
-        </div>
-      </div>
-    </article>
   </fieldset>
 
+	<fieldset scope>
+    <legend bo-html="'access.search.legend' | message"></legend>
+		<access-search-form volume="{{volumeEditAccessForm.volume.id}}"></access-search-form>
+	</fieldset>
+
   <fieldset class="clean">
-    <button ng-click="volumeEditAccessForm.cancel()" bo-html="'cancel' | message" class="yellow" ng-if="volumeEditAccessForm.volume"></button>
+    <button ng-click="volumeEditAccessForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
+    <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
   </fieldset>
 </form>
 

@@ -6,10 +6,10 @@
 // MIXINS
 
 .tooltip-color(@c) {
-	background-color: mix(@c, @white, 25%);
+	color: @c;
 	border-color: mix(@c, @gray, 75%);
 
-	a{
+	a {
 		&:link, &.link,
 		&:visited, &.visited {
 			color: mix(@c, @black, 75%);
@@ -41,23 +41,31 @@
 //
 
 .tooltip {
-	.font(.75, .75);
-	background-color: mix(@pale, @white, 90%);
-	border: 1px solid @pale;
-	.border-radius(15px);
-	.grid-width(max, 3);
-	float: left;
 	position: absolute;
 	top: -1000px;
 	left: -1000px;
 	opacity: 0;
-	.transition(opacity .15s linear);
-	pointer-events: none;
-	.padding(@f4, @f3);
-	text-shadow: 0 0 2px fadeout(@white, 25%);
+
+	background-color: @white;
+	.border-radius(@b6);
+	.box-shadow();
+	.padding(@f6);
+	.font-size(.75);
+	.line-height(.75);
+	z-index: 2000;
+	.grid-width(max, 3);
 
 	&.tooltip_visible {
 		opacity: 1;
+	}
+
+	&:after,
+	&:before {
+		content: "";
+		.size(0);
+		border: @b4 solid transparent;
+		position: absolute;
+		pointer-events: none;
 	}
 }
 
@@ -87,24 +95,46 @@
 	.tooltip-color(@purple);
 }
 
+.tooltip_neutral {
+	.tooltip-color(@neutral);
+}
+
 //
 
 .tooltip_left {
-	&.tooltip_top {
-		.border-radius(@round @round @point @round);
-	}
-
-	&.tooltip_bottom {
-		.border-radius(@round @point @round @round);
+	&:after,
+	&:before {
+		right: @b1 + @b12;
 	}
 }
 
 .tooltip_right {
-	&.tooltip_top {
-		.border-radius(@round @round @round @point);
+	&:after,
+	&:before {
+		left: @b1 + @b12;
+	}
+}
+
+&.tooltip_top {
+	&:after {
+		border-top-color: @white;
+		bottom: -@b2;
 	}
 
-	&.tooltip_bottom {
-		.border-radius(@point @round @round @round);
+	&:before {
+		border-top-color: @gray;
+		bottom: -@b2 - 1px;
+	}
+}
+
+&.tooltip_bottom {
+	&:after {
+		border-bottom-color: @white;
+		top: -@b2;
+	}
+
+	&:before {
+		border-bottom-color: @gray;
+		top: -@b2 - 1px;
 	}
 }

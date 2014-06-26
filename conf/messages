@@ -8,25 +8,48 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
+format.list.text=text files
+format.list.application=documents
+format.list.video=video
+format.list.image=images
+format.list.audio=audio
+format.list.note=
+format.list.link=Click here to see list of supported file formats
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
-citation.invalid=Invalid citation
+error.date=
+citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format ''{0}'' is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
+file.superseded=That file has already been replaced.
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
 duns.invalid=Invalid D-U-N-S
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
+object.invalid=Invalid {0} specified
+funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
-url.invalid=Invalid URL (should start with http or doi:)
+url.invalid=Invalid. Please check your typing.
+
+error.generic=Something''s gone terribly wrong.
+error.prefix=<strong>Error</strong>:
+error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.view=<a href="" ng-click="message.fn()">View error</a>.
+
+error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
+error.report.subject=[Error {0}] {1}
+error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
+
+scraper.error=Could not retrieve required document "{0}".
+video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
 
 error.forbidden.title=Access denied
-error.forbidden.body=
+error.forbidden.body=If you are not logged-in, try logging in.
 error.notfound.title=There''s nothing here
 error.notfound.body=The resource you requested may no longer be available.
 error.badrequest.title=Bad request
@@ -63,15 +86,25 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 databrary=Databrary
 featured=Featured Dataset
 
+navigation.confirmation=Do you want to abandon all unsaved changes?
+
 save=Save
+save.all=Save All
+clear=Clear
 cancel=Cancel
 reset=Reset
+replace=Replace
+upload=Upload
 revert=Revert
+revert.all=Revert All
 add=Add
 remove=Remove
 edit=Edit
 create=Create
-lookup=Lookup
+file=file
+account=Account
+password=Password
+me=Me
 
 toolbar.login=login
 toolbar.logout=logout
@@ -80,42 +113,64 @@ toolbar.profile=view profile
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
-# HTML page attributes
-page.title.home=Welcome
+# --- Login page
 page.title.login=Login
-page.title.reset=Password Reset
-page.title.register=Register
-page.title.search=Search
-page.title.stub=Create Volume Stub
-page.title.error=There''s been an Error!
 
-# Login, party, auth pages
 login.title=Login
 login.title.sub=Enter Databrary
 login.login=Login
 login.method.password=or login with Databrary.
 login.method.openid=or login with OpenID.
 login.forgot=Forgot your password?
-email=Email
-password=Password
-password.current=Current Password
-password.new=New Password
-password.new.again=New Password (again)
-password.incorrect=Incorrect password.
-password.again=Passwords do not match.
-password.check=Insecure password: {0}
-openid=OpenID
-orcid=ORCiD
-fullname=Full Name
-duns=D-U-N-S
-avatar=Avatar
-affiliation=Affiliation
+
 login.bad=Incorrect login.
 login.throttled=Too many login attempts. Try again later.
 login.openID.notFound=No account is associated with that OpenID.
 login.noCookie=You must be logged in to perform that action. Please make sure you have cookies enabled.
 login.expired=Your session has expired. Please login again.
 login.error=Unable to log in with those credentials.
+
+login.email.help=Enter the email address you used to register.
+login.email.error=This email address is invalid.
+login.password.help=Enter your password.
+
+# --- Reset page
+page.title.reset=Password Reset
+
+reset.title=Password Reset
+reset.request=Reset
+reset.save=Save
+reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
+reset.save.success=Your password has been reset.
+reset.request.error=Password reset unsuccessful.
+
+reset.email.help=Enter the email address you used to register.
+reset.once.help=Enter a secure password.
+reset.again.help=Enter the same password again.
+
+# --- HTML page attributes
+page.title.home=Welcome
+page.title.register=Register
+page.title.search=Search
+page.title.stub=Create Volume Stub
+page.title.error=There''s been an Error!
+
+# party, auth pages
+email=Email
+password.once=Password
+password.again=Password (again)
+password.current=Current Password
+password.new=New Password
+password.new.again=New Password (again)
+password.incorrect=Incorrect password.
+password.match=Passwords do not match.
+password.check=Insecure password: {0}
+openid=OpenID
+orcid=ORCiD
+fullname=Full Name
+duns=D-U-N-S
+avatar=avatar
+affiliation=Affiliation
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
@@ -125,25 +180,12 @@ superuser.on.error=Could not activate superuser mode!
 superuser.off.success=Superuser mode deactivated!
 superuser.off.error=Could not deactivate superuser mode!
 
-reset.title=Password Reset
-reset.request=Reset
-reset.save=Save
-reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
-reset.save.success=Your password has been reset.
-reset.request.error=Password reset unsuccessful.
-
 welcome.title=Welcome
 welcome.title.sub=Databrary Private Beta
 welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/releasing-data.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-authorized.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
 
 party.overview.title=Overview
 party.contact.title=Contact
-party.edit=update profile
-
-party.edit.personal=Personal Info
-party.edit.admin=Administration
-party.edit.success=Profile saved successfully!
-party.edit.error=Unable to save profile.
 
 network.title=Authorizations
 network.authquery.error=Could not retrieve your authorizing agents and affiliates.
@@ -152,100 +194,209 @@ network.remote.apply=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
-auth.inherit=Access to Databrary
-auth.direct=Access to {0} data
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
-auth.request.title=Request authorization from {0}
-auth.request.notfound.user=User Not Found
-auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
-auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
-auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 auth.apply.error=Could not submit your request.
-auth.grant.title=Grant {0} the following capabilities:
-auth.grant.save.error=Could not save this authorization.
-auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
-auth.search=Search for a user or institution...
-auth.search.principal=Search for your institution...
-auth.search.affiliate=Search for your sponsoring PI...
-auth.search.error=Could not retrieve any users or institutions.
+
 auth.request=Request
 auth.authorize=Authorize
 auth.update=Update
 auth.deny=Deny
 auth.revoke=Revoke
 auth.notfound=None of these
-auth.info.prompt=Please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+auth.pending.notice=You have a pending authorization request from {0}.
+
+# --- Auth grant
+auth.grant.title=Grant {0} the following capabilities:
+auth.grant.save.error=Could not save this authorization.
+auth.grant.deny.error=Could not deny this authorization.
+auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.expires.help=Select a date within the next two years.
+auth.grant.expires.error=The date selected is not within the next two years.
+
+# --- Party edit
+page.title.party.edit=Edit Profile
+party.edit=edit profile
+party.view=view profile
+
+party.edit.personal=Personal Information
+party.edit.extended=Additional Info
+party.edit.account=Login Information
+party.edit.confirm=Confirm Access
+
+party.edit.name.title=Full name
+party.edit.name.help=Enter your full name.
+
+party.edit.affiliation.title=Affiliation
+party.edit.affiliation.help=Specify your institutional affiliation.
+
+party.edit.orcid.title=ORCiD
+party.edit.orcid.help=Enter your ORCiD.
+
+party.edit.duns.title=DUNS
+party.edit.duns.help=Enter this institution''s DUNS.
+
+party.edit.email.title=Email
+party.edit.email.help=Enter a valid email address.
+
+party.edit.password.title=New password
+party.edit.password.help=Enter a new, secure password.
+
+party.edit.password.again.title=New password (again)
+party.edit.password.again.help=Enter your new password again.
+party.edit.password.again.error=Passwords do not match.
+
+party.edit.auth.title=Current password
+party.edit.auth.help=Enter your current password to save changes.
+
+party.edit.avatar.title=Avatar
+party.edit.avatar.exists=Choose a new profile image
+
+party.edit.avatar.upload=Saving data and uploading your avatar now.
+party.edit.profile.success=Profile saved successfully.
+party.edit.account.success=Account updated successfully.
+
+wizard.party_edit_profile.name=Profile
+wizard.party_edit_profile.description=Modify publicly visible info.
+wizard.party_edit_profile.instructions=
+
+wizard.party_edit_account.name=Account
+wizard.party_edit_account.description=Update email address and password.
+wizard.party_edit_account.instructions=
+
+# --- Auth search
+auth.search=Search for a user or institution...
+auth.search.name.help=Enter your institution or PI.
+auth.search.name.error=Enter at least 3 characters for auto-search to begin.
+auth.search.principal=Search for your institution...
+auth.search.principal.help=Enter your institution.
+auth.search.affiliate=Search for your sponsoring PI...
+auth.search.affiliate.help=Enter your sponsoring PI.
+auth.search.placeholder=Search for your sponsoring PI or institution...
+auth.search.placeholder.help=Enter your sponsoring PI or institution.
+auth.search.child=Search for the person you wish to sponsor...
+auth.search.child.help=Enter the person you wish to sponsor.
+auth.search.error=Could not retrieve any users or institutions.
+
+# --- Auth apply
+auth.request.title=Request authorization from {0}
+auth.request.notfound.user=User Not Found
+auth.request.notfound.title=More information required
+auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
+auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
+
+auth.info.prompt=Expedite the authorization process by helping us contact your Institution''s Authorizing Official (a.k.a. the co-signer of your Agreement).
+auth.request.info.title=More Info
+auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
-access.search=Search for a user, group, or institution...
-access.search.error=Could not retrieve any users or institutions.
-access.notfound=None of these
-access.grant.funding=Grant #
+access.global.legend=Share this study
+access.global.save.success=Sharing settings updated.
+access.global.save.error=Unable to update sharing settings.
+access.global.NONE.NONE=Share only with those collaborators I specify below.
+access.global.NONE.SHARED=Share with all authorized Databrary investigators.
+access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
+access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
+
 access.remove=Remove
 access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.funding.save.success=Funding source updated.
-access.grant.funding.remove.success=Funding source removed.
-access.grant.access.save.success=Access record updated.
-access.grant.access.remove.success=Access record removed.
+access.grant.access.save.success=Access changed.
+access.grant.access.remove.success=Access removed.
+access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
+access.grant.remove.success=Access removed successfully.
 access.grant.remove.error=Could not remove access at this time.
 access.delete.self=You cannot remove your own access to a volume.
 access.grant.restricted=You are not authorized to share data with {0}.
+access.grant.special.legend=Collaborators
+
+access.search.legend=Add another collaborator
+access.search=Search for a user, group, or institution...
+access.search.name.help=Enter to whom you want to grant access.
+access.search.name.error=Enter at least 3 characters for auto-search to begin.
+access.search.error=Could not retrieve any users or institutions.
+access.search.repeat={0} has already been added.
+access.notfound=None of these
+
+# Funding
+funding.save.success=Funding source updated.
+funding.save.error=Could not update funding agency at this time.
+funding.remove.success=Funding source removed.
+funding.remove.error=Could not remove funding agency at this time.
+
+funding.awards=Grant #
+funding.awards.placeholder=XXX-XXXXXX-XX
+funding.search.legend=Search Funding Agencies
+funding.search.placeholder=Search for a funding agency...
+funding.search.more=Find more...
+funding.search.repeat={0} has already been added.
+
+funding.search.name.help=Start typing the name of the desired funding agency.
 
 # Permission levels
-auth.inherit.NONE=No access.
-auth.inherit.VIEW=Access to deidentified Databrary data.
-auth.inherit.DOWNLOAD=Access to identifiable Databrary data.
-auth.inherit.CONTRIBUTE=Can create and share Databrary data.
-auth.inherit.ADMIN=Can authorize users on {0} behalf.
+auth.site=Access to others'' shared Databrary data
+auth.site.NONE.title=No access
+auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
+auth.site.PUBLIC.title=Restricted access
+auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
+auth.site.SHARED.title=Provisional access
+auth.site.SHARED=Access to all shared Databrary data.
+auth.site.READ.title=Affiliate Investigator
+auth.site.READ=Access all shared Databrary data.
+auth.site.EDIT.title=Principal Investigator
+auth.site.EDIT=Share data with Databrary and the public.
+auth.site.ADMIN.title=Administrative access
+auth.site.ADMIN=Can authorize users on {0} behalf.
 
-auth.direct.NONE=No access.
-auth.direct.VIEW=Access to {0} deidentified data.
-auth.direct.DOWNLOAD=Access to {0} identifiable data.
-auth.direct.CONTRIBUTE=Can edit {0} data.
-auth.direct.ADMIN=Can share {0} data.
-
-# presents: auth.preset.<inherit>.<direct>
-# for ADMIN parents:
-auth.preset.DOWNLOAD.NONE.title=Affiliate Investigator
-auth.preset.DOWNLOAD.NONE=Access to shared Databrary data.
-auth.preset.CONTRIBUTE.NONE.title=Principal Investigator
-auth.preset.CONTRIBUTE.NONE=Researchers eligible for PI status may access and share Databrary data, and authorize affiliates.
-auth.preset.ADMIN.NONE.title=Administrator
-auth.preset.ADMIN.NONE=Authorize Principal Investigators on {0} behalf.
-
-# for CONTRIBUTE parents:
-auth.preset.DOWNLOAD.DOWNLOAD.title=Restricted Affiliate
-auth.preset.DOWNLOAD.DOWNLOAD=View-only access to shared Databrary data and all {0} private data.
-auth.preset.CONTRIBUTE.CONTRIBUTE.title=Affiliate Investigator
-auth.preset.CONTRIBUTE.CONTRIBUTE=Access to create and modify {0} datasets and studies, as well as above privileges.
-auth.preset.ADMIN.ADMIN.title=Delegated Proxy
-auth.preset.ADMIN.ADMIN=Full access to all {0} authorization and data sharing controls, as well as above privileges.
+auth.member=Access to {0} group/lab data
+auth.member.NONE.title=No access
+auth.member.NONE=Cannot access {0} data (except as granted through Databrary authorization).
+auth.member.PUBLIC.title=Public access
+auth.member.PUBLIC=Can browse {0} studies and volumes, but only view public data.
+auth.member.SHARED.title=Shared access
+auth.member.SHARED=Read-only access to {0} group data except private data.
+auth.member.READ.title=Read-only access
+auth.member.READ=Full view access to all {0} group data.
+auth.member.EDIT.title=Read/write access
+auth.member.EDIT=Can access and edit all {0} group data.
+auth.member.ADMIN.title=Manager
+auth.member.ADMIN=Can access and change permisions on all {0} group data.
 
 # note: {0} may be name or "You"
-access.NONE={0} cannot access this data.
-access.VIEW={0} can access only unrestricted data.
-access.DOWNLOAD={0} can access all released, restricted data.
-access.CONTRIBUTE={0} can access and edit all released and unreleased data.
-access.ADMIN={0}, as the owner of these data, can fully edit and share them.
+access.NONE={0} cannot access these data.
+access.PUBLIC={0} can access only public data.
+access.SHARED={0} can access only shared data.
+access.READ={0} has read-only access.
+access.EDIT={0} has read-write access.
+access.ADMIN={0}, as an investigator on these data, can fully edit and share them.
 
+access.edit.NONE=No access
+access.edit.PUBLIC=View access only public data
+access.edit.SHARED=View and access only shared data
+access.edit.READ=Read-only access
+access.edit.EDIT=Read/write access
+access.edit.ADMIN=Investigator (read/write/share access)
+
+access.edit.READ.who=For those you trust to view all data.
+access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
+access.edit.ADMIN.who=For fellow study investigators only.
+
+consent.NONE=There is no release for this session.
 consent.PRIVATE=The identifying data in this session have not been released for sharing.
 consent.SHARED=The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
-consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings.
+consent.EXCERPTS=The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
 consent.PUBLIC=The identifying data in this session have been released publicly.
 
-classification.IDENTIFIED=This file contains identifying information.
-classification.EXCERPT=This file, containing identifying information, has been chosen as a publicly-releasable excerpt.
-classification.DEIDENTIFIED=This data in this file have been deidentified, and contain no identifying information.
-classification.ANALYSIS=This data in this file are summarized, aggregated, or otherwise anonymized.
-classification.PRODUCT=This file contains research products, such as figures or manuscripts.
-classification.MATERIAL=This file contains no data but may have been used to collect data, such as proposals, protocols, stimuli, or blank forms.
+classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
+classification.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
+classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
+classification.PUBLIC=Public: available to anybody for unrestricted use.
 
+asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
 asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
 
 # objects
@@ -258,16 +409,16 @@ object.tip.asset=Files can potentially contain a lot of valuable data.
 # Volume page
 volume=Volume
 volume.overview.title=Overview
+volume.authors.title=Original Authors
 volume.contributors.title=Investigators
 volume.funding.title=Funding
-volume.metadata.title=Description
 volume.creation.title=Shared on
 volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
 volume.ages={0} (M = {1})
-volume.citation.title=Citation
-volume.citation.study.link=Original publication
+volume.citation.title=Original Work
+volume.link.title=How to Cite
 volume.access.title=Shared with
 volume.reuse.title=Reuse
 volume.reuse.provides=These data are used in...
@@ -276,18 +427,7 @@ volume.reuse.consumes=These data were originally collected as part of...
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
 volume.body=Description
-volume.edit=edit volume
-volume.edit.create=create volume
-volume.edit.exit=view volume
-volume.edit.success=Volume saved successfully!
-volume.edit.error=Unable to save volume.
-volume.edit.cancel=cancel
-volume.edit.autodoi=Enter the DOI or URL of any corresponding publication
-volume.edit.autodoi.instructions=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter its DOI or URL here.  If you enter a DOI, we will attempt to automatically fill in the title and citation.
-volume.edit.autodoi.name.success=Title retrieved from DOI.
-volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
-volume.edit.autodoi.citation.success=Citation retrieved from DOI.
-volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
+study.body=Abstract
 
 browser.title=Data
 browser.group=+
@@ -312,10 +452,6 @@ player.close=Close the media player.
 materials.title=Materials
 materials.empty=There are no files here.
 
-material.file=File
-material.name=Name
-material.classification=Classification
-
 citations.title=Citations
 citations.study.title=Corresponding Publication
 citations.study.body=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter a citation to it here.
@@ -323,8 +459,9 @@ citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
 citation.head=Citation
+citation.year=Year
 citation.url=DOI or URL
-citation.body=Abstract
+citation.authors=Authors
 
 comments.title=Comments
 comments.post=Post
@@ -334,6 +471,10 @@ comments.prompt=Post a comment...
 comments.update.error=Could not update comments list.
 comments.add.success=Comment added.
 comments.add.error=Error while posting comment.
+
+comments.text.title=Comment
+comments.text.help=Comment on the content of this page.
+comments.text.error=Must be at least 3 characters long.
 
 tags.title=Tags
 tags.vote.up=Vote this tag up.
@@ -357,22 +498,6 @@ search.deep.info=You are in deep search mode. Press enter to submit new request,
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
 
-# Errors
-error.prefix=<strong>Error</strong>:
-error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
-
-error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
-error.report.subject=[Error {0}] {1}
-error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
-
-error.view=<a href="" ng-click="message.fn()">View error</a>.
-
-error.generic=Something''s gone terribly wrong.
-error.email=feedback@databrary.org
-
-scraper.error=Could not retrieve required document "{0}".
-video.unsupported=Unfortunately, we do not currently support playing videos in Firefox on OS X. Please try Safari or Chrome.
-
 # --- Registration
 register.title=Register
 register.title.sub=Get Databrary Access
@@ -382,6 +507,13 @@ register.agree=Agree
 register.register=Agree and register
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
+
+register.name.help=Provide your full name.
+
+register.email.help=We recommend using your institutional email address. You can change it later.
+register.email.error=This email address is invalid.
+
+register.affiliation.help=Enter your affiliation as you wish it to display on your profile.
 
 wizard.register_create.name=Create Account
 wizard.register_create.description=Register to browse shared data and comment on datasets.
@@ -416,50 +548,85 @@ wizard.register_pending.name=Stay Tuned
 wizard.register_pending.description=Tips for exploring Databrary.
 wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
-wizard.register_form.name.help=<strong>Name</strong>: Provide your full name.
-wizard.register_form.email.help=<strong>Email</strong>: We recommend using your institutional email address. You can change it later.
-wizard.register_form.email.error=<strong>Email</strong>: This email address is invalid.
-wizard.register_form.affiliation.help=<strong>Affiliation</strong>: Enter your affiliation as you wish it to display on your profile.
-
 #Splash page text
 splash.investigators.header=Databrary Investigators
 
 # --- Volume edit
 
-volume.edit.title.sub=New Volume
+volume.edit.create=create study
+volume.edit.cancel=cancel
+volume.edit=edit study
+volume.edit.exit=view study
+
+volume.edit.title.sub=New Study
+volume.edit.success=Volume saved successfully.
+volume.edit.error=Unable to save volume.
+
+wizard.volume_edit_overview.name=Citation
+wizard.volume_edit_overview.description=Edit citation and description.
+wizard.volume_edit_overview.instructions=First, provide basic information about the published paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
+
+volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
+volume.edit.autodoi=DOI or URL
+volume.edit.autodoi.placeholder=10.XXXX/XXXXXXXX
+volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Lookup".
+volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this study represents.
+volume.edit.autodoi.lookup=Lookup
+volume.edit.autodoi.donthave=I don''t have one
+
+volume.edit.autodoi.name.success=Title retrieved from DOI.
+volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
+volume.edit.autodoi.citation.success=Citation retrieved from DOI.
+volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
+
+volume.edit.citation.head.help=Enter the full citation of the associated paper, preferably in APA format.
+volume.edit.citation.head.placeholder=Last, F. (2014). Title...
+volume.edit.name.help=Enter the title of the paper or study.
+volume.edit.name.placeholder=Title
+volume.edit.citation.author.placeholder=First Last
+volume.edit.citation.year.help=Enter the publication year of the associated paper.
+volume.edit.citation.year.placeholder=2014
+volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
+volume.edit.body.placeholder=
+volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
+volume.edit.alias.placeholder=
 
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
-volume.edit.citations.success=Citations updated successfully.
-volume.edit.citations.error=Unable to update citations.
+
+wizard.volume_edit_excerpts.name=Excerpts
+wizard.volume_edit_excerpts.description=Upload representative videos and images.
+wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
+
+wizard.volume_edit_materials.name=Materials
+wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
+
+material.file=File
+material.file.help=Select the file you wish to upload.
+material.name=Caption
+material.name.help=You may optionally provide a brief description of this file for other users.
+material.name.placeholder=
+material.classification=Classification
+
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
 volume.edit.materials.create=Upload of {0} in progress.  Please wait.
 volume.edit.materials.create.success=Uploaded {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
 volume.edit.materials.create.error=Unable to upload {0}.
+volume.edit.materials.replace.success=Replaced {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
+volume.edit.materials.replace.error=Unable to replace {0}.
 volume.edit.materials.remove.success=Removed {0} successfully.
 volume.edit.materials.remove.error=Unable to remove {0}.
 volume.edit.materials.refresh.error=Could not update materials display. Please refresh before making any new edits.
-volume.edit.access.success=Volume access updated successfully.
-volume.edit.access.error=Unable to update volume access.
-
-wizard.volume_edit_overview.name=Overview
-wizard.volume_edit_overview.description=Edit name and description.
-wizard.volume_edit_overview.instructions=Provide a name and description for your dataset or study. If this study corresponds to a paper, these can be the same as the title and abstract of the paper.\n\nVisit the tabs on the left to provide more information or additional files.
-
-# Same as citations.title above??!
-wizard.volume_edit_citations.name=Citations
-wizard.volume_edit_citations.description=Edit or add relevant citations.
-wizard.volume_edit_citations.instructions=Enter details about any related research products, papers, or publications that either reference or are referenced by this volume.
-
-wizard.volume_edit_materials.name=Materials
-wizard.volume_edit_materials.description=Upload excerpts, stimuli, and other materials.
-wizard.volume_edit_materials.instructions=Provide any files related to this study, such as video excerpts that may be shared without restriction, stimuli or displays used during data collection, scripts, blank forms, or any other unrestricted or deidentified files.\n\nAfter you add a new file, please be patient as it may take some time to upload and process. We do not yet support uploading identifying or restricted participant data or metadata.
 
 wizard.volume_edit_funding.name=Funding
 wizard.volume_edit_funding.description=Specify funding sources.
-wizard.volume_edit_funding.instructions=Specify any sources of funding that may have supported this research along with the grant numbers.  If your funding agency is not listed, contact us to add it.
+wizard.volume_edit_funding.instructions=Sources of funding that supported this research.
 
 wizard.volume_edit_access.name=Access
 wizard.volume_edit_access.description=Set access and sharing levels.
 wizard.volume_edit_access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
+
+volume.edit.access.success=Volume access updated successfully.
+volume.edit.access.error=Unable to update volume access.

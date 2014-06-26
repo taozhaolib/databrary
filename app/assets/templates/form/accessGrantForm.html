@@ -1,24 +1,23 @@
 <form name="accessGrantForm" bindonce novalidate>
   <messages form="accessGrantForm"></messages>
 
-  <fieldset class="clean" ng-if="accessGrantForm.funding">
-		<label bo-html="'access.grant.funding' | message"></label>
-		<input name="funding" type="text" ng-model="accessGrantForm.data.funding" idle="accessGrantForm.save()" ng-blur="accessGrantForm.save()">
-  </fieldset>
+	<fieldset class="clean radio-set" ng-disabled="!accessGrantForm.canChange()">
+    <div ng-repeat="(val, name) in page.constants.data.accessPreset">
+      <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
+      <label bo-html="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
+    </div>
+	</fieldset>
 
-	<fieldset class="clean radio-set" ng-if="!accessGrantForm.funding">
-		<div ng-repeat="permission in page.constants.data.permission">
-			<input type="radio" ng-model="accessGrantForm.data.access" name="accessOption" ng-value="$index" ng-selected="$index == accessGrantForm.data.access" ng-change="accessGrantForm.save()">
-			<label bo-html="'access.'+permission | message:access.party.name" class="option"></label>
-		</div>
-
+	<fieldset class="clean radio-set">
 		<div ng-if="!access.party.institution">
-			<input type="checkbox" ng-checked="accessGrantForm.data.inherit != 0" ng-model="accessGrantForm.extending" ng-change="accessGrantForm.extend()">
+			<input type="checkbox" ng-model="accessGrantForm.data.extend">
 			<label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
 		</div>
 	</fieldset>
 
   <fieldset class="clean">
-    <button ng-click="accessGrantForm.remove()" class="orange" bo-html="'access.remove' | message"></button>
+    <button ng-click="accessGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>
+    <button ng-click="accessGrantForm.reset()" class="yellow" bo-html="'revert' | message" ng-disabled="!accessGrantForm.$dirty"></button>
+    <button ng-click="accessGrantForm.remove()" class="red" bo-html="'remove' | message" ng-if="accessGrantForm.canChange()"></button>
   </fieldset>
 </form>
