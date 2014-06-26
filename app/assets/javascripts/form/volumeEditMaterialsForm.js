@@ -122,6 +122,7 @@ module.directive('volumeEditMaterialsForm', [
 								subform.messages.remove(msg);
 
 								form.clean(subform);
+						page.display.scrollTo(subform.$element);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
@@ -165,6 +166,7 @@ module.directive('volumeEditMaterialsForm', [
 								subform.messages.remove(msg);
 
 								form.clean(subform);
+						page.display.scrollTo(subform.$element);
 							});
 					}
 				} else {
@@ -202,6 +204,7 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						form.clean(subform);
+						page.display.scrollTo(subform.$element);
 					});
 				}
 			};
@@ -259,6 +262,7 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						form.clean(subform);
+						page.display.scrollTo(subform.$element);
 					});
 				}
 			};
