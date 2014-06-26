@@ -202,7 +202,10 @@ auth.children.title=Granted authorization to
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
+
 auth.apply.error=Could not submit your request.
+auth.apply.save.success=Request processed successfully.
+auth.apply.remove.success=Request removed successfully.
 
 auth.request=Request
 auth.authorize=Authorize

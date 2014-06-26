@@ -1,16 +1,19 @@
 module.directive('authApplyForm', [
 	'pageService', function (page) {
-		var link = function ($scope) {
+		var link = function ($scope, $element, $attrs) {
 			var form = $scope.authApplyForm;
 
 			$scope.page = page;
 
-			form.party = $scope.party || page.auth.user;
-			form.other = undefined;
+			form.party = page.$parse($attrs.party)($scope) || $scope.party || page.auth.user;
+			form.other = page.$parse($attrs.other)($scope) || undefined;
+
 			form.notFound = {
 				query: undefined,
 				info: undefined
 			};
+
+			form.$setDirty();
 
 			//
 
@@ -30,12 +33,16 @@ module.directive('authApplyForm', [
 					partyId: form.other.party.id
 				}, function () {
 					form.validator.server({});
+					page.models.Party.$cache.removeAll();
+					form.$setPristine();
+					delete form.other.new;
 
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
 					form.validator.server(res);
+					page.display.scrollTo(form.$element);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -54,6 +61,9 @@ module.directive('authApplyForm', [
 					info: form.notFound.info
 				}, function (res) {
 					form.validator.server({});
+					page.models.Party.$cache.removeAll();
+					form.$setPristine();
+					delete form.other.new;
 
 					form.messages.add({
 						type: 'green',
@@ -66,6 +76,7 @@ module.directive('authApplyForm', [
 					}
 				}, function (res) {
 					form.validator.server(res);
+					page.display.scrollTo(form.$element);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
@@ -80,8 +91,7 @@ module.directive('authApplyForm', [
 
 				if (form.notFound.query) {
 					saveQuery();
-				}
-				else {
+				} else {
 					saveAuth();
 				}
 			};
