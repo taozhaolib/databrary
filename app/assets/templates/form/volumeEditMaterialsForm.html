@@ -1,7 +1,7 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate>
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filterAssets()" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filterAssets()" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
     <validator form="form" name="name" label="'material.name' | message">

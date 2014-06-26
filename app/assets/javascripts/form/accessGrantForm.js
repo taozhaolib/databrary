@@ -28,7 +28,7 @@ module.directive('accessGrantForm', [
 			form.successFn = undefined;
 			form.errorFn = undefined;
 
-			form.save = function () {
+			form.save = function (scroll) {
 				form.data.children = form.data.extend ? form.data.individual : 0;
 
 				if (angular.isFunction(form.saveFn)) {
@@ -61,6 +61,8 @@ module.directive('accessGrantForm', [
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
 					}
+
+					page.display.scrollTo(form.$element);
 				});
 			};
 
@@ -118,6 +120,8 @@ module.directive('accessGrantForm', [
 					if (angular.isFunction(form.removeErrorFn)) {
 						form.removeErrorFn(form, arguments, form.access);
 					}
+
+					page.display.scrollTo(form.$element);
 				});
 			};
 

@@ -40,13 +40,12 @@ module.directive('fundingGrantForm', [
 			form.successFn = undefined;
 			form.errorFn = undefined;
 
-			form.save = function () {
+			form.save = function (scroll) {
 				form.data.awards = form.awards.map(function (award) {
 					return award.val.trim();
 				}).filter(function (author) {
 					return author != '';
 				});
-				;
 
 				form.volumeAccess = new page.models.VolumeAccess(form.data);
 
@@ -81,6 +80,8 @@ module.directive('fundingGrantForm', [
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
 					}
+
+					page.display.scrollTo(form.$element);
 				});
 			};
 
@@ -149,6 +150,8 @@ module.directive('fundingGrantForm', [
 					if (angular.isFunction(form.removeErrorFn)) {
 						form.removeErrorFn(form, arguments, form.access);
 					}
+
+					page.display.scrollTo(form.$element);
 				});
 			};
 
