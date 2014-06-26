@@ -108,6 +108,14 @@ module.directive('partyEditGrantForm', [
 					}
 				};
 
+				searchForm.notFoundFn = function (query) {
+					page.messages.add({
+						type: 'yellow',
+						countdown: 3000,
+						body: page.constants.message('auth.grant.notfound.message')
+					});
+				};
+
 				event.stopPropagation();
 			});
 

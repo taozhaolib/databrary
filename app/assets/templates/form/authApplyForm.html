@@ -16,7 +16,7 @@
   <fieldset class="clean" ng-if="authApplyForm.notFound.query">
     <legend bo-html="'auth.request.notfound.title' | message"></legend>
 
-    <div class="cut_f" ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
+    <div ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
 
     <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
       <textarea id="field_info" name="info" ng-model="authApplyForm.notFound.info"></textarea>

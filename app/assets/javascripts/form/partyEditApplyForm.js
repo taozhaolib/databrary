@@ -89,7 +89,7 @@ module.directive('partyEditApplyForm', [
 					return;
 				}
 
-				searchForm.selectFn = function (found) {
+				searchForm.selectFn = function (found, query) {
 					var present = false;
 
 					angular.forEach(form.data, function (access, i) {
@@ -114,8 +114,17 @@ module.directive('partyEditApplyForm', [
 							party: found,
 							site: 0,
 							member: 0,
+							query: angular.isString(query) ? query : undefined,
 						});
 					}
+				};
+
+				searchForm.notFoundFn = function (query) {
+					searchForm.selectFn({
+							id: -1,
+							name: page.constants.message('auth.request.notfound.user'),
+							avatar: '/party/-1/avatar'
+						}, query);
 				};
 
 				event.stopPropagation();

@@ -326,7 +326,6 @@ access.global.PUBLIC.SHARED=Make the study and all public data visible to everyo
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
-access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
 access.grant.access.save.success=Access changed.
 access.grant.access.remove.success=Access removed.
