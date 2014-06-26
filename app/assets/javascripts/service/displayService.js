@@ -58,9 +58,9 @@ module.factory('displayService', [
 		var $scroll = $('html,body');
 
 		display.scrollTo = function (id) {
-			var target = (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
-
 			$timeout(function () {
+
+				var target = (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
 				$scroll.animate({
 					scrollTop: target
 				}, 500);
