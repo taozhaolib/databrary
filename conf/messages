@@ -222,7 +222,7 @@ auth.grant.deny.error=Could not deny this authorization.
 auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
 
 auth.grant.save.success=Authorization saved successfully.
-auth.grant.remove.success=Authorization remove successfully.
+auth.grant.remove.success=Authorization removed successfully.
 
 auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
@@ -270,19 +270,19 @@ party.edit.profile.success=Profile saved successfully.
 party.edit.account.success=Account updated successfully.
 
 wizard.party_edit_profile.name=Profile
-wizard.party_edit_profile.description=Modify publicly visible info.
+wizard.party_edit_profile.description=Publicly visible info
 wizard.party_edit_profile.instructions=
 
 wizard.party_edit_account.name=Account
-wizard.party_edit_account.description=Update email address and password.
+wizard.party_edit_account.description=Email address and password
 wizard.party_edit_account.instructions=
 
-wizard.party_edit_apply.name=Request Authorization
-wizard.party_edit_apply.description=View and add new authorizations.
+wizard.party_edit_apply.name=Sponsors
+wizard.party_edit_apply.description=Authorizations and memberships granted by others
 wizard.party_edit_apply.instructions=
 
-wizard.party_edit_grant.name=Grant Authorization
-wizard.party_edit_grant.description=Update authorization you grant to others.
+wizard.party_edit_grant.name=Affiliates
+wizard.party_edit_grant.description=Authorizations and memberships granted to others
 wizard.party_edit_grant.instructions=
 
 # --- Auth search
@@ -299,10 +299,10 @@ auth.search.child=Search for the person you wish to sponsor...
 auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
 
-auth.apply.legend=Sponsors
-auth.search.apply.legend=Search for Sponsors
-auth.grant.legend=Affiliates
-auth.search.grant.legend=Search for Affiliates
+auth.apply.legend=Current sponsors and applications
+auth.search.apply.legend=Apply for a new sponsor
+auth.grant.legend=Current affiliates and requests
+auth.search.grant.legend=Authorize a new affiliate
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}
