@@ -333,7 +333,7 @@ module.controller('RegisterView', [
 
 				step.authSearchForm = $scope.authSearchForm;
 
-				if ($scope.authSearchForm.data.party && !$scope.authApplyForm.other) {
+				if ($scope.authSearchForm.data.party) {
 					$scope.authApplyForm.other = {
 						id: $scope.authSearchForm.data.party.id,
 						party: $scope.authSearchForm.data.party,

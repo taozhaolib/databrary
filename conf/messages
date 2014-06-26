@@ -192,12 +192,20 @@ network.authquery.error=Could not retrieve your authorizing agents and affiliate
 network.remote.grant=Grant authorization to {0}
 network.remote.apply=Apply for authorization from {0}
 
+network.apply.local=Apply for authorization
+network.apply.foreign=Grant {0} authorization
+network.grant.local=Grant others authorization
+network.grant.foreign=Apply for {0} authorization
+
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
+
 auth.apply.error=Could not submit your request.
+auth.apply.save.success=Request processed successfully.
+auth.apply.remove.success=Request removed successfully.
 
 auth.request=Request
 auth.authorize=Authorize
@@ -212,6 +220,9 @@ auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
 auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.save.success=Authorization saved successfully.
+auth.grant.remove.success=Authorization remove successfully.
 
 auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
@@ -266,6 +277,14 @@ wizard.party_edit_account.name=Account
 wizard.party_edit_account.description=Update email address and password.
 wizard.party_edit_account.instructions=
 
+wizard.party_edit_apply.name=Request Authorization
+wizard.party_edit_apply.description=View and add new authorizations.
+wizard.party_edit_apply.instructions=
+
+wizard.party_edit_grant.name=Grant Authorization
+wizard.party_edit_grant.description=Update authorization you grant to others.
+wizard.party_edit_grant.instructions=
+
 # --- Auth search
 auth.search=Search for a user or institution...
 auth.search.name.help=Enter your institution or PI.
@@ -279,6 +298,11 @@ auth.search.placeholder.help=Enter your sponsoring PI or institution.
 auth.search.child=Search for the person you wish to sponsor...
 auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
+
+auth.apply.legend=Sponsors
+auth.search.apply.legend=Search for Sponsors
+auth.grant.legend=Affiliates
+auth.search.grant.legend=Search for Affiliates
 
 # --- Auth apply
 auth.request.title=Request authorization from {0}
@@ -302,7 +326,6 @@ access.global.PUBLIC.SHARED=Make the study and all public data visible to everyo
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
-access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
 access.grant.access.save.success=Access changed.
 access.grant.access.remove.success=Access removed.

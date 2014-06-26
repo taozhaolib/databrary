@@ -14,6 +14,23 @@ module.controller('PartyEditView', [
 
 		//
 
+		var partyAuth = {
+			parents: {},
+			children: {},
+		};
+
+		if (page.auth.hasAccess('ADMIN', $scope.party)) {
+			page.models.PartyAuthorize.query(function (data) {
+				partyAuth = data;
+				$scope.updateWizard();
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('network.authquery.error'),
+					report: res,
+				});
+			});
+		}
+
 		var updateQuery = false;
 
 		$scope.$watch(function () {
@@ -130,6 +147,26 @@ module.controller('PartyEditView', [
 				};
 				forms.account.form.init(party);
 			},
+
+			'party_edit_apply': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.apply = {
+					step: step,
+					form: step.partyEditApplyForm,
+				};
+				forms.apply.form.init(party, partyAuth.parents);
+			},
+
+			'party_edit_grant': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.grant = {
+					step: step,
+					form: step.partyEditGrantForm,
+				};
+				forms.grant.form.init(party, partyAuth.children);
+			},
 		};
 
 		//
@@ -141,6 +178,14 @@ module.controller('PartyEditView', [
 
 			'party_edit_account': function (step) {
 				forms.account.form.init(party);
+			},
+
+			'party_edit_apply': function (step) {
+				forms.apply.form.init(party, partyAuth.parents);
+			},
+
+			'party_edit_grant': function (step) {
+				forms.grant.form.init(party, partyAuth.children);
 			},
 		};
 	}

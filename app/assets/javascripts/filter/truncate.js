@@ -1,8 +1,9 @@
 module.filter('truncate', [
 	function () {
 		return function (text, length, type, end) {
-			if (!text)
+			if (!text) {
 				return text;
+			}
 
 			length = angular.isNumber(parseInt(length)) ? parseInt(length) : 10;
 			type = ['characters', 'words'].indexOf(type) ? type : 'characters';

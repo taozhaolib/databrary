@@ -1,8 +1,9 @@
 module.directive('dateModel', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs, ngModel) {
-			if (!ngModel)
+			if (!ngModel) {
 				return;
+			}
 
 			var supportsDate = document.createElement('input');
 			supportsDate.setAttribute('type', 'date');

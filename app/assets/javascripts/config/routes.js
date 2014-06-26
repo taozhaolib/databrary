@@ -159,7 +159,7 @@ module.config([
 							openid: '',
 							duns: '',
 							parents: '',
-							children: ''
+							children: '',
 						};
 
 						if (page.$route.current.params.id) {
@@ -240,6 +240,8 @@ module.config([
 						page.models.Party.get({
 							id: page.$route.current.params.id,
 							duns: '',
+							parents: '',
+							children: '',
 						}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {

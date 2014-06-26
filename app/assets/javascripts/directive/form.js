@@ -56,9 +56,9 @@ module.directive('form', [
 
 					client: function (data, replace) {
 						for (var name in data) {
-							if (!data.hasOwnProperty(name)){
+							if (!data.hasOwnProperty(name)) {
 								continue;
-							} else if(form.validators[name]) {
+							} else if (form.validators[name]) {
 								form.validators[name].client(data[name], replace);
 							} else {
 								unclaimed[name] = data[name];
@@ -101,7 +101,7 @@ module.directive('form', [
 					break;
 
 				default:
-					if(angular.isString($attrs.messages)) {
+					if (angular.isString($attrs.messages)) {
 						form.messages = page.$parse($attrs.messages)($scope);
 					}
 

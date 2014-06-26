@@ -51,11 +51,14 @@ module.factory('constantService', [
 			//
 
 			constants.data.accessGlobal = [
-				['NONE','NONE'],
-				['NONE','SHARED'],
-				['PUBLIC','SHARED']
+				['NONE', 'NONE'],
+				['NONE', 'SHARED'],
+				['PUBLIC', 'SHARED']
 			];
-			constants.data.accessGlobal.parties = [constants.data.party.NOBODY, constants.data.party.ROOT];
+			constants.data.accessGlobal.parties = [
+				constants.data.party.NOBODY,
+				constants.data.party.ROOT
+			];
 		};
 
 		var update = function () {

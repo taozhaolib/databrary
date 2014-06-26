@@ -1,0 +1,40 @@
+<form name="partyEditGrantForm" bindonce novalidate>
+  <messages form="partyEditGrantForm"></messages>
+
+  <fieldset ng-if="partyEditGrantForm.data.length > 0">
+    <legend bo-html="'auth.apply.legend' | message"></legend>
+    <article ng-repeat="other in partyEditGrantForm.data">
+      <div class="row">
+        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <figure baseline="square" class="figure_avatar">
+            <figmedia><img bo-src="other.party.avatar"></figmedia>
+          </figure>
+        </div>
+
+        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+          <div class="row">
+            <div class="network-heading col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <a bo-href="page.router.party(other.party)" class="network-auth-username" bo-text="other.party.name"></a>
+              <span class="network-auth-email" bo-if="other.party.email" bo-text="other.party.email"></span>
+            </div>
+
+            <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+              <auth-grant-form party="partyEditGrantForm.party" other="other"></auth-grant-form>
+            </div>
+           </div>
+        </div>
+      </div>
+    </article>
+  </fieldset>
+
+	<fieldset scope>
+    <legend bo-html="'auth.search.grant.legend' | message"></legend>
+		<auth-search-form child principal="child" party="{{party.id}}"></auth-search-form>
+	</fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
+    <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
+  </fieldset>
+</form>
+

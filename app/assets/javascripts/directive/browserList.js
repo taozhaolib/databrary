@@ -257,7 +257,7 @@ module.directive('browserList', [
 					return true;
 				}
 
-				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join("|"), "i");
+				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join('|'), 'i');
 
 				if (!page.types.isVolume(data.object)) {
 					return true;
