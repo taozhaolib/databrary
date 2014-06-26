@@ -9,7 +9,7 @@ module.directive('authApplyForm', [
 			form.other = page.$parse($attrs.other)($scope) || undefined;
 
 			form.notFound = {
-				query: form.other.query || undefined,
+				query: form.other && form.other.query || undefined,
 				info: undefined
 			};
 

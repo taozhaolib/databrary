@@ -1,8 +1,8 @@
-<form name="authApplyForm" novalidate>
+<form name="authApplyForm" novalidate bindonce>
   <messages form="authApplyForm"></messages>
 
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
-    <legend class="auth_request" bo-text="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
+    <legend class="auth_request" ng-bind-html="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
 
     <div ng-if="authApplyForm.other.party.institution">
       <div ng-bind-html="'auth.info.prompt' | message | format"></div>
