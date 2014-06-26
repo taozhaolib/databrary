@@ -14,6 +14,23 @@ module.controller('PartyEditView', [
 
 		//
 
+		var partyAuth = {
+			parents: {},
+			children: {},
+		};
+
+		if (page.auth.hasAccess('ADMIN', $scope.party)) {
+			page.models.PartyAuthorize.query(function (data) {
+				partyAuth = data;
+				$scope.updateWizard();
+			}, function (res) {
+				page.messages.addError({
+					body: page.constants.message('network.authquery.error'),
+					report: res,
+				});
+			});
+		}
+
 		var updateQuery = false;
 
 		$scope.$watch(function () {
@@ -138,7 +155,7 @@ module.controller('PartyEditView', [
 					step: step,
 					form: step.partyEditApplyForm,
 				};
-				forms.apply.form.init(party);
+				forms.apply.form.init(party, partyAuth.parents);
 			},
 
 			'party_edit_grant': function (step) {
@@ -148,7 +165,7 @@ module.controller('PartyEditView', [
 					step: step,
 					form: step.partyEditGrantForm,
 				};
-				forms.grant.form.init(party);
+				forms.grant.form.init(party, partyAuth.children);
 			},
 		};
 
@@ -164,11 +181,11 @@ module.controller('PartyEditView', [
 			},
 
 			'party_edit_apply': function (step) {
-				forms.apply.form.init(party);
+				forms.apply.form.init(party, partyAuth.parents);
 			},
 
 			'party_edit_grant': function (step) {
-				forms.grant.form.init(party);
+				forms.grant.form.init(party, partyAuth.children);
 			},
 		};
 	}

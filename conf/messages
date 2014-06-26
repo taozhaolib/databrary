@@ -218,6 +218,9 @@ auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
 auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
 
+auth.grant.save.success=Authorization saved successfully.
+auth.grant.remove.success=Authorization remove successfully.
+
 auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
 

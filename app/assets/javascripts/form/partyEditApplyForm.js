@@ -7,9 +7,9 @@ module.directive('partyEditApplyForm', [
 
 			//
 
-			form.init = function (party) {
+			form.init = function (party, parents) {
 				form.party = form.party || party;
-				form.data = page.$filter('toArray')(form.party.parents);
+				form.data = page.$filter('toArray')(parents);
 			};
 
 			//
