@@ -4,14 +4,6 @@
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.filterAssets()" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate>
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
-    <validator form="form" name="name" label="'material.name' | message">
-      <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
-    </validator>
-
-    <validator form="form" name="classification" label="'material.classification' | message">
-      <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in ['SHARED','PUBLIC']" ng-required></select>
-    </validator>
-
     <validator form="form" name="file" label="'material.file' | message">
       <input type="file" name="file" file-model="asset.file" file-model-form="form" ng-if="!asset.asset.creation">
 
@@ -19,6 +11,14 @@
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
+    </validator>
+
+    <validator form="form" name="classification" label="'material.classification' | message">
+      <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in ['SHARED','PUBLIC']" ng-required></select>
+    </validator>
+
+    <validator form="form" name="name" label="'material.name' | message">
+      <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
     </validator>
 
     <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
