@@ -17,9 +17,9 @@ module.directive('accessGrantForm', [
 			//
 
 			form.canChange = function () {
-				return !form.volume || !form.volume.access || form.access.individual != 5 || form.volume.access.filter(function (access) {
+				return form.access.individual != 5 || (form.access.party.id != page.auth.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
 					return access.individual == 5;
-				}).length >= 2;
+				}).length >= 2);
 			};
 
 			//
