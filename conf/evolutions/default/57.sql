@@ -194,13 +194,11 @@ $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
 
-ALTER TABLE "excerpt" ADD "classification" classification NOT NULL DEFAULT 'SHARED' Check ("classification" >= 'RESTRICTED');
-ALTER TABLE "excerpt" ALTER "classification" DROP DEFAULT;
+ALTER TABLE "excerpt" ADD "classification" classification NOT NULL DEFAULT 'PRIVATE';
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
-ALTER TABLE audit."excerpt" ADD "classification" classification NOT NULL DEFAULT 'SHARED';
-ALTER TABLE audit."excerpt" ALTER "classification" DROP DEFAULT;
+ALTER TABLE audit."excerpt" ADD "classification" classification NOT NULL DEFAULT 'PRIVATE';
 
-INSERT INTO excerpt SELECT id, '(,)', 'SHARED' FROM asset JOIN slot_asset ON id = asset WHERE classification = 'EXCERPT';
+INSERT INTO excerpt SELECT asset, '(,)', CASE WHEN top THEN 'SHARED'::classification ELSE 'PRIVATE'::classification END FROM asset JOIN slot_asset ON id = asset JOIN container ON container = container.id WHERE classification = 'EXCERPT';
 
 ALTER TABLE "asset"
 	ALTER "classification" TYPE classification USING CASE

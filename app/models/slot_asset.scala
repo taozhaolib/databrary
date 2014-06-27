@@ -53,7 +53,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   final def relativeSegment = segment.map(_ - slot.position)
   require(excerpt.forall(_ @> this))
 
-  final def classification = excerpt.fold(asset.classification)(_.classification)
+  final def classification = excerpt.fold(asset.classification)(e => max(e.classification, asset.classification))
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
@@ -193,13 +193,13 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all readable excerpts. */
   private[models] def getExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, excerpt_consent.consent)")
+    .SELECT("WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)")
     .apply(volume.permission).list
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE excerpt.classification >= read_classification(?::permission, excerpt_consent.consent)",
+    .SELECT("WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt
 

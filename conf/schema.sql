@@ -462,12 +462,13 @@ END; $$;
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	"classification" classification NOT NULL Check ("classification" >= 'RESTRICTED'), -- should be >= asset.classification
+	"classification" classification NOT NULL Default 'PRIVATE',
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
 COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
+COMMENT ON COLUMN "excerpt"."classification" IS 'Override (by relaxing only) asset''s original classification.';
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
