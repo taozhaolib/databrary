@@ -109,10 +109,11 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
 		SELECT * FROM authorize
 		UNION
-		SELECT a.child, aa.parent, LEAST(a.site,
-			CASE WHEN aa.site = 'ADMIN' THEN 'EDIT'::permission
-			     WHEN aa.site = 'EDIT' THEN 'READ'::permission
-			END), NULL, LEAST(a.expires, aa.expires)
+		SELECT a.child, aa.parent, CASE
+		         WHEN aa.site = 'ADMIN' THEN LEAST(a.site, 'EDIT')
+			 WHEN aa.site = 'EDIT' THEN LEAST(a.site, 'READ')
+			 ELSE 'NONE'::permission
+		       END, 'NONE', LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa
 	UNION ALL SELECT id, id, 'ADMIN', 'ADMIN', NULL FROM party WHERE id >= 0
