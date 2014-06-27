@@ -6,6 +6,7 @@
             <header>
               <a ng-href="" ng-click="jump(current)" class="icon line jump tool" target="_self" tooltip tooltip-message="{{'excerpts.jump' | message}}"></a>
               <a ng-href="{{page.router.assetLink(current, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'excerpts.download' | message}}"></a>
+              <div class="classification icon line tool" bo-class="page.constants.data.classification[current.excerpt].toLowerCase()" hint="classification-{{page.constants.data.classification[current.excerpt]}}"></div>
 
               <h1>
                 <img class="icon" bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(current).extension + '.png'">

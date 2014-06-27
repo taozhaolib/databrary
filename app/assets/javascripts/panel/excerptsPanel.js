@@ -27,7 +27,7 @@ module.controller('ExcerptsPanel', [
 
 		$scope.hasThumbnail = function (asset) {
 			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
-		}
+		};
 
 		$scope.listClass = function (excerpt) {
 			var cls = [];
