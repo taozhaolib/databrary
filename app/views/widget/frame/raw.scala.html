@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (String,String)*)(title: String = "")(body: Html)
+@(id: String, classes: String)(title: String = "")(body: Html)
 
-<aside id="frame_@id" class="frame col-full frame_@id @classes" @El.attrToHtml(attr)>
+<aside id="frame_@id" class="frame col-full frame_@id @classes">
     <div class="row">
         @if(title.nonEmpty) {
             <h2 class="col-full frame_header">@title</h2>

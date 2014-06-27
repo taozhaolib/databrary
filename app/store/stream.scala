@@ -62,8 +62,8 @@ object StreamEnumerator {
       case in @ Input.El(a) if pos < start => next(pos+a.length, k(Input.El(a.drop((start-pos).toInt))))
       case in @ Input.El(a) if pos + a.length <= stop => next(pos+a.length, k(in))
       case in @ Input.El(a) if pos < stop => Done(k(Input.El(a.take((stop-pos).toInt))), Input.Empty)
-      case in @ Input.Empty if pos < start => Cont(step(pos)(k))
-      case in @ Input.Empty if pos < stop => next(pos, k(in))
+      case Input.Empty if pos < start => Cont(step(pos)(k))
+      case Input.Empty if pos < stop => next(pos, k(Input.Empty))
       case in => Done(Cont(k), in)
     }
     def continue[A](k: K[Data, A]) = Cont(step(0)(k))

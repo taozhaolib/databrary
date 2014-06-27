@@ -7,9 +7,6 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   val entryPoints = SettingKey[PathFinder]("angular-template-entry-points")
   val options = SettingKey[Seq[String]]("angular-template-options")
 
-  private def read(file : File) : String =
-    scalax.file.Path(file).string
-
   private final case class Replacer(source : String, regex : Regex) {
     val matches = regex.findAllMatchIn(source).toSeq
     def apply(f : Regex.Match => String) : String = {
@@ -39,7 +36,7 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
     protected def each(f : File, p : String => String) : String =
       replacer(_.matched match {
 	case "@FILENAME@" => f.getName
-	case "@CONTENTS@" => p(read(f))
+	case "@CONTENTS@" => p(IO.read(f))
       })
   }
   private object AllSubstTemplate {
@@ -65,14 +62,14 @@ object AngularTemplate extends play.PlayAssetsCompiler with Plugin {
   private def compile(file : File, options : Seq[String]) : (String, Option[String], Seq[File]) = {
     if (file.getName.equals("_all.html")) {
       val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
-      val tpl = AllSubstTemplate(read(file))
+      val tpl = AllSubstTemplate(IO.read(file))
       (tpl(all), Some(tpl(all, compressor.compress)), all : Seq[File])
     } else if (file.getName.equals("_all.js")) {
       val all = PathFinder(file.getParentFile).descendantsExcept("*.html", "_*").get
-      val tpl = AllSubstTemplate(read(file))
+      val tpl = AllSubstTemplate(IO.read(file))
       (tpl(all, jsstr), Some(tpl(all, (compressor.compress _).andThen(jsstr))), all : Seq[File])
     } else {
-      val c = read(file)
+      val c = IO.read(file)
       (c, Some(compressor.compress(c)), Nil)
     }
   }

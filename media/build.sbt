@@ -1,3 +1,7 @@
+libraryDependencies ++= Seq(
+  "commons-io" % "commons-io" % "2.4"
+)
+
 resourceGenerators in Compile <+= (streams, baseDirectory in Compile, resourceManaged in Compile) map { (str, srcDir, outDir) =>
 	val src = (PathFinder(srcDir) * "*.c").get
 	val out = outDir / System.mapLibraryName("media")

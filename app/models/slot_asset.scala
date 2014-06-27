@@ -203,5 +203,5 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt
 
-  private final val fileNamePad = "[\0-,/?\\\\]+".r
+  private final val fileNamePad = "[\u0000-,/?\\\\]+".r
 }

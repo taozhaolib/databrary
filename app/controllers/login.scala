@@ -19,7 +19,7 @@ import models._
 
 private[controllers] sealed class LoginController extends SiteController {
 
-  private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[SimpleResult] = {
+  private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[Result] = {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
       (if (request.isApi) Ok((new SiteRequest.Auth(request, token)).json)
@@ -72,13 +72,13 @@ private[controllers] sealed class LoginController extends SiteController {
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(request.json + ('superuser -> superuserTime))
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
-      .withSession(session + ("superuser" -> expires.toString))
+      .withSession(request.session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
     (if (request.isApi) Ok(request.json - "superuser")
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
-      .withSession(session - "superuser")
+      .withSession(request.session - "superuser")
   }
 
   def register =
@@ -99,7 +99,7 @@ private[controllers] sealed class LoginController extends SiteController {
 }
 
 object LoginController extends LoginController {
-  private[controllers] def needed(message : String)(implicit request : SiteRequest[_]) : SimpleResult = {
+  private[controllers] def needed(message : String)(implicit request : SiteRequest[_]) : Result = {
     val msg = Messages(message)
     if (request.isApi) Forbidden(msg)
     else Forbidden(LoginHtml.viewLogin(msg))
@@ -181,9 +181,9 @@ object LoginController extends LoginController {
 object LoginHtml extends LoginController with HtmlController {
   import LoginController._
 
-  def viewLogin()(implicit request: SiteRequest[_]) : templates.Html =
+  def viewLogin()(implicit request: SiteRequest[_]) : play.twirl.api.Html =
     views.html.party.login(new LoginForm)
-  def viewLogin(err : String, args : Any*)(implicit request: SiteRequest[_]) : templates.Html =
+  def viewLogin(err : String, args : Any*)(implicit request: SiteRequest[_]) : play.twirl.api.Html =
     views.html.party.login {
       val form = new LoginForm
       form.withGlobalError(err, args)

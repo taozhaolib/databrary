@@ -18,7 +18,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     RequestObject.check(Slot.get(i, segment)(_), p)
 
   private[controllers] def Action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
-    SiteAction ~> action(i, segment, p)
+    SiteAction andThen action(i, segment, p)
 
   def update(i : Container.Id, segment : Segment) =
     Action(i, segment, Permission.EDIT).async { implicit request =>

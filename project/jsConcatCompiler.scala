@@ -69,7 +69,7 @@ object JSConcatCompiler extends play.PlayAssetsCompiler with Plugin {
       entryPoints,
       { (name, min) => if (min) name.replace(".js", ".min.js") else name },
       compile(ext, cacheDir),
-      play.Keys.closureCompilerOptions)
+      play.PlayImport.PlayKeys.closureCompilerOptions)
   }
 
   override val projectSettings = Seq(

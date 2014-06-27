@@ -2,6 +2,7 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.Play.current
 import macros._
 import macros.async._
 import dbrary._
@@ -28,17 +29,17 @@ object Funder extends Table[Funder]("funder") {
     }
 
   import play.api.libs.json
-  import play.api.libs.ws.WS
+  import play.api.libs.ws
 
   private val fundRefDOI = "10.13039/"
   private def fundRefId(id : Id) =
-    WS.url("http://data.fundref.org/fundref/funder/" + fundRefDOI + id)
+    ws.WS.url("http://data.fundref.org/fundref/funder/" + fundRefDOI + id)
   private def fundRefSearch(query : String) =
-    WS.url("http://search.crossref.org/funders").withQueryString("q" -> query)
+    ws.WS.url("http://search.crossref.org/funders").withQueryString("q" -> query)
   private val geoNamesRes = "http://sws\\.geonames\\.org/([0-9]*)/".r
   private val geoNamesUS = "6252001"
   private def geoNamesId(id : String) =
-    WS.url("http://api.geonames.org/getJSON").withQueryString("geonameId" -> id, "username" -> "databrary")
+    ws.WS.url("http://api.geonames.org/getJSON").withQueryString("geonameId" -> id, "username" -> "databrary")
 
   def apply(id : Id, name : String, aliases : Seq[String] = Nil, country : Option[String] = None) = {
     import org.apache.commons.lang3.StringUtils.containsIgnoreCase
@@ -54,7 +55,7 @@ object Funder extends Table[Funder]("funder") {
     new Funder(id, n.toString)
   }
 
-  private def getJson(r : WS.WSRequestHolder) : Future[Option[json.JsValue]] =
+  private def getJson(r : ws.WSRequestHolder) : Future[Option[json.JsValue]] =
     r.get.map { r =>
       if (r.status == 200 && r.header("Content-Type").exists(_.startsWith("application/json")))
 	Some(r.json)

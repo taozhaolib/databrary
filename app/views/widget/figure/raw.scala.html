@@ -1,6 +1,6 @@
-@(id: String, classes: String, attr: (String,String)*)(caption: Html = Html(""), link: String = "", title: String = "", arbitrary : Html = Html(""))(body: Html)
+@(id: String, classes: String)(caption: Html = Html(""), link: String = "", title: String = "", arbitrary : Html = Html(""))(body: Html)
 
-<figure id="figure_@id" class="figure figure_@id @classes" @El.attrToHtml(attr) @arbitrary>
+<figure id="figure_@id" class="figure figure_@id @classes" @arbitrary>
     @if(link.nonEmpty){<a href="@link" @if(title.nonEmpty){title="@title"}>}
 
     <div class="media">

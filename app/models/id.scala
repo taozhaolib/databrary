@@ -49,7 +49,7 @@ private[models] object IntId {
   }
 }
 /** Any class (usually a singleton object) which provides an Id type. */
-private[models] trait HasId[+T] {
+private[models] trait HasId[T] {
   type Id = IntId[T]
   /** Create an [[Id]] value. */
   def asId(i : Int) : Id = IntId[T](i)

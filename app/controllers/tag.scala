@@ -8,7 +8,7 @@ import models._
 
 private[controllers] sealed class TagController extends SiteController {
   def update(name : String = "", i : models.Container.Id, segment : Segment) =
-    (SiteAction.access(Permission.VIEW) ~> SlotController.action(i, segment)).async { implicit request =>
+    SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new TagController.SlotForm()._bind
       for {
 	r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])

@@ -3,7 +3,7 @@ package object macros {
   import scala.language.experimental.macros
 
   /** Cast Any to Option[A].  Equivalent to: `cast[A](x) = x match { a : A => Some(a) ; _ => None }` */
-  def cast[A](x : Any) = macro Cast.castImpl[A]
+  def cast[A](x : Any) : Option[A] = macro Cast.castImpl[A]
 
   /** What a.zip(b) should do but doesn't?
     * Takes an optional function to map the result over. */

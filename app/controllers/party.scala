@@ -24,7 +24,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     zip[Party.Id, Permission.Value, ActionFunction[SiteRequest.Base,Request]](i, p, (i, p) =>
       RequestObject.check[SiteParty](models.SiteParty.get(i)(_), p))
     .getOrElse {
-      SiteAction.Auth ~> new ActionRefiner[SiteRequest.Auth,Request] {
+      SiteAction.Auth andThen new ActionRefiner[SiteRequest.Auth,Request] {
         protected def refine[A](request : SiteRequest.Auth[A]) =
           if (i.forall(_ === request.identity.id))
             request.identity.perSite(request).map { p =>
@@ -36,10 +36,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     }
 
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
-    SiteAction ~> action(i, p)
+    SiteAction andThen action(i, p)
 
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    SiteAction.Unlocked ~> action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
+    SiteAction.Unlocked andThen action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
@@ -76,7 +76,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     } yield (result(request.obj))
   }
 
-  def create(acct : Boolean = false) : Action[_] = SiteAction.rootAccess().async { implicit request =>
+  def create(acct : Boolean = false) = SiteAction.rootAccess().async { implicit request =>
     val form = createForm(acct)._bind
     for {
       p <- Party.create(
@@ -308,7 +308,7 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
 
   def profile =
-    (SiteAction.Unlocked ~> action(None, Some(Permission.NONE))).async(viewParty(_))
+    SiteAction.Unlocked.andThen(action(None, Some(Permission.NONE))).async(viewParty(_))
 
   def view(i : models.Party.Id) =
     Action(Some(i), Some(Permission.NONE)).async(viewParty(_))
@@ -351,7 +351,7 @@ object PartyHtml extends PartyController with HtmlController {
   }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
-    (SiteAction.Unlocked ~> action(Some(i), Some(Permission.NONE))).async { implicit request =>
+    SiteAction.Unlocked.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
 	async(Found("//gravatar.com/avatar/"+request.obj.party.account.fold("none")(a => store.MD5.hex(a.email.toLowerCase))+"?s="+size+"&d=mm")))(
 	AssetController.assetResult(_)))
@@ -365,7 +365,7 @@ object PartyApi extends PartyController with ApiController {
   }
 
   def profile =
-    (SiteAction.Unlocked ~> action(None, Some(Permission.NONE))).async { implicit request =>
+    SiteAction.Unlocked.andThen(action(None, Some(Permission.NONE))).async { implicit request =>
       request.obj.json(request.apiOptions).map(Ok(_))
     }
 

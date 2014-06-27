@@ -1,6 +1,6 @@
 package macros
 
-import scala.reflect.macros.Context
+import scala.reflect.macros.blackbox.Context
 
 object Macro {
   def getString(c : Context)(str : c.Expr[String]) : String = str.tree match {
