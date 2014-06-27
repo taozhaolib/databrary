@@ -81,15 +81,15 @@ module.directive('partyEditApplyForm', [
 					});
 				};
 
-				grantForm.cancelFn = function (grantForm, args, access) {
+				grantForm.cancelFn = function (applyForm) {
 					form.messages.add({
 						body: page.constants.message('auth.apply.remove.success'),
 						type: 'green',
 						countdown: 3000,
 					});
 
-					form.data.splice(form.data.indexOf(access), 1);
-					subforms.splice(subforms.indexOf(grantForm), 1);
+					form.data.splice(form.data.indexOf(applyForm.other), 1);
+					subforms.splice(subforms.indexOf(applyForm), 1);
 				};
 
 				event.stopPropagation();

@@ -71,14 +71,14 @@ module.directive('partyEditGrantForm', [
 					});
 				};
 
-				grantForm.denySuccessFn = function (grantForm, args, access) {
+				grantForm.denySuccessFn = function (grantForm) {
 					form.messages.add({
 						body: page.constants.message('auth.grant.remove.success'),
 						type: 'green',
 						countdown: 3000,
 					});
 
-					form.data.splice(form.data.indexOf(access), 1);
+					form.data.splice(form.data.indexOf(grantForm.other), 1);
 					subforms.splice(subforms.indexOf(grantForm), 1);
 				};
 
