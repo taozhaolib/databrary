@@ -92,8 +92,8 @@
     </article>
 
 		<fieldset class="clean">
-			<button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'grant'))" bo-text="'network.grant.local' | possessive:party"></button>
-			<button class="green" ng-if="canApply()" ng-click="apply()" bo-text="'network.grant.foreign' | possessive:party"></button>
+			<button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'grant'))" bo-text="'network.grant.local' | message"></button>
+			<button class="green" ng-if="canApply()" ng-click="apply()" bo-text="'network.grant.foreign' | message:party.name"></button>
 		</fieldset>
   </div>
 </panel>
