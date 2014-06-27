@@ -8,12 +8,11 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
-format.list.text=text files
-format.list.application=documents
-format.list.video=video
-format.list.image=images
-format.list.audio=audio
-format.list.note=
+format.list.text=Text Files
+format.list.application=Documents
+format.list.video=Videos
+format.list.image=Images
+format.list.audio=Audio
 format.list.link=Click here to see list of supported file formats
 
 # --- Errors
@@ -154,7 +153,15 @@ page.title.register=Register
 page.title.search=Search
 page.title.stub=Create Volume Stub
 page.title.error=There''s been an Error!
+
+# --- Formats
 page.title.help.formats=Supported File Formats
+
+help.title=Help
+help.formats.title=Supported File Formats
+
+format.list.extension=Extension
+format.list.description=Description
 
 # party, auth pages
 email=Email
