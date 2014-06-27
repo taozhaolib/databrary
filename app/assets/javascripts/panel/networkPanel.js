@@ -59,7 +59,24 @@ module.controller('NetworkPanel', [
 					parents: '',
 					children: ''
 				}, function (data) {
+					$scope.partyAuth = {
+						parents: {},
+						children: {}
+					};
 
+					angular.forEach(data.parents, function (party) {
+						$scope.partyAuth.parents[party.id] = {
+							id: party.id,
+							party: party
+						};
+					});
+
+					angular.forEach(data.children, function (party) {
+						$scope.partyAuth.children[party.id] = {
+							id: party.id,
+							party: party
+						};
+					});
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
