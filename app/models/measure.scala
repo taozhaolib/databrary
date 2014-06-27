@@ -112,7 +112,7 @@ object Metric extends TableId[Metric[_]]("metric") {
   private final val INFO        : Id = asId(-90)
 
   /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
-    * [[Classification.DEIDENTIFIED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
+    * [[Classification.SHARED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
   final val Ident       = new Metric[String](IDENT, "ident", Classification.SHARED)
   final val Reason      = new Metric[String](REASON, "reason", Classification.SHARED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
   final val Summary     = new Metric[String](SUMMARY, "summary", Classification.PUBLIC)
