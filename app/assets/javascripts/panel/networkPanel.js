@@ -231,5 +231,75 @@ module.controller('NetworkPanel', [
 				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
 			}
 		};
+
+		//
+
+		$scope.canGrant = function () {
+			if (!$scope.isForeign()) {
+				return false;
+			}
+
+			var exists;
+
+			angular.forEach($scope.partyAuth.parents, function (parent) {
+				if (parent.party.id == page.auth.user.id) {
+					exists = true;
+					return false;
+				}
+			});
+
+			return !exists;
+		};
+
+		$scope.canApply = function () {
+			if (!$scope.isForeign()) {
+				return false;
+			}
+
+			var exists;
+
+			angular.forEach($scope.partyAuth.children, function (child) {
+				if (child.party.id == page.auth.user.id) {
+					exists = true;
+					return false;
+				}
+			});
+
+			return !exists;
+		};
+
+		$scope.grant = function () {
+			page.$location.url(page.router.partyEdit(page.auth.user, 'grant'));
+			var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form, $thatScope) {
+				remove();
+
+				remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
+					if (searchForm.principal != 'child') {
+						return;
+					}
+
+					searchForm.selectFn($scope.party);
+					form.scrollToFuture($scope.party);
+					remove();
+				});
+			});
+		};
+
+		$scope.apply = function () {
+			page.$location.url(page.router.partyEdit(page.auth.user, 'apply'));
+			var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form, $thatScope) {
+				remove();
+
+				remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
+					if (searchForm.principal == 'child') {
+						return;
+					}
+
+					searchForm.selectFn($scope.party);
+					form.scrollToFuture($scope.party);
+					remove();
+				});
+			});
+		};
 	}
 ]);

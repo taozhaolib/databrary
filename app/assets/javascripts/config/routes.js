@@ -164,11 +164,9 @@ module.config([
 
 						if (page.$route.current.params.id) {
 							req.id = page.$route.current.params.id;
-						}
-						else if (page.auth.isLoggedIn()) {
+						} else if (page.auth.isLoggedIn()) {
 							req.id = page.auth.user.id;
-						}
-						else if (page.types.isParty(page.$window.$play.object)) {
+						} else if (page.types.isParty(page.$window.$play.object)) {
 							req.id = page.$window.$play.object.id;
 						}
 
@@ -178,8 +176,7 @@ module.config([
 							}, function (res) {
 								deferred.reject(res);
 							});
-						}
-						else {
+						} else {
 							page.models.Party.profile(req, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
@@ -229,6 +226,8 @@ module.config([
 
 		//
 
+		var partyEditParty;
+
 		$routeProvider.when('/party/:id/edit', {
 			controller: 'PartyEditView',
 			templateUrl: 'partyEditView.html',
@@ -248,9 +247,36 @@ module.config([
 							deferred.reject(res);
 						});
 
+						partyEditParty = deferred.promise;
 						return deferred.promise;
 					}
-				]
+				],
+				partyAuth: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						var empty = {
+							parents: {},
+							children: {},
+						};
+
+						partyEditParty.then(function (party) {
+							if (page.auth.hasAccess('ADMIN', party)) {
+								page.models.PartyAuthorize.query(function (res) {
+									deferred.resolve(res);
+								}, function (res) {
+									deferred.reject(res);
+								});
+							} else {
+								deferred.resolve(empty);
+							}
+						}, function (res) {
+							deferred.resolve(empty);
+						});
+
+						return deferred.promise;
+					}
+				],
 			},
 			reloadOnSearch: false,
 			authenticate: true
@@ -284,7 +310,6 @@ module.config([
 						}
 
 						volumeEditVolume = deferred.promise;
-
 						return volumeEditVolume;
 					}
 				],

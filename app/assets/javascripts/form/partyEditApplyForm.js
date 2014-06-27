@@ -47,6 +47,17 @@ module.directive('partyEditApplyForm', [
 				});
 			};
 
+			form.scrollToFuture = function (party) {
+				var remove = $scope.$watch(function () {
+					return subforms[subforms.length - 1];
+				}, function (subform) {
+					if (subform && subform.other && subform.other.party == party) {
+						page.display.scrollTo(subform.$element);
+						remove();
+					}
+				});
+			};
+
 			//
 
 			form.presetName = function (type, name, party) {

@@ -1,5 +1,5 @@
 module.controller('PartyEditView', [
-	'$scope', 'party', 'pageService', function ($scope, party, page) {
+	'$scope', 'party', 'partyAuth', 'pageService', function ($scope, party, partyAuth, page) {
 		page.display.title = page.constants.message('page.title.party.edit');
 
 		page.display.toolbarLinks = [
@@ -12,24 +12,12 @@ module.controller('PartyEditView', [
 
 		$scope.party = party;
 
-		//
-
-		var partyAuth = {
+		partyAuth = partyAuth || {
 			parents: {},
 			children: {},
 		};
 
-		if (page.auth.hasAccess('ADMIN', $scope.party)) {
-			page.models.PartyAuthorize.query(function (data) {
-				partyAuth = data;
-				$scope.updateWizard();
-			}, function (res) {
-				page.messages.addError({
-					body: page.constants.message('network.authquery.error'),
-					report: res,
-				});
-			});
-		}
+		//
 
 		var updateQuery = false;
 
