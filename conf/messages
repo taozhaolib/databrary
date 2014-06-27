@@ -189,13 +189,11 @@ party.contact.title=Contact
 
 network.title=Authorizations
 network.authquery.error=Could not retrieve your authorizing agents and affiliates.
-network.remote.grant=Grant authorization to {0}
-network.remote.apply=Apply for authorization from {0}
 
-network.apply.local=Apply for authorization
-network.apply.foreign=Grant {0} authorization
-network.grant.local=Grant others authorization
-network.grant.foreign=Apply for {0} authorization
+network.apply.local=Manage and apply for authorization
+network.apply.foreign=Grant authorization to {0}
+network.grant.local=Manage and grant authorizations
+network.grant.foreign=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
@@ -208,10 +206,6 @@ auth.apply.save.success=Request processed successfully.
 auth.apply.remove.success=Request removed successfully.
 
 auth.request=Request
-auth.authorize=Authorize
-auth.update=Update
-auth.deny=Deny
-auth.revoke=Revoke
 auth.notfound=None of these
 auth.pending.notice=You have a pending authorization request from {0}.
 
