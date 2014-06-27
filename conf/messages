@@ -1,5 +1,5 @@
 # --- App
-app.update=The Databrary app can be updated. Save your work and reload your browser tab.
+app.update=The Databrary website has been updated. Please save your work and reload your browser tab.
 
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
@@ -58,7 +58,7 @@ error.internal.title=Internal error
 error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
 error.title=Error
-error.resolve=<strong>Error</strong>: An error occured retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.resolve=<strong>Error</strong>: An error occurred retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 error.0=Network Error
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
@@ -353,7 +353,7 @@ funding.remove.error=Could not remove funding agency at this time.
 
 funding.awards=Grant #
 funding.awards.placeholder=XXX-XXXXXX-XX
-funding.search.legend=Search Funding Agencies
+funding.search.legend=Add a funding source
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
 funding.search.repeat={0} has already been added.
@@ -363,7 +363,7 @@ funding.search.name.help=Start typing the name of the desired funding agency.
 # Permission levels
 auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
-auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
+auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
 auth.site.PUBLIC.title=Restricted access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
 auth.site.SHARED.title=Provisional access
@@ -387,7 +387,7 @@ auth.member.READ=Full view access to all {0} group data.
 auth.member.EDIT.title=Read/write access
 auth.member.EDIT=Can access and edit all {0} group data.
 auth.member.ADMIN.title=Manager
-auth.member.ADMIN=Can access and change permisions on all {0} group data.
+auth.member.ADMIN=Can access and change permissions on all {0} group data.
 
 # note: {0} may be name or "You"
 access.NONE={0} cannot access these data.
@@ -420,7 +420,7 @@ classification.SHARED=Shared: only shared with authorized Databrary users for ed
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
-asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
+asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
 # objects
 object.tip.dataset=Datasets are collections of raw data.
@@ -623,7 +623,7 @@ wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
 
 material.file=File
 material.file.help=Select the file you wish to upload.
