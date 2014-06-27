@@ -68,6 +68,8 @@ POST    /asset/$aID<[0-9]+>/edit                                                
 GET     /asset/$aID<[0-9]+>/transcode                                                             controllers.AssetHtml.transcode(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/remove                                                                controllers.AssetHtml.remove(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/replace                                                               controllers.AssetHtml.replace(aID : models.Asset.Id)
+# List of supported formats
+GET     /asset/formats	                                                                          controllers.AssetHtml.formats
 
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
@@ -210,8 +212,6 @@ POST    /api/asset/$assetId<[0-9]+>                                             
 POST    /api/asset/$assetId<[0-9]+>/replace                                                       controllers.AssetApi.replace(assetId : models.Asset.Id)
 # DELETE
 DELETE  /api/asset/$aID<[0-9]+>                                                                   controllers.AssetApi.remove(aID : models.Asset.Id)
-# List of supported formats
-GET     /formats	                                                                          controllers.AssetHtml.formats
 
 # ----- SLOT ASSET ----- #
 # QUERY     ?volume=ID;segment=

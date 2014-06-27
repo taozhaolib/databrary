@@ -154,6 +154,7 @@ page.title.register=Register
 page.title.search=Search
 page.title.stub=Create Volume Stub
 page.title.error=There''s been an Error!
+page.title.help.formats=Supported File Formats
 
 # party, auth pages
 email=Email

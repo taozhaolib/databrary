@@ -80,6 +80,7 @@ module.factory('routerService', [
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
+		router.helpFormats = makeRoute('/asset/formats');
 
 		router.prevUrl = function () {
 			return prevUrl;

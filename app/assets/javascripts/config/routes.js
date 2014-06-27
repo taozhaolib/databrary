@@ -85,6 +85,15 @@ module.config([
 
 		//
 
+		$routeProvider.when('/asset/formats', {
+			controller: 'HelpFormatsView',
+			templateUrl: 'helpFormatsView.html',
+			reloadOnSearch: false,
+			authenticate: true,
+		});
+
+		//
+
 		$routeProvider.when('/token/:id', {
 			controller: (function () {
 				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
