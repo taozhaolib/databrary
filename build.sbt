@@ -51,7 +51,16 @@ resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) ma
 
 TwirlKeys.templateImports ++= Seq("macros._", "site._")
 
+pipelineStages := Seq(uglify)
+
 includeFilter in (Assets, LessKeys.less) := "app.less"
+
+UglifyKeys.mangle := false
+
+UglifyKeys.concat := { js =>
+  // we assume that app.js ends up first, somehow
+  Seq((js, "app.min.js"))
+}
 
 PlayKeys.closureCompilerOptions += "ecmascript5_strict"
 
