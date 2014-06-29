@@ -43,9 +43,10 @@ libraryDependencies ++= Seq(
 
 resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) map { (dir, name, ver) =>
   val f = dir / "properties"
-  val content = "name=" + name + "\nversion=" + ver + "\n"
-  if (!f.exists || !IO.read(f).equals(content))
-    IO.write(f, content)
+  val p = new java.util.Properties()
+  p.setProperty("name", name)
+  p.setProperty("version", ver)
+  IO.write(p, "build info", f)
   Seq(f)
 }
 
@@ -69,5 +70,3 @@ UglifyKeys.concat := { js =>
   // we assume that app.js ends up first, somehow
   Seq((js, "app.min.js"))
 }
-
-PlayKeys.closureCompilerOptions += "ecmascript5_strict"
