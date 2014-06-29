@@ -61,6 +61,8 @@ AngularTemplatesKeys.naming := { f =>
   new File(f).getName
 }
 
+AngularTemplatesKeys.outputHtml := None
+
 UglifyKeys.mangle := false
 
 UglifyKeys.concat := { js =>
