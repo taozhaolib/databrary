@@ -37,7 +37,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
   "org.webjars" % "jquery" % "1.11.0",
   "org.webjars" % "angularjs" % "1.2.18",
-  "org.webjars" % "bindonce" % "0.3.1"
+  "org.webjars" % "bindonce" % "0.3.1",
+  "org.webjars" % "ngStorage" % "0.3.0"
 )
 
 resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) map { (dir, name, ver) =>
@@ -68,7 +69,3 @@ UglifyKeys.concat := { js =>
 }
 
 PlayKeys.closureCompilerOptions += "ecmascript5_strict"
-
-JSConcatCompiler.externs := Seq(
-  url("https://github.com/gsklee/ngStorage/raw/0.3.0/ngStorage.min.js")
-)
