@@ -28,8 +28,7 @@ lazy val media = project
 lazy val logbackAccess = project in file("logback-access")
 
 lazy val databrary = (project in file("."))
-  .enablePlugins(play.PlayScala)
-  .aggregate(macros, dbrary, media, logbackAccess)
+  .enablePlugins(PlayScala, SbtWeb)
   .dependsOn(macros, dbrary, media, logbackAccess)
 
 libraryDependencies ++= Seq(
