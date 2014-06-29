@@ -34,8 +34,9 @@ module.directive('volumeEditMaterialsForm', [
 
 				return page.$filter('filter')(form.slot.assets, function (asset) {
 					var e = angular.isDefined(asset.excerpt);
-					if (!asset.classification)
+					if (!asset.classification) {
 						asset.classification = page.constants.data.classification[e ? asset.excerpt : asset.asset.classification];
+					}
 					return e === form.excerptsMode;
 				});
 			};
@@ -89,8 +90,6 @@ module.directive('volumeEditMaterialsForm', [
 									body: page.constants.message('volume.edit.materials.replace.success', subform.asset.name || page.constants.message('file')),
 								});
 
-								subform.messages.remove(msg);
-
 								if (angular.isFunction(form.successFn)) {
 									form.successFn(form, res);
 								}
@@ -106,7 +105,6 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
-								form.clean(subform);
 								page.models.Slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
@@ -118,11 +116,11 @@ module.directive('volumeEditMaterialsForm', [
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
 								}
-
-								subform.messages.remove(msg);
-
-								form.clean(subform);
-						page.display.scrollTo(subform.$element);
+							})
+							['finally'](function(res){
+									subform.messages.remove(msg);
+									form.clean(subform); 
+									page.display.scrollTo(subform.$element);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
@@ -166,7 +164,7 @@ module.directive('volumeEditMaterialsForm', [
 								subform.messages.remove(msg);
 
 								form.clean(subform);
-						page.display.scrollTo(subform.$element);
+								page.display.scrollTo(subform.$element);
 							});
 					}
 				} else {
@@ -274,7 +272,7 @@ module.directive('volumeEditMaterialsForm', [
 
 				return form.data.assets.push({
 					classification: 'SHARED',
-				        excerpt: form.excerptsMode ? page.classification.SHARED : undefined
+					excerpt: form.excerptsMode ? page.classification.SHARED : undefined
 				});
 			};
 

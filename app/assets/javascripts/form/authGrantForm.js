@@ -1,18 +1,17 @@
 module.directive('authGrantForm', [
 	'pageService', function (page) {
-		var link = function ($scope) {
+		var link = function ($scope, $element, $attrs) {
 			var form = $scope.authGrantForm;
 
-			form.party = $scope.party || page.auth.user;
-			form.other = undefined;
+			form.party = page.$parse($attrs.party)($scope) || undefined;
+			form.other = page.$parse($attrs.other)($scope) || undefined;
+			var backup = {};
+
+			form.other.member = form.other.member || 0;
+			form.other.site = form.other.site || 0;
+			backup = $.extend(true, {}, form.other);
 
 			//
-
-			form.init = function (data) {
-				form.other = data;
-				form.other.member = form.other.member || 0;
-				form.other.site = form.other.site || 0;
-			};
 
 			form.presetName = function (type, name, party) {
 				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
@@ -40,17 +39,40 @@ module.directive('authGrantForm', [
 					partyId: form.other.party.id
 				}, form.other, function () {
 					form.validator.server({});
+					backup = $.extend(true, {}, form.other);
+					page.models.Party.$cache.removeAll();
+					form.$setPristine();
 
 					if (angular.isFunction(form.successFn)) {
 						form.successFn(form, arguments);
 					}
 				}, function (res) {
 					form.validator.server(res);
+					page.display.scrollTo(form.$element);
 
 					if (angular.isFunction(form.errorFn)) {
 						form.errorFn(form, arguments);
 					}
 				});
+			};
+
+			//
+
+			form.resetFn = undefined;
+
+			form.reset = function () {
+				if (angular.isFunction(form.resetFn)) {
+					form.resetFn(form);
+				}
+
+				form.validator.clearServer();
+				form.other = $.extend(true, {}, backup);
+
+				if (form.other.new) {
+					form.remove();
+				} else {
+					form.$setPristine();
+				}
 			};
 
 			//
@@ -69,30 +91,19 @@ module.directive('authGrantForm', [
 					partyId: form.other.party.id
 				}, {}, function () {
 					form.validator.server({});
+					page.models.Party.$cache.removeAll();
 
 					if (angular.isFunction(form.denySuccessFn)) {
 						form.denySuccessFn(form, arguments);
 					}
 				}, function (res) {
 					form.validator.server(res);
+					page.display.scrollTo(form.$element);
 
 					if (angular.isFunction(form.denyErrorFn)) {
 						form.denyErrorFn(form, arguments);
 					}
 				});
-			};
-
-			//
-
-			form.cancelFn = undefined;
-
-			form.cancel = function () {
-				if (angular.isFunction(form.cancelFn)) {
-					form.cancelFn(form);
-				}
-
-				form.other.site = 0;
-				form.other.member = 0;
 			};
 
 			//
@@ -116,7 +127,7 @@ module.directive('authGrantForm', [
 			templateUrl: 'authGrantForm.html',
 			scope: false,
 			replace: true,
-			link: link
+			link: link,
 		};
 	}
 ]);

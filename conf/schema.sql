@@ -164,10 +164,11 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
 		SELECT * FROM authorize
 		UNION
-		SELECT a.child, aa.parent, LEAST(a.site,
-			CASE WHEN aa.site = 'ADMIN' THEN 'EDIT'::permission
-			     WHEN aa.site = 'EDIT' THEN 'READ'::permission
-			END), NULL, LEAST(a.expires, aa.expires)
+		SELECT a.child, aa.parent, CASE
+		         WHEN aa.site = 'ADMIN' THEN LEAST(a.site, 'EDIT')
+			 WHEN aa.site = 'EDIT' THEN LEAST(a.site, 'READ')
+			 ELSE 'NONE'::permission
+		       END, 'NONE', LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa
 	UNION ALL SELECT id, id, 'ADMIN', 'ADMIN', NULL FROM party WHERE id >= 0
@@ -379,9 +380,6 @@ CREATE TABLE "format" (
 );
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
--- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG image');
-
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv', 'csv', 'Comma-separated values');
@@ -402,7 +400,10 @@ SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
 INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
+
+-- The privledged formats with special handling (image and video for now) have hard-coded IDs:
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG image');
 
 CREATE TABLE "asset" (
 	"id" serial Primary Key,
@@ -461,12 +462,13 @@ END; $$;
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	"classification" classification NOT NULL Check ("classification" >= 'RESTRICTED'), -- should be >= asset.classification
+	"classification" classification NOT NULL Default 'PRIVATE',
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
 COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
+COMMENT ON COLUMN "excerpt"."classification" IS 'Override (by relaxing only) asset''s original classification.';
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
@@ -597,10 +599,10 @@ INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'dis
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'SHARED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'PUBLIC', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'PUBLIC', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'SHARED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'PUBLIC', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
@@ -830,9 +832,9 @@ Most developmental scientists rely on video recordings to capture the complexity
 The Databrary project is dedicated to transforming the culture of developmental science by building a community of researchers committed to open video data sharing, training a new generation of developmental scientists and empowering them with an unprecedented set of tools for discovery, and raising the profile of behavioral science by bolstering interest in and support for scientific research among the general public.');
 SELECT setval('volume_id_seq', 1);
 
-INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
 INSERT INTO slot_asset VALUES (1, '[0,40)'::segment, 1);

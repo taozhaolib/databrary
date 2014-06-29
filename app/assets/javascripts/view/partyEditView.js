@@ -1,5 +1,5 @@
 module.controller('PartyEditView', [
-	'$scope', 'party', 'pageService', function ($scope, party, page) {
+	'$scope', 'party', 'partyAuth', 'pageService', function ($scope, party, partyAuth, page) {
 		page.display.title = page.constants.message('page.title.party.edit');
 
 		page.display.toolbarLinks = [
@@ -11,6 +11,11 @@ module.controller('PartyEditView', [
 		];
 
 		$scope.party = party;
+
+		partyAuth = partyAuth || {
+			parents: {},
+			children: {},
+		};
 
 		//
 
@@ -130,6 +135,26 @@ module.controller('PartyEditView', [
 				};
 				forms.account.form.init(party);
 			},
+
+			'party_edit_apply': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.apply = {
+					step: step,
+					form: step.partyEditApplyForm,
+				};
+				forms.apply.form.init(party, partyAuth.parents);
+			},
+
+			'party_edit_grant': function (step) {
+				step.enable = page.auth.hasAccess('ADMIN', party);
+
+				forms.grant = {
+					step: step,
+					form: step.partyEditGrantForm,
+				};
+				forms.grant.form.init(party, partyAuth.children);
+			},
 		};
 
 		//
@@ -141,6 +166,14 @@ module.controller('PartyEditView', [
 
 			'party_edit_account': function (step) {
 				forms.account.form.init(party);
+			},
+
+			'party_edit_apply': function (step) {
+				forms.apply.form.init(party, partyAuth.parents);
+			},
+
+			'party_edit_grant': function (step) {
+				forms.grant.form.init(party, partyAuth.children);
 			},
 		};
 	}

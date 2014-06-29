@@ -9,12 +9,6 @@ module.directive('volumeEditAccessForm', [
 			form.volume = undefined;
 			var backup = [];
 
-			form.saveFn = undefined;
-			form.successFn = undefined;
-			form.errorFn = undefined;
-			form.resetFn = undefined;
-			form.cancelFn = undefined;
-
 			//
 
 			form.init = function (data, volume) {
@@ -38,7 +32,9 @@ module.directive('volumeEditAccessForm', [
 				form.globalVal = undefined;
 
 				angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
-					if (preset.every(function (x, i) { return form.global[i] === x; })) {
+					if (preset.every(function (x, i) {
+						return form.global[i] === x;
+					})) {
 						form.globalVal = i;
 						return false;
 					}

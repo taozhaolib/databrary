@@ -69,8 +69,8 @@ module.directive('volumeEditFundingForm', [
 				}
 				subforms.push(grantForm);
 
-				grantForm.removeSuccessFn = function (grantForm, args, funder) {
-					form.data.splice(form.data.indexOf(funder), 1);
+				grantForm.removeSuccessFn = function (grantForm) {
+					form.data.splice(form.data.indexOf(grantForm.data), 1);
 				};
 
 				event.stopPropagation();

@@ -1,11 +1,11 @@
-<panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold>
-  <div class="network_parents_region" ng-show="showRegion(true)">
+<panel ng-controller="NetworkPanel" id="panel_network" panel-title="{{'network.title' | message}}" fold bindonce>
+  <div class="network_parents_region">
     <h2>{{'auth.parents.title' | message}}</h2>
 
-    <article bo-id="'network-parent-'+parent.id" class="network-auth cf" bindonce ng-repeat="parent in partyAuth.parents">
+    <article bo-id="'network-parent-'+parent.id" class="network-auth cf" ng-repeat="parent in partyAuth.parents">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure baseline="square" class="figure_avatar" ng-click="openAuthParent(parent)">
+          <figure baseline="square" class="figure_avatar">
             <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
           </figure>
         </div>
@@ -39,51 +39,24 @@
                 <div class="network-auth-expiration" ng-if="!parent.member && !parent.site" ng-bind-html="'auth.pending' | message"></div>
               </div>
             </div>
-
-            <div ng-if="currentAuthParent == parent">
-              <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                <div ng-if="showRemote(true)">
-                    <auth-grant-form></auth-grant-form>
-                </div>
-
-                <div ng-if="!showRemote(true)">
-                    <auth-apply-form query="parent.query"></auth-apply-form>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </article>
 
-    <article ng-if="showAdd(true)" class="network-auth network-auth-add cf" bindonce>
+		<fieldset class="clean">
+			<button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'apply'))" bo-text="'network.apply.local' | message"></button>
+			<button class="green" ng-if="canGrant()" ng-click="grant()" bo-text="'network.apply.foreign' | message:party.name"></button>
+		</fieldset>
+  </div>
+
+  <div class="network_children_region">
+    <h2>{{'auth.children.title' | message}}</h2>
+
+    <article bo-id="'network-child-'+child.id" class="network-auth cf" ng-repeat="child in partyAuth.children">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure baseline="square" class="figure_avatar">
-            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
-          </figure>
-        </div>
-
-        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div ng-if="showSearch()">
-            <auth-search-form party="{{party.id}}"></auth-search-form>
-          </div>
-
-          <div ng-if="!showSearch()">
-            <a href="" class="remote-action" ng-click="remoteAction(false)" bo-html="'network.remote.grant' | message:party.name"></a>
-          </div>
-        </div>
-      </div>
-    </article>
-  </div>
-
-  <div class="network_children_region" ng-show="showRegion()">
-    <h2>{{'auth.children.title' | message}}</h2>
-
-    <article bo-id="'network-child-'+child.id" class="network-auth cf" bindonce ng-repeat="child in partyAuth.children">
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure baseline="square" class="figure_avatar" ng-click="openAuthChild(child)">
             <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
           </figure>
         </div>
@@ -93,7 +66,6 @@
             <div class="network-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
               <a bo-href="page.router.party(child.party)" class="network-auth-username" bo-text="child.party.name"></a>
               <span class="network-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
-              <span class="icon edit line" ng-click="openAuthChild(child)" ng-if="showExtended(false, child)"></span>
             </div>
 
             <div ng-if="showExtended(false, child)">
@@ -114,42 +86,15 @@
                 <div class="network-auth-expiration" ng-if="!child.member && !child.site" ng-bind-html="'auth.pending' | message"></div>
               </div>
             </div>
-
-            <div ng-if="currentAuthChild == child">
-              <div class="col-desktop-12 col-laptop-10 col-tablet-8 col-mobile-5">
-                <div ng-if="showRemote()">
-                    <auth-apply-form></auth-apply-form>
-                </div>
-
-                <div ng-if="!showRemote()">
-                    <auth-grant-form></auth-grant-form>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
     </article>
 
-    <article ng-if="showAdd()" class="network-auth network-auth-add cf" bindonce>
-      <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure baseline="square" class="figure_avatar">
-            <figmedia><img src="/public/images/network/auth-add.png"></figmedia>
-          </figure>
-        </div>
-
-        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div ng-if="showSearch()">
-            <auth-search-form child principal="child" party="{{party.id}}"></auth-search-form>
-          </div>
-
-          <div ng-if="!showSearch()">
-            <a href="" class="remote-action" ng-click="remoteAction(true)" bo-html="'network.remote.apply' | message:party.name"></a>
-          </div>
-        </div>
-      </div>
-    </article>
+		<fieldset class="clean">
+			<button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'grant'))" bo-text="'network.grant.local' | message"></button>
+			<button class="green" ng-if="canApply()" ng-click="apply()" bo-text="'network.grant.foreign' | message:party.name"></button>
+		</fieldset>
   </div>
 </panel>
 

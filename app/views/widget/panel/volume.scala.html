@@ -35,7 +35,7 @@
 @if(funding.nonEmpty) {
     @widget.frame.raw("funding", "")(Messages("volume.funding.title")) {
         @funding.map { f =>
-            @f.funder @f.awards.mkString(", ")
+            @f.funder.name @f.awards.mkString(", ")
         }
     }
 }

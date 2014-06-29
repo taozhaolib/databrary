@@ -83,8 +83,8 @@
 		    <button type='submit' class="button">@Messages("auth.request")</button>
 		}
 		case form : AuthorizeChildForm => {
-		    <button type='submit' class="button second">@Messages(if(form.pending) "auth.authorize" else "auth.update")</button>
-		    <button type='submit' class="button first" name='delete' value='true'>@Messages(if(form.pending) "auth.deny" else "auth.revoke")</button>
+		    <button type='submit' class="button second">@Messages("save")</button>
+		    <button type='submit' class="button first" name='delete' value='true'>@Messages("remove")</button>
 		}
 		}
 		</td>

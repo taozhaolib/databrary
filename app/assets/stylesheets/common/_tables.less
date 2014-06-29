@@ -61,5 +61,25 @@ tbody {
 		&:hover {
 			background: mix(@pale, @white, 50%);
 		}
+
+		&.hr {
+			background: @white;
+
+			&:hover {
+				background: @white;
+			}
+		}
+
+		&.hr-big {
+			th {
+				.padding-top(@f1);
+				.font-line(1.5);
+			}
+		}
+	}
+
+	.th-right {
+		min-width: 33%;
+		text-align: right;
 	}
 }

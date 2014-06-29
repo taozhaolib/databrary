@@ -1,0 +1,31 @@
+<article class="article article_crud article_action article_login" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col-full">
+        <h1 class="panel_context" bo-html="'help.title' | message"></h1>
+        <h2 class="panel_title with_context" bo-html="'help.formats.title' | message"></h2>
+      </hgroup>
+
+      <div class="col-full">
+        <table>
+          <tbody ng-repeat="(key, group) in groups">
+            <tr class="hr hr-big">
+              <th colspan="2" bo-text="'format.list.'+key | message"></th>
+            </tr>
+
+            <tr class="hr">
+              <th bo-text="'format.list.extension' | message" class="th-right"></th>
+              <th bo-text="'format.list.description' | message"></th>
+            </tr>
+
+            <tr ng-repeat="format in group">
+              <td bo-text="format.format.extension" class="th-right"></td>
+              <td bo-text="format.description"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</article>
+

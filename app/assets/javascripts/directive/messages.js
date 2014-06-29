@@ -25,7 +25,7 @@ module.directive('messages', [
 						classes.push('messages_local');
 					}
 
-					if(page.$filter('filter')(this.toArray(), {enabled: true}).length === 0) {
+					if (page.$filter('filter')(this.toArray(), {enabled: true}).length === 0) {
 						classes.push('ng-hide');
 					}
 

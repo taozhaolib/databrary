@@ -1,5 +1,5 @@
 # --- App
-app.update=The Databrary app can be updated. Save your work and reload your browser tab.
+app.update=The Databrary website has been updated. Please save your work and reload your browser tab.
 
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
@@ -8,12 +8,11 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
-format.list.text=text files
-format.list.application=documents
-format.list.video=video
-format.list.image=images
-format.list.audio=audio
-format.list.note=
+format.list.text=Text Files
+format.list.application=Documents
+format.list.video=Videos
+format.list.image=Images
+format.list.audio=Audio
 format.list.link=Click here to see list of supported file formats
 
 # --- Errors
@@ -58,7 +57,7 @@ error.internal.title=Internal error
 error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
 error.title=Error
-error.resolve=<strong>Error</strong>: An error occured retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.resolve=<strong>Error</strong>: An error occurred retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 error.0=Network Error
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
@@ -155,6 +154,15 @@ page.title.search=Search
 page.title.stub=Create Volume Stub
 page.title.error=There''s been an Error!
 
+# --- Formats
+page.title.help.formats=Supported File Formats
+
+help.title=Help
+help.formats.title=Supported File Formats
+
+format.list.extension=Extension
+format.list.description=Description
+
 # party, auth pages
 email=Email
 password.once=Password
@@ -189,21 +197,23 @@ party.contact.title=Contact
 
 network.title=Authorizations
 network.authquery.error=Could not retrieve your authorizing agents and affiliates.
-network.remote.grant=Grant authorization to {0}
-network.remote.apply=Apply for authorization from {0}
+
+network.apply.local=Manage and apply for authorization
+network.apply.foreign=Grant authorization to {0}
+network.grant.local=Manage and grant authorizations
+network.grant.foreign=Apply for authorization from {0}
 
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
 auth.expiration=Expiration
 auth.expiration.none=N/A
 auth.pending=Request pending.
+
 auth.apply.error=Could not submit your request.
+auth.apply.save.success=Request processed successfully.
+auth.apply.remove.success=Request removed successfully.
 
 auth.request=Request
-auth.authorize=Authorize
-auth.update=Update
-auth.deny=Deny
-auth.revoke=Revoke
 auth.notfound=None of these
 auth.pending.notice=You have a pending authorization request from {0}.
 
@@ -212,6 +222,9 @@ auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
 auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+
+auth.grant.save.success=Authorization saved successfully.
+auth.grant.remove.success=Authorization removed successfully.
 
 auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
@@ -259,12 +272,20 @@ party.edit.profile.success=Profile saved successfully.
 party.edit.account.success=Account updated successfully.
 
 wizard.party_edit_profile.name=Profile
-wizard.party_edit_profile.description=Modify publicly visible info.
+wizard.party_edit_profile.description=Publicly visible info
 wizard.party_edit_profile.instructions=
 
 wizard.party_edit_account.name=Account
-wizard.party_edit_account.description=Update email address and password.
+wizard.party_edit_account.description=Email address and password
 wizard.party_edit_account.instructions=
+
+wizard.party_edit_apply.name=Sponsors
+wizard.party_edit_apply.description=Authorizations and memberships granted by others
+wizard.party_edit_apply.instructions=
+
+wizard.party_edit_grant.name=Affiliates
+wizard.party_edit_grant.description=Authorizations and memberships granted to others
+wizard.party_edit_grant.instructions=
 
 # --- Auth search
 auth.search=Search for a user or institution...
@@ -280,6 +301,11 @@ auth.search.child=Search for the person you wish to sponsor...
 auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
 
+auth.apply.legend=Current sponsors and applications
+auth.search.apply.legend=Apply for a new sponsor
+auth.grant.legend=Current affiliates and requests
+auth.search.grant.legend=Authorize a new affiliate
+
 # --- Auth apply
 auth.request.title=Request authorization from {0}
 auth.request.notfound.user=User Not Found
@@ -288,8 +314,8 @@ auth.request.notfound.instructions=If you''re seeking affiliate status from an i
 auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
 auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 
-auth.info.prompt=Expedite the authorization process by helping us contact your Institution''s Authorizing Official (a.k.a. the co-signer of your Agreement).
-auth.request.info.title=More Info
+auth.info.prompt=Expedite the authorization process by providing contact information for your Institution''s Authorizing Official (i.e., the co-signer of your Agreement).
+auth.request.info.title=Contact info
 auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
 
 # Access
@@ -302,7 +328,6 @@ access.global.PUBLIC.SHARED=Make the study and all public data visible to everyo
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
-access.grant.notfound.message=Users must create an account before they can be granted access. Please suggest they register.
 access.grant.inherit=Extend access to those in {0}''s lab/group.
 access.grant.access.save.success=Access changed.
 access.grant.access.remove.success=Access removed.
@@ -330,7 +355,7 @@ funding.remove.error=Could not remove funding agency at this time.
 
 funding.awards=Grant #
 funding.awards.placeholder=XXX-XXXXXX-XX
-funding.search.legend=Search Funding Agencies
+funding.search.legend=Add a funding source
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
 funding.search.repeat={0} has already been added.
@@ -340,7 +365,7 @@ funding.search.name.help=Start typing the name of the desired funding agency.
 # Permission levels
 auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
-auth.site.NONE=Cannot access shared Databray data (except as granted through group/lab access).
+auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
 auth.site.PUBLIC.title=Restricted access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
 auth.site.SHARED.title=Provisional access
@@ -364,7 +389,7 @@ auth.member.READ=Full view access to all {0} group data.
 auth.member.EDIT.title=Read/write access
 auth.member.EDIT=Can access and edit all {0} group data.
 auth.member.ADMIN.title=Manager
-auth.member.ADMIN=Can access and change permisions on all {0} group data.
+auth.member.ADMIN=Can access and change permissions on all {0} group data.
 
 # note: {0} may be name or "You"
 access.NONE={0} cannot access these data.
@@ -397,7 +422,7 @@ classification.SHARED=Shared: only shared with authorized Databrary users for ed
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
-asset.untranscoded=This video is being converted to Databrary''s standand format, so some features may not work yet.
+asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
 # objects
 object.tip.dataset=Datasets are collections of raw data.
@@ -600,7 +625,7 @@ wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionaire forms).
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
 
 material.file=File
 material.file.help=Select the file you wish to upload.

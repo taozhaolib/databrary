@@ -12,10 +12,16 @@ module.controller('NetworkPanel', [
 
 		$scope.partyAuth = {
 			parents: {},
-			children: {}
+			children: {},
 		};
 
 		var actionMessages = {};
+
+		$scope.$on('$destroy', function () {
+			angular.forEach(actionMessages, function (bundle) {
+				page.messages.remove(bundle.message);
+			});
+		});
 
 		var getPartyAuth = function () {
 			if (page.auth.hasAccess('ADMIN', $scope.party)) {
@@ -24,14 +30,14 @@ module.controller('NetworkPanel', [
 					$scope.partyAuth = data;
 
 					angular.forEach($scope.partyAuth.children, function (party) {
-						if (!party.authorized) {
+						if (!party.member && !party.site) {
 							if (!actionMessages[party.id]) {
 								actionMessages[party.id] = {
 									party: party,
 									message: page.messages.add({
 										type: 'yellow',
 										closeable: true,
-										body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="" ng-click="openMessageChild(' + party.id + ')">Manage</a>.</span>')($scope)
+										body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + page.router.partyEdit($scope.party, 'grant') + '">Manage</a>.</span>')($scope)
 									})
 								};
 							}
@@ -80,76 +86,6 @@ module.controller('NetworkPanel', [
 			}
 		};
 
-		$scope.openMessageChild = function (id) {
-			page.messages.remove(actionMessages[id].message);
-			$scope.openAuthChild(actionMessages[id].party);
-		};
-
-		$scope.$on('$destroy', function () {
-			angular.forEach(actionMessages, function (bundle) {
-				page.messages.remove(bundle.message);
-			});
-		});
-
-		//
-
-		$scope.resetAuth = {};
-
-		$scope.currentAuthParent = undefined;
-		$scope.currentAuthChild = undefined;
-
-		var childWatch = undefined;
-
-		//
-
-		$scope.openAuthChild = function (child) {
-			if (!child.force && !page.auth.hasAccess('ADMIN', $scope.party)) {
-				return;
-			}
-
-			if (!child.force) {
-				$scope.resetAuthChild(child);
-			}
-
-			$scope.currentAuthChild = child;
-			page.display.scrollTo('network-child-' + child.id);
-		};
-
-		$scope.resetAuthChild = function (child) {
-			if (angular.isDefined($scope.currentAuthChild) && angular.isDefined($scope.resetAuth)) {
-				angular.extend($scope.currentAuthChild, $scope.resetAuth);
-			}
-
-			if (angular.isFunction(childWatch)) {
-				childWatch();
-			}
-
-			if (!angular.isDefined(child)) {
-				return;
-			}
-
-			$scope.resetAuth = {
-				direct: child.direct,
-				inherit: child.inherit,
-				expires: child.expires,
-				id: child.id
-			};
-
-			/* XXX What's this for?  If the user doesn't have admin access to this party, they can't change anything anyway. */
-			if (!page.auth.hasAccess('ADMIN', $scope.party)) {
-				childWatch = $scope.$watch(function () {
-					return [child.direct, child.inherit, child.expiration];
-				}, function (newVal, oldVal) {
-					if (newVal[0] != oldVal[0]) {
-						child.inherit = Math.min(child.inherit, Math.max(child.direct, page.permission.DOWNLOAD));
-					} else if (newVal[1] != oldVal[1]) {
-						if (child.inherit > page.permission.DOWNLOAD)
-							child.direct = Math.max(child.direct, child.inherit);
-					}
-				}, true);
-			}
-		};
-
 		//
 
 		var grantCancelFn = function () {
@@ -180,7 +116,7 @@ module.controller('NetworkPanel', [
 				party: $scope.party,
 				id: $scope.party.id,
 				inherit: page.permission.DOWNLOAD,
-				direct: page.permission.DOWNLOA,
+				direct: page.permission.DOWNLOAD,
 			} : $scope.currentAuthChild;
 
 			form.successFn = grantCancelFn;
@@ -188,21 +124,6 @@ module.controller('NetworkPanel', [
 			form.denySuccessFn = grantCancelFn;
 			event.stopPropagation();
 		});
-
-		//
-
-		$scope.openAuthParent = function (parent) {
-			if (!page.auth.hasAccess('ADMIN', $scope.party) && !parent.force) {
-				return;
-			}
-
-			if (parent.force) {
-				$scope.resetAuthChild(parent);
-			}
-
-			$scope.currentAuthParent = parent;
-			page.display.scrollTo('network-parent-' + parent.id);
-		};
 
 		//
 
@@ -306,68 +227,16 @@ module.controller('NetworkPanel', [
 
 		//
 
-		$scope.remoteAction = function (apply) {
-			var request = {
-				party: page.auth.user,
-				force: true,
-				remote: true,
-				id: page.auth.user.id,
-				direct: page.permission.DOWNLOAD,
-				inherit: page.permission.DOWNLOAD
-			};
-
-			if (apply) {
-				$scope.partyAuth.children[page.auth.user.id] = request;
-				$scope.openAuthChild(request);
-			} else {
-				$scope.partyAuth.parents[page.auth.user.id] = request;
-				$scope.openAuthParent(request);
-			}
-		};
-
-		//
-
 		var isAdmin = function () {
 			return page.auth.hasAccess('ADMIN', $scope.party);
 		};
 
-		var isForeign = function () {
-			return (!$scope.partyAuth.parents[page.auth.user.id] && !$scope.partyAuth.children[page.auth.user.id]);
-		};
-
-		$scope.showRegion = function (parents) {
-			if (parents) {
-				return !$.isEmptyObject($scope.partyAuth.parents) || isAdmin() || isForeign();
-			}
-			else {
-				return !$.isEmptyObject($scope.partyAuth.children) || isAdmin() || isForeign();
-			}
-		};
-
-		$scope.showRemote = function (parents) {
-			if (parents) {
-				return $scope.currentAuthParent.remote;
-			}
-			else {
-				return $scope.currentAuthChild.remote;
-			}
+		$scope.isForeign = function () {
+			return $scope.party.id != page.auth.user.id;
 		};
 
 		$scope.showExtended = function (parents, party) {
-			if (parents) {
-				return isAdmin() && $scope.currentAuthParent != party;
-			}
-			else {
-				return isAdmin() && $scope.currentAuthChild != party;
-			}
-		};
-
-		$scope.showAdd = function () {
-			return isAdmin() || isForeign();
-		};
-
-		$scope.showSearch = function () {
-			return isAdmin();
+			return isAdmin()
 		};
 
 		//
@@ -378,6 +247,76 @@ module.controller('NetworkPanel', [
 			} else {
 				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
 			}
+		};
+
+		//
+
+		$scope.canGrant = function () {
+			if (!$scope.isForeign()) {
+				return false;
+			}
+
+			var exists;
+
+			angular.forEach($scope.partyAuth.parents, function (parent) {
+				if (parent.party.id == page.auth.user.id) {
+					exists = true;
+					return false;
+				}
+			});
+
+			return !exists;
+		};
+
+		$scope.canApply = function () {
+			if (!$scope.isForeign()) {
+				return false;
+			}
+
+			var exists;
+
+			angular.forEach($scope.partyAuth.children, function (child) {
+				if (child.party.id == page.auth.user.id) {
+					exists = true;
+					return false;
+				}
+			});
+
+			return !exists;
+		};
+
+		$scope.grant = function () {
+			page.$location.url(page.router.partyEdit(page.auth.user, 'grant'));
+			var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form, $thatScope) {
+				remove();
+
+				remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
+					if (searchForm.principal != 'child') {
+						return;
+					}
+
+					searchForm.selectFn($scope.party);
+					form.scrollToFuture($scope.party);
+					remove();
+				});
+			});
+		};
+
+		$scope.apply = function () {
+			page.$location.url(page.router.partyEdit(page.auth.user, 'apply'));
+			var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form, $thatScope) {
+				remove();
+
+				remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
+					if (searchForm.principal == 'child') {
+						return;
+					}
+
+					searchForm.selectFn($scope.party);
+					form.scrollToFuture($scope.party);
+					remove();
+				});
+			});
 		};
 	}
 ]);

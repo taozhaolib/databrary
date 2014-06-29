@@ -1,7 +1,12 @@
 module.factory('routerService', [
-	'$rootScope', '$route', '$filter', '$location', 'typeService', function ($rootScope, $route, $filter, $location, type) {
+	'$rootScope',
+	'$route',
+	'$filter',
+	'$location',
+	'typeService',
+	function ($rootScope, $route, $filter, $location, type) {
 		var router = {};
-		var prevUrl = "/"
+		var prevUrl = '/';
 
 		router.$route = $route;
 
@@ -54,7 +59,7 @@ module.factory('routerService', [
 
 		var makeRoute = function (route) {
 			return function (params, stripQuery, setPrev) {
-				if(setPrev){
+				if (setPrev) {
 					prevUrl = $location.path();
 				}
 				return router.makeUrl(route, params, stripQuery);
@@ -75,8 +80,11 @@ module.factory('routerService', [
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
-		
-		router.prevUrl = function() {return prevUrl;};
+		router.helpFormats = makeRoute('/asset/formats');
+
+		router.prevUrl = function () {
+			return prevUrl;
+		};
 		//
 
 		router.record = function (data) {
@@ -241,7 +249,7 @@ module.factory('routerService', [
 			return router.makeUrl('/volume/:id/edit', data);
 		};
 
-		router.partyEdit = function (data) {
+		router.partyEdit = function (data, page) {
 			if (!type.isParty(data)) {
 				throw new Error('routerService.partyEdit() requires Party as first argument');
 			}
@@ -249,6 +257,10 @@ module.factory('routerService', [
 			data = {
 				id: data.id
 			};
+
+			if (page) {
+				data.page = page;
+			}
 
 			return router.makeUrl('/party/:id/edit', data);
 		};

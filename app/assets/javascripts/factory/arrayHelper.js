@@ -44,7 +44,6 @@ module.factory('ArrayHelper', [
 
 		//
 
-
 		ArrayHelper.prototype.newCatalog = function (key) {
 			this.catalogKey = key;
 			this.catalogUpdate();
@@ -74,7 +73,6 @@ module.factory('ArrayHelper', [
 		};
 
 		//
-
 
 		ArrayHelper.prototype.index = function (item) {
 			if (this.useCatalog(item)) {

@@ -10,9 +10,9 @@ module.directive('hint', [
 
 			if (i >= 3) {
 				hints['access-edit-' + a.toLowerCase()] = {
-				class: 'hint-access-edit-' + a.toLowerCase(),
-				message: page.constants.message('access.edit.' + a + '.who', 'You'),
-			};
+					class: 'hint-access-edit-' + a.toLowerCase(),
+					message: page.constants.message('access.edit.' + a + '.who', 'You'),
+				};
 			}
 		});
 

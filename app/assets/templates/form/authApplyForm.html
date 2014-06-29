@@ -1,8 +1,8 @@
-<form name="authApplyForm" novalidate>
+<form name="authApplyForm" novalidate bindonce>
   <messages form="authApplyForm"></messages>
 
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
-    <legend class="auth_request">{{"auth.request.title" | message:authApplyForm.other.party.name}}</legend>
+    <legend class="auth_request" ng-bind-html="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
 
     <div ng-if="authApplyForm.other.party.institution">
       <div ng-bind-html="'auth.info.prompt' | message | format"></div>
@@ -14,9 +14,9 @@
   </fieldset>
 
   <fieldset class="clean" ng-if="authApplyForm.notFound.query">
-    <legend>{{"auth.request.notfound.title" | message}}</legend>
+    <legend bo-html="'auth.request.notfound.title' | message"></legend>
 
-    <div class="cut_f" ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
+    <div ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
 
     <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
       <textarea id="field_info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
@@ -26,8 +26,8 @@
   <fieldset class="clean">
     <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
-    <button ng-click="authApplyForm.save()" class="green">{{"auth.request" | message}}</button>
-    <button ng-click="authApplyForm.cancel()" class="yellow">{{"cancel" | message}}</button>
+    <button ng-click="authApplyForm.save()" class="green" bo-html="'auth.request' | message"></button>
+    <button ng-click="authApplyForm.cancel()" class="yellow" bo-html="'cancel' | message"></button>
   </fieldset>
 </form>
 

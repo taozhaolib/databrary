@@ -123,7 +123,7 @@ module.factory('typeService', [
 
 		typeService.assetFormat = function (object, dig) {
 			return constants.data.format[typeService.assetProperty(object, 'format', dig)];
-		}
+		};
 
 		typeService.assetDisplayName = function (object, dig) {
 			return typeService.assetProperty(object, 'name', dig) || typeService.assetFormat(object, dig).name;

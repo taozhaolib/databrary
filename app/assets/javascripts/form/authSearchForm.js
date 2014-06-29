@@ -45,7 +45,7 @@ module.directive('authSearchForm', [
 						id: form.id || page.auth.user.id,
 						name: form.nameVal,
 						institution: form.principal === 'principal' ? true :
-							form.principal === 'affiliate' ? false : undefined,
+								form.principal === 'affiliate' ? false : undefined,
 					}, function (data) {
 						form.found = data;
 

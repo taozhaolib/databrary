@@ -109,10 +109,11 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
 		SELECT * FROM authorize
 		UNION
-		SELECT a.child, aa.parent, LEAST(a.site,
-			CASE WHEN aa.site = 'ADMIN' THEN 'EDIT'::permission
-			     WHEN aa.site = 'EDIT' THEN 'READ'::permission
-			END), NULL, LEAST(a.expires, aa.expires)
+		SELECT a.child, aa.parent, CASE
+		         WHEN aa.site = 'ADMIN' THEN LEAST(a.site, 'EDIT')
+			 WHEN aa.site = 'EDIT' THEN LEAST(a.site, 'READ')
+			 ELSE 'NONE'::permission
+		       END, 'NONE', LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa
 	UNION ALL SELECT id, id, 'ADMIN', 'ADMIN', NULL FROM party WHERE id >= 0
@@ -193,13 +194,11 @@ $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
 
-ALTER TABLE "excerpt" ADD "classification" classification NOT NULL DEFAULT 'SHARED' Check ("classification" >= 'RESTRICTED');
-ALTER TABLE "excerpt" ALTER "classification" DROP DEFAULT;
+ALTER TABLE "excerpt" ADD "classification" classification NOT NULL DEFAULT 'PRIVATE';
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
-ALTER TABLE audit."excerpt" ADD "classification" classification NOT NULL DEFAULT 'SHARED';
-ALTER TABLE audit."excerpt" ALTER "classification" DROP DEFAULT;
+ALTER TABLE audit."excerpt" ADD "classification" classification NOT NULL DEFAULT 'PRIVATE';
 
-INSERT INTO excerpt SELECT id, '(,)', 'SHARED' FROM asset JOIN slot_asset ON id = asset WHERE classification = 'EXCERPT';
+INSERT INTO excerpt SELECT asset, '(,)', CASE WHEN top THEN 'SHARED'::classification ELSE 'PRIVATE'::classification END FROM asset JOIN slot_asset ON id = asset JOIN container ON container = container.id WHERE classification = 'EXCERPT';
 
 ALTER TABLE "asset"
 	ALTER "classification" TYPE classification USING CASE
