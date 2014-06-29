@@ -54,6 +54,12 @@ pipelineStages := Seq(uglify)
 
 includeFilter in (Assets, LessKeys.less) := "app.less"
 
+AngularTemplatesKeys.compressRemoveIntertagSpaces := true
+
+AngularTemplatesKeys.naming := { f =>
+  new File(f).getName
+}
+
 UglifyKeys.mangle := false
 
 UglifyKeys.concat := { js =>

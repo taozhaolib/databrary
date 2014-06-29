@@ -1,3 +1,6 @@
 [submodule "logback-access"]
 	path = logback-access
 	url = https://github.com/databrary/play-logback-access.git
+[submodule "sbt-angular-templates"]
+	path = project/angular-templates
+	url = https://github.com/databrary/sbt-angular-templates.git
