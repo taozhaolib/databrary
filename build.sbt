@@ -56,6 +56,8 @@ JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 pipelineStages in Assets := Seq(uglify)
 
+StylusKeys.useNib in Assets := true
+
 includeFilter in (Assets, StylusKeys.stylus) := "app.styl"
 
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
