@@ -9,7 +9,7 @@ addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-less" % "1.0.0")
 
-addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3-SNAPSHOT")
+addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
 
 lazy val angularTemplates = project in file("angular-templates")
 
