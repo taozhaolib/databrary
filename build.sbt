@@ -52,9 +52,11 @@ resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) ma
 
 TwirlKeys.templateImports ++= Seq("macros._", "site._")
 
+JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
+
 pipelineStages := Seq(uglify)
 
-includeFilter in (Assets, LessKeys.less) := "app.less"
+includeFilter in (Assets, StylusKeys.stylus) := "app.styl"
 
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
