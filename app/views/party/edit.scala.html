@@ -4,7 +4,10 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@defining(cast[PartyController.EditForm](form).map(_.party)) { party =>
+@defining(form match {
+    case editForm : PartyController.EditForm => Some(editForm.party)
+    case _ => None
+  }) { party =>
 @template.form(party, form.formName, angular = Some(RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.json.js).getOrElse(play.api.libs.json.JsNull))) {
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
