@@ -66,7 +66,7 @@ AngularTemplatesKeys.outputHtml := None
 
 UglifyKeys.mangle := false
 
-UglifyKeys.concat := { js =>
+UglifyKeys.uglifyOps := { js =>
   // we assume that app.js ends up first, somehow
   Seq((js, "app.min.js"))
 }
