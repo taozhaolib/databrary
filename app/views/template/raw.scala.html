@@ -18,11 +18,19 @@
   <link rel="apple-touch-icon-precomposed" href="@routes.Assets.at("icons/apple-touch-icon.png")">
 
   <!-- css -->
-  <link rel="stylesheet" href="@routes.Assets.at("stylesheets/app.min.css")">
+  <link rel="stylesheet" href="@routes.Assets.at("app.css")">
 
   <!-- js -->
   @angular.map { obj =>
-    <script src="@routes.SiteApi.appJs"></script>
+    <script src="@routes.Assets.at("lib/jquery/jquery.min.js")"></script>
+    <script src="@routes.Assets.at("lib/angularjs/angular.min.js")"></script>
+    <script src="@routes.Assets.at("lib/angularjs/angular-resource.min.js")"></script>
+    <script src="@routes.Assets.at("lib/angularjs/angular-route.min.js")"></script>
+    <script src="@routes.Assets.at("lib/angularjs/angular-sanitize.min.js")"></script>
+    <script src="@routes.Assets.at("lib/bindonce/bindonce.min.js")"></script>
+    <script src="@routes.Assets.at("lib/ngStorage/ngStorage.min.js")"></script>
+    <script src="@routes.Assets.at("app.js")"></script>
+    <script src="@routes.Assets.at("templates.js")"></script>
 
     <script>
 	window.$play = {
@@ -130,12 +138,7 @@
 
   @if(angular){
     <messages default></messages>
-
-    <div id="tooltips" class="tooltips" ng-controller="TooltipCtrl" ng-class="getControllerClasses()">
-      <div ng-repeat="tooltip in tooltips.toArray() | filter:{enabled: true}" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
-        <div class="tooltip_content" ng-bind-html="tooltip.message"></div>
-      </div>
-    </div>
+    <tooltips></tooltips>
 
     <div id="loading" class="loading" ng-show="page.display.loading">
       <div class="loading_spinner">

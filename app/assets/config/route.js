@@ -1,12 +1,6 @@
 module.config([
-	'$locationProvider',
 	'$routeProvider',
-	'$httpProvider',
-	function ($locationProvider, $routeProvider, $httpProvider) {
-		$locationProvider.html5Mode(true);
-
-		//
-
+	function ($routeProvider) {
 		$routeProvider.when('/', {
 			controller: 'HomeView',
 			templateUrl: 'homeView.html',

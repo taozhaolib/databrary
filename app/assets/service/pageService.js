@@ -63,6 +63,8 @@ module.factory('pageService', [
 
 		//
 
+		page.$rootScope.page = page;
+
 		return page;
 	}
 ]);
