@@ -268,32 +268,3 @@
 .border-max-height(@offset, @x) {
 	max-height: (floor((1px * @x * @baseline) * 4) / 4) - @offset;
 }
-
-//
-
-.rules(hide, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
-	background: @back;
-
-	&:hover {
-		._rules(@baseline, @offset, @odd, @even, @back);
-	}
-}
-
-.rules(show, @baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
-	._rules(@baseline, @offset, @odd, @even, @back);
-
-	&:hover {
-		background: @back;
-	}
-}
-
-._rules(@baseline: @baseline, @offset: -(@baseline / 6), @odd: #dff, @even: #dff, @back: @back) {
-	@half: @baseline / 2;
-	background: -webkit-linear-gradient(top,
-	@back, @back (@half - 1),
-	@odd (@half - 1), @odd @half,
-	@back @half, @back (@baseline - 1),
-	@even (@baseline - 1), @even);
-	background-size: auto @baseline;
-	background-position: 0 @offset;
-}

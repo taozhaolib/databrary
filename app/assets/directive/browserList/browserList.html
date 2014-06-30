@@ -1,31 +1,35 @@
-<aside bindonce class="browser_list cf">
-  <div class="browser_controller cf">
-    <browser-player ng-if="data.player"></browser-player>
-  </div>
+<aside bindonce class="browser-list cf">
+	<div class="browser-controller cf">
+		<browser-player ng-if="data.player"></browser-player>
+	</div>
 
-  <div ng-if="page.browser.context == 'search'">
-    <ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="cf">
-      <li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
+	<div ng-if="page.browser.context == 'search'">
+		<ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="cf">
+			<li ng-if="!data.items[0]">{{"browser.group.empty" | message}}</li>
 
-      <li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)" id="{{data.id}}">
-        <ng-include src="getInclude()"></ng-include>
-      </li>
-    </ul>
-  </div>
+			<li ng-repeat="data in data.items | filter:queryFilter" ng-class="itemClasses(data)" id="{{data.id}}">
+				<ng-include src="getInclude()"></ng-include>
+			</li>
+		</ul>
+	</div>
 
-  <div ng-if="page.browser.context != 'search'">
-    <ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="cf">
-      <li ng-if="!data.items[0] && (data.group != 'session' || !page.browser.loading)">{{"browser.group.empty" | message}}</li>
-      <li ng-if="!data.items[0] && (data.group == 'session' && page.browser.loading)">{{"browser.group.loading" | message}}</li>
+	<div ng-if="page.browser.context != 'search'">
+		<ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="cf">
+			<li ng-if="!data.items[0] && (data.group != 'session' || !page.browser.loading)">{{"browser.group.empty" |
+				message}}
+			</li>
+			<li ng-if="!data.items[0] && (data.group == 'session' && page.browser.loading)">{{"browser.group.loading" |
+				message}}
+			</li>
 
-      <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)" id="{{data.id}}">
-        <ng-include src="getInclude()"></ng-include>
-      </li>
+			<li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)" id="{{data.id}}">
+				<ng-include src="getInclude()"></ng-include>
+			</li>
 
-      <li ng-if="data.items.length > data.limit" class="browser_bonus">
-        <a href="" ng-click="data.limit = data.limit + 10">+10 more</a> <span class="sep">|</span>
-        <a href="" ng-click="data.limit = data.limit + 1984">show all</a>
-      </li>
-    </ul>
-  </div>
+			<li ng-if="data.items.length > data.limit" class="browser-bonus">
+				<a href="" ng-click="data.limit = data.limit + 10">+10 more</a> <span class="sep">|</span>
+				<a href="" ng-click="data.limit = data.limit + 1984">show all</a>
+			</li>
+		</ul>
+	</div>
 </aside>

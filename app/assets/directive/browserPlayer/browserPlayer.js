@@ -1,7 +1,7 @@
 module.directive('browserPlayer', [
 	'pageService', function (page) {
 		var link = function ($scope, $element) {
-			var $content = $element.find('.browser_player_content').first();
+			var $content = $element.find('.browser-player-content').first();
 
 			//
 

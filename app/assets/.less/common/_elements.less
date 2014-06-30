@@ -153,7 +153,6 @@ a, .a {
 	}
 
 	&:focus, &.focus {
-
 	}
 }
 
@@ -212,7 +211,7 @@ h6, .h6 {
 
 hr {
 	@color: @pale;
-	@color_diamond: @pale;
+	@color-diamond: @pale;
 	@size: @b8;
 	@shift: @size * 2;
 	border-width: 0;
@@ -238,14 +237,14 @@ hr {
 		left: 50%;
 		top: -@shift;
 		margin-left: -@size;
-		border-bottom-color: @color_diamond;
+		border-bottom-color: @color-diamond;
 	}
 
 	&:after {
 		left: 50%;
 		top: 1px;
 		margin-left: -@shift;
-		border-top-color: @color_diamond;
+		border-top-color: @color-diamond;
 	}
 }
 
@@ -256,7 +255,6 @@ kbd, .kbd,
 samp, .samp,
 pre, .pre {
 	@color: @orange;
-
 	font-family: 'Lucida Console', monospace;
 	.font-size(.9);
 	background: mix(@color, @white, 15%);
@@ -268,7 +266,6 @@ code, .code,
 kbd, .kbd,
 samp, .samp {
 	@border: 1px;
-
 	.line-height(2/3);
 	border-width: @border 0;
 	.border-padding-height(@border, .125);
@@ -277,7 +274,6 @@ samp, .samp {
 
 pre, .pre {
 	@border: 2px;
-
 	border-width: @border 0;
 	.border-padding-height(@border, .5);
 	.padding-width(.5);
@@ -314,7 +310,6 @@ ol {
 		&:before {
 			content: counter(li) ".";
 			counter-increment: li;
-
 			.font-size(.75);
 			font-style: italic;
 			text-align: right;
@@ -387,7 +382,6 @@ dl, .dl {
 
 q, .q {
 	quotes: '\201C' '\201D' '\2018' '\2019' '\201C' '\201D' '\2018' '\2019';
-
 	.quote-double();
 
 	q, .q {
@@ -415,7 +409,6 @@ cite, .cite, q[cite] {
 
 blockquote, .blockquote {
 	@color: @purple;
-
 	.margin(2, 2.5, 1.5);
 
 	&:before, &:after {
@@ -525,29 +518,23 @@ del, .del {
 mark, .mark,
 s, .s {
 	@border: 1px;
-
 	.font-size(.9);
 	.line-height(2/3);
-
 	border-width: @border 0;
 	border-style: solid;
-
 	.border-padding-height(@border, .125);
 	.padding-width(.25);
-
 	text-decoration: none;
 }
 
 mark, .mark {
 	@color: @green;
-
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;
 }
 
 s, .s {
 	@color: @red;
-
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;
 }
@@ -559,21 +546,15 @@ var, .var,
 abbr, .abbr,
 abbr[title] {
 	@border: 1px;
-
 	.font-size(.9);
 	.line-height(2/3);
-
 	border-width: @border 0;
 	border-style: solid;
-
 	.border-padding-height(@border, .125);
 	.padding-width(.25);
-
 	text-decoration: none;
 	font-style: normal;
-
 	@color: @yellow;
-
 	background-color: mix(@color, @white, 15%);
 	border-color: @color;
 }

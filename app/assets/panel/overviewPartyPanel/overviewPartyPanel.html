@@ -1,12 +1,12 @@
-<panel ng-controller="OverviewPartyPanel" top id="panel_overview" panel-title="{{'party.overview.title' | message}}" bindonce>
-  <div class="row">
-    <div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-6 col-cell">
-      <hgroup>
-        <h1 class="panel_title">{{party.name}}</h1>
-      </hgroup>
+<panel ng-controller="OverviewPartyPanel" top id="panel-overview" panel-title="{{'party.overview.title' | message}}" bindonce>
+	<div class="row">
+		<div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-6 col-cell">
+			<hgroup>
+				<h1 class="panel-title">{{party.name}}</h1>
+			</hgroup>
 
 			<div>
-				<div frame id="frame_contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
+				<div frame id="frame-contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
 					<div class="metadata">
 						<dl class="flat">
 							<dt bo-if="party.affiliation" bo-html="'affiliation' | message"/>
@@ -21,12 +21,12 @@
 					</div>
 				</div>
 			</div>
-    </div>
+		</div>
 
-    <div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6 col-cell">
-      <div class="panel_overview_thumbnail_wrap">
-        <img class="panel_overview_thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
-      </div>
-    </div>
-  </div>
+		<div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6 col-cell">
+			<div class="panel-overview-thumbnail-wrap">
+				<img class="panel-overview-thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
+			</div>
+		</div>
+	</div>
 </panel>

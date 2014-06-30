@@ -1,40 +1,41 @@
-<article class="article article_crud article_action article_login" bindonce>
-  <div class="wrap">
-    <div class="row">
-      <hgroup class="col-full">
-        <h1 class="panel_context" bo-html="'login.title' | message"></h1>
-        <h2 class="panel_title with_context" bo-html="'login.title.sub' | message"></h2>
-      </hgroup>
+<article class="article article-crud article-action article-login" bindonce>
+	<div class="wrap">
+		<div class="row">
+			<hgroup class="col-full">
+				<h1 class="panel-context" bo-html="'login.title' | message"></h1>
 
-      <div class="col-full">
-        <form name="loginForm" novalidate>
-          <messages form="loginForm"></messages>
+				<h2 class="panel-title with-context" bo-html="'login.title.sub' | message"></h2>
+			</hgroup>
 
-          <div ng-switch="method">
-            <div ng-switch-default>
-              <validator form="loginForm" name="email" label="'email' | message">
-                <input id="loginEmail" name="email" type="email" ng-model="loginData.email">
-              </validator>
+			<div class="col-full">
+				<form name="loginForm" novalidate>
+					<messages form="loginForm"></messages>
 
-              <validator form="loginForm" name="password" label="'password' | message">
-                <input id="loginPassword" name="password" type="password" ng-model="loginData.password" ng-required>
-              </validator>
-            </div>
+					<div ng-switch="method">
+						<div ng-switch-default>
+							<validator form="loginForm" name="email" label="'email' | message">
+								<input id="loginEmail" name="email" type="email" ng-model="loginData.email">
+							</validator>
 
-            <div ng-switch-when="openid">
-              <input id="loginOpenid" type="text" ng-model="loginData.openid" bo-attr bo-attr-placeholder="'openid' | message" ng-required>
-            </div>
-          </div>
+							<validator form="loginForm" name="password" label="'password' | message">
+								<input id="loginPassword" name="password" type="password" ng-model="loginData.password" ng-required>
+							</validator>
+						</div>
 
-          <button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
+						<div ng-switch-when="openid">
+							<input id="loginOpenid" type="text" ng-model="loginData.openid" bo-attr bo-attr-placeholder="'openid' | message" ng-required>
+						</div>
+					</div>
 
-          <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-html="'login.method.openid' | message"></a>
-          <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-html="'login.method.password' | message"></a>
+					<button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
 
-          <a bo-href="page.router.password()" bo-html="'login.forgot' | message"></a>
-        </form>
-      </div>
-    </div>
-  </div>
+					<a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-html="'login.method.openid' | message"></a>
+					<a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-html="'login.method.password' | message"></a>
+
+					<a bo-href="page.router.password()" bo-html="'login.forgot' | message"></a>
+				</form>
+			</div>
+		</div>
+	</div>
 </article>
 

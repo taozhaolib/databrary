@@ -15,7 +15,7 @@ module.factory('tooltipService', [
 		tooltips.newCatalog('id');
 
 		tooltips.newTransform(function (tooltip) {
-			tooltip.id = tooltip.id || 'tooltip_' + Math.random().toString(36).substring(2);
+			tooltip.id = tooltip.id || 'tooltip-' + Math.random().toString(36).substring(2);
 			tooltip.cls = tooltip.cls || '';
 			tooltip.style = angular.isObject(tooltip.style) ? tooltip.style : {};
 			tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'blue';
@@ -152,14 +152,14 @@ module.factory('tooltipService', [
 
 			if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0) {
 				return [
-						'focusin' + namespace + '_' + tooltip.id,
-						'focusout' + namespace + '_' + tooltip.id
+						'focusin' + namespace + '-' + tooltip.id,
+						'focusout' + namespace + '-' + tooltip.id
 				];
 			}
 
 			return [
-					'mouseenter' + namespace + '_' + tooltip.id,
-					'mouseleave' + namespace + '_' + tooltip.id
+					'mouseenter' + namespace + '-' + tooltip.id,
+					'mouseleave' + namespace + '-' + tooltip.id
 			];
 		};
 

@@ -1021,7 +1021,7 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			display.scrollTo($('#' + data.parent.id).find('.browser_controller'));
+			display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
 			return browserService.player;
 		};

@@ -100,7 +100,7 @@ module.controller('RegisterView', [
 		//
 
 		$scope.prepareStep = {
-			'register_create': function (step) {
+			'register-create': function (step) {
 				$scope.registerForm = step.registerForm;
 				$scope.registerForm.data = {};
 				$scope.registerForm.sent = false;
@@ -132,7 +132,7 @@ module.controller('RegisterView', [
 				}, true);
 			},
 
-			'register_agreement': function (step) {
+			'register-agreement': function (step) {
 				step.ready = function () {
 					return step.agreementCheckbox;
 				};
@@ -156,11 +156,11 @@ module.controller('RegisterView', [
 				};
 			},
 
-			'register_email': function (step) {
+			'register-email': function (step) {
 				step.registerForm = $scope.registerForm;
 			},
 
-			'register_password': function (step) {
+			'register-password': function (step) {
 				$scope.userPasswordForm = step.userPasswordForm;
 				$scope.userPasswordForm.sent = false;
 
@@ -170,7 +170,7 @@ module.controller('RegisterView', [
 				};
 			},
 
-			'register_agent': function (step) {
+			'register-agent': function (step) {
 				$scope.authSearchForm = step.authSearchForm;
 				$scope.authSearchForm.data = {};
 
@@ -187,7 +187,7 @@ module.controller('RegisterView', [
 				};
 			},
 
-			'register_request': function (step) {
+			'register-request': function (step) {
 				$scope.authApplyForm = step.authApplyForm;
 				$scope.authApplyForm.sent = false;
 
@@ -259,14 +259,14 @@ module.controller('RegisterView', [
 				};
 			},
 
-			'register_pending': function (step) {
+			'register-pending': function (step) {
 			}
 		};
 
 		//
 
 		$scope.updateStep = {
-			'register_create': function (step, activate) {
+			'register-create': function (step, activate) {
 				step.allow = user.anon && !user.password && !$scope.registerForm.sent;
 
 				if (activate && user.anon && !user.password && !$scope.registerForm.ready()) {
@@ -276,7 +276,7 @@ module.controller('RegisterView', [
 				step.complete = !user.anon || user.password || !!$scope.registerForm.ready() ? true : undefined;
 			},
 
-			'register_agreement': function (step, activate) {
+			'register-agreement': function (step, activate) {
 				step.allow = user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent;
 
 				if (activate && user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent) {
@@ -286,7 +286,7 @@ module.controller('RegisterView', [
 				step.complete = !user.anon || user.password || !!$scope.registerForm.sent ? true : undefined;
 			},
 
-			'register_email': function (step, activate) {
+			'register-email': function (step, activate) {
 				step.allow = user.anon && !user.password && $scope.registerForm.sent;
 
 				if (activate && user.anon && !user.password && $scope.registerForm.sent) {
@@ -296,7 +296,7 @@ module.controller('RegisterView', [
 				step.complete = !user.anon || user.password ? true : undefined;
 			},
 
-			'register_password': function (step, activate) {
+			'register-password': function (step, activate) {
 				step.allow = user.anon && user.password && !$scope.userPasswordForm.sent;
 
 				if (activate && user.anon && user.password && !$scope.userPasswordForm.sent) {
@@ -306,7 +306,7 @@ module.controller('RegisterView', [
 				step.complete = !user.anon ? true : undefined;
 			},
 
-			'register_agent': function (step, activate) {
+			'register-agent': function (step, activate) {
 				step.allow = !user.anon && !user.pending && !$scope.authApplyForm.sent;
 
 				if (activate && !user.anon && !user.pending && !$scope.authSearchForm.data.party) {
@@ -316,7 +316,7 @@ module.controller('RegisterView', [
 				step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party) ? true : undefined;
 			},
 
-			'register_request': function (step, activate) {
+			'register-request': function (step, activate) {
 				step.allow = !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent;
 
 				if (activate && !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent) {
@@ -341,7 +341,7 @@ module.controller('RegisterView', [
 				}
 			},
 
-			'register_pending': function (step, activate) {
+			'register-pending': function (step, activate) {
 				step.allow = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
 
 				if (activate && !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent)) {

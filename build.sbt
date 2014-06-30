@@ -54,7 +54,7 @@ TwirlKeys.templateImports ++= Seq("macros._", "site._")
 
 JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
-pipelineStages := Seq(uglify)
+pipelineStages in Assets := Seq(uglify)
 
 includeFilter in (Assets, StylusKeys.stylus) := "app.styl"
 

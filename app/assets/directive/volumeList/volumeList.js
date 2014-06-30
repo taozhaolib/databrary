@@ -44,8 +44,8 @@ module.directive('volumeList', [
 
 			var bindTooltips = function () {
 				var newtips = {
-					'.search_results .icon.dataset': page.constants.message('object.tip.dataset'),
-					'.search_results .icon.study': page.constants.message('object.tip.study'),
+					'.search-results .icon.dataset': page.constants.message('object.tip.dataset'),
+					'.search-results .icon.study': page.constants.message('object.tip.study'),
 				};
 
 				angular.forEach(newtips, function (message, target) {

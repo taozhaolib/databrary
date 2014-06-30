@@ -29,7 +29,7 @@
 			.transition();
 		}
 
-		.panel_header {
+		.panel-header {
 			cursor: pointer;
 
 			&:before {
@@ -56,7 +56,7 @@
 	}
 
 	&.folded {
-		.panel_header {
+		.panel-header {
 			&.folder {
 				color: mix(@blue, @black, 50%);
 			}
@@ -79,7 +79,7 @@
 	}
 }
 
-.panel_header {
+.panel-header {
 	font-weight: normal;
 	letter-spacing: 2px;
 	text-transform: uppercase;
@@ -102,17 +102,17 @@
 	}
 }
 
-.panel_title {
+.panel-title {
 	.font(3.5, 2.5);
 	.margin-top(1);
 	.margin-bottom(2);
 
-	&.with_context {
+	&.with-context {
 		.margin-top(0);
 	}
 }
 
-.panel_context {
+.panel-context {
 	.font(2, 1.5);
 	.margin-top(1);
 	color: @red32;
@@ -120,6 +120,6 @@
 
 //
 
-.panel_ingest {
+.panel-ingest {
 	min-height: 400px;
 }

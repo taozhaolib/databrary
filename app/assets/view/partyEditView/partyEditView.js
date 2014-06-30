@@ -49,7 +49,7 @@ module.controller('PartyEditView', [
 
 		var activateFn = function (step) {
 			if (updateQuery) {
-				page.$location.search('page', step.id.split('_').pop());
+				page.$location.search('page', step.id.split('-').pop());
 			}
 		};
 
@@ -60,7 +60,7 @@ module.controller('PartyEditView', [
 
 				if (page.$location.search().page && $scope.wizard.newStep.id.indexOf(page.$location.search().page) > -1) {
 					$scope.wizard.activateStep($scope.wizard.newStep);
-				} else if ($scope.wizard.newStep.id === 'party_edit_profile') {
+				} else if ($scope.wizard.newStep.id === 'party-edit-profile') {
 					$scope.wizard.activateStep($scope.wizard.newStep);
 				}
 
@@ -116,7 +116,7 @@ module.controller('PartyEditView', [
 		//
 
 		$scope.prepareStep = {
-			'party_edit_profile': function (step) {
+			'party-edit-profile': function (step) {
 				step.enable = true;
 
 				forms.profile = {
@@ -126,7 +126,7 @@ module.controller('PartyEditView', [
 				forms.profile.form.init(party);
 			},
 
-			'party_edit_account': function (step) {
+			'party-edit-account': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', party);
 
 				forms.account = {
@@ -136,7 +136,7 @@ module.controller('PartyEditView', [
 				forms.account.form.init(party);
 			},
 
-			'party_edit_apply': function (step) {
+			'party-edit-apply': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', party);
 
 				forms.apply = {
@@ -146,7 +146,7 @@ module.controller('PartyEditView', [
 				forms.apply.form.init(party, partyAuth.parents);
 			},
 
-			'party_edit_grant': function (step) {
+			'party-edit-grant': function (step) {
 				step.enable = page.auth.hasAccess('ADMIN', party);
 
 				forms.grant = {
@@ -160,19 +160,19 @@ module.controller('PartyEditView', [
 		//
 
 		$scope.updateStep = {
-			'party_edit_profile': function (step) {
+			'party-edit-profile': function (step) {
 				forms.profile.form.init(party);
 			},
 
-			'party_edit_account': function (step) {
+			'party-edit-account': function (step) {
 				forms.account.form.init(party);
 			},
 
-			'party_edit_apply': function (step) {
+			'party-edit-apply': function (step) {
 				forms.apply.form.init(party, partyAuth.parents);
 			},
 
-			'party_edit_grant': function (step) {
+			'party-edit-grant': function (step) {
 				forms.grant.form.init(party, partyAuth.children);
 			},
 		};

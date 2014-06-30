@@ -13,7 +13,7 @@
 	&:-moz-placeholder,
 	&::-moz-placeholder,
 	&:-ms-input-placeholder,
-	&::-webkit-input-placeholder  { color: @x; }
+	&::-webkit-input-placeholder { color: @x; }
 }
 
 // STYLES
@@ -43,17 +43,14 @@ select {
 	color: @text;
 	.body-family();
 	.box-sizing();
-
 	.border-padding-height(1px, @f4);
 	.padding-width(@f3);
 	.border-radius(@b8);
 	width: 100%;
 	border: 1px solid @gray;
 	.margin-bottom(@f2);
-
 	.transition(~"border, outline, color, background, padding, margin, box-shadow .15s linear");
 	.box-shadow(@inset);
-
 	.placeholder();
 
 	&.mini {
@@ -62,7 +59,7 @@ select {
 		.font-size(.75);
 		.padding-width(@f8);
 
-		&.supermini{
+		&.supermini {
 			width: 50px;
 		}
 	}
@@ -224,11 +221,11 @@ label, .label {
 			.padding-right(1);
 		}
 
-		>input, >button, >.button, >select, >textarea, >.fieldgroup {
+		> input, > button, > .button, > select, > textarea, > .fieldgroup {
 			float: right;
 		}
 
-		>input, >select, >textarea, >.fieldgroup {
+		> input, > select, > textarea, > .fieldgroup {
 			width: 66.666666666%;
 		}
 	}
@@ -244,7 +241,7 @@ th, td {
 
 //
 
-.validator_input {
+.validator-input {
 	position: relative;
 
 	.field {
@@ -284,11 +281,11 @@ th, td {
 	}
 }
 
-.validator_messages {
+.validator-messages {
 	position: relative;
 }
 
-.validator_message {
+.validator-message {
 	position: absolute;
 	background-color: @white;
 	left: 0;
@@ -322,14 +319,14 @@ th, td {
 	}
 }
 
-.validator_server {
+.validator-server {
 	color: @red;
 }
 
-.validator_client {
+.validator-client {
 	color: @red;
 }
 
-.validator_tip {
+.validator-tip {
 	color: @green;
 }

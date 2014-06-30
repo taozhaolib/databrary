@@ -1,40 +1,42 @@
-<article class="article article_crud article_volume article_edit panel panel_edit" bindonce>
-  <div class="wrap">
-    <div class="row">
-      <hgroup class="col-full" bo-if="!volume">
-        <h1 class="panel_title_alias" bo-html="'create' | message"></h1>
-        <h2 class="panel_title" bo-html="'volume.edit.title.sub' | message"></h2>
-      </hgroup>
+<article class="article article-crud article-volume article-edit panel panel-edit" bindonce>
+	<div class="wrap">
+		<div class="row">
+			<hgroup class="col-full" bo-if="!volume">
+				<h1 class="panel-title-alias" bo-html="'create' | message"></h1>
 
-      <hgroup class="col-full" bo-if="volume">
-        <h1 class="panel_context" bo-html="'edit' | message"></h1>
-        <h2 class="panel_title with_context" ng-bind="volume.name"></h2>
-      </hgroup>
+				<h2 class="panel-title" bo-html="'volume.edit.title.sub' | message"></h2>
+			</hgroup>
 
-      <div class="col-full">
-        <wizard retrieve="retrieveWizard" update="updateWizard">
-          <wizard-step id="volume_edit_overview">
-            <volume-edit-overview-form></volume-edit-overview-form>
-          </wizard-step>
+			<hgroup class="col-full" bo-if="volume">
+				<h1 class="panel-context" bo-html="'edit' | message"></h1>
 
-          <wizard-step id="volume_edit_excerpts">
-            <volume-edit-materials-form mode="excerpts"></volume-edit-materials-form>
-          </wizard-step>
+				<h2 class="panel-title with-context" ng-bind="volume.name"></h2>
+			</hgroup>
 
-          <wizard-step id="volume_edit_materials">
-            <volume-edit-materials-form></volume-edit-materials-form>
-          </wizard-step>
+			<div class="col-full">
+				<wizard retrieve="retrieveWizard" update="updateWizard">
+					<wizard-step id="volume-edit-overview">
+						<volume-edit-overview-form></volume-edit-overview-form>
+					</wizard-step>
 
-          <wizard-step id="volume_edit_funding">
-            <volume-edit-funding-form></volume-edit-funding-form>
-          </wizard-step>
+					<wizard-step id="volume-edit-excerpts">
+						<volume-edit-materials-form mode="excerpts"></volume-edit-materials-form>
+					</wizard-step>
 
-          <wizard-step id="volume_edit_access">
-            <volume-edit-access-form></volume-edit-access-form>
-          </wizard-step>
-        </wizard>
-      </div>
-    </div>
-  </div>
+					<wizard-step id="volume-edit-materials">
+						<volume-edit-materials-form></volume-edit-materials-form>
+					</wizard-step>
+
+					<wizard-step id="volume-edit-funding">
+						<volume-edit-funding-form></volume-edit-funding-form>
+					</wizard-step>
+
+					<wizard-step id="volume-edit-access">
+						<volume-edit-access-form></volume-edit-access-form>
+					</wizard-step>
+				</wizard>
+			</div>
+		</div>
+	</div>
 </article>
 

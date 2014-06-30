@@ -65,10 +65,10 @@ module.directive('browserList', [
 				}
 
 				if (study) {
-					cls.push('browser_study');
+					cls.push('browser-study');
 				}
 				else {
-					cls.push('browser_dataset');
+					cls.push('browser-dataset');
 				}
 
 				return cls;

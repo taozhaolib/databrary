@@ -1,21 +1,24 @@
 <div class="volume-list" bindonce>
-  <ul class="flat search_results">
-    <li ng-repeat="v in volumes">
-      <article class="search_result cf" bo-class="volumeClasses(v)">
-        <img class="thumb" bo-src="page.router.volumeThumb(v)" bo-if="page.$location.path() !== '/profile'">
+	<ul class="flat search-results">
+		<li ng-repeat="v in volumes">
+			<article class="search-result cf" bo-class="volumeClasses(v)">
+				<img class="thumb" bo-src="page.router.volumeThumb(v)" bo-if="page.$location.path() !== '/profile'">
 
-        <h1><span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-text="name(v)"></a></h1>
+				<h1>
+					<span class="icon" bo-class="iconClass(v)"></span><a bo-href="page.router.volume({id: v.id})" bo-text="name(v)"></a>
+				</h1>
 
-        <div class="investigators" bo-if="page.$location.path() !== '/profile'">
-          <strong>{{'volume.contributors.title' | message}}:</strong>
+				<div class="investigators" bo-if="page.$location.path() !== '/profile'">
+					<strong>{{'volume.contributors.title' | message}}:</strong>
 
-          <ul class="inline-block">
-            <li ng-repeat="access in v.access | filter:{individual: page.permission.ADMIN}"><a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
-          </ul>
-        </div>
+					<ul class="inline-block">
+						<li ng-repeat="access in v.access | filter:{individual: page.permission.ADMIN}">
+							<a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
+					</ul>
+				</div>
 
-        <div class="body" bo-text="v.body.replace('\n', ' ') | truncate:30:'words'" bo-if="page.$location.path() !== '/profile'"></div>
-      </article>
-    </li>
-  </ul>
+				<div class="body" bo-text="v.body.replace('\n', ' ') | truncate:30:'words'" bo-if="page.$location.path() !== '/profile'"></div>
+			</article>
+		</li>
+	</ul>
 </div>

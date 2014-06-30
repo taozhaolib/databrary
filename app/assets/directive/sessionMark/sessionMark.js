@@ -45,7 +45,7 @@ module.directive('sessionMark', [
 			$scope.getMarkClasses = function () {
 				var classes = [];
 
-				classes.push('session_mark_' + $scope.mark);
+				classes.push('session-mark-' + $scope.mark);
 
 				return classes;
 			};

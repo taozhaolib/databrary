@@ -306,9 +306,9 @@ module.controller('TagsPanel', [
 
 		var bindTooltips = function () {
 			var unsetTips = {
-				'.panel_tags_list .vote.available.up': page.constants.message('tags.vote.up'),
-				'.panel_tags_list .vote.available.null': page.constants.message('tags.vote.null'),
-				'.panel_tags_list .vote.available.down': page.constants.message('tags.vote.down')
+				'.panel-tags-list .vote.available.up': page.constants.message('tags.vote.up'),
+				'.panel-tags-list .vote.available.null': page.constants.message('tags.vote.null'),
+				'.panel-tags-list .vote.available.down': page.constants.message('tags.vote.down')
 			};
 
 			angular.forEach(unsetTips, function (message, target) {

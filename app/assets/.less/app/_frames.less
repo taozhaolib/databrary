@@ -5,7 +5,7 @@
 // MIXINS
 
 .frame-color(@c) {
-	.frame_header {
+	.frame-header {
 		&.folder {
 			&:hover {
 				color: mix(@c, @black, 75%);
@@ -17,7 +17,7 @@
 		border-bottom-color: mix(@c, @pale, 75%);
 		background-color: mix(@c, @white, 10%);
 
-		.frame_header {
+		.frame-header {
 			&.folder {
 				color: mix(@c, @black, 50%);
 			}
@@ -32,13 +32,13 @@
 
 // STYLES
 
-.frame_body {
+.frame-body {
 	background-color: transparent;
 	.border-padding-bottom(0, @framepad);
 	.border-padding-top(0, @framepad);
 }
 
-.frame_header {
+.frame-header {
 	font-weight: normal;
 	.font(1, 1.5);
 	text-transform: uppercase;
@@ -95,7 +95,7 @@
 
 	&.folded {
 		.frame {
-			.frame_header {
+			.frame-header {
 				&:before {
 					.transform-rotate(-90deg);
 				}

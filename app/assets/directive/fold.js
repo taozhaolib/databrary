@@ -6,7 +6,7 @@ module.directive('fold', [
 			foldedClass = 'folded',
 			folderAttr = '[folder]',
 			foldAttr = '[folded]',
-			disabledClass = 'always_folded';
+			disabledClass = 'always-folded';
 
 		var link = function ($scope, $element, $attrs) {
 			$scope.id = $attrs.id;
@@ -71,16 +71,16 @@ module.directive('fold', [
 
 			$scope.setFolding = function () {
 				if (!isForgetful()) {
-					$scope.$storage['folding_' + $scope.id] = folded;
+					$scope.$storage['folding-' + $scope.id] = folded;
 				}
 			};
 
 			$scope.getFolding = function () {
-				if (isForgetful() || angular.isUndefined($scope.$storage['folding_' + $scope.id])) {
+				if (isForgetful() || angular.isUndefined($scope.$storage['folding-' + $scope.id])) {
 					return undefined;
 				}
 
-				return $scope.$storage['folding_' + $scope.id];
+				return $scope.$storage['folding-' + $scope.id];
 			};
 
 			$scope.restoreFolding = function () {

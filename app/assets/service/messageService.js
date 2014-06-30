@@ -9,7 +9,7 @@ module.factory('messageService', [
 		//
 
 		var transformFn = function (message) {
-			message.id = message.id || 'message_' + Math.random().toString(36).substring(2);
+			message.id = message.id || 'message-' + Math.random().toString(36).substring(2);
 			message.type = types.indexOf(message.type) != -1 ? message.type : 'blue';
 			message.target = angular.isString(message.target) ? message.target : undefined;
 			message.closeable = angular.isDefined(message.closeable) && message.closeable != false;
@@ -81,14 +81,14 @@ module.factory('messageService', [
 
 			if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0) {
 				return [
-						'focusin' + namespace + '_' + message.id,
-						'focusout' + namespace + '_' + message.id
+						'focusin' + namespace + '-' + message.id,
+						'focusout' + namespace + '-' + message.id
 				];
 			}
 
 			return [
-					'mouseenter' + namespace + '_' + message.id,
-					'mouseleave' + namespace + '_' + message.id
+					'mouseenter' + namespace + '-' + message.id,
+					'mouseleave' + namespace + '-' + message.id
 			];
 		};
 

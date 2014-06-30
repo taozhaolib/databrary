@@ -1,54 +1,54 @@
 <form name="volumeEditOverviewForm" bindonce novalidate>
-  <messages form="volumeEditOverviewForm"></messages>
+	<messages form="volumeEditOverviewForm"></messages>
 
-  <fieldset>
-    <div bo-html="'volume.edit.autodoi.instructions' | message"></div>
+	<fieldset>
+		<div bo-html="'volume.edit.autodoi.instructions' | message"></div>
 
-    <validator form="volumeEditOverviewForm" name="citation.url" label="'volume.edit.autodoi' | message">
-      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{'volume.edit.autodoi.placeholder' | message}}">
-    </validator>
+		<validator form="volumeEditOverviewForm" name="citation.url" label="'volume.edit.autodoi' | message">
+			<input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{'volume.edit.autodoi.placeholder' | message}}">
+		</validator>
 
-    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'volume.edit.autodoi.lookup' | message"></button>
-    <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-html="'volume.edit.autodoi.donthave' | message"></button>
-  </fieldset>
+		<button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-html="'volume.edit.autodoi.lookup' | message"></button>
+		<button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-html="'volume.edit.autodoi.donthave' | message"></button>
+	</fieldset>
 
-  <fieldset class="clean skinny" ng-if="!volumeEditOverviewForm.automatic">
-    <validator form="volumeEditOverviewForm" name="citation.head" label="'citation.head' | message">
-      <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" placeholder="{{'volume.edit.citation.head.placeholder' | message}}">
-    </validator>
+	<fieldset class="clean skinny" ng-if="!volumeEditOverviewForm.automatic">
+		<validator form="volumeEditOverviewForm" name="citation.head" label="'citation.head' | message">
+			<input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" placeholder="{{'volume.edit.citation.head.placeholder' | message}}">
+		</validator>
 
-    <validator form="volumeEditOverviewForm" name="name" label="'volume.name' | message">
-      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{'volume.edit.name.placeholder' | message}}">
-    </validator>
+		<validator form="volumeEditOverviewForm" name="name" label="'volume.name' | message">
+			<input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{'volume.edit.name.placeholder' | message}}">
+		</validator>
 
-    <label bo-html="'citation.authors' | message"></label>
+		<label bo-html="'citation.authors' | message"></label>
 
-    <div ng-repeat="author in volumeEditOverviewForm.authors">
-      <validator form="volumeEditOverviewForm" name="citation.authors[{{$index}}]">
-        <input type="text" name="citation.authors[{{$index}}]" ng-model="author.name" placeholder="{{'volume.edit.citation.author.placeholder' | message}}">
-        <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="red mini pull"></button>
-      </validator>
-    </div>
-    <button ng-click="volumeEditOverviewForm.addAuthor()" bo-html="'add' | message" class="orange add_f2"></button>
+		<div ng-repeat="author in volumeEditOverviewForm.authors">
+			<validator form="volumeEditOverviewForm" name="citation.authors[{{$index}}]">
+				<input type="text" name="citation.authors[{{$index}}]" ng-model="author.name" placeholder="{{'volume.edit.citation.author.placeholder' | message}}">
+				<button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="red mini pull"></button>
+			</validator>
+		</div>
+		<button ng-click="volumeEditOverviewForm.addAuthor()" bo-html="'add' | message" class="orange add-f2"></button>
 
-    <validator form="volumeEditOverviewForm" name="citation.year" label="'citation.year' | message">
-      <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" placeholder="{{'volume.edit.citation.year.placeholder' | message}}">
-    </validator>
-  </fieldset>
+		<validator form="volumeEditOverviewForm" name="citation.year" label="'citation.year' | message">
+			<input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" placeholder="{{'volume.edit.citation.year.placeholder' | message}}">
+		</validator>
+	</fieldset>
 
-  <fieldset class="clean">
-    <validator form="volumeEditOverviewForm" name="body" label="'study.body' | message">
-      <textarea name="body" ng-model="volumeEditOverviewForm.data.body" placeholder="{{'volume.edit.body.placeholder' | message}}"></textarea>
-    </validator>
+	<fieldset class="clean">
+		<validator form="volumeEditOverviewForm" name="body" label="'study.body' | message">
+			<textarea name="body" ng-model="volumeEditOverviewForm.data.body" placeholder="{{'volume.edit.body.placeholder' | message}}"></textarea>
+		</validator>
 
-    <validator form="volumeEditOverviewForm" name="alias" label="'volume.alias' | message">
-      <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{'volume.edit.alias.placeholder' | message}}">
-    </validator>
-  </fieldset>
+		<validator form="volumeEditOverviewForm" name="alias" label="'volume.alias' | message">
+			<input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{'volume.edit.alias.placeholder' | message}}">
+		</validator>
+	</fieldset>
 
-  <fieldset class="clean">
-    <button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty || !volumeEditOverviewForm.$valid"></button>
-    <button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
-  </fieldset>
+	<fieldset class="clean">
+		<button ng-click="volumeEditOverviewForm.save()" bo-html="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty || !volumeEditOverviewForm.$valid"></button>
+		<button ng-click="volumeEditOverviewForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
+	</fieldset>
 </form>
 

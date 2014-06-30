@@ -132,10 +132,10 @@ module.directive('partyEditApplyForm', [
 
 				searchForm.notFoundFn = function (query) {
 					searchForm.selectFn({
-							id: -1,
-							name: page.constants.message('auth.request.notfound.user'),
-							avatar: '/party/-1/avatar'
-						}, query);
+						id: -1,
+						name: page.constants.message('auth.request.notfound.user'),
+						avatar: '/party/-1/avatar'
+					}, query);
 				};
 
 				event.stopPropagation();

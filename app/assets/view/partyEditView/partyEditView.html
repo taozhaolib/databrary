@@ -1,30 +1,31 @@
-<article class="article article_crud article_volume article_edit panel panel_edit" bindonce>
-  <div class="wrap">
-    <div class="row">
-      <hgroup class="col-full">
-        <h1 class="panel_title_alias" bo-html="'edit' | message"></h1>
-        <h2 class="panel_title" bo-text="party.name"></h2>
-      </hgroup>
+<article class="article article-crud article-volume article-edit panel panel-edit" bindonce>
+	<div class="wrap">
+		<div class="row">
+			<hgroup class="col-full">
+				<h1 class="panel-title-alias" bo-html="'edit' | message"></h1>
 
-      <div class="col-full">
-        <wizard retrieve="retrieveWizard" update="updateWizard">
-          <wizard-step id="party_edit_profile">
-            <party-edit-profile-form></party-edit-profile-form>
-          </wizard-step>
+				<h2 class="panel-title" bo-text="party.name"></h2>
+			</hgroup>
 
-          <wizard-step id="party_edit_account">
-            <party-edit-account-form></party-edit-account-form>
-          </wizard-step>
+			<div class="col-full">
+				<wizard retrieve="retrieveWizard" update="updateWizard">
+					<wizard-step id="party-edit-profile">
+						<party-edit-profile-form></party-edit-profile-form>
+					</wizard-step>
 
-          <wizard-step id="party_edit_apply">
-            <party-edit-apply-form></party-edit-apply-form>
-          </wizard-step>
+					<wizard-step id="party-edit-account">
+						<party-edit-account-form></party-edit-account-form>
+					</wizard-step>
 
-          <wizard-step id="party_edit_grant">
-            <party-edit-grant-form></party-edit-grant-form>
-          </wizard-step>
-        </wizard>
-      </div>
-    </div>
-  </div>
+					<wizard-step id="party-edit-apply">
+						<party-edit-apply-form></party-edit-apply-form>
+					</wizard-step>
+
+					<wizard-step id="party-edit-grant">
+						<party-edit-grant-form></party-edit-grant-form>
+					</wizard-step>
+				</wizard>
+			</div>
+		</div>
+	</div>
 </article>

@@ -16,13 +16,13 @@ module.directive('messages', [
 					var classes = [];
 
 					if (this.enabled) {
-						classes.push('messages_enabled');
+						classes.push('messages-enabled');
 					}
 
 					if (angular.isDefined($attrs.default)) {
-						classes.push('messages_default');
+						classes.push('messages-default');
 					} else {
-						classes.push('messages_local');
+						classes.push('messages-local');
 					}
 
 					if (page.$filter('filter')(this.toArray(), {enabled: true}).length === 0) {
@@ -36,19 +36,19 @@ module.directive('messages', [
 					var classes = [];
 
 					classes.push('message');
-					classes.push('message_animate');
-					classes.push('message_' + message.type);
+					classes.push('message-animate');
+					classes.push('message-' + message.type);
 
 					if (message.enabled) {
-						classes.push('message_enabled');
+						classes.push('message-enabled');
 					}
 
 					if (message.target) {
-						classes.push('message_target');
+						classes.push('message-target');
 					}
 
 					if (message.closable) {
-						classes.push('message_closable');
+						classes.push('message-closable');
 					}
 
 					return classes;

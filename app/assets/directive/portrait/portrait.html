@@ -1,12 +1,12 @@
 <aside bindonce class="portrait ng-cloak">
-  <figure ng-if="avatar" baseline="square" class="figure_avatar">
-    <figmedia><img bo-src="page.router.partyAvatar(party, 216)"></figmedia>
-    <figcaption ng-if="caption" bo-text="caption"></figcaption>
-  </figure>
+	<figure ng-if="avatar" baseline="square" class="figure-avatar">
+		<figmedia><img bo-src="page.router.partyAvatar(party, 216)"></figmedia>
+		<figcaption ng-if="caption" bo-text="caption"></figcaption>
+	</figure>
 
-  <div ng-if="info" class="portrait_info">
-    <a class="portrait_name" bo-href="page.router.party(party)" bo-text="party.name"></a>
-    <a class="portrait_affiliation" ng-if="party.affiliation" bo-text="party.affiliation"></a>
-  </div>
+	<div ng-if="info" class="portrait-info">
+		<a class="portrait-name" bo-href="page.router.party(party)" bo-text="party.name"></a>
+		<a class="portrait-affiliation" ng-if="party.affiliation" bo-text="party.affiliation"></a>
+	</div>
 </aside>
 

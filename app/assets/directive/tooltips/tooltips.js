@@ -3,6 +3,7 @@ module.directive('tooltips', [
 		var controller = function ($scope, $element, $attrs) {
 			var Region = function () {
 //				$scope.tooltips = this;
+				// TODO: does this work???
 				this.enabled = true;
 
 				//
@@ -11,7 +12,7 @@ module.directive('tooltips', [
 					var classes = [];
 
 					if ($scope.enabled) {
-						classes.push('tooltips_enabled');
+						classes.push('tooltips-enabled');
 					}
 
 					return classes;
@@ -23,15 +24,15 @@ module.directive('tooltips', [
 					var classes = tooltip.cls.split(' ');
 
 					classes.push('tooltip');
-					classes.push('tooltip_' + tooltip.type);
+					classes.push('tooltip-' + tooltip.type);
 
 					if (tooltip.position) {
-						classes.push('tooltip_' + tooltip.position[0]);
-						classes.push('tooltip_' + tooltip.position[1]);
+						classes.push('tooltip-' + tooltip.position[0]);
+						classes.push('tooltip-' + tooltip.position[1]);
 					}
 
 					if (tooltip.visible) {
-						classes.push('tooltip_visible');
+						classes.push('tooltip-visible');
 					}
 
 					return classes;

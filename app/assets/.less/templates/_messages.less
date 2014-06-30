@@ -27,7 +27,7 @@
 	display: none;
 	.margin-bottom(@f1);
 
-	&.messages_default {
+	&.messages-default {
 		position: fixed;
 		z-index: 850;
 		top: @b1 * 1.5;
@@ -42,7 +42,7 @@
 		}
 	}
 
-	&.messages_local {
+	&.messages-local {
 		.wrap,
 		.row {
 			width: auto;
@@ -53,7 +53,7 @@
 	}
 }
 
-.messages_enabled {
+.messages-enabled {
 	display: block;
 }
 
@@ -76,37 +76,37 @@
 
 //
 
-.message_blue {
+.message-blue {
 	.message-color(@blue);
 }
 
-.message_green {
+.message-green {
 	.message-color(@green);
 }
 
-.message_red {
+.message-red {
 	.message-color(@red);
 }
 
-.message_orange {
+.message-orange {
 	.message-color(@orange);
 }
 
-.message_yellow {
+.message-yellow {
 	.message-color(@yellow);
 }
 
-.message_purple {
+.message-purple {
 	.message-color(@purple);
 }
 
-.message_neutral {
+.message-neutral {
 	.message-color(@neutral);
 }
 
 //
 
-.message_content {
+.message-content {
 	.padding-height(@f4);
 
 	p {
@@ -153,7 +153,7 @@
 
 //
 
-.message_close {
+.message-close {
 	.size(@b1);
 	.margin-height(@f4);
 	float: right;
@@ -168,19 +168,19 @@
 
 //
 
-.message_animate {
+.message-animate {
 	.transition();
 	overflow: hidden;
 }
 
-.message_animate.ng-leave.ng-leave-active,
-.message_animate.ng-move,
-.message_animate.ng-enter {
+.message-animate.ng-leave.ng-leave-active,
+.message-animate.ng-move,
+.message-animate.ng-enter {
 	.max-height(0);
 }
 
-.message_animate.ng-leave,
-.message_animate.ng-move.ng-move-active,
-.message_animate.ng-enter.ng-enter-active {
+.message-animate.ng-leave,
+.message-animate.ng-move.ng-move-active,
+.message-animate.ng-enter.ng-enter-active {
 	.max-height(4);
 }

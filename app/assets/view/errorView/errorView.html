@@ -1,15 +1,16 @@
-<article class="article article_crud article_action article_login" bindonce>
-  <div class="wrap">
-    <div class="row">
-      <hgroup class="col-full">
-        <h1 class="panel_context" bo-html="'error.title' | message"></h1>
-        <h2 class="panel_title with_context" bo-html="'error.'+ error.status | message"></h2>
-      </hgroup>
+<article class="article article-crud article-action article-login" bindonce>
+	<div class="wrap">
+		<div class="row">
+			<hgroup class="col-full">
+				<h1 class="panel-context" bo-html="'error.title' | message"></h1>
 
-      <div class="col-full">
-        <div bo-html="'error.resolve' | message | format:false:true"></div>
-      </div>
-    </div>
-  </div>
+				<h2 class="panel-title with-context" bo-html="'error.'+ error.status | message"></h2>
+			</hgroup>
+
+			<div class="col-full">
+				<div bo-html="'error.resolve' | message | format:false:true"></div>
+			</div>
+		</div>
+	</div>
 </article>
 

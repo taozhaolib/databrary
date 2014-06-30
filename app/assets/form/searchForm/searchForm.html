@@ -1,15 +1,15 @@
-<form name="searchForm" class="search_form" messages="default" novalidate>
-  <div class="row">
-    <div class="col-full">
-      <div class="search_form_logo">
-        <a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary.png"></a>
-      </div>
+<form name="searchForm" class="search-form" messages="default" novalidate>
+	<div class="row">
+		<div class="col-full">
+			<div class="search-form-logo">
+				<a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary.png"></a>
+			</div>
 
-      <div class="search_form_search" ng-if="page.auth.isAuthorized()">
-        <div class="w">
-          <input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" ng-focus="searchForm.focus()" ng-blur="searchForm.blur()" focus="page.$sessionStorage.searchFocus">
-        </div>
-      </div>
-    </div>
-  </div>
+			<div class="search-form-search" ng-if="page.auth.isAuthorized()">
+				<div class="w">
+					<input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" ng-focus="searchForm.focus()" ng-blur="searchForm.blur()" focus="page.$sessionStorage.searchFocus">
+				</div>
+			</div>
+		</div>
+	</div>
 </form>

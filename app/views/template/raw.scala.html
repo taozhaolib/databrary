@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   @defining("Databrary: The Open Data Library for Developmental Science"){ tail =>
-    <title @if(angular){ng-bind="page.display.title + ' || @tail'"}>@title || @tail</title>
+  <title @if(angular){ng-bind="page.display.title + ' || @tail'"}>@title || @tail</title>
   }
 
   <!-- icons -->
@@ -34,10 +34,10 @@
 
     <script>
 	window.$play = {
-        object: @format.raw(obj.toString),
-	    @requestOption.map { request =>
-		user: @format.raw(request.json.toString),
-	    }
+      object: @format.raw(obj.toString),
+      @requestOption.map { request =>
+      user: @format.raw(request.json.toString),
+      }
 	};
     </script>
   }
@@ -46,58 +46,56 @@
 </head>
 
 <body class="@if(play.api.Play.isDev(play.api.Play.current)){dev}">
-  <section toolbar id="toolbars" class="cf">
-    <nav id="toolbar_databrary" class="toolbar toolbar_databrary">
-      <div class="wrap">
-        <div class="row">
-          <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2">
-            <h1 class="toolbar_h1">
-              <a href="@routes.Site.start" title="Databrary: An Open Data Library"></a>
-            </h1>
-          </div>
+  <section toolbar id="toolbar" class="toolbar" class="cf">
+    <div class="wrap">
+      <div class="row">
+        <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2">
+          <h1 class="toolbar-h1">
+            <a href="@routes.Site.start" title="Databrary: An Open Data Library"></a>
+          </h1>
+        </div>
 
-          <div class="toolbar_user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4">
-            @requestOption match {
-              case Some(request : SiteRequest.Auth[_]) => {
-                <a href="@routes.PartyHtml.profile" class="toolbar_user_link">
-                  <span class="username hide-mobile hide-tablet">@requestOption.get.identity.name</span>
-                  <img src="@display.avatar(request.identity, 16)" class="avatar">
-                </a>
+        <div class="toolbar-user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4">
+          @requestOption match {
+            case Some(request : SiteRequest.Auth[_]) => {
+              <a href="@routes.PartyHtml.profile" class="toolbar-user-link">
+                <span class="username hide-mobile hide-tablet">@requestOption.get.identity.name</span>
+                <img src="@display.avatar(request.identity, 16)" class="avatar">
+              </a>
 
-                @if(request.access.isAdmin) {
-                  <span class="sep">|</span>
+              @if(request.access.isAdmin) {
+                <span class="sep">|</span>
 
-                  @if(request.superuser) {
-                    @helper.form(routes.LoginHtml.superuserOff) {
-                      <button type="submit" class="link superuser on">SU</button>
-                    }
-                  } else {
-                    @defining(new LoginController.SuperuserForm()(request)) { form =>
-                      @widget.tag.form(form) {
-                        @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
-                          @widget.tag.inputPassword(form.auth(), 'class -> "mini supermini password")
-                          <button type="submit" class="link superuser off">SU</button>
-                        }
+                @if(request.superuser) {
+                  @helper.form(routes.LoginHtml.superuserOff) {
+                    <button type="submit" class="link superuser on">SU</button>
+                  }
+                } else {
+                  @defining(new LoginController.SuperuserForm()(request)) { form =>
+                    @widget.tag.form(form) {
+                      @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
+                        @widget.tag.inputPassword(form.auth(), 'class -> "mini supermini password")
+                        <button type="submit" class="link superuser off">SU</button>
                       }
                     }
                   }
                 }
-
-                <span class="sep">|</span>
-
-                @widget.tag.form(LoginController.LogoutForm) {
-                  <button type="submit" class="link">logout</button>
-                }
               }
 
-              case _ => {
-                <a href="@routes.LoginHtml.view">login</a>
+              <span class="sep">|</span>
+
+              @widget.tag.form(LoginController.LogoutForm) {
+                <button type="submit" class="link">logout</button>
               }
             }
-          </div>
+
+            case _ => {
+              <a href="@routes.LoginHtml.view">login</a>
+            }
+          }
         </div>
       </div>
-    </nav>
+    </div>
   </section>
 
   <main ng-view id="main" class="main" autoscroll>
@@ -141,14 +139,14 @@
     <tooltips></tooltips>
 
     <div id="loading" class="loading" ng-show="page.display.loading">
-      <div class="loading_spinner">
+      <div class="loading-spinner">
         <div class="spinner">
           <div class="mask">
             <div class="circle"></div>
           </div>
         </div>
 
-        <div class="loading_text">[<span>loading</span>]</div>
+        <div class="loading-text">[<span>loading</span>]</div>
       </div>
     </div>
 

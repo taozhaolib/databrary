@@ -45,7 +45,6 @@
 	top: -1000px;
 	left: -1000px;
 	opacity: 0;
-
 	background-color: @white;
 	.border-radius(@b6);
 	.box-shadow();
@@ -55,7 +54,7 @@
 	z-index: 2000;
 	.grid-width(max, 3);
 
-	&.tooltip_visible {
+	&.tooltip-visible {
 		opacity: 1;
 	}
 
@@ -71,51 +70,51 @@
 
 //
 
-.tooltip_blue {
+.tooltip-blue {
 	.tooltip-color(@blue);
 }
 
-.tooltip_green {
+.tooltip-green {
 	.tooltip-color(@green);
 }
 
-.tooltip_red {
+.tooltip-red {
 	.tooltip-color(@red);
 }
 
-.tooltip_orange {
+.tooltip-orange {
 	.tooltip-color(@orange);
 }
 
-.tooltip_yellow {
+.tooltip-yellow {
 	.tooltip-color(@yellow);
 }
 
-.tooltip_purple {
+.tooltip-purple {
 	.tooltip-color(@purple);
 }
 
-.tooltip_neutral {
+.tooltip-neutral {
 	.tooltip-color(@neutral);
 }
 
 //
 
-.tooltip_left {
+.tooltip-left {
 	&:after,
 	&:before {
 		right: @b1 + @b12;
 	}
 }
 
-.tooltip_right {
+.tooltip-right {
 	&:after,
 	&:before {
 		left: @b1 + @b12;
 	}
 }
 
-&.tooltip_top {
+&.tooltip-top {
 	&:after {
 		border-top-color: @white;
 		bottom: -@b2;
@@ -127,7 +126,7 @@
 	}
 }
 
-&.tooltip_bottom {
+&.tooltip-bottom {
 	&:after {
 		border-bottom-color: @white;
 		top: -@b2;
