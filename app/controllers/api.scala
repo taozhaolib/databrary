@@ -14,8 +14,8 @@ import site._
 import models._
 
 object SiteApi extends SiteController {
-  private def publicResource(name : String, ext : String) =
-    Play.resourceAsStream("/public/" + name + (if (Play.isDev) "." else ".min.") + ext)
+  private def publicResource(name : String) =
+    Play.resourceAsStream("/public/" + name)
     .fold(
       throw new RuntimeException("missing: " + name))(
       org.apache.commons.io.IOUtils.toString _)
@@ -54,11 +54,15 @@ object SiteApi extends SiteController {
     ).js
 
   val constants = static("constants", constantsJson)
-  val appJs = static("app.js",
-    views.js.app(
-      publicResource("javascripts/app", "js"),
-      publicResource("templates/_all", "js"),
-      constantsJson))
+
+  val jsDepends = Seq(
+    "lib/jquery/jquery.min.js",
+    "lib/angularjs/angular.min.js",
+    "lib/angularjs/angular-route.min.js",
+    "lib/angularjs/angular-sanitize.min.js",
+    "lib/bindonce/bindonce.min.js",
+    "lib/ngStorage/ngStorage.min.js",
+    "app.min.js")
 
   private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
     case json.JsObject(f) =>
