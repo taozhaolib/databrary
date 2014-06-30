@@ -580,10 +580,15 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-
+			console.log(data);
+			if (data.object.segment)
+			{
+				console.log("FOUND SEGMENT!!");
+			}
+			console.log(volume);
 			Slot.get({
 				id: data.object.id,
-				segment: data.object.segment || ',',
+				segment: typeService.segmentJoin(data.parent.segment),
 				assets: ''
 			}, function (object) {
 				angular.forEach(object.assets, function (asset) {
@@ -632,6 +637,10 @@ module.factory('browserService', [
 			if (group == 'asset') {
 				data.player = false;
 				data.played = undefined;
+			}
+
+			if (group == 'session') {
+				data.segment = [null,null]; //TODO: set segment as it should be!
 			}
 
 			browserService.groups[group].push(newData);

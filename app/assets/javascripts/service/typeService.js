@@ -102,7 +102,13 @@ module.factory('typeService', [
 				throw new Error('typeService.segmentString() requires Asset or Session as first argument');
 			}
 
-			if (!segment) {
+			return typeService.segmentJoin(segment);
+
+		};
+
+		typeService.segmentJoin = function(segment)
+		{
+			if (!segment || segment[0] === null && segment[1] === null) {
 				return ',';
 			}
 
