@@ -24,15 +24,16 @@
     @SiteApi.jsDepends.map { js =>
       <script src="@routes.Assets.at(js)"></script>
     }
+  <script src="/constants.js"></script>
 	
-    <script>
+  <script>
 	window.$play = {
       object: @format.raw(obj.toString),
       @requestOption.map { request =>
       user: @format.raw(request.json.toString),
       }
 	};
-    </script>
+  </script>
   }
 </head>
 <body class="@if(play.api.Play.isDev(play.api.Play.current)){dev}">
