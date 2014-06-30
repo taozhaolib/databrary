@@ -54,6 +54,8 @@ object SiteApi extends SiteController {
     ).js
 
   val constants = static("constants", constantsJson)
+  val constantsJs = static("constants",
+    views.js.constants(constantsJson))
 
   val jsDepends = Seq(
     "lib/jquery/jquery.min.js",
