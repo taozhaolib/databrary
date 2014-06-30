@@ -1,6 +1,6 @@
 module.directive('tabset', [
 	function () {
-		var controller = function ($scope, $element) {
+		var controller = ['$scope', '$element', '$attrs', function ($scope, $element) {
 			var ctrl = {};
 
 			$scope.tabList = [];
@@ -99,7 +99,7 @@ module.directive('tabset', [
 			//
 
 			return ctrl;
-		};
+		}];
 
 		return {
 			restrict: 'E',

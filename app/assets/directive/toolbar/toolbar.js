@@ -1,6 +1,6 @@
 module.directive('toolbar', [
 	'pageService', function (page) {
-		var controller = function ($scope) {
+		var controller = ['$scope', '$element', '$attrs', function ($scope) {
 			this.hoverUser = false;
 
 			this.hideHover = function () {
@@ -15,7 +15,7 @@ module.directive('toolbar', [
 						link.auth ? page.auth.hasAuth(link.auth) : true;
 				});
 			};
-		};
+		}];
 
 		return {
 			restrict: 'A',

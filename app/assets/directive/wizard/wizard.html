@@ -3,7 +3,7 @@
 		<div class="wizard-list-name">
 			<ul class="flat">
 				<li ng-repeat="step in steps | filter:{enable: true}" ng-class="getListItemClasses(step)" ng-click="activateStep(step)">
-					<strong class="wizard-list-name">{{step.name || 'wizard.class="wizard-list-description"age}}</strong>
+					<strong class="wizard-list-name">{{step.name || 'wizard.'+step.id+'.name' | message}}</strong>
 
 					<p class="wizard-list-description">{{step.description || 'wizard.'+step.id+'.description' | message}}</p>
 				</li>

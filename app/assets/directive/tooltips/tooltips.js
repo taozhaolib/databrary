@@ -1,6 +1,6 @@
 module.directive('tooltips', [
 	'pageService', function (page) {
-		var controller = function ($scope, $element, $attrs) {
+		var controller = ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 			var Region = function () {
 //				$scope.tooltips = this;
 				// TODO: does this work???
@@ -42,7 +42,7 @@ module.directive('tooltips', [
 			Region.prototype = page.tooltips;
 
 			return new Region();
-		};
+		}];
 
 		//
 

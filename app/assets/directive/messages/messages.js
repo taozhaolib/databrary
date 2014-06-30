@@ -1,6 +1,6 @@
 module.directive('messages', [
 	'pageService', function (page) {
-		var controller = function ($scope, $element, $attrs) {
+		var controller = ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 			var Region = function () {
 				$scope.messages = this;
 				if ($scope[$attrs.form]) {
@@ -66,7 +66,7 @@ module.directive('messages', [
 			Region.prototype = angular.isDefined($attrs.default) ? page.messages : page.messages.region();
 
 			return new Region();
-		};
+		}];
 
 		//
 

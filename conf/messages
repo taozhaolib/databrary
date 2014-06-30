@@ -271,21 +271,21 @@ party.edit.avatar.upload=Saving data and uploading your avatar now.
 party.edit.profile.success=Profile saved successfully.
 party.edit.account.success=Account updated successfully.
 
-wizard.party_edit_profile.name=Profile
-wizard.party_edit_profile.description=Publicly visible info
-wizard.party_edit_profile.instructions=
+wizard.party-edit-profile.name=Profile
+wizard.party-edit-profile.description=Publicly visible info
+wizard.party-edit-profile.instructions=
 
-wizard.party_edit_account.name=Account
-wizard.party_edit_account.description=Email address and password
-wizard.party_edit_account.instructions=
+wizard.party-edit-account.name=Account
+wizard.party-edit-account.description=Email address and password
+wizard.party-edit-account.instructions=
 
-wizard.party_edit_apply.name=Sponsors
-wizard.party_edit_apply.description=Authorizations and memberships granted by others
-wizard.party_edit_apply.instructions=
+wizard.party-edit-apply.name=Sponsors
+wizard.party-edit-apply.description=Authorizations and memberships granted by others
+wizard.party-edit-apply.instructions=
 
-wizard.party_edit_grant.name=Affiliates
-wizard.party_edit_grant.description=Authorizations and memberships granted to others
-wizard.party_edit_grant.instructions=
+wizard.party-edit-grant.name=Affiliates
+wizard.party-edit-grant.description=Authorizations and memberships granted to others
+wizard.party-edit-grant.instructions=
 
 # --- Auth search
 auth.search=Search for a user or institution...
@@ -540,38 +540,38 @@ register.email.error=This email address is invalid.
 
 register.affiliation.help=Enter your affiliation as you wish it to display on your profile.
 
-wizard.register_create.name=Create Account
-wizard.register_create.description=Register to browse shared data and comment on datasets.
-wizard.register_create.instructions=Please provide information about yourself.
+wizard.register-create.name=Create Account
+wizard.register-create.description=Register to browse shared data and comment on datasets.
+wizard.register-create.instructions=Please provide information about yourself.
 
-wizard.register_agreement.name=Sign Agreement
-wizard.register_agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register_agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">full agreement as pdf</a>.
-wizard.register_agreement.agreement_contents=<p>Users must abide by these three guiding principles</p><ol><li>Databrary investigators are responsible for getting participant permission levels correct. They must ensure that participants'' wishes are respected in the data they contribute.</li><li>Databrary investigators must treat other researchers'' data with the same respect, security, and ethical commitment as their own.</li><li>Databrary investigators must take care in authorizing other people (affiliates and collaborators) and are responsible for their conduct and use of Databrary data, just as they are in their own labs.</li></ol>
-wizard.register_agreement.agree=I have read and understand the <a href="http://databrary.org/user-guide/policies/investigator-agreement.html" target="_blank">Databrary Investigator Agreement</a>
+wizard.register-agreement.name=Sign Agreement
+wizard.register-agreement.description=Learn about the responsibilities of all Databrary members.
+wizard.register-agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">full agreement as pdf</a>.
+wizard.register-agreement.agreement-contents=<p>Users must abide by these three guiding principles</p><ol><li>Databrary investigators are responsible for getting participant permission levels correct. They must ensure that participants'' wishes are respected in the data they contribute.</li><li>Databrary investigators must treat other researchers'' data with the same respect, security, and ethical commitment as their own.</li><li>Databrary investigators must take care in authorizing other people (affiliates and collaborators) and are responsible for their conduct and use of Databrary data, just as they are in their own labs.</li></ol>
+wizard.register-agreement.agree=I have read and understand the <a href="http://databrary.org/user-guide/policies/investigator-agreement.html" target="_blank">Databrary Investigator Agreement</a>
 
-wizard.register_email.name=Confirm Email
-wizard.register_email.description=Confirm your email address to continue.
-wizard.register_email.instructions=Check your inbox for your email confirmation. You must verify your email address to continue.
+wizard.register-email.name=Confirm Email
+wizard.register-email.description=Confirm your email address to continue.
+wizard.register-email.instructions=Check your inbox for your email confirmation. You must verify your email address to continue.
 
-wizard.register_password.name=Set Password
-wizard.register_password.description=Pick a secure password.
-wizard.register_password.instructions=Please set a secure password. Remember that users may not share their login information with anyone.
+wizard.register-password.name=Set Password
+wizard.register-password.description=Pick a secure password.
+wizard.register-password.instructions=Please set a secure password. Remember that users may not share their login information with anyone.
 
-wizard.register_agent.name=Request Authorization
-wizard.register_agent.description=Begin the authorization process.
-wizard.register_agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html" target="_blank">Read more</a> about this process and its requirements.
+wizard.register-agent.name=Request Authorization
+wizard.register-agent.description=Begin the authorization process.
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html" target="_blank">Read more</a> about this process and its requirements.
 
 auth.register.principal=<strong>Authorized Investigator</strong>: Researchers with <a href="http://databrary.org/user-guide/definitions.html#people" target="_blank">PI status</a> (eligible to conduct independent research at their institution) may request authorization to access and share Databrary data, as well as authorize affiliates.
 auth.register.affiliate=<strong>Affiliate Investigator</strong>: Individuals working with Authorized Investigators may be sponsored to access shared Databrary data.
 
-wizard.register_request.name=Submit Authorization
-wizard.register_request.description=Confirm your authorization request.
-wizard.register_request.instructions=
+wizard.register-request.name=Submit Authorization
+wizard.register-request.description=Confirm your authorization request.
+wizard.register-request.instructions=
 
-wizard.register_pending.name=Stay Tuned
-wizard.register_pending.description=Tips for exploring Databrary.
-wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
+wizard.register-pending.name=Stay Tuned
+wizard.register-pending.description=Tips for exploring Databrary.
+wizard.register-pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
 #Splash page text
 splash.investigators.header=Databrary Investigators
@@ -587,9 +587,9 @@ volume.edit.title.sub=New Study
 volume.edit.success=Volume saved successfully.
 volume.edit.error=Unable to save volume.
 
-wizard.volume_edit_overview.name=Citation
-wizard.volume_edit_overview.description=Edit citation and description.
-wizard.volume_edit_overview.instructions=First, provide basic information about the published paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
+wizard.volume-edit-overview.name=Citation
+wizard.volume-edit-overview.description=Edit citation and description.
+wizard.volume-edit-overview.instructions=First, provide basic information about the published paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
 
 volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
 volume.edit.autodoi=DOI or URL
@@ -619,13 +619,13 @@ volume.edit.alias.placeholder=
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
 
-wizard.volume_edit_excerpts.name=Excerpts
-wizard.volume_edit_excerpts.description=Upload representative videos and images.
-wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
+wizard.volume-edit-excerpts.name=Excerpts
+wizard.volume-edit-excerpts.description=Upload representative videos and images.
+wizard.volume-edit-excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
 
-wizard.volume_edit_materials.name=Materials
-wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
+wizard.volume-edit-materials.name=Materials
+wizard.volume-edit-materials.description=Upload stimuli, documents, and other materials.
+wizard.volume-edit-materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
 
 material.file=File
 material.file.help=Select the file you wish to upload.
@@ -645,13 +645,13 @@ volume.edit.materials.remove.success=Removed {0} successfully.
 volume.edit.materials.remove.error=Unable to remove {0}.
 volume.edit.materials.refresh.error=Could not update materials display. Please refresh before making any new edits.
 
-wizard.volume_edit_funding.name=Funding
-wizard.volume_edit_funding.description=Specify funding sources.
-wizard.volume_edit_funding.instructions=Sources of funding that supported this research.
+wizard.volume-edit-funding.name=Funding
+wizard.volume-edit-funding.description=Specify funding sources.
+wizard.volume-edit-funding.instructions=Sources of funding that supported this research.
 
-wizard.volume_edit_access.name=Access
-wizard.volume_edit_access.description=Set access and sharing levels.
-wizard.volume_edit_access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
+wizard.volume-edit-access.name=Access
+wizard.volume-edit-access.description=Set access and sharing levels.
+wizard.volume-edit-access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
 
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
