@@ -580,12 +580,6 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-			console.log(data);
-			if (data.object.segment)
-			{
-				console.log("FOUND SEGMENT!!");
-			}
-			console.log(volume);
 			Slot.get({
 				id: data.object.id,
 				segment: typeService.segmentJoin(data.parent.segment),
