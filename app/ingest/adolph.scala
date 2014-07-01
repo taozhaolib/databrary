@@ -204,7 +204,7 @@ object Adolph extends Ingest {
 
   private object Asset {
     def positions(assets : Seq[Asset]) : Seq[Offset] =
-      assets.scanLeft(Offset.ZERO)(_ + _.info.duration)
+      assets.scanLeft(Offset.ZERO)(_ + _.info.duration + Offset.SECOND)
   }
 
   private def recordMap(r : Record*) : Map[Int,Record] =
