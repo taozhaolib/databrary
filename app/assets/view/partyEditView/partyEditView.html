@@ -1,13 +1,13 @@
 <article class="article article-crud article-volume article-edit panel panel-edit" bindonce>
 	<div class="wrap">
 		<div class="row">
-			<hgroup class="col-full">
+			<hgroup class="col">
 				<h1 class="panel-title-alias" bo-html="'edit' | message"></h1>
 
 				<h2 class="panel-title" bo-text="party.name"></h2>
 			</hgroup>
 
-			<div class="col-full">
+			<div class="col">
 				<wizard retrieve="retrieveWizard" update="updateWizard">
 					<wizard-step id="party-edit-profile">
 						<party-edit-profile-form></party-edit-profile-form>

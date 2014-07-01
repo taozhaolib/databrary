@@ -1,117 +1,117 @@
 // STYLES
 
-.portrait {
-	.margin-bottom(1);
-}
+.portrait
+	.margin-bottom(1)
 
-.portrait-info {
-	.padding-height(.5);
-}
+
+.portrait-info
+	.padding-height(.5)
+
 
 .portrait-name,
-.portrait-affiliation {
-	text-align: center;
-	display: block;
-}
+.portrait-affiliation
+	text-align: center
+	display: block
 
-.portrait-name {
-	.font(1.25, 1);
-	font-weight: bold;
 
-	&:link, &:visited {
-		color: @orange;
-	}
+.portrait-name
+	.font(1.25, 1)
+	font-weight: bold
 
-	&:hover {
-		color: @orange41;
-	}
+	&:link, &:visited
+		color: orange
 
-	&:active {
-		color: @orange51;
-	}
-}
 
-.portrait-affiliation {
-	color: @gray;
-}
+	&:hover
+		color: orange41
 
-//
 
-.portrait-vertical {
-	.figure-avatar {
-		float: left;
-	}
-}
+	&:active
+		color: orange51
+
+
+
+.portrait-affiliation
+	color: @gray
+
 
 //
 
-.portrait-small {
-	height: @b1 * 2;
+.portrait-vertical
+	.figure-avatar
+		float: left
 
-	.figure-avatar {
-		width: @b1 * 2;
-		.margin-right(@f4);
-	}
 
-	.portrait-info {
-		.padding-height(0);
-	}
+
+//
+
+.portrait-small
+	height: @b1 * 2
+
+	.figure-avatar
+		width: @b1 * 2
+		.margin-right(@f4)
+
+
+	.portrait-info
+		.padding-height(0)
+
 
 	.portrait-name,
-	.portrait-affiliation {
-		text-align: left;
-		.font-size(1);
-		display: block;
-		.text-overflow();
-		overflow: hidden;
-		white-space: nowrap;
-		.height(1);
-	}
+	.portrait-affiliation
+		text-align: left
+		.font-size(1)
+		display: block
+		.text-overflow()
+		overflow: hidden
+		white-space: nowrap
+		.height(1)
 
-	.portrait-name {
 
-		&:link, &:visited {
-			color: @orange;
-		}
+	.portrait-name
 
-		&:hover {
-			color: @orange;
-		}
+		&:link, &:visited
+			color: orange
 
-		&:active {
-			color: @orange;
-		}
-	}
 
-	&.portrait-more {
-		.portrait-name {
-			.line-height(1);
-			.height(1);
-		}
-	}
-}
+		&:hover
+			color: orange
 
-.portrait-micro {
-	.margin-bottom(0);
 
-	.figure-avatar {
-		.size(@b1);
-		.border-radius(@b1);
-	}
+		&:active
+			color: orange
 
-	.portrait-info {
-		.padding(0);
-	}
 
-	.portrait-name {
-		.font(1, 1);
-		text-align: left;
-		font-weight: normal;
-		.padding(0, @f4, 0, @f1 + @f4);
-	}
-}
 
-.portrait-micro-wrap {
-	float: left;
-	.margin-right(@f4);
-}
+	&.portrait-more
+		.portrait-name
+			.line-height(1)
+			.height(1)
+
+
+
+
+.portrait-micro
+	.margin-bottom(0)
+
+	.figure-avatar
+		.size(@b1)
+		.border-radius(@b1)
+
+
+	.portrait-info
+		.padding(0)
+
+
+	.portrait-name
+		.font(1, 1)
+		text-align: left
+		font-weight: normal
+		.padding(0, @f4, 0, @f1 + @f4)
+
+
+
+.portrait-micro-wrap
+	float: left
+	.margin-right(@f4)
+

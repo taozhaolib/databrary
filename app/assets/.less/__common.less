@@ -1,33 +1,48 @@
-@desktop: 1216px;
-@laptop: 976px;
-@tablet: 736px;
-@mobile: 496px;
 
 
-main {
-	.transition(~"padding, margin .15s linear");
-}
 
-.hide { .hide(); }
 
-.hide-text { .hide-text(); }
+// MEDIA
 
-.hide-eyes { .hide-eyes(); }
+@media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
+.panel-overview
+.panel-overview-thumbnail-wrap
+.grid-height 6
 
-//
+@media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
+.home-feature
+.info
+width auto
+top auto
+bottom base1*-2
+right base1
+left base1
 
-.cf { .clearfix(); }
+h1
+.font-size(.75)
+.line-height(.75)
 
-.cut-f {
-	*:last-child {
-		.margin-bottom(0);
-	}
-}
+@media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
+.home-parties-header
+.font(1.25, 2)
+letter-spacing 1px
 
-.add-f {
-	.margin-bottom(@f1);
-}
+@media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
+.home-feature
+.info
+width base1*10
+top 0
+bottom base4
+right -base1*10
 
-.add-f2 {
-	.margin-bottom(@f2);
-}
+@media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
+.home-parties-header
+.font(2, 3)
+
+@media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
+.home-feature
+.info
+grid-width 3.5
+top auto
+bottom base1
+right base1*-9.5
