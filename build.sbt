@@ -68,7 +68,11 @@ AngularTemplatesKeys.naming := { f =>
 
 AngularTemplatesKeys.outputHtml := None
 
+includeFilter in uglify := new SimpleFileFilter({ f =>
+  f.getPath.startsWith((sourceDirectory in Assets).value.getPath) && f.getName.endsWith(".js")
+})
+
 UglifyKeys.uglifyOps := { js =>
-  // we assume that app.js ends up first, somehow
-  Seq((js, "app.min.js"))
+  // we assume that app.js is first alphabetically
+  Seq((js.sortBy(_._2), "app.min.js"))
 }
