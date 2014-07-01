@@ -1,8 +1,6 @@
 module.directive('browserPlayer', [
 	'pageService', function (page) {
 		var link = function ($scope, $element) {
-			var $content = $element.find('.browser-player-content').first();
-
 			//
 
 			$scope.getAssetClasses = function (asset) {
