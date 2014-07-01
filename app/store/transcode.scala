@@ -53,7 +53,7 @@ object Transcode {
       pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
 	ctl(asset.id,
 	  "-f", src.getAbsolutePath,
-	  "-r", controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL(play.api.Play.isProd))
+	  "-r", new controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL(play.api.Play.isProd))
       }
       _ = logger.debug("running " + asset.id + ": " + pid.merge.toString)
       r <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")

@@ -43,20 +43,14 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   def get(token : String) : Future[Option[T]] =
     row.SELECT("WHERE token = ?").apply(token).singleOpt
 
-  protected def insert[A](f : Token.Id => Future[A]) : Future[(Token.Id,A)] = {
-    /*@scala.annotation.tailrec*/ def loop : Future[(Token.Id,A)] = {
-      val t = Token.generate
-      f(t).map((t, _)).recoverWith {
+  private def insert[A](f : Token.Id => Future[A]) : Future[A] = {
+    /*@scala.annotation.tailrec*/ def loop : Future[A] =
+      f(Token.generate).recoverWith {
         case SQLDuplicateKeyException() => loop
       }
-    }
     loop
   }
-  protected def insert(args : SQLTerms) : Future[Token.Id] =
-    insert[Boolean] { (token : Token.Id) =>
-      INSERT(('token -> token) +: args).execute
-    }.map(_._1)
-  protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[(Token.Id,A)] =
+  protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[A] =
     insert[A] { (token : Token.Id) =>
       val a = ('token -> token) +: args
       SQL("INSERT INTO", table, a.insert, "RETURNING", returning.select)
@@ -107,7 +101,6 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     else async(false)).flatMap { _ =>
       insert(SQLTerms('account -> account.id, 'password -> password),
         columns.map(_(account)))
-        .map(_._2)
     }
 }
 
@@ -137,6 +130,5 @@ object SessionToken extends TokenTable[SessionToken]("session") {
     account.party.access.flatMap { access =>
       insert(SQLTerms('account -> account.id),
         columns.map(_(account, access)))
-        .map(_._2)
     }
 }
