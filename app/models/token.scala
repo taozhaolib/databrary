@@ -31,6 +31,10 @@ object Token extends Table[Token]("token") {
 }
 
 private[models] sealed abstract class TokenTable[T <: Token](table : String) extends Table[T](table) {
+  protected def tokenColumns = Columns(
+      SelectColumn[Token.Id]("token")
+    , SelectColumn[Timestamp]("expires")
+    )
   protected def row : Selector[T]
 
   def delete(token : String) : Future[Boolean] =
@@ -87,10 +91,8 @@ final class LoginToken protected (id : Token.Id, expires : Timestamp, account : 
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {
-  private val columns = Columns(
-      SelectColumn[Token.Id]("token")
-    , SelectColumn[Timestamp]("expires")
-    , SelectColumn[Boolean]("password")
+  private val columns = (tokenColumns ~+
+      SelectColumn[Boolean]("password")
     ).map { (token, expires, password) =>
       (account : Account) => new LoginToken(token, expires, account, password)
     }
@@ -120,10 +122,8 @@ final class SessionToken protected (id : Token.Id, expires : Timestamp, account 
 }
 
 object SessionToken extends TokenTable[SessionToken]("session") {
-  private val columns = Columns(
-      SelectColumn[Token.Id]("token")
-    , SelectColumn[Timestamp]("expires")
-    ).map { (token, expires) =>
+  private val columns = tokenColumns
+    .map { (token, expires) =>
       (account : Account, access : Access) =>
 	new SessionToken(token, expires, account, access)
     }
