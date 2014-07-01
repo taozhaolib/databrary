@@ -1,0 +1,118 @@
+// VARS
+
+framepad = .5
+
+// MIXINS
+
+.frame-color(c)
+	.frame-header
+		&.folder
+			&:hover
+				color mix(c, black, 75%)
+
+
+
+
+	&.folded
+		border-bottom-color mix(c, pale, 75%)
+		background-color mix(c, white, 10%)
+
+		.frame-header
+			&.folder
+				color mix(c, black, 50%)
+
+
+
+
+	&:hover
+		border-bottom-color mix(c, pale, 25%)
+		background-color mix(c, white, 1%)
+
+
+
+// STYLES
+
+.frame-body
+	background-color transparent
+	border-padding-bottom(0, framepad)
+	border-padding-top(0, framepad)
+
+
+.frame-header
+	font-weight normal
+	font(1, 1.5)
+	text-transform uppercase
+	letter-spacing 1px
+	margin(0)
+	display inline-block
+
+	&.folder
+		cursor pointer
+
+		&:before
+			content ""
+			size(0)
+			display block
+			float left
+			position relative
+			top b2
+			border b4 solid transparent
+			border-top-color black
+			margin-right(f4)
+			transition()
+
+
+		&:hover
+			color gray
+
+			&:before
+				transform-rotate(-45deg)
+
+
+
+
+
+.frame
+	transition()
+
+	&.nowrap
+		.wrap
+			width auto
+			padding-width(framepad)
+
+
+
+	.portrait
+		margin-bottom(f2)
+
+
+
+.foldable
+	.fold
+		max-height 10000px
+		transition()
+
+
+	&.folded
+		.frame
+			.frame-header
+				&:before
+					transform-rotate(-90deg)
+
+
+				&:hover
+					color gray
+
+					&:before
+						transform-rotate(-45deg)
+
+
+
+
+			.fold
+				overflow hidden
+				max-height 0
+
+
+
+

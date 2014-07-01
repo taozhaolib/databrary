@@ -6,16 +6,16 @@
 //
 
 .repeat
-	position: relative
-	.margin-bottom(@f2)
+	position relative
+	.margin-bottom(f2)
 
 
 //
 
 .repeat-body
 	.margin-left(2)
-	.padding-top(@f6)
-	.padding-bottom(@f3)
+	.padding-top(f6)
+	.padding-bottom(f3)
 
 	> *:last-child
 		.margin-bottom(0)
@@ -25,50 +25,50 @@
 //
 
 .repeat-controls
-	position: absolute
-	z-index: 100
-	top: 0
-	left: 0
-	bottom: 0
-	width: @b1 * 1.5
-	border: 1px solid @gray
-	.border-radius(@b1)
+	position absolute
+	z-index 100
+	top 0
+	left 0
+	bottom 0
+	width b1 * 1.5
+	border 1px solid gray
+	.border-radius(b1)
 
 
 //
 
 .repeat-control
-	position: absolute
-	left: 0
-	right: 0
+	position absolute
+	left 0
+	right 0
 	.transition()
 
 	&.add,
 	&.remove
-		.size(@b1 + @b12)
-		.border-radius(@b1)
-		border: 1px solid orange
-		.margin(@f6)
-		cursor: pointer
-		text-align: center
+		.size(b1 + b12)
+		.border-radius(b1)
+		border 1px solid orange
+		.margin(f6)
+		cursor pointer
+		text-align center
 		.font-size(1.5)
 
 		&:hover
-			background-color: orange51
+			background-color orange51
 
 
 
 	&.add
-		bottom: 0
-		line-height: .9
+		bottom 0
+		line-height .9
 
 
 	&.remove
-		top: 0
-		line-height: .9
+		top 0
+		line-height .9
 
 
 	.move
-		cursor: hand
+		cursor hand
 
 
