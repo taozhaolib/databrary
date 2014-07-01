@@ -1,8 +1,6 @@
 module.directive('browserPlayer', [
 	'pageService', function (page) {
-		var link = function ($scope, $element) {
-			//
-
+		var link = function ($scope) {
 			$scope.getAssetClasses = function (asset) {
 				return {
 					'active': $scope.currentAsset == asset
