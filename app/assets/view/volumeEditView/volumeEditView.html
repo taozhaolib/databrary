@@ -1,19 +1,19 @@
 <article class="article article-crud article-volume article-edit panel panel-edit" bindonce>
 	<div class="wrap">
 		<div class="row">
-			<hgroup class="col-full" bo-if="!volume">
+			<hgroup class="col" bo-if="!volume">
 				<h1 class="panel-title-alias" bo-html="'create' | message"></h1>
 
 				<h2 class="panel-title" bo-html="'volume.edit.title.sub' | message"></h2>
 			</hgroup>
 
-			<hgroup class="col-full" bo-if="volume">
+			<hgroup class="col" bo-if="volume">
 				<h1 class="panel-context" bo-html="'edit' | message"></h1>
 
 				<h2 class="panel-title with-context" ng-bind="volume.name"></h2>
 			</hgroup>
 
-			<div class="col-full">
+			<div class="col">
 				<wizard retrieve="retrieveWizard" update="updateWizard">
 					<wizard-step id="volume-edit-overview">
 						<volume-edit-overview-form></volume-edit-overview-form>

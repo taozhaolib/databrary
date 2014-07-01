@@ -1,161 +1,161 @@
 // STYLES
 
-button, .button {
-	display: inline-block;
-	text-shadow: 0 0 2px fadeout(@white, 25%);
-	.line-height(1);
-	.border-padding-height(1px, @f4);
-	.padding-width(@f2);
-	.border-radius(@b8);
-	color: @black;
-	.margin-right(@f8);
-	border: 1px solid @neutral33;
-	#gradient > .vertical(@neutral51, @neutral52);
+button, .button
+	display: inline-block
+	text-shadow: 0 0 2px fadeout(@white, 25%)
+	.line-height(1)
+	.border-padding-height(1px, @f4)
+	.padding-width(@f2)
+	.border-radius(@b8)
+	color: @black
+	.margin-right(@f8)
+	border: 1px solid neutral33
+	background linear-gradient(top, neutral51, neutral52)
 
-	&:hover {
-		#gradient > .vertical(@neutral52, @neutral51);
-		text-decoration: none;
-	}
+	&:hover
+		background linear-gradient(top, neutral52, neutral51)
+		text-decoration: none
 
-	&:active {
-		#gradient > .vertical(@neutral52, @neutral53);
-	}
 
-	&.red {
-		border: 1px solid @red33;
-		#gradient > .vertical(@red51, @red52);
+	&:active
+		background linear-gradient(top, neutral52, neutral53)
 
-		&:hover {
-			#gradient > .vertical(@red52, @red51);
-		}
 
-		&:active {
-			#gradient > .vertical(@red52, @red53);
-		}
-	}
+	&.red
+		border: 1px solid red33
+		background linear-gradient(top, red51, red52)
 
-	&.blue {
-		border: 1px solid @blue33;
-		#gradient > .vertical(@blue51, @blue52);
+		&:hover
+			background linear-gradient(top, red52, red51)
 
-		&:hover {
-			#gradient > .vertical(@blue52, @blue51);
-		}
 
-		&:active {
-			#gradient > .vertical(@blue52, @blue53);
-		}
-	}
+		&:active
+			background linear-gradient(top, red52, red53)
 
-	&.green {
-		border: 1px solid @green33;
-		#gradient > .vertical(@green51, @green52);
 
-		&:hover {
-			#gradient > .vertical(@green52, @green51);
-		}
 
-		&:active {
-			#gradient > .vertical(@green52, @green53);
-		}
-	}
+	&.blue
+		border: 1px solid blue33
+		background linear-gradient(top, blue51, blue52)
 
-	&.orange {
-		border: 1px solid @orange33;
-		#gradient > .vertical(@orange51, @orange52);
+		&:hover
+			background linear-gradient(top, blue52, blue51)
 
-		&:hover {
-			#gradient > .vertical(@orange52, @orange51);
-		}
 
-		&:active {
-			#gradient > .vertical(@orange52, @orange53);
-		}
-	}
+		&:active
+			background linear-gradient(top, blue52, blue53)
 
-	&.purple {
-		border: 1px solid @purple33;
-		#gradient > .vertical(@purple51, @purple52);
 
-		&:hover {
-			#gradient > .vertical(@purple52, @purple51);
-		}
 
-		&:active {
-			#gradient > .vertical(@purple52, @purple53);
-		}
-	}
+	&.green
+		border: 1px solid green33
+		background linear-gradient(top, green51, green52)
 
-	&.yellow {
-		border: 1px solid @yellow33;
-		#gradient > .vertical(@yellow51, @yellow52);
+		&:hover
+			background linear-gradient(top, green52, green51)
 
-		&:hover {
-			#gradient > .vertical(@yellow52, @yellow51);
-		}
 
-		&:active {
-			#gradient > .vertical(@yellow52, @yellow53);
-		}
-	}
+		&:active
+			background linear-gradient(top, green52, green53)
 
-	&:disabled, &.disabled {
-		border: 1px solid @gray;
-		#gradient > .vertical(mix(@gray, @white, 75%), mix(@gray, @white, 50%));
-		cursor: default;
 
-		&:hover {
-			#gradient > .vertical(mix(@gray, @white, 75%), mix(@gray, @white, 50%));
-		}
 
-		&:active {
-			#gradient > .vertical(mix(@gray, @white, 75%), mix(@gray, @white, 50%));
-		}
-	}
+	&.orange
+		border: 1px solid orange33
+		background linear-gradient(top, orange51, orange52)
 
-	&.mini {
-		.border-padding-height(1px, @f8);
-		.padding-width(@f4);
-	}
+		&:hover
+			background linear-gradient(top, orange52, orange51)
 
-	&.pull {
-		position: relative;
-		float: right;
-		top: (-@b1 * 2) + @b8;
-		right: 0;
+
+		&:active
+			background linear-gradient(top, orange52, orange53)
+
+
+
+	&.purple
+		border: 1px solid purple33
+		background linear-gradient(top, purple51, purple52)
+
+		&:hover
+			background linear-gradient(top, purple52, purple51)
+
+
+		&:active
+			background linear-gradient(top, purple52, purple53)
+
+
+
+	&.yellow
+		border: 1px solid yellow33
+		background linear-gradient(top, yellow51, yellow52)
+
+		&:hover
+			background linear-gradient(top, yellow52, yellow51)
+
+
+		&:active
+			background linear-gradient(top, yellow52, yellow53)
+
+
+
+	&:disabled, &.disabled
+		border: 1px solid @gray
+		background linear-gradient(top, mix(@gray, @white, 75%), mix(@gray, @white, 50%))
+		cursor: default
+
+		&:hover
+			background linear-gradient(top, mix(@gray, @white, 75%), mix(@gray, @white, 50%))
+
+
+		&:active
+			background linear-gradient(top, mix(@gray, @white, 75%), mix(@gray, @white, 50%))
+
+
+
+	&.mini
+		.border-padding-height(1px, @f8)
+		.padding-width(@f4)
+
+
+	&.pull
+		position: relative
+		float: right
+		top: (-@b1 * 2) + @b8
+		right: 0
 		.margin-bottom(@f1 * -2)
-	}
-}
+
+
 
 //
 
-a.button {
+a.button
 	&:link, &.link,
 	&:visited, &.visited,
 	&:hover, &.hover,
 	&:active, &.active,
-	&:focus, &.focus {
+	&:focus, &.focus
 		color: @black
-	}
-}
+
+
 
 //
 
-button.link {
-	border: none;
-	background: inherit;
-	display: inline;
-	padding: 0;
-	margin: 0;
-	.transition(@transition);
-	color: @red;
-	font: inherit;
-	outline: none;
-	outline-offset: 0;
-	text-shadow: 0;
-	.border-radius(0);
+button.link
+	border: none
+	background: inherit
+	display: inline
+	padding: 0
+	margin: 0
+	.transition(@transition)
+	color: red
+	font: inherit
+	outline: none
+	outline-offset: 0
+	text-shadow: 0
+	.border-radius(0)
 
-	&:hover {
-		color: darken(@red, 25%);
-	}
-}
+	&:hover
+		color: darken(red, 25%)
+
+

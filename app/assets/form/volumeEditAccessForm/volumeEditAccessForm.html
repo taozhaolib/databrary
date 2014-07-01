@@ -4,7 +4,7 @@
 	<fieldset class="clean radio-set" ng-disabled="!page.auth.hasAuth('EDIT')" ng-form="accessGlobalForm">
 		<legend bo-html="'access.global.legend' | message"></legend>
 
-		<div class="col-full message message-yellow message-content" bo-if="!page.auth.hasAuth('EDIT')" bo-html="'access.global.restricted' | message"></div>
+		<div class="col message message-yellow message-content" bo-if="!page.auth.hasAuth('EDIT')" bo-html="'access.global.restricted' | message"></div>
 
 		<div ng-repeat="(val, perms) in page.constants.data.accessGlobal">
 			<input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">

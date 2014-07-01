@@ -1,332 +1,328 @@
 // VARIABLES
 
-@inset: inset 0 1px 1px @pale;
-@outset: 0 0 @b4 @green;
+@inset = inset 0 1px 1px @pale
+@outset = 0 0 @b4 green
 
 // MIXINS
 
-.input-shadow(@c) {
-	.box-shadow(~"inset 0 1px 1px @{pale}, 0 0 @{b4} @{c}");
-}
+.input-shadow(@c)
+	.box-shadow(~"inset 0 1px 1px @pale, 0 0 @b4 @c")
 
-.placeholder(@x: @gray) {
-	&:-moz-placeholder,
-	&::-moz-placeholder,
-	&:-ms-input-placeholder,
-	&::-webkit-input-placeholder { color: @x; }
-}
+
+
+
 
 // STYLES
 
-textarea {
-	resize: vertical;
-	height: auto;
-	overflow-x: hidden;
-	overflow-y: auto;
-	.min-height(6);
-}
+textarea
+	resize: vertical
+	height: auto
+	overflow-x: hidden
+	overflow-y: auto
+	.min-height(6)
+
 
 select[multiple],
-select[size] {
-	.min-height(6);
-	height: auto;
-}
+select[size]
+	.min-height(6)
+	height: auto
+
 
 input,
-select {
-	.line-height(1);
-}
+select
+	.line-height(1)
+
 
 input,
 textarea,
-select {
-	color: @black;
-	.body-family();
-	.box-sizing();
-	.border-padding-height(1px, @f4);
-	.padding-width(@f3);
-	.border-radius(@b8);
-	width: 100%;
-	border: 1px solid @gray;
-	.margin-bottom(@f2);
-	.transition(~"border, outline, color, background, padding, margin, box-shadow .15s linear");
-	.box-shadow(@inset);
-	.placeholder();
+select
+	color: @black
+	.body-family()
+	.box-sizing()
+	.border-padding-height(1px, @f4)
+	.padding-width(@f3)
+	.border-radius(@b8)
+	width: 100%
+	border: 1px solid @gray
+	.margin-bottom(@f2)
+	.transition(~"border, outline, color, background, padding, margin, box-shadow .15s linear")
+	.box-shadow(@inset)
+	placeholder gray
 
-	&.mini {
-		.border-padding-bottom(1px, @f12);
-		line-height: .9;
-		.font-size(.75);
-		.padding-width(@f8);
+	&.mini
+		.border-padding-bottom(1px, @f12)
+		line-height: .9
+		.font-size(.75)
+		.padding-width(@f8)
 
-		&.supermini {
-			width: 50px;
-		}
-	}
+		&.supermini
+			width: 50px
 
-	&.half {
-		width: 50%;
-	}
 
-	&.third {
-		width: 100% / 3;
-	}
 
-	&.quarter {
-		width: 25%;
-	}
+	&.half
+		width: 50%
 
-	&:focus {
-		border-color: @green;
-		.input-shadow(@green);
 
-		&.ng-invalid:not(.ng-pristine) {
-			border-color: @red;
-			.input-shadow(@red);
-		}
-	}
-}
+	&.third
+		width: 100% / 3
 
-input {
-	&[type="search"] {
-		.border-radius(@b1*4);
-		.padding-width((1/2));
-		.box-sizing();
-	}
 
-	&[type="file"] {
-		display: block;
-		background-color: @white;
-		.border-padding-top(2px, .25);
-	}
+	&.quarter
+		width: 25%
 
-	&[type="date"] {
-		.border-padding-height(2px, .25);
-	}
+
+	&:focus
+		border-color: green
+		.input-shadow(green)
+
+		&.ng-invalid:not(.ng-pristine)
+			border-color: red
+			.input-shadow(red)
+
+
+
+
+input
+	&[type="search"]
+		.border-radius(@b1*4)
+		.padding-width((1/2))
+		.box-sizing()
+
+
+	&[type="file"]
+		display: block
+		background-color: @white
+		.border-padding-top(2px, .25)
+
+
+	&[type="date"]
+		.border-padding-height(2px, .25)
+
 
 	&[type="radio"],
-	&[type="checkbox"] {
-		margin: 4px 0 0;
-		line-height: inherit;
-		width: auto;
-		display: inline-block;
-		.box-shadow(none);
+	&[type="checkbox"]
+		margin: 4px 0 0
+		line-height: inherit
+		width: auto
+		display: inline-block
+		.box-shadow(none)
 
-		&:focus {
-			.box-shadow(@outset);
-			outline: 0;
-		}
-	}
-}
+		&:focus
+			.box-shadow(@outset)
+			outline: 0
 
-select {
-	.border-padding-bottom(0, .25);
-}
+
+
+
+select
+	.border-padding-bottom(0, .25)
+
 
 input,
 select,
 textarea,
 option,
-fieldset {
-	&:disabled {
-		border-color: @pale;
-		color: @pale;
-		cursor: default;
-	}
-}
+fieldset
+	&:disabled
+		border-color: @pale
+		color: @pale
+		cursor: default
+
+
 
 //
 
-fieldset, .fieldset {
-	border-width: 1px 0;
-	border-color: @pale;
-	.border-padding-top(0, @f2);
-	.border-padding-bottom(1px, @f2);
-	.padding-width(0);
-	.margin(0, 0, 1);
+fieldset, .fieldset
+	border-width: 1px 0
+	border-color: @pale
+	.border-padding-top(0, @f2)
+	.border-padding-bottom(1px, @f2)
+	.padding-width(0)
+	.margin(0, 0, 1)
 
-	> *:last-child {
-		.margin-bottom(0);
-	}
+	> *:last-child
+		.margin-bottom(0)
 
-	&.clean {
-		border: 0;
-		.padding-height(0);
 
-		&.skinny {
-			.margin-bottom(0);
-		}
-	}
+	&.clean
+		border: 0
+		.padding-height(0)
 
-	&.boxed {
-		border: 1px solid @pale;
-		.border-radius();
-		.border-padding-height(1px, @f4);
-		.padding-width(@f3);
-	}
-}
+		&.skinny
+			.margin-bottom(0)
 
-legend, .legend {
-	font-weight: normal;
-	.padding(0, @f4, 0, 0);
-	.font-size(1.5);
-	color: @gray;
-}
 
-label, .label {
-	display: block;
-	font-weight: bold;
-	text-transform: uppercase;
-	.font-size(.75);
 
-	&.option {
-		font-weight: normal;
-		display: inline;
-		.font-size(1);
-		text-transform: none;
-	}
-}
+	&.boxed
+		border: 1px solid @pale
+		.border-radius()
+		.border-padding-height(1px, @f4)
+		.padding-width(@f3)
 
-.radio-set {
+
+
+legend, .legend
+	font-weight: normal
+	.padding(0, @f4, 0, 0)
+	.font-size(1.5)
+	color: @gray
+
+
+label, .label
+	display: block
+	font-weight: bold
+	text-transform: uppercase
+	.font-size(.75)
+
+	&.option
+		font-weight: normal
+		display: inline
+		.font-size(1)
+		text-transform: none
+
+
+
+.radio-set
 	input[type="radio"],
-	input[type="checkbox"] {
-		float: left;
-		position: relative;
-		top: @b12;
-		left: @b8;
-	}
+	input[type="checkbox"]
+		float: left
+		position: relative
+		top: @b12
+		left: @b8
 
-	label.option {
-		display: block;
-		.margin-left(@f1);
-	}
-}
 
-//
+	label.option
+		display: block
+		.margin-left(@f1)
 
-.field {
-	&.minimal {
-		label {
-			.hide();
-		}
-	}
 
-	&.horizontal {
-		.clearfix();
-
-		label {
-			text-align: right;
-			width: 33.333333333%;
-			float: left;
-			.padding-right(1);
-		}
-
-		> input, > button, > .button, > select, > textarea, > .fieldgroup {
-			float: right;
-		}
-
-		> input, > select, > textarea, > .fieldgroup {
-			width: 66.666666666%;
-		}
-	}
-}
 
 //
 
-th, td {
-	input, select {
-		.margin-bottom(0);
-	}
-}
+.field
+	&.minimal
+		label
+			.hide()
+
+
+
+	&.horizontal
+		.clearfix()
+
+		label
+			text-align: right
+			width: 33.333333333%
+			float: left
+			.padding-right(1)
+
+
+		> input, > button, > .button, > select, > textarea, > .fieldgroup
+			float: right
+
+
+		> input, > select, > textarea, > .fieldgroup
+			width: 66.666666666%
+
+
+
 
 //
 
-.validator-input {
-	position: relative;
+th, td
+	input, select
+		.margin-bottom(0)
 
-	.field {
-		.margin-right(1);
-	}
 
-	.indicator {
-		position: absolute;
-		.size(@b3 * 2);
-		top: @b3 + @b12;
-		right: @b8;
-		display: none;
 
-		img {
-			display: none;
-		}
+//
 
-		&.show {
-			display: block;
+.validator-input
+	position: relative
 
-			&.invalid {
-				background-color: @red;
+	.field
+		.margin-right(1)
 
-				img.invalid {
-					display: block;
-				}
-			}
 
-			&.valid {
-				background-color: @green;
+	.indicator
+		position: absolute
+		.size(@b3 * 2)
+		top: @b3 + @b12
+		right: @b8
+		display: none
 
-				img.valid {
-					display: block;
-				}
-			}
-		}
-	}
-}
+		img
+			display: none
 
-.validator-messages {
-	position: relative;
-}
 
-.validator-message {
-	position: absolute;
-	background-color: @white;
-	left: 0;
-	right: 0;
-	bottom: @b3;
-	.border-radius(@b6);
-	.box-shadow();
-	.padding(@f6);
-	.font-size(.75);
-	.line-height(.75);
-	z-index: 2000;
+		&.show
+			display: block
+
+			&.invalid
+				background-color: red
+
+				img.invalid
+					display: block
+
+
+
+			&.valid
+				background-color: green
+
+				img.valid
+					display: block
+
+
+
+
+
+
+.validator-messages
+	position: relative
+
+
+.validator-message
+	position: absolute
+	background-color: @white
+	left: 0
+	right: 0
+	bottom: @b3
+	.border-radius(@b6)
+	.box-shadow()
+	.padding(@f6)
+	.font-size(.75)
+	.line-height(.75)
+	z-index: 2000
 
 	&:after,
-	&:before {
-		content: "";
-		.size(0);
-		left: @b1 + @b12;
-		border: @b4 solid transparent;
-		position: absolute;
-		pointer-events: none;
-	}
+	&:before
+		content: ""
+		.size(0)
+		left: @b1 + @b12
+		border: @b4 solid transparent
+		position: absolute
+		pointer-events: none
 
-	&:after {
-		border-top-color: @white;
-		bottom: -@b2;
-	}
 
-	&:before {
-		border-top-color: @gray;
-		bottom: -@b2 - 1px;
-	}
-}
+	&:after
+		border-top-color: @white
+		bottom: -@b2
 
-.validator-server {
-	color: @red;
-}
 
-.validator-client {
-	color: @red;
-}
+	&:before
+		border-top-color: @gray
+		bottom: -@b2 - 1px
 
-.validator-tip {
-	color: @green;
-}
+
+
+.validator-server
+	color: red
+
+
+.validator-client
+	color: red
+
+
+.validator-tip
+	color: green
+

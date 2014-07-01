@@ -1,139 +1,139 @@
 // VARS
 
-@round: 15px;
-@point: 0;
+@round = 15px
+@point = 0
 
 // MIXINS
 
-.tooltip-color(@c) {
-	color: @c;
-	border-color: mix(@c, @gray, 75%);
+.tooltip-color(@c)
+	color: @c
+	border-color: mix(@c, @gray, 75%)
 
-	a {
+	a
 		&:link, &.link,
-		&:visited, &.visited {
-			color: mix(@c, @black, 75%);
-		}
+		&:visited, &.visited
+			color: mix(@c, @black, 75%)
 
-		&:hover, &.hover {
-			color: mix(@c, @gray, 75%);
-		}
 
-		&:active, &.active {
-			color: mix(@c, @pale, 75%);
-		}
-	}
-}
+		&:hover, &.hover
+			color: mix(@c, @gray, 75%)
+
+
+		&:active, &.active
+			color: mix(@c, @pale, 75%)
+
+
+
 
 // STYLES
 
-.tooltips {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 0;
-	overflow: visible;
-	z-index: 2000;
-	pointer-events: none;
-}
+.tooltips
+	position: absolute
+	top: 0
+	left: 0
+	right: 0
+	height: 0
+	overflow: visible
+	z-index: 2000
+	pointer-events: none
+
 
 //
 
-.tooltip {
-	position: absolute;
-	top: -1000px;
-	left: -1000px;
-	opacity: 0;
-	background-color: @white;
-	.border-radius(@b6);
-	.box-shadow();
-	.padding(@f6);
-	.font-size(.75);
-	.line-height(.75);
-	z-index: 2000;
-	.grid-width(max, 3);
+.tooltip
+	position: absolute
+	top: -1000px
+	left: -1000px
+	opacity: 0
+	background-color: @white
+	.border-radius(@b6)
+	.box-shadow()
+	.padding(@f6)
+	.font-size(.75)
+	.line-height(.75)
+	z-index: 2000
+	.grid-width(max, 3)
 
-	&.tooltip-visible {
-		opacity: 1;
-	}
+	&.tooltip-visible
+		opacity: 1
+
 
 	&:after,
-	&:before {
-		content: "";
-		.size(0);
-		border: @b4 solid transparent;
-		position: absolute;
-		pointer-events: none;
-	}
-}
+	&:before
+		content: ""
+		.size(0)
+		border: @b4 solid transparent
+		position: absolute
+		pointer-events: none
+
+
 
 //
 
-.tooltip-blue {
-	.tooltip-color(@blue);
-}
+.tooltip-blue
+	.tooltip-color(blue)
 
-.tooltip-green {
-	.tooltip-color(@green);
-}
 
-.tooltip-red {
-	.tooltip-color(@red);
-}
+.tooltip-green
+	.tooltip-color(green)
 
-.tooltip-orange {
-	.tooltip-color(@orange);
-}
 
-.tooltip-yellow {
-	.tooltip-color(@yellow);
-}
+.tooltip-red
+	.tooltip-color(red)
 
-.tooltip-purple {
-	.tooltip-color(@purple);
-}
 
-.tooltip-neutral {
-	.tooltip-color(@neutral);
-}
+.tooltip-orange
+	.tooltip-color(orange)
+
+
+.tooltip-yellow
+	.tooltip-color(yellow)
+
+
+.tooltip-purple
+	.tooltip-color(purple)
+
+
+.tooltip-neutral
+	.tooltip-color(neutral)
+
 
 //
 
-.tooltip-left {
+.tooltip-left
 	&:after,
-	&:before {
-		right: @b1 + @b12;
-	}
-}
+	&:before
+		right: @b1 + @b12
 
-.tooltip-right {
+
+
+.tooltip-right
 	&:after,
-	&:before {
-		left: @b1 + @b12;
-	}
-}
+	&:before
+		left: @b1 + @b12
 
-&.tooltip-top {
-	&:after {
-		border-top-color: @white;
-		bottom: -@b2;
-	}
 
-	&:before {
-		border-top-color: @gray;
-		bottom: -@b2 - 1px;
-	}
-}
 
-&.tooltip-bottom {
-	&:after {
-		border-bottom-color: @white;
-		top: -@b2;
-	}
+&.tooltip-top
+	&:after
+		border-top-color: @white
+		bottom: -@b2
 
-	&:before {
-		border-bottom-color: @gray;
-		top: -@b2 - 1px;
-	}
-}
+
+	&:before
+		border-top-color: @gray
+		bottom: -@b2 - 1px
+
+
+
+&.tooltip-bottom
+	&:after
+		border-bottom-color: @white
+		top: -@b2
+
+
+	&:before
+		border-bottom-color: @gray
+		top: -@b2 - 1px
+
+
