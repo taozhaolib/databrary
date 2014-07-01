@@ -28,7 +28,7 @@ module.directive('accessGrantForm', [
 			form.successFn = undefined;
 			form.errorFn = undefined;
 
-			form.save = function (scroll) {
+			form.save = function () {
 				form.data.children = form.data.extend ? form.data.individual : 0;
 
 				if (angular.isFunction(form.saveFn)) {

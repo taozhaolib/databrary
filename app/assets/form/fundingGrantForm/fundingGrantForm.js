@@ -40,7 +40,7 @@ module.directive('fundingGrantForm', [
 			form.successFn = undefined;
 			form.errorFn = undefined;
 
-			form.save = function (scroll) {
+			form.save = function () {
 				form.data.awards = form.awards.map(function (award) {
 					return award.val.trim();
 				}).filter(function (author) {

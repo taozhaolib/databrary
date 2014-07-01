@@ -1,6 +1,6 @@
 module.directive('volumeList', [
 	'pageService', function (page) {
-		var link = function ($scope, $el, $attrs) {
+		var link = function ($scope) {
 			$scope.page = page;
 			$scope.volumes = [];
 

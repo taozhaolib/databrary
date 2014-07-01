@@ -26,7 +26,7 @@ module.directive('authSearchForm', [
 			var recentSearch = undefined;
 			var sentSearch = undefined;
 
-			var fin = function (res) {
+			var fin = function () {
 				sentSearch = undefined;
 
 				if (recentSearch) {

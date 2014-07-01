@@ -273,7 +273,7 @@ module.config([
 							} else {
 								deferred.resolve(empty);
 							}
-						}, function (res) {
+						}, function () {
 							deferred.resolve(empty);
 						});
 

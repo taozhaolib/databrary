@@ -1,6 +1,6 @@
 module.directive('tabset', [
 	function () {
-		var controller = ['$scope', '$element', '$attrs', function ($scope, $element) {
+		var controller = ['$scope', '$attrs', function ($scope) {
 			var ctrl = {};
 
 			$scope.tabList = [];

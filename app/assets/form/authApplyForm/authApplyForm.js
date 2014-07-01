@@ -59,7 +59,7 @@ module.directive('authApplyForm', [
 					notfound: true,
 					name: form.notFound.query,
 					info: form.notFound.info
-				}, function (res) {
+				}, function () {
 					form.validator.server({});
 					page.models.Party.$cache.removeAll();
 					form.$setPristine();

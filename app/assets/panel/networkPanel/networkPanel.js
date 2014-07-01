@@ -235,7 +235,7 @@ module.controller('NetworkPanel', [
 			return $scope.party.id != page.auth.user.id;
 		};
 
-		$scope.showExtended = function (parents, party) {
+		$scope.showExtended = function () {
 			return isAdmin()
 		};
 

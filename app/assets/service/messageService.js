@@ -12,9 +12,9 @@ module.factory('messageService', [
 			message.id = message.id || 'message-' + Math.random().toString(36).substring(2);
 			message.type = types.indexOf(message.type) != -1 ? message.type : 'blue';
 			message.target = angular.isString(message.target) ? message.target : undefined;
-			message.closeable = angular.isDefined(message.closeable) && message.closeable != false;
+			message.closeable = angular.isDefined(message.closeable) && !!message.closeable;
 			message.countdown = parseInt(message.countdown) || false;
-			message.enabled = angular.isUndefined(message.enabled) || message.enabled != false;
+			message.enabled = angular.isUndefined(message.enabled) || !!message.enabled;
 
 			message.body = message.body || undefined;
 

@@ -40,7 +40,7 @@ module.directive('partyEditApplyForm', [
 			};
 
 			form.resetAll = function () {
-				angular.forEach(subforms, function (subform, id) {
+				angular.forEach(subforms, function (subform) {
 					if (subform.$dirty) {
 						subform.cancel();
 					}
@@ -73,7 +73,7 @@ module.directive('partyEditApplyForm', [
 			page.events.listen($scope, 'authApplyForm-init', function (event, grantForm) {
 				subforms.push(grantForm);
 
-				grantForm.successFn = function (grantForm) {
+				grantForm.successFn = function () {
 					form.messages.add({
 						body: page.constants.message('auth.apply.save.success'),
 						type: 'green',

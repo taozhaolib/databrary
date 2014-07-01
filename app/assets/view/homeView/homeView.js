@@ -10,7 +10,7 @@ module.controller('HomeView', [
 
 		}
 
-		angular.forEach(parties, function (v, k) {
+		angular.forEach(parties, function (v) {
 			v.lastName = lastName(v.name);
 		});
 		$scope.parties = page.$filter('toArray')(parties, 'lastName');

@@ -40,7 +40,7 @@ module.directive('partyEditGrantForm', [
 			};
 
 			form.resetAll = function () {
-				angular.forEach(subforms, function (subform, id) {
+				angular.forEach(subforms, function (subform) {
 					if (subform.$dirty) {
 						subform.reset();
 					}
@@ -63,7 +63,7 @@ module.directive('partyEditGrantForm', [
 			page.events.listen($scope, 'authGrantForm-init', function (event, grantForm) {
 				subforms.push(grantForm);
 
-				grantForm.successFn = function (grantForm) {
+				grantForm.successFn = function () {
 					form.messages.add({
 						body: page.constants.message('auth.grant.save.success'),
 						type: 'green',
@@ -119,7 +119,7 @@ module.directive('partyEditGrantForm', [
 					}
 				};
 
-				searchForm.notFoundFn = function (query) {
+				searchForm.notFoundFn = function () {
 					page.messages.add({
 						type: 'yellow',
 						countdown: 3000,

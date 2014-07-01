@@ -7,7 +7,6 @@ module.directive('messages', [
 					$scope[$attrs.form].messages = this;
 				}
 
-				var that = this;
 				this.enabled = true;
 
 				//

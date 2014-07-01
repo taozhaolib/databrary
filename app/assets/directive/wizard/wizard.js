@@ -1,7 +1,7 @@
 module.directive('wizard', [
 	function () {
 		var compile = function ($element, $attrs, transclude) {
-			return function ($scope, $element, $attrs) {
+			return function ($scope, $element) {
 				if (angular.isFunction($scope.retrieve())) {
 					$scope.retrieve()($scope);
 				}
