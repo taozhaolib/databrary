@@ -25,7 +25,6 @@ module.directive('sessionMark', [
 
 				default:
 					return $el.remove();
-					break;
 			}
 
 			var tooltip = page.tooltips.add({

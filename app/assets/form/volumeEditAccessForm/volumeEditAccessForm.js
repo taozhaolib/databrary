@@ -75,7 +75,7 @@ module.directive('volumeEditAccessForm', [
 			};
 
 			form.resetAll = function () {
-				angular.forEach(subforms, function (subform, id) {
+				angular.forEach(subforms, function (subform) {
 					if (subform.$dirty) {
 						subform.reset();
 					}
@@ -102,7 +102,7 @@ module.directive('volumeEditAccessForm', [
 						individual: p,
 						children: p,
 					})
-				})).then(function (res) {
+				})).then(function () {
 					if (angular.isFunction(form.successGlobalFn)) {
 						form.successGlobalFn(form, arguments);
 					}
@@ -152,7 +152,7 @@ module.directive('volumeEditAccessForm', [
 			$scope.$on('accessGrantForm-init', function (event, grantForm) {
 				subforms.push(grantForm);
 
-				grantForm.successFn = function (grantForm) {
+				grantForm.successFn = function () {
 					form.messages.add({
 						body: page.constants.message('access.grant.access.save.success'),
 						type: 'green',

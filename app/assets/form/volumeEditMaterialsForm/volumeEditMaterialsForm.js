@@ -117,7 +117,7 @@ module.directive('volumeEditMaterialsForm', [
 									form.errorFn(form, res);
 								}
 							})
-							['finally'](function (res) {
+							['finally'](function () {
 							subform.messages.remove(msg);
 							form.clean(subform);
 							page.display.scrollTo(subform.$element);

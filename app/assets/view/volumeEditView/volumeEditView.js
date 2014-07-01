@@ -215,7 +215,7 @@ module.controller('VolumeEditView', [
 		//
 
 		$scope.updateStep = {
-			'volume-edit-overview': function (step) {
+			'volume-edit-overview': function () {
 				if (volume) {
 					forms.overview.form.init({
 						name: volume.name,
@@ -228,7 +228,7 @@ module.controller('VolumeEditView', [
 				}
 			},
 
-			'volume-edit-citations': function (step) {
+			'volume-edit-citations': function () {
 				if (!volume) {
 					return;
 				}
@@ -251,7 +251,7 @@ module.controller('VolumeEditView', [
 				}
 			},
 
-			'volume-edit-excerpts': function (step) {
+			'volume-edit-excerpts': function () {
 				if (!volume) {
 					return;
 				}
@@ -265,7 +265,7 @@ module.controller('VolumeEditView', [
 				}
 			},
 
-			'volume-edit-materials': function (step) {
+			'volume-edit-materials': function () {
 				if (!volume) {
 					return;
 				}
@@ -279,7 +279,7 @@ module.controller('VolumeEditView', [
 				}
 			},
 
-			'volume-edit-funding': function (step) {
+			'volume-edit-funding': function () {
 				if (!volume) {
 					return;
 				}
@@ -287,7 +287,7 @@ module.controller('VolumeEditView', [
 				forms.funding.form.init(volume.funding, volume);
 			},
 
-			'volume-edit-access': function (step) {
+			'volume-edit-access': function () {
 				if (!volume) {
 					return;
 				}

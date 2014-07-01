@@ -12,7 +12,6 @@ module.factory('modelService', [
 			'Party',
 			'PartyAuthorize',
 			'Record',
-			'Scraper',
 			'Slot',
 			'SlotAsset',
 			'Tag',

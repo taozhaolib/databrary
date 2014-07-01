@@ -19,7 +19,7 @@ module.factory('tooltipService', [
 			tooltip.cls = tooltip.cls || '';
 			tooltip.style = angular.isObject(tooltip.style) ? tooltip.style : {};
 			tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'blue';
-			tooltip.enabled = angular.isUndefined(tooltip.enabled) || tooltip.enabled != false;
+			tooltip.enabled = angular.isUndefined(tooltip.enabled) || !!tooltip.enabled;
 			tooltip.visible = !!tooltip.visible || false;
 			tooltip.$target = tooltip.$target ? tooltip.$target : undefined;
 			tooltip.live = tooltip.live || false;
@@ -92,7 +92,7 @@ module.factory('tooltipService', [
 			return tooltips.toggle(tooltip, 'visible', true);
 		};
 
-		tooltips.hide = function (tooltip, event) {
+		tooltips.hide = function (tooltip) {
 			tooltips.position(tooltip, false);
 
 			return tooltips.toggle(tooltip, 'visible', false);

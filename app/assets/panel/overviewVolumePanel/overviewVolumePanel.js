@@ -32,8 +32,6 @@ module.controller('OverviewVolumePanel', [
 				return false;
 			}
 
-			var has = false;
-
 			for (var prop in volume[property]) {
 				if (volume[property].hasOwnProperty(prop)) {
 					return true;

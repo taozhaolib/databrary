@@ -76,7 +76,7 @@ module.controller('RegisterView', [
 			page.models.PartyAuthorize.query({
 				id: page.auth.user.id
 			}, function (data) {
-				angular.forEach(data.parents, function (parent) {
+				angular.forEach(data.parents, function () {
 					user.pending = true;
 				});
 
@@ -105,7 +105,7 @@ module.controller('RegisterView', [
 				$scope.registerForm.data = {};
 				$scope.registerForm.sent = false;
 
-				$scope.registerForm.ready = function (form) {
+				$scope.registerForm.ready = function () {
 					return $scope.registerForm.$dirty &&
 						$scope.registerForm.$valid &&
 						$scope.registerForm.data.name &&
@@ -142,7 +142,7 @@ module.controller('RegisterView', [
 
 					page.$http
 						.post('/register', $scope.registerForm.data)
-						.success(function (res) {
+						.success(function () {
 							$scope.registerForm.sent = true;
 							$scope.updateWizard();
 						})
@@ -164,7 +164,7 @@ module.controller('RegisterView', [
 				$scope.userPasswordForm = step.userPasswordForm;
 				$scope.userPasswordForm.sent = false;
 
-				$scope.userPasswordForm.saveSuccessFn = function (form) {
+				$scope.userPasswordForm.saveSuccessFn = function () {
 					$scope.userPasswordForm.sent = true;
 					$scope.updateWizard();
 				};
@@ -208,13 +208,13 @@ module.controller('RegisterView', [
 
 				//
 
-				$scope.authApplyForm.successFn = function (form) {
+				$scope.authApplyForm.successFn = function () {
 					$scope.authApplyForm.sent = true;
 					updateUserAuth();
 					$scope.updateWizard();
 				};
 
-				$scope.authApplyForm.cancelFn = function (form) {
+				$scope.authApplyForm.cancelFn = function () {
 					$scope.authSearchForm.data.party = undefined;
 					$scope.authApplyForm.other = undefined;
 					$scope.updateWizard();
@@ -238,7 +238,7 @@ module.controller('RegisterView', [
 								info: $scope.infoForm.data.info
 							}
 						})
-						.success(function (data) {
+						.success(function () {
 							$scope.authApplyForm.successFn();
 						})
 						.error(function (errors, status) {
@@ -259,7 +259,7 @@ module.controller('RegisterView', [
 				};
 			},
 
-			'register-pending': function (step) {
+			'register-pending': function () {
 			}
 		};
 
@@ -328,8 +328,6 @@ module.controller('RegisterView', [
 				//
 
 				$scope.authApplyForm.party = page.auth.user;
-
-				var perm = [];
 
 				step.authSearchForm = $scope.authSearchForm;
 

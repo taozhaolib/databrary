@@ -145,7 +145,7 @@ module.controller('TagsPanel', [
 
 			form.newNameVal = '';
 
-			tagModel.$save(data, function (newTag, status, headers, config) {
+			tagModel.$save(data, function () {
 				createMessage(page.constants.message('tags.new.success', data.id));
 				emptyAuto();
 
@@ -221,7 +221,7 @@ module.controller('TagsPanel', [
 			$scope.newNameChange(form);
 		};
 
-		$scope.newNameBlur = function (form) {
+		$scope.newNameBlur = function () {
 			$('#newName').off('keypress');
 
 			emptyAutoAfter(250);

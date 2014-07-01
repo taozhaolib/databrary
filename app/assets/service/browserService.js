@@ -982,7 +982,6 @@ module.factory('browserService', [
 		//
 
 		browserService.player = undefined;
-		var $w = $(window);
 
 		browserService.setItemPlayer = function (data) {
 			var newPlayer, newPlayed;

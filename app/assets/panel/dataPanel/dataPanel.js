@@ -1,5 +1,5 @@
 module.controller('DataPanel', [
-	'$scope', 'pageService', function ($scope, page) {
+	'$scope', function ($scope) {
 		$scope.refreshPanel = function () {
 			$scope.enabled = $scope.volumes[0];
 		}

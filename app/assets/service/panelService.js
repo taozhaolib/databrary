@@ -51,10 +51,9 @@ module.factory('panelService', [
 				panel.toggleFold(false);
 			}
 
-			var $window = $(window),
-				$document = $(document),
-				oldHeight = 0,
-				newHeight = 0;
+			var $document = $(document);
+			var oldHeight = 0;
+			var newHeight = 0;
 
 			var checkHeight = function () {
 				newHeight = $document.innerHeight();

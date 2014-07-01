@@ -184,7 +184,7 @@ GET     /api/slot/$containerId<[0-9]+>                                          
 # UPDATE    ?segment=
 POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
 # DELETE
-#                                                                                                 TODO: DELETE /api/slot/$containerId<[0-9]+>
+#                                                                                                 TODO: DELETE /api/slot/containerId<[0-9]+>
 
 # ----- RECORD ----- #
 # QUERY     ?volume=ID;category=ID                                                                TODO: container=ID;asset=ID
@@ -196,7 +196,7 @@ POST    /api/record                                                             
 # UPDATE
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
 # DELETE
-#                                                                                                 TODO: DELETE /api/record/$recordId<[0-9]+>
+#                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
 # ADD           ?segment=
 POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.add(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 # REMOVE        ?segment=
@@ -215,7 +215,7 @@ DELETE  /api/asset/$aID<[0-9]+>                                                 
 
 # ----- SLOT ASSET ----- #
 # QUERY     ?volume=ID;segment=
-#                                                                                                 TODO: GET     /api/slot/$containerId<[0-9]+>/asset
+#                                                                                                 TODO: GET     /api/slot/containerId<[0-9]+>/asset
 # GET       ?segment=
 GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
 
@@ -243,9 +243,5 @@ GET     /favicon.ico                                                            
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
-
-GET     /error                                                                                    controllers.Site.moved(path: String = "")
-GET     /loading                                                                                  controllers.Site.moved(path: String = "")
-GET     /home                                                                                     controllers.Site.moved(path: String = "")
 
 GET     /*path/                                                                                   controllers.Site.moved(path: String)

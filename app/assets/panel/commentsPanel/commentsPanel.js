@@ -5,24 +5,6 @@ module.controller('CommentsPanel', [
 			form = commentForm;
 		});
 
-		var DEFAULT_MESSAGE = {
-			type: 'blue',
-			countdown: 3000
-		};
-
-		//
-
-		var createMessage = function (message) {
-			if (typeof(message) == 'string') {
-				form.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
-					body: message
-				}));
-			}
-			else {
-				form.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
-			}
-		};
-
 		//
 
 		$scope.refreshPanel = function () {

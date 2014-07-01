@@ -4,7 +4,7 @@ module.factory('eventService', [
 
 		//
 
-		events.talk = function (eventName) {
+		events.talk = function () {
 			return $rootScope.$emit.apply($rootScope, arguments);
 		};
 

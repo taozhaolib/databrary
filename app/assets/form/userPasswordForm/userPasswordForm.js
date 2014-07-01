@@ -33,7 +33,7 @@ module.directive('userPasswordForm', [
 
 				page.$http
 					.post('/password', $scope.userPasswordForm.data)
-					.success(function (data) {
+					.success(function () {
 						form.validator.server({});
 
 						form.messages.add({

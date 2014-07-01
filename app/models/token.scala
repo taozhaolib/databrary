@@ -31,6 +31,10 @@ object Token extends Table[Token]("token") {
 }
 
 private[models] sealed abstract class TokenTable[T <: Token](table : String) extends Table[T](table) {
+  protected def tokenColumns = Columns(
+      SelectColumn[Token.Id]("token")
+    , SelectColumn[Timestamp]("expires")
+    )
   protected def row : Selector[T]
 
   def delete(token : String) : Future[Boolean] =
@@ -39,20 +43,14 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   def get(token : String) : Future[Option[T]] =
     row.SELECT("WHERE token = ?").apply(token).singleOpt
 
-  protected def insert[A](f : Token.Id => Future[A]) : Future[(Token.Id,A)] = {
-    /*@scala.annotation.tailrec*/ def loop : Future[(Token.Id,A)] = {
-      val t = Token.generate
-      f(t).map((t, _)).recoverWith {
+  private def insert[A](f : Token.Id => Future[A]) : Future[A] = {
+    /*@scala.annotation.tailrec*/ def loop : Future[A] =
+      f(Token.generate).recoverWith {
         case SQLDuplicateKeyException() => loop
       }
-    }
     loop
   }
-  protected def insert(args : SQLTerms) : Future[Token.Id] =
-    insert[Boolean] { (token : Token.Id) =>
-      INSERT(('token -> token) +: args).execute
-    }.map(_._1)
-  protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[(Token.Id,A)] =
+  protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[A] =
     insert[A] { (token : Token.Id) =>
       val a = ('token -> token) +: args
       SQL("INSERT INTO", table, a.insert, "RETURNING", returning.select)
@@ -87,10 +85,8 @@ final class LoginToken protected (id : Token.Id, expires : Timestamp, account : 
 }
 
 object LoginToken extends TokenTable[LoginToken]("login_token") {
-  private val columns = Columns(
-      SelectColumn[Token.Id]("token")
-    , SelectColumn[Timestamp]("expires")
-    , SelectColumn[Boolean]("password")
+  private val columns = (tokenColumns ~+
+      SelectColumn[Boolean]("password")
     ).map { (token, expires, password) =>
       (account : Account) => new LoginToken(token, expires, account, password)
     }
@@ -105,7 +101,6 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     else async(false)).flatMap { _ =>
       insert(SQLTerms('account -> account.id, 'password -> password),
         columns.map(_(account)))
-        .map(_._2)
     }
 }
 
@@ -120,10 +115,8 @@ final class SessionToken protected (id : Token.Id, expires : Timestamp, account 
 }
 
 object SessionToken extends TokenTable[SessionToken]("session") {
-  private val columns = Columns(
-      SelectColumn[Token.Id]("token")
-    , SelectColumn[Timestamp]("expires")
-    ).map { (token, expires) =>
+  private val columns = tokenColumns
+    .map { (token, expires) =>
       (account : Account, access : Access) =>
 	new SessionToken(token, expires, account, access)
     }
@@ -137,6 +130,5 @@ object SessionToken extends TokenTable[SessionToken]("session") {
     account.party.access.flatMap { access =>
       insert(SQLTerms('account -> account.id),
         columns.map(_(account, access)))
-        .map(_._2)
     }
 }

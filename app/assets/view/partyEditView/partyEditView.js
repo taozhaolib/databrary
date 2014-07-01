@@ -160,19 +160,19 @@ module.controller('PartyEditView', [
 		//
 
 		$scope.updateStep = {
-			'party-edit-profile': function (step) {
+			'party-edit-profile': function () {
 				forms.profile.form.init(party);
 			},
 
-			'party-edit-account': function (step) {
+			'party-edit-account': function () {
 				forms.account.form.init(party);
 			},
 
-			'party-edit-apply': function (step) {
+			'party-edit-apply': function () {
 				forms.apply.form.init(party, partyAuth.parents);
 			},
 
-			'party-edit-grant': function (step) {
+			'party-edit-grant': function () {
 				forms.grant.form.init(party, partyAuth.children);
 			},
 		};

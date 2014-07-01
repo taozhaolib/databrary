@@ -2,8 +2,7 @@ module.factory('analyticService', [
 	'$rootScope',
 	'$location',
 	'$cacheFactory',
-	'$injector',
-	function ($rootScope, $location, $cacheFactory, $injector) {
+	function ($rootScope, $location, $cacheFactory) {
 		var analytics = {};
 		var queue = [];
 

@@ -20,7 +20,7 @@ module.directive('searchForm', [
 				}
 			};
 
-			$scope.$watch('searchForm.data.query', function (val, old) {
+			$scope.$watch('searchForm.data.query', function () {
 				page.$location.search('query', form.data.query || undefined);
 			});
 

@@ -49,7 +49,7 @@ module.directive('volumeEditFundingForm', [
 			};
 
 			form.resetAll = function () {
-				angular.forEach(subforms, function (subform, id) {
+				angular.forEach(subforms, function (subform) {
 					if (subform.$dirty) {
 						subform.reset();
 					}

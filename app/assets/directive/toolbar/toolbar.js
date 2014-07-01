@@ -1,6 +1,6 @@
 module.directive('toolbar', [
 	'pageService', function (page) {
-		var controller = ['$scope', '$element', '$attrs', function ($scope) {
+		var controller = ['$element', '$attrs', function () {
 			this.hoverUser = false;
 
 			this.hideHover = function () {
