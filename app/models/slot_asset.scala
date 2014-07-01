@@ -179,7 +179,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
     row(Slot.rowVolume(Volume.fixed(asset.volume)), Asset.fixed(asset).map(const _))
-    .SELECT("WHERE slot.volume = ?")
+    .SELECT("WHERE container.volume = ?")
     .apply(asset.volumeId).singleOpt
 
   private def excerpts(volume : Volume) = 
