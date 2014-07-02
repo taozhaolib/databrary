@@ -55,7 +55,7 @@
 			<div frame id="frame-people" frame-title="{{'volume.contributors.title' | message}}" fold>
 				<div class="row">
 					<div ng-repeat="volumeAccess in volume.access | filter:isContributor" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-						<portrait class="portrait-vertical portrait-small"></portrait>
+						<portrait></portrait>
 					</div>
 				</div>
 			</div>
@@ -63,15 +63,7 @@
 			<div frame id="frame-access" frame-title="{{'volume.access.title' | message}}" fold>
 				<div class="row">
 					<div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-						<aside class="portrait portrait-vertical portrait-small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
-							<figure baseline="square" class="figure-avatar" ng-href="{{page.router.party(party)}}">
-								<figmedia><img ng-src="{{page.router.partyAvatar(party, 216)}}"></figmedia>
-							</figure>
-
-							<div class="portrait-info">
-								<a class="portrait-name" ng-href="{{page.router.party(party)}}">{{party.name}}</a>
-							</div>
-						</aside>
+						<portrait tooltip tooltip-message="{{shareMessage(volumeAccess)}}"></portrait>
 					</div>
 				</div>
 			</div>
