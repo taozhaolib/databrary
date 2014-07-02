@@ -7,8 +7,9 @@ import          mvc._
 import          data._
 import          i18n.Messages
 import          libs.Files.TemporaryFile
-import          libs.iteratee.Enumerator
+import          libs.iteratee.{Iteratee,Enumerator}
 import          libs.concurrent.Execution.Implicits.defaultContext
+import java.io.RandomAccessFile
 import macros._
 import macros.async._
 import dbrary._
@@ -236,11 +237,19 @@ object AssetApi extends AssetController with ApiController {
   def uploadStart(v : models.Volume.Id, size : Long) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       for {
-	u <- UploadToken.create(size)(request.asInstanceOf[AuthSite])
-      } yield (Ok(u.id))
+	u <- UploadToken.create(request.asInstanceOf[AuthSite])
+      } yield {
+	val f = new RandomAccessFile(u.file, "w")
+	try {
+	  f.setLength(size)
+	} finally {
+	  f.close
+	}
+	Ok(u.id)
+      }
     }
 
-  class ResumableForm extends StructForm(routes.AssetApi.uploadResumable) {
+  class ResumableForm extends ApiForm(routes.AssetApi.uploadResumable) {
     val resumableChunkNumber = Field(Forms.number(1))
     val resumableChunkSize = Field(Forms.number(1024))
     val resumableTotalSize = Field(Forms.longNumber(1))
@@ -248,15 +257,26 @@ object AssetApi extends AssetController with ApiController {
     val resumableFilename = Field(Forms.text)
   }
 
-  def uploadResumable = SiteAction { implicit request =>
-    NotImplemented
-    /*
+  def uploadResumable = DeferredAction.site(SiteAction.auth) { implicit request =>
     val form = new ResumableForm()._bind
-    UploadToken.get(form.resumableIdentifier.get, form.resumableTotaleSize.get)
-    .map(_.fold(NotFound) { u =>
-      store.Upload.
-    })
-    */
+    Iteratee.flatten {
+      UploadToken.get(form.resumableIdentifier.get)
+      .map(_.fold(Iteratee.ignore[Array[Byte]].map[Result](_ => NotFound)) { u =>
+	val f = new RandomAccessFile(u.file, "w")
+	if (f.length != form.resumableTotalSize.get)
+	  form.resumableTotalSize.withError("size mismatch")._throw
+	f.seek(form.resumableChunkSize.get * (form.resumableChunkNumber.get-1))
+	Iteratee.foreach[Array[Byte]](f.write(_))
+	.map[Result] { _ =>
+	  f.close
+	  Ok
+	}
+	.recover[Result] { case e : Throwable =>
+	  f.close
+	  throw e
+	}
+      })
+    }
   }
 
   class TranscodedForm(aid : Asset.Id) extends {

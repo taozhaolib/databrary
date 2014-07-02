@@ -152,18 +152,13 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
       new UploadToken(token, expires, account)
     }
 
-  def get(token : String, size : Long)(implicit site : AuthSite) : Future[Option[UploadToken]] =
+  def get(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
     rowAccount(site.account)
     .SELECT("WHERE token = ? AND account = ?")
     .apply(token, site.account.id).singleOpt
-    .map(_.filter(_.file.length == size))
 
   /** Issue a new token for a new upload. */
-  def create(size : Long)(implicit site : AuthSite) : Future[UploadToken] =
+  def create(implicit site : AuthSite) : Future[UploadToken] =
     insert(SQLTerms('account -> site.account.id),
       rowAccount(site.account))
-    .map { u =>
-      store.Upload.writing(u, _.setLength(size))
-      u
-    }
 }
