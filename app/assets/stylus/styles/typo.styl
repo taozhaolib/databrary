@@ -301,7 +301,7 @@ dl
 	> dd
 		margin-bottom 0
 
-	.flat
+	&.flat
 		clearfix()
 
 		> dt
@@ -315,6 +315,31 @@ dl
 			width 67%
 			float right
 			margin-left 0
+
+	&.comma
+		clearfix()
+
+		> dt
+			display inline-block
+			float left
+			clear left
+			margin-right f8
+			text-transform capitalize
+
+			&:after
+				content ":"
+
+			& + dd
+				&:before
+					content none
+
+		> dd
+			margin-left 0
+			display inline-block
+			float left
+
+			&:before
+				content ', '
 
 	&.inline-block
 		display inline-block

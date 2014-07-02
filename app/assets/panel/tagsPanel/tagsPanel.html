@@ -5,18 +5,18 @@
 		<form name="tagForm" novalidate messages="nearest">
 			<ul class="panel-tags-items">
 				<li ng-repeat="tag in tags" class="panel-tags-item">
-					<div class="weight">{{tag.weight}}</div>
+					<div class="panel-tag-weight">{{tag.weight}}</div>
 
-					<div class="name">{{tag.id}}</div>
+					<div class="panel-tag-name">{{tag.id}}</div>
 
-					<div class="controls" ng-if="page.auth.isLoggedIn()">
-						<button class="vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1" ng-class="{available: tag.vote != -1}">
+					<div class="panel-tag-controls" ng-if="page.auth.isLoggedIn()">
+						<button class="panel-tag-vote down" name="vote" ng-click="vote(tag, -1);" ng-disabled="tag.vote == -1" ng-class="{available: tag.vote != -1}" hint="tags-vote-down">
 							-
 						</button>
-						<button class="vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote" ng-class="{available: tag.vote != 0}">
+						<button class="panel-tag-vote null" name="vote" ng-click="vote(tag, 0)" ng-disabled="!tag.vote" ng-class="{available: tag.vote != 0}" hint="tags-vote-null">
 							0
 						</button>
-						<button class="vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1" ng-class="{available: tag.vote != 1}">
+						<button class="panel-tag-vote up" name="vote" ng-click="vote(tag, 1)" ng-disabled="tag.vote == 1" ng-class="{available: tag.vote != 1}" hint="tags-vote-up">
 							+
 						</button>
 					</div>
@@ -26,11 +26,11 @@
 	</div>
 
 	<div id="tag-add" class="panel-tags-form" ng-if="page.auth.isLoggedIn()">
-		<form name="tagNewForm" novalidate ng-submit="voteNew(tagNewForm)" class="tag-new-form" messages="nearest">
+		<form name="tagNewForm" novalidate ng-submit="voteNew(tagNewForm)" class="panel-tags-new-form" messages="nearest">
 			<input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur(tagNewForm)">
 			<button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
 
-			<ul class="new-auto-list">
+			<ul class="panel-tags-auto-list">
 				<li ng-repeat="autoTag in autoList" ng-class="{active: autoSelect == $index}">
 					<a href="" ng-click="fillAuto(tagNewForm, autoTag)">{{autoTag}}</a></li>
 			</ul>

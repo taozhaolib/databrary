@@ -13,10 +13,10 @@ module.directive('volumeList', [
 			$scope.volumeClasses = function (volume) {
 				var cls = [];
 
-				if (Object.keys(volume.providers).length === 0) {
-					cls.push('dataset');
-				} else {
+				if (volume.citation) {
 					cls.push('study');
+				} else {
+					cls.push('dataset');
 				}
 
 				return cls;

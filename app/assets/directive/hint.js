@@ -37,6 +37,13 @@ module.directive('hint', [
 			};
 		});
 
+		angular.forEach(['up', 'null', 'down'], function (a) {
+			hints['tags-vote-' + a] = {
+				class: 'tags-vote-' + a,
+				message: page.constants.message('tags.vote.' + a),
+			};
+		});
+
 		angular.forEach(hints, function (hint, name) {
 			hints[name].tooltip = page.tooltips.add({
 				live: true,

@@ -57,7 +57,7 @@
 									</button>
 								</form>
 
-								<a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate
+								<a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
 									SU</a>
 							</li>
 						</ul>

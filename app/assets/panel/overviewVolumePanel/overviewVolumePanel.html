@@ -2,8 +2,8 @@
 	<div class="row">
 		<div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
 			<hgroup>
-				<div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel-title-alias" bo-text="volume.alias"></div>
-				<h1 class="panel-title" ng-bind-html="volume.name | format:true"></h1>
+				<div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel-alias" bo-text="volume.alias"></div>
+				<h1 class="panel-title smaller" ng-bind-html="volume.name | format:true"></h1>
 			</hgroup>
 
 			<div>

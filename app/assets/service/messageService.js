@@ -154,7 +154,7 @@ module.factory('messageService', [
 
 				if (angular.isObject(message.errors)) {
 					angular.forEach(message.errors, function (errorArray, field) {
-						moreBody += '<dl><dt>' + (field || '') + '</dt><dd>' + errorArray.join('</dd><dd>') + '</dd></dl>';
+						moreBody += '<dl class="comma"><dt>' + (field || '') + '</dt><dd>' + errorArray.join('</dd><dd>') + '</dd></dl>';
 						messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
 					});
 				}
