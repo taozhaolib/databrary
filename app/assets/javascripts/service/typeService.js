@@ -127,6 +127,18 @@ module.factory('typeService', [
 			return segment.join(',');
 		};
 
+		typeService.segmentIntersect = function(a,b)
+		{
+			var FUNCTIONS = [Math.max, Math.min];
+			var ans = b.slice(0);
+			for(var i in FUNCTIONS){	
+				if(angular.isDefined(a[i])){
+					ans[i] = FUNCTIONS[i](a[i],b[i]);
+				}
+			}
+			return ans;
+		}					
+
 		typeService.assetFormat = function (object, dig) {
 			return constants.data.format[typeService.assetProperty(object, 'format', dig)];
 		};

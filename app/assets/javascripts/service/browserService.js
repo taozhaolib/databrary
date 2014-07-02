@@ -582,7 +582,7 @@ module.factory('browserService', [
 			browserService.loading = true;
 			Slot.get({
 				id: data.object.id,
-				segment: typeService.segmentJoin(data.parent.segment),
+				segment: typeService.segmentJoin(data.segment),
 				assets: ''
 			}, function (object) {
 				angular.forEach(object.assets, function (asset) {
@@ -634,7 +634,22 @@ module.factory('browserService', [
 			}
 
 			if (group == 'session') {
-				data.segment = [null,null]; //TODO: set segment as it should be!
+				var newSegment = [undefined, undefined];
+				var cur = newData.parent;
+				while(cur.object)
+				{
+					var obj = cur.object;
+					var catInstances = volume.sessions[newData.object.id].categories[obj.category];
+					for(var i in catInstances){
+						var c = catInstances[i];
+						if(c.id == obj.id && c.segment){
+							newSegment = typeService.segmentIntersect(newSegment, c.segment);
+						}
+					}
+					cur = cur.parent;
+				}
+				newData.segment = newSegment;
+				if (newSegment[0] >= newSegment[1]){return newData;} //in order to not push empty segmented things (contradictory constraints) onto list
 			}
 
 			browserService.groups[group].push(newData);
