@@ -5,7 +5,7 @@ module.factory('typeService', [
 
 		//
 
-		typeService.getType = function (object) {
+		typeService.getType = function (object, volumeType) {
 			if (!angular.isObject(object)) {
 				return undefined;
 			}
@@ -19,7 +19,7 @@ module.factory('typeService', [
 			}
 
 			if (typeService.isVolume(object)) {
-				return 'volume';
+				return volumeType ? typeService.getVolumeType(object) : 'volume';
 			}
 
 			if (typeService.isAsset(object)) {
@@ -41,6 +41,18 @@ module.factory('typeService', [
 			return undefined;
 		};
 
+		typeService.getVolumeType = function (object) {
+			if (typeService.isStudy(object)) {
+				return 'study';
+			}
+
+			if (typeService.isDataset(object)) {
+				return 'dataset';
+			}
+
+			return undefined;
+		};
+
 		//
 
 		typeService.isAsset = function (object) {
@@ -49,6 +61,14 @@ module.factory('typeService', [
 
 		typeService.isVolume = function (object) {
 			return angular.isObject(object) && object.hasOwnProperty('body');
+		};
+
+		typeService.isStudy = function (object) {
+			return typeService.isVolume(object) && object.hasOwnProperty('citation');
+		};
+
+		typeService.isDataset = function (object) {
+			return typeService.isVolume(object) && !object.hasOwnProperty('citation');
 		};
 
 		typeService.isRecord = function (object) {

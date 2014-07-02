@@ -1,4 +1,4 @@
-<article class="article article-crud article-volume article-edit panel" bindonce>
+<article class="view home-view" bindonce>
 	<div class="wrap">
 		<div class="row">
 			<div class="col">
@@ -16,15 +16,15 @@
 
 		<div class="row" bo-if="page.auth.isAuthorized()">
 			<article class="home-feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
-				<div class="inner">
-					<img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
+				<div class="home-feature-inner">
+					<img bo-src="page.router.volumeThumb(volume)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
 
-					<div class="info">
-						<div class="inner-feature" bo-html="'featured' | message"></div>
+					<div class="home-feature-info">
+						<div class="home-feature-message" bo-html="'featured' | message"></div>
 						<h1><a bo-href="page.router.volume({id: volume.id})" bo-text="volume.name"></a></h1>
 
-						<div class="investigators">
-							<ul class="inline-block flat">
+						<div class="home-feature-investigators">
+							<ul class="inline-block comma">
 								<li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
 									<a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
 							</ul>
@@ -43,7 +43,7 @@
 					</div>
 				</div>
 
-				<div class="party-row row">
+				<div class="row">
 					<div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'lastName'" bindonce>
 						<portrait class="portrait-vertical portrait-small"></portrait>
 					</div>

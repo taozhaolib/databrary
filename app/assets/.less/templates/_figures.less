@@ -1,11 +1,11 @@
 // STYLES
 
-figure, .figure
+figure
 	position relative
 	overflow hidden
 
-	> a,
-	.media,
+	> a
+	.media
 	.text
 		position absolute
 		overflow hidden
@@ -25,52 +25,20 @@ figure, .figure
 			*
 				margin 0 auto
 
-
-
-
-	&.square,
-	&.wide
-
-
 	&.square
 		.scalar
 			margin-top 0
 
 
-
-	&.wide
-
-
-	&.tube
-
-
-	&.hoverable
-		.text
-			opacity 0
-			background red
-
-
-		&:hover, &.hover
-			box-shadow()
-
-			.text
-				opacity 1
-
-
-
-
-
-//
-
 .figure-avatar
-	margin-bottom(0)
+	margin-bottom 0
 
 	.text
 		text-align center
 		text-transform uppercase
 		letter-spacing 1px
 		font-style normal
-		background-color fadeout(green51, 10%)
+		background-color fade-out(green51, 10%)
 		bottom auto
 		border-top 0
 
