@@ -36,12 +36,13 @@
   </script>
   }
 </head>
+
 <body class="@if(play.api.Play.isDev(play.api.Play.current)){dev}">
   <section toolbar id="toolbar" class="toolbar" class="cf">
     <div class="wrap">
       <div class="row">
         <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2">
-          <h1 class="toolbar-h1">
+          <h1 class="toolbar-site">
             <a href="@routes.Site.start" title="Databrary: An Open Data Library"></a>
           </h1>
         </div>
@@ -51,7 +52,7 @@
             case Some(request : SiteRequest.Auth[_]) => {
               <a href="@routes.PartyHtml.profile" class="toolbar-user-link">
                 <span class="username hide-mobile hide-tablet">@requestOption.get.identity.name</span>
-                <img src="@display.avatar(request.identity, 16)" class="avatar">
+                <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">
               </a>
 
               @if(request.access.isAdmin) {
@@ -59,14 +60,14 @@
 
                 @if(request.superuser) {
                   @helper.form(routes.LoginHtml.superuserOff) {
-                    <button type="submit" class="link superuser on">SU</button>
+                    <button type="submit" class="link toolbar-superuser on">SU</button>
                   }
                 } else {
                   @defining(new LoginController.SuperuserForm()(request)) { form =>
                     @widget.tag.form(form) {
                       @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
                         @widget.tag.inputPassword(form.auth(), 'class -> "mini supermini password")
-                        <button type="submit" class="link superuser off">SU</button>
+                        <button type="submit" class="link toolbar-superuser off">SU</button>
                       }
                     }
                   }
@@ -88,44 +89,49 @@
       </div>
     </div>
   </section>
+
   <main ng-view id="main" class="main" autoscroll>
     @if(angular){
       <noscript>
-	@body
+	      @body
       </noscript>
     }else{
       @body
     }
   </main>
+
   <footer id="site-footer" class="site-footer">
     <div class="wrap">
       <div class="row">
-	<div class="site-footer-links col-desktop-8 col-laptop-6 col-tablet-5 col-mobile-6 col-cell">
-	  <p>Stay informed with <a href="http://databrary.org/contact/newsletter.html">our newsletter</a>!</p>
-	</div>
-	<div class="site-footer-social col-desktop-7 col-laptop-6 col-tablet-4 col-mobile-6 col-cell">
-	  <p>Find us on <a href="https://www.facebook.com/pages/Databrary/185349568273416" target="_blank" class="img"><img id="facebook" src="/public/images/social/16px/facebook.png" alt="Facebook"></a>, <a href="https://plus.google.com/u/1/111083162045777800330/posts" target="_blank" class="img"><img id="google-plus" src="/public/images/social/16px/google-plus.png" alt="Google+"></a>, <a href="https://twitter.com/databrary" target="_blank" class="img"><img id="twitter" src="/public/images/social/16px/twitter.png" alt="Twitter"></a>, and <a href="https://github.com/databrary/" target="_blank" class="img"><img id="github" src="/public/images/social/16px/github.png" alt="GitHub"></a>.</p>
-	</div>
-	<div class="col-full site-footer-legal">
-	  <p>This material is based on work supported by the National Science Foundation under Grant No. BCS-1238599 and the Eunice Kennedy Shriver National Institute of Child Health and Human Development under Cooperative Agreement U01-HD-076595. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation or the Eunice Kennedy Shriver National Institute of Child Health and Human Development.</p>
-	  <p>[@site.Site.version] <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Databrary.org documentation</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</p>
-	  <ul class="site-footer-grants">
-	    <li><a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1238599&HistoricalAwards=false"> <img src="//databrary.org/theme/img/grants/nsf.png" class="nsf"> BCS-1238599</a></li>
-	    <li><a href="http://projectreporter.nih.gov/project_info_description.cfm?aid=8531595&icde=15908155&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC"> <img src="//databrary.org/theme/img/grants/nih.png" class="nih"> U01-HD-076595</a></li>
-	  </ul>
-	</div>
+        <div class="site-footer-links col-desktop-8 col-laptop-6 col-tablet-5 col-mobile-6">
+          <p>Stay informed with <a href="http://databrary.org/contact/newsletter.html">our newsletter</a>!</p>
+        </div>
+
+        <div class="site-footer-social col-desktop-7 col-laptop-6 col-tablet-4 col-mobile-6">
+          <p>Find us on <a href="https://www.facebook.com/pages/Databrary/185349568273416" target="_blank" class="img"><img id="facebook" src="/public/images/social/16px/facebook.png" alt="Facebook"></a>, <a href="https://plus.google.com/u/1/111083162045777800330/posts" target="_blank" class="img"><img id="google-plus" src="/public/images/social/16px/google-plus.png" alt="Google+"></a>, <a href="https://twitter.com/databrary" target="_blank" class="img"><img id="twitter" src="/public/images/social/16px/twitter.png" alt="Twitter"></a>, and <a href="https://github.com/databrary/" target="_blank" class="img"><img id="github" src="/public/images/social/16px/github.png" alt="GitHub"></a>.</p>
+        </div>
+
+        <div class="site-footer-legal col">
+          <p>This material is based on work supported by the National Science Foundation under Grant No. BCS-1238599 and the Eunice Kennedy Shriver National Institute of Child Health and Human Development under Cooperative Agreement U01-HD-076595. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation or the Eunice Kennedy Shriver National Institute of Child Health and Human Development.</p>
+          <p>[@site.Site.version] <span xmlns:dct="http://purl.org/dc/terms/" href="http://purl.org/dc/dcmitype/Text" property="dct:title" rel="dct:type">Databrary.org documentation</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/deed.en_US">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>.</p>
+          <ul class="site-footer-grants">
+            <li><a href="http://www.nsf.gov/awardsearch/showAward?AWD_ID=1238599&HistoricalAwards=false"> <img src="//databrary.org/theme/img/grants/nsf.png" class="nsf"> BCS-1238599</a></li>
+            <li><a href="http://projectreporter.nih.gov/project_info_description.cfm?aid=8531595&icde=15908155&ddparam=&ddvalue=&ddsub=&cr=1&csb=default&cs=ASC"> <img src="//databrary.org/theme/img/grants/nih.png" class="nih"> U01-HD-076595</a></li>
+          </ul>
+        </div>
       </div>
     </div>
   </footer>
+
   @if(angular){
     <messages default></messages>
     <tooltips></tooltips>
 
     <div id="loading" class="loading" ng-show="page.display.loading">
-      <div class="loading-spinner">
-        <div class="spinner">
-          <div class="mask">
-            <div class="circle"></div>
+      <div class="loading-animation">
+        <div class="loading-spinner">
+          <div class="loading-mask">
+            <div class="loading-circle"></div>
           </div>
         </div>
 
