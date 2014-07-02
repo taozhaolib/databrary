@@ -21,7 +21,7 @@ error.missing=Field value has not been filled
 error.offset=Position in seconds expected
 error.date=
 citation.invalid=Invalid citation: at least citation or DOI is required
-file.format.unknown=File format ''{0}'' is not supported.
+file.format.unknown=File format is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
 measure.unknown=Invalid or unknown type of measure.
@@ -34,6 +34,7 @@ funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
 url.invalid=Invalid. Please check your typing.
+file.notfound=File not found
 
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
