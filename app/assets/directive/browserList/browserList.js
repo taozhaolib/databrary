@@ -144,8 +144,6 @@ module.directive('browserList', [
 				}
 			};
 
-			var measures = undefined;
-
 			$scope.getMeasures = function (data) {
 				if (measures) {
 					return measures;

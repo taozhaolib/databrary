@@ -307,6 +307,7 @@ module.factory('browserService', [
 
 			filterables = browserService.groups[children];
 
+			/*
 			angular.forEach(sortables, function (data) {
 				sortItems(data, children);
 			});
@@ -315,11 +316,12 @@ module.factory('browserService', [
 				// TODO: filter
 				// adjust data.active
 			});
+			*/
 		};
-
+		/*
 		var sortItems = function (data, group) {
-			var option = getOption(data, true),
-				length = option.sort.length;
+			var option = getOption(data, true);
+			var length = option.sort.length;
 
 			for (var i = length - 1; i >= 0; i--) {
 				switch (group) {
@@ -341,29 +343,7 @@ module.factory('browserService', [
 				}
 			}
 		};
-
-		var sortVolumes = function (data, sort) {
-
-		};
-
-		var sortRecords = function (data, sort) {
-
-		};
-
-		var sortSessions = function (data, sort) {
-			switch (sort.name) {
-				default:
-					// if property exists, sort array callback...
-					break;
-			}
-		};
-
-		var sortAssets = function (data, sort) {
-
-		};
-
-		//
-
+		*/
 		var isGroupAllowed = function (group) {
 			return browserService.options[group] && browserService.options[group].allow;
 		};
@@ -589,7 +569,7 @@ module.factory('browserService', [
 				angular.forEach(object.assets, function (asset) {
 					asset.container = object.container;
 					asset.segment = object.segment;
-					var newData = callbackItem(data, volume, undefined, asset, 'asset');
+					callbackItem(data, volume, undefined, asset, 'asset');
 				});
 
 				browserService.loading = false;
@@ -790,7 +770,7 @@ module.factory('browserService', [
 		};
 
 		//
-
+		/*
 		var getOption = function (data, child) {
 			var level = child === true ? data.level + 1 : data.level,
 				group = getActiveGroups()[level];
@@ -809,7 +789,7 @@ module.factory('browserService', [
 					return browserService.options.record.categories.find({id: group});
 			}
 		};
-
+		*/
 		var getOptionByGroup = function (group) {
 			switch (group) {
 				case 'asset':
