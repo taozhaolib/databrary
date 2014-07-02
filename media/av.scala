@@ -23,7 +23,7 @@ object AV {
   }
 
   @native def _probe(file : String) : Probe
-  @native def _frame(infile : String, offset : Double, outfile : String) : Array[Byte]
+  @native def _frame(infile : String, offset : Double, outfile : String, width : Int = -1, height : Int = -1) : Array[Byte]
   def probe(file : File) : Probe = _probe(file.getPath)
   def frame(infile : File, offset : Offset) : Array[Byte] =
     _frame(infile.getPath, offset.seconds, null)
