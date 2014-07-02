@@ -1,7 +1,7 @@
 module.directive('resumable', [
-	'pageService', function (page) {
-		var link = function ($scope, $element, $attrs) {
-			var r = new Resumable();
+	/*'pageService',*/ function (/*page*/) {
+		var link = function (/*$scope, $element, $attrs*/) {
+			//var r = new Resumable();
 
 		};
 
