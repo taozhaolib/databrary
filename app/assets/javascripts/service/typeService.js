@@ -137,7 +137,7 @@ module.factory('typeService', [
 				}
 			}
 			return ans;
-		}					
+		};	
 
 		typeService.assetFormat = function (object, dig) {
 			return constants.data.format[typeService.assetProperty(object, 'format', dig)];
