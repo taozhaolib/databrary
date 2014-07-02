@@ -31,7 +31,7 @@ object Token extends Table[Token]("token") {
 }
 
 private[models] sealed abstract class TokenTable[T <: Token](table : String) extends Table[T](table) {
-  protected def tokenColumns = Columns(
+  protected final def tokenColumns = Columns(
       SelectColumn[Token.Id]("token")
     , SelectColumn[Timestamp]("expires")
     )
