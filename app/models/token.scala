@@ -132,3 +132,38 @@ object SessionToken extends TokenTable[SessionToken]("session") {
         columns.map(_(account, access)))
     }
 }
+
+/** A token issued as a resumable upload identifier.
+  */
+final class UploadToken protected (id : Token.Id, expires : Timestamp, account : Account) extends AccountToken(id, expires, account) {
+  def file = store.Upload.file(this)
+  def remove = UploadToken.delete(id)
+}
+
+object UploadToken extends TokenTable[UploadToken]("upload") {
+  private val columns = tokenColumns
+  protected val row = columns
+    .join(Account.row, "session.account = account.id")
+    .map { case ((token, expires), account) =>
+      new UploadToken(token, expires, account)
+    }
+  protected def rowAccount(account : Account) = columns
+    .map { (token, expires) =>
+      new UploadToken(token, expires, account)
+    }
+
+  def get(token : String, size : Long)(implicit site : AuthSite) : Future[Option[UploadToken]] =
+    rowAccount(site.account)
+    .SELECT("WHERE token = ? AND account = ?")
+    .apply(token, site.account.id).singleOpt
+    .map(_.filter(_.file.length == size))
+
+  /** Issue a new token for a new upload. */
+  def create(size : Long)(implicit site : AuthSite) : Future[UploadToken] =
+    insert(SQLTerms('account -> site.account.id),
+      rowAccount(site.account))
+    .map { u =>
+      store.Upload.writing(u, _.setLength(size))
+      u
+    }
+}

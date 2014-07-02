@@ -207,6 +207,8 @@ DELETE  /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                 
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
 # CREATE
 POST    /api/asset                                                                                controllers.AssetApi.upload(volume : models.Volume.Id)
+POST    /api/asset/start                                                                          controllers.AssetApi.uploadStart(volume : models.Volume.Id, size : Long)
+POST    /api/asset/chunk                                                                          controllers.AssetApi.uploadResumable
 # UPDATE
 POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 POST    /api/asset/$assetId<[0-9]+>/replace                                                       controllers.AssetApi.replace(assetId : models.Asset.Id)

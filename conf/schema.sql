@@ -788,6 +788,13 @@ CREATE TABLE "session" (
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
 
+CREATE TABLE "upload" (
+	"token" char(64) Primary Key,
+	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
+	"account" integer NOT NULL References "account" ON DELETE CASCADE
+) INHERITS ("account_token");
+COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';
+
 ----------------------------------------------------------- avatars
 
 CREATE TABLE "avatar" (

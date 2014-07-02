@@ -45,6 +45,21 @@ object Stage extends StoreDir("store.stage") {
   }
 }
 
+object Upload extends StoreDir("store.upload") {
+  import java.io.RandomAccessFile
+
+  def file(token : UploadToken) : File =
+    new File(baseDir, token.id)
+  def writing(token : UploadToken, op : RandomAccessFile => Unit) {
+    val f = new RandomAccessFile(file(token), "w")
+    try {
+      op(f)
+    } finally {
+      f.close
+    }
+  }
+}
+
 object FileAsset extends StoreDir("store.master") {
   private def relativeFile(asset : models.Asset) : File = {
     val i = asset.sha1

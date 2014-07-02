@@ -233,6 +233,32 @@ object AssetApi extends AssetController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
+  def uploadStart(v : models.Volume.Id, size : Long) =
+    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+      for {
+	u <- UploadToken.create(size)(request.asInstanceOf[AuthSite])
+      } yield (Ok(u.id))
+    }
+
+  class ResumableForm extends StructForm(routes.AssetApi.uploadResumable) {
+    val resumableChunkNumber = Field(Forms.number(1))
+    val resumableChunkSize = Field(Forms.number(1024))
+    val resumableTotalSize = Field(Forms.longNumber(1))
+    val resumableIdentifier = Field(Forms.text)
+    val resumableFilename = Field(Forms.text)
+  }
+
+  def uploadResumable = SiteAction { implicit request =>
+    NotImplemented
+    /*
+    val form = new ResumableForm()._bind
+    UploadToken.get(form.resumableIdentifier.get, form.resumableTotaleSize.get)
+    .map(_.fold(NotFound) { u =>
+      store.Upload.
+    })
+    */
+  }
+
   class TranscodedForm(aid : Asset.Id) extends {
       val auth = play.api.libs.Crypto.sign(aid.toString)
     } with StructForm(routes.AssetApi.transcoded(aid, auth)) {
