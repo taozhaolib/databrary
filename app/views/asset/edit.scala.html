@@ -14,7 +14,7 @@
 		@widget.tag.inputHidden(form.container())
 		@widget.tag.inputHidden(form.position())
 
-		@cast[AssetController.UploadForm](form).map { form =>
+		@cast[AssetController.AssetUploadForm](form).map { form =>
                     @widget.tag.inputFile(form.file())
 
                     @if(request.access.isAdmin) {
