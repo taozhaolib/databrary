@@ -1043,7 +1043,8 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			display.scrollTo($('#' + data.parent.id).find('.browser_controller'));
+			if(data.parent && data.parent.id)
+				display.scrollTo($('#' + data.parent.id).find('.browser_controller'));
 
 			return browserService.player;
 		};
