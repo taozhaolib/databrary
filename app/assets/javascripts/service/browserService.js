@@ -634,22 +634,26 @@ module.factory('browserService', [
 			}
 
 			if (group == 'session') {
-				var newSegment = [undefined, undefined];
+				var newSegment;
+				var categories = volume.sessions[newData.object.id].categories;
 				var cur = newData.parent;
-				while(cur.object)
+				while (cur.object)
 				{
 					var obj = cur.object;
-					var catInstances = volume.sessions[newData.object.id].categories[obj.category];
-					for(var i in catInstances){
-						var c = catInstances[i];
-						if(c.id == obj.id && c.segment){
-							newSegment = typeService.segmentIntersect(newSegment, c.segment);
-						}
-					}
+					var recSegment = null;
+					/* if record coverage is disjoint we pretend it's continuous: */
+					angular.forEach(categories[obj.category], function (c) {
+						if (c.id == obj.id)
+							recSegment = typeService.segmentUnion(recSegment, c.segment);
+					});
+					newSegment = typeService.segmentIntersect(newSegment, recSegment);
 					cur = cur.parent;
 				}
 				newData.segment = newSegment;
-				if (newSegment[0] >= newSegment[1]){return newData;} //in order to not push empty segmented things (contradictory constraints) onto list
+				if (typeService.segmentEmpty(newSegment)) {
+					console.log(newSegment);
+					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
+				}
 			}
 
 			browserService.groups[group].push(newData);
