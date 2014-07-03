@@ -210,7 +210,7 @@ object PartyController extends PartyController {
     def accountForm = None
   }
   final class AccountEditForm(val account : Account)(implicit protected val request : Request[_] with AuthSite) extends EditForm with AccountForm with LoginController.AuthForm {
-    def accountForm = if (_authorized || request.superuser) Some(this)
+    def accountForm = if (_authorized) Some(this)
       else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid)))
 	Some(this.auth.withError("error.required"))
       else None
