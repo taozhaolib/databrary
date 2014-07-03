@@ -128,15 +128,15 @@ module.factory('typeService', [
 
 		typeService.segmentJoin = function(segment)
 		{
-			if (segment === null)
+			if (typeService.segmentEmpty(segment))
 				return '';
 			if (angular.isUndefined(segment))
 				return ',';
 			if (angular.isNumber(segment))
 				return segment;
-			return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? segment[0] : '')
+			return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? Math.floor(segment[0]) : '')
 				+ ',' +
-				(angular.isNumber(segment[1]) && segment[1] < Infinity ? segment[1] : '');
+				(angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
 		};
 
 		typeService.segmentEmpty = function(seg) {
