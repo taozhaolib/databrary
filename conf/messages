@@ -245,6 +245,9 @@ party.edit.name.help=Enter your full name.
 party.edit.affiliation.title=Affiliation
 party.edit.affiliation.help=Specify your institutional affiliation.
 
+party.edit.url.title=Website
+party.edit.url.help=Specify whatever personal web page you''d like (faculty page, ResearchGate, etc.)
+
 party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
 
@@ -286,6 +289,8 @@ wizard.party_edit_apply.instructions=
 wizard.party_edit_grant.name=Affiliates
 wizard.party_edit_grant.description=Authorizations and memberships granted to others
 wizard.party_edit_grant.instructions=
+
+party.view.url=Website
 
 # --- Auth search
 auth.search=Search for a user or institution...
