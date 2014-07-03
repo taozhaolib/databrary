@@ -1,11 +1,11 @@
-<form name="commentReplyForm" class="comment" novalidate novalidate>
+<form name="commentReplyForm" class="comment-reply-form" novalidate novalidate>
 	<div class="row" ng-if="commentReplyForm.getParty()">
 		<div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
-			<footer class="comment-meta" ng-init="party = commentReplyForm.getParty()">
+			<footer class="panel-comments-meta" ng-init="party = commentReplyForm.getParty()">
 				<portrait extra="{{'comments.prompt' | message}}"></portrait>
 			</footer>
 
-			<div class="comment-body comment-form">
+			<div class="panel-comments-body">
 				<messages form="commentReplyForm"></messages>
 
 				<validator form="commentReplyForm" name="text" label="'comments.text.title' | message">

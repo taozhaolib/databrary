@@ -1,4 +1,4 @@
-<form name="authGrantForm" novalidate bindonce>
+<form name="authGrantForm" class="auth-grant-form" novalidate bindonce>
 	<messages form="authGrantForm"></messages>
 
 	<fieldset class="radio-set">
@@ -21,7 +21,7 @@
 
 	<fieldset class="clean">
 		<validator form="authGrantForm" name="expires" label="'auth.expiration' | message">
-			<input type="date" ng-model="authGrantForm.other.expires" name="expires" class="network-auth-expiration-input" ng-blur="authGrantForm.transformExpiration()" date-model date-min="now" date-max="2 years">
+			<input type="date" ng-model="authGrantForm.other.expires" name="expires" class="quarter" ng-blur="authGrantForm.transformExpiration()" date-model date-min="now" date-max="2 years">
 		</validator>
 	</fieldset>
 

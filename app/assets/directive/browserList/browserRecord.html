@@ -8,18 +8,18 @@
 			<header>
 				<browser-icon data="data"></browser-icon>
 
-				<h1 bo-text="nameRecord(data)"></h1></h1>
+				<h1 class="browser-item-title" bo-text="nameRecord(data)"></h1></h1>
 			</header>
 		</div>
 
-		<div class="browser-description-title">
-			<dl class="browser-description-title" ng-repeat="(metric, value) in getMeasures(data)">
+		<div class="browser-item-description">
+			<dl class="browser-item-description-title" ng-repeat="(metric, value) in getMeasures(data)">
 				<dt bo-text="capitalize(metric)"></dt>
 				<dd bo-text="value"></dd>
 			</dl>
 
-			<div class="browser-description-title" bo-if="data.object.measures.description">
-				<div class="browser-description-title">Description:</div>
+			<div class="browser-item-description" bo-if="data.object.measures.description">
+				<div class="browser-item-description-title">Description:</div>
 				<div bo-text="data.object.measures.description"></div>
 			</div>
 		</div>

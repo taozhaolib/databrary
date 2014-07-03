@@ -1,7 +1,13 @@
 module.directive('panel', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs, ctrl, transclude) {
-			$scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
+			if (angular.isDefined($attrs.id)) {
+				$scope.id = $attrs.id;
+				$element.addClass($attrs.id);
+			} else {
+				$scope.id = '';
+			}
+
 			$scope.title = $attrs.panelTitle || '';
 			$scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
 			$scope.enabled = true;

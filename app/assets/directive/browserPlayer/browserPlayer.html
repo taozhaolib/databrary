@@ -1,5 +1,5 @@
-<section class="excerpts-player-frame">
-	<section ng-if="page.browser.player.played" class="excerpts-player-frame">
+<section class="browser-player">
+	<section ng-if="page.browser.player.played" class="browser-player-frame">
 		<div ng-repeat="played in [page.browser.player.played]" bindonce>
 			<header>
 				<a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
@@ -7,7 +7,7 @@
 
 				<div class="classification icon line tool" bo-class="page.constants.data.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[played.object.asset.classification]}}"></div>
 
-				<h1>
+				<h1 class="browser-player-heading">
 					<span bo-html="page.types.assetDisplayName(played.object) | format:true"></span>
 				</h1>
 			</header>

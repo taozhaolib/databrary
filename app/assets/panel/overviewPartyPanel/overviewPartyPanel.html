@@ -1,4 +1,4 @@
-<panel ng-controller="OverviewPartyPanel" top id="panel-overview" panel-title="{{'party.overview.title' | message}}" bindonce>
+<panel ng-controller="OverviewPartyPanel" top id="panel-overview-party" panel-title="{{'party.overview.title' | message}}" bindonce>
 	<div class="row">
 		<div class="col-desktop-12 col-laptop-9 col-tablet-6 col-mobile-6 col-cell">
 			<hgroup>
@@ -7,7 +7,7 @@
 
 			<div>
 				<div frame id="frame-contact" frame-title="{{'party.contact.title' | message}}" fold ng-if="party.email || party.orcid">
-					<div class="metadata">
+					<div>
 						<dl class="flat">
 							<dt bo-if="party.affiliation" bo-html="'affiliation' | message"/>
 							<dd bo-if="party.affiliation" bo-text="party.affiliation"></dd>
@@ -24,9 +24,7 @@
 		</div>
 
 		<div class="col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6 col-cell">
-			<div class="panel-overview-thumbnail-wrap">
-				<img class="panel-overview-thumbnail" ng-src="{{page.router.partyAvatar(party, 500)}}">
-			</div>
+			<img class="panel-overview-party-thumb" ng-src="{{page.router.partyAvatar(party, 500)}}">
 		</div>
 	</div>
 </panel>

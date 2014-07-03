@@ -2,11 +2,11 @@
 	<div class="browser-item-content">
 		<div class="cf">
 			<footer>
-                <span bo-if="data.object.consent">
-                    <div class="item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
+				<span bo-if="data.object.consent">
+						<div class="browser-item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
 
-                    <div class="item-meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|</div>
-                </span>
+						<div class="browser-item-meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|</div>
+				</span>
 
 				<a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
 			</footer>
@@ -14,19 +14,18 @@
 			<header>
 				<browser-icon data="data"></browser-icon>
 
-				<h1 bo-if="!data.object.top">
+				<h1 class="browser-item-title" bo-if="!data.object.top">
 					Session<span bo-if="data.object.name">: <span bo-text="data.object.name"></span></span>
-
 					<session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
 					<session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
 				</h1>
 
-				<h1 bo-if="data.object.top">Materials</h1>
+				<h1 class="browser-item-title"1 bo-if="data.object.top">Materials</h1>
 			</header>
 		</div>
 
-		<div class="item-main">
-			<dl class="flat-list cf" bindonce ng-repeat="cat in getSessionRecords(data)">
+		<div class="browser-item-main">
+			<dl class="comma cf" bindonce ng-repeat="cat in getSessionRecords(data)">
 				<dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
 				<dd ng-repeat="record in cat.records" ng-if="record.id != 0">
@@ -34,7 +33,7 @@
 				</dd>
 			</dl>
 
-			<dl class="flat-list cf" bo-if="data.object.date">
+			<dl class="comma cf" bo-if="data.object.date">
 				<dt>Date</dt>
 				<dd bo-text="data.object.date"></dd>
 			</dl>

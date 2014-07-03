@@ -1,21 +1,21 @@
 <panel ng-controller="CommentsPanel" id="panel-comments" panel-title="{{'comments.title' | message}}" fold>
 	<comment-reply-form ng-if="getReply(undefined)"></comment-reply-form>
 
-	<article bindonce ng-repeat="comment in comments" class="comment" ng-class="getCommentClasses(comment)">
+	<article bindonce ng-repeat="comment in comments" class="panel-comments-comment" ng-class="getCommentClasses(comment)">
 		<div class="row">
 			<div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
-				<footer class="comment-meta" ng-init="party = commentParty(comment)">
+				<footer class="panel-comments-meta" ng-init="party = commentParty(comment)">
 					<portrait extra="{{commentMeta(comment)}}"></portrait>
 				</footer>
 
-				<div class="comment-body" bo-html="comment.text | format"></div>
+				<div class="panel-comments-body" bo-html="comment.text | format"></div>
 
-				<div class="comment-body" ng-if="!comment.stop && !getReply(comment)">
+				<div class="panel-comments-body" ng-if="!comment.stop && !getReply(comment)">
 					<button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
 				</div>
 			</div>
 		</div>
 
-		<comment-reply-form ng-if="getReply(comment)"></comment-reply-form>
+		<comment-reply-form ng-if="getReply(comment)" class="depth-1"></comment-reply-form>
 	</article>
 </panel>
