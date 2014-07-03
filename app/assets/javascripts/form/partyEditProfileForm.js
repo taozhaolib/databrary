@@ -22,6 +22,7 @@ module.directive('partyEditProfileForm', [
 					duns: party.duns,
 					affiliation: party.affiliation,
 					avatar: party.avatar,
+					url: party.url
 				};
 
 				backup = $.extend(true, {}, form.data);
