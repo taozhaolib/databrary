@@ -28,7 +28,7 @@ object AV {
   def frame(infile : File, offset : Offset) : Array[Byte] =
     _frame(infile.getPath, offset.seconds, null, 480, 480)
   def frame(infile : File, offset : Offset, outfile : File) : Unit =
-    _frame(infile.getPath, offset.seconds, outfile.getPath)
+    _frame(infile.getPath, offset.seconds, outfile.getPath, 480, 480)
   def segment(infile : File, section : Section, outfile : File) : Unit = {
     /* XXX this rounds outwards to keyframes and does other strange things with timing */
     val r = new ProcessBuilder("ffmpeg", "-y", "-loglevel", "error", "-threads", "1", "-accurate_seek", 
