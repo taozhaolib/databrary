@@ -1,0 +1,541 @@
+// STYLES
+
+.panel-browser
+
+
+//
+
+.browser-widget-title,
+.browser-widget-wrap,
+.browser-widget-pill
+	position relative
+	display block
+	float left
+
+
+.browser-widget-title
+	text-transform uppercase
+	font-weight bold
+	color dark
+	margin-height(f4)
+	margin-width(f4)
+
+
+.browser-widget-wrap
+	margin-right(f4)
+	text-transform capitalize
+
+	&:after
+		content ""
+		border b4 solid transparent
+		border-left-color dark
+		size(0)
+		float left
+		display block
+		margin-top(f2)
+		margin-left(f2)
+
+
+	&.last
+		&:after
+			display none
+
+
+
+	&.off
+		.browser-widget-pill
+			background-color pale
+
+			&:hover
+				background-color blue41
+
+
+
+
+
+.browser-widget-pill
+	transition(transition)
+	cursor pointer
+	position relative
+	border 1px solid gray
+	border-radius(b1)
+	padding-width(f2)
+	border-margin-height(1px, f4)
+	background-color blue51
+
+	&.left
+		border-radius(b1 0 0 b1)
+		padding-right(f4)
+
+		&:after
+			content ""
+			border b6 solid transparent
+			border-top-color dark
+			size(0)
+			display inline-block
+			position relative
+			top 0
+			margin-left(f6)
+
+
+
+	&.middle
+		border-radius(0)
+		border-left-width 0
+
+
+	&.right
+		border-radius(0 b1 b1 0)
+		border-left-width 0
+		padding-left(f4)
+
+
+	&.add
+		background-color yellow52
+
+
+	&.expanded
+		background-color mix(blue, white, 10%)
+
+		&:hover
+			background-color mix(blue, white, 10%)
+
+
+
+	&:hover
+		color inherit
+		background-color blue41
+
+
+
+//
+
+.browser-tool
+	height 24px
+	display inline-block
+	border-radius(border-radius)
+	background-color white
+	padding-left(f1)
+
+	&:hover
+		background-color pale
+
+
+	&.filter
+		background url('/public/images/browser/tool-filter.png') no-repeat 4px 4px
+
+
+	&.player
+		background url('/public/images/browser/tool-player.png') no-repeat 4px 4px
+
+
+	&.edit
+		background url('/public/images/browser/tool-edit.png') no-repeat 4px 4px
+
+
+
+.browser-item-content
+	.browser-tool
+		position relative
+		top b4
+
+
+
+//
+
+.browser-filters
+	border-top 1px solid fade(black, 25%)
+
+
+//
+
+.browser-player
+	.excerpts-player-frame
+		background-color white
+		padding(0)
+
+		h1
+			margin-left(0)
+			padding-left(0)
+
+
+
+
+//
+
+.record-pill-remove
+	&:hover
+		background-color red41
+
+
+
+.record-pill-options
+	display none
+	position absolute
+	left b2
+	top b1 + b4
+	margin(0)
+	padding(0)
+	border-radius(0 b4 b4 b4)
+	background-color white
+	box-shadow(box-shadow)
+	overflow hidden
+	min-width b1 * 6
+	z-index 100
+
+	li
+		&:before
+			display none
+
+
+
+	a
+		display block
+		padding-width(f4)
+
+		&:hover
+			color inherit
+			background-color mix(blue, white, 10%)
+
+
+
+
+.expanded .record-pill-options
+	display block
+
+
+//
+
+.browser-item
+	border-radius(b4 0 0 0)
+
+	header
+		display inline
+
+
+	h1
+		font-size(1.5)
+		line-height(1.5)
+		margin-left(f1 + f4)
+
+		a
+			color black
+
+			&:hover
+				text-decoration underline
+
+
+
+		div
+			display inline
+
+
+
+	footer
+		display inline-block
+		line-height(1.5)
+		margin-left(f2)
+		float right
+
+		a
+			color black
+
+			&:hover
+				text-decoration underline
+
+
+
+
+	.browser-icon
+		width b1 * 1.25
+		height b1 * 1.5
+		float left
+
+		&.enabled
+			&:hover
+				background url('/public/images/browser/tool-folder-closed.png') no-repeat 4px 10px
+
+
+			&.active
+				&:hover
+					background-image url('/public/images/browser/tool-folder-open.png')
+
+
+
+
+
+	.item-meta
+		display inline-block
+
+
+	.item-main
+		margin-left(1.25)
+
+
+	.item-body
+		p:last-of-type
+			margin-bottom(0)
+
+
+
+	.flat-list
+		margin-bottom(0)
+
+		div
+			display inline
+
+
+		dt
+			display inline
+
+			&:after
+				content ":"
+
+
+			&.solo
+				&:after
+					content none
+
+
+
+			& + dd
+				&:before
+					content none
+
+
+
+
+		dd
+			margin-left(0)
+			display inline
+
+			&:before
+				content ', '
+
+
+
+
+
+.browser-item-content
+	padding(0, f4)
+
+
+//
+
+.browser-study
+	background-color yellow51
+
+	.browser-icon
+		background url('/public/images/browser/icon-study.png') no-repeat 0 6px
+
+
+
+.browser-dataset
+	background-color blue51
+
+	.browser-icon
+		background url('/public/images/browser/icon-dataset.png') no-repeat 0 6px
+
+
+
+//
+
+.browser-record
+	color = orange
+
+	.browser-icon
+		background url('/public/images/browser/icon-record.png') no-repeat 0 6px
+
+
+	background-color mix(color, white, 15%)
+
+	.browser-record
+		background-color mix(color, white, 30%)
+
+		.browser-record
+			background-color mix(color, white, 45%)
+
+			.browser-record
+				background-color mix(color, white, 15%)
+
+				.browser-record
+					background-color mix(color, white, 30%)
+
+					.browser-record
+						background-color mix(color, white, 45%)
+
+
+
+
+
+
+	h1
+		font-size(1.5)
+		line-height(1.5)
+
+
+	&.null
+		background-color pale !important
+
+
+
+//
+
+.browser-session
+	background-color green51
+
+	.browser-icon
+		background url('/public/images/browser/icon-session.png') no-repeat 0 6px
+
+
+	&.materials
+		background-color green52 !important
+
+
+
+//
+
+.browser-asset
+	background-color red51
+	cursor pointer
+
+	h1
+		padding-left(f8)
+		background transparent
+		margin-left(0)
+
+
+	.browser-item-content
+		margin-bottom(0)
+
+
+
+//
+
+.browser-controller
+	background-color white
+	border-radius(b4 0 0 b4)
+
+	.browser-tool
+		opacity .1
+		transition()
+
+
+	&:hover
+		.browser-tool
+			opacity 1
+
+
+
+
+.browser-list
+	background-color white
+	padding-left(0)
+	border-radius(b4 0 0 0)
+	margin-bottom(2)
+
+	.browser-list
+		margin-left(1.5)
+		padding-left(f8)
+		margin-bottom(0)
+
+
+	ul
+		padding-left(0)
+		padding-top(f8)
+
+
+	li
+		padding-bottom(f8)
+
+		&:last-child
+			padding-bottom(0)
+
+
+		&:before
+			display none
+
+
+		&.deepest
+			.browser-item
+				border-radius(b4 0 0 b4)
+
+
+			.browser-controller
+				border-radius(b4 0 0 0)
+
+
+
+
+
+//
+
+.browser-description
+	margin-top(f2)
+
+
+.browser-description-title
+	font-weight bold
+
+
+//
+
+.session-mark
+	font-size(1)
+	font-line(.75)
+	padding-width(f4)
+	padding-height(f12)
+	border 1px solid pale
+	background white
+	border-radius(b1)
+	position relative
+	top -b6
+	text-transform uppercase
+	cursor pointer
+
+
+.session-mark-pilot
+	color red32
+	background red51
+	border-color red32
+
+
+.session-mark-excluded
+	color purple32
+	background purple51
+	border-color purple32
+
+
+.display-age
+	transition()
+	background-color fadeout(white, 100%)
+	cursor pointer
+
+	&:hover
+		background-color white
+
+
+	&:before
+		content '('
+
+
+	&:after
+		content ')'
+
+
+
+.browser-bonus
+	text-align center
+	font-line(1.5)
+
+	a
+		color gray
+
+		&:hover
+			color pale
+
+
+
+
+//
+

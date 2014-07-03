@@ -8,14 +8,15 @@
     case editForm : PartyController.EditForm => Some(editForm.party)
     case _ => None
   }) { party =>
-@template.form(party, form.formName, angular = Some(RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.json.js).getOrElse(play.api.libs.json.JsNull))) {
+@template.form(party, form.formName, angular = RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.json.js)) {
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
-                @widget.tag.inputText(form.affiliation(), ('placeholder,"Affiliation"))
+                @widget.tag.inputText(form.affiliation(), ('placeholder, "Affiliation"))
 		@if(request.access.member == Permission.ADMIN) {
                     @widget.tag.inputText(form.duns(), ('placeholder, "DUNS"))
 		}
+                @widget.tag.inputText(form.url(), ('placeholder, "URL"))
 
 		@cast[PartyController.AccountEditForm](form).map { form =>
                     @widget.tag.inputPassword(form.auth(), ('placeholder, "Current Password"))

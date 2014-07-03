@@ -116,8 +116,7 @@ module.directive('volumeEditMaterialsForm', [
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
 								}
-							})
-							['finally'](function () {
+							}).finally(function () {
 							subform.messages.remove(msg);
 							form.clean(subform);
 							page.display.scrollTo(subform.$element);

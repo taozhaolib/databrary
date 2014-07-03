@@ -1,0 +1,138 @@
+// styles
+
+.home-feature
+	margin-bottom 3
+
+.home-feature-inner
+	position relative
+
+.home-feature-thumb
+	width 100%
+	cursor pointer
+	box-shadow box-shadow
+
+.home-feature-info
+	position absolute
+	bottom b1
+	right b1 * -13.25
+	width 15
+	background white
+	box-shadow box-shadow
+	padding f6 f3
+
+	h1
+		font-line 1
+
+		a
+			link-color black
+
+.home-feature-message
+	font-weight bold
+	text-transform uppercase
+	color gray
+	letter-spacing f2
+	font-line f90 1
+	display inline-block
+
+.home-feature-investigators
+	font-size f90
+
+	ul
+		margin-top 0
+		display inline-block
+
+		li
+			display inline-block
+			margin-right f6
+
+			&:after
+				content ', '
+
+			&:last-child
+				&:after
+					content none
+
+.home-parties
+	margin-bottom 3
+
+.home-parties-header
+	font-weight normal
+	letter-spacing 2px
+	text-transform uppercase
+	font-line 2 3
+	margin 0 2 f1 0
+	padding-right f1
+	display inline-block
+	background-color orange52
+	position relative
+	text-shadow -1px 0 2px orange51
+
+	span:first-child
+		background-color orange52
+		position absolute
+		width 1000px
+		left -1000px
+		top 0
+		bottom 0
+		z-index -100
+
+.home-party
+	margin-bottom f1
+	transition transition
+
+	&:hover
+		box-shadow box-shadow
+
+	img
+		display block
+		cursor pointer
+		width 100%
+		max-width none
+
+	.info
+		padding f6 f3
+		text-align center
+
+		a
+			color black
+
+			&:hover
+				color gray
+
+	h1
+		font-line 1
+
+	.affiliation
+		color gray
+
+// media
+
+@media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
+	.home-feature-info
+		width auto
+		top auto
+		bottom b1 * -2
+		right b1
+		left b1
+
+		h1
+			font-line f34
+
+	.home-parties-header
+		font-line 1.25 2
+		letter-spacing 1px
+
+@media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
+	.home-feature-info
+		width 10
+		top 0
+		bottom b4
+		right b1 * -10
+
+	.home-parties-header
+		font-line 2 3
+
+@media screen and (min-width: grid-laptop-width) and (max-width: (grid-desktop-width - 1))
+	.home-feature-info
+		width 13.25
+		right b1 * -9.75

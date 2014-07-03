@@ -307,6 +307,7 @@ module.factory('browserService', [
 
 			filterables = browserService.groups[children];
 
+			/*
 			angular.forEach(sortables, function (data) {
 				sortItems(data, children);
 			});
@@ -315,11 +316,12 @@ module.factory('browserService', [
 				// TODO: filter
 				// adjust data.active
 			});
+			*/
 		};
-
+		/*
 		var sortItems = function (data, group) {
-			var option = getOption(data, true),
-				length = option.sort.length;
+			var option = getOption(data, true);
+			var length = option.sort.length;
 
 			for (var i = length - 1; i >= 0; i--) {
 				switch (group) {
@@ -341,29 +343,7 @@ module.factory('browserService', [
 				}
 			}
 		};
-
-		var sortVolumes = function (data, sort) {
-
-		};
-
-		var sortRecords = function (data, sort) {
-
-		};
-
-		var sortSessions = function (data, sort) {
-			switch (sort.name) {
-				default:
-					// if property exists, sort array callback...
-					break;
-			}
-		};
-
-		var sortAssets = function (data, sort) {
-
-		};
-
-		//
-
+		*/
 		var isGroupAllowed = function (group) {
 			return browserService.options[group] && browserService.options[group].allow;
 		};
@@ -580,16 +560,15 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-
 			Slot.get({
 				id: data.object.id,
-				segment: data.object.segment || ',',
+				segment: typeService.segmentJoin(data.segment),
 				assets: ''
 			}, function (object) {
 				angular.forEach(object.assets, function (asset) {
 					asset.container = object.container;
 					asset.segment = object.segment;
-					var newData = callbackItem(data, volume, undefined, asset, 'asset');
+					callbackItem(data, volume, undefined, asset, 'asset');
 				});
 
 				browserService.loading = false;
@@ -632,6 +611,29 @@ module.factory('browserService', [
 			if (group == 'asset') {
 				data.player = false;
 				data.played = undefined;
+			}
+
+			if (group == 'session') {
+				var newSegment;
+				var categories = volume.sessions[newData.object.id].categories;
+				var cur = newData.parent;
+				while (cur.object)
+				{
+					var obj = cur.object;
+					var recSegment = null;
+					/* if record coverage is disjoint we pretend it's continuous: */
+					angular.forEach(categories[obj.category], function (c) {
+						if (c.id == obj.id)
+							recSegment = typeService.segmentUnion(recSegment, c.segment);
+					});
+					newSegment = typeService.segmentIntersect(newSegment, recSegment);
+					cur = cur.parent;
+				}
+				newData.segment = newSegment;
+				if (typeService.segmentEmpty(newSegment)) {
+					console.log(newSegment);
+					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
+				}
 			}
 
 			browserService.groups[group].push(newData);
@@ -790,7 +792,7 @@ module.factory('browserService', [
 		};
 
 		//
-
+		/*
 		var getOption = function (data, child) {
 			var level = child === true ? data.level + 1 : data.level,
 				group = getActiveGroups()[level];
@@ -809,7 +811,7 @@ module.factory('browserService', [
 					return browserService.options.record.categories.find({id: group});
 			}
 		};
-
+		*/
 		var getOptionByGroup = function (group) {
 			switch (group) {
 				case 'asset':

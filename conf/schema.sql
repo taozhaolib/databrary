@@ -460,7 +460,7 @@ END; $$;
 
 
 CREATE TABLE "excerpt" (
-	"asset" integer NOT NULL References "slot_asset" ON DELETE CASCADE,
+	"asset" integer NOT NULL References "slot_asset" ON UPDATE CASCADE ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
 	"classification" classification NOT NULL Default 'PRIVATE',
 	Primary Key ("asset", "segment"),

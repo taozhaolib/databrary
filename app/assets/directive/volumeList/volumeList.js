@@ -13,10 +13,10 @@ module.directive('volumeList', [
 			$scope.volumeClasses = function (volume) {
 				var cls = [];
 
-				if (Object.keys(volume.providers).length === 0) {
-					cls.push('dataset');
-				} else {
+				if (volume.citation) {
 					cls.push('study');
+				} else {
+					cls.push('dataset');
 				}
 
 				return cls;
@@ -25,10 +25,10 @@ module.directive('volumeList', [
 			$scope.iconClass = function (volume) {
 				var cls = [];
 
-				if (Object.keys(volume.providers).length === 0) {
-					cls.push('dataset');
-				} else {
+				if (volume.citation) {
 					cls.push('study');
+				} else {
+					cls.push('dataset');
 				}
 
 				return cls;
@@ -37,34 +37,6 @@ module.directive('volumeList', [
 			$scope.name = function (volume) {
 				return volume.alias && page.$location.path() === '/profile' ? volume.alias : volume.name;
 			};
-
-			//
-
-			var tips = {};
-
-			var bindTooltips = function () {
-				var newtips = {
-					'.search-results .icon.dataset': page.constants.message('object.tip.dataset'),
-					'.search-results .icon.study': page.constants.message('object.tip.study'),
-				};
-
-				angular.forEach(newtips, function (message, target) {
-					tips[target] = page.tooltips.add({
-						live: true,
-						$target: target,
-						message: message
-					});
-				});
-			};
-
-			bindTooltips();
-
-			$scope.$on('$destroy', function () {
-				angular.forEach(tips, function (tip) {
-					page.tooltips.remove(tip);
-				})
-			});
-
 		};
 
 		return {

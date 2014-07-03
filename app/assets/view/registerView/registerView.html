@@ -1,10 +1,9 @@
-<article class="article article-crud article-action article-login">
+<article class="view register-view">
 	<div class="wrap">
 		<div class="row">
 			<hgroup class="col">
-				<h1 class="panel-context">{{'register.title' | message}}</h1>
-
-				<h2 class="panel-title with-context">{{'register.title.sub' | message }}</h2>
+				<h1 class="view-context">{{'register.title' | message}}</h1>
+				<h2 class="view-title">{{'register.title.sub' | message }}</h2>
 			</hgroup>
 
 			<div class="col">
@@ -70,7 +69,7 @@
 							<auth-apply-form></auth-apply-form>
 						</div>
 
-						<div ng-show="ifInfo() && authSearchForm.principal === 'principal'">
+						<div ng-show="ifInfo()">
 							<div ng-bind-html="'auth.info.prompt' | message"></div>
 
 							<form name="infoForm" novalidate>
@@ -85,10 +84,6 @@
 								</button>
 								<button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
 							</form>
-						</div>
-
-						<div ng-show="ifInfo() && authSearchForm.principal === 'affiliate'">
-							<div ng-bind-html="'auth.request.notfound.affiliate.instructions' | message | format"></div>
 						</div>
 					</wizard-step>
 

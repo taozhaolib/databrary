@@ -116,15 +116,11 @@ module.controller('TagsPanel', [
 						createMessage(page.constants.message('tags.vote.up.success', tag.id));
 						break;
 				}
-
-				hideTooltips();
 			}, function (res) {
 				$scope.messages.addError({
 					body: page.constants.message('tags.vote.error', tag.id),
 					report: res,
 				});
-
-				hideTooltips();
 			});
 		};
 
@@ -150,7 +146,6 @@ module.controller('TagsPanel', [
 				emptyAuto();
 
 				$scope.retrieveTags();
-				hideTooltips();
 			}, function (res) {
 				$scope.messages.addError({
 					body: page.constants.message('tags.new.error', data.id),
@@ -158,7 +153,6 @@ module.controller('TagsPanel', [
 				});
 
 				emptyAuto();
-				hideTooltips();
 			});
 		};
 
@@ -299,41 +293,5 @@ module.controller('TagsPanel', [
 				$scope.messages.disable($scope.tagNewFormMessage);
 			}
 		};
-
-		//
-
-		var tips = [];
-
-		var bindTooltips = function () {
-			var unsetTips = {
-				'.panel-tags-list .vote.available.up': page.constants.message('tags.vote.up'),
-				'.panel-tags-list .vote.available.null': page.constants.message('tags.vote.null'),
-				'.panel-tags-list .vote.available.down': page.constants.message('tags.vote.down')
-			};
-
-			angular.forEach(unsetTips, function (message, target) {
-				tips.push(page.tooltips.add({
-					live: true,
-					$target: target,
-					message: message
-				}));
-			});
-		};
-
-		bindTooltips();
-
-		var hideTooltips = function () {
-			angular.forEach(tips, function (tip) {
-				page.tooltips.hide(tip);
-			});
-		};
-
-		$scope.$on('$destroy', function () {
-			angular.forEach(tips, function (tip) {
-				page.tooltips.remove(tip);
-			});
-
-			tips = [];
-		});
 	}
 ]);

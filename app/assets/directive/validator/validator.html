@@ -2,7 +2,7 @@
 	<label bo-if="validator.label" bo-html="validator.label"></label>
 
 	<div class="validator-input">
-		<div class="field">
+		<div class="validator-field">
 			<aside class="validator-messages">
 				<div class="validator-message" ng-show="validator.show()">
 					<div ng-if="validator.showServerErrors()">
@@ -22,9 +22,9 @@
 			<div ng-transclude></div>
 		</div>
 
-		<div class="indicator" ng-class="validator.iconClasses()">
-			<img class="invalid" src="/public/images/icon/invalid.png">
-			<img class="valid" src="/public/images/icon/valid.png">
+		<div class="validator-indicator" ng-class="validator.iconClasses()">
+			<img class="validator-invalid" src="/public/images/icon/invalid.png">
+			<img class="validator-valid" src="/public/images/icon/valid.png">
 		</div>
 	</div>
 </div>

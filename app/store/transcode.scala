@@ -90,8 +90,13 @@ object Transcode {
 	val tp = media.AV.probe(t.file)
 	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
 	  scala.sys.error("check failed: " + sp.duration + "," + tp.duration)
-	models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
-	  .flatMap(_.supersede(asset))
+	for {
+	  a <- models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
+	  _ <- a.supersede(asset)
+	  /* fixup slot_asset duration to reflect transcoding slop */
+	  _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ? AND duration(segment) = ? AND lower_inc(segment)")
+	    .apply(tp.duration, a.id, sp.duration).execute
+	} yield (())
       }, false))
       .recoverWith { case e : Throwable =>
 	logger.error("collecting " + aid, e)

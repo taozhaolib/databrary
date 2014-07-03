@@ -1,0 +1,146 @@
+// styles
+
+.panel-tags-list
+	form
+		display inline
+
+.panel-tags-items
+	padding 0
+	display inline
+
+.panel-tags-item
+	font-line 1 1.25
+	height b1 + b4
+	display inline-block
+	margin-right f2
+	border-radius b1
+	border 1px solid pale
+	padding-width f3
+	margin-bottom f2
+
+	&:before
+		display none
+
+	.panel-tag-weight
+	.panel-tag-controls
+	.panel-tag-name
+		position relative
+
+	.panel-tag-weight
+		font-weight bold
+		display inline-block
+		background green51
+		border-radius b3
+		margin-right f4
+		top -b12
+		min-width b1
+		font-line f34 f23
+		text-align center
+
+	.panel-tag-controls
+		display inline-block
+		margin-left f4
+
+	.panel-tag-name
+		display inline-block
+		height b1
+		top -b12
+
+	.panel-tag-vote
+		arrow = b4
+		able = orange
+		hover = orange42
+		active = orange52
+		disabled = green
+		position relative
+		margin 0
+		padding 0
+		background transparent
+		line-height b2
+		hide-text()
+
+		&.null
+			top -7px
+			size b3
+			border 2px solid able
+			border-radius b1
+
+			&:hover
+				border-color hover
+
+			&:active
+				border-color active
+
+			&[disabled]
+				border-color disabled
+
+		&.up
+		&.down
+			border-color transparent
+			border-width arrow
+			border-style solid
+			border-radius b4
+
+		&.up
+			top -10px
+			border-bottom arrow solid able
+
+			&:hover
+				border-bottom arrow solid hover
+
+			&:active
+				border-bottom arrow solid active
+
+			&[disabled]
+				border-bottom arrow solid disabled
+
+		&.down
+			top -4px
+			border-top arrow solid able
+
+			&:hover
+				border-top arrow solid hover
+
+			&:active
+				border-top arrow solid active
+
+			&[disabled]
+				border-top arrow solid disabled
+
+		&[disabled]
+			&:hover
+				background-image none
+
+		&:focus
+			outline 0
+
+.panel-tags-form
+	max-width 10
+
+.panel-tags-new-form
+	position relative
+
+	input
+		z-index 100
+		position relative
+
+.panel-tags-auto-list
+	margin 0
+	padding 0
+	position absolute
+	top b1 + b2 - 3px
+	left 0
+	right 0
+	background-color white
+	border 1px solid pale
+	border-radius 0 0 b8 b8
+	z-index 90
+
+	li
+		padding-width f4
+
+		&.active
+			background-color mix(yellow51, white, 50%)
+
+		&:before
+			display none

@@ -4,9 +4,6 @@ module.directive('portrait', [
 			return function ($scope, $element, $attrs) {
 				$element.find('.portrait').addClass($element.attr('class'));
 				$element.attr('class', '');
-				$scope.avatar = $attrs.avatar !== false;
-				$scope.info = $attrs.info !== false;
-				$scope.caption = $attrs.caption;
 			};
 		};
 

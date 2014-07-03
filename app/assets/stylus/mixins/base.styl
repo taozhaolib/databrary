@@ -38,28 +38,22 @@ text-indent(span)
 
 font-line(font, line = font)
 	font-size font
-
-	if line < (2/3)
-		line-height f2
-	else if line < 1
-		line-height 1
-	else
-		line-height line
-
+	line-height line
 
 // position
+// TODO: fix, currently breaks gradient (top(top)...)
 
-top(top)
-	top base-calc(top)
+/*top(top)*/
+	/*top base-calc(top)*/
 
-right(right)
-	right base-calc(right)
+/*right(right)*/
+	/*right base-calc(right)*/
 
-bottom(bottom)
-	bottom base-calc(bottom)
+/*bottom(bottom)*/
+	/*bottom base-calc(bottom)*/
 
-left(left)
-	left base-calc(left)
+/*left(left)*/
+	/*left base-calc(left)*/
 
 // size
 

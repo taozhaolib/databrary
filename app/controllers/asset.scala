@@ -215,6 +215,11 @@ object AssetHtml extends AssetController with HtmlController {
       new ChangeForm().Ok
     }
 
+  def replaceView(o : models.Asset.Id) =
+    Action(o, Permission.EDIT).async { implicit request =>
+      new ReplaceForm().Ok
+    }
+
   def create(v : models.Volume.Id, c : Option[Container.Id], pos : Option[Offset]) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new UploadForm()

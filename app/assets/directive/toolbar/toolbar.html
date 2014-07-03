@@ -2,7 +2,7 @@
 	<div class="wrap">
 		<div class="row">
 			<div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-				<h1 class="toolbar-h1">
+				<h1 class="toolbar-site">
 					<a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
 				</h1>
 
@@ -25,10 +25,10 @@
 				</span>
 
 				<span ng-if="page.auth.hasAuth('NONE')">
-					<a href="" class="toolbar-user-link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
+					<a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
 						<span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
 						<span class="username show-mobile" bo-text="'me' | message"></span>
-						<img bo-src="page.auth.user.avatar" class="avatar"> </a>
+						<img bo-src="page.auth.user.avatar" class="toolbar-avatar"> </a>
 				</span>
 
 				<span class="sep">|</span>
@@ -38,7 +38,7 @@
 
 			<section class="toolbar-hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
 				<div class="row">
-					<div class="user-links col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+					<div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
 						<ul class="flat">
 							<li><strong bo-text="page.auth.user.name"></strong></li>
 							<li>
@@ -49,22 +49,22 @@
 							</li>
 							<li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
-							<li ng-if="page.auth.hasAuth('ADMIN')" class="password-form">
+							<li ng-if="page.auth.hasAuth('ADMIN')" class="toolbar-password-form">
 								<form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" messages="default" novalidate>
 									<input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
-									<button type="submit" class="link superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
+									<button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
 										activate SU
 									</button>
 								</form>
 
-								<a ng-if="page.auth.hasAuth('SUPER')" class="superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate
+								<a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
 									SU</a>
 							</li>
 						</ul>
 					</div>
 
 					<div class="user-icon col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-						<img bo-src="page.auth.user.avatar" class="avatar">
+						<img bo-src="page.auth.user.avatar" class="toolbar-hover-avatar">
 					</div>
 				</div>
 			</section>
