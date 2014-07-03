@@ -9,7 +9,7 @@
               <div class="classification icon line tool" bo-class="page.constants.data.classification[current.excerpt || current.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[current.excerpt || current.asset.classification]}}"></div>
 
               <h1>
-                <img class="icon" bo-src="page.types.assetIcon(current)">
+                <img class="icon" bo-src="page.types.assetIcon(current)" hint="format-{{page.types.assetFormat(current).extension}}">
                 <span bo-html="page.types.assetDisplayName(current) | format:true"></span>
               </h1>
             </header>

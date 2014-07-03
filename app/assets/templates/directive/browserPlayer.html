@@ -7,6 +7,7 @@
         <div class="classification icon line tool" bo-class="page.constants.data.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[played.object.asset.classification]}}"></div>
 
         <h1>
+					<img class="icon" bo-src="page.types.assetIcon(played.object)" hint="format-{{page.types.assetFormat(played.object).extension}}">
           <span bo-html="page.types.assetDisplayName(played.object) | format:true"></span>
         </h1>
       </header>

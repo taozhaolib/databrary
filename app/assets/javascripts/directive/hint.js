@@ -30,6 +30,13 @@ module.directive('hint', [
 			};
 		});
 
+		angular.forEach(page.constants.data.format, function (a) {
+			hints['format-' + a.extension.toLowerCase()] = {
+				class: 'format-' + a.extension.toLowerCase(),
+				message: a.name,
+			};
+		});
+
 		angular.forEach(['dataset', 'study', 'record', 'session', 'asset'], function (a) {
 			hints['object-' + a] = {
 				class: 'hint-object-' + a,

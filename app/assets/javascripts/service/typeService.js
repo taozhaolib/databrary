@@ -172,7 +172,7 @@ module.factory('typeService', [
 		};
 
 		typeService.assetIcon = function (object, dig) {
-			return '/public/images/filetype/filetype-' + typeService.assetFormat(object).mimetype.split('/').shift() + '.png';
+			return '/public/images/filetype/16px/' + typeService.assetFormat(object).extension + '.png';
 		};
 
 		//
