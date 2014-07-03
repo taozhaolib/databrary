@@ -44,14 +44,14 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
 
-  protected def editForm(implicit request : Request[_]) : PartyController.EditForm =
+  protected def editForm(implicit request : Request[_] with AuthSite) : PartyController.EditForm =
     adminAccount.fold[PartyController.EditForm](new PartyController.PartyEditForm)(new PartyController.AccountEditForm(_))
 
   protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : PartyController.CreateForm =
     if (acct) new PartyController.AccountCreateForm else new PartyController.PartyCreateForm
 
   def update(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    val form = editForm._bind
+    val form = editForm(request.asInstanceOf[Request[_] with AuthSite])._bind
     val party = request.obj.party
     for {
       _ <- party.change(
@@ -209,7 +209,7 @@ object PartyController extends PartyController {
   final class PartyEditForm(implicit request : Request[_]) extends EditForm {
     def accountForm = None
   }
-  final class AccountEditForm(val account : Account)(implicit request : Request[_]) extends EditForm with AccountForm with LoginController.AuthForm {
+  final class AccountEditForm(val account : Account)(implicit protected val request : Request[_] with AuthSite) extends EditForm with AccountForm with LoginController.AuthForm {
     def accountForm = if (_authorized || request.superuser) Some(this)
       else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid)))
 	Some(this.auth.withError("error.required"))
@@ -330,7 +330,7 @@ object PartyHtml extends PartyController with HtmlController {
   }
   
   def edit(i : models.Party.Id) = AdminAction(i).async { implicit request =>
-    editForm.Ok
+    editForm(request.asInstanceOf[Request[_] with AuthSite]).Ok
   }
 
   def createNew(acct : Boolean = false) = SiteAction.rootAccess().async { implicit request =>

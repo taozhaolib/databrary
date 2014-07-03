@@ -134,9 +134,9 @@ object LoginController extends LoginController {
   }
 
   trait AuthForm extends StructForm {
-    def account : Account
+    protected def request : AuthSite
     val auth = Field(Forms.default(Forms.text, "").verifying("password.incorrect",
-      s => s.isEmpty || BCrypt.checkpw(s, account.password))).fill("")
+      s => s.isEmpty || BCrypt.checkpw(s, request.account.password))).fill("")
     def _authorized = !hasErrors && (auth.get.nonEmpty || !Play.isProd)
   }
 
@@ -170,7 +170,7 @@ object LoginController extends LoginController {
     }
   }
 
-  final class SuperuserForm(implicit request : SiteRequest.Auth[_])
+  final class SuperuserForm(implicit protected val request : SiteRequest.Auth[_])
     extends FormView(routes.LoginHtml.superuserOn)
     with AuthForm {
     def account = request.account
