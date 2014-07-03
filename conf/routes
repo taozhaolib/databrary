@@ -63,6 +63,7 @@ GET     /volume/$vID<[0-9]+>/asset/create                                       
 POST    /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.upload(vID : models.Volume.Id)
 GET     /asset/$aID<[0-9]+>                                                                       controllers.AssetHtml.view(aID : models.Asset.Id)
 GET     /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.edit(aID : models.Asset.Id)
+GET     /asset/$aID<[0-9]+>/replace                                                               controllers.AssetHtml.replaceView(aID : models.Asset.Id)
 POST    /asset/$aID<[0-9]+>/edit                                                                  controllers.AssetHtml.update(aID : models.Asset.Id)
 # should be POST but just for debugging:
 GET     /asset/$aID<[0-9]+>/transcode                                                             controllers.AssetHtml.transcode(aID : models.Asset.Id)

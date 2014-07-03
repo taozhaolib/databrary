@@ -203,9 +203,9 @@ JNIEXPORT jobject JNICALL
 Java_media_AV_00024__1frame(
 		JNIEnv *env,
 		jobject this,
-		jstring jinfile,
-		jdouble offset,
-		jstring joutfile)
+		jstring jinfile, jdouble offset,
+		jstring joutfile,
+		jint width, jint height)
 {
 	const char *infile = (*env)->GetStringUTFChars(env, jinfile, 0);
 	const char *outfile = joutfile ? (*env)->GetStringUTFChars(env, joutfile, 0) : NULL;
@@ -262,17 +262,26 @@ Java_media_AV_00024__1frame(
 		goto error;
 	}
 	os->codec->time_base = is->codec->time_base;
-	os->codec->width = frame->width;
-	os->codec->height = frame->height;
-	/* These are too new and should also use av_frame_get_color* instead:
-	os->codec->colorspace = frame->colorspace;
-	os->codec->color_range = frame->color_range;
-	*/
+	AVRational sar = av_guess_sample_aspect_ratio(in, is, frame);
+	AVRational dsr = av_make_q(frame->width, frame->height);
+	if (sar.num)
+		dsr = av_mul_q(dsr, sar);
+	else
+		sar.num = sar.den = 1;
+	if (frame->height > (unsigned)height || sar.num > sar.den) {
+		os->codec->height = (unsigned)height < frame->height ? height : frame->height;
+		os->codec->width = os->codec->height * dsr.num / dsr.den;
+	}
+	if (!os->codec->width || os->codec->width > (unsigned)width) {
+		os->codec->width = (unsigned)width < frame->width ? width : frame->width;
+		os->codec->height = os->codec->width * dsr.den / dsr.num;
+	}
+	os->codec->colorspace = av_frame_get_colorspace(frame);
+	os->codec->color_range = av_frame_get_color_range(frame);
 	os->codec->pix_fmt = CHECK(avcodec_find_best_pix_fmt_of_list(codec->pix_fmts, frame->format, 0, NULL), "finding pixel format");
 
-	if (os->codec->pix_fmt != frame->format)
+	if (os->codec->pix_fmt != frame->format || os->codec->width != frame->width || os->codec->height != frame->height)
 	{
-		// printf("converting pixfmts: %d <- %d\n", os->codec->pix_fmt, frame->format);
 		AVFrame tmp;
 		memset(&tmp, 0, sizeof(tmp));
 		tmp.format = os->codec->pix_fmt;

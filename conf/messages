@@ -311,12 +311,11 @@ auth.request.title=Request authorization from {0}
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
 auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
-auth.request.notfound.affiliate.instructions=Please invite the investigator from whom you are seeking authorization to register on Databrary first.
 auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 
-auth.info.prompt=Expedite the authorization process by providing contact information for your Institution''s Authorizing Official (i.e., the co-signer of your Agreement).
+auth.info.prompt=Expedite the authorization process by providing contact information for your Institution''s Authorizing Official or your sponsoring PI (i.e., the co-signer of your Agreement).
 auth.request.info.title=Contact info
-auth.request.info.help=Enter contact information (name, email, phone number) for your Institution''s Authorizing Official.
+auth.request.info.help=Enter contact information (name, email, phone number) for your authorizing co-signer.
 
 # Access
 access.global.legend=Share this study

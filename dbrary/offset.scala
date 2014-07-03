@@ -36,6 +36,7 @@ final case class Offset(millis : Long) extends scala.math.Ordered[Offset] {
 
 object Offset {
   final val ZERO = new Offset(0)
+  final val SECOND = ofSeconds(1)
   // def apply(d : BigDecimal) : Offset = new Offset((1000L*d).toLong)
   def apply(i : PGInterval) : Offset =
     ofSeconds(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)

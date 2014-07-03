@@ -560,10 +560,9 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-
 			Slot.get({
 				id: data.object.id,
-				segment: data.object.segment || ',',
+				segment: typeService.segmentJoin(data.segment),
 				assets: ''
 			}, function (object) {
 				angular.forEach(object.assets, function (asset) {
@@ -612,6 +611,29 @@ module.factory('browserService', [
 			if (group == 'asset') {
 				data.player = false;
 				data.played = undefined;
+			}
+
+			if (group == 'session') {
+				var newSegment;
+				var categories = volume.sessions[newData.object.id].categories;
+				var cur = newData.parent;
+				while (cur.object)
+				{
+					var obj = cur.object;
+					var recSegment = null;
+					/* if record coverage is disjoint we pretend it's continuous: */
+					angular.forEach(categories[obj.category], function (c) {
+						if (c.id == obj.id)
+							recSegment = typeService.segmentUnion(recSegment, c.segment);
+					});
+					newSegment = typeService.segmentIntersect(newSegment, recSegment);
+					cur = cur.parent;
+				}
+				newData.segment = newSegment;
+				if (typeService.segmentEmpty(newSegment)) {
+					console.log(newSegment);
+					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
+				}
 			}
 
 			browserService.groups[group].push(newData);

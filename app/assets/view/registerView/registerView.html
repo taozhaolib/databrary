@@ -69,7 +69,7 @@
 							<auth-apply-form></auth-apply-form>
 						</div>
 
-						<div ng-show="ifInfo() && authSearchForm.principal === 'principal'">
+						<div ng-show="ifInfo()">
 							<div ng-bind-html="'auth.info.prompt' | message"></div>
 
 							<form name="infoForm" novalidate>
@@ -84,10 +84,6 @@
 								</button>
 								<button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
 							</form>
-						</div>
-
-						<div ng-show="ifInfo() && authSearchForm.principal === 'affiliate'">
-							<div ng-bind-html="'auth.request.notfound.affiliate.instructions' | message | format"></div>
 						</div>
 					</wizard-step>
 

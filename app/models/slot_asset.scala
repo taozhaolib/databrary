@@ -178,9 +178,13 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
-    row(Slot.rowVolume(Volume.fixed(asset.volume)), Asset.fixed(asset).map(const _))
-    .SELECT("WHERE slot.volume = ?")
-    .apply(asset.volumeId).singleOpt
+    SlotAssetSlot.rowVolume(Volume.fixed(asset.volume))
+    .leftJoin(Excerpt.columns, "slot_asset.segment <@ excerpt.segment AND slot_asset.asset = excerpt.asset")
+    .map { case (slot, excerpt) =>
+      make(asset, slot.segment, slot, excerpt.map(_(slot.context)))
+    }
+    .SELECT("WHERE slot_asset.asset = ?")
+    .apply(asset.id).singleOpt
 
   private def excerpts(volume : Volume) = 
     Excerpt.rowVolume(Volume.fixed(volume))
