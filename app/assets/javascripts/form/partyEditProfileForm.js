@@ -152,6 +152,9 @@ module.directive('partyEditProfileForm', [
 				duns: {
 					tips: page.constants.message('party.edit.duns.help')
 				},
+				url : {
+					tips: page.constants.message('party.edit.url.help') 
+				}
 			}, true);
 
 			//
