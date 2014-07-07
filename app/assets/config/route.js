@@ -378,6 +378,35 @@ module.config([
 
 		//
 
+		$routeProvider.when('/slot/:id', {
+			controller: 'SlotView',
+			templateUrl: 'slotView.html',
+			resolve: {
+				volume: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						page.models.Slot.get({
+							assets: '',
+							records: '',
+							tags: '',
+							comments: '',
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
+						});
+
+						return deferred.promise;
+					}
+				]
+			},
+			reloadOnSearch: false,
+			authenticate: true
+		});
+
+		//
+
 		$routeProvider.otherwise({
 			redirectTo: '/search'
 		});
