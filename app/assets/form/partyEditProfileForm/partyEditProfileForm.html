@@ -16,6 +16,10 @@
 			<input type="text" name="orcid" ng-model="partyEditProfileForm.data.orcid">
 		</validator>
 
+                <validator form="partyEditProfileForm" name="url" label="'party.edit.url.title' | message">
+                        <input type="url" name="url" ng-model="partyEditProfileForm.data.url">
+                </validator>
+
 		<validator form="partyEditProfileForm" name="avatar" label="'party.edit.avatar.title' | message">
 			<input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar" file-model-form="partyEditProfileForm" ng-if="partyEditProfileForm.uploading()">
 

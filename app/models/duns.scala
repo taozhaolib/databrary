@@ -10,7 +10,11 @@ import dbrary._
 final class DUNS private (val duns : Int)
 {
   def valid : Boolean = duns >= 0 && duns <= 999999999
-  override def toString : String = duns.formatted("%09d")
+  override def toString : String =
+    if (duns > 0)
+      "%02d-%03d-%04d".format(duns / 10000000, duns / 10000 % 1000, duns % 10000)
+    else
+      duns.toString
 }
 
 object DUNS {
@@ -19,7 +23,7 @@ object DUNS {
     def bind(key: String, data: Map[String, String]) =
       (for {
 	s <- data.get(key)
-	n <- Maybe.toInt(s)
+	n <- Maybe.toInt(s.filterNot(c => c == '-' || c.isSpaceChar))
 	duns = new DUNS(n)
 	if duns.valid
       } yield(duns))

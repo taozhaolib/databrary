@@ -37,6 +37,7 @@ GET     /party/$pID<-?[0-9]+>/avatar                                            
 
 # admin
 GET     /admin/authorize                                                                          controllers.PartyHtml.authorizeAdmin
+POST    /party/$pID<-?[0-9]+>/investigator                                                        controllers.PartyHtml.investigator(pID : models.Party.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search

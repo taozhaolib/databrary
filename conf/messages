@@ -177,7 +177,7 @@ password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
 fullname=Full Name
-duns=D-U-N-S
+duns=DUNS
 avatar=avatar
 affiliation=Affiliation
 
@@ -246,6 +246,9 @@ party.edit.name.help=Enter your full name.
 party.edit.affiliation.title=Affiliation
 party.edit.affiliation.help=Specify your institutional affiliation.
 
+party.edit.url.title=Website
+party.edit.url.help=Specify whatever personal web page you''d like (faculty page, ResearchGate, etc.)
+
 party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
 
@@ -287,6 +290,8 @@ wizard.party-edit-apply.instructions=
 wizard.party-edit-grant.name=Affiliates
 wizard.party-edit-grant.description=Authorizations and memberships granted to others
 wizard.party-edit-grant.instructions=
+
+party.view.url=Website
 
 # --- Auth search
 auth.search=Search for a user or institution...

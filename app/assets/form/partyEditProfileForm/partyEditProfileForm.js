@@ -22,6 +22,7 @@ module.directive('partyEditProfileForm', [
 					duns: party.duns,
 					affiliation: party.affiliation,
 					avatar: party.avatar,
+					url: party.url
 				};
 
 				backup = $.extend(true, {}, form.data);
@@ -152,6 +153,9 @@ module.directive('partyEditProfileForm', [
 				duns: {
 					tips: page.constants.message('party.edit.duns.help')
 				},
+				url : {
+					tips: page.constants.message('party.edit.url.help') 
+				}
 			}, true);
 
 			//

@@ -121,7 +121,7 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
     , "openid" -> (opt => async(if (party === site.identity || site.superuser)
 	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
     , "duns" -> (opt => async(if (site.access.member >= Permission.ADMIN)
-	Json.toJson(party.duns.map(_.duns)) else JsNull))
+	Json.toJson(party.duns.map(_.toString)) else JsNull))
     )
 }
 
