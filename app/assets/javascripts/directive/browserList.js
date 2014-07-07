@@ -188,12 +188,20 @@ module.directive('browserList', [
 
 				sessionRecords[data.object.id] = [];
 				var skip = ['-700', '-800'];
-
 				angular.forEach(data.object.categories, function (records, key) {
 					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1) {
+						var sr = specifiedRecord(data,key);
+						if(sr){
+							for(var i in records){
+								if(records[i].id == sr) var relevantRecords = [records[i]];
+							}
+						}
+						else{
+							var relevantRecords = records;
+						}
 						sessionRecords[data.object.id].push({
 							id: parseInt(key),
-							records: records
+							records: relevantRecords
 						});
 					}
 				});
@@ -201,8 +209,20 @@ module.directive('browserList', [
 				sessionRecords[data.object.id].sort(function (a, b) {
 					return a.id > b.id;
 				});
-
 				return sessionRecords[data.object.id];
+			};
+
+			var specifiedRecord = function(data, cat)
+			{
+				var cur = data.parent;
+				while(cur.object)
+				{
+					if(cur.object.category && cur.object.category == cat){
+						return cur.object.id;
+					}
+					cur = cur.parent;
+				}
+				return false;
 			};
 
 			$scope.nameRecord = function (data) {
