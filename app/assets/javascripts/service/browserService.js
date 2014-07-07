@@ -640,18 +640,20 @@ module.factory('browserService', [
 				while (cur.object)
 				{
 					var obj = cur.object;
-					var recSegment = null;
-					/* if record coverage is disjoint we pretend it's continuous: */
-					angular.forEach(categories[obj.category], function (c) {
-						if (c.id == obj.id)
-							recSegment = typeService.segmentUnion(recSegment, c.segment);
-					});
-					newSegment = typeService.segmentIntersect(newSegment, recSegment);
+					if(obj.id != 0){
+						var recSegment = null;
+						angular.forEach(categories[obj.category], function (c) {
+							if (c.id == obj.id){
+								/* if record coverage is disjoint we pretend it's continuous: */
+								recSegment = typeService.segmentUnion(recSegment, c.segment);
+							}
+						});
+						newSegment = typeService.segmentIntersect(newSegment, recSegment);
+					}
 					cur = cur.parent;
 				}
 				newData.segment = newSegment;
 				if (typeService.segmentEmpty(newSegment)) {
-					console.log(newSegment);
 					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
 				}
 			}
