@@ -3,7 +3,6 @@ module.directive('portrait', [
 		return {
 			restrict: 'E',
 			templateUrl: 'portrait.html',
-			replace: true,
 			link: {
 				pre: function ($scope, $element, $attrs) {
 					$scope.portraitExtra = page.$parse($attrs.extra)($scope);
