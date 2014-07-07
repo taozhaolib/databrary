@@ -182,9 +182,9 @@ DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                 
 # QUERY     ?volume=ID;record=ID;asset=ID
 #                                                                                                 TODO: GET     /api/slot
 # GET       ?segment=;assets;records;tags;comments
-GET     /volume/$vID<[0-9]+>/api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+GET     /api/volume/$vID<[0-9]+>/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.get(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 # UPDATE    ?segment=
-POST    /volume/$vID<[0-9]+>/api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+POST    /api/volume/$vID<[0-9]+>/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 # DELETE
 #                                                                                                 TODO: DELETE /api/slot/containerId<[0-9]+>
 
