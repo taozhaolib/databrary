@@ -17,7 +17,7 @@
 			<header>
 				<h1 class="browser-item-title">
           <span class="filetype">
-              <img bo-src="'/public/images/filetypes/16px/' + page.types.assetFormat(data.object).extension + '.png'">
+              <img bo-src="page.types.assetIcon(data.object)" hint="format-{{page.types.assetFormat(data.object).extension}}">
           </span>
 
 					<span class="filename" bo-text="page.types.assetDisplayName(data.object)"></span>

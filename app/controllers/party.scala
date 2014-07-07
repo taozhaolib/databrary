@@ -350,6 +350,11 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }
 
+  def investigator(i : models.Party.Id) =
+    SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
+      Mail.investigator(request.obj.party).map(HTTP.wsResult)
+    }
+
   def avatar(i : models.Party.Id, size : Int = 64) =
     SiteAction.Unlocked.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
