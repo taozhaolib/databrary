@@ -479,7 +479,7 @@ player.title=Player
 player.download=Download this file.
 player.close=Close the media player.
 
-materials.title=Materials
+materials=Materials
 materials.empty=There are no files here.
 
 citations.title=Citations

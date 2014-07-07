@@ -195,6 +195,14 @@ module.factory('typeService', [
 			return '/public/images/filetype/16px/' + typeService.assetFormat(object).extension + '.png';
 		};
 
+		typeService.slotName = function (object) {
+			if (!typeService.isSession(object)) {
+				throw new Error('typeService.slotName() requires Slot as first argument');
+			}
+
+			return constants.message(object.top ? 'materials' : 'session') + (object.name ? ': ' + object.name : '');
+		};
+
 		//
 
 		return typeService;
