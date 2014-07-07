@@ -378,11 +378,11 @@ module.config([
 
 		//
 
-		$routeProvider.when('/slot/:id', {
+		$routeProvider.when('/volume/:vid/slot/:id', {
 			controller: 'SlotView',
 			templateUrl: 'slotView.html',
 			resolve: {
-				volume: [
+				slot: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 

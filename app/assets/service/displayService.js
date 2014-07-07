@@ -39,6 +39,7 @@ module.factory('displayService', [
 		$rootScope.$on('$routeChangeError', function (event, next, previous, error) {
 			display.error = true;
 			display.loading = false;
+			display.scrollTo(0);
 			events.talk('displayService-error', error);
 		});
 
@@ -61,8 +62,7 @@ module.factory('displayService', [
 
 		display.scrollTo = function (id) {
 			$timeout(function () {
-
-				var target = (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
+				var target = angular.isNumber(id) ? id : (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
 				$scroll.animate({
 					scrollTop: target
 				}, 500);

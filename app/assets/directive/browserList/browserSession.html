@@ -15,12 +15,12 @@
 				<browser-icon data="data"></browser-icon>
 
 				<h1 class="browser-item-title" bo-if="!data.object.top">
-					Session<span bo-if="data.object.name">: <span bo-text="data.object.name"></span></span>
+					<a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})">Session<span bo-if="data.object.name">: <span bo-text="data.object.name"></span></span></a>
 					<session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
 					<session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
 				</h1>
 
-				<h1 class="browser-item-title"1 bo-if="data.object.top">Materials</h1>
+				<h1 class="browser-item-title" bo-if="data.object.top"><a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})">Materials</a></h1>
 			</header>
 		</div>
 

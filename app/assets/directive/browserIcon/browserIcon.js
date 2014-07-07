@@ -1,8 +1,18 @@
 module.directive('browserIcon', [
 	'pageService', function (page) {
 		var link = function ($scope) {
-			$scope.toggleExpand = function () {
-				$scope.data = page.browser.setItemExpand($scope.data);
+			$scope.toggleExpand = function (data) {
+				if (data.group !== 'session')
+					$scope.data = page.browser.setItemExpand($scope.data);
+			};
+
+			$scope.iconLink = function (data) {
+				if (data.group === 'session')
+					return page.router.slot({
+						vid: data.volume.id,
+						id: data.object.id,
+						segment: data.segment,
+					});
 			};
 
 			$scope.expanderClasses = function (data) {
@@ -12,7 +22,9 @@ module.directive('browserIcon', [
 					classes.push('enabled');
 				}
 
-				classes.push(data.expand ? 'active' : '');
+				if (data.expand) {
+					classes.push('active');
+				}
 
 				return classes;
 			};

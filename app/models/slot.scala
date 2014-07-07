@@ -99,7 +99,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   }
   override final def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
-  def pageURL = controllers.routes.SlotHtml.view(containerId, segment)
+  def pageURL = controllers.routes.SlotHtml.view(volumeId, containerId, segment)
 
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
