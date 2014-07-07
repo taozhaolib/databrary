@@ -2,7 +2,7 @@ package controllers
 
 import scala.util.control.Exception.catching
 import play.api.http.HeaderNames
-import play.api.mvc.Request
+import play.api.mvc._
 import macros._
 import dbrary._
 import site._
@@ -45,4 +45,7 @@ object HTTP extends HeaderNames {
     ifNoneMatch.exists(t => t.equals("*") || unquote(t).equals(etag)) ||
       ifNoneMatch.isEmpty && request.headers.get(IF_MODIFIED_SINCE).flatMap(parseDate).exists(!date.isAfter(_))
   }
+
+  def wsResult(ws : play.api.libs.ws.Response) : SimpleResult =
+    SimpleResult(new ResponseHeader(ws.status), play.api.libs.iteratee.Enumerator(ws.body.getBytes))
 }
