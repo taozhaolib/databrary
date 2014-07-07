@@ -65,6 +65,7 @@ object SiteApi extends SiteController {
     "lib/angularjs/angular-sanitize.min.js",
     "lib/bindonce/bindonce.min.js",
     "lib/ngStorage/ngStorage.min.js",
+    "lib/resumable.js/resumable.js",
     "app.min.js",
     "templates.js")
 

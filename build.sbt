@@ -38,7 +38,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "1.11.0",
   "org.webjars" % "angularjs" % "1.2.18",
   "org.webjars" % "bindonce" % "0.3.1",
-  "org.webjars" % "ngStorage" % "0.3.0"
+  "org.webjars" % "ngStorage" % "0.3.0",
+  "org.webjars" % "resumable.js" % "1.0"
 )
 
 resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) map { (dir, name, ver) =>
