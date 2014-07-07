@@ -2,8 +2,6 @@ module.directive('tooltips', [
 	'pageService', function (page) {
 		var controller = ['$scope', function ($scope) {
 			var Region = function () {
-//				$scope.tooltips = this;
-				// TODO: does this work???
 				this.enabled = true;
 
 				//

@@ -21,6 +21,7 @@ module.factory('displayService', [
 
 		$rootScope.$on('$routeChangeStart', function () {
 			display.loading = true;
+			display.error = false;
 			display.toolbarLinks = [];
 		});
 
@@ -36,8 +37,9 @@ module.factory('displayService', [
 		display.error = undefined;
 
 		$rootScope.$on('$routeChangeError', function (event, next, previous, error) {
-			display.error = error;
-			$location.url(router.error());
+			display.error = true;
+			display.loading = false;
+			events.talk('displayService-error', error);
 		});
 
 		//

@@ -90,7 +90,7 @@
     </div>
   </section>
 
-  <main ng-view id="main" class="main" autoscroll>
+  <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error">
     @if(angular){
       <noscript>
 	      @body
@@ -99,6 +99,10 @@
       @body
     }
   </main>
+
+  @if(angular) {
+    <errors></errors>
+  }
 
   <footer id="site-footer" class="site-footer">
     <div class="wrap">

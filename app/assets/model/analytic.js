@@ -1,5 +1,5 @@
 module.factory('Analytic', [
-	'resourceFactory', '$route', function (resource, $route) {
+	'resourceFactory', function (resource) {
 		var analytic = resource('/api/null', {}, 'analytic');
 
 		analytic.send = function () {

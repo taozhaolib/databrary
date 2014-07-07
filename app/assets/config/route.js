@@ -71,14 +71,6 @@ module.config([
 
 		//
 
-		$routeProvider.when('/error', {
-			controller: 'ErrorView',
-			templateUrl: 'errorView.html',
-			reloadOnSearch: false
-		});
-
-		//
-
 		$routeProvider.when('/asset/formats', {
 			controller: 'HelpFormatsView',
 			templateUrl: 'helpFormatsView.html',
