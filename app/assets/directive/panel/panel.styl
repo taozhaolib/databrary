@@ -47,8 +47,8 @@
 	&.smaller
 		font-line 2 1.75
 
-.foldable
-	.panel
+.panel
+	&.foldable
 		margin-top 0
 
 		.panel-header
@@ -76,15 +76,15 @@
 			max-height 100000px
 			transition transition
 
-	&.folded
-		.panel-header
-			&:before
-				transform rotate(-90deg)
-
-			&:hover
+		&.folded
+			.panel-header
 				&:before
-					transform rotate(-45deg)
+					transform rotate(-90deg)
 
-		.fold
-			overflow hidden
-			max-height 0
+				&:hover
+					&:before
+						transform rotate(-45deg)
+
+			.fold
+				overflow hidden
+				max-height 0

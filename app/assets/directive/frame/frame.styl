@@ -12,8 +12,8 @@ pad = f2
 	margin 0
 	display inline-block
 
-.foldable
-	.frame
+.frame
+	&.foldable
 		.folder
 			cursor pointer
 
@@ -40,17 +40,16 @@ pad = f2
 			transition transition
 
 	&.folded
-		.frame
-			.folder
+		.folder
+			&:before
+				transform rotate(-90deg)
+
+			&:hover
+				color gray
+
 				&:before
-					transform rotate(-90deg)
+					transform rotate(-45deg)
 
-				&:hover
-					color gray
-
-					&:before
-						transform rotate(-45deg)
-
-			.fold
-				overflow hidden
-				max-height 0
+		.fold
+			overflow hidden
+			max-height 0
