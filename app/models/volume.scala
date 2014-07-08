@@ -23,7 +23,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] = {
+  def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] =
     Audit.change("volume", SQLTerms.flatten(
 	name.map('name -> _),
 	alias.map('alias -> _),
@@ -33,7 +33,6 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
         name.foreach(_name = _)
         body.foreach(_body = _)
       }
-  }
 
   /** List of parties access to this volume, sorted by level (ADMIN first). */
   def partyAccess(access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] = VolumeAccess.getParties(this, access)
@@ -246,8 +245,8 @@ object Volume extends TableId[Volume]("volume") {
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, alias : Option[String], body : Option[String] = None)(implicit site : Site) : Future[Volume] =
-    Audit.add(table, SQLTerms('name -> name, 'alias -> alias, 'body -> body), "id").single(SQLCols[Id])
-      .map(new Volume(_, name, alias, body, models.Permission.NONE, new Timestamp))
+    Audit.add(table, SQLTerms('name -> name, 'alias -> alias, 'body -> body), "id")
+      .single(SQLCols[Id].map(new Volume(_, name, alias, body, models.Permission.NONE, new Timestamp)))
 
   private final val CORE : Id = asId(0)
   /** The "core" volume, containing site-wide "global" assets.

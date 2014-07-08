@@ -77,14 +77,13 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] = {
-    category.fold(async(false)) { cat =>
-    SQL("UPDATE record SET category = ? WHERE id = ?").apply(cat.map(_.id), id)
+  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] =
+    Audit.change("record", SQLTerms.flatten(
+	category.map('category -> _.map(_.id))),
+      sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
-        _category = cat
+        category.foreach(_category = _)
       }
-    }
-  }
 
   /** The set of measures on the current volume readable by the current user. */
   lazy val measures : Measures =
@@ -155,10 +154,14 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
     .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
     .apply(record.id, record.volumeId).list
 
-  def add(record : Record, slot : Slot) =
-    INSERT(('record -> record.id) +: slot.slotSql).execute
-  def remove(record : Record, slot : Slot) =
-    DELETE(('record -> record.id) +: slot.slotSql).execute
+  def add(record : Record, slot : Slot) = {
+    implicit val site = record.site
+    Audit.add(table, ('record -> record.id) +: slot.slotSql).execute
+  }
+  def remove(record : Record, slot : Slot) = {
+    implicit val site = record.site
+    Audit.remove(table, ('record -> record.id) +: slot.slotSql).execute
+  }
 }
 
 object Record extends TableId[Record]("record") {
@@ -223,8 +226,8 @@ object Record extends TableId[Record]("record") {
 
   /** Create a new record, initially unattached. */
   def create(volume : Volume, category : Option[RecordCategory] = None) : Future[Record] = {
-    val args = SQLTerms('volume -> volume.id, 'category -> category.map(_.id))
-    SQL("INSERT INTO record", args.insert, "RETURNING id")
-      .apply(args).single(SQLCols[Id].map(new Record(_, volume, category)))
+    implicit val site = volume.site
+    Audit.add("record", SQLTerms('volume -> volume.id, 'category -> category.map(_.id)), "id")
+      .single(SQLCols[Id].map(new Record(_, volume, category)))
   }
 }
