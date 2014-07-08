@@ -24,12 +24,17 @@ CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_date" FOR EACH RO
 
 SELECT audit.CREATE_TABLE ('slot_record');
 
+-- fixups that should've been in 57:
+
+ALTER TABLE audit.excerpt ALTER classification DROP DEFAULT;
+COMMENT ON COLUMN excerpt.classification IS 'Override (by relaxing only) asset''s original classification.';
+
 # --- !Downs
 
 DROP TABLE audit.slot_record;
 DROP VIEW audit.measure_date;
 DROP VIEW audit.measure_number;
 DROP VIEW audit.measure_text;
-DROP FUNCTION audit.measure_id ();
+DROP FUNCTION audit.measure_i ();
 DROP TABLE audit.measure;
 DROP TABLE audit.record;
