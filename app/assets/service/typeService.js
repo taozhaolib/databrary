@@ -1,6 +1,7 @@
 module.factory('typeService', [
 	'constantService',
-	function (constants) {
+	'$window',
+	function (constants, $window) {
 		var typeService = {};
 
 		//
@@ -187,12 +188,20 @@ module.factory('typeService', [
 			return constants.data.format[typeService.assetProperty(object, 'format', dig)];
 		};
 
+		typeService.assetMimeArray = function (object, dig) {
+			return constants.data.format[typeService.assetProperty(object, 'format', dig)].mimetype.split('/');
+		};
+
 		typeService.assetDisplayName = function (object, dig) {
 			return typeService.assetProperty(object, 'name', dig) || typeService.assetFormat(object, dig).name;
 		};
 
-		typeService.assetIcon = function (object, dig) {
+		typeService.assetIcon = function (object) {
 			return '/public/images/filetype/16px/' + typeService.assetFormat(object).extension + '.png';
+		};
+
+		typeService.videoSupported = function () {
+			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
 		};
 
 		typeService.slotName = function (object) {

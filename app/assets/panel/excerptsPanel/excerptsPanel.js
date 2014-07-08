@@ -39,10 +39,6 @@ module.controller('ExcerptsPanel', [
 			return cls;
 		};
 
-		$scope.supported = function () {
-			return page.$window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || page.$window.navigator.platform.toLowerCase().indexOf('mac') == -1;
-		};
-
 		$scope.jump = function (asset) {
 			var found;
 

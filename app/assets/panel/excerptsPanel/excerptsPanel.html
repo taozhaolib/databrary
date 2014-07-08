@@ -11,7 +11,7 @@
 
 						<h1 class="panel-excerpts-player-heading">
               <img class="icon" bo-src="page.types.assetIcon(current)" hint="format-{{page.types.assetFormat(current).extension}}">
-							<span bo-html="page.types.assetDisplayName(current) | format:true"></span>
+							<span bo-html="page.types.assetDisplayName(current)"></span>
 						</h1>
 					</header>
 
@@ -21,11 +21,11 @@
 						</div>
 
 						<div ng-switch-when="video">
-							<video bo-if="supported()" controls excerpt="current">
+							<video bo-if="page.types.videoSupported()" controls excerpt="current">
 								<source ng-src="{{srcRoute}}" type="{{page.types.assetFormat(current).mimetype}}">
 							</video>
 
-							<div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
+							<div bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
 						</div>
 
 						<div ng-switch-default></div>
