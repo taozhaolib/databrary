@@ -1024,7 +1024,7 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			if(data.parent && data.parent.id)
+                        if(data && data.parent && data.parent.id)
 				display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
 			return browserService.player;

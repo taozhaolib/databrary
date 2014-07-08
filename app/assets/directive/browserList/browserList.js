@@ -186,12 +186,11 @@ module.directive('browserList', [
 
 				sessionRecords[data.object.id] = [];
 				var skip = ['-700', '-800'];
-
 				angular.forEach(data.object.categories, function (records, key) {
 					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1) {
 						sessionRecords[data.object.id].push({
 							id: parseInt(key),
-							records: records
+							records: relevantRecords(data,key,records)
 						});
 					}
 				});
@@ -199,8 +198,13 @@ module.directive('browserList', [
 				sessionRecords[data.object.id].sort(function (a, b) {
 					return a.id > b.id;
 				});
-
 				return sessionRecords[data.object.id];
+			};
+
+			var relevantRecords = function(data, cat, records)
+			{
+				if (angular.isUndefined(data.segment)) return records; //no logical difference, just efficiency
+				return page.$filter('filter')(records, function(x){return page.types.overlaps(x.segment,data.segment);});
 			};
 
 			$scope.nameRecord = function (data) {

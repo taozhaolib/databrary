@@ -169,6 +169,10 @@ module.factory('typeService', [
 			return a;
 		};
 
+		typeService.overlaps = function(a,b){
+			return !typeService.segmentEmpty(typeService.segmentIntersect(segmentNormalize(a),b));
+		}
+
 		/* If segments are disjoint, assume the excluded middle.
 		 * may modify and/or return a */
 		typeService.segmentUnion = function (a, b) {

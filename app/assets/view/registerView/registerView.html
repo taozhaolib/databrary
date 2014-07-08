@@ -13,15 +13,15 @@
 							<messages form="registerForm"></messages>
 
 							<validator form="registerForm" name="fieldName" label="'register.name.prompt' | message">
-								<input id="field-name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3">
+                                                                <input id="field-name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3" placeholder="{{'register.name.placeholder' | message}}">
 							</validator>
 
 							<validator form="registerForm" name="fieldEmail" label="'email' | message">
-								<input id="field-email" name="fieldEmail" type="email" ng-model="registerForm.data.email">
+                                                                <input id="field-email" name="fieldEmail" type="email" ng-model="registerForm.data.email" placeholder="{{'register.email.placeholder' | message}}">
 							</validator>
 
 							<validator form="registerForm" name="fieldAffiliation" label="'affiliation' | message">
-								<input id="field-affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation">
+                                                                <input id="field-affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{'register.affiliation.placeholder' | message}}">
 							</validator>
 
 							<button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">
