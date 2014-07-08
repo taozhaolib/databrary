@@ -1,6 +1,6 @@
 @(formats : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
 
-@template.crud(Messages("page.title.help.formats", angular = Some(play.api.libs.json.JsNull)) {
+@template.crud(Messages("page.title.help.formats"), angular = Some(play.api.libs.json.JsNull)) {
 	<div class="col-full">
 	<h3>@Messages("help.formats.title")</h3>
         <p>@Messages("help.formats.body")</p>
