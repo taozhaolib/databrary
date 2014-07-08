@@ -181,6 +181,8 @@ duns=DUNS
 avatar=avatar
 affiliation=Affiliation
 
+return.volume=Return to volume
+
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
 
