@@ -8,12 +8,6 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
-format.list.text=Text Files
-format.list.application=Documents
-format.list.video=Videos
-format.list.image=Images
-format.list.audio=Audio
-format.list.link=Click here to see list of supported file formats
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
@@ -159,9 +153,15 @@ page.title.help.formats=Supported File Formats
 
 help.title=Help
 help.formats.title=Supported File Formats
+help.formats.body=This is the list of file formats which we currently accept.  Note that all video formats will be automatically transcoded to mp4 format.  If you have files in other formats you wish to share, just <a href="mailto:feedback@databrary.org">contact us</a> so that we can add appropriate handling.
 
 format.list.extension=Extension
 format.list.description=Description
+format.list.text=Text Files
+format.list.application=Documents
+format.list.video=Videos
+format.list.image=Images
+format.list.audio=Audio
 
 # party, auth pages
 email=Email
@@ -625,11 +625,11 @@ volume.edit.overview.error=Unable to save volume.
 
 wizard.volume_edit_excerpts.name=Excerpts
 wizard.volume_edit_excerpts.description=Upload representative videos and images.
-wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
+wizard.volume_edit_excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals. See our <a href="/asset/formats">list of accepted file types</a>.\n\nYou can share non-excerpt files in the Materials section.
 
 wizard.volume_edit_materials.name=Materials
 wizard.volume_edit_materials.description=Upload stimuli, documents, and other materials.
-wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
+wizard.volume_edit_materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms). See our <a href="/asset/formats">list of accepted file types</a>.
 
 material.file=File
 material.file.help=Select the file you wish to upload.

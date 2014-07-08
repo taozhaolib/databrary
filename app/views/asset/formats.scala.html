@@ -1,9 +1,10 @@
-@(assets : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
+@(formats : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
 
-@template.crud("Supported formats", angular = Some(play.api.libs.json.JsNull)) {
-	<div class="col-full scraper">
-	<h3>File formats supported by Databrary</h3>
-	@assets.map{case(k,v) =>
+@template.crud(Messages("page.title.help.formats", angular = Some(play.api.libs.json.JsNull)) {
+	<div class="col-full">
+	<h3>@Messages("help.formats.title")</h3>
+        <p>@Messages("help.formats.body")</p>
+	@formats.map { case(k,v) =>
 		<div class="metadata">
 			<h3 class="col-full">@Messages("format.list."+k)</h2>
 
