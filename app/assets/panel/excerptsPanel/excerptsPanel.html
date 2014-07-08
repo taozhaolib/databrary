@@ -10,7 +10,7 @@
 						<div class="classification icon line tool" bo-class="page.constants.data.classification[current.excerpt || current.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[current.excerpt || current.asset.classification]}}"></div>
 
 						<h1 class="panel-excerpts-player-heading">
-                                                        <img class="icon" bo-src="page.types.assetIcon(current)" hint="format-{{page.types.assetFormat(current).extension}}">
+              <img class="icon" bo-src="page.types.assetIcon(current)" hint="format-{{page.types.assetFormat(current).extension}}">
 							<span bo-html="page.types.assetDisplayName(current) | format:true"></span>
 						</h1>
 					</header>
@@ -45,7 +45,7 @@
 						</div>
 
 						<div ng-if="hasThumbnail(excerpt)">
-                                                        <figure ng-click="setCurrent(excerpt)" fill>
+              <figure ng-click="setCurrent(excerpt)" fill>
 								<figmedia>
 									<img bo-src="page.router.assetThumb(excerpt)">
 									<div class="panel-excerpts-video-overlay"></div>
@@ -56,7 +56,7 @@
 						<div ng-if="!hasThumbnail(excerpt)">
 							<figure ng-click="setCurrent(excerpt)">
 								<span bo-text="excerpt.asset.name"></span>
-                                                                <img class="panel-excerpt-filetype-thumb" bo-src="page.types.assetIcon(excerpt)">
+                <img class="panel-excerpt-filetype-thumb" bo-src="page.types.assetIcon(excerpt)">
 							</figure>
 						</div>
 					</div>
