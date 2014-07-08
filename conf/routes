@@ -56,8 +56,8 @@ POST    /volume/$vID<[0-9]+>/slot/container                                     
 GET     /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.createContainer(vID : models.Volume.Id)
 
 GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.SlotHtml.view(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
-GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.SlotHtml.edit(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
-POST    /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.SlotHtml.update(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
+GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(sID : models.Container.Id, segment : dbrary.Segment)
+POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Container.Id, segment : dbrary.Segment)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.create(vID : models.Volume.Id, container : Option[models.Container.Id] ?= None, position : Option[dbrary.Offset] ?= None)
@@ -184,7 +184,7 @@ DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                 
 # GET       ?segment=;assets;records;tags;comments
 GET     /api/volume/$vID<[0-9]+>/slot/$containerId<[0-9]+>                                        controllers.SlotApi.get(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 # UPDATE    ?segment=
-POST    /api/volume/$vID<[0-9]+>/slot/$containerId<[0-9]+>                                        controllers.SlotApi.update(vID : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
 # DELETE
 #                                                                                                 TODO: DELETE /api/slot/containerId<[0-9]+>
 

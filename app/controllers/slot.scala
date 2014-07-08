@@ -20,7 +20,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
   private[controllers] def Action(i : Container.Id, segment : Segment, p : Permission.Value = Permission.VIEW) =
     SiteAction andThen action(i, segment, p)
 
-  def update(v: Volume.Id, i : Container.Id, segment : Segment) =
+  def update(i : Container.Id, segment : Segment) =
     Action(i, segment, Permission.EDIT).async { implicit request =>
       val form = SlotController.editForm._bind
       for {
@@ -45,7 +45,7 @@ object SlotController extends SlotController {
 
   sealed class EditForm(implicit request : Request[_])
     extends AHtmlForm[EditForm](
-      routes.SlotHtml.update(request.obj.volumeId, request.obj.containerId, request.obj.segment),
+      routes.SlotHtml.update(request.obj.containerId, request.obj.segment),
       f => SlotHtml.viewEdit(Some(f)))
     with SlotForm {
     def actionName = "Update"
@@ -95,7 +95,7 @@ object SlotHtml extends SlotController with HtmlController {
       selectList = all diff records
     } yield (views.html.slot.edit(form getOrElse editForm, records, recordForm orElse Some(new RecordHtml.SelectForm), selectList))
 
-  def edit(v: Volume.Id, i : Container.Id, segment : Segment) =
+  def edit(i : Container.Id, segment : Segment) =
     Action(i, segment, Permission.EDIT).async { implicit request =>
       editForm.Ok
     }
