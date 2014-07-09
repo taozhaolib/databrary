@@ -32,7 +32,7 @@ module.controller('ExcerptsPanel', [
 		$scope.listClass = function (excerpt) {
 			var cls = [];
 
-			if ($scope.getMimeGroup(excerpt) == 'video') {
+			if ($scope.getMimeGroup(excerpt) == 'video' && excerpt.asset.duration) {
 				cls.push('video');
 			}
 
