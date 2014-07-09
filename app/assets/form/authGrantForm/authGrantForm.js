@@ -16,6 +16,20 @@ module.directive('authGrantForm', [
 			form.presetName = function (type, name, party) {
 				return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
 			};
+			
+			$scope.canGrantSite = function (p) {
+				return  p <= page.constants.data.permissionName.PUBLIC ||
+					p == page.constants.data.permissionName.READ ||
+					p > page.constants.data.permissionName.READ &&
+					page.auth.hasAccess(p+1);
+			};
+
+			$scope.canGrantMember = function (p) {
+				return  p == page.constants.data.permissionName.NONE ||
+					p == page.constants.data.permissionName.READ ||
+					p == page.constants.data.permissionName.EDIT ||
+					p == page.constants.data.permissionName.ADMIN;
+			};
 
 			//
 

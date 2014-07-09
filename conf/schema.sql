@@ -167,7 +167,7 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 		SELECT a.child, aa.parent, CASE
 		         WHEN aa.site = 'ADMIN' THEN LEAST(a.site, 'EDIT')
 			 WHEN aa.site = 'EDIT' THEN LEAST(a.site, 'READ')
-			 ELSE 'NONE'::permission
+			 ELSE LEAST(aa.site, a.site, 'PUBLIC')
 		       END, 'NONE', LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa

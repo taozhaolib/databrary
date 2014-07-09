@@ -10,6 +10,12 @@ module.directive('accessGrantForm', [
 				children: form.access.children || 0,
 			};
 
+			$scope.canGrantAccess = function (p) {
+				return  p == page.constants.data.permissionName.READ ||
+					p == page.constants.data.permissionName.EDIT ||
+					p == page.constants.data.permissionName.ADMIN;
+			};
+
 			form.data.extend = form.data.children !== 0;
 
 			var backup = $.extend(true, {}, form.data);

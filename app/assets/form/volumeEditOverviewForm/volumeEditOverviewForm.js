@@ -179,14 +179,14 @@ module.directive('volumeEditOverviewForm', [
 								body: page.constants.message('volume.edit.autodoi.name.error'),
 							});
 						} else {
-							form['name'].$setViewValue(res.title);
+							form.data.name = res.title;
 
 							if (!form.data.citation) {
 								form.data.citation = {};
 							}
 
 							if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
-								form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
+								form.data.citation.year = res.issued['date-parts'][0][0];
 							}
 
 							if (res.author) {
@@ -206,7 +206,6 @@ module.directive('volumeEditOverviewForm', [
 									name = name.slice(0, -1);
 
 									form.authors.push({name: name});
-									form['citation.author'].$setViewValue();
 								});
 							}
 
@@ -225,29 +224,31 @@ module.directive('volumeEditOverviewForm', [
 						});
 					});
 
-				page.models.CrossCite
-					.apa(doi[1])
-					.then(function (res) {
-						if (!form.data.citation) {
-							form.data.citation = {};
-						}
+				if (!form.hasCitations) {
+					page.models.CrossCite
+						.apa(doi[1])
+						.then(function (res) {
+							if (!form.data.citation) {
+								form.data.citation = {};
+							}
 
-						form['citation.url'].$setViewValue('doi:' + doi[1]);
-						form['citation.head'].$setViewValue(res);
+							form.data.citation.url = 'doi:' + doi[1];
+							form.data.citation.head = res;
 
-						form.setAutomatic(false);
+							form.setAutomatic(false);
 
-						form.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.autodoi.citation.success'),
+							form.messages.add({
+								type: 'green',
+								countdown: 3000,
+								body: page.constants.message('volume.edit.autodoi.citation.success'),
+							});
+						}, function (res) {
+							form.messages.add({
+								type: 'red',
+								body: page.constants.message('volume.edit.autodoi.citation.error'),
+							});
 						});
-					}, function () {
-						form.messages.add({
-							type: 'red',
-							body: page.constants.message('volume.edit.autodoi.citation.error'),
-						});
-					});
+				}
 			};
 
 			//

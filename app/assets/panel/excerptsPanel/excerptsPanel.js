@@ -26,13 +26,13 @@ module.controller('ExcerptsPanel', [
 		};
 
 		$scope.hasThumbnail = function (asset) {
-			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
+			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video' && asset.asset.duration;
 		};
 
 		$scope.listClass = function (excerpt) {
 			var cls = [];
 
-			if ($scope.getMimeGroup(excerpt) == 'video') {
+			if ($scope.getMimeGroup(excerpt) == 'video' && excerpt.asset.duration) {
 				cls.push('video');
 			}
 
