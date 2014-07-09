@@ -1,4 +1,4 @@
 <panel ng-controller="DataPanel" id="panel_browser" panel-title="{{'browser.title' | message}}" fold>
   <volume-list data="volumes"></volume-list>
-  <button class="green ng-scope" ng-click="page.$location.url(page.router.volumeCreate({owner: party.id},undefined,true))" bo-text="'volume.edit.create' | message" ng-show="party.permission >= page.constants.data.permissionName.EDIT" bindonce></button> 
+  <button class="green ng-scope" ng-click="page.$location.url(page.router.volumeCreate({owner: party.id},undefined,true))" bo-text="'volume.edit.create' | message" ng-if="party.permission >= page.constants.data.permissionName.EDIT" bindonce></button> 
 </panel>
