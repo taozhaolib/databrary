@@ -11,8 +11,7 @@ module.directive('accessGrantForm', [
 			};
 
 			$scope.canGrantAccess = function (p) {
-				return  p == page.constants.data.permissionName.NONE ||
-					p == page.constants.data.permissionName.READ ||
+				return  p == page.constants.data.permissionName.READ ||
 					p == page.constants.data.permissionName.EDIT ||
 					p == page.constants.data.permissionName.ADMIN;
 			};
