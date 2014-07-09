@@ -145,7 +145,7 @@ reset.again.help=Enter the same password again.
 page.title.home=Welcome
 page.title.register=Register
 page.title.search=Search
-page.title.stub=Create Study 
+page.title.stub=Create Study
 page.title.error=There''s been an Error!
 
 # --- Formats
