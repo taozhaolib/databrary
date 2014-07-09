@@ -198,8 +198,12 @@ object Party extends TableId[Party]("party") {
       async(Some(p))
     }
 
-  def getAll(implicit site : Site) : Future[Seq[Party]] =
-    row.SELECT("ORDER BY id").apply().list
+  /* Only used by authorizeAdmin */
+  def getAll : Future[Seq[Authorization]] =
+    row
+    .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
+    .map { case (a, p) => Authorization.make(a)(p) }
+    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name").apply().list
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
