@@ -19,6 +19,6 @@ module.directive('message', [
 		return {
 			restrict: 'EA',
 			link: link
-		}
+		};
 	}
 ]);

@@ -103,7 +103,7 @@ module.directive('volumeEditAccessForm', [
 					}, {
 						individual: p,
 						children: p,
-					})
+					});
 				})).then(function () {
 					if (angular.isFunction(form.successGlobalFn)) {
 						form.successGlobalFn(form, arguments);

@@ -136,8 +136,8 @@ module.factory('typeService', [
 				return ',';
 			if (angular.isNumber(segment))
 				return segment;
-			return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? Math.floor(segment[0]) : '')
-				+ ',' +
+			return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? Math.floor(segment[0]) : '') +
+				',' +
 				(angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
 		};
 
@@ -173,7 +173,7 @@ module.factory('typeService', [
 
 		typeService.overlaps = function (a, b) {
 			return !typeService.segmentEmpty(typeService.segmentIntersect(segmentNormalize(a), b));
-		}
+		};
 
 		/* If segments are disjoint, assume the excluded middle.
 		 * may modify and/or return a */

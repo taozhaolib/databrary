@@ -2,5 +2,6 @@
 "predef": ["angular","module","$"],
 "strict": true,
 "globalstrict": true,
-"browser": true
+"browser": true,
+"devel": true
 }

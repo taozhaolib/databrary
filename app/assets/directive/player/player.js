@@ -45,7 +45,7 @@ module.directive('player', [
 
 			player.select = function (media) {
 				player.main[0] = media;
-			}
+			};
 		}];
 
 		//

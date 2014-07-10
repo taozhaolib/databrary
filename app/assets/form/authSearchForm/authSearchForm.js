@@ -12,7 +12,7 @@ module.directive('authSearchForm', [
 			form.principal = $attrs.principal;
 
 			$scope.$watch(function () {
-				return form.principal
+				return form.principal;
 			}, function (principal) {
 				form.nameVal = '';
 				form.found = [];
@@ -25,8 +25,8 @@ module.directive('authSearchForm', [
 
 			//
 
-			var recentSearch = undefined;
-			var sentSearch = undefined;
+			var recentSearch;
+			var sentSearch;
 
 			var fin = function () {
 				sentSearch = undefined;

@@ -76,6 +76,6 @@ module.directive('hint', [
 		return {
 			restrict: 'A',
 			link: link,
-		}
+		};
 	}
 ]);

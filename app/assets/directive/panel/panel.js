@@ -19,7 +19,7 @@ module.directive('panel', [
 			$scope.getPanelClasses = function () {
 				var classes = {};
 
-				classes['panel'] = true;
+				classes.panel = true;
 				classes[$scope.id] = true;
 
 				return classes;

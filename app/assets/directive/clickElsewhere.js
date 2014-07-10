@@ -15,6 +15,6 @@ module.directive('clickElsewhere', [
 		return {
 			restrict: 'A',
 			link: link
-		}
+		};
 	}
 ]);

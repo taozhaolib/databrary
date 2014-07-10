@@ -81,6 +81,6 @@ module.directive('dateModel', [
 			restrict: 'A',
 			require: 'ngModel',
 			link: link,
-		}
+		};
 	}
 ]);

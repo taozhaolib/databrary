@@ -7,12 +7,12 @@ module.factory('analyticInterceptor', [
 				var json = analytics.dump(config);
 
 				if (json) {
-					config.headers['Analytics'] = json;
+					config.headers.Analytics = json;
 				}
 
 				return config;
 			}
-		}
+		};
 	}
 ]);
 

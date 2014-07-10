@@ -12,7 +12,7 @@ module.directive('figure', [
 				$element.attr('href', '');
 
 				if ($attrs.title) {
-					$wrap.attr('title', $attr.title);
+					$wrap.attr('title', $attrs.title);
 					$element.attr('title', '');
 				}
 
@@ -53,7 +53,7 @@ module.directive('figure', [
 					$img.one('load', resizeFn);
 					$element.on('resize.figure', resizeFn);
 				}
-			}
+			};
 		};
 
 		return {

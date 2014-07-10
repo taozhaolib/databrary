@@ -114,6 +114,6 @@ module.directive('fold', [
 			restrict: 'A',
 			priority: 0,
 			link: link
-		}
+		};
 	}
 ]);

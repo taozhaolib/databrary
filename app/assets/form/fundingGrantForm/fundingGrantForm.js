@@ -45,8 +45,8 @@ module.directive('fundingGrantForm', [
 			form.save = function () {
 				form.data.awards = form.awards.map(function (award) {
 					return award.val.trim();
-				}).filter(function (author) {
-					return author != '';
+				}).filter(function (grant) {
+					return grant !== '';
 				});
 
 				form.volumeAccess = new page.models.VolumeAccess(form.data);

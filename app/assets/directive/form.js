@@ -25,7 +25,8 @@ module.directive('form', [
 							});
 						}
 
-						for (var name in form.validators) {
+						var name;
+						for (name in form.validators) {
 							if (form.validators.hasOwnProperty(name)) {
 								form.validators[name].server(res.data[name] || {}, replace);
 							} else if (form.messages) {
@@ -37,7 +38,7 @@ module.directive('form', [
 							}
 						}
 
-						for (var name in res.data) {
+						for (name in res.data) {
 							if (res.data.hasOwnProperty(name) && form.validators[name]) {
 								form.validators[name].server(res.data[name], replace);
 							} else if (form.messages) {
@@ -120,6 +121,6 @@ module.directive('form', [
 				pre: pre,
 				post: post,
 			},
-		}
+		};
 	}
 ]);

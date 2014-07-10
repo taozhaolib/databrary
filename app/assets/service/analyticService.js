@@ -45,7 +45,7 @@ module.factory('analyticService', [
 			analytic.data = angular.isObject(route) ? route : data || {};
 
 			if (analytic.data.error && angular.isString(analytic.data.error.data) && analytic.data.error.data.length > 512) {
-				return
+				return;
 			}
 
 			queue.push(analytic);

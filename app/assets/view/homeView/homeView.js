@@ -10,7 +10,7 @@ module.controller('HomeView', [
 				return '';
 			}
 			return s.substr(s.lastIndexOf(' '));
-		}
+		};
 
 		$scope.parties = page.$filter('toArray')(parties, lastName);
 		$scope.volume = volume;

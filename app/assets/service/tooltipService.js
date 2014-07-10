@@ -189,7 +189,7 @@ module.factory('tooltipService', [
 
 			if (!tooltip.live && $target.length === 0) {
 				tooltips.disable(tooltip);
-				return tooltip.$target = false;
+				return (tooltip.$target = false);
 			}
 
 			var events = getTargetEvents(tooltip);
@@ -233,7 +233,7 @@ module.factory('tooltipService', [
 
 		$rootScope.$watch(function () {
 			angular.forEach(tooltips, function (tooltip) {
-				if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length == 0) {
+				if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length === 0) {
 					removeEvents(tooltip);
 					tooltips.remove(tooltip);
 				}

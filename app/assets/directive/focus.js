@@ -13,6 +13,6 @@ module.directive('focus', [
 		return {
 			restrict: 'A',
 			link: link,
-		}
+		};
 	}
 ]);

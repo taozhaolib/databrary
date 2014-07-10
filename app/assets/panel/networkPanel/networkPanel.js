@@ -131,10 +131,10 @@ module.controller('NetworkPanel', [
 
 		var applySuccessFn = function () {
 			if ($scope.currentAuthChild && $scope.currentAuthChild.remote) {
-				delete $scope.currentAuthChild['force'];
+				delete $scope.currentAuthChild.force;
 			}
 			else {
-				delete $scope.currentAuthParent['force'];
+				delete $scope.currentAuthParent.force;
 			}
 
 			applyCancelFn();
@@ -238,7 +238,7 @@ module.controller('NetworkPanel', [
 		};
 
 		$scope.showExtended = function () {
-			return isAdmin()
+			return isAdmin();
 		};
 
 		//

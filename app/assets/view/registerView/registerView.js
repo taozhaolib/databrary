@@ -16,7 +16,7 @@ module.controller('RegisterView', [
 
 			for (var i = 0, l = $scope.wizard.steps.length; i < l; i++) {
 				if ($scope.wizard.steps[i].active) {
-					return $scope.wizard.steps[i]
+					return $scope.wizard.steps[i];
 				}
 			}
 		}, function (step) {
@@ -87,7 +87,7 @@ module.controller('RegisterView', [
 				page.messages.addError({
 					body: page.constants.message('register.authquery.error'),
 					report: res,
-				})
+				});
 			});
 		};
 

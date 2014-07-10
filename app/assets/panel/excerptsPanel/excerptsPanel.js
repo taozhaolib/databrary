@@ -61,7 +61,7 @@ module.controller('ExcerptsPanel', [
 
 			var $item = $('#' + found.id);
 
-			if ($item.length == 0) {
+			if ($item.length === 0) {
 				return addTo(found, asset);
 			}
 

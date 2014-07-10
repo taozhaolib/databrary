@@ -119,7 +119,7 @@ module.directive('browserList', [
 			};
 
 			$scope.recordIdentifier = function (record) {
-				if (record.id != 0) {
+				if (record.id !== 0) {
 					switch (record.category) {
 						case -700:
 							return record.measures.reason;
@@ -214,7 +214,7 @@ module.directive('browserList', [
 				var category = page.constants.data.category[data.object.category],
 					name;
 
-				if (data.object.id == 0) {
+				if (data.object.id === 0) {
 					switch (category.id) {
 						case -800:
 							name = 'Not pilot';

@@ -19,6 +19,6 @@ module.directive('tooltip', [
 		return {
 			restrict: 'EA',
 			link: link
-		}
+		};
 	}
 ]);

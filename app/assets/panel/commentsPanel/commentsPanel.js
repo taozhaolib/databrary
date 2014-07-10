@@ -42,7 +42,7 @@ module.controller('CommentsPanel', [
 						form.messages.addError({
 							body: page.constants.message('comments.update.error'),
 							report: res,
-						})
+						});
 					});
 
 					break;
@@ -61,8 +61,6 @@ module.controller('CommentsPanel', [
 				case 'PartyView':
 					return $scope.party;
 
-				case 'VolumeView':
-				case 'SlotView':
 				default:
 					return comment.who;
 			}
@@ -101,8 +99,8 @@ module.controller('CommentsPanel', [
 
 		//
 
-		var commentReplyForm = undefined;
-		var replyTo = undefined;
+		var commentReplyForm;
+		var replyTo;
 
 		$scope.getReply = function (comment) {
 			return page.auth.isLoggedIn() &&
@@ -163,6 +161,6 @@ module.controller('CommentsPanel', [
 			}
 
 			return classes;
-		}
+		};
 	}
 ]);

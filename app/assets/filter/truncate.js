@@ -21,8 +21,8 @@ module.filter('truncate', [
 					else {
 						return words.splice(0, length).join(' ') + end;
 					}
+					break;
 
-				case 'characters':
 				default:
 					if (text.length <= length || text.length - end.length <= length) {
 						return text;

@@ -10,7 +10,7 @@ module.factory('authInterceptor', [
 
 				return $q.reject(response);
 			}
-		}
+		};
 	}
 ]);
 

@@ -22,7 +22,7 @@ module.filter('age', [
 			//
 
 			var fix = function (value) {
-				return new Number(value + '').toFixed(decimals);
+				return value.toFixed(decimals);
 			};
 
 			//
@@ -35,7 +35,6 @@ module.filter('age', [
 					days = age / 86400;
 					break;
 
-				case 'days':
 				default:
 					seconds = age * 86400;
 					days = age;
@@ -66,7 +65,6 @@ module.filter('age', [
 					output = fix(seconds) + ' days';
 					break;
 
-				case 'science':
 				default:
 					if (months < 3) {
 						output = fix(days) + ' days';

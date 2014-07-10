@@ -70,7 +70,7 @@ module.factory('messageService', [
 				var doc = document.open('text/html', 'replace');
 				doc.write(html);
 				doc.close();
-			}
+			};
 		};
 
 		var getTargetEvents = function (message) {
@@ -230,7 +230,7 @@ module.factory('messageService', [
 
 			if ($target.length === 0) {
 				this.disable(message);
-				return message.target = false;
+				return (message.target = false);
 			}
 
 			message.targetElement = $target;
@@ -268,7 +268,7 @@ module.factory('messageService', [
 			message.countdown = angular.isDefined(countdown) ? countdown : message.countdown;
 
 			if (!angular.isNumber(message.countdown)) {
-				return message.countdown = false;
+				return (message.countdown = false);
 			}
 
 			message.countdownTimer = $timeout(function () {

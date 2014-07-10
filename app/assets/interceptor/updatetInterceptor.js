@@ -2,7 +2,7 @@
 
 module.factory('updateInterceptor', [
 	'$rootScope', function ($rootScope) {
-		var version = undefined;
+		var version;
 		var warning = false;
 
 		return {
@@ -28,7 +28,7 @@ module.factory('updateInterceptor', [
 
 				return res;
 			}
-		}
+		};
 	}
 ]);
 

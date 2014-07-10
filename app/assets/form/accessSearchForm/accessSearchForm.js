@@ -17,8 +17,8 @@ module.directive('accessSearchForm', [
 
 			//
 
-			var recentSearch = undefined;
-			var sentSearch = undefined;
+			var recentSearch;
+			var sentSearch;
 
 			var fin = function (res) {
 				form.validator.server(res || {});

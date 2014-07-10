@@ -28,6 +28,6 @@ module.directive('fileModel', [
 		return {
 			restrict: 'A',
 			link: link
-		}
+		};
 	}
 ]);

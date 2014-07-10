@@ -51,7 +51,7 @@ module.controller('LoginView', [
 				page.auth.parseUser(data);
 
 				if (page.auth.next) {
-					page.$location.path(auth.next);
+					page.$location.path(page.auth.next);
 					page.auth.next = undefined;
 				} else {
 					page.$location.path('/');

@@ -65,7 +65,7 @@ module.directive('volumeEditOverviewForm', [
 				form.data.citation.authors = form.authors.map(function (author) {
 					return author.name.trim();
 				}).filter(function (author) {
-					return author != '';
+					return author !== '';
 				});
 
 				if (angular.isFunction(form.saveFn)) {
@@ -175,7 +175,7 @@ module.directive('volumeEditOverviewForm', [
 				}
 
 				var gotDate = function (res) {
-					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]
+					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0];
 				};
 
 				page.models.CrossCite
@@ -217,7 +217,7 @@ module.directive('volumeEditOverviewForm', [
 								});
 
 								page.$timeout(function () {
-									form['name'].$setViewValue(res.title);
+									form.name.$setViewValue(res.title);
 									form['citation.author'].$setViewValue();
 
 									if (gotDate(res)) {

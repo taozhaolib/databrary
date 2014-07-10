@@ -80,7 +80,7 @@ module.controller('TagsPanel', [
 						$scope.messages.addError({
 							body: page.constants.message('tags.update.error'),
 							report: res,
-						})
+						});
 					});
 
 					break;
@@ -94,11 +94,11 @@ module.controller('TagsPanel', [
 
 			tagModel.$save({
 				id: tag.id,
-				vote: vote == -1 ? 'false' : vote == 1 ? 'true' : '',
+				vote: vote === -1 ? 'false' : vote === 1 ? 'true' : '',
 				container: $scope.target.container,
 				segment: $scope.target.segment
 			}, function (newTag) {
-				if (newTag.weight == 0 && !newTag.vote) {
+				if (newTag.weight === 0 && !newTag.vote) {
 					$scope.tags.splice($scope.tags.indexOf(tag), 1);
 				}
 				else {
@@ -175,7 +175,7 @@ module.controller('TagsPanel', [
 		var keypress = function (event, form) {
 			if (event.which == 40) {
 				// down
-				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == $scope.autoList.length - 1) {
+				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect === $scope.autoList.length - 1) {
 					$scope.autoSelect = 0;
 				}
 				else {
@@ -185,7 +185,7 @@ module.controller('TagsPanel', [
 				return;
 			} else if (event.which == 38) {
 				// up
-				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect == 0) {
+				if (angular.isUndefined($scope.autoSelect) || $scope.autoSelect === 0) {
 					$scope.autoSelect = $scope.autoList.length - 1;
 				}
 				else {
