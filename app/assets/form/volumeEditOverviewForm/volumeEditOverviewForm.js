@@ -139,12 +139,14 @@ module.directive('volumeEditOverviewForm', [
 
 				form.validator.clearServer();
 
-				if (form.data.citation && form.data.citation.authors) {
-					form.authors = form.data.citation.authors.map(function (author) {
+				if (backup.citation && backup.citation.authors) {
+					form.authors = backup.citation.authors.map(function (author) {
 						return {
 							name: author,
 						};
 					});
+				} else {
+					form.authors = [];
 				}
 
 				form.$setPristine();
@@ -170,6 +172,10 @@ module.directive('volumeEditOverviewForm', [
 					return;
 				}
 
+				var gotDate = function (res) {
+					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]
+				};
+
 				page.models.CrossCite
 					.json(doi[1])
 					.then(function (res) {
@@ -185,7 +191,7 @@ module.directive('volumeEditOverviewForm', [
 								form.data.citation = {};
 							}
 
-							if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
+							if (gotDate(res)) {
 								form.data.citation.year = res.issued['date-parts'][0][0];
 							}
 
@@ -207,6 +213,15 @@ module.directive('volumeEditOverviewForm', [
 
 									form.authors.push({name: name});
 								});
+
+								page.$timeout(function () {
+									form['name'].$setViewValue(res.title);
+									form['citation.author'].$setViewValue();
+
+									if (gotDate(res)) {
+										form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
+									}
+								});
 							}
 
 							form.setAutomatic(false);
@@ -224,31 +239,34 @@ module.directive('volumeEditOverviewForm', [
 						});
 					});
 
-				if (!form.hasCitations) {
-					page.models.CrossCite
-						.apa(doi[1])
-						.then(function (res) {
-							if (!form.data.citation) {
-								form.data.citation = {};
-							}
+				page.models.CrossCite
+					.apa(doi[1])
+					.then(function (res) {
+						if (!form.data.citation) {
+							form.data.citation = {};
+						}
 
-							form.data.citation.url = 'doi:' + doi[1];
-							form.data.citation.head = res;
+						form.data.citation.url = 'doi:' + doi[1];
+						form.data.citation.head = res;
 
-							form.setAutomatic(false);
-
-							form.messages.add({
-								type: 'green',
-								countdown: 3000,
-								body: page.constants.message('volume.edit.autodoi.citation.success'),
-							});
-						}, function (res) {
-							form.messages.add({
-								type: 'red',
-								body: page.constants.message('volume.edit.autodoi.citation.error'),
-							});
+						page.$timeout(function () {
+							form['citation.url'].$setViewValue('doi:' + doi[1]);
+							form['citation.head'].$setViewValue(res);
 						});
-				}
+
+						form.setAutomatic(false);
+
+						form.messages.add({
+							type: 'green',
+							countdown: 3000,
+							body: page.constants.message('volume.edit.autodoi.citation.success'),
+						});
+					}, function (res) {
+						form.messages.add({
+							type: 'red',
+							body: page.constants.message('volume.edit.autodoi.citation.error'),
+						});
+					});
 			};
 
 			//

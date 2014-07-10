@@ -26,13 +26,17 @@ module.controller('ExcerptsPanel', [
 		};
 
 		$scope.hasThumbnail = function (asset) {
-			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video' && asset.asset.duration;
+			return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
+		};
+
+		$scope.showThumbnail = function (asset) {
+			return $scope.getMimeGroup(asset) == 'image' || asset.asset.duration;
 		};
 
 		$scope.listClass = function (excerpt) {
 			var cls = [];
 
-			if ($scope.getMimeGroup(excerpt) == 'video' && excerpt.asset.duration) {
+			if ($scope.getMimeGroup(excerpt) == 'video') {
 				cls.push('video');
 			}
 

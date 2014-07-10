@@ -29,7 +29,7 @@ module.factory('messageService', [
 				var exists;
 
 				angular.forEach(this, function (thisMessage) {
-					if (message.body === thisMessage.body) {
+					if (message.body === thisMessage.body && thisMessage.enabled) {
 						exists = true;
 						return false;
 					}

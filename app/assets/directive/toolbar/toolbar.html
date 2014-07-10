@@ -10,7 +10,7 @@
           <ul class="toolbar-nav-ul inline-block flat cf">
             <li ng-repeat="link in toolbar.links()" bindonce>
               <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target"><span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
-                <span class="text" bo-html="link.html"></span></a></li>
+                <span class="text" bo-html="link.html.toLowerCase()"></span></a></li>
           </ul>
         </nav>
       </div>
@@ -45,7 +45,7 @@
                 <a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-html="'toolbar.profile' | message"></a>
               </li>
               <li>
-                <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
+                <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
               </li>
               <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 

@@ -8,12 +8,12 @@
     </div>
   </fieldset>
 
-  <fieldset class="clean radio-set">
-    <div ng-if="!access.party.institution">
-      <input type="checkbox" ng-model="accessGrantForm.data.extend">
-      <label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
-    </div>
-  </fieldset>
+	<fieldset class="clean radio-set">
+		<div ng-if="!access.party.institution">
+			<input type="checkbox" ng-model="accessGrantForm.data.extend" ng-disabled="!accessGrantForm.data.individual">
+			<label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
+		</div>
+	</fieldset>
 
   <fieldset class="clean">
     <button ng-click="accessGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>

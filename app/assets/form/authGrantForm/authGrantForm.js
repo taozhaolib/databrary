@@ -83,7 +83,7 @@ module.directive('authGrantForm', [
 				form.other = $.extend(true, {}, backup);
 
 				if (form.other.new) {
-					form.remove();
+					form.deny();
 				} else {
 					form.$setPristine();
 				}
@@ -100,24 +100,30 @@ module.directive('authGrantForm', [
 					form.denyFn(form);
 				}
 
-				page.models.PartyAuthorize.delete({
-					id: form.party.id,
-					partyId: form.other.party.id
-				}, {}, function () {
-					form.validator.server({});
-					page.models.Party.$cache.removeAll();
-
+				if (form.other.new) {
 					if (angular.isFunction(form.denySuccessFn)) {
 						form.denySuccessFn(form, arguments);
 					}
-				}, function (res) {
-					form.validator.server(res);
-					page.display.scrollTo(form.$element);
+				} else {
+					page.models.PartyAuthorize.delete({
+						id: form.party.id,
+						partyId: form.other.party.id
+					}, {}, function () {
+						form.validator.server({});
+						page.models.Party.$cache.removeAll();
 
-					if (angular.isFunction(form.denyErrorFn)) {
-						form.denyErrorFn(form, arguments);
-					}
-				});
+						if (angular.isFunction(form.denySuccessFn)) {
+							form.denySuccessFn(form, arguments);
+						}
+					}, function (res) {
+						form.validator.server(res);
+						page.display.scrollTo(form.$element);
+
+						if (angular.isFunction(form.denyErrorFn)) {
+							form.denyErrorFn(form, arguments);
+						}
+					});
+				}
 			};
 
 			//

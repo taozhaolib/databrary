@@ -47,7 +47,7 @@
             <div ng-if="hasThumbnail(excerpt)">
               <figure ng-click="setCurrent(excerpt)" fill>
                 <figmedia>
-                  <img bo-src="page.router.assetThumb(excerpt)">
+                  <img bo-src="page.router.assetThumb(excerpt)" bo-if="showThumbnail(excerpt)">
 
                   <div class="panel-excerpts-video-overlay"></div>
                 </figmedia>
