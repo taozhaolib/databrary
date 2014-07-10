@@ -587,10 +587,10 @@ splash.investigators.header=Databrary Investigators
 
 # --- Volume edit
 
-volume.edit.create=create study
-volume.edit.cancel=cancel
-volume.edit=edit study
-volume.edit.exit=view study
+volume.edit.create=Create study
+volume.edit.cancel=Cancel
+volume.edit=Edit study
+volume.edit.exit=View study
 
 volume.edit.title.sub=New Study
 volume.edit.success=Volume saved successfully.
