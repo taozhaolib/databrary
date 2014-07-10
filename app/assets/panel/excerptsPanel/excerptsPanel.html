@@ -44,17 +44,17 @@
               <a ng-href="" ng-click="jump(excerpt)" class="icon line jump tool" target="_self" tooltip tooltip-message="{{'excerpts.jump' | message}}"></a>
             </div>
 
-            <div ng-if="hasThumbnail(excerpt)">
+            <div ng-if="hasThumbnail(excerpt)" class="panel-excerpts-icon">
               <figure ng-click="setCurrent(excerpt)" fill>
                 <figmedia>
                   <img bo-src="page.router.assetThumb(excerpt)" bo-if="showThumbnail(excerpt)">
-
-                  <div class="panel-excerpts-video-overlay"></div>
                 </figmedia>
               </figure>
+
+              <div class="panel-excerpts-video-overlay"></div>
             </div>
 
-            <div ng-if="!hasThumbnail(excerpt)">
+            <div ng-if="!hasThumbnail(excerpt)" class="panel-excerpts-icon">
               <figure ng-click="setCurrent(excerpt)">
                 <span bo-text="excerpt.asset.name"></span>
                 <img class="panel-excerpt-filetype-thumb" bo-src="page.types.assetIcon(excerpt)">
