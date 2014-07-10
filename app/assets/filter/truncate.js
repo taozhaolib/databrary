@@ -15,13 +15,9 @@ module.filter('truncate', [
 				case 'words':
 					var words = text.split(' ');
 
-					if (words.length < length) {
-						return text;
-					}
-					else {
-						return words.splice(0, length).join(' ') + end;
-					}
-					break;
+					return words.length < length ?
+						text :
+						words.splice(0, length).join(' ') + end;
 
 				default:
 					if (text.length <= length || text.length - end.length <= length) {

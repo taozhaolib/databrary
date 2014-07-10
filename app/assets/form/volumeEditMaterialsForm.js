@@ -128,7 +128,7 @@ module.directive('volumeEditMaterialsForm', [
 								}
 
 								page.display.scrollTo(subform.$element);
-							}).finally(function(res){
+							}).finally(function(){
 									subform.messages.remove(msg);
 									form.clean(subform);
 							});
@@ -170,10 +170,10 @@ module.directive('volumeEditMaterialsForm', [
 								}
 
 								page.display.scrollTo(subform.$element);
-							}).finally(function(res){
+							}).finally(function(){
 								subform.messages.remove(msg);
 								form.clean(subform);
-						});
+							});
 					}
 				} else {
 					var newAsset = new page.models.Asset({
@@ -210,7 +210,7 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						page.display.scrollTo(subform.$element);
-					}).finally(function(res){
+					}).finally(function(){
 						form.clean(subform);
 					});
 				}
@@ -269,7 +269,7 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						page.display.scrollTo(subform.$element);
-					}).finally(function(res){
+					}).finally(function(){
 						form.clean(subform);
 					});
 				}

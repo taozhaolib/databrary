@@ -263,7 +263,7 @@ module.directive('volumeEditOverviewForm', [
 							countdown: 3000,
 							body: page.constants.message('volume.edit.autodoi.citation.success'),
 						});
-					}, function (res) {
+					}, function () {
 						form.messages.add({
 							type: 'red',
 							body: page.constants.message('volume.edit.autodoi.citation.error'),
