@@ -12,7 +12,7 @@
     <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-html="'volume.edit.autodoi.donthave' | message"></button>
   </fieldset>
 
-  <fieldset class="clean skinny" ng-if="!volumeEditOverviewForm.automatic">
+  <fieldset class="clean skinny" ng-show="!volumeEditOverviewForm.automatic">
     <validator form="volumeEditOverviewForm" name="citation.head" label="'citation.head' | message">
       <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" placeholder="{{'volume.edit.citation.head.placeholder' | message}}">
     </validator>

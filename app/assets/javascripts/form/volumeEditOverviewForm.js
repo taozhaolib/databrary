@@ -172,6 +172,10 @@ module.directive('volumeEditOverviewForm', [
 					return;
 				}
 
+				var gotDate = function (res) {
+					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]
+				};
+
 				page.models.CrossCite
 					.json(doi[1])
 					.then(function (res) {
@@ -181,14 +185,14 @@ module.directive('volumeEditOverviewForm', [
 								body: page.constants.message('volume.edit.autodoi.name.error'),
 							});
 						} else {
-							form['name'].$setViewValue(res.title);
+							form.data.name = res.title;
 
 							if (!form.data.citation) {
 								form.data.citation = {};
 							}
 
-							if (res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]) {
-								form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
+							if (gotDate(res)) {
+								form.data.citation.year = res.issued['date-parts'][0][0];
 							}
 
 							if (res.author) {
@@ -208,7 +212,15 @@ module.directive('volumeEditOverviewForm', [
 									name = name.slice(0, -1);
 
 									form.authors.push({name: name});
+								});
+
+								page.$timeout(function () {
+									form['name'].$setViewValue(res.title);
 									form['citation.author'].$setViewValue();
+
+									if (gotDate(res)) {
+										form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
+									}
 								});
 							}
 
@@ -234,8 +246,13 @@ module.directive('volumeEditOverviewForm', [
 							form.data.citation = {};
 						}
 
-						form['citation.url'].$setViewValue('doi:' + doi[1]);
-						form['citation.head'].$setViewValue(res);
+						form.data.citation.url = 'doi:' + doi[1];
+						form.data.citation.head = res;
+
+						page.$timeout(function () {
+							form['citation.url'].$setViewValue('doi:' + doi[1]);
+							form['citation.head'].$setViewValue(res);
+						});
 
 						form.setAutomatic(false);
 
