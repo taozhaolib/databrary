@@ -318,6 +318,7 @@ module.config([
 							volumeEditVolume.then(function (volume) {
 								page.models.Slot.get({
 									id: volume.top.id,
+									vid: volume.id,
 									assets: '',
 								}, function (res) {
 									deferred.resolve(res);
