@@ -359,6 +359,7 @@ funding.remove.error=Could not remove funding agency at this time.
 
 funding.awards=Grant #
 funding.awards.placeholder=XXX-XXXXXX-XX
+funding.awards.add=Add another grant
 funding.search.legend=Add a funding source
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
@@ -618,6 +619,7 @@ volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
 volume.edit.name.placeholder=Title
 volume.edit.citation.author.placeholder=First Last
+volume.edit.citation.author.add=Add another author
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
 volume.edit.citation.year.placeholder=2014
 volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
