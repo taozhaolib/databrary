@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('ArrayHelper', [
 	'$filter', function ($filter) {
 		var ArrayHelper = function (array) {

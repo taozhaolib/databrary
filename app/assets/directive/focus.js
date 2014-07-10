@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('focus', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
@@ -11,6 +13,6 @@ module.directive('focus', [
 		return {
 			restrict: 'A',
 			link: link,
-		}
+		};
 	}
 ]);

@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('displayService', [
 	'$rootScope',
 	'$sessionStorage',
@@ -80,14 +82,10 @@ module.factory('displayService', [
 
 			var result = display.navigationFn(event, url);
 
-			if (result === true) {
-				return display.navigationFn = undefined;
-			} else if (angular.isUndefined(result)) {
+			if (angular.isUndefined(result)) {
 				return;
-			}
-
-			if (result === true || confirm(constants.message('navigation.confirmation'))) {
-				return display.navigationFn = undefined;
+			} else if (result === true || confirm(constants.message('navigation.confirmation'))) {
+				return (display.navigationFn = undefined);
 			}
 
 			event.preventDefault();
@@ -96,12 +94,12 @@ module.factory('displayService', [
 		//
 
 		var ageKeys = ['science', 'days', 'months', 'years'],
-			ageKey = $sessionStorage['displayAge'] || 'science';
+			ageKey = $sessionStorage.displayAge || 'science';
 
 		display.toggleAge = function () {
 			ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
 			events.talk('displayService-toggleAge', ageKey);
-			$sessionStorage['displayAge'] = ageKey;
+			$sessionStorage.displayAge = ageKey;
 		};
 
 		display.formatAge = function (value) {

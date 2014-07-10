@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('fileModel', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
@@ -26,6 +28,6 @@ module.directive('fileModel', [
 		return {
 			restrict: 'A',
 			link: link
-		}
+		};
 	}
 ]);

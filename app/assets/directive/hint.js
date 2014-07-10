@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('hint', [
 	'pageService', function (page) {
 		var hints = {};
@@ -74,6 +76,6 @@ module.directive('hint', [
 		return {
 			restrict: 'A',
 			link: link,
-		}
+		};
 	}
 ]);

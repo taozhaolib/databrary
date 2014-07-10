@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('authInterceptor', [
 	'$rootScope', '$q', '$location', function ($rootScope, $q, $location) {
 		return {
@@ -8,7 +10,7 @@ module.factory('authInterceptor', [
 
 				return $q.reject(response);
 			}
-		}
+		};
 	}
 ]);
 

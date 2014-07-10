@@ -1,3 +1,4 @@
+/* globals -module */
 'use strict';
 
 var module = angular.module('databraryModule', [

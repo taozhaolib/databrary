@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('cite', [
 	'pageService', function (page) {
 		return function (volume) {

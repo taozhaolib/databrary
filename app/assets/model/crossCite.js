@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('crossCite', [
 	'$http', '$q', function ($http, $q) {
 		var url = 'http://data.crossref.org/';

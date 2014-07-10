@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('analyticInterceptor', [
 	'$rootScope', 'analyticService', function ($rootScope, analytics) {
 		return {
@@ -5,12 +7,12 @@ module.factory('analyticInterceptor', [
 				var json = analytics.dump(config);
 
 				if (json) {
-					config.headers['Analytics'] = json;
+					config.headers.Analytics = json;
 				}
 
 				return config;
 			}
-		}
+		};
 	}
 ]);
 

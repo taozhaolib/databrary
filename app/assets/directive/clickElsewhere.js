@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('clickElsewhere', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
@@ -13,6 +15,6 @@ module.directive('clickElsewhere', [
 		return {
 			restrict: 'A',
 			link: link
-		}
+		};
 	}
 ]);

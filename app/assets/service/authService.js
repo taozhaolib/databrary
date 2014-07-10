@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('authService', [
 	'$rootScope',
 	'$location',
@@ -22,7 +24,7 @@ module.factory('authService', [
 			if (user) {
 				user.superuser = !!user.superuser;
 
-				if (auth.user && auth.user.id === user.id && !auth.user.superuser === !user.superuser) {
+				if (auth.user && auth.user.id === user.id && auth.user.superuser == user.superuser) {
 					reload = false;
 				}
 			} else if (!user && !auth.user) {

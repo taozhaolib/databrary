@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('pageService', [
 	'$injector', function ($injector) {
 		var page = {

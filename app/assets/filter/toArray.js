@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('toArray', [
 	'pageService', function (page) {
 		return function (input, expression, reverse) {
@@ -9,7 +11,7 @@ module.filter('toArray', [
 
 			angular.forEach(input, function (item, key) {
 				if (key != '$promise' && key != '$resolved') {
-					item['key'] = key;
+					item.key = key;
 					output.push(item);
 				}
 			});
