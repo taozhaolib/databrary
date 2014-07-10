@@ -35,7 +35,7 @@ module.directive('accessSearchForm', [
 				} else if (sentSearch) {
 					recentSearch = form.nameVal;
 				} else {
-					sentSearch = page.models.VolumeAccess.search({
+					sentSearch = page.models.volumeAccess.search({
 						id: form.id,
 						name: form.nameVal,
 						institution: form.institution,

@@ -66,9 +66,9 @@ module.controller('TagsPanel', [
 		$scope.retrieveTags = function () {
 			switch (page.$route.current.controller) {
 				case 'VolumeView':
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 
-					page.models.Volume.get({
+					page.models.volume.get({
 						id: $scope.volume.id,
 						tags: ''
 					}, function (data) {
@@ -88,7 +88,7 @@ module.controller('TagsPanel', [
 		//
 
 		$scope.vote = function (tag, vote) {
-			var tagModel = new page.models.Tag({id: tag.id});
+			var tagModel = new page.models.tag({id: tag.id});
 
 			tagModel.$save({
 				id: tag.id,
@@ -131,7 +131,7 @@ module.controller('TagsPanel', [
 
 			emptyAuto();
 
-			var tagModel = new page.models.Tag({id: form.newNameVal});
+			var tagModel = new page.models.tag({id: form.newNameVal});
 			var data = {
 				id: form.newNameVal,
 				vote: 'true',

@@ -25,7 +25,7 @@ module.directive('commentReplyForm', [
 					form.saveFn(form);
 				}
 
-				form.comment = new page.models.Comment();
+				form.comment = new page.models.comment();
 
 				form.comment.$save(form.data,
 					function () {

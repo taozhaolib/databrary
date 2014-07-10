@@ -95,7 +95,7 @@ module.directive('volumeEditAccessForm', [
 
 				page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
 					var p = page.constants.data.permissionName[form.global[i]];
-					page.models.VolumeAccess.save({
+					page.models.volumeAccess.save({
 						id: form.volume.id,
 						partyId: party
 					}, {
@@ -116,7 +116,7 @@ module.directive('volumeEditAccessForm', [
 					angular.copy(form.global, backup);
 					form.accessGlobalDirty = false;
 					form.$setPristine();
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.global.save.error'),

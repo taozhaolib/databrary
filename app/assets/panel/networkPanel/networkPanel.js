@@ -25,8 +25,8 @@ module.controller('NetworkPanel', [
 
 		var getPartyAuth = function () {
 			if (page.auth.hasAccess('ADMIN', $scope.party)) {
-				page.models.PartyAuthorize.$cache.removeAll();
-				page.models.PartyAuthorize.query(function (data) {
+				page.models.partyAuthorize.$cache.removeAll();
+				page.models.partyAuthorize.query(function (data) {
 					$scope.partyAuth = data;
 
 					angular.forEach($scope.partyAuth.children, function (party) {
@@ -53,8 +53,8 @@ module.controller('NetworkPanel', [
 					});
 				});
 			} else {
-				page.models.Party.$cache.removeAll();
-				page.models.Party.get({
+				page.models.party.$cache.removeAll();
+				page.models.party.get({
 					id: page.$routeParams.id || page.auth.user.id,
 					parents: '',
 					children: ''

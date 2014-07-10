@@ -52,7 +52,7 @@ module.directive('partyEditProfileForm', [
 						body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
 					});
 
-					page.models.Party.upload(form.party, fd)
+					page.models.party.upload(form.party, fd)
 						.then(function (res) {
 							form.validator.server({});
 
@@ -76,7 +76,7 @@ module.directive('partyEditProfileForm', [
 							}
 
 							form.$setPristine();
-							page.models.Party.$cache.removeAll();
+							page.models.party.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
 							page.display.scrollTo(form.$element);
@@ -88,7 +88,7 @@ module.directive('partyEditProfileForm', [
 							}
 						});
 				} else {
-					page.models.Party.save({
+					page.models.party.save({
 							id: form.party.id,
 						}, form.data,
 						function (res) {
@@ -110,7 +110,7 @@ module.directive('partyEditProfileForm', [
 							}
 
 							form.$setPristine();
-							page.models.Party.$cache.removeAll();
+							page.models.party.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
 							page.display.scrollTo(form.$element);

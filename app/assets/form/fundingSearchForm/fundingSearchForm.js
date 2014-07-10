@@ -37,7 +37,7 @@ module.directive('fundingSearchForm', [
 				} else if (sentSearch) {
 					recentSearch = form.nameVal;
 				} else {
-					sentSearch = page.models.VolumeAccess.searchFunding(data,
+					sentSearch = page.models.volumeAccess.searchFunding(data,
 						function (data) {
 							form.found = data;
 

@@ -1,4 +1,4 @@
-module.controller('SearchView', [
+module.controller('searchView', [
 	'$scope', 'volumes', 'pageService', function ($scope, volumes, page) {
 		page.display.title = page.constants.message('page.title.search');
 

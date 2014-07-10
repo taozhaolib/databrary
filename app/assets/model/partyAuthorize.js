@@ -1,4 +1,4 @@
-module.factory('PartyAuthorize', [
+module.factory('partyAuthorize', [
 	'resourceFactory', '$route', 'authService', function (resource, $route, auth) {
 		return resource('/api/party/:id/authorize/:partyId', {
 			id: function () {

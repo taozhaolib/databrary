@@ -71,7 +71,7 @@ module.directive('volumeEditOverviewForm', [
 				}
 
 				if (form.volume) {
-					page.models.Volume.save(form.data,
+					page.models.volume.save(form.data,
 						function (res) {
 							form.validator.server({});
 
@@ -88,7 +88,7 @@ module.directive('volumeEditOverviewForm', [
 							}
 
 							form.$setPristine();
-							page.models.Volume.$cache.removeAll();
+							page.models.volume.$cache.removeAll();
 						}, function (res) {
 							form.validator.server(res);
 							page.display.scrollTo(form.$element);
@@ -98,7 +98,7 @@ module.directive('volumeEditOverviewForm', [
 							}
 						});
 				} else {
-					var volume = new page.models.Volume(form.data);
+					var volume = new page.models.volume(form.data);
 
 					volume.$save({
 						owner: page.auth.user.id
@@ -118,7 +118,7 @@ module.directive('volumeEditOverviewForm', [
 						}
 
 						form.$setPristine();
-						page.models.Volume.$cache.removeAll();
+						page.models.volume.$cache.removeAll();
 						page.$location.url(page.router.volumeEdit(res));
 					}, function (res) {
 						form.validator.server(res);
@@ -176,7 +176,7 @@ module.directive('volumeEditOverviewForm', [
 					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0]
 				};
 
-				page.models.CrossCite
+				page.models.crossCite
 					.json(doi[1])
 					.then(function (res) {
 						if (!res.title) {
@@ -239,7 +239,7 @@ module.directive('volumeEditOverviewForm', [
 						});
 					});
 
-				page.models.CrossCite
+				page.models.crossCite
 					.apa(doi[1])
 					.then(function (res) {
 						if (!form.data.citation) {

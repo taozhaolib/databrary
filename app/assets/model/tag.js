@@ -1,4 +1,4 @@
-module.factory('Tag', [
+module.factory('tag', [
 	'$resource', function ($resource) {
 		return $resource('/api/tag/:id', {});
 	}

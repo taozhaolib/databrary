@@ -1,4 +1,4 @@
-module.controller('PartyEditView', [
+module.controller('partyEditView', [
 	'$scope', 'party', 'partyAuth', 'pageService', function ($scope, party, partyAuth, page) {
 		page.display.title = page.constants.message('page.title.party.edit');
 

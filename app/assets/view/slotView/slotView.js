@@ -1,4 +1,4 @@
-module.controller('SlotView', [
+module.controller('slotView', [
 	'$scope', 'slot', 'pageService', function ($scope, slot, page) {
 		$scope.slot = slot;
 

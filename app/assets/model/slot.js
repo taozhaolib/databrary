@@ -1,4 +1,4 @@
-module.factory('Slot', [
+module.factory('slot', [
 	'resourceFactory', '$route', function (resource, $route) {
 		return resource('/api/volume/:vid/slot/:id', {
 			id: function () {

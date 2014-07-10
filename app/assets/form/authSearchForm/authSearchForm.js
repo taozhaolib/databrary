@@ -41,7 +41,7 @@ module.directive('authSearchForm', [
 				} else if (sentSearch) {
 					recentSearch = form.nameVal;
 				} else {
-					sentSearch = page.models.PartyAuthorize.search({
+					sentSearch = page.models.partyAuthorize.search({
 						id: form.id || page.auth.user.id,
 						name: form.nameVal,
 						institution: form.principal === 'principal' ? true :

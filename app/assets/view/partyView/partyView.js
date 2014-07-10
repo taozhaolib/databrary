@@ -1,4 +1,4 @@
-module.controller('PartyView', [
+module.controller('partyView', [
 	'$scope', 'party', 'volumes', 'pageService', function ($scope, party, volumes, page) {
 		$scope.party = party;
 		$scope.volumes = volumes;
