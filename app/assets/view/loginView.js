@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('LoginView', [
+module.controller('loginView', [
 	'$scope', 'pageService', function ($scope, page) {
 		page.display.title = page.constants.message('page.title.login');
 
@@ -41,7 +41,7 @@ module.controller('LoginView', [
 		//
 
 		$scope.submitForm = function () {
-			page.models.Party.login(angular.extend({
+			page.models.party.login(angular.extend({
 				email: '',
 				password: '',
 				openid: '',

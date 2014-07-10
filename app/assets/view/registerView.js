@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('RegisterView', [
+module.controller('registerView', [
 	'$scope', 'pageService', function ($scope, page) {
 		page.display.title = page.constants.message('page.title.register');
 
@@ -30,7 +30,7 @@ module.controller('RegisterView', [
 				name: step.name
 			});
 
-			page.models.Analytic.send();
+			page.models.analytic.send();
 		});
 
 		//
@@ -75,7 +75,7 @@ module.controller('RegisterView', [
 		//
 
 		var updateUserAuth = function () {
-			page.models.PartyAuthorize.query({
+			page.models.partyAuthorize.query({
 				id: page.auth.user.id
 			}, function (data) {
 				angular.forEach(data.parents, function () {

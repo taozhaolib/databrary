@@ -91,7 +91,7 @@ module.directive('volumeEditMaterialsForm', [
 					});
 
 					if (subform.asset.asset) {
-						page.models.Asset.replace(subform.asset, fd)
+						page.models.asset.replace(subform.asset, fd)
 							.then(function (res) {
 								subform.messages.add({
 									type: 'green',
@@ -105,7 +105,7 @@ module.directive('volumeEditMaterialsForm', [
 
 								delete subform.asset.file;
 								subform.asset.asset = res.data.asset;
-								page.models.Asset.get({
+								page.models.asset.get({
 									creation: '',
 									id: res.data.asset.id
 								}, function (res) {
@@ -114,8 +114,8 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
-								page.models.Volume.$cache.removeAll();
-								page.models.Slot.$cache.removeAll();
+								page.models.volume.$cache.removeAll();
+								page.models.slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
 									type: 'red',
@@ -133,7 +133,7 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 							});
 					} else {
-						page.models.Asset.upload(form.volume, fd)
+						page.models.asset.upload(form.volume, fd)
 							.then(function (res) {
 								subform.messages.add({
 									type: 'green',
@@ -147,7 +147,7 @@ module.directive('volumeEditMaterialsForm', [
 
 								delete subform.asset.file;
 								subform.asset.asset = res.data.asset;
-								page.models.Asset.get({
+								page.models.asset.get({
 									creation: '',
 									id: res.data.asset.id
 								}, function (res) {
@@ -156,8 +156,8 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
-								page.models.Volume.$cache.removeAll();
-								page.models.Slot.$cache.removeAll();
+								page.models.volume.$cache.removeAll();
+								page.models.slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
 									type: 'red',
@@ -176,7 +176,7 @@ module.directive('volumeEditMaterialsForm', [
 							});
 					}
 				} else {
-					var newAsset = new page.models.Asset({
+					var newAsset = new page.models.asset({
 						name: subform.asset.name || '',
 						classification: classification,
 						excerpt: excerpt,
@@ -196,8 +196,8 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						form.store(subform);
-						page.models.Volume.$cache.removeAll();
-						page.models.Slot.$cache.removeAll();
+						page.models.volume.$cache.removeAll();
+						page.models.slot.$cache.removeAll();
 					}, function (res) {
 						subform.messages.addError({
 							type: 'red',
@@ -238,7 +238,7 @@ module.directive('volumeEditMaterialsForm', [
 					form.clean(subform);
 					form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 				} else {
-					var newAsset = new page.models.Asset();
+					var newAsset = new page.models.asset();
 
 					newAsset.$delete({
 						id: subform.asset.asset.id
@@ -255,8 +255,8 @@ module.directive('volumeEditMaterialsForm', [
 
 						form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
-						page.models.Volume.$cache.removeAll();
-						page.models.Slot.$cache.removeAll();
+						page.models.volume.$cache.removeAll();
+						page.models.slot.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
 							type: 'red',
@@ -325,7 +325,7 @@ module.directive('volumeEditMaterialsForm', [
 				subform.asset = backup[subform.$id];
 
 				if (subform.asset.asset) {
-					page.models.Asset.get({
+					page.models.asset.get({
 						creation: '',
 						id: subform.asset.asset.id
 					}, function (res) {

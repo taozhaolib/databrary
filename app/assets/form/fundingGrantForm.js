@@ -49,7 +49,7 @@ module.directive('fundingGrantForm', [
 					return grant !== '';
 				});
 
-				form.volumeAccess = new page.models.VolumeAccess(form.data);
+				form.volumeAccess = new page.models.volumeAccess(form.data);
 
 				if (angular.isFunction(form.saveFn)) {
 					form.saveFn(form);
@@ -71,7 +71,7 @@ module.directive('fundingGrantForm', [
 
 					delete form.data.new;
 					backup = $.extend(true, {}, form.data);
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 					form.$setPristine();
 				}, function (res) {
 					form.messages.addError({
@@ -120,7 +120,7 @@ module.directive('fundingGrantForm', [
 			form.removeErrorFn = undefined;
 
 			form.remove = function () {
-				form.volumeAccess = new page.models.VolumeAccess();
+				form.volumeAccess = new page.models.volumeAccess();
 
 				if (angular.isFunction(form.removeFn)) {
 					form.removeFn(form);
@@ -141,7 +141,7 @@ module.directive('fundingGrantForm', [
 					});
 
 					delete form.data.new;
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 					form.$setPristine();
 				}, function (res) {
 					form.messages.addError({

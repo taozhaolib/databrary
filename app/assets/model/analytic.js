@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('Analytic', [
+module.factory('analytic', [
 	'resourceFactory', function (resource) {
 		var analytic = resource('/api/null', {}, 'analytic');
 

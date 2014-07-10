@@ -36,7 +36,7 @@ module.directive('partyEditAccountForm', [
 					form.saveFn(form);
 				}
 
-				page.models.Party.save({
+				page.models.party.save({
 						id: form.party.id,
 					}, form.data,
 					function (res) {
@@ -55,7 +55,7 @@ module.directive('partyEditAccountForm', [
 						}
 
 						form.$setPristine();
-						page.models.Party.$cache.removeAll();
+						page.models.party.$cache.removeAll();
 					}, function (res) {
 						form.validator.server(res);
 						page.display.scrollTo(form.$element);

@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('VolumeView', [
+module.controller('volumeView', [
 	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
 		$scope.volume = volume;
 

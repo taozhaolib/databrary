@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('HelpFormatsView', [
+module.controller('helpFormatsView', [
 	'$scope', 'pageService', function ($scope, page) {
 		page.display.title = page.constants.message('page.title.help.formats');
 

@@ -4,14 +4,14 @@ module.config([
 	'$routeProvider',
 	function ($routeProvider) {
 		$routeProvider.when('/', {
-			controller: 'HomeView',
+			controller: 'homeView',
 			templateUrl: 'homeView.html',
 			resolve: {
 				parties: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Party.query({
+						page.models.party.query({
 							access: page.permission.CONTRIBUTE
 						}, function (res) {
 							deferred.resolve(res);
@@ -27,7 +27,7 @@ module.config([
 						var deferred = page.$q.defer();
 
 						if (page.auth.isAuthorized()) {
-							page.models.Volume.get({
+							page.models.volume.get({
 								id: 8,
 								access: ''
 							}, function (res) {
@@ -50,7 +50,7 @@ module.config([
 		//
 
 		$routeProvider.when('/login', {
-			controller: 'LoginView',
+			controller: 'loginView',
 			templateUrl: 'loginView.html',
 			reloadOnSearch: false
 		});
@@ -58,7 +58,7 @@ module.config([
 		//
 
 		$routeProvider.when('/register', {
-			controller: 'RegisterView',
+			controller: 'registerView',
 			templateUrl: 'registerView.html',
 			reloadOnSearch: false
 		});
@@ -66,7 +66,7 @@ module.config([
 		//
 
 		$routeProvider.when('/password', {
-			controller: 'ResetView',
+			controller: 'resetView',
 			templateUrl: 'resetView.html',
 			reloadOnSearch: false
 		});
@@ -74,7 +74,7 @@ module.config([
 		//
 
 		$routeProvider.when('/asset/formats', {
-			controller: 'HelpFormatsView',
+			controller: 'helpFormatsView',
 			templateUrl: 'helpFormatsView.html',
 			reloadOnSearch: false,
 			authenticate: true,
@@ -84,7 +84,7 @@ module.config([
 
 		$routeProvider.when('/token/:id', {
 			controller: (function () {
-				return window.$play.object && window.$play.object.reset ? 'ResetView' : 'RegisterView';
+				return window.$play.object && window.$play.object.reset ? 'resetView' : 'registerView';
 			}()),
 			templateUrl: function () {
 				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
@@ -119,14 +119,14 @@ module.config([
 		//
 
 		$routeProvider.when('/search', {
-			controller: 'SearchView',
+			controller: 'searchView',
 			templateUrl: 'searchView.html',
 			resolve: {
 				volumes: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Volume.query({}, function (res) {
+						page.models.volume.query({}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
 							deferred.reject(res);
@@ -143,7 +143,7 @@ module.config([
 		//
 
 		var partyView = {
-			controller: 'PartyView',
+			controller: 'partyView',
 			templateUrl: 'partyView.html',
 			resolve: {
 				party: [
@@ -168,13 +168,13 @@ module.config([
 						}
 
 						if (page.$route.current.params.id) {
-							page.models.Party.get(req, function (res) {
+							page.models.party.get(req, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
 								deferred.reject(res);
 							});
 						} else {
-							page.models.Party.profile(req, function (res) {
+							page.models.party.profile(req, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
 								deferred.reject(res);
@@ -204,7 +204,7 @@ module.config([
 							return [];
 						}
 
-						page.models.Volume.query(req, function (res) {
+						page.models.volume.query(req, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
 							deferred.reject(res);
@@ -226,14 +226,14 @@ module.config([
 		var partyEditParty;
 
 		$routeProvider.when('/party/:id/edit', {
-			controller: 'PartyEditView',
+			controller: 'partyEditView',
 			templateUrl: 'partyEditView.html',
 			resolve: {
 				party: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Party.get({
+						page.models.party.get({
 							id: page.$route.current.params.id,
 							duns: '',
 							parents: '',
@@ -259,7 +259,7 @@ module.config([
 
 						partyEditParty.then(function (party) {
 							if (page.auth.hasAccess('ADMIN', party)) {
-								page.models.PartyAuthorize.query(function (res) {
+								page.models.partyAuthorize.query(function (res) {
 									deferred.resolve(res);
 								}, function (res) {
 									deferred.reject(res);
@@ -284,7 +284,7 @@ module.config([
 		var volumeEditVolume;
 
 		var volumeEdit = {
-			controller: 'VolumeEditView',
+			controller: 'volumeEditView',
 			templateUrl: 'volumeEditView.html',
 			resolve: {
 				volume: [
@@ -294,7 +294,7 @@ module.config([
 						if (!page.$route.current.params.id) {
 							deferred.resolve();
 						} else {
-							page.models.Volume.get({
+							page.models.volume.get({
 								access: '',
 								citation: '',
 								top: '',
@@ -318,7 +318,7 @@ module.config([
 							deferred.resolve();
 						} else {
 							volumeEditVolume.then(function (volume) {
-								page.models.Slot.get({
+								page.models.slot.get({
 									id: volume.top.id,
 									vid: volume.id,
 									assets: '',
@@ -344,14 +344,14 @@ module.config([
 		//
 
 		$routeProvider.when('/volume/:id', {
-			controller: 'VolumeView',
+			controller: 'volumeView',
 			templateUrl: 'volumeView.html',
 			resolve: {
 				volume: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Volume.get({
+						page.models.volume.get({
 							access: '',
 							citation: '',
 							funding: '',
@@ -382,15 +382,14 @@ module.config([
 		//
 
 		$routeProvider.when('/volume/:vid/slot/:id', {
-			controller: 'SlotView',
-			controllerAs: 'view',
+			controller: 'slotView',
 			templateUrl: 'slotView.html',
 			resolve: {
 				slot: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						page.models.Slot.get({
+						page.models.slot.get({
 							assets: '',
 							records: '',
 							tags: '',

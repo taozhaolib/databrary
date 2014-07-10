@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('SlotAsset', [
+module.factory('slotAsset', [
 	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/slot/:slotId/asset/:id', {
 			slotId: function () {

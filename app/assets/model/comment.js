@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('Comment', [
+module.factory('comment', [
 	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/comment/:id', {
 			segment: function () {

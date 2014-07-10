@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('Asset', [
+module.factory('asset', [
 	'$resource', '$http', function ($resource, $http) {
 		var asset = $resource('/api/asset/:id');
 

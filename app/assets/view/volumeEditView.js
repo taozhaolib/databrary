@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('VolumeEditView', [
+module.controller('volumeEditView', [
 	'$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
 		page.display.title = page.constants.message('page.title.stub');
 
@@ -51,7 +51,7 @@ module.controller('VolumeEditView', [
 
 		if (slot) {
 			angular.forEach(slot.assets, function (asset) {
-				page.models.Asset.get({
+				page.models.asset.get({
 					creation: '',
 					id: asset.asset.id
 				}, function (res) {

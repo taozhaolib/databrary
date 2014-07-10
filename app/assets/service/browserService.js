@@ -3,14 +3,14 @@
 module.factory('browserService', [
 	'$rootScope',
 	'ArrayHelper',
-	'Slot',
+	'slot',
 	'typeService',
 	'messageService',
 	'constantService',
 	'tooltipService',
 	'$timeout',
 	'displayService',
-	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout, display) {
+	function ($rootScope, ArrayHelper, slot, typeService, messages, constants, tooltips, $timeout, display) {
 		var browserService = {};
 
 		//
@@ -20,7 +20,6 @@ module.factory('browserService', [
 				allow: false,
 				active: true,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			},
 
@@ -33,7 +32,6 @@ module.factory('browserService', [
 				allow: true,
 				active: true,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			},
 
@@ -41,7 +39,6 @@ module.factory('browserService', [
 				allow: true,
 				active: false,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			}
 		};
@@ -525,7 +522,7 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-			Slot.get({
+			slot.get({
 				id: data.object.id,
 				segment: typeService.segmentJoin(data.segment),
 				assets: ''

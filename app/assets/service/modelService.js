@@ -7,18 +7,18 @@ module.factory('modelService', [
 		//
 
 		angular.forEach([
-			'Analytic',
-			'Asset',
-			'Comment',
-			'CrossCite',
-			'Party',
-			'PartyAuthorize',
-			'Record',
-			'Slot',
-			'SlotAsset',
-			'Tag',
-			'Volume',
-			'VolumeAccess',
+			'analytic',
+			'asset',
+			'comment',
+			'crossCite',
+			'party',
+			'partyAuthorize',
+			'record',
+			'slot',
+			'slotAsset',
+			'tag',
+			'volume',
+			'volumeAccess',
 		], function (dependency) {
 			models[dependency] = $injector.get(dependency);
 		});

@@ -43,7 +43,7 @@ module.directive('accessGrantForm', [
 					form.saveFn(form);
 				}
 
-				page.models.VolumeAccess.save({
+				page.models.volumeAccess.save({
 					id: form.volume.id,
 					partyId: form.access.party.id,
 				}, form.data, function () {
@@ -59,7 +59,7 @@ module.directive('accessGrantForm', [
 
 					backup = $.extend(true, {}, form.data);
 					form.$setPristine();
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.grant.save.error'),
@@ -103,7 +103,7 @@ module.directive('accessGrantForm', [
 					form.removeFn(form);
 				}
 
-				page.models.VolumeAccess.delete({
+				page.models.volumeAccess.delete({
 					id: form.volume.id,
 					partyId: form.access.party.id,
 				}, {}, function () {
@@ -118,7 +118,7 @@ module.directive('accessGrantForm', [
 					});
 
 					form.$setPristine();
-					page.models.Volume.$cache.removeAll();
+					page.models.volume.$cache.removeAll();
 				}, function (res) {
 					form.messages.addError({
 						body: page.constants.message('access.grant.remove.error'),

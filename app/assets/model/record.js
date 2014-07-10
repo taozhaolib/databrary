@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('Record', [
+module.factory('record', [
 	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/record/:id', {
 			id: function () {
