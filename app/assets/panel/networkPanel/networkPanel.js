@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('NetworkPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		$scope.bootPanel = function () {

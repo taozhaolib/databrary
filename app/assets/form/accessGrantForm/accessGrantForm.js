@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('accessGrantForm', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {

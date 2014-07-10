@@ -1,3 +1,5 @@
+'use strict';
+
 module.config([
 	'$routeProvider',
 	function ($routeProvider) {

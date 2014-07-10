@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('modelService', [
 	'$injector', function ($injector) {
 		var models = {};

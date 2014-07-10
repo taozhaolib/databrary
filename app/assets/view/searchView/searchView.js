@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('SearchView', [
 	'$scope', 'volumes', 'pageService', function ($scope, volumes, page) {
 		page.display.title = page.constants.message('page.title.search');

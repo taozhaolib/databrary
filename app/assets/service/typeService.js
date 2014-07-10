@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('typeService', [
 	'constantService',
 	'$window',

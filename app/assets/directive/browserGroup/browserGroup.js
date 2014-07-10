@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('browserGroup', [
 	'pageService', function (page) {
 		var link = function ($scope) {

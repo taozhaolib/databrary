@@ -11,6 +11,8 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
 
+addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.1")
+
 lazy val angularTemplates = project in file("angular-templates")
 
 libraryDependencies += "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"

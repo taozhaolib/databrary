@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('browserIcon', [
 	'pageService', function (page) {
 		var link = function ($scope) {

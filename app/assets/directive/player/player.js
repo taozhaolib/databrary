@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('player', [
 	'pageService', function (page) {
 		var isNothing = function (val) {

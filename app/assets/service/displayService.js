@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('displayService', [
 	'$rootScope',
 	'$sessionStorage',

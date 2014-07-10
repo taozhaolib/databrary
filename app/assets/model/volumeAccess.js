@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('VolumeAccess', [
 	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/volume/:id/access/:partyId', {

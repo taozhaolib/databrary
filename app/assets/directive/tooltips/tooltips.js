@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('tooltips', [
 	'pageService', function (page) {
 		var controller = ['$scope', function ($scope) {

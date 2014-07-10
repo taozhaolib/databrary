@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('wizard', [
 	function () {
 		var compile = function ($element, $attrs, transclude) {

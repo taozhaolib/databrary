@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('Slot', [
 	'resourceFactory', '$route', function (resource, $route) {
 		return resource('/api/volume/:vid/slot/:id', {

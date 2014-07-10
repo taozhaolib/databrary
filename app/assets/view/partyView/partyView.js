@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('PartyView', [
 	'$scope', 'party', 'volumes', 'pageService', function ($scope, party, volumes, page) {
 		$scope.party = party;

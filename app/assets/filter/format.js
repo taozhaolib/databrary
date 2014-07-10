@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('format', [
 	'pageService', function (page) {
 		return function (input, lineMode, raw) {

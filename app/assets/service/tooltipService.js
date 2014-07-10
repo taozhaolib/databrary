@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('tooltipService', [
 	'$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, ArrayHelper, $timeout) {
 		var tooltips = new ArrayHelper([]);

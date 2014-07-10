@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('BrowserPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		$scope.refreshPanel = function () {

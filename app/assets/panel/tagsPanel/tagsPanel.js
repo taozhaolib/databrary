@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('TagsPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		var DEFAULT_MESSAGE = {

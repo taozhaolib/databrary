@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('analyticInterceptor', [
 	'$rootScope', 'analyticService', function ($rootScope, analytics) {
 		return {

@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('timecode', [
 	function () {
 		return function (input, showMilli) {

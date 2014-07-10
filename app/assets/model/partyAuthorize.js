@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('PartyAuthorize', [
 	'resourceFactory', '$route', 'authService', function (resource, $route, auth) {
 		return resource('/api/party/:id/authorize/:partyId', {

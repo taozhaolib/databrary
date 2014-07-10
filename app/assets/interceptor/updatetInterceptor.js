@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('updateInterceptor', [
 	'$rootScope', function ($rootScope) {
 		var version = undefined;

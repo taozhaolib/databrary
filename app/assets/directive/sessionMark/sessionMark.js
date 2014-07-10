@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('sessionMark', [
 	'pageService', function (page) {
 		var link = function ($scope, $el, $attrs) {

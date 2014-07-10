@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('SlotView', [
 	'$scope', 'slot', 'pageService', function ($scope, slot, page) {
 		$scope.slot = slot;

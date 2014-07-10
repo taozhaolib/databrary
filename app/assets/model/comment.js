@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('Comment', [
 	'$resource', '$route', function ($resource, $route) {
 		return $resource('/api/comment/:id', {

@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('fold', [
 	'pageService', function (page) {
 		var foldableClass = 'foldable',

@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('toArray', [
 	'pageService', function (page) {
 		return function (input, expression, reverse) {

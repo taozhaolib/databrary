@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('CommentsPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		var form;

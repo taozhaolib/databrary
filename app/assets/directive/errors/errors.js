@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('errors', [
 	'pageService', function (page) {
 		var controller = ['$scope', function ($scope) {

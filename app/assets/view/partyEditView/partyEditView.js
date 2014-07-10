@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('PartyEditView', [
 	'$scope', 'party', 'partyAuth', 'pageService', function ($scope, party, partyAuth, page) {
 		page.display.title = page.constants.message('page.title.party.edit');

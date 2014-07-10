@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('portrait', [
 	'pageService', function (page) {
 		return {

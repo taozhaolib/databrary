@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('age', [
 	function () {
 		var daysTo = {

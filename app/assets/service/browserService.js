@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('browserService', [
 	'$rootScope',
 	'ArrayHelper',

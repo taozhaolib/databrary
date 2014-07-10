@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('DataPanel', [
 	'$scope', function ($scope) {
 		$scope.refreshPanel = function () {

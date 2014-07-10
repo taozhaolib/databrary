@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('truncate', [
 	function () {
 		return function (text, length, type, end) {

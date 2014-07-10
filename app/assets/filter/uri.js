@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('uri', [
 	function () {
 		var encodeURIQuery = function (val, pctEncodeSpaces) {

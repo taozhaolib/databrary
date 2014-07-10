@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('tabset', [
 	function () {
 		var controller = ['$scope', function ($scope) {

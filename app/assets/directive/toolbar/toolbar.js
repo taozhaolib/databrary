@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('toolbar', [
 	'pageService', function (page) {
 		var controller = [function () {

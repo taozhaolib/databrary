@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('Asset', [
 	'$resource', '$http', function ($resource, $http) {
 		var asset = $resource('/api/asset/:id');

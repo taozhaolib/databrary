@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('partyEditGrantForm', [
 	'pageService', function (page) {
 		var link = function ($scope) {

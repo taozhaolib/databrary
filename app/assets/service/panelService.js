@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('panelService', [
 	'$rootScope',
 	'$location',

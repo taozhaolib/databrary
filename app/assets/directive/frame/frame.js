@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('frame', [
 	function () {
 		var compile = function ($element, $attrs, transclude) {

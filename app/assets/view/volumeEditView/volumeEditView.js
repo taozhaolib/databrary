@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('VolumeEditView', [
 	'$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
 		page.display.title = page.constants.message('page.title.stub');

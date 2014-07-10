@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('figure', [
 	'pageService', function (page) {
 		var compile = function ($element, $attrs) {

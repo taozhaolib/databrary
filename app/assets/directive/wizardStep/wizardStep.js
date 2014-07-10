@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('wizardStep', [
 	'pageService', function (page) {
 		var compile = function ($element, $attrs, transclude) {

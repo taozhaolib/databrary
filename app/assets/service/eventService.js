@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('eventService', [
 	'$rootScope', function ($rootScope) {
 		var events = {};

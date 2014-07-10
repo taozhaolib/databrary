@@ -1,3 +1,5 @@
+'use strict';
+
 module.controller('ExcerptsPanel', [
 	'$scope',
 	'pageService',

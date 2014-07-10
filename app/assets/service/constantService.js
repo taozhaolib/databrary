@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('constantService', [
 	'$http', '$log', 'constantData', function ($http, $log, constantData) {
 		var constants = {

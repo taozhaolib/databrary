@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('tab', [
 	'pageService', function (page) {
 		var link = function ($scope, $el, $attr, tabset) {
