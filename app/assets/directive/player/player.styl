@@ -11,6 +11,7 @@
 	img
 	video
 		display block
+		max-width 100%
 
 	video
 		margin-bottom 0
@@ -60,8 +61,12 @@
 		bottom b24
 
 .player-list
+	position relative
+	background-color pale
+	padding f4
 	min-height 5
 	height 5
+	overflow hidden
 
 .player-list-items
 .player-list-item
@@ -69,8 +74,10 @@
 
 .player-list-items
 	margin 0
-	background-color pale
-	padding f4
+	padding 0 b1
+	position relative
+	left 0
+	min-width 200%
 
 .player-list-item
 	float left
@@ -90,3 +97,45 @@
 		height 100%
 		margin-width f4
 		border-left 1px solid gray
+
+.player-list-scroll
+	z-index 1
+	transition background trans-time trans-ease
+	position absolute
+	width b1
+	border-radius b8
+	top b8
+	bottom b8
+
+	&:hover
+		background gray
+
+.player-list-scroll-arrow
+	width 100%
+	height 100%
+
+	&:after
+		content ''
+		display block
+		size 0
+		border b2 solid transparent
+		top 50%
+		margin-top -b2
+		position relative
+		pointer-events none
+
+.player-list-scroll-left
+	left b8
+
+	.player-list-scroll-arrow
+		&:after
+			border-right-color black
+			right b4
+
+.player-list-scroll-right
+	right b8
+
+	.player-list-scroll-arrow
+		&:after
+			border-left-color black
+			left b4

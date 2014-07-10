@@ -6,6 +6,8 @@ module.directive('player', [
 
 		var controller = ['$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 			var player = this;
+			var $list = $('.player-list');
+			var $items = $('.player-list-items');
 
 			player.slot = page.$parse($attrs.slot)($scope);
 			player.main = [];
@@ -43,7 +45,16 @@ module.directive('player', [
 
 			player.select = function (media) {
 				player.main[0] = media;
-			}
+			};
+
+			//
+
+			player.listScroll = function (direction) {
+				var listW = $list.outerWidth();
+				var itemsW = $items.outerWidth();
+
+
+			};
 		}];
 
 		//
