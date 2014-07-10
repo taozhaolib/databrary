@@ -1,14 +1,16 @@
+'use strict';
+
 module.factory('browserService', [
 	'$rootScope',
 	'ArrayHelper',
-	'Slot',
+	'slot',
 	'typeService',
 	'messageService',
 	'constantService',
 	'tooltipService',
 	'$timeout',
 	'displayService',
-	function ($rootScope, ArrayHelper, Slot, typeService, messages, constants, tooltips, $timeout, display) {
+	function ($rootScope, ArrayHelper, slot, typeService, messages, constants, tooltips, $timeout, display) {
 		var browserService = {};
 
 		//
@@ -18,7 +20,6 @@ module.factory('browserService', [
 				allow: false,
 				active: true,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			},
 
@@ -31,7 +32,6 @@ module.factory('browserService', [
 				allow: true,
 				active: true,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			},
 
@@ -39,7 +39,6 @@ module.factory('browserService', [
 				allow: true,
 				active: false,
 				expand: false,
-				//filter: {},
 				sort: new ArrayHelper([])
 			}
 		};
@@ -306,44 +305,7 @@ module.factory('browserService', [
 			}
 
 			filterables = browserService.groups[children];
-
-			/*
-			angular.forEach(sortables, function (data) {
-				sortItems(data, children);
-			});
-
-			angular.forEach(filterables, function (data) {
-				// TODO: filter
-				// adjust data.active
-			});
-			*/
 		};
-		/*
-		var sortItems = function (data, group) {
-			var option = getOption(data, true);
-			var length = option.sort.length;
-
-			for (var i = length - 1; i >= 0; i--) {
-				switch (group) {
-					case 'volume':
-						sortVolumes(data, option.sort[i]);
-						break;
-
-					case 'session':
-						sortSessions(data, option.sort[i]);
-						break;
-
-					case 'asset':
-						sortAssets(data, option.sort[i]);
-						break;
-
-					default:
-						sortRecords(data, option.sort[i]);
-						break;
-				}
-			}
-		};
-		*/
 		var isGroupAllowed = function (group) {
 			return browserService.options[group] && browserService.options[group].allow;
 		};
@@ -560,7 +522,7 @@ module.factory('browserService', [
 
 		var callbackAssets = function (data, volume) {
 			browserService.loading = true;
-			Slot.get({
+			slot.get({
 				id: data.object.id,
 				segment: typeService.segmentJoin(data.segment),
 				assets: ''
@@ -616,22 +578,22 @@ module.factory('browserService', [
 			if (group == 'session') {
 				var newSegment;
 				var categories = volume.sessions[newData.object.id].categories;
-				var cur = newData.parent;
-				while (cur.object)
-				{
-					var obj = cur.object;
-					var recSegment = null;
-					/* if record coverage is disjoint we pretend it's continuous: */
-					angular.forEach(categories[obj.category], function (c) {
-						if (c.id == obj.id)
-							recSegment = typeService.segmentUnion(recSegment, c.segment);
-					});
-					newSegment = typeService.segmentIntersect(newSegment, recSegment);
-					cur = cur.parent;
+				var cur, obj;
+				var union = function (seg, c) {
+					if (c.id == obj.id) {
+						/* if record coverage is disjoint we pretend it's continuous: */
+						seg = typeService.segmentUnion(seg, c.segment);
+					}
+					return seg;
+				};
+				for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
+					if (obj.id !== 0) {
+						newSegment = typeService.segmentIntersect(newSegment, 
+								categories[obj.category].reduce(union, null));
+					}
 				}
 				newData.segment = newSegment;
 				if (typeService.segmentEmpty(newSegment)) {
-					console.log(newSegment);
 					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
 				}
 			}
@@ -660,7 +622,7 @@ module.factory('browserService', [
 
 		//
 
-		var recordGroupToggle = undefined;
+		var recordGroupToggle;
 
 		browserService.setRecordGroupToggle = function (group) {
 			if (group == 'add') {
@@ -769,7 +731,7 @@ module.factory('browserService', [
 			if (!data.expand && expand !== false) {
 				data.expand = true;
 
-				if (data.items == 0) {
+				if (data.items === 0) {
 					browserService.updateData(data);
 				}
 			} else if (data.expand && expand !== true) {
@@ -792,26 +754,7 @@ module.factory('browserService', [
 		};
 
 		//
-		/*
-		var getOption = function (data, child) {
-			var level = child === true ? data.level + 1 : data.level,
-				group = getActiveGroups()[level];
 
-			switch (group) {
-				case 'asset':
-					return browserService.options.asset;
-
-				case 'session':
-					return browserService.options.session;
-
-				case 'volume':
-					return browserService.options.volume;
-
-				default:
-					return browserService.options.record.categories.find({id: group});
-			}
-		};
-		*/
 		var getOptionByGroup = function (group) {
 			switch (group) {
 				case 'asset':
@@ -832,7 +775,7 @@ module.factory('browserService', [
 			return getOptionByGroup(group).sort;
 		};
 
-		var sortToggle = undefined;
+		var sortToggle;
 
 		browserService.setSortToggle = function (sort) {
 			sortToggle = angular.isUndefined(sortToggle) ? sort : undefined;
@@ -925,7 +868,7 @@ module.factory('browserService', [
 
 		browserService.getObjectPermission = function (object) {
 			var type = typeService.getType(object),
-				permission = undefined;
+				permission;
 
 			angular.forEach(raw, function (volume) {
 				switch (type) {
@@ -958,7 +901,7 @@ module.factory('browserService', [
 
 		//
 
-		var itemSelect = undefined;
+		var itemSelect;
 
 		browserService.setItemSelect = function (data) {
 			if (angular.isDefined(itemSelect)) {
@@ -966,19 +909,15 @@ module.factory('browserService', [
 			}
 
 			if (itemSelect == data) {
-				return itemSelect = undefined;
+				return (itemSelect = undefined);
 			}
 
 			data.select = true;
-			return itemSelect = data;
+			return (itemSelect = data);
 		};
 
 		browserService.getItemSelect = function () {
 			return itemSelect;
-		};
-
-		browserService.isItemSelect = function (data) {
-			return data = itemSelect;
 		};
 
 		//
@@ -1022,17 +961,14 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-			display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
+			if (data && data.parent && data.parent.id)
+				display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
 			return browserService.player;
 		};
 
 		browserService.getItemPlayer = function () {
 			return browserService.player;
-		};
-
-		browserService.isItemPlayer = function (data) {
-			return data = browserService.player;
 		};
 
 		//

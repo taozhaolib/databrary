@@ -1,4 +1,0 @@
-module.controller('OverviewPartyPanel', [
-	function () {
-	}
-]);

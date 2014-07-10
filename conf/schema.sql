@@ -167,7 +167,7 @@ CREATE MATERIALIZED VIEW "authorize_inherit" AS
 		SELECT a.child, aa.parent, CASE
 		         WHEN aa.site = 'ADMIN' THEN LEAST(a.site, 'EDIT')
 			 WHEN aa.site = 'EDIT' THEN LEAST(a.site, 'READ')
-			 ELSE 'NONE'::permission
+			 ELSE LEAST(aa.site, a.site, 'PUBLIC')
 		       END, 'NONE', LEAST(a.expires, aa.expires)
 	          FROM aa JOIN authorize a ON aa.child = a.parent
 	) SELECT * FROM aa
@@ -578,6 +578,8 @@ CREATE TABLE "record" (
 CREATE INDEX ON "record" ("volume");
 COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or applying to a single cohesive unit.  These belong to the object(s) they''re attached to, which are expected to be within a single volume.';
 
+SELECT audit.CREATE_TABLE ('record');
+
 CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
 COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
 
@@ -651,6 +653,26 @@ CREATE TABLE "measure_date" (
 	"datum" date NOT NULL,
 	Primary Key ("record", "metric")
 ) INHERITS ("measure");
+
+SELECT audit.CREATE_TABLE ('measure');
+ALTER TABLE audit."measure" ADD "datum" text NOT NULL;
+
+CREATE FUNCTION audit."measure_i" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+	IF NEW.audit_time IS NULL THEN
+		NEW.audit_time := CURRENT_TIMESTAMP;
+	END IF;
+	INSERT INTO audit."measure" SELECT NEW.*;
+	RETURN NEW;
+END; $$;
+CREATE VIEW audit."measure_text" AS
+	SELECT * FROM audit.measure;
+CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_text" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
+CREATE VIEW audit."measure_number" AS
+	SELECT * FROM audit.measure;
+CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_number" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
+CREATE VIEW audit."measure_date" AS
+	SELECT * FROM audit.measure;
+CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_date" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
 
 CREATE VIEW "measure_view" AS
 	SELECT record, metric, datum FROM measure_text UNION ALL
@@ -741,6 +763,7 @@ CREATE TABLE "slot_record" (
 CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
+SELECT audit.CREATE_TABLE ('slot_record');
 
 -- TODO review this: other places we may effectively enforce the much looser MAX(consent) with &&
 CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS

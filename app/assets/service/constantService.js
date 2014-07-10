@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('constantService', [
 	'$http', '$log', 'constantData', function ($http, $log, constantData) {
 		var constants = {
@@ -30,26 +32,6 @@ module.factory('constantService', [
 		};
 
 		var makePresets = function () {
-			constants.data.accessPreset = {};
-			constants.data.authPreset = {
-				site: {},
-				member: {},
-			};
-
-			angular.forEach(constants.data.permission, function (name, val) {
-				switch (name) {
-					case 'NONE':
-					case 'READ':
-						constants.data.authPreset.site[val] = name;
-					case 'EDIT':
-					case 'ADMIN':
-						constants.data.authPreset.member[val] = name;
-						constants.data.accessPreset[val] = name;
-				}
-			});
-
-			//
-
 			constants.data.accessGlobal = [
 				['NONE', 'NONE'],
 				['NONE', 'SHARED'],

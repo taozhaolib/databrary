@@ -18,7 +18,6 @@
 
     <h1 class="col-full panel_title">@display.formatTitle(party.pageName)</h1>
 
-@party.account.map { account =>
     @widget.frame.raw("contact", "")(Messages("party.contact.title")) {
         <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
             <div class="metadata">
@@ -41,7 +40,6 @@
             </div>
         </div>
     }
-}
 
     @defining(parents.map(p => p.parent)) { parties =>
         @widget.frame.parties(parties, "memberships", Messages("auth.parents.title"))

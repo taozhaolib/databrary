@@ -84,7 +84,7 @@ object SlotHtml extends SlotController with HtmlController {
     } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))
   }
 
-  def view(i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
+  def view(v: Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
     show().map(Ok(_))
   }
 
@@ -117,7 +117,7 @@ object SlotHtml extends SlotController with HtmlController {
 }
 
 object SlotApi extends SlotController with ApiController {
-  def get(c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
+  def get(v : models.Volume.Id, c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
     request.obj.slotJson(request.apiOptions).map(Ok(_))
   }
 }

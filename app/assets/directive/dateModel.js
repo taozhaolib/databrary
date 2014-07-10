@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('dateModel', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs, ngModel) {
@@ -79,6 +81,6 @@ module.directive('dateModel', [
 			restrict: 'A',
 			require: 'ngModel',
 			link: link,
-		}
+		};
 	}
 ]);

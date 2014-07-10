@@ -1,0 +1,19 @@
+<form name="volumeEditFundingForm" bindonce novalidate>
+  <messages form="volumeEditFundingForm"></messages>
+
+  <fieldset class="clean skinny permission-auth" ng-repeat="funder in volumeEditFundingForm.data">
+    <div class="permission-auth-username" bo-text="funder.funder.name"></div>
+
+    <funding-grant-form funder="funder"></funding-grant-form>
+  </fieldset>
+
+  <fieldset scope>
+    <legend bo-html="'funding.search.legend' | message"></legend>
+    <funding-search-form></funding-search-form>
+  </fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="volumeEditFundingForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
+  </fieldset>
+</form>

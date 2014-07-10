@@ -8,12 +8,6 @@ format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
-format.list.text=Text Files
-format.list.application=Documents
-format.list.video=Videos
-format.list.image=Images
-format.list.audio=Audio
-format.list.link=Click here to see list of supported file formats
 
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
@@ -104,6 +98,7 @@ create=Create
 file=file
 account=Account
 password=Password
+link=link
 me=Me
 
 toolbar.login=login
@@ -152,7 +147,7 @@ reset.again.help=Enter the same password again.
 page.title.home=Welcome
 page.title.register=Register
 page.title.search=Search
-page.title.stub=Create Volume Stub
+page.title.stub=Create Study
 page.title.error=There''s been an Error!
 
 # --- Formats
@@ -160,9 +155,15 @@ page.title.help.formats=Supported File Formats
 
 help.title=Help
 help.formats.title=Supported File Formats
+help.formats.body=This is the list of file formats which we currently accept.  Note that all video formats will be automatically transcoded to mp4 format.  If you have files in other formats you wish to share, just <a href="mailto:feedback@databrary.org">contact us</a> so that we can add appropriate handling.
 
 format.list.extension=Extension
 format.list.description=Description
+format.list.text=Text Files
+format.list.application=Documents
+format.list.video=Videos
+format.list.image=Images
+format.list.audio=Audio
 
 # party, auth pages
 email=Email
@@ -177,9 +178,11 @@ password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
 fullname=Full Name
-duns=D-U-N-S
+duns=DUNS
 avatar=avatar
 affiliation=Affiliation
+
+return.volume=Return to volume
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
@@ -246,6 +249,9 @@ party.edit.name.help=Enter your full name.
 party.edit.affiliation.title=Affiliation
 party.edit.affiliation.help=Specify your institutional affiliation.
 
+party.edit.url.title=Website
+party.edit.url.help=Specify whatever personal web page you''d like (faculty page, ResearchGate, etc.)
+
 party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
 
@@ -287,6 +293,8 @@ wizard.party-edit-apply.instructions=
 wizard.party-edit-grant.name=Affiliates
 wizard.party-edit-grant.description=Authorizations and memberships granted to others
 wizard.party-edit-grant.instructions=
+
+party.view.url=Website
 
 # --- Auth search
 auth.search=Search for a user or institution...
@@ -355,6 +363,7 @@ funding.remove.error=Could not remove funding agency at this time.
 
 funding.awards=Grant #
 funding.awards.placeholder=XXX-XXXXXX-XX
+funding.awards.add=Add another grant
 funding.search.legend=Add a funding source
 funding.search.placeholder=Search for a funding agency...
 funding.search.more=Find more...
@@ -365,7 +374,9 @@ funding.search.name.help=Start typing the name of the desired funding agency.
 # Permission levels
 auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
-auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
+# for lockdown only:
+auth.site.NONE=Cannot access Databrary at all (during beta).
+#auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
 auth.site.PUBLIC.title=Restricted access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
 auth.site.SHARED.title=Provisional access
@@ -474,7 +485,7 @@ player.title=Player
 player.download=Download this file.
 player.close=Close the media player.
 
-materials.title=Materials
+materials=Materials
 materials.empty=There are no files here.
 
 citations.title=Citations
@@ -527,6 +538,9 @@ notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due 
 register.title=Register
 register.title.sub=Get Databrary Access
 register.name.prompt=Full name
+register.name.placeholder=First Last
+register.email.placeholder=
+register.affiliation.placeholder=University
 register.continue=Continue
 register.agree=Agree
 register.register=Agree and register
@@ -578,10 +592,10 @@ splash.investigators.header=Databrary Investigators
 
 # --- Volume edit
 
-volume.edit.create=create study
-volume.edit.cancel=cancel
-volume.edit=edit study
-volume.edit.exit=view study
+volume.edit.create=Create study
+volume.edit.cancel=Cancel
+volume.edit=Edit study
+volume.edit.exit=View study
 
 volume.edit.title.sub=New Study
 volume.edit.success=Volume saved successfully.
@@ -609,6 +623,7 @@ volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
 volume.edit.name.placeholder=Title
 volume.edit.citation.author.placeholder=First Last
+volume.edit.citation.author.add=Add another author
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
 volume.edit.citation.year.placeholder=2014
 volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
@@ -621,11 +636,11 @@ volume.edit.overview.error=Unable to save volume.
 
 wizard.volume-edit-excerpts.name=Excerpts
 wizard.volume-edit-excerpts.description=Upload representative videos and images.
-wizard.volume-edit-excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals.\n\nYou can share non-excerpt files in the Materials section.
+wizard.volume-edit-excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals. See our <a href="/asset/formats">list of accepted file types</a>.\n\nYou can share non-excerpt files in the Materials section.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms).
+wizard.volume-edit-materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms). See our <a href="/asset/formats">list of accepted file types</a>.
 
 material.file=File
 material.file.help=Select the file you wish to upload.

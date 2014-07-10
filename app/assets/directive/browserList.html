@@ -1,0 +1,18 @@
+<aside bindonce class="browser-list cf">
+  <browser-player ng-if="data.player"></browser-player>
+
+  <ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="browser-list-children cf">
+    <li ng-if="!data.items[0] && (data.group != 'session' || !page.browser.loading)" bo-text="'browser.group.empty' | message"></li>
+
+    <li ng-if="!data.items[0] && (data.group == 'session' && page.browser.loading)" bo-text="'browser.group.loading' | message"></li>
+
+    <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)" id="{{data.id}}">
+      <ng-include src="getInclude()"></ng-include>
+    </li>
+
+    <li ng-if="data.items.length > data.limit" class="browser-list-addmore">
+      <a href="" ng-click="data.limit = data.limit + 10">+10 more</a> <span class="sep">|</span>
+      <a href="" ng-click="data.limit = data.limit + 1984">show all</a>
+    </li>
+  </ul>
+</aside>

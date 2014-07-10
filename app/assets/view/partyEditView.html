@@ -1,0 +1,31 @@
+<article class="view party-edit-view" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col">
+        <h1 class="view-context smaller" bo-html="'edit' | message"></h1>
+
+        <h2 class="view-title smaller" bo-text="party.name"></h2>
+      </hgroup>
+
+      <div class="col">
+        <wizard retrieve="retrieveWizard" update="updateWizard">
+          <wizard-step id="party-edit-profile">
+            <party-edit-profile-form></party-edit-profile-form>
+          </wizard-step>
+
+          <wizard-step id="party-edit-account">
+            <party-edit-account-form></party-edit-account-form>
+          </wizard-step>
+
+          <wizard-step id="party-edit-apply">
+            <party-edit-apply-form></party-edit-apply-form>
+          </wizard-step>
+
+          <wizard-step id="party-edit-grant">
+            <party-edit-grant-form></party-edit-grant-form>
+          </wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>

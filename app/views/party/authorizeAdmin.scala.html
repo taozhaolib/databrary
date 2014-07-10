@@ -1,4 +1,4 @@
-@(parties : Seq[Party], pending : Seq[PartyController.AuthorizeAdminForm], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
+@(parties : Seq[Authorization], pending : Seq[PartyController.AuthorizeAdminForm], active : Seq[Authorize], expired : Seq[Authorize])(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.tableFieldConstructor.f)
@@ -38,11 +38,31 @@
 
 @template.action("Admin Authorizations") {
     <h3>Parties</h3>
-    <ul>
-    @parties.map { party =>
-	<li>@display(party)</li>
+    <table>
+    <thead>
+	<tr>
+	    <th>ID</th>
+	    <th>Auth</th>
+	    <th>Name</th>
+	    <th>Affiliation</th>
+	    <th>Pass</th>
+	</tr>
+    </thead>
+
+    <tbody>
+    @parties.map { auth =>
+    @defining(auth.child) { party =>
+        <tr>
+          <td>@party.id</td>
+          <td>@auth.site@Maybe(auth.member).fold("")("/" + _)</td>
+          <td>@display(party)</td>
+          <td>@party.affiliation</td>
+          <td>@party.account.map(_.password.nonEmpty)</td>
+        </tr>
     }
-    </ul>
+    }
+    </tbody>
+    </table>
 
     <h3>Pending</h3>
 

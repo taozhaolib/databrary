@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('possessive', [
 	'pageService', function (page) {
 		return function (key, party, name) {

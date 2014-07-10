@@ -1,4 +1,6 @@
-module.factory('Party', [
+'use strict';
+
+module.factory('party', [
 	'resourceFactory', '$route', '$http', function (resource, $route, $http) {
 		var party = resource('/api/party/:id', {
 			id: function () {

@@ -80,18 +80,15 @@ evolution_hash () {
 
 evolve () {
 	local dir=$1 ; shift
-	local play
-	if [[ $1 = -p ]] ; then
-		shift
-		play=1
-	fi
 	for id in "$@" ; do
 		if [[ -n $play ]] ; then
 			runsql <<EOF
 DELETE FROM play_evolutions WHERE id = $id;
 EOF
 		fi
-		evolution $dir $id | sed 's/;;/;/g' | runsql
+		if [[ -z $fake ]] ; then
+			evolution $dir $id | sed 's/;;/;/g' | runsql
+		fi
 		if [[ -n $play && $dir = up ]] ; then
 			runsql <<EOF
 INSERT INTO play_evolutions VALUES ($id, '`evolution_hash $id`', CURRENT_TIMESTAMP, \$evolution_up\$$(evolution up $id)\$evolution_up\$, \$evolution_down\$$(evolution down $id)\$evolution_down\$, 'applied');
@@ -116,6 +113,11 @@ check_diff() {
 
 evolve_all () {
 	n=0
+	if [[ -n $play ]] ; then
+		runsql <<EOF
+CREATE TABLE play_evolutions (id integer primary key, hash varchar(255) not null, applied_at timestamp not null, apply_script text, revert_script text, state varchar(255), last_problem text);
+EOF
+	fi
 	while [[ -f $evolutions/$[++n].sql ]] ; do
 		if [[ -n $1 ]] ; then
 			check_dump up-$n
@@ -125,24 +127,70 @@ evolve_all () {
 	done
 }
 
+opts () {
+	local opts=$1 ; shift
+	OPTIND=1
+	while getopts "$opts" opt ; do case "$opt" in
+		p) play=1 ;;
+		P) play=1 ; fake=1 ;;
+	esac ; done
+}
+
+usage () {
+	cat <<EOF
+Usage:
+  runsql  		run psql interactively
+  runsql -|<file>	execute contents of file
+  runsql reset		reset the database (clear public schema)
+  runsql schema	[-p]	apply master schema
+  runsql up|down [-pP] [NUM]	run evolution NUM
+  runsql check		apply and compare master schema and evolutions
+  runsql dump ARGS.. 	run pg_dump
+  runsql restore ARGS.. run pg_restore
+Any non-argument options are passed to the run command.
+EOF
+}
+
 if [[ $# -eq 0 ]] ; then
 	echo "Use '$0 help' for help"
 	exec psql "${args[@]}" "${database}"
+elif [[ $1 = help && $# -eq 1 ]] ; then
+	usage
 elif [[ $# -eq 1 && ( $1 = - || -f $1 ) ]] ; then
 	runsql "$1"
-elif [[ $# -eq 1 && $1 = reset ]] ; then
+elif [[ $1 = reset && $# -eq 1 ]] ; then
 	dbreset
-elif [[ $# -eq 1 && $1 = schema ]] ; then
+elif [[ $1 = schema ]] ; then
+	shift
+	opts 'p' "$@"
+	if [[ $# -ge $OPTIND ]] ; then
+		usage
+		exit 1
+	fi
 	dbreset
 	schema
+	if [[ -n $play ]] ; then
+		fake=1
+		evolve_all
+	fi
 elif [[ $# -eq 2 && $1 = hash ]] ; then
 	shift
 	evolution_hash "$@"
-elif [[ $# -eq 1 && $1 = up ]] ; then
-	dbreset
-	evolve_all
-elif [[ $# -ge 2 && ( $1 = up || $1 = down ) ]] ; then
-	evolve "$@"
+elif [[ $1 = up || $1 = down ]] ; then
+	cmd=$1 ; shift
+	opts 'pP' "$@"
+	shift $[OPTIND-1]
+	if [[ $# -eq 0 ]] ; then
+		if [[ -z $fake ]] ; then
+			dbreset
+		fi
+		evolve_all
+	elif [[ $# -eq 1 ]] ; then
+		evolve $cmd "$@"
+	else
+		usage
+		exit 1
+	fi
 elif [[ $1 = check ]] ; then
 	dbreset
 	if ! [[ $conf/check-schema.sql -nt $conf/schema.sql ]] ; then
@@ -170,16 +218,6 @@ elif [[ $1 = restore ]] ; then
 	dbreset 1
 	exec pg_restore "${args[@]}" -d "${database}" -O "$@"
 else
-	cat <<EOF
-Usage:
-  runsql  		run psql interactively
-  runsql -|<file>	execute contents of file
-  runsql reset		reset the database (clear public schema)
-  runsql schema		apply master schema
-  runsql up|down NUM	run evolution NUM (no play_evolutions)
-  runsql check		apply and compare master schema and evolutions
-  runsql dump ARGS.. 	run pg_dump
-  runsql restore ARGS.. run pg_restore
-Any non-argument options are passed to the run command.
-EOF
+	usage
+	exit 1
 fi

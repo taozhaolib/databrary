@@ -1,0 +1,46 @@
+<form name="partyEditProfileForm" bindonce novalidate>
+  <messages form="partyEditProfileForm"></messages>
+
+  <fieldset>
+    <legend bo-html="'party.edit.personal' | message"></legend>
+
+    <validator form="partyEditProfileForm" name="name" label="'party.edit.name.title' | message">
+      <input type="text" name="name" ng-model="partyEditProfileForm.data.name">
+    </validator>
+
+    <validator form="partyEditProfileForm" name="affiliation" label="'party.edit.affiliation.title' | message">
+      <input type="text" name="affiliation" ng-model="partyEditProfileForm.data.affiliation">
+    </validator>
+
+    <validator form="partyEditProfileForm" name="orcid" label="'party.edit.orcid.title' | message">
+      <input type="text" name="orcid" ng-model="partyEditProfileForm.data.orcid">
+    </validator>
+
+    <validator form="partyEditProfileForm" name="url" label="'party.edit.url.title' | message">
+      <input type="url" name="url" ng-model="partyEditProfileForm.data.url">
+    </validator>
+
+    <validator form="partyEditProfileForm" name="avatar" label="'party.edit.avatar.title' | message">
+      <input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar" file-model-form="partyEditProfileForm" ng-if="partyEditProfileForm.uploading()">
+
+      <div ng-if="!partyEditProfileForm.uploading()">
+        <input type="text" name="avatarname" bo-value="'party.edit.avatar.exists' | message" disabled>
+        <button ng-click="partyEditProfileForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
+      </div>
+    </validator>
+  </fieldset>
+
+  <fieldset ng-if="page.auth.hasAuth('ADMIN')">
+    <legend bo-html="'party.edit.extended' | message"></legend>
+
+    <validator form="partyEditProfileForm" name="duns" label="'party.edit.duns.title' | message">
+      <input type="text" name="duns" ng-model="partyEditProfileForm.data.duns">
+    </validator>
+  </fieldset>
+
+  <fieldset class="clean">
+    <button ng-click="partyEditProfileForm.save()" bo-html="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
+    <button ng-click="partyEditProfileForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
+  </fieldset>
+</form>
+

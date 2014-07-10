@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('hint', [
 	'pageService', function (page) {
 		var hints = {};
@@ -27,6 +29,13 @@ module.directive('hint', [
 			hints['classification-' + a.toLowerCase()] = {
 				class: 'hint-classification-' + a.toLowerCase(),
 				message: page.constants.message('classification.' + a),
+			};
+		});
+
+		angular.forEach(page.constants.data.format, function (a) {
+			hints['format-' + a.extension.toLowerCase()] = {
+				class: 'format-' + a.extension.toLowerCase(),
+				message: a.name,
 			};
 		});
 
@@ -67,6 +76,6 @@ module.directive('hint', [
 		return {
 			restrict: 'A',
 			link: link,
-		}
+		};
 	}
 ]);

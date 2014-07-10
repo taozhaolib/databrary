@@ -1,0 +1,92 @@
+// styles
+
+.player-main
+	width 100%
+	background-color dark
+	position relative
+
+.player-main-media
+	margin 0 auto
+
+	img
+	video
+		display block
+
+	video
+		margin-bottom 0
+
+.player-main-info
+	position absolute
+	bottom b1
+	left b1
+
+.player-resize
+	width 100%
+	margin-height f12
+	position relative
+
+	&:after
+		content ''
+		border-top 1px solid pale
+		display block
+		position absolute
+		float left
+		width 100%
+		bottom b12
+		z-index -1
+
+.player-resize-grip
+	margin 0 auto
+	width f1
+	height f6 + f24
+	background gray
+	position relative
+	border-radius b1
+
+	&:before
+	&:after
+		content ''
+		border-top 1px solid pale
+		display block
+		position absolute
+		float left
+		width f23
+		left b6
+
+	&:before
+		top b24
+
+	&:after
+		bottom b24
+
+.player-list
+	min-height 5
+	height 5
+
+.player-list-items
+.player-list-item
+	height 100%
+
+.player-list-items
+	margin 0
+	background-color pale
+	padding f4
+
+.player-list-item
+	float left
+
+	img
+		display block
+		float left
+		height 100%
+		width auto
+		max-width none
+
+.player-list-item-playable
+	&:after
+		content ''
+		float left
+		display block
+		height 100%
+		margin-width f4
+		border-left 1px solid gray

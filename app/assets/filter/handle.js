@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('handle', [
 	function () {
 		var urlTypes = {
