@@ -112,6 +112,7 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
+								page.models.Volume.$cache.removeAll();
 								page.models.Slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
@@ -153,6 +154,7 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
+								page.models.Volume.$cache.removeAll();
 								page.models.Slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
@@ -192,6 +194,7 @@ module.directive('volumeEditMaterialsForm', [
 						}
 
 						form.store(subform);
+						page.models.Volume.$cache.removeAll();
 						page.models.Slot.$cache.removeAll();
 					}, function (res) {
 						subform.messages.addError({
@@ -250,6 +253,7 @@ module.directive('volumeEditMaterialsForm', [
 
 						form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
+						page.models.Volume.$cache.removeAll();
 						page.models.Slot.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
