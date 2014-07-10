@@ -44,22 +44,22 @@ font-line(font, line = font)
 // TODO: fix, currently breaks gradient (top(top)...)
 
 /*top(top)*/
-/*top base-calc(top)*/
+	/*top base-calc(top)*/
 
 /*right(right)*/
-/*right base-calc(right)*/
+	/*right base-calc(right)*/
 
 /*bottom(bottom)*/
-/*bottom base-calc(bottom)*/
+	/*bottom base-calc(bottom)*/
 
 /*left(left)*/
-/*left base-calc(left)*/
+	/*left base-calc(left)*/
 
 // size
 
 size (width, height = width)
-width base-calc(width)
-height base-calc(height)
+	width base-calc(width)
+	height base-calc(height)
 
 // width
 
@@ -120,6 +120,7 @@ margin()
 	else if length(arguments) >= 1
 		margin-height arguments[0]
 
+
 // padding
 
 padding-top(top)
@@ -157,13 +158,14 @@ padding()
 	else if length(arguments) >= 1
 		padding-height arguments[0]
 
+
 // border-margin
 
 border-margin-top(top, border...)
 	margin-top base-clip(top, border[0])
 
 	if border[2]
-		border-top border[0]border[1]border[2]
+		border-top border[0] border[1] border[2]
 	else
 		border-top-width border[0]
 
@@ -171,7 +173,7 @@ border-margin-right(right, border...)
 	margin-right base-clip(right, border[0])
 
 	if border[2]
-		border-right border[0]border[1]border[2]
+		border-right border[0] border[1] border[2]
 	else
 		border-right-width border[0]
 
@@ -179,7 +181,7 @@ border-margin-bottom(bottom, border...)
 	margin-bottom base-clip(bottom, border[0])
 
 	if border[2]
-		border-bottom border[0]border[1]border[2]
+		border-bottom border[0] border[1] border[2]
 	else
 		border-bottom-width border[0]
 
@@ -187,7 +189,7 @@ border-margin-left(left, border...)
 	margin-left base-clip(left, border[0])
 
 	if border[2]
-		border-left border[0]border[1]border[2]
+		border-left border[0] border[1] border[2]
 	else
 		border-left-width border[0]
 
@@ -259,7 +261,7 @@ border-padding-top(top, border...)
 	padding-top base-clip(top, border[0])
 
 	if border[2]
-		border-top border[0]border[1]border[2]
+		border-top border[0] border[1] border[2]
 	else
 		border-top-width border[0]
 
@@ -267,7 +269,7 @@ border-padding-right(right, border...)
 	padding-right base-clip(right, border[0])
 
 	if border[2]
-		border-right border[0]border[1]border[2]
+		border-right border[0] border[1] border[2]
 	else
 		border-right-width border[0]
 
@@ -275,7 +277,7 @@ border-padding-bottom(bottom, border...)
 	padding-bottom base-clip(bottom, border[0])
 
 	if border[2]
-		border-bottom border[0]border[1]border[2]
+		border-bottom border[0] border[1] border[2]
 	else
 		border-bottom-width border[0]
 
@@ -283,7 +285,7 @@ border-padding-left(left, border...)
 	padding-left base-clip(left, border[0])
 
 	if border[2]
-		border-left border[0]border[1]border[2]
+		border-left border[0] border[1] border[2]
 	else
 		border-left-width border[0]
 
