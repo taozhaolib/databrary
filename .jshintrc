@@ -1,8 +1,6 @@
 {
-"globals": {
-  "angular": false,
-  "module": true
-},
+"predef": ["angular","module","$"],
 "strict": true,
-"globalstrict": true
+"globalstrict": true,
+"browser": true
 }
