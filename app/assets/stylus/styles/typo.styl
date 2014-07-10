@@ -41,7 +41,7 @@ figcaption
 	border-padding-height f4 2px
 	border-padding-top f4 3px
 	padding-width f4
-	font-line .75 (2/3)
+	font-line .75(2 / 3)
 	font-style italic
 	border-top 1px solid gray
 	color gray
@@ -124,15 +124,13 @@ h5
 	font-line 1.5 1
 	margin .5 0 0
 
-
 h6
 	font-weight normal
 	text-align center
 	text-transform uppercase
-	letter-spacing (1em/16)
+	letter-spacing (1em / 16)
 	font-line .75
 	margin 2 0
-
 
 //
 
@@ -147,7 +145,7 @@ hr
 	padding 0
 	margin-top f1
 	border-margin-bottom f1 1px
-	
+
 	&:before
 	&:after
 		float left
@@ -158,15 +156,13 @@ hr
 		border-color transparent
 		border-width size
 		border-style solid
-	
-	
+
 	&:before
 		left 50%
 		top -shift
 		margin-left -size
 		border-bottom-color color-diamond
-	
-	
+
 	&:after
 		left 50%
 		top 1px
@@ -186,23 +182,20 @@ pre
 	border-color color
 	border-style solid
 
-
 code
 kbd
 samp
 	border = 1px
-	line-height (2/3)
+	line-height (2 / 3)
 	border-width border 0
 	border-padding-height border f8
 	padding-width f4
-
 
 pre
 	border = 2px
 	border-width border 0
 	border-padding-height border f2
 	padding-width f2
-
 
 // ol, ul, li
 
@@ -253,12 +246,12 @@ ul
 	&.comma
 		margin-bottom f1
 		padding-left 0
-		
+
 		> li
 			display inline
 			margin 0
 			padding 0
-		
+
 			&:before
 				content ", "
 				background-color inherit
@@ -358,13 +351,13 @@ dl
 q
 	quotes '\201C' '\201D' '\2018' '\2019' '\201C' '\201D' '\2018' '\2019'
 	quote-double()
-	
+
 	q
 		quote-single()
-		
+
 		q
 			quote-double()
-			
+
 			q
 				quote-single()
 
@@ -380,32 +373,32 @@ q[cite]
 blockquote
 	color = purple
 	margin 2 2.5 1.5
-	
+
 	&:before
 	&:after
 		font-size 5
 		color color
 		position relative
 		line-height 0
-	
+
 	&:before
 		content open-quote
 		top .25em
 		left -.425em
 		float left
-	
+
 	&:after
 		content no-close-quote
-	
+
 	p
 		margin-bottom f2
-	
+
 	cite
 		display block
 		color color
 		border-bottom 0
 		text-align right
-	
+
 		&:before
 			color color
 			content "\2014 \0020"
@@ -419,11 +412,9 @@ sup
 	position relative
 	padding 0 1px
 
-
 sub
 	vertical-align bottom
 	bottom .5em
-
 
 sup
 	vertical-align top
@@ -433,7 +424,6 @@ sup
 
 small
 	font-line .75
-
 
 // ins, del
 
@@ -445,7 +435,6 @@ ins
 	color green
 	text-decoration underline
 
-
 del
 	color red
 	text-decoration line-through
@@ -455,25 +444,22 @@ del
 s
 mark
 	border = 1px
-	font-line .9 (2/3)
+	font-line .9(2 / 3)
 	border-width border 0
 	border-style solid
 	border-padding-height border f8
 	padding-width f4
 	text-decoration none
 
-
 mark
 	color = green
 	background-color mix(color, white, 15%)
 	border-color color
 
-
 s
 	color = red
 	background-color mix(color, white, 15%)
 	border-color color
-
 
 // dfn, var, abbr
 
@@ -483,7 +469,7 @@ abbr
 abbr[title]
 	color = yellow
 	border = 1px
-	font-line .9 (2/3)
+	font-line .9(2 / 3)
 	border-width border 0
 	border-style solid
 	border-padding-height border f8
@@ -492,7 +478,7 @@ abbr[title]
 	font-style normal
 	background-color mix(color, white, 15%)
 	border-color color
-	
+
 // time, address
 
 address

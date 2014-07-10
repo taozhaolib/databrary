@@ -117,10 +117,10 @@ module.directive('volumeEditMaterialsForm', [
 									form.errorFn(form, res);
 								}
 							}).finally(function () {
-							subform.messages.remove(msg);
-							form.clean(subform);
-							page.display.scrollTo(subform.$element);
-						});
+								subform.messages.remove(msg);
+								form.clean(subform);
+								page.display.scrollTo(subform.$element);
+							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
 							.then(function (res) {

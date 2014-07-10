@@ -1,33 +1,33 @@
 <form name="authApplyForm" class="auth-apply-form" novalidate bindonce>
-	<messages form="authApplyForm"></messages>
+  <messages form="authApplyForm"></messages>
 
-	<fieldset class="clean" ng-if="!authApplyForm.notFound.query">
-		<legend ng-bind-html="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
+  <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
+    <legend ng-bind-html="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
 
-		<div ng-if="authApplyForm.other.party.institution">
-			<div ng-bind-html="'auth.info.prompt' | message | format"></div>
+    <div ng-if="authApplyForm.other.party.institution">
+      <div ng-bind-html="'auth.info.prompt' | message | format"></div>
 
-			<validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
-				<textarea id="field-guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
-			</validator>
-		</div>
-	</fieldset>
+      <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
+        <textarea id="field-guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+      </validator>
+    </div>
+  </fieldset>
 
-	<fieldset class="clean" ng-if="authApplyForm.notFound.query">
-		<legend bo-html="'auth.request.notfound.title' | message"></legend>
+  <fieldset class="clean" ng-if="authApplyForm.notFound.query">
+    <legend bo-html="'auth.request.notfound.title' | message"></legend>
 
-		<div ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
+    <div ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
 
-		<validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
-			<textarea id="field-info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
-		</validator>
-	</fieldset>
+    <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
+      <textarea id="field-info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+    </validator>
+  </fieldset>
 
-	<fieldset class="clean">
-		<input type="hidden" name="id" ng-value="authApplyForm.other.id">
+  <fieldset class="clean">
+    <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
-		<button ng-click="authApplyForm.save()" class="green" bo-html="'auth.request' | message"></button>
-		<button ng-click="authApplyForm.cancel()" class="yellow" bo-html="'cancel' | message"></button>
-	</fieldset>
+    <button ng-click="authApplyForm.save()" class="green" bo-html="'auth.request' | message"></button>
+    <button ng-click="authApplyForm.cancel()" class="yellow" bo-html="'cancel' | message"></button>
+  </fieldset>
 </form>
 

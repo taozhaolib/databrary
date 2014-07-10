@@ -308,42 +308,42 @@ module.factory('browserService', [
 			filterables = browserService.groups[children];
 
 			/*
-			angular.forEach(sortables, function (data) {
-				sortItems(data, children);
-			});
+			 angular.forEach(sortables, function (data) {
+			 sortItems(data, children);
+			 });
 
-			angular.forEach(filterables, function (data) {
-				// TODO: filter
-				// adjust data.active
-			});
-			*/
+			 angular.forEach(filterables, function (data) {
+			 // TODO: filter
+			 // adjust data.active
+			 });
+			 */
 		};
 		/*
-		var sortItems = function (data, group) {
-			var option = getOption(data, true);
-			var length = option.sort.length;
+		 var sortItems = function (data, group) {
+		 var option = getOption(data, true);
+		 var length = option.sort.length;
 
-			for (var i = length - 1; i >= 0; i--) {
-				switch (group) {
-					case 'volume':
-						sortVolumes(data, option.sort[i]);
-						break;
+		 for (var i = length - 1; i >= 0; i--) {
+		 switch (group) {
+		 case 'volume':
+		 sortVolumes(data, option.sort[i]);
+		 break;
 
-					case 'session':
-						sortSessions(data, option.sort[i]);
-						break;
+		 case 'session':
+		 sortSessions(data, option.sort[i]);
+		 break;
 
-					case 'asset':
-						sortAssets(data, option.sort[i]);
-						break;
+		 case 'asset':
+		 sortAssets(data, option.sort[i]);
+		 break;
 
-					default:
-						sortRecords(data, option.sort[i]);
-						break;
-				}
-			}
-		};
-		*/
+		 default:
+		 sortRecords(data, option.sort[i]);
+		 break;
+		 }
+		 }
+		 };
+		 */
 		var isGroupAllowed = function (group) {
 			return browserService.options[group] && browserService.options[group].allow;
 		};
@@ -617,13 +617,12 @@ module.factory('browserService', [
 				var newSegment;
 				var categories = volume.sessions[newData.object.id].categories;
 				var cur = newData.parent;
-				while (cur.object)
-				{
+				while (cur.object) {
 					var obj = cur.object;
-					if(obj.id != 0){
+					if (obj.id != 0) {
 						var recSegment = null;
 						angular.forEach(categories[obj.category], function (c) {
-							if (c.id == obj.id){
+							if (c.id == obj.id) {
 								/* if record coverage is disjoint we pretend it's continuous: */
 								recSegment = typeService.segmentUnion(recSegment, c.segment);
 							}
@@ -795,25 +794,25 @@ module.factory('browserService', [
 
 		//
 		/*
-		var getOption = function (data, child) {
-			var level = child === true ? data.level + 1 : data.level,
-				group = getActiveGroups()[level];
+		 var getOption = function (data, child) {
+		 var level = child === true ? data.level + 1 : data.level,
+		 group = getActiveGroups()[level];
 
-			switch (group) {
-				case 'asset':
-					return browserService.options.asset;
+		 switch (group) {
+		 case 'asset':
+		 return browserService.options.asset;
 
-				case 'session':
-					return browserService.options.session;
+		 case 'session':
+		 return browserService.options.session;
 
-				case 'volume':
-					return browserService.options.volume;
+		 case 'volume':
+		 return browserService.options.volume;
 
-				default:
-					return browserService.options.record.categories.find({id: group});
-			}
-		};
-		*/
+		 default:
+		 return browserService.options.record.categories.find({id: group});
+		 }
+		 };
+		 */
 		var getOptionByGroup = function (group) {
 			switch (group) {
 				case 'asset':
@@ -1024,7 +1023,7 @@ module.factory('browserService', [
 				browserService.player = undefined;
 			}
 
-                        if(data && data.parent && data.parent.id)
+			if (data && data.parent && data.parent.id)
 				display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
 			return browserService.player;

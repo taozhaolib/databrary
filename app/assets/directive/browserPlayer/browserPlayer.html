@@ -1,35 +1,35 @@
 <section class="browser-player">
-	<section ng-if="page.browser.player.played" class="browser-player-frame">
-		<div ng-repeat="played in [page.browser.player.played]" bindonce>
-			<header>
-				<a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
-				<a ng-href="{{page.router.assetLink(played.object, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
+  <section ng-if="page.browser.player.played" class="browser-player-frame">
+    <div ng-repeat="played in [page.browser.player.played]" bindonce>
+      <header>
+        <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
+        <a ng-href="{{page.router.assetLink(played.object, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
 
-				<div class="classification icon line tool" bo-class="page.constants.data.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[played.object.asset.classification]}}"></div>
+        <div class="classification icon line tool" bo-class="page.constants.data.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[played.object.asset.classification]}}"></div>
 
-				<h1 class="browser-player-heading">
-                                        <img class="icon" bo-src="page.types.assetIcon(played.object)" hint="format-{{page.types.assetFormat(played.object).extension}}">
-					<span bo-html="page.types.assetDisplayName(played.object) | format:true"></span>
-				</h1>
-			</header>
+        <h1 class="browser-player-heading">
+          <img class="icon" bo-src="page.types.assetIcon(played.object)" hint="format-{{page.types.assetFormat(played.object).extension}}">
+          <span bo-html="page.types.assetDisplayName(played.object) | format:true"></span>
+        </h1>
+      </header>
 
-			<div ng-switch="getMimeGroup(played.object)">
-				<div ng-switch-when="image">
-					<img ng-src="{{page.router.assetLink(played.object, true)}}" style="max-width: 100%;">
-				</div>
+      <div ng-switch="getMimeGroup(played.object)">
+        <div ng-switch-when="image">
+          <img ng-src="{{page.router.assetLink(played.object, true)}}" style="max-width: 100%;">
+        </div>
 
-				<div ng-switch-when="video">
-					<div bo-if="!played.object.asset.duration" bo-html="'asset.untranscoded | message"></div>
+        <div ng-switch-when="video">
+          <div bo-if="!played.object.asset.duration" bo-html="'asset.untranscoded | message"></div>
 
-					<video bo-if="supported()" controls excerpt="played">
-						<source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{page.types.assetFormat(played.object).mimetype}}">
-					</video>
+          <video bo-if="supported()" controls excerpt="played">
+            <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{page.types.assetFormat(played.object).mimetype}}">
+          </video>
 
-					<div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
-				</div>
+          <div bo-if="!supported()" bo-html="'video.unsupported' | message"></div>
+        </div>
 
-				<div ng-switch-default></div>
-			</div>
-		</div>
-	</section>
+        <div ng-switch-default></div>
+      </div>
+    </div>
+  </section>
 </section>

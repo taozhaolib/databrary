@@ -1,52 +1,50 @@
 <section class="player" bindonce>
-	<div class="player-main">
-		<div class="player-main-media" ng-repeat="media in player.main track by media.asset.id" ng-switch="page.types.assetMimeArray(media)[0]">
-			<div ng-switch-when="image">
-				<img bo-src="page.router.assetLink(media, true)">
-			</div>
+  <div class="player-main">
+    <div class="player-main-media" ng-repeat="media in player.main track by media.asset.id" ng-switch="page.types.assetMimeArray(media)[0]">
+      <div ng-switch-when="image">
+        <img bo-src="page.router.assetLink(media, true)">
+      </div>
 
-			<div ng-switch-when="video">
-				<video bo-if="page.types.videoSupported()" controls>
-					<source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
-				</video>
+      <div ng-switch-when="video">
+        <video bo-if="page.types.videoSupported()" controls>
+          <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
+        </video>
 
+      </div>
+    </div>
 
-			</div>
-		</div>
+    <div class="player-main-info">
+      <dl></dl>
 
-		<div class="player-main-info">
-			<dl>
-			</dl>
+      <div class="player-main-info-support" bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
+    </div>
+  </div>
 
-			<div class="player-main-info-support" bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
-		</div>
-	</div>
+  <div class="player-resize player-resize-main">
+    <div class="player-resize-grip"></div>
+  </div>
 
-	<div class="player-resize player-resize-main">
-		<div class="player-resize-grip"></div>
-	</div>
+  <div class="player-list">
+    <div class="player-list-scroll player-list-scroll-left">
+      <div class="player-list-scroll-arrow"></div>
+    </div>
 
-	<div class="player-list">
-		<div class="player-list-scroll player-list-scroll-left">
-			<div class="player-list-scroll-arrow"></div>
-		</div>
+    <div class="player-list-scroll player-list-scroll-right">
+      <div class="player-list-scroll-arrow"></div>
+    </div>
 
-		<div class="player-list-scroll player-list-scroll-right">
-			<div class="player-list-scroll-arrow"></div>
-		</div>
+    <ul class="player-list-items flat cf">
+      <li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
+        <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
+      </li>
 
-		<ul class="player-list-items flat cf">
-			<li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
-				<img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
-			</li>
-
-			<li class="player-list-item player-list-item-unplayable">
-				<ul class="player-unplayable-items flat" xng-repeat="">
-					<li ng-repeat="media in player.unplayable">
-						<a bo-text="page.types.assetDisplayName(media)" ng-click="player.select(media)"></a>
-					</li>
-				</ul>
-			</li>
-		</ul>
-	</div>
+      <li class="player-list-item player-list-item-unplayable">
+        <ul class="player-unplayable-items flat" xng-repeat="">
+          <li ng-repeat="media in player.unplayable">
+            <a bo-text="page.types.assetDisplayName(media)" ng-click="player.select(media)"></a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
 </section>

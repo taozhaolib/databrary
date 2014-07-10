@@ -190,7 +190,7 @@ module.directive('browserList', [
 					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1) {
 						sessionRecords[data.object.id].push({
 							id: parseInt(key),
-							records: relevantRecords(data,key,records)
+							records: relevantRecords(data, key, records)
 						});
 					}
 				});
@@ -201,10 +201,11 @@ module.directive('browserList', [
 				return sessionRecords[data.object.id];
 			};
 
-			var relevantRecords = function(data, cat, records)
-			{
+			var relevantRecords = function (data, cat, records) {
 				if (angular.isUndefined(data.segment)) return records; //no logical difference, just efficiency
-				return page.$filter('filter')(records, function(x){return page.types.overlaps(x.segment,data.segment);});
+				return page.$filter('filter')(records, function (x) {
+					return page.types.overlaps(x.segment, data.segment);
+				});
 			};
 
 			$scope.nameRecord = function (data) {

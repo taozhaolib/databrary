@@ -1,12 +1,12 @@
 <aside bindonce class="portrait ng-cloak">
-	<figure class="figure-avatar" href="{{page.router.party(party)}}">
-		<figmedia><img bo-src="page.router.partyAvatar(party, 216)"></figmedia>
-	</figure>
+  <figure class="figure-avatar" href="{{page.router.party(party)}}">
+    <figmedia><img bo-src="page.router.partyAvatar(party, 216)"></figmedia>
+  </figure>
 
-	<div class="portrait-info">
-		<a class="portrait-name" bo-href="page.router.party(party)" bo-text="party.name"></a>
-		<span class="portrait-extra" bo-if="portraitExtra" bo-html="portraitExtra"></span>
-		<span class="portrait-extra" bo-if="!portraitExtra" bo-text="party.affiliation"></span>
-	</div>
+  <div class="portrait-info">
+    <a class="portrait-name" bo-href="page.router.party(party)" bo-text="party.name"></a>
+    <span class="portrait-extra" bo-if="portraitExtra" bo-html="portraitExtra"></span>
+    <span class="portrait-extra" bo-if="!portraitExtra" bo-text="party.affiliation"></span>
+  </div>
 </aside>
 

@@ -1,32 +1,34 @@
 <article class="view help-formats-view" bindonce>
-	<div class="wrap">
-		<div class="row">
-			<hgroup class="col">
-				<h1 class="view-context" bo-html="'help.title' | message"></h1>
-				<h2 class="view-title" bo-html="'help.formats.title' | message"></h2>
-                                <p bo-html="'help.formats.body' | message"></p>
-			</hgroup>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col">
+        <h1 class="view-context" bo-html="'help.title' | message"></h1>
 
-			<div class="col">
-				<table>
-					<tbody ng-repeat="(key, group) in groups">
-						<tr class="hr hr-big">
-							<th colspan="2" bo-text="'format.list.'+key | message"></th>
-						</tr>
+        <h2 class="view-title" bo-html="'help.formats.title' | message"></h2>
 
-						<tr class="hr">
-							<th bo-text="'format.list.extension' | message" class="th-right"></th>
-							<th bo-text="'format.list.description' | message"></th>
-						</tr>
+        <p bo-html="'help.formats.body' | message"></p>
+      </hgroup>
 
-						<tr ng-repeat="format in group">
-							<td bo-text="format.format.extension" class="th-right"></td>
-							<td bo-text="format.description"></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+      <div class="col">
+        <table>
+          <tbody ng-repeat="(key, group) in groups">
+            <tr class="hr hr-big">
+              <th colspan="2" bo-text="'format.list.'+key | message"></th>
+            </tr>
+
+            <tr class="hr">
+              <th bo-text="'format.list.extension' | message" class="th-right"></th>
+              <th bo-text="'format.list.description' | message"></th>
+            </tr>
+
+            <tr ng-repeat="format in group">
+              <td bo-text="format.format.extension" class="th-right"></td>
+              <td bo-text="format.description"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </article>
 

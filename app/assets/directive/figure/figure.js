@@ -43,7 +43,7 @@ module.directive('figure', [
 							$inner.css({
 								'width': calc,
 								'left': '50%',
-								'margin-left': calc/-2,
+								'margin-left': calc / -2,
 							});
 						}
 					};
