@@ -18,9 +18,6 @@
               <dt bo-if="party.orcid" bo-html="'orcid' | message"/>
               <dd bo-if="party.orcid"><a bo-href="'http://orcid.org/' + party.orcid" bo-text="party.orcid"></a></dd>
 
-              <dt bo-if="party.duns" bo-html="'duns' | message"/>
-              <dd bo-if="party.duns" bo-text="party.duns"></dd>
-
               <dt bo-if="party.url" bo-html="'party.view.url' | message"/>
               <dd bo-if="party.url"><a bo-href="party.url" bo-text="party.url"></a></dd>
             </dl>
