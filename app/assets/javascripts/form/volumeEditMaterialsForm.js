@@ -7,6 +7,7 @@ module.directive('volumeEditMaterialsForm', [
 			form.data = {};
 			form.volume = undefined;
 			form.slot = undefined;
+			form.filtered = [];
 			var backup = {};
 
 			form.saveFn = undefined;
@@ -27,18 +28,24 @@ module.directive('volumeEditMaterialsForm', [
 				form.volume = form.volume || volume;
 			};
 
+			$scope.$watchCollection(function () {
+				return form.data.assets;
+			}, function () {
+				form.filterAssets();
+			});
+
 			form.filterAssets = function () {
 				if (!form.slot) {
 					return [];
 				}
 
-				return page.$filter('filter')(form.slot.assets, function (asset) {
+				form.filtered = page.$filter('orderBy')(page.$filter('filter')(form.slot.assets, function (asset) {
 					var e = angular.isDefined(asset.excerpt);
 					if (!asset.classification) {
 						asset.classification = page.constants.data.classification[e ? asset.excerpt : asset.asset.classification];
 					}
 					return e === form.excerptsMode;
-				});
+				}), 'asset.id');
 			};
 
 			form.saveText = function (subform) {
@@ -116,11 +123,11 @@ module.directive('volumeEditMaterialsForm', [
 								if (angular.isFunction(form.errorFn)) {
 									form.errorFn(form, res);
 								}
-							})
-							['finally'](function(res){
+
+								page.display.scrollTo(subform.$element);
+							}).finally(function(res){
 									subform.messages.remove(msg);
-									form.clean(subform); 
-									page.display.scrollTo(subform.$element);
+									form.clean(subform);
 							});
 					} else {
 						page.models.Asset.upload(form.volume, fd)
@@ -130,8 +137,6 @@ module.directive('volumeEditMaterialsForm', [
 									closeable: true,
 									body: page.constants.message('volume.edit.materials.create.success', subform.asset.name || page.constants.message('file')),
 								});
-
-								subform.messages.remove(msg);
 
 								if (angular.isFunction(form.successFn)) {
 									form.successFn(form, res);
@@ -148,7 +153,6 @@ module.directive('volumeEditMaterialsForm', [
 									form.clean(subform);
 								});
 
-								form.clean(subform);
 								page.models.Slot.$cache.removeAll();
 							}, function (res) {
 								subform.messages.addError({
@@ -161,11 +165,11 @@ module.directive('volumeEditMaterialsForm', [
 									form.errorFn(form, res);
 								}
 
-								subform.messages.remove(msg);
-
-								form.clean(subform);
 								page.display.scrollTo(subform.$element);
-							});
+							}).finally(function(res){
+								subform.messages.remove(msg);
+								form.clean(subform);
+						});
 					}
 				} else {
 					var newAsset = new page.models.Asset({
@@ -187,7 +191,6 @@ module.directive('volumeEditMaterialsForm', [
 							form.successFn(form, res);
 						}
 
-						form.clean(subform);
 						form.store(subform);
 						page.models.Slot.$cache.removeAll();
 					}, function (res) {
@@ -201,8 +204,9 @@ module.directive('volumeEditMaterialsForm', [
 							form.errorFn(form, res);
 						}
 
-						form.clean(subform);
 						page.display.scrollTo(subform.$element);
+					}).finally(function(res){
+						form.clean(subform);
 					});
 				}
 			};
@@ -246,7 +250,6 @@ module.directive('volumeEditMaterialsForm', [
 
 						form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
-						form.clean(subform);
 						page.models.Slot.$cache.removeAll();
 					}, function (res) {
 						form.messages.addError({
@@ -259,8 +262,9 @@ module.directive('volumeEditMaterialsForm', [
 							form.errorFn(form, res);
 						}
 
-						form.clean(subform);
 						page.display.scrollTo(subform.$element);
+					}).finally(function(res){
+						form.clean(subform);
 					});
 				}
 			};
