@@ -4,11 +4,8 @@ module.controller('HomeView', [
 
 		var lastName = function (p) {
 			var s = p.name;
-			if (!s) {
-				return '';
-			}
-			return s.substr(s.lastIndexOf(' '));
-		}
+			return s ? s.substr(s.lastIndexOf(' ')) : '';
+		};
 
 		$scope.parties = page.$filter('toArray')(parties, lastName);
 		$scope.volume = volume;

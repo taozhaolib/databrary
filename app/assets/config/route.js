@@ -381,7 +381,6 @@ module.config([
 
 		$routeProvider.when('/volume/:vid/slot/:id', {
 			controller: 'SlotView',
-			controllerAs: 'view',
 			templateUrl: 'slotView.html',
 			resolve: {
 				slot: [
