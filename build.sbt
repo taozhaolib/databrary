@@ -38,7 +38,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "1.11.0",
   "org.webjars" % "angularjs" % "1.2.18",
   "org.webjars" % "bindonce" % "0.3.1",
-  "org.webjars" % "ngStorage" % "0.3.0"
+  "org.webjars" % "ngStorage" % "0.3.0",
+  "org.webjars" % "normalize.styl" % "3.0.0"
 )
 
 resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) map { (dir, name, ver) =>
@@ -59,6 +60,16 @@ pipelineStages in Assets := Seq(uglify)
 StylusKeys.useNib in Assets := true
 
 includeFilter in (Assets, StylusKeys.stylus) := "app.styl"
+
+StylusKeys.compress in (Assets, StylusKeys.stylus) := true
+
+JsTaskKeys.jsOptions in (Assets, StylusKeys.stylus) ~= { (s : String) =>
+  import spray.json._
+  JsObject(s.parseJson.asJsObject.fields
+    /* unfortunate hard-coding: */
+    .+("paths" -> JsArray(JsString("target/web/web-modules/main/webjars/lib/normalize.styl")))
+  ).toString
+}
 
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
