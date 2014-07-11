@@ -11,6 +11,8 @@
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
+
+      <div resumable-drop prep-target="/api/asset/start" upload-target="/api/asset/chunk" style="height: 50px; width: 150px"></div>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">
