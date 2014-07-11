@@ -41,8 +41,8 @@
 
         <li class="player-list-item player-list-item-unplayable" bo-if="player.unplayable">
           <ul class="player-unplayable-items flat">
-            <li ng-repeat="media in player.unplayable">
-              <a bo-text="page.types.assetDisplayName(media)" ng-click="player.select(media)"></a>
+            <li class="player-unplayable-item" ng-repeat="media in player.unplayable">
+              <a ng-click="player.select(media)"><img class="icon" bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}"><span bo-text="page.types.assetDisplayName(media)"></span></a>
             </li>
           </ul>
         </li>

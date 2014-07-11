@@ -92,14 +92,6 @@
 	height 100%
 	display inline-block
 
-.player-list-item-playable
-	img
-		height 100%
-		width auto
-		max-width none
-		transition none
-		cursor pointer
-
 	&:after
 		content ''
 		display inline-block
@@ -110,6 +102,29 @@
 	&:last-child
 		&:after
 			content none
+
+.player-list-item-playable
+	img
+		height 100%
+		width auto
+		max-width none
+		transition none
+		cursor pointer
+
+.player-unplayable-items
+	position absolute
+	padding 0
+	min-width 16
+
+.player-unplayable-item
+	a
+		&:hover
+		&:active
+			color black
+			text-decoration underline
+
+	span
+		margin-left b6
 
 .player-list-scroll
 	z-index 1
