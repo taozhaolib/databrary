@@ -1,7 +1,7 @@
 @(records : Seq[Record], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : CommentController.SlotForm, tags : Seq[TagWeight], tagForm : TagController.SlotForm)(implicit request : SlotHtml.Request[_])
 
 @defining(request.obj) { slot =>
-@template.crud("Session: " + slot.pageName) {
+@template.crud("Session: " + slot.pageName, angular = Some(request.obj.json.js)) {
     @widget.panel.slot(slot)
     @widget.panel.records(slot, records)
     @widget.panel.materials(assets)

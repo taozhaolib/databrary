@@ -4,8 +4,8 @@
 	margin-bottom 2
 
 .view-context
-	font-line 2 1.5
 	margin-top 1
+	font-line 2 1.5
 	color red32
 
 	&.smaller
@@ -19,3 +19,15 @@
 	&.smaller
 		margin-top 0
 		font-line 2 1.75
+
+	&.with-link
+		margin-top 1
+		display block
+		margin-bottom 0
+
+.view-link
+	display block
+	margin-bottom 2
+
+	&:before
+		content '< '

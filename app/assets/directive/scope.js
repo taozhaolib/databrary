@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('scope', [
 	function () {
 		return {

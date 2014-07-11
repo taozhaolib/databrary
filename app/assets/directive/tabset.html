@@ -1,0 +1,11 @@
+<section class="tabset">
+  <div class="tabset-list">
+    <ul ng-if="tabset.checkTabList()">
+      <li ng-repeat="tab in tabList track by $index | filter:tabset.tabListFilter" ng-class="tabset.tabListClass(tab)">
+        <a href="#" ng-click="tabset.activateTab(tab)">{{tab.name}}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="tabset-tabs" tabset-tabs ng-transclude></div>
+</section>

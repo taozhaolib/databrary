@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('tooltip', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {
@@ -17,6 +19,6 @@ module.directive('tooltip', [
 		return {
 			restrict: 'EA',
 			link: link
-		}
+		};
 	}
 ]);

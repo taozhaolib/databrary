@@ -1,0 +1,150 @@
+// styles
+
+.browser-list
+	background-color white
+	padding-left 0
+	border-radius b4 0 0 0
+	margin-bottom 2
+
+	.browser-list
+		margin-left 1.5
+		padding-left f8
+		margin-bottom 0
+
+.browser-list-children
+	padding-left 0
+	padding-top f8
+
+	li
+		padding-bottom f8
+
+		&:last-child
+			padding-bottom 0
+
+		&:before
+			display none
+
+		&.deepest
+			.browser-item
+				border-radius b4 0 0 b4
+
+			.browser-controller
+				border-radius b4 0 0 0
+
+.browser-list-addmore
+	text-align center
+	font-line 1.5
+
+	a
+		color gray
+
+		&:hover
+			color pale
+
+// browser items
+
+.browser-item
+	border-radius b4 0 0 0
+
+	header
+		display inline
+
+	footer
+		display inline-block
+		line-height 1.5
+		margin-left f2
+		float right
+
+		a
+			color black
+
+			&:hover
+				text-decoration underline
+
+.browser-item-title
+	font-size 1.5
+	line-height 1.5
+	margin-left f1 + f4
+
+	a
+		color black
+
+		&:hover
+			text-decoration underline
+
+	div
+		display inline
+
+.browser-item-content
+	padding 0 f4
+
+.browser-item-meta
+	display inline-block
+
+.browser-item-main
+	margin-left 1.25
+
+	div
+		display inline-block
+
+	dl
+		margin-bottom 0
+
+.browser-item-body
+	p:last-of-type
+		margin-bottom 0
+
+.browser-item-description
+	margin-top f2
+
+.browser-item-description-title
+	font-weight bold
+
+// browser item types
+
+.browser-record
+	color = orange
+	background-color mix(color, white, 15%)
+
+	.browser-record
+		background-color mix(color, white, 30%)
+
+		.browser-record
+			background-color mix(color, white, 45%)
+
+			.browser-record
+				background-color mix(color, white, 15%)
+
+				.browser-record
+					background-color mix(color, white, 30%)
+
+					.browser-record
+						background-color mix(color, white, 45%)
+
+	.browser-item-title
+		font-size 1.5
+		line-height 1.5
+
+	&.null
+		background-color pale !important
+
+.browser-session
+	background-color green51
+
+	&.materials
+		background-color green52 !important
+
+.browser-asset
+	background-color red51
+	cursor pointer
+
+	.browser-item-title
+		padding-left f8
+		background transparent
+		margin-left 0
+
+		img
+			margin-right f8
+
+	.browser-item-content
+		margin-bottom 0

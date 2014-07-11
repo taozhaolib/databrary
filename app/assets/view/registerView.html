@@ -1,0 +1,96 @@
+<article class="view register-view">
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col">
+        <h1 class="view-context">{{'register.title' | message}}</h1>
+
+        <h2 class="view-title">{{'register.title.sub' | message }}</h2>
+      </hgroup>
+
+      <div class="col">
+        <wizard retrieve="retrieveWizard" update="updateWizard">
+          <wizard-step id="register-create">
+            <form name="registerForm" novalidate>
+              <messages form="registerForm"></messages>
+
+              <validator form="registerForm" name="fieldName" label="'register.name.prompt' | message">
+                <input id="field-name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3" placeholder="{{'register.name.placeholder' | message}}">
+              </validator>
+
+              <validator form="registerForm" name="fieldEmail" label="'email' | message">
+                <input id="field-email" name="fieldEmail" type="email" ng-model="registerForm.data.email" placeholder="{{'register.email.placeholder' | message}}">
+              </validator>
+
+              <validator form="registerForm" name="fieldAffiliation" label="'affiliation' | message">
+                <input id="field-affiliation" name="fieldAffiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{'register.affiliation.placeholder' | message}}">
+              </validator>
+
+              <button class="green" type="submit" ng-disabled="!registerForm.ready()" ng-click="registerForm.proceed(registerForm)">
+                {{'register.continue' | message}}
+              </button>
+            </form>
+          </wizard-step>
+
+          <wizard-step id="register-agreement">
+            <div ng-bind-html="'wizard.register-agreement.agreement-contents' | message"></div>
+
+            <p><input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="agreementCheckbox">
+              <label for="agreement-checkbox" class="option" ng-bind-html="'wizard.register-agreement.agree' | message"></label>
+            </p>
+
+            <button class="green" ng-click="proceed()" ng-disabled="!ready()">{{'register.register' | message}}</button>
+          </wizard-step>
+
+          <wizard-step id="register-email">
+            <p ng-bind-html="'register.sent.instructions' | message:'<strong>'+registerForm.data.email+'</strong>'"></p>
+          </wizard-step>
+
+          <wizard-step id="register-password">
+            <user-password-form></user-password-form>
+          </wizard-step>
+
+          <wizard-step id="register-agent">
+            <div class="radio-set">
+              <div>
+                <input type="radio" ng-model="authSearchForm.principal" ng-value="'principal'">
+                <label class="option" ng-bind-html="'auth.register.principal' | message"></label>
+              </div>
+
+              <div>
+                <input type="radio" ng-model="authSearchForm.principal" ng-value="'affiliate'">
+                <label class="option" ng-bind-html="'auth.register.affiliate' | message"></label>
+              </div>
+            </div>
+
+            <auth-search-form ng-show="authSearchForm.principal"></auth-search-form>
+          </wizard-step>
+
+          <wizard-step id="register-request">
+            <div ng-hide="ifInfo()">
+              <auth-apply-form></auth-apply-form>
+            </div>
+
+            <div ng-show="ifInfo()">
+              <div ng-bind-html="'auth.info.prompt' | message"></div>
+
+              <form name="infoForm" novalidate>
+                <messages form="infoForm"></messages>
+
+                <validator form="infoForm" name="info" label="'auth.request.info.title' | message">
+                  <textarea id="field-info" name="info" ng-model="infoForm.data.info"></textarea>
+                </validator>
+
+                <button class="green" type="submit" ng-disabled="!infoForm.ready()" ng-click="infoForm.proceed()">
+                  {{'register.continue' | message}}
+                </button>
+                <button ng-click="infoForm.cancel()" class="red">{{"cancel" | message}}</button>
+              </form>
+            </div>
+          </wizard-step>
+
+          <wizard-step id="register-pending"></wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>

@@ -203,7 +203,9 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)",
+    .SELECT("JOIN format ON asset.format = format.id",
+      "WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)",
+        "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt
 

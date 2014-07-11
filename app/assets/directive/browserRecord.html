@@ -1,0 +1,29 @@
+<article bindonce class="browser-item browser-record cf" bo-class="{null: data.object.id == 0}">
+  <div class="browser-item-content">
+    <div class="cf">
+      <footer>
+        <a bo-href="editLink(data)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
+      </footer>
+
+      <header>
+        <browser-icon data="data"></browser-icon>
+
+        <h1 class="browser-item-title" bo-text="nameRecord(data)"></h1></h1>
+      </header>
+    </div>
+
+    <div class="browser-item-description">
+      <dl class="browser-item-description-title" ng-repeat="(metric, value) in getMeasures(data)">
+        <dt bo-text="capitalize(metric)"></dt>
+        <dd bo-text="value"></dd>
+      </dl>
+
+      <div class="browser-item-description" bo-if="data.object.measures.description">
+        <div class="browser-item-description-title">Description:</div>
+        <div bo-text="data.object.measures.description"></div>
+      </div>
+    </div>
+  </div>
+
+  <browser-list ng-if="page.browser.showList(data)" data="data"></browser-list>
+</article>

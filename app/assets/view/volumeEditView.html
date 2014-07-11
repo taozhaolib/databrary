@@ -1,0 +1,42 @@
+<article class="view volume-edit-view" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <hgroup class="col" bo-if="!volume">
+        <h1 class="view-context smaller" bo-html="'create' | message"></h1>
+
+        <h2 class="view-title smaller" bo-html="'volume.edit.title.sub' | message"></h2>
+      </hgroup>
+
+      <hgroup class="col" bo-if="volume">
+        <h1 class="view-context smaller" bo-html="'edit' | message"></h1>
+
+        <h2 class="view-title smaller" ng-bind="volume.name"></h2>
+      </hgroup>
+
+      <div class="col">
+        <wizard retrieve="retrieveWizard" update="updateWizard">
+          <wizard-step id="volume-edit-overview">
+            <volume-edit-overview-form></volume-edit-overview-form>
+          </wizard-step>
+
+          <wizard-step id="volume-edit-excerpts">
+            <volume-edit-materials-form mode="excerpts"></volume-edit-materials-form>
+          </wizard-step>
+
+          <wizard-step id="volume-edit-materials">
+            <volume-edit-materials-form></volume-edit-materials-form>
+          </wizard-step>
+
+          <wizard-step id="volume-edit-funding">
+            <volume-edit-funding-form></volume-edit-funding-form>
+          </wizard-step>
+
+          <wizard-step id="volume-edit-access">
+            <volume-edit-access-form></volume-edit-access-form>
+          </wizard-step>
+        </wizard>
+      </div>
+    </div>
+  </div>
+</article>
+

@@ -1,13 +1,9 @@
 # --- !Ups
 
-CREATE TABLE "upload" (
-	"token" char(64) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
-	"account" integer NOT NULL References "account" ON DELETE CASCADE,
-	"filename" text NOT NULL
-) INHERITS ("account_token");
-COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';
+ALTER TABLE audit.excerpt ALTER classification DROP DEFAULT;
+COMMENT ON COLUMN excerpt.classification IS 'Override (by relaxing only) asset''s original classification.';
 
 # --- !Downs
 
-DROP TABLE "upload";
+ALTER TABLE audit.excerpt ALTER classification SET DEFAULT 'PRIVATE';
+COMMENT ON COLUMN excerpt.classification IS NULL;

@@ -51,7 +51,7 @@
           @requestOption match {
             case Some(request : SiteRequest.Auth[_]) => {
               <a href="@routes.PartyHtml.profile" class="toolbar-user-link">
-                <span class="username hide-mobile hide-tablet">@requestOption.get.identity.name</span>
+                <span class="username hide-mobile hide-tablet">@Messages("me")</span>
                 <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">
               </a>
 
@@ -66,7 +66,7 @@
                   @defining(new LoginController.SuperuserForm()(request)) { form =>
                     @widget.tag.form(form) {
                       @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
-                        @widget.tag.inputPassword(form.auth(), 'class -> "mini supermini password")
+                        @widget.tag.inputPassword(form.auth(), 'class -> "mini toolbar-static-input password")
                         <button type="submit" class="link toolbar-superuser off">SU</button>
                       }
                     }
@@ -90,7 +90,7 @@
     </div>
   </section>
 
-  <main ng-view id="main" class="main" autoscroll>
+  <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error">
     @if(angular){
       <noscript>
 	      @body
@@ -99,6 +99,10 @@
       @body
     }
   </main>
+
+  @if(angular) {
+    <errors></errors>
+  }
 
   <footer id="site-footer" class="site-footer">
     <div class="wrap">

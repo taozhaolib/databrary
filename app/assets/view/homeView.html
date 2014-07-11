@@ -1,0 +1,54 @@
+<article class="view home-view" bindonce>
+  <div class="wrap">
+    <div class="row">
+      <div class="col">
+        <search-form></search-form>
+      </div>
+    </div>
+
+    <div class="row" bo-if="!page.auth.isAuthorized()">
+      <div class="col">
+        <h1 class="home-parties-header"><span></span><span bo-html="'welcome.title.sub' | message"></span></h1>
+
+        <div bo-html="'welcome.body' | message | format:false:true"></div>
+      </div>
+    </div>
+
+    <div class="row" bo-if="page.auth.isAuthorized()">
+      <article class="home-feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
+        <div class="home-feature-inner">
+          <img bo-src="page.router.volumeThumb(volume)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
+
+          <div class="home-feature-info">
+            <div class="home-feature-message" bo-html="'featured' | message"></div>
+            <h1><a bo-href="page.router.volume({id: volume.id})" bo-text="volume.name"></a></h1>
+
+            <div class="home-feature-investigators">
+              <ul class="inline-block comma">
+                <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
+                  <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="row">
+      <div class="home-parties">
+        <div class="row">
+          <div class="col">
+            <h1 class="home-parties-header"><span></span><span bo-html="'splash.investigators.header' | message"></span>
+            </h1>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'lastName'" bindonce>
+            <portrait></portrait>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

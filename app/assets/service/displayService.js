@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('displayService', [
 	'$rootScope',
 	'$sessionStorage',
@@ -21,6 +23,7 @@ module.factory('displayService', [
 
 		$rootScope.$on('$routeChangeStart', function () {
 			display.loading = true;
+			display.error = false;
 			display.toolbarLinks = [];
 		});
 
@@ -36,8 +39,10 @@ module.factory('displayService', [
 		display.error = undefined;
 
 		$rootScope.$on('$routeChangeError', function (event, next, previous, error) {
-			display.error = error;
-			$location.url(router.error());
+			display.error = true;
+			display.loading = false;
+			display.scrollTo(0);
+			events.talk('displayService-error', error);
 		});
 
 		//
@@ -59,8 +64,7 @@ module.factory('displayService', [
 
 		display.scrollTo = function (id) {
 			$timeout(function () {
-
-				var target = (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
+				var target = angular.isNumber(id) ? id : (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
 				$scroll.animate({
 					scrollTop: target
 				}, 500);
@@ -78,14 +82,10 @@ module.factory('displayService', [
 
 			var result = display.navigationFn(event, url);
 
-			if (result === true) {
-				return display.navigationFn = undefined;
-			} else if (angular.isUndefined(result)) {
+			if (angular.isUndefined(result)) {
 				return;
-			}
-
-			if (result === true || confirm(constants.message('navigation.confirmation'))) {
-				return display.navigationFn = undefined;
+			} else if (result === true || confirm(constants.message('navigation.confirmation'))) {
+				return (display.navigationFn = undefined);
 			}
 
 			event.preventDefault();
@@ -94,12 +94,12 @@ module.factory('displayService', [
 		//
 
 		var ageKeys = ['science', 'days', 'months', 'years'],
-			ageKey = $sessionStorage['displayAge'] || 'science';
+			ageKey = $sessionStorage.displayAge || 'science';
 
 		display.toggleAge = function () {
 			ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
 			events.talk('displayService-toggleAge', ageKey);
-			$sessionStorage['displayAge'] = ageKey;
+			$sessionStorage.displayAge = ageKey;
 		};
 
 		display.formatAge = function (value) {

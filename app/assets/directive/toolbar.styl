@@ -1,0 +1,142 @@
+// styles
+
+body
+	.main
+		margin-top 1.5
+
+.toolbar
+	top 0
+	z-index 1000
+	position fixed
+	width 100%
+	height 1.5
+	line-height 1.5
+	box-shadow box-shadow
+	background-color white
+	font-family heading-family
+
+	.row
+		position relative
+
+	.icon.contact
+		position relative
+		top b8
+
+.toolbar-site
+	font-line 1 1.5
+	margin-height 0
+	display inline-block
+
+	a
+		color black
+		display block
+		background url('/public/images/logo/databrary-nav.png') no-repeat 0 center
+		height 1.5
+		width 114px
+		margin-right f2
+
+		&:link
+			color black
+
+		&:hover
+			color blue52
+
+.toolbar-nav
+	display inline-block
+	position relative
+	top -b2
+
+	li
+		margin-right f2
+
+	a
+		text-transform lowercase
+		position relative
+		top -b24
+		font-line .75 .75
+
+		.icon
+			position relative
+			top b12
+
+.toolbar-avatar
+	position relative
+	top b8
+	display inline-block
+	border 1px solid gray
+	size b34
+	margin-left f8
+
+.toolbar-user,
+.toolbar-hover
+	a
+		color black
+
+		&:hover
+			color gray
+
+			.avatar
+				border-color pale
+
+		&.toolbar-superuser
+			color red53
+
+			&:hover
+				color red51
+
+			&.on
+				color green53
+
+				&:hover
+					color green51
+
+.toolbar-user
+	text-align right
+
+	form
+		display inline-block
+
+.toolbar-hover
+	position absolute
+	top b1 * 2
+	right b1
+	background-color white
+	border-radius b6
+	box-shadow box-shadow
+	padding f2
+	line-height 1
+
+	&:after,
+	&:before
+		content ""
+		position absolute
+		right b1 + b12
+		size 0
+		border b4 solid transparent
+		pointer-events none
+
+	&:after
+		border-bottom-color white
+		top -b2
+
+	&:before
+		border-bottom-color gray
+		top -b2 - 1px
+
+.toolbar-user-menu
+	text-align right
+
+	ul
+		padding-left 0
+		margin-bottom 0
+
+.toolbar-password-form
+	border-top 1px solid gray
+	padding-top f4
+	margin-top f4
+
+	.password
+		margin-bottom 0
+
+.toolbar-static-input
+	width 50px

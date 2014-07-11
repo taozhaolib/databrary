@@ -9,8 +9,6 @@
             @if(assets.nonEmpty) {
                 @assets.map { link =>
                         <li class="panel_materials_item @link.classification" ng-click="selectAsset(@link.sourceId)" ng-class="{active: currentAsset == @link.sourceId}">
-                            <span class="filetype @link.format.extension"><img src="@routes.Assets.at("images/filetypes/16px/" + link.format.extension.getOrElse("_blank") + ".png")"></span>
-
                             <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
 
                         <span class="classification">@link.classification.toString.charAt(0)</span>

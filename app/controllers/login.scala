@@ -93,8 +93,8 @@ private[controllers] sealed class LoginController extends SiteController {
 	  .flatMap(Account.create(_, email = form.email.get))
 	}
 	_ <- controllers.TokenController.newPassword(Right(a), "register")
-	_ = Mail.investigator(form.name.get)
-      } yield (Ok("sent"))
+	_ = Mail.investigator(a.party)
+      } yield (Ok(Messages("register.sent.instructions", a.email)))
     }
 }
 

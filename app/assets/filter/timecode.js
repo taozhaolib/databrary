@@ -1,3 +1,5 @@
+'use strict';
+
 module.filter('timecode', [
 	function () {
 		return function (input, showMilli) {
@@ -31,7 +33,7 @@ module.filter('timecode', [
 			input = input % millTo.seconds;
 
 			angular.forEach(time, function (input, k) {
-				if (k != 0 && time.length > 1) {
+				if (k !== 0 && time.length > 1) {
 					time[k] = new Array(3 - input.toString().length).join('0') + input;
 				}
 			});

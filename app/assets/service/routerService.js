@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('routerService', [
 	'$rootScope',
 	'$route',
@@ -79,6 +81,7 @@ module.factory('routerService', [
 		router.asset = makeRoute('/asset/:id');
 		router.volume = makeRoute('/volume/:id');
 		router.volumeCreate = makeRoute('/volume/create');
+		router.slot = makeRoute('/volume/:vid/slot/:id');
 		router.slotAsset = makeRoute('/slot/:sid/asset/:id');
 		router.helpFormats = makeRoute('/asset/formats');
 
@@ -97,19 +100,6 @@ module.factory('routerService', [
 			};
 
 			return router.makeUrl('/record/:id', data);
-		};
-
-		router.slot = function (data) {
-			if (!type.isSession(data)) {
-				throw new Error('routerService.slot() requires Slot as first argument');
-			}
-
-			data = {
-				id: data.id,
-				segment: type.segmentString(data)
-			};
-
-			return router.makeUrl('/slot/:id', data);
 		};
 
 		router.volumeThumb = function (data) {

@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('populate', [
 	'pageService', function (page) {
 		var link = function ($scope, $element, $attrs) {

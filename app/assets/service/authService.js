@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('authService', [
 	'$rootScope',
 	'$location',
@@ -7,9 +9,9 @@ module.factory('authService', [
 	'messageService',
 	'constantService',
 	'routerService',
-	'Party',
+	'party',
 	'playService',
-	function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, play) {
+	function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, party, play) {
 		var auth = {};
 
 		//
@@ -22,7 +24,7 @@ module.factory('authService', [
 			if (user) {
 				user.superuser = !!user.superuser;
 
-				if (auth.user && auth.user.id === user.id && !auth.user.superuser === !user.superuser) {
+				if (auth.user && auth.user.id === user.id && auth.user.superuser == user.superuser) {
 					reload = false;
 				}
 			} else if (!user && !auth.user) {
@@ -42,7 +44,7 @@ module.factory('authService', [
 				return auth.parseUser(user);
 			}
 
-			Party.user(function (data) {
+			party.user(function (data) {
 				if (data.id == -1 || angular.isString(data)) {
 					auth.parseUser(undefined);
 				}
@@ -102,7 +104,7 @@ module.factory('authService', [
 		//
 
 		auth.logout = function () {
-			Party.logout(function (data) {
+			party.logout(function (data) {
 				auth.parseUser(data);
 				$location.url('/login');
 
@@ -162,7 +164,7 @@ module.factory('authService', [
 		//
 
 		var enableSU = function (form) {
-			Party.superuserOn({
+			party.superuserOn({
 					auth: form.auth
 				},
 				function (data) {
@@ -182,7 +184,7 @@ module.factory('authService', [
 		};
 
 		var disableSU = function () {
-			Party.superuserOff(function (data) {
+			party.superuserOff(function (data) {
 				auth.parseUser(data);
 
 				messages.add({

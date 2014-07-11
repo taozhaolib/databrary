@@ -1,3 +1,5 @@
+'use strict';
+
 module.directive('fold', [
 	'pageService', function (page) {
 		var foldableClass = 'foldable',
@@ -112,6 +114,6 @@ module.directive('fold', [
 			restrict: 'A',
 			priority: 0,
 			link: link
-		}
+		};
 	}
 ]);

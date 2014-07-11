@@ -1,3 +1,5 @@
+'use strict';
+
 module.config([
 	'$provide', function ($provide) {
 		$provide.decorator('$cacheFactory', [

@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('resourceFactory', [
 	'$rootScope', '$cacheFactory', '$resource', function ($rootScope, $cacheFactory, $resource) {
 		return function (url, params, methods, cacheID) {
