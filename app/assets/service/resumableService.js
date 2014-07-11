@@ -1,6 +1,5 @@
 "use strict";
 /*globals Resumable*/
->>>>>>> Stashed changes
 module.factory('resumableService', [
 	'$rootScope',
 	'typeService',
