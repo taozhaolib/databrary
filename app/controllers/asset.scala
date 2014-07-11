@@ -251,7 +251,7 @@ object AssetApi extends AssetController with ApiController {
       for {
 	u <- UploadToken.create(filename)(request.asInstanceOf[AuthSite])
       } yield {
-	val f = new RandomAccessFile(u.file, "w")
+	val f = new RandomAccessFile(u.file, "rw")
 	try {
 	  f.setLength(size)
 	} finally {
@@ -273,7 +273,7 @@ object AssetApi extends AssetController with ApiController {
     val form = new ChunkForm()._bind
     UploadToken.get(form.resumableIdentifier.get)
     .map(_.filter(_.filename == form.resumableFilename.get).fold(notfound) { u =>
-      val f = new RandomAccessFile(u.file, if (write) "w" else "r")
+      val f = new RandomAccessFile(u.file, if (write) "rw" else "r")
       if (f.length != form.resumableTotalSize.get)
 	form.resumableTotalSize.withError("size mismatch")._throw
       f.seek(form.resumableChunkSize.get * (form.resumableChunkNumber.get-1))
