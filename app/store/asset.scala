@@ -46,6 +46,7 @@ object Stage extends StoreDir("store.stage") {
 }
 
 object Upload extends StoreDir("store.upload") {
+  baseDir.mkdir
   def file(token : Token.Id) : File =
     new File(baseDir, token)
 }
