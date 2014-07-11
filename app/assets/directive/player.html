@@ -25,26 +25,28 @@
   </div>
 
   <div class="player-list">
-    <div class="player-list-scroll player-list-scroll-left" ng-click="player.listScroll('left')">
+    <div class="player-list-scroll player-list-scroll-left" ng-click="player.listScroll(false)" ng-show="player.canScrollBack">
       <div class="player-list-scroll-arrow"></div>
     </div>
 
-    <div class="player-list-scroll player-list-scroll-right" ng-click="player.listScroll('right')">
+    <div class="player-list-scroll player-list-scroll-right" ng-click="player.listScroll(true)" ng-show="player.canScrollForward">
       <div class="player-list-scroll-arrow"></div>
     </div>
 
-    <ul class="player-list-items flat cf">
-      <li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
-        <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
-      </li>
+    <div class="player-list-inner">
+      <ul class="player-list-items flat cf">
+        <li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
+          <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
+        </li>
 
-      <li class="player-list-item player-list-item-unplayable">
-        <ul class="player-unplayable-items flat">
-          <li ng-repeat="media in player.unplayable">
-            <a bo-text="page.types.assetDisplayName(media)" ng-click="player.select(media)"></a>
-          </li>
-        </ul>
-      </li>
-    </ul>
+        <li class="player-list-item player-list-item-unplayable" bo-if="player.unplayable">
+          <ul class="player-unplayable-items flat">
+            <li ng-repeat="media in player.unplayable">
+              <a bo-text="page.types.assetDisplayName(media)" ng-click="player.select(media)"></a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
   </div>
 </section>

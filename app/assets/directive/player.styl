@@ -63,28 +63,29 @@
 .player-list
 	position relative
 	background-color pale
-	padding f4
 	min-height 5
 	height 5
 	overflow hidden
 
-.player-list-items
-.player-list-item
+.player-list-inner
+	position absolute
 	height 100%
+	left 0
+	width 1000
 
 .player-list-items
 	margin 0
-	padding 0 b1
-	position relative
+	padding-width b4
+	position absolute
 	left 0
-	min-width 200%
+	top b4
+	bottom b4
 
 .player-list-item
-	float left
+	height 100%
+	display inline-block
 
 	img
-		display block
-		float left
 		height 100%
 		width auto
 		max-width none
@@ -92,20 +93,22 @@
 .player-list-item-playable
 	&:after
 		content ''
-		float left
-		display block
+		display inline-block
 		height 100%
 		margin-width f4
 		border-left 1px solid gray
+
+	&:last-child
+		&:after
+			content none
 
 .player-list-scroll
 	z-index 1
 	transition background trans-time trans-ease
 	position absolute
 	width b1
-	border-radius b8
-	top b8
-	bottom b8
+	top b4
+	bottom b4
 
 	&:hover
 		background gray
@@ -125,17 +128,17 @@
 		pointer-events none
 
 .player-list-scroll-left
-	left b8
+	left b4
 
 	.player-list-scroll-arrow
 		&:after
-			border-right-color black
+			border-right-color white
 			right b4
 
 .player-list-scroll-right
-	right b8
+	right b4
 
 	.player-list-scroll-arrow
 		&:after
-			border-left-color black
+			border-left-color white
 			left b4
