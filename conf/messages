@@ -3,7 +3,6 @@ app.update=The Databrary website has been updated. Please save your work and rel
 
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
-format.duns=9-digit D-U-N-S
 format.offset=Position in seconds
 format.orcid=ORCID iD
 format.boolean=
@@ -20,7 +19,6 @@ file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
 measure.unknown=Invalid or unknown type of measure.
 measure.bad=Invalid value for measure.
-duns.invalid=Invalid D-U-N-S
 orcid.invalid=Invalid ORCID iD
 range.invalid=Invalid time range
 object.invalid=Invalid {0} specified
@@ -178,7 +176,6 @@ password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
 fullname=Full Name
-duns=DUNS
 avatar=avatar
 affiliation=Affiliation
 
@@ -239,7 +236,6 @@ party.edit=edit profile
 party.view=view profile
 
 party.edit.personal=Personal Information
-party.edit.extended=Additional Info
 party.edit.account=Login Information
 party.edit.confirm=Confirm Access
 
@@ -254,9 +250,6 @@ party.edit.url.help=Specify whatever personal web page you''d like (faculty page
 
 party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
-
-party.edit.duns.title=DUNS
-party.edit.duns.help=Enter this institution''s DUNS.
 
 party.edit.email.title=Email
 party.edit.email.help=Enter a valid email address.

@@ -62,12 +62,10 @@ CREATE TABLE "party" (
 	"name" text NOT NULL,
 	"orcid" char(16),
 	"affiliation" text,
-	"duns" numeric(9),
 	"url" text
 );
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
-COMMENT ON COLUMN "party"."duns" IS 'http://en.wikipedia.org/wiki/DUNS';
 
 -- special parties (SERIAL starts at 1):
 INSERT INTO "party" VALUES (-1, 'Everybody'); -- NOBODY

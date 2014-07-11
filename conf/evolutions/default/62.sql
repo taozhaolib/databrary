@@ -1,13 +1,25 @@
 # --- !Ups
 
-CREATE TABLE "upload" (
-	"token" char(64) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
-	"account" integer NOT NULL References "account" ON DELETE CASCADE,
-	"filename" text NOT NULL
-) INHERITS ("account_token");
-COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';
+ALTER TABLE "party" DROP "duns";
+ALTER TABLE audit."party" DROP "duns";
 
 # --- !Downs
 
-DROP TABLE "upload";
+ALTER TABLE "party" ADD "duns" numeric(9);
+ALTER TABLE "party" RENAME "url" TO "url_old";
+ALTER TABLE "party" ADD "url" text;
+UPDATE "party" SET url = url_old;
+ALTER TABLE "party" DROP "url_old";
+
+COMMENT ON COLUMN "party"."duns" IS 'http://en.wikipedia.org/wiki/DUNS';
+
+ALTER TABLE audit."party" ADD "duns" numeric(9);
+ALTER TABLE audit."party" RENAME "url" TO "url_old";
+ALTER TABLE audit."party" ADD "url" text;
+DO $do$ BEGIN
+EXECUTE $$GRANT UPDATE ON TABLE audit.party TO $$ || quote_ident(current_user);;
+UPDATE audit.party SET url = url_old;;
+EXECUTE $$REVOKE UPDATE ON TABLE audit.party FROM $$ || quote_ident(current_user);;
+END;; $do$;
+ALTER TABLE audit."party" DROP "url_old";
+

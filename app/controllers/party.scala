@@ -58,7 +58,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	name = form.name.get,
 	orcid = form.orcid.get,
 	affiliation = form.affiliation.get,
-	duns = form.duns.get.filter(_ => request.access.member == Permission.ADMIN),
 	url = form.url.get
       )
       _ <- form.accountForm foreachAsync { form =>
@@ -83,7 +82,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	name = form.name.get.get,
 	orcid = form.orcid.get.flatten,
 	affiliation = form.affiliation.get.flatten,
-	duns = form.duns.get.flatten,
 	url = form.url.get.flatten)
       a <- cast[PartyController.AccountCreateForm](form).mapAsync(form =>
 	Account.create(p,
@@ -183,7 +181,6 @@ object PartyController extends PartyController {
     val name : Field[Option[String]]
     val orcid = Field(OptionMapping(Forms.optional(Forms.of[Orcid])))
     val affiliation = Field(OptionMapping(Mappings.maybeText))
-    val duns = Field(OptionMapping(Forms.optional(Forms.of[DUNS])))
     val url = Field(OptionMapping(Forms.optional(Forms.of[java.net.URL])))
   }
   sealed trait AccountForm extends PartyForm with LoginController.PasswordChangeForm {
@@ -203,7 +200,6 @@ object PartyController extends PartyController {
     val avatar = OptionalFile()
     orcid.fill(Some(party.orcid))
     affiliation.fill(Some(party.affiliation))
-    duns.fill(if (request.access.member >= Permission.ADMIN) Some(party.duns) else None)
     url.fill(Some(party.url))
   }
   final class PartyEditForm(implicit request : Request[_]) extends EditForm {

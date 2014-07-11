@@ -11,15 +11,13 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], duns_ : Option[DUNS] = None, url_ : Option[URL] = None) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], url_ : Option[URL] = None) extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
   def orcid = _orcid
   private[this] var _affiliation = affiliation_
   def affiliation = _affiliation
-  private[this] var _duns = duns_
-  def duns = _duns
   private[this] var _url = url_
   def url = _url
 
@@ -27,19 +25,17 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
   def account = _account
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], duns : Option[Option[DUNS]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
+  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
     Audit.change("party", SQLTerms.flatten(
       name.map('name -> _),
       orcid.map('orcid -> _),
       affiliation.map('affiliation -> _),
-      duns.map('duns -> _),
       url.map('url -> _)),
       SQLTerms('id -> id))
     .execute.andThen { case scala.util.Success(true) =>
       name.foreach(_name = _)
       orcid.foreach(_orcid = _)
       affiliation.foreach(_affiliation = _)
-      duns.foreach(_duns = _)
       url.foreach(_url = _)
     }
 
@@ -73,7 +69,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     , orcid.map(('orcid, _))
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
-    , if (duns.isDefined) Some('institution -> true) else None
+    , if (account.isEmpty) Some('institution -> true) else None
     , url.map(('url, _))
     , Some('avatar -> views.html.display.avatar(this).url)
     )
@@ -120,8 +116,6 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
       )
     , "openid" -> (opt => async(if (party === site.identity || site.superuser)
 	Json.toJson(party.account.flatMap(_.openid)) else JsNull))
-    , "duns" -> (opt => async(if (site.access.member >= Permission.ADMIN)
-	Json.toJson(party.duns.map(_.toString)) else JsNull))
     )
 }
 
@@ -172,10 +166,9 @@ object Party extends TableId[Party]("party") {
     , SelectColumn[String]("name")
     , SelectColumn[Option[Orcid]]("orcid")
     , SelectColumn[Option[String]]("affiliation")
-    , SelectColumn[Option[DUNS]]("duns")
     , SelectColumn[Option[URL]]("url")
-    ).map { (id, name, orcid, affiliation, duns, url) =>
-      new Party(id, name, orcid, affiliation, duns, url)
+    ).map { (id, name, orcid, affiliation, url) =>
+      new Party(id, name, orcid, affiliation, url)
     }
   private[models] val row : Selector[Party] =
     columns.leftJoin(Account.columns, using = 'id)
@@ -206,15 +199,14 @@ object Party extends TableId[Party]("party") {
     .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name").apply().list
 
   /** Create a new party. */
-  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, duns : Option[DUNS] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
+  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
     Audit.add("party", SQLTerms(
       'name -> name,
       'orcid -> orcid,
       'affiliation -> affiliation,
-      'duns -> duns,
       'url -> url),
       "id")
-    .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, duns, url))
+    .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, url))
 
   private def byName(implicit site : Site) =
     if (site.access.site >= Permission.SHARED)
@@ -240,7 +232,7 @@ object Party extends TableId[Party]("party") {
     */
   def searchForAuthorize(name : String, who : Party, institute : Option[Boolean] = None)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT("WHERE", byName, "AND id != ? AND id > 0",
-      institute.fold("")(if (_) "AND duns IS NOT NULL" else "AND duns IS NULL"),
+      institute.fold("")(i => "AND account.id IS " + (if (i) "" else "NOT ") + "NULL"),
       "AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
       .apply(byNameArgs(name) ++ SQLArgs(who.id) * 3).list
 

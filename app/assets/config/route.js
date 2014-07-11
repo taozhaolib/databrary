@@ -154,7 +154,6 @@ module.config([
 							comments: '',
 							access: '',
 							openid: '',
-							duns: '',
 							parents: '',
 							children: '',
 						};
@@ -235,7 +234,6 @@ module.config([
 
 						page.models.party.get({
 							id: page.$route.current.params.id,
-							duns: '',
 							parents: '',
 							children: '',
 						}, function (res) {

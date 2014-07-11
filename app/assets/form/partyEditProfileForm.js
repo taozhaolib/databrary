@@ -21,7 +21,6 @@ module.directive('partyEditProfileForm', [
 				form.data = {
 					name: party.name,
 					orcid: party.orcid,
-					duns: party.duns,
 					affiliation: party.affiliation,
 					avatar: party.avatar,
 					url: party.url
@@ -155,9 +154,6 @@ module.directive('partyEditProfileForm', [
 				},
 				orcid: {
 					tips: page.constants.message('party.edit.orcid.help')
-				},
-				duns: {
-					tips: page.constants.message('party.edit.duns.help')
 				},
 				url: {
 					tips: page.constants.message('party.edit.url.help')

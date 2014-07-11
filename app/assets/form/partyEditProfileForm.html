@@ -30,14 +30,6 @@
     </validator>
   </fieldset>
 
-  <fieldset ng-if="page.auth.hasAuth('ADMIN')">
-    <legend bo-html="'party.edit.extended' | message"></legend>
-
-    <validator form="partyEditProfileForm" name="duns" label="'party.edit.duns.title' | message">
-      <input type="text" name="duns" ng-model="partyEditProfileForm.data.duns">
-    </validator>
-  </fieldset>
-
   <fieldset class="clean">
     <button ng-click="partyEditProfileForm.save()" bo-html="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
     <button ng-click="partyEditProfileForm.reset()" bo-html="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
