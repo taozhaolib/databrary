@@ -6,7 +6,9 @@ module.directive('resumableDrop', [
 				target: $attrs.uploadTarget, 
 				method: 'octet', 
 				maxFiles: 1, 
-				testChunks: false
+				testChunks: false,
+				chunkRetryInterval: 5000,
+				permanentErrors: [400,403,404,415,500,501]
 			});
 			
 			r.assignDrop($el);
@@ -22,6 +24,11 @@ module.directive('resumableDrop', [
 					}
 			);
 
+			r.on('complete', function(){
+				//call to api/asset with remaining fields
+				}
+			);
+						
 			$scope.resumableObj = r;
 		};
 
