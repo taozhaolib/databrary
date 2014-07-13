@@ -9,8 +9,11 @@ module.directive('player', [
 		var controller = [
 			'$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 				var player = this;
-				var $list = $('.player-list');
-				var $items = $('.player-list-items');
+				var $player = $element.find('.player');
+				var $main = $element.find('.player-main');
+				var $list = $element.find('.player-list');
+				var $items = $element.find('.player-list-items');
+				var $resize = $element.find('.player-resize-main');
 
 				player.slot = page.$parse($attrs.slot)($scope);
 				player.main = [];
@@ -95,7 +98,6 @@ module.directive('player', [
 
 					player.canScrollBack = pos < 0;
 					player.canScrollForward = listW - pos < itemsW;
-					console.log(listW, itemsW, pos, player.canScrollBack, player.canScrollForward);
 				};
 
 				var updateScrollEvent = function () {
@@ -107,6 +109,56 @@ module.directive('player', [
 				page.$w
 					.resize(updateScrollEvent)
 					.load(updateScrollEvent);
+
+				//
+
+				var resizeStart = 0;
+
+				player.resize = function (e) {
+					page.$d
+						.bind('mousemove.playerResize', resizeMove)
+						.bind('mouseup.playerResize', resizeUp);
+
+					resizeStart = e.clientY;
+					e.stopPropagation();
+				};
+
+				var resizeMove = function (e) {
+					var playerH = $player.outerHeight();
+					var playerT = $player.offset().top;
+					var resizeH = $resize.outerHeight(true);
+					var mainH = e.clientY - playerT;
+					var listH = playerH - resizeH - mainH;
+
+					if (mainH < 48) {
+						mainH = 48;
+						listH = playerH - resizeH - mainH;
+					} else if (listH < 32) {
+						mainH = playerH - 32 - resizeH;
+						listH = playerH - resizeH - mainH;
+					}
+
+					$main.height(mainH);
+					$list.height(listH);
+
+					page.$timeout(function () {
+						updateScroll();
+						$element.find('img, video').each(function () {
+							var realW = this.naturalWidth;
+							var realH = this.naturalHeight;
+							var h = this.height;
+
+							$(this).width(h * (realW / realH));
+						});
+					});
+
+					e.preventDefault();
+				};
+
+				var resizeUp = function (e) {
+					page.$d.unbind('mousemove.playerResize mouseup.playerResize');
+					e.preventDefault();
+				};
 			}
 		];
 
