@@ -49,7 +49,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     dataPermission(classification, consent)
   /** Whether the current user may not download restricted data within this slot. */
   final def restricted : Boolean =
-    dataPermission(Classification.RESTRICTED).checkPermission(Permission.READ)
+    !dataPermission(Classification.RESTRICTED).checkPermission(Permission.READ)
 
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
