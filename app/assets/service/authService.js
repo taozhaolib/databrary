@@ -16,7 +16,8 @@ module.factory('authService', [
 
 		//
 
-		auth.user = undefined;
+		auth.everybody = constants.data.everybody;
+		auth.user = auth.everybody;
 
 		auth.parseUser = function (user) {
 			var reload = true;
@@ -24,14 +25,14 @@ module.factory('authService', [
 			if (user) {
 				user.superuser = !!user.superuser;
 
-				if (auth.user && auth.user.id === user.id && auth.user.superuser == user.superuser) {
+				if (auth.user.id === user.id && auth.user.superuser == user.superuser) {
 					reload = false;
 				}
 			} else if (!user && !auth.user) {
 				reload = false;
 			}
 
-			auth.user = user || undefined;
+			auth.user = user || auth.everybody;
 
 			if (reload) {
 				$cacheFactory.removeAll();
@@ -45,14 +46,9 @@ module.factory('authService', [
 			}
 
 			party.user(function (data) {
-				if (data.id == -1 || angular.isString(data)) {
-					auth.parseUser(undefined);
-				}
-				else {
-					auth.parseUser(data);
-				}
+				auth.parseUser(angular.isString(data) ? auth.everybody : data);
 			}, function () {
-				auth.parseUser(undefined);
+				auth.parseUser(auth.everybody);
 			});
 		};
 
@@ -66,10 +62,6 @@ module.factory('authService', [
 		};
 
 		var parseUserAuth = function (object) {
-			if (!auth.user || !auth.user.id || auth.user.id == -1) {
-				return -1;
-			}
-
 			if (auth.user.superuser) {
 				return constants.data.permissionName.SUPER;
 			}
@@ -130,7 +122,7 @@ module.factory('authService', [
 		//
 
 		auth.isLoggedIn = function () {
-			return !!(auth.user && auth.user.id && auth.user.id != -1);
+			return auth.user !== auth.everybody;
 		};
 
 		auth.hasToken = function () {

@@ -79,7 +79,7 @@ module.factory('typeService', [
 		};
 
 		typeService.isParty = function (object) {
-			return angular.isObject(object) && object.avatar;
+			return angular.isObject(object) && angular.isDefined(object.institution);
 		};
 
 		typeService.isToken = function (object) {
