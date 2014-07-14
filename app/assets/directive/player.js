@@ -143,7 +143,14 @@ module.directive('player', [
 
 					page.$timeout(function () {
 						updateScroll();
-						$element.find('img, video').each(function () {
+						$main.find('img, video').each(function () {
+							var realW = this.naturalWidth;
+							var realH = this.naturalHeight;
+							var h = mainH;
+
+							$(this).width(h * (realW / realH));
+						});
+						$list.find('img, video').each(function () {
 							var realW = this.naturalWidth;
 							var realH = this.naturalHeight;
 							var h = this.height;
