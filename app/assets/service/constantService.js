@@ -38,7 +38,7 @@ module.factory('constantService', [
 				['PUBLIC', 'SHARED']
 			];
 			constants.data.everybody = {
-				id: -1,
+				id: constants.data.party.NOBODY,
 				name: 'Everybody',
 				permission: 3
 			};

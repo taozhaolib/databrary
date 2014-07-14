@@ -122,7 +122,7 @@ module.factory('authService', [
 		//
 
 		auth.isLoggedIn = function () {
-			return auth.user !== auth.everybody;
+			return auth.user.id !== auth.everybody.id;
 		};
 
 		auth.hasToken = function () {
@@ -146,6 +146,7 @@ module.factory('authService', [
 		};
 
 		auth.isAuthorized = function () {
+			console.log(auth.isLoggedIn(), auth.hasAuth(constants.data.permissionName.PUBLIC));
 			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
 		};
 
