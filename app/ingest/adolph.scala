@@ -236,8 +236,8 @@ object Adolph extends Ingest {
       }
     }
     def withLocation(f : Record => Record) = {
-      val i = RecordCategory.Location.id.unId
-      val p = records.getOrElse(i, TotalRecord(RecordCategory.Location))
+      val i = RecordCategory.Context.id.unId
+      val p = records.getOrElse(i, TotalRecord(RecordCategory.Context))
       copy(records = records.updated(i, f(p)))
     }
     def withRecord(r : Record) = {
