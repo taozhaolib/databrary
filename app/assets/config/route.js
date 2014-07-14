@@ -425,14 +425,14 @@ module.run([
 
 					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
 
-					if (controller !== 'RegisterView') {
+					if (controller !== 'registerView') {
 						page.$location.url(page.router.register());
 					}
-				} else if (!next.authenticate && next.$$route.controller !== 'ErrorView' && next.$$route.originalPath !== '/profile') {
+				} else if (!next.authenticate && next.$$route.controller !== 'errorView' && next.$$route.originalPath !== '/profile') {
 					page.$location.url(page.router.index());
 				}
 			} else {
-				if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'RegisterView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'RegisterView')) {
+				if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'registerView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'registerView')) {
 					page.$location.url(page.router.register());
 				} else if (next.authenticate) {
 					page.$location.url(page.router.index());

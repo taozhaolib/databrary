@@ -4,10 +4,10 @@ module.controller('BrowserPanel', [
 	'$scope', 'pageService', function ($scope, page) {
 		$scope.refreshPanel = function () {
 			switch (page.$route.current.controller) {
-				case 'VolumeView':
+				case 'volumeView':
 					$scope.enabled = $scope.volume.sessions;
 					break;
-				case 'PartyView':
+				case 'partyView':
 					$scope.enabled = $scope.volumes[0];
 					break;
 			}

@@ -146,7 +146,6 @@ module.factory('authService', [
 		};
 
 		auth.isAuthorized = function () {
-			console.log(auth.isLoggedIn(), auth.hasAuth(constants.data.permissionName.PUBLIC));
 			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
 		};
 

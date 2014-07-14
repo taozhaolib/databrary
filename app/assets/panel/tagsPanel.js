@@ -29,8 +29,8 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.refreshPanel = function () {
-			switch (page.$route.current.controller) {
-				case 'VolumeView':
+			switch (page.$route.current.$$route.controller) {
+				case 'volumeView':
 					$scope.prepareTags($scope.volume.tags);
 					$scope.target.container = $scope.volume.top.id;
 					$scope.target.segment = ',';
@@ -39,7 +39,7 @@ module.controller('TagsPanel', [
 					$scope.enabled = $scope.tags.length > 0 || page.auth.isLoggedIn();
 					break;
 
-				case 'PartyView':
+				case 'partyView':
 					$scope.prepareTags($scope.party.tags);
 
 					$scope.enabled = $scope.tags.length > 0;
@@ -66,8 +66,8 @@ module.controller('TagsPanel', [
 		};
 
 		$scope.retrieveTags = function () {
-			switch (page.$route.current.controller) {
-				case 'VolumeView':
+			switch (page.$route.current.$$route.controller) {
+				case 'volumeView':
 					page.models.volume.$cache.removeAll();
 
 					page.models.volume.get({
