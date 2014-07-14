@@ -97,6 +97,11 @@
 	height 100%
 	display inline-block
 
+	&:last-child
+		&:after
+			content none
+
+.player-list-item-playable
 	&:after
 		content ''
 		display inline-block
@@ -104,11 +109,6 @@
 		margin-width f4
 		border-left 1px solid gray
 
-	&:last-child
-		&:after
-			content none
-
-.player-list-item-playable
 	img
 		height 100%
 		width auto
@@ -116,12 +116,17 @@
 		transition none
 		cursor pointer
 
+.player-list-item-unplayable
+	position relative
+	width 8
+
 .player-unplayable-items
 	position absolute
 	padding 0
-	min-width 16
 
 .player-unplayable-item
+	overflow ellipsis
+
 	a
 		&:hover
 		&:active

@@ -39,9 +39,9 @@
           <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
         </li>
 
-        <li class="player-list-item player-list-item-unplayable" bo-if="player.unplayable">
+        <li class="player-list-item player-list-item-unplayable" ng-repeat="list in player.unplayableList">
           <ul class="player-unplayable-items flat">
-            <li class="player-unplayable-item" ng-repeat="media in player.unplayable">
+            <li class="player-unplayable-item" ng-repeat="media in list">
               <a ng-click="player.select(media)"><img class="icon" bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}"><span bo-text="page.types.assetDisplayName(media)"></span></a>
             </li>
           </ul>
