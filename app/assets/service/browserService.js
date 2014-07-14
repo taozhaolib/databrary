@@ -661,7 +661,7 @@ module.factory('browserService', [
 			if (!data.expand && expand !== false) {
 				data.expand = true;
 
-				if (data.items === 0) {
+				if (!angular.isArray(data.items) || data.items.length === 0) {
 					browserService.updateData(data);
 				}
 			} else if (data.expand && expand !== true) {
