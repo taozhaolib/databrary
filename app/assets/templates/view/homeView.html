@@ -33,18 +33,16 @@
       </article>
     </div>
 
-    <div class="row">
-      <div class="home_parties">
-        <div class="row">
-          <div class="col-full">
-            <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
-          </div>
+    <div class="home_parties">
+      <div class="row">
+        <div class="col-full">
+          <h1 class="home_parties_header"><span></span><span bo-html="'splash.investigators.header' | message"></span></h1>
         </div>
+      </div>
 
-        <div class="party_row row">
-          <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'lastName'" bindonce>
-            <portrait class="portrait_vertical portrait_small"></portrait>
-          </div>
+      <div class="party_row row">
+        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties | toArray:'lastName'" bindonce>
+          <portrait class="portrait_vertical portrait_small"></portrait>
         </div>
       </div>
     </div>
