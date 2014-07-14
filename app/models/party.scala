@@ -69,9 +69,8 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     , orcid.map(('orcid, _))
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
-    , if (account.isEmpty) Some('institution -> true) else None
+    , Some('institution -> account.isEmpty)
     , url.map(('url, _))
-    , Some('avatar -> views.html.display.avatar(this).url)
     )
 }
 
