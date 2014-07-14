@@ -216,7 +216,6 @@ module.directive('volumeEditOverviewForm', [
 
 								page.$timeout(function () {
 									form['name'].$setViewValue(res.title);
-									form['citation.author'].$setViewValue();
 
 									if (gotDate(res)) {
 										form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
@@ -237,35 +236,36 @@ module.directive('volumeEditOverviewForm', [
 							type: 'red',
 							body: page.constants.message('volume.edit.autodoi.name.error'),
 						});
-					});
+					})
+					.finally(function () {
+						page.models.CrossCite
+							.apa(doi[1])
+							.then(function (res) {
+								if (!form.data.citation) {
+									form.data.citation = {};
+								}
 
-				page.models.CrossCite
-					.apa(doi[1])
-					.then(function (res) {
-						if (!form.data.citation) {
-							form.data.citation = {};
-						}
+								form.data.citation.url = 'doi:' + doi[1];
+								form.data.citation.head = res;
 
-						form.data.citation.url = 'doi:' + doi[1];
-						form.data.citation.head = res;
+								page.$timeout(function () {
+									form['citation.url'].$setViewValue('doi:' + doi[1]);
+									form['citation.head'].$setViewValue(res);
+								});
 
-						page.$timeout(function () {
-							form['citation.url'].$setViewValue('doi:' + doi[1]);
-							form['citation.head'].$setViewValue(res);
-						});
+								form.setAutomatic(false);
 
-						form.setAutomatic(false);
-
-						form.messages.add({
-							type: 'green',
-							countdown: 3000,
-							body: page.constants.message('volume.edit.autodoi.citation.success'),
-						});
-					}, function (res) {
-						form.messages.add({
-							type: 'red',
-							body: page.constants.message('volume.edit.autodoi.citation.error'),
-						});
+								form.messages.add({
+									type: 'green',
+									countdown: 3000,
+									body: page.constants.message('volume.edit.autodoi.citation.success'),
+								});
+							}, function (res) {
+								form.messages.add({
+									type: 'red',
+									body: page.constants.message('volume.edit.autodoi.citation.error'),
+								});
+							});
 					});
 			};
 
