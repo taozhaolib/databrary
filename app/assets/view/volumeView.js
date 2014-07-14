@@ -10,6 +10,18 @@ module.controller('volumeView', [
 			return page.constants.message.apply(this, arguments);
 		};
 
+		$scope.viewClass = function () {
+			var cls = [];
+
+			if (volume.citation) {
+				cls.push('study');
+			} else {
+				cls.push('dataset');
+			}
+
+			return cls;
+		};
+
 		page.display.title = volume.name;
 		page.display.toolbarLinks = [
 			{

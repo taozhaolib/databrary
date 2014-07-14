@@ -1,11 +1,14 @@
 <panel ng-controller="OverviewVolumePanel" top id="panel-overview-volume" panel-title="{{'volume.overview.title' | message}}" ng-mouseover="hoverPanel()" bindonce>
   <div class="row">
-    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
-      <hgroup>
+    <div class="col">
+      <hgroup class="panel-overview-volume-header">
+        <div class="panel-overview-volume-header-fill"></div>
         <div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel-alias" bo-text="volume.alias"></div>
         <h1 class="panel-title smaller" ng-bind-html="volume.name | format:true"></h1>
       </hgroup>
+    </div>
 
+    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
       <div>
         <div ng-if="volume.citation" frame id="frame-citation" frame-title="{{'volume.citation.title' | message}}" fold>
           <p class="panel-overview-volume-citation">
