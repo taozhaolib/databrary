@@ -12,8 +12,8 @@
       </header>
     </div>
 
-    <div class="browser-item-description">
-      <dl class="browser-item-description-title" ng-repeat="(metric, value) in getMeasures(data)">
+    <div class="browser-item-main">
+      <dl class="comma cf" ng-repeat="(metric, value) in getMeasures(data)">
         <dt bo-text="capitalize(metric)"></dt>
         <dd bo-text="value"></dd>
       </dl>
