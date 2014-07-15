@@ -3,7 +3,7 @@ module.directive('partyEditGrantForm', [
 		var link = function ($scope) {
 			var form = $scope.partyEditGrantForm;
 
-			form.data = {};
+			form.data = [];
 
 			//
 
