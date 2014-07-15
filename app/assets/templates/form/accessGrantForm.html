@@ -9,8 +9,8 @@
 	</fieldset>
 
 	<fieldset class="clean radio-set">
-		<div ng-if="!access.party.institution">
-			<input type="checkbox" ng-model="accessGrantForm.data.extend" ng-disabled="!accessGrantForm.data.individual">
+		<div ng-if="!access.party.institution && accessGrantForm.data.individual">
+			<input type="checkbox" ng-model="accessGrantForm.data.extend">
 			<label class="option" bo-html="'access.grant.inherit' | message:access.party.name"></label>
 		</div>
 	</fieldset>
