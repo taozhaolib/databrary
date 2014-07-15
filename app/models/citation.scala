@@ -51,7 +51,8 @@ object Citation {
 
   private def getHDLJson(hdl : String, style : String = "apa") : Future[Option[json.JsObject]] =
     crossref(hdl, jsonType)
-    .flatMap(_.flatMap(_.json.asOpt[json.JsObject] /* XXX: json parse error? */).mapAsync { j =>
+    .flatMap(_.flatMap(_.json.asOpt[json.JsObject] /* XXX: json parse error? */)
+      .filter(_.\("DOI").asOpt[String].exists(_.nonEmpty)).mapAsync { j =>
       crossref(hdl, bibliographyType + ";style=" + style).map(
 	_.fold(j)(b => j + ("head" -> json.JsString(new String(
 	  /* empirically this is UTF-8, but does not say so: */
@@ -68,7 +69,7 @@ object Citation {
     .flatMap(j.\(_).asOpt[String])
     .mkString(" ")
 
-  private def get(url : java.net.URL) : Future[Option[Citation]] =
+  def get(url : java.net.URL) : Future[Option[Citation]] =
     getURLJson(url).map(_.map { j =>
       new Citation(
 	head = (j \ "head").asOpt[String].getOrElse(""),

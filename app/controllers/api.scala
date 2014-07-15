@@ -3,6 +3,7 @@ package controllers
 import scala.concurrent.Future
 import play.api.Play
 import play.api.Play.current
+import play.api.data.Forms
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
@@ -84,6 +85,16 @@ object SiteApi extends SiteController {
 	  case json.JsArray(l) => l.foreachAsync(analytic _)
 	  case j => analytic(j)
 	}))
+
+
+  final class CiteForm
+    extends ApiForm(routes.SiteApi.cite) {
+    val url = Field(Forms.of[java.net.URL])
+  }
+  def cite = SiteAction.async { implicit request =>
+    val form = new CiteForm()._bind
+    Citation.get(form.url.get).map(_.fold[SimpleResult](NotFound)(c => Ok(c.json.js)))
+  }
 
   def void =
     SiteAction.Unlocked { implicit request =>
