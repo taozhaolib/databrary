@@ -13,11 +13,7 @@ module.controller('volumeView', [
 		$scope.viewClass = function () {
 			var cls = [];
 
-			if (volume.citation) {
-				cls.push('study');
-			} else {
-				cls.push('dataset');
-			}
+			cls.push(page.types.getVolumeType(volume));
 
 			return cls;
 		};
