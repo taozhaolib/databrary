@@ -97,6 +97,8 @@ account=Account
 password=Password
 link=link
 me=Me
+dataset=Dataset
+study=Study
 
 toolbar.login=login
 toolbar.logout=logout

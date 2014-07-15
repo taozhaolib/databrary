@@ -67,11 +67,11 @@ module.factory('typeService', [
 		};
 
 		typeService.isStudy = function (object) {
-			return typeService.isVolume(object) && object.hasOwnProperty('citation');
+			return typeService.isVolume(object) && angular.isObject(object.citation);
 		};
 
 		typeService.isDataset = function (object) {
-			return typeService.isVolume(object) && !object.hasOwnProperty('citation');
+			return typeService.isVolume(object) && !angular.isObject(object.citation);
 		};
 
 		typeService.isRecord = function (object) {
