@@ -8,7 +8,7 @@ module.factory('modelService', [
 			'Analytic',
 			'Asset',
 			'Comment',
-			'CrossCite',
+			'Cite',
 			'Party',
 			'PartyAuthorize',
 			'Record',
