@@ -13,13 +13,8 @@ module.directive('volumeEditOverviewForm', [
 			];
 			var backup = {};
 
-			form.saveFn = undefined;
-			form.successFn = undefined;
-			form.errorFn = undefined;
-			form.resetFn = undefined;
-			form.cancelFn = undefined;
-
 			//
+
 			form.setAutomatic = function (auto) {
 				form.automatic = auto;
 				form.validator.client({
@@ -157,103 +152,30 @@ module.directive('volumeEditOverviewForm', [
 			//
 
 			form.autoDOI = function () {
-				if (!angular.isUndefined(form.hasCitations)) {
-					form.hasCitations = false;
-
-					for (var cite in form.volume.citations) {
-						if (form.volume.citations.hasOwnProperty(cite)) {
-							form.hasCitations = true;
-							break;
-						}
-					}
-				}
-
 				var doi = page.constants.regex.doi.exec(form.data.citation.url);
 
 				if (!doi || !doi[1]) {
 					return;
 				}
 
-				var gotDate = function (res) {
-					return res.issued && res.issued['date-parts'] && res.issued['date-parts'][0] && res.issued['date-parts'][0][0];
-				};
-
-				page.models.crossCite
-					.json(doi[1])
+				page.models.Cite(doi[1])
 					.then(function (res) {
-						if (!res.title) {
-							form.messages.add({
-								type: 'red',
-								body: page.constants.message('volume.edit.autodoi.name.error'),
-							});
-						} else {
+						form.data.citation = res;
 							form.data.name = res.title;
 
-							if (!form.data.citation) {
-								form.data.citation = {};
-							}
-
-							if (gotDate(res)) {
-								form.data.citation.year = res.issued['date-parts'][0][0];
-							}
-
-							if (res.author) {
-								var parts = ['given', 'non-dropping-particle', 'family', 'suffix'];
-
+						if (res.authors) {
 								form.authors = [];
 
-								angular.forEach(res.author, function (author) {
-									var name = '';
-
-									angular.forEach(parts, function (part) {
-										if (author[part]) {
-											name += author[part] + ' ';
-										}
-									});
-
-									name = name.slice(0, -1);
-
-									form.authors.push({name: name});
+							angular.forEach(res.authors, function (author) {
+								form.authors.push({name: author});
 								});
-
-								page.$timeout(function () {
-									form.name.$setViewValue(res.title);
-									form['citation.author'].$setViewValue();
-
-									if (gotDate(res)) {
-										form['citation.year'].$setViewValue(res.issued['date-parts'][0][0]);
-									}
-								});
-							}
-
-							form.setAutomatic(false);
-
-							form.messages.add({
-								type: 'green',
-								countdown: 3000,
-								body: page.constants.message('volume.edit.autodoi.name.success'),
-							});
 						}
-					}, function () {
-						form.messages.add({
-							type: 'red',
-							body: page.constants.message('volume.edit.autodoi.name.error'),
-						});
-					});
-
-				page.models.crossCite
-					.apa(doi[1])
-					.then(function (res) {
-						if (!form.data.citation) {
-							form.data.citation = {};
-						}
-
-						form.data.citation.url = 'doi:' + doi[1];
-						form.data.citation.head = res;
 
 						page.$timeout(function () {
-							form['citation.url'].$setViewValue('doi:' + doi[1]);
-							form['citation.head'].$setViewValue(res);
+							form.name.$setViewValue(res.title);
+							form['citation.url'].$setViewValue(res.url);
+							form['citation.head'].$setViewValue(res.head);
+							form['citation.year'].$setViewValue(res.year);
 						});
 
 						form.setAutomatic(false);
