@@ -1,6 +1,6 @@
 <section class="player" bindonce>
-  <div class="player-main">
-    <div class="player-main-media" ng-repeat="media in player.main track by media.asset.id" ng-switch="page.types.assetMimeArray(media)[0]">
+  <div class="player-main" ng-repeat="media in player.main track by media.asset.id">
+    <div class="player-main-media" ng-switch="page.types.assetMimeArray(media)[0]">
       <div ng-switch-when="image">
         <img bo-src="page.router.assetLink(media, true)">
       </div>
@@ -9,14 +9,37 @@
         <video bo-if="page.types.videoSupported()" controls>
           <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
         </video>
-
       </div>
     </div>
 
-    <div class="player-main-info">
-      <dl></dl>
+    <div class="player-main-info" bo-class="{always: !player.isPlayable(media)}">
+      <h1 class="player-main-info-name">
+        <span class="filetype">
+          <img bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}">
+        </span>
+
+        <span class="filename" bo-text="page.types.assetDisplayName(media)"></span>
+      </h1>
 
       <div class="player-main-info-support" bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
+
+      <dl class="player-main-info-list">
+        <dt>Classification</dt>
+        <dd><span class="classification icon" bo-class="page.constants.data.classification[media.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[media.asset.classification]}}"></span>&nbsp;<span bo-html="page.constants.data.classification[media.asset.classification]"></span></dd>
+
+        <dt>File Type</dt>
+        <dd bo-text="page.types.assetFormat(media).name"></dd>
+
+        <dt>Mime Type</dt>
+        <dd bo-text="page.types.assetFormat(media).mimetype"></dd>
+
+        <dt bo-if="media.asset.duration">Duration</dt>
+        <dd bo-if="media.asset.duration" bo-text="media.asset.duration | timecode"></dd>
+
+      </dl>
+
+      <a bo-href="page.router.assetLink(media, true)" target="_self" ng-if="page.auth.hasAccess('READ', media)" class="player-main-info-link">download</a>&nbsp;
+      <a bo-href="page.router.assetEdit(media)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', media)" class="player-main-info-link">edit</a>
     </div>
   </div>
 

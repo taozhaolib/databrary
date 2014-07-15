@@ -29,8 +29,39 @@
 .player-main-info
 	position absolute
 	text-align left
-	bottom b1
+	top b1
 	left b1
+	padding 1
+	border-radius b4
+	border 2px solid black
+	box-shadow 0 0 5px white
+	background white
+	opacity 0
+	transition opacity trans-time trans-ease
+
+	&.always
+	.player-main:hover &
+		opacity 1
+
+.player-main-info-name
+	font-line 1.5 1
+	border-bottom 1px solid gray
+	margin-bottom b4
+
+.player-main-info-list
+	margin-bottom 0
+
+	.icon
+		position relative
+		top b12
+
+	dd
+		margin-left b2
+
+.player-main-info-link
+	link-color orange
+	margin-top b2
+	display inline-block
 
 .player-resize
 	width 100%

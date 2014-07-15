@@ -36,16 +36,18 @@ module.directive('player', [
 					}
 				};
 
+				player.isPlayable = function (asset) {
+					return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+				};
+
 				player.slot.assets.map(function (asset) {
 					return asset;
 				}).sort(function (a, b) {
 					if (isNothing(a.segment) && isNothing(b.segment)) {
 						return 0;
-					}
-					else if (isNothing(a.segment)) {
+					} else if (isNothing(a.segment)) {
 						return 1;
-					}
-					else if (isNothing(b.segment)) {
+					} else if (isNothing(b.segment)) {
 						return -1;
 					}
 
@@ -60,7 +62,7 @@ module.directive('player', [
 						return;
 					}
 
-					if (['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1) {
+					if (player.isPlayable(asset)) {
 						player.playable.push(asset);
 					} else {
 						player.unplayable.push(asset);
