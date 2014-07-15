@@ -4,7 +4,7 @@
       <hgroup class="panel-overview-volume-header">
         <div class="panel-overview-volume-header-fill"></div>
         <div ng-if="page.auth.hasAccess('ADMIN', volume) && volume.alias" class="panel-alias" bo-text="volume.alias"></div>
-        <div class="panel-overview-volume-type"><span class="icon" bo-class="page.types.getVolumeType(volume)"></span>&nbsp;<span bo-html="page.types.getVolumeType(volume) | message"></span></div>
+        <div class="panel-overview-volume-type"><span class="icon" bo-class="page.types.getVolumeType(volume)" hint="object-{{page.types.getVolumeType(volume)}}"></span>&nbsp;<span bo-html="page.types.getVolumeType(volume) | message"></span></div>
         <h1 class="panel-title smaller" ng-bind-html="volume.name | format:true"></h1>
       </hgroup>
     </div>
