@@ -172,7 +172,7 @@ module.directive('volumeEditOverviewForm', [
 						}
 
 						page.$timeout(function () {
-							form['name'].$setViewValue(res.title);
+							form.name.$setViewValue(res.title);
 							form['citation.url'].$setViewValue(res.url);
 							form['citation.head'].$setViewValue(res.head);
 							form['citation.year'].$setViewValue(res.year);

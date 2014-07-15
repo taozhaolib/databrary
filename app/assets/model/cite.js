@@ -1,3 +1,5 @@
+'use strict';
+
 module.factory('cite', [
 	'$http', '$q', function ($http, $q) {
 		return function (url) {
