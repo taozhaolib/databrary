@@ -101,7 +101,7 @@ object SiteApi extends SiteController {
   }
   def cite = SiteAction.async { implicit request =>
     val form = new CiteForm()._bind
-    Citation.get(form.url.get).map(_.fold[SimpleResult](NotFound)(c => Ok(c.json.js)))
+    Citation.get(form.url.get).map(_.fold[Result](NotFound)(c => Ok(c.json.js)))
   }
 
   def void =
