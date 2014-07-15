@@ -161,10 +161,10 @@ module.directive('volumeEditOverviewForm', [
 						form.data.citation = res;
 						form.data.name = res.title;
 
-						if (res.author) {
+						if (res.authors) {
 							form.authors = [];
 
-							angular.forEach(res.author, function (author) {
+							angular.forEach(res.authors, function (author) {
 								form.authors.push({name: author});
 							});
 						}
