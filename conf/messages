@@ -607,8 +607,6 @@ volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this 
 volume.edit.autodoi.lookup=Lookup
 volume.edit.autodoi.donthave=I don''t have one
 
-volume.edit.autodoi.name.success=Title retrieved from DOI.
-volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 

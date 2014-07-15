@@ -110,10 +110,6 @@ module.controller('volumeEditView', [
 		};
 
 		page.display.navigationFn = function (event, val) {
-			if (!volume || val.indexOf('/volume/' + volume.id + '/edit') > -1) {
-				return;
-			}
-
 			for (var id in forms) {
 				if (forms.hasOwnProperty(id) && forms[id] && forms[id].form && forms[id].form.$dirty) {
 					return false;

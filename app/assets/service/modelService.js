@@ -10,7 +10,7 @@ module.factory('modelService', [
 			'analytic',
 			'asset',
 			'comment',
-			'crossCite',
+			'cite',
 			'party',
 			'partyAuthorize',
 			'record',

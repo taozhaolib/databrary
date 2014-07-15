@@ -233,6 +233,9 @@ GET     /api/tag                                                                
 # UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
+# GET ?url=URL
+GET     /api/cite                                                                                 controllers.SiteApi.cite
+
 # transcode remote
 POST    /transcoded/:id                                                                           controllers.AssetApi.transcoded(id : models.Asset.Id, auth : String)
 
