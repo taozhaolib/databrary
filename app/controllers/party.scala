@@ -109,7 +109,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	    form.member.get,
 	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
-	  _ <- async.when(Play.isProd && !c.exists(_.authorized),
+	  _ <- async.when(Play.isProd && form.site.get > Permission.PUBLIC && !c.exists(_.site > Permission.PUBLIC),
 	    Mail.send(
 	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
 	      subject = Messages("mail.authorized.subject"),
