@@ -41,7 +41,9 @@ object Offset {
   def apply(i : PGInterval) : Offset =
     ofSeconds(60*(60*(24*(30*(12.175*i.getYears + i.getMonths) + i.getDays) + i.getHours) + i.getMinutes) + i.getSeconds)
   def apply(d : time.Duration) : Offset = new Offset(d.getMillis)
-  def ofSeconds(seconds : Double) : Offset = new Offset((1000.0*seconds).toLong)
+  def ofSeconds(seconds : Double) : Offset =
+    if (seconds.isInfinite /* why !seconds.isValidLong? */) throw new java.lang.NumberFormatException("Invalid offset")
+    else new Offset((1000.0*seconds).toLong)
 
   private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.0)(_ * _)
   def fromString(s : String) : Offset =
