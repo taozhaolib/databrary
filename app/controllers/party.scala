@@ -350,9 +350,20 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }
 
+  /** Resend the investigator agreement through Mail.investigator. */
   def investigator(i : models.Party.Id) =
     (SiteAction.rootAccess() ~> action(Some(i))).async { implicit request =>
       Mail.investigator(request.obj.party).map(HTTP.wsResult)
+    }
+
+  /** Issue a new password reset token with the "reissue" message. */
+  def reissue(i : models.Account.Id) =
+    (SiteAction.rootAccess() ~> action(Some(i))).async { implicit request =>
+      request.obj.party.account.fold(ANotFound) { a =>
+	TokenHtml.newPassword(Right(a), "reissue").map { t =>
+	  Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
+	}
+      }
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =

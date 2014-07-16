@@ -57,7 +57,18 @@
           <td>@auth.site@Maybe(auth.member).fold("")("/" + _)</td>
           <td>@display(party)</td>
           <td>@party.affiliation</td>
-          <td>@party.account.map(_.password.nonEmpty)</td>
+          <td>
+            @party.account.map { a =>
+            @helper.form(routes.PartyHtml.investigator(party.id)) {
+              <button type="submit">agreement</button>
+            }
+            @if(a.password.isEmpty) {
+            @helper.form(routes.PartyHtml.reissue(a.id)) {
+              <button type="submit">reissue</button>
+            }
+            }
+            }
+          </td>
         </tr>
     }
     }
