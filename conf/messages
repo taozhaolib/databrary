@@ -375,10 +375,10 @@ auth.site.NONE.title=No access
 # for lockdown only:
 auth.site.NONE=Cannot access Databrary at all (during beta).
 #auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
-auth.site.PUBLIC.title=Restricted access
+auth.site.PUBLIC.title=Provisional access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
-auth.site.SHARED.title=Provisional access
-auth.site.SHARED=Access to all shared Databrary data.
+auth.site.SHARED.title=Browse access
+auth.site.SHARED=Access all shared Databrary data.
 auth.site.READ.title=Affiliate Investigator
 auth.site.READ=Access all shared Databrary data.
 auth.site.EDIT.title=Principal Investigator
