@@ -8,6 +8,8 @@
       <input type="email" name="email" ng-model="partyEditAccountForm.data.email">
     </validator>
 
+    <p bo-text="'password.advice' | message"></p>
+
     <validator form="partyEditAccountForm" name="password" label="'party.edit.password.title' | message">
       <input type="password" name="password" ng-model="partyEditAccountForm.data.password.once">
     </validator>
