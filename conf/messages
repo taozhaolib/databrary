@@ -194,7 +194,7 @@ superuser.off.error=Could not deactivate superuser mode!
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Beta
-welcome.body=Databrary is currently in beta.\n\nYou can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to<a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.\n\nIf you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.
+welcome.body=Databrary is currently in beta.\n\nYou can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.\n\nIf you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
 party.contact.title=Contact
