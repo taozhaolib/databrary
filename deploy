@@ -2,7 +2,7 @@
 PATH=$PATH:/usr/local/bin
 
 die () {
-	echo "Usage: $0 [/path/to/databrary-VER.zip|[databrary-]VER] MODE ..."
+	echo "Usage: $0 [/path/to/databrary-VER.tgz|[databrary-]VER] MODE ..."
 	exit 2
 }
 
@@ -11,6 +11,12 @@ if [[ $1 = */databrary-*.zip && -r $1 ]] ; then
 	base=${src%.zip}
 	ver=${base##*/databrary-}
 	unzip $src
+	shift
+elif [[ $1 = */databrary-*.tgz && -r $1 ]] ; then
+	src=$1
+	base=${src%.tgz}
+	ver=${base##*/databrary-}
+	tar xf $src
 	shift
 elif [[ -n $1 && -d databrary-$1 ]] ; then
 	ver=$1
