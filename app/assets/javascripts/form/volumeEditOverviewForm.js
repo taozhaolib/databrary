@@ -186,6 +186,7 @@ module.directive('volumeEditOverviewForm', [
 					}, function (res) {
 						form.messages.add({
 							type: 'red',
+							countdown: 5000,
 							body: page.constants.message('volume.edit.autodoi.citation.error'),
 						});
 					});
