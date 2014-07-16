@@ -19,15 +19,24 @@ module.directive('resumableDrop', [
 							';filename='+file.fileName+
 							';size='+file.size).then(function(res){
 									file.uniqueIdentifier = res.data;
+									$scope.token = res.data;
 								}
 							);
 					}
 			);
 
+
+
 			r.on('complete', function(){
 				//call to api/asset with remaining fields
-				}
-			);
+				var data = {};
+				data.name = $scope.asset.name;
+				data.classification = page.constants.data.classification.indexOf($scope.asset.classification);  //TODO: improve this!
+				data.container = $scope.volumeEditMaterialsForm.slot.container.id;
+				data.upload = $scope.token;
+				
+				page.$http.post('/api/asset?volume='+$scope.volumeEditMaterialsForm.volume.id,data);
+			});
 						
 			$scope.resumableObj = r;
 		};
