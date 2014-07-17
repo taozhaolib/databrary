@@ -12,7 +12,7 @@
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
 
-      <div resumable-drop prep-target="/api/asset/start" upload-target="/api/asset/chunk" style="height: 50px; width: 150px"></div>
+      <div resumable-drop prep-target="/api/asset/start" upload-target="/api/asset/chunk" asset-target="/api/asset" volume="{{volumeEditMaterialsForm.volume.id}}" style="height: 50px; width: 150px"></div>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">

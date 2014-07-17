@@ -1,41 +1,23 @@
 "use strict";
-module.directive('resumableDrop', [
-	'pageService', function (page) {
+module.directive('resumableDrop', ['pageService', function (page) {
 		var link = function($scope, $el, $attrs) {
-			var r = new page.resumable.makeResumable({
-				target: $attrs.uploadTarget, 
-				method: 'octet', 
-				maxFiles: 1, 
-				testChunks: false,
-				chunkRetryInterval: 5000,
-				permanentErrors: [400,403,404,415,500,501]
-			});
-			
+			var r = new page.resumable.makeResumable($attrs.uploadTarget); //or do some singleton-y stuff in service?
+			var prepCall = page.resumable.makePrepCall($attrs.prepTarget, $attrs.volume);
+			var uploadCall = page.resumable.makeUploadCall(r);
+			var assetCall = page.resumable.makeAssetCall($attrs.assetTarget, $attrs.volume);
 			r.assignDrop($el);
 			
 			r.on('fileAdded', function(file){
-						page.$http.post($attrs.prepTarget+
-							'?volume='+$scope.volumeEditMaterialsForm.volume.id+
-							';filename='+file.fileName+
-							';size='+file.size).then(function(res){
-									file.uniqueIdentifier = res.data;
-									$scope.token = res.data;
-								}
-							);
-					}
-			);
-
-
+				var x = prepCall(file);
+				x.then(uploadCall);
+			});
 
 			r.on('complete', function(){
-				//call to api/asset with remaining fields
 				var data = {};
 				data.name = $scope.asset.name;
 				data.classification = page.constants.data.classification.indexOf($scope.asset.classification);  //TODO: improve this!
 				data.container = $scope.volumeEditMaterialsForm.slot.container.id;
-				data.upload = $scope.token;
-				
-				page.$http.post('/api/asset?volume='+$scope.volumeEditMaterialsForm.volume.id,data);
+				assetCall(data);
 			});
 						
 			$scope.resumableObj = r;
