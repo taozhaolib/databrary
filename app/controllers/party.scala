@@ -389,11 +389,12 @@ object PartyApi extends PartyController with ApiController {
     extends ApiForm(routes.PartyApi.query) {
     val query = Field(Mappings.maybeText)
     val access = Field(OptionMapping(Mappings.enum(Permission)))
+    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
   }
 
   def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
-    Party.search(form.query.get, form.access.get).map(l =>
+    Party.search(form.query.get, form.access.get, form.institution.get).map(l =>
       Ok(JsonRecord.map[Party](_.json)(l)))
   }
 

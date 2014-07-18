@@ -16,7 +16,8 @@ module.config([
 						var deferred = page.$q.defer();
 
 						page.models.Party.query({
-							access: page.permission.CONTRIBUTE
+							access: page.permission.CONTRIBUTE,
+							institution: false
 						}, function (res) {
 							deferred.resolve(res);
 						}, function (res) {
