@@ -79,7 +79,7 @@ module.directive('partyEditAccountForm', [
 			};
 
 			form.ready = function () {
-				return form.$dirty && form.$valid && form.data.auth && form.data.password && (form.data.password.once == form.data.password.again);
+				return form.$dirty && form.$valid && form.data.auth && (!form.data.password || (!form.data.password.once || form.data.password.once == form.data.password.again));
 			};
 
 			//
@@ -103,8 +103,11 @@ module.directive('partyEditAccountForm', [
 
 			form.clearPasswordFields = function(){
 				form.data.auth = undefined;
-				form.data.password.again = undefined;
-				form.data.password.once = undefined;
+				if(form.data.password)
+				{
+					form.data.password.again = undefined;
+					form.data.password.once = undefined;
+				}
 			};
 
 			//
