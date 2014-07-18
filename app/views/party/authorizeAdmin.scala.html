@@ -44,6 +44,7 @@
 	    <th>ID</th>
 	    <th>Auth</th>
 	    <th>Name</th>
+	    <th>Email</th>
 	    <th>Affiliation</th>
 	    <th>Pass</th>
 	</tr>
@@ -56,6 +57,10 @@
           <td>@party.id</td>
           <td>@auth.site@Maybe(auth.member).fold("")("/" + _)</td>
           <td>@display(party)</td>
+          <td>@party.email.map { e =>
+            <a href="mailto:@e">@e</a>
+            }
+          </td>
           <td>@party.affiliation</td>
           <td>
             @party.account.map { a =>
