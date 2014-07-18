@@ -216,11 +216,12 @@ object Party extends TableId[Party]("party") {
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
       (if (site.access.site >= Permission.SHARED) 2 else 1)
 
-  def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
+  def search(query : Option[String], access : Option[Permission.Value], institution : Option[Boolean] = None)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
       "WHERE id > 0",
       if (query.nonEmpty) "AND " + byName else "",
-      if (access.nonEmpty) "AND site = ?" else "")
+      if (access.nonEmpty) "AND site = ?" else "",
+      institution.fold("")(if (_) "AND duns IS NOT NULL" else "AND duns IS NULL"))
     .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)))
     .list
 

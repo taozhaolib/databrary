@@ -346,9 +346,20 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }
 
+  /** Resend the investigator agreement through Mail.investigator. */
   def investigator(i : models.Party.Id) =
     SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
       Mail.investigator(request.obj.party).map(HTTP.wsResult)
+    }
+
+  /** Issue a new password reset token with the "reissue" message. */
+  def reissue(i : models.Account.Id) =
+    (SiteAction.rootAccess() ~> action(Some(i))).async { implicit request =>
+      request.obj.party.account.fold(ANotFound) { a =>
+	TokenHtml.newPassword(Right(a), "reissue").map { t =>
+	  Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
+	}
+      }
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
@@ -374,11 +385,12 @@ object PartyApi extends PartyController with ApiController {
     extends ApiForm(routes.PartyApi.query) {
     val query = Field(Mappings.maybeText)
     val access = Field(OptionMapping(Mappings.enum(Permission)))
+    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
   }
 
   def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
-    Party.search(form.query.get, form.access.get).map(l =>
+    Party.search(form.query.get, form.access.get, form.institution.get).map(l =>
       Ok(JsonRecord.map[Party](_.json)(l)))
   }
 
