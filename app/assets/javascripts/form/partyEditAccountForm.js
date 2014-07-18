@@ -76,7 +76,7 @@ module.directive('partyEditAccountForm', [
 			};
 
 			form.ready = function () {
-				return form.$dirty && form.$valid && form.data.auth && ((form.data.password && !form.data.password.once) || form.data.password.once == form.data.password.again);
+				return form.$dirty && form.$valid && form.data.auth && form.data.password && (form.data.password.once == form.data.password.again);
 			};
 
 			//
