@@ -82,7 +82,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     Action(id, Permission.ADMIN).async { implicit request =>
       val form = new VolumeController.AccessSearchForm()._bind
       for {
-	res <- models.Party.searchForVolumeAccess(form.name.get, request.obj)
+	res <- models.Party.search(Some(form.name.get), volume = Some(request.obj))
 	r <- if (request.isApi) macros.async(Ok(JsonRecord.map[Party](_.json)(res)))
 	  else VolumeHtml.viewAdmin(accessSearchForm = Some(form), accessResults = res)
 	    .map(Ok(_))

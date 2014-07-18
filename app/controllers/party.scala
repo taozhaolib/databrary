@@ -161,7 +161,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
 	} yield (Ok("request sent"))
       else for {
-	res <- models.Party.searchForAuthorize(form.name.get, request.obj.party, form.institution.get)
+	res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
         r <- if (request.isApi) async(Ok(JsonRecord.map[Party](_.json)(res)))
 	  else PartyHtml.viewAdmin(form +: res.map(e =>
 	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
@@ -354,7 +354,7 @@ object PartyHtml extends PartyController with HtmlController {
 
   /** Issue a new password reset token with the "reissue" message. */
   def reissue(i : models.Account.Id) =
-    (SiteAction.rootAccess() ~> action(Some(i))).async { implicit request =>
+    SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
       request.obj.party.account.fold(ANotFound) { a =>
 	TokenHtml.newPassword(Right(a), "reissue").map { t =>
 	  Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
@@ -390,7 +390,7 @@ object PartyApi extends PartyController with ApiController {
 
   def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
-    Party.search(form.query.get, form.access.get, form.institution.get).map(l =>
+    Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
       Ok(JsonRecord.map[Party](_.json)(l)))
   }
 
