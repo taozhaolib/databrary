@@ -53,7 +53,8 @@ module.directive('partyEditAccountForm', [
 						}
 
 						form.$setPristine();
-						page.models.Party.$cache.removeAll();
+						page.models.party.$cache.removeAll();
+						form.clearPasswordFields();
 					}, function (res) {
 						form.validator.server(res);
 						page.display.scrollTo(form.$element);
@@ -97,6 +98,12 @@ module.directive('partyEditAccountForm', [
 					tips: page.constants.message('party.edit.auth.help'),
 				},
 			}, true);
+
+			form.clearPasswordFields = function(){
+				form.data.auth = undefined;
+				form.data.password.again = undefined;
+				form.data.password.once = undefined;
+			};
 
 			//
 
