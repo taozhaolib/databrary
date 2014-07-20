@@ -17,20 +17,21 @@ trait Asset {
       case Nil =>
 	/* for now copy and don't delete */
 	val infile = store.TemporaryFileLinkOrCopy(info.file)
+	val n = Maybe(name).opt
 	for {
 	  asset <- info match {
 	    case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
 	      for {
 		o <- populate(volume, orig)
-		a <- models.Asset.create(volume, fmt, classification, duration, Maybe(name).opt, infile)
+		a <- models.Asset.create(volume, fmt, classification, duration, n, infile)
 		_ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
 	      } yield (a)
 	    case Asset.TranscodableFileInfo(_, fmt, _) =>
-	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile).andThen {
+	      models.Asset.create(volume, fmt, classification, n, infile).andThen {
 		case scala.util.Success(a) => store.Transcode.start(a)
 	      }
 	    case Asset.FileInfo(_, fmt) =>
-	      models.Asset.create(volume, fmt, classification, Maybe(name).opt, infile)
+	      models.Asset.create(volume, fmt, classification, n, infile)
 	  }
 	  _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
 	} yield (asset)

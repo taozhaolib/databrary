@@ -127,7 +127,7 @@ object Adolph extends Ingest {
       ObjectParser.option[Participant,MeasureV[T]](_.withMeasure(_), m, nullif)
     val parseId = measure(measureParser(Metric.Ident, trimmed), null)
     val parseSet = measure(measureParser(Metric.Info, trimmed))
-    private def parseHeader(name : String) : Parser[Participant => Participant] =
+    private[Adolph] def parseHeader(name : String) : Parser[Participant => Participant] =
       name match {
 	case "SUBJECT ID" => parseId
 	case "DATASET" => parseSet
@@ -137,7 +137,7 @@ object Adolph extends Ingest {
 	case "ETHNICITY" => measure(Ethnicity.measureParse)
 	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(Metric.Disability, trimmed), "typical")
 	case "LANGUAGE" => measure(measureParser(Metric.Language, trimmed))
-	case _ => fail("unknown participant header: " + name)
+	case _ => fail("unknown header: " + name)
       }
     private def header : Parser[CellParser[Participant]] =
       Parser[CellParser[Participant]] {
@@ -183,7 +183,7 @@ object Adolph extends Ingest {
     val LAB, HOME, MUSEUM, CLASSROOM, OUTDOOR, CLINIC = Value
   }
 
-  private final case class Asset(name : String = "", path : File, classification : Classification.Value) extends ingest.Asset {
+  private final case class Asset(name : String = "", path : File, classification : Classification.Value, offset : Offset) extends ingest.Asset {
     val info = {
       val file = Stage.file(path)
       if (!file.isFile)
@@ -202,15 +202,10 @@ object Adolph extends Ingest {
     }
   }
 
-  private object Asset {
-    def positions(assets : Seq[Asset]) : Seq[Offset] =
-      assets.scanLeft(Offset.ZERO)(_ + _.info.duration + Offset.SECOND)
-  }
-
   private def recordMap(r : Record*) : Map[Int,Record] =
     Map(r.map(r => (r.category.id.unId, r)) : _*)
 
-  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
+  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assetOffset : Offset = Offset.ZERO, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
     def withName(n : String) =
       if (name.nonEmpty && !name.equals(n))
 	fail("duplicate session name: " + n)
@@ -248,8 +243,10 @@ object Adolph extends Ingest {
     }
     def withAssetPath(p : File) =
       copy(assetPath = Some(p))
+    def withAssetOffset(o : Offset) =
+      copy(assetOffset = o)
     def withAsset(a : Asset) =
-      copy(assets = assets :+ a)
+      copy(assets = assets :+ a, assetOffset = assetOffset + a.info.duration + Offset.SECOND)
 
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
@@ -279,12 +276,12 @@ object Adolph extends Ingest {
 		PopulateException("existing session for " + pr + " with different consent", s))
 	  } yield (c)
 	}
-	_ <- assets zip Asset.positions(assets) foreachAsync { case (i, o) =>
+	_ <- assets foreachAsync { i =>
 	  for {
 	    a <- i.populate(volume)
 	    as <- a.slot
 	    _ <- as.fold[Future[Any]] {
-	      a.link(c, Some(o), i.info.duration)
+	      a.link(c, Some(i.offset), i.info.duration)
 	    } { as =>
 	      check(as.container === c,
 		PopulateException("existing asset in different container", as))
@@ -317,8 +314,6 @@ object Adolph extends Ingest {
     private val fileRegex = """FILE(?: \(([a-zA-Z]*)\))?(?:: (.*))?""".r
     private def parseHeader(name : String) : Parser[Session => Session] =
       name match {
-	case "SUBJECT ID" => participant(Participants.parseId)
-	case "DATASET" => participant(Participants.parseSet)
 	case "TEST DATE" => ObjectParser.map[Session, Date](_.withDate(_), date)
 	case "SESSION ID" => ObjectParser.option[Session, String](_.withName(_), trimmed)
 	case "RELEASE LEVEL" => ObjectParser.option[Session, Consent.Value](_.withConsent(_), consent)
@@ -327,12 +322,16 @@ object Adolph extends Ingest {
 	  only("pilot"), "not pilot")
 	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
 	case "PATH" => ObjectParser.map[Session, File](_.withAssetPath(_), file)
+	case "OFFSET" => ObjectParser.map[Session, Offset](_.withAssetOffset(_), offset)
 	case fileRegex(cls, name) =>
 	  val c = Option(cls).fold(Classification.IDENTIFIED)(classification(_))
 	  val n = Option(name).map(_.trim)
-	  Parser[Session => Session] { f => s =>
-	    if (f.isEmpty) s else
-	    s.withAsset(Asset(n.getOrElse(""), s.assetPath.fold(new File(f))(new File(_, f)), c))
+	  val k = n.exists(_.equals("<name>"))
+	  Parser[Session => Session] { p => s =>
+	    if (p.isEmpty) s else {
+	      val f = s.assetPath.fold(new File(p))(new File(_, p))
+	      s.withAsset(Asset(if (k) f.getName.replaceFirst("\\.[a-zA-Z0-9]{1,4}$","") else n.getOrElse(""), f, c, s.assetOffset))
+	    }
 	  }
 	case "SETTING" => location(Setting.measureParse)
 	case "COUNTRY" => location(measureParser(Metric.Country, trimmed), "US")
@@ -341,28 +340,29 @@ object Adolph extends Ingest {
 	case "GROUP" => record(RecordCategory.Group, trimmed)
 	case "STUDY LANGUAGE" => location(measureParser(Metric.Language, trimmed))
 	case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
-	case _ => fail("unknown session header: " + name)
+	case _ => participant(Participants.parseHeader(name))
       }
     private def header : Parser[CellParser[Session]] =
       Parser[CellParser[Session]] {
 	case "" => blankCellParser
 	case s => new CellParser(s, parseHeader(s))
       }
-    private def parseData(l : List[List[String]], pm : ParticipantMap) : Seq[Session] = l.zipWithIndex match {
+    private def parseData(l : List[List[String]], pm : Option[ParticipantMap]) : Seq[Session] = l.zipWithIndex match {
       case h :: l =>
 	val p = listAll(header).run(h)
-	val line = parseCells(empty, p).map(_.fillParticipant(pm))
-	l.map(line.run)
+	val line = parseCells(empty, p)
+	val pline = pm.fold(line)(m => line.map(_.fillParticipant(m)))
+	l.map(pline.run)
       case Nil => Nil
     }
-    final def parseCSV(f : File, p : File) : Future[Seq[Session]] =
-      Future(parseData(CSV.parseFile(f), Participants.parseCSV(p)))
+    final def parseCSV(f : File, p : Option[File]) : Future[Seq[Session]] =
+      Future(parseData(CSV.parseFile(f), p.map(Participants.parseCSV)))
   }
 
-  def parse(s : File, p : File) : Future[Int] =
+  def parse(s : File, p : Option[File]) : Future[Int] =
     Sessions.parseCSV(s, p).map(_.length)
 
-  def process(volume : Volume, s : File, p : File)(implicit request : controllers.SiteRequest[_]) : Future[Seq[Container]] =
+  def process(volume : Volume, s : File, p : Option[File])(implicit request : controllers.SiteRequest[_]) : Future[Seq[Container]] =
     Sessions.parseCSV(s, p).flatMap(_.mapAsync(_.populate(volume)))
 
 }
