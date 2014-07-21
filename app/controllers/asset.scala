@@ -246,8 +246,8 @@ object AssetApi extends AssetController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  def uploadStart(v : models.Volume.Id, filename : String, size : Long) =
-    VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
+  def uploadStart(filename : String, size : Long) =
+    SiteAction.access(Permission.PUBLIC).async { implicit request =>
       for {
 	u <- UploadToken.create(filename)(request.asInstanceOf[AuthSite])
       } yield {
