@@ -6,5 +6,6 @@ var module = angular.module('databraryModule', [
 	'ngSanitize',
 	'ngStorage',
 	'ngResource',
-	'pasvaz.bindonce'
+	'pasvaz.bindonce',
+	'flow'
 ]);
