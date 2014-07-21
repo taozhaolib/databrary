@@ -1,13 +1,12 @@
 # --- !Ups
 
-CREATE TABLE "upload" (
-	"token" char(64) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
-	"account" integer NOT NULL References "account" ON DELETE CASCADE,
-	"filename" text NOT NULL
-) INHERITS ("account_token");
-COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';
+ALTER TABLE "metric" ADD "assumed" TEXT;
+UPDATE "metric" SET "assumed" = 'typical' WHERE "id" = -520;
+UPDATE "metric" SET "assumed" = 'English' WHERE "id" = -510;
+UPDATE "metric" SET "assumed" = 'US' WHERE "id" = -150;
+UPDATE "record_category" SET "name" = 'context' WHERE "id" = -100;
 
 # --- !Downs
 
-DROP TABLE "upload";
+ALTER TABLE "metric" DROP "assumed";
+UPDATE "record_category" SET "name" = 'location' WHERE "id" = -100;

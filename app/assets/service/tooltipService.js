@@ -240,6 +240,12 @@ module.factory('tooltipService', [
 			});
 		});
 
+		$rootScope.$on('$routeChangeStart', function ()  {
+			angular.forEach(tooltips, function (tooltip) {
+				tooltips.hide(tooltip);
+			});
+		});
+
 		//
 
 		return tooltips;

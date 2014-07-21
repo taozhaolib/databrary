@@ -129,7 +129,7 @@ module.controller('partyEditView', [
 			},
 
 			'party-edit-account': function (step) {
-				step.enable = page.auth.hasAccess('ADMIN', party);
+				step.enable = page.auth.user.id == party.id || (page.auth.hasAuth('SUPER') && !party.institution);
 
 				forms.account = {
 					step: step,

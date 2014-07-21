@@ -38,6 +38,7 @@ GET     /party/$pID<-?[0-9]+>/avatar                                            
 # admin
 GET     /admin/authorize                                                                          controllers.PartyHtml.authorizeAdmin
 POST    /party/$pID<-?[0-9]+>/investigator                                                        controllers.PartyHtml.investigator(pID : models.Party.Id)
+POST    /party/$pID<-?[0-9]+>/reissue                                                             controllers.PartyHtml.reissue(pID : models.Account.Id)
 
 # volumes
 GET     /search                                                                                   controllers.VolumeHtml.search
@@ -235,6 +236,9 @@ GET     /api/tag/:name                                                          
 GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
 # UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
+
+# GET ?url=URL
+GET     /api/cite                                                                                 controllers.SiteApi.cite
 
 # transcode remote
 POST    /transcoded/:id                                                                           controllers.AssetApi.transcoded(id : models.Asset.Id, auth : String)

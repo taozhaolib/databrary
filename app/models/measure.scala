@@ -16,7 +16,7 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] final class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
+private[models] sealed abstract class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
   /** The name of this type, as used in database identifiers. */
   val name = dataType.toString
   /** The table storing measurements of this type. */
@@ -26,14 +26,21 @@ private[models] final class MeasureType[T] private (val dataType : DataType.Valu
   private[models] val select : SelectColumn[T] = SelectColumn[T]("datum")
   /** Column access to values of this type in the joint measurement table. */
   private[models] val selectAll : SelectColumn[T] = SelectColumn[T]("measure_all", "datum_" + name)
+  private[models] def fromString(s : String) : T
 }
 private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
-  implicit val measureText = new MeasureType[String](DataType.text)
+  implicit val measureText = new MeasureType[String](DataType.text) {
+    def fromString(s : String) = s
+  }
   /** Numeric measurements are represented as BigDecimal. */
-  implicit val measureNumber = new MeasureType[BigDecimal](DataType.number)
+  implicit val measureNumber = new MeasureType[BigDecimal](DataType.number) {
+    def fromString(s : String) = BigDecimal.apply(s)
+  }
   /** Date measurements. */
-  implicit val measureDate = new MeasureType[Date](DataType.date)
+  implicit val measureDate = new MeasureType[Date](DataType.date) {
+    def fromString(s : String) = org.joda.time.LocalDate.parse(s)
+  }
 
   val all : IndexedSeq[MeasureType[_]] = IndexedSeq(
     measureText,
@@ -48,10 +55,11 @@ private[models] object MeasureType {
   * @param classification privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
+sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
   // val id = id_.coerce[MetricT[T]]
   def dataType = measureType.dataType
   def sqlType : SQLType[T] = measureType.sqlType
+  def assumed : Option[T] = _assumed.map(measureType.fromString)
   val long : Boolean = false
   Metric.add(this)
 }
@@ -70,8 +78,10 @@ object Metric extends TableId[Metric[_]]("metric") {
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[DataType.Value]("type")
     , SelectColumn[Option[IndexedSeq[String]]]("options")
-    ).map { (id, name, classification, dataType, options) =>
-      new Metric(id, name, classification, options.getOrElse(IndexedSeq.empty[String]))(MeasureType(dataType))
+    , SelectColumn[Option[String]]("assumed")
+    ).map { (id, name, classification, dataType, options, assumed) =>
+      implicit val mt = MeasureType(dataType)
+      new Metric(id, name, classification, options.getOrElse(IndexedSeq.empty[String]), assumed)
     }
 
   /** Retrieve a single metric by id.
@@ -127,10 +137,10 @@ object Metric extends TableId[Metric[_]]("metric") {
   final val Gender      = new Metric[String](GENDER, "gender", Classification.SHARED, IndexedSeq[String]("Female", "Male"))
   final val Race        = new Metric[String](RACE, "race", Classification.SHARED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
   final val Ethnicity   = new Metric[String](ETHNICITY, "ethnicity", Classification.SHARED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
-  final val Disability  = new Metric[String](DISABILITY, "disability", Classification.RESTRICTED)
-  final val Language    = new Metric[String](LANGUAGE, "language", Classification.SHARED)
+  final val Disability  = new Metric[String](DISABILITY, "disability", Classification.RESTRICTED, _assumed = Some("typical"))
+  final val Language    = new Metric[String](LANGUAGE, "language", Classification.SHARED, _assumed = Some("English"))
   final val Setting     = new Metric[String](SETTING, "setting", Classification.PUBLIC, IndexedSeq("Lab","Home","Classroom","Outdoor","Clinic"))
-  final val Country     = new Metric[String](COUNTRY, "country", Classification.SHARED)
+  final val Country     = new Metric[String](COUNTRY, "country", Classification.SHARED, _assumed = Some("US"))
   final val State       = new Metric[String](STATE, "state", Classification.SHARED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
   final val Info        = new Metric[String](INFO, "info", Classification.PUBLIC)
 }

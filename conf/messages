@@ -67,6 +67,8 @@ error.504=504 - Gateway Timeout
 mail.password.subject=Databrary password reset
 mail.password.none=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it.\n\nUnfortunately, no Databrary account found for this email address. You can try again with a different email address, or reply to this email for assistance.
 mail.password.body=Someone (hopefully you) has requested to reset the password for the Databrary account associated with this email address. If you did not request this, let us know (by replying to this message) or simply ignore it. Otherwise, you may use this link to reset your Databrary password:\n\n{0}
+mail.reissue.subject=Databrary email confirmation
+mail.reissue.body=Your email confirmation link has now expired. Please use this new link to set your password and complete your registration:\n\n{0}\n\nOnce you''ve validated your e-mail address, you will be able to request authorization in order to be granted full access to Databrary.
 mail.register.subject=Databrary account created
 mail.register.body=Thank you for registering with Databrary. Please use this link to complete your registration:\n\n{0}\n\nBy clicking the above link, you also indicate that you have read and understand the investigator agreement, which you can download here:\n\nhttp://databrary.org/policies/investigator-agreement.pdf\n\nOnce you''ve validated your e-mail, you will be able to request authorization in order to be granted full access to Databrary.
 mail.authorize.subject=Databrary authorization request
@@ -98,6 +100,8 @@ account=Account
 password=Password
 link=link
 me=Me
+dataset=Dataset
+study=Study
 
 toolbar.login=login
 toolbar.logout=logout
@@ -179,7 +183,7 @@ fullname=Full Name
 avatar=avatar
 affiliation=Affiliation
 
-return.volume=Return to volume
+password.advice=Your Databrary password is used to protect many sensitive resources, including identifying human subjects data, and to control your own stored research data.  Therefore, we require that passwords meet a minimum security threshold.  To choose a secure password, please:<ul><li>do not use the same password you use for other websites or computers;</li><li>do not base your password on a single word, even with minimal substitutions or additions;</li><li>do not use repeated characters or simple sequences (like "abc" or "&amp;*()");</li><li>use a long password with multiple words or a variety of characters.</li></ul>
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
@@ -190,8 +194,8 @@ superuser.off.success=Superuser mode deactivated!
 superuser.off.error=Could not deactivate superuser mode!
 
 welcome.title=Welcome
-welcome.title.sub=Databrary Private Beta
-welcome.body=Databrary is currently in private beta. For more information, please visit <a href="http://databrary.org">databrary.org</a>.\n\nIf you''d like to be notified when we open the site to a wider audience, you can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a>. In the mean time, you can also <a href="http://databrary.org/user-guide/releasing-data.html">start collecting sharable data</a> or <a href="http://databrary.org/user-guide/getting-authorized.html">begin the authorization process</a> so you''re ready to start using Databrary once we launch.\n\nIf you already have an account, you can <a href="/login">login</a>. If you''ve received an invitation, please use the link found in that email to register.
+welcome.title.sub=Databrary Beta
+welcome.body=Databrary is currently in beta.\n\nYou can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.\n\nIf you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.
 
 party.overview.title=Overview
 party.contact.title=Contact
@@ -370,10 +374,10 @@ auth.site.NONE.title=No access
 # for lockdown only:
 auth.site.NONE=Cannot access Databrary at all (during beta).
 #auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
-auth.site.PUBLIC.title=Restricted access
+auth.site.PUBLIC.title=Provisional access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.
-auth.site.SHARED.title=Provisional access
-auth.site.SHARED=Access to all shared Databrary data.
+auth.site.SHARED.title=Browse access
+auth.site.SHARED=Access all shared Databrary data.
 auth.site.READ.title=Affiliate Investigator
 auth.site.READ=Access all shared Databrary data.
 auth.site.EDIT.title=Principal Investigator
@@ -523,6 +527,8 @@ search.prompt=Start your search...
 search.error=Could not complete your search.
 search.deep.info=You are in deep search mode. Press enter to submit new request, or click [X] to return to filter mode.
 
+return.volume=Return to volume
+
 # --- Notices
 notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
 notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
@@ -606,8 +612,6 @@ volume.edit.citation.url.help=Enter an optional DOI or URL of the resource this 
 volume.edit.autodoi.lookup=Lookup
 volume.edit.autodoi.donthave=I don''t have one
 
-volume.edit.autodoi.name.success=Title retrieved from DOI.
-volume.edit.autodoi.name.error=Could not retrieve title from provided DOI.
 volume.edit.autodoi.citation.success=Citation retrieved from DOI.
 volume.edit.autodoi.citation.error=Could not retrieve citation from provided DOI.
 

@@ -43,6 +43,12 @@ libraryDependencies ++= Seq(
   "org.webjars" % "resumable.js" % "1.0"
 )
 
+mappings in Universal ~= { s =>
+  s.filterNot(_._2.startsWith("share/doc/api/"))
+}
+
+com.typesafe.sbt.packager.universal.Keys.dist <<= com.typesafe.sbt.packager.universal.Keys.packageZipTarball in Universal
+
 resourceGenerators in Compile <+= (resourceManaged in Compile, name, version) map { (dir, name, ver) =>
   val f = dir / "properties"
   val p = new java.util.Properties()

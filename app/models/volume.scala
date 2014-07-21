@@ -136,7 +136,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
       JOIN container ON volume.id = container.volume
       JOIN volume_inclusion ON container.id = volume_inclusion.container
-      WHERE volume_inclusion.volume = ?""")
+      WHERE volume_inclusion.volume = ? AND """ + Volume.condition)
     .apply(id).list
 
   /** Volumes ("studies") which include data provided by this volume. */
@@ -144,7 +144,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
     Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
       JOIN volume_inclusion ON volume.id = volume_inclusion.volume
       JOIN container ON volume_inclusion.container = container.id
-      WHERE container.volume = ?""")
+      WHERE container.volume = ? AND """ + Volume.condition)
     .apply(id).list
 
   /** List of parties through whom the current user has the given access to this volume. */

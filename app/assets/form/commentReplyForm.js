@@ -5,10 +5,6 @@ module.directive('commentReplyForm', [
 		var link = function ($scope) {
 			var form = $scope.commentReplyForm;
 
-			form.getParty = function () {
-				return page.auth.user;
-			};
-
 			form.data = {
 				text: '',
 				container: $scope.volume && $scope.volume.top.id,

@@ -42,6 +42,10 @@ module.controller('ExcerptsPanel', [
 				cls.push('video');
 			}
 
+			if (excerpt === $scope.current) {
+				cls.push('panel-excerpts-list-current');
+			}
+
 			return cls;
 		};
 

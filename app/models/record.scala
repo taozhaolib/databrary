@@ -44,7 +44,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   final val CONDITION   : Id = asId(-400)
   final val TASK        : Id = asId(-300)
   final val GROUP       : Id = asId(-200)
-  final val LOCATION    : Id = asId(-100)
+  final val CONTEXT     : Id = asId(-100)
 
   final val Pilot = new RecordCategory(PILOT, "pilot")
   final val Exclusion = new RecordCategory(EXCLUSION, "exclusion") {
@@ -60,12 +60,12 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     override val template = Seq(Metric.Ident, Metric.Description)
   }
   final val Group = new RecordCategory(GROUP, "group")
-  final val Location = new RecordCategory(LOCATION, "location") {
+  final val Context = new RecordCategory(CONTEXT, "context") {
     override val ident = Seq(Metric.Setting, Metric.State, Metric.Country)
     override val template = Seq(Metric.Setting, Metric.State)
   }
 
-  private val list = Seq(Pilot, Exclusion, Participant, Condition, Task, Group, Location)
+  private val list = Seq(Pilot, Exclusion, Participant, Condition, Task, Group, Context)
   private val byId = Map[Int, RecordCategory](list.map(c => (c.id.unId, c)) : _*)
   private val byName = Map[String, RecordCategory](list.map(c => (c.name, c)) : _*)
 }

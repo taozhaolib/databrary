@@ -21,12 +21,7 @@
     </validator>
 
     <validator form="partyEditProfileForm" name="avatar" label="'party.edit.avatar.title' | message">
-      <input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar" file-model-form="partyEditProfileForm" ng-if="partyEditProfileForm.uploading()">
-
-      <div ng-if="!partyEditProfileForm.uploading()">
-        <input type="text" name="avatarname" bo-value="'party.edit.avatar.exists' | message" disabled>
-        <button ng-click="partyEditProfileForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
-      </div>
+      <input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar" file-model-form="partyEditProfileForm">
     </validator>
   </fieldset>
 

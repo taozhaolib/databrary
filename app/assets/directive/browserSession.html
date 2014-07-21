@@ -15,7 +15,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1 class="browser-item-title">
-          <a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})" bo-text="page.types.slotName(data.object)"></a>
+          <a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})" bo-text="page.types.slotName(data.object)"></a>&nbsp;
           <session-mark data="data" mark="pilot" bo-if="data.object.categories[-800]"></session-mark>
           <session-mark data="data" mark="excluded" bo-if="data.object.categories[-700]"></session-mark>
         </h1>
@@ -27,7 +27,7 @@
         <dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
         <dd ng-repeat="record in cat.records" ng-if="record.id != 0">
-          <span bo-text="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age"> <display-age value="{{record.age}}"></display-age></span>
+          <span bo-text="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age">&nbsp;<display-age value="{{record.age}}"></display-age></span>
         </dd>
       </dl>
 

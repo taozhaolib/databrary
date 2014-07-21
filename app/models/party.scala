@@ -69,9 +69,8 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     , orcid.map(('orcid, _))
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
-    , if (account.isEmpty) Some('institution -> true) else None
+    , Some('institution -> account.isEmpty)
     , url.map(('url, _))
-    , Some('avatar -> views.html.display.avatar(this).url)
     )
 }
 
@@ -217,32 +216,23 @@ object Party extends TableId[Party]("party") {
     SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
       (if (site.access.site >= Permission.SHARED) 2 else 1)
 
-  def search(query : Option[String], access : Option[Permission.Value])(implicit site : Site) : Future[Seq[Party]] =
+  /** Search for parties
+    * @param query string to match against name/email (case insensitive substring)
+    * @param access limit to users with specific site access level
+    * @param institution limit to institutions
+    * @param authorize party doing the authorization, to exclude parties already authorized
+    * @param volume volume to which to grant access, to exclude parties with access already.
+    */
+  def search(query : Option[String], access : Option[Permission.Value] = None, institution : Option[Boolean] = None, authorize : Option[Party] = None, volume : Option[Volume] = None)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
       "WHERE id > 0",
       if (query.nonEmpty) "AND " + byName else "",
-      if (access.nonEmpty) "AND site = ?" else "")
-    .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)))
+      if (access.nonEmpty) "AND site = ?" else "",
+      institution.fold("")(i => "AND account.id IS " + (if (i) "" else "NOT ") + "NULL"),
+      if (authorize.nonEmpty) "AND id != ? AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?)" else "",
+      if (volume.nonEmpty) "AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?)" else "")
+    .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)) ++ authorize.fold(SQLArgs())(a => SQLArgs(a.id) * 3) ++ volume.fold(SQLArgs())(v => SQLArgs(v.id)))
     .list
-
-  /** Search for parties by name for the purpose of authorization.
-    * @param name string to match against name/email (case insensitive substring)
-    * @param who party doing the authorization, to exclude parties already authorized
-    * @param institute limit to institutions
-    */
-  def searchForAuthorize(name : String, who : Party, institute : Option[Boolean] = None)(implicit site : Site) : Future[Seq[Party]] =
-    row.SELECT("WHERE", byName, "AND id != ? AND id > 0",
-      institute.fold("")(i => "AND account.id IS " + (if (i) "" else "NOT ") + "NULL"),
-      "AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?) LIMIT 8")
-      .apply(byNameArgs(name) ++ SQLArgs(who.id) * 3).list
-
-  /** Search for parties by name for the purpose of volume access.
-    * @param name string to match against name/email (case insensitive substring)
-    * @param volume volume to which to grant access, to exclude parties with access already.
-    */
-  def searchForVolumeAccess(name : String, volume : Volume)(implicit site : Site) : Future[Seq[Party]] =
-    row.SELECT("WHERE " + byName + " AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?) LIMIT 8").
-      apply(byNameArgs(name) :+ volume.id).list
 
   final val NOBODY : Id = asId(-1)
   final val ROOT   : Id = asId(0)

@@ -11,13 +11,13 @@ module.controller('CommentsPanel', [
 
 		$scope.refreshPanel = function () {
 			switch (page.$route.current.controller) {
-				case 'VolumeView':
+				case 'volumeView':
 					$scope.comments = $scope.volume.comments;
 
 					$scope.enabled = page.auth.isLoggedIn() || !$.isEmptyObject($scope.comments);
 					break;
 
-				case 'PartyView':
+				case 'partyView':
 					$scope.comments = $scope.party.comments;
 
 					$scope.enabled = !$.isEmptyObject($scope.comments);
@@ -29,7 +29,7 @@ module.controller('CommentsPanel', [
 
 		$scope.pullComments = function () {
 			switch (page.$route.current.controller) {
-				case 'VolumeView':
+				case 'volumeView':
 					page.models.volume.$cache.removeAll();
 
 					page.models.volume.get({
@@ -58,7 +58,7 @@ module.controller('CommentsPanel', [
 
 		$scope.commentParty = function (comment) {
 			switch (page.$route.current.controller) {
-				case 'PartyView':
+				case 'partyView':
 					return $scope.party;
 
 				default:
@@ -67,7 +67,7 @@ module.controller('CommentsPanel', [
 		};
 
 		$scope.commentMeta = function (comment) {
-			var isParty = page.$route.current.controller == 'PartyView' && !$scope.volume;
+			var isParty = page.$route.current.controller == 'partyView' && !$scope.volume;
 			var isTop = comment.container.top;
 
 			var meta = '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
@@ -104,7 +104,7 @@ module.controller('CommentsPanel', [
 
 		$scope.getReply = function (comment) {
 			return page.auth.isLoggedIn() &&
-				page.$route.current.controller != 'PartyView' &&
+				page.$route.current.controller != 'partyView' &&
 				replyTo == comment;
 		};
 
@@ -137,7 +137,7 @@ module.controller('CommentsPanel', [
 		$scope.getCommentClasses = function (comment) {
 			var classes = [];
 
-			if (page.$route.current.controller != 'PartyView') {
+			if (page.$route.current.controller != 'partyView') {
 				if (!comment.parent) {
 					comment.parent = 0;
 				}

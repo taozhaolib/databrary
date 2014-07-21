@@ -33,13 +33,6 @@ module.factory('browserService', [
 				active: true,
 				expand: false,
 				sort: new ArrayHelper([])
-			},
-
-			asset: {
-				allow: true,
-				active: false,
-				expand: false,
-				sort: new ArrayHelper([])
 			}
 		};
 
@@ -114,15 +107,12 @@ module.factory('browserService', [
 				case 'search':
 					browserService.options.volume.allow = true;
 					browserService.options.session.allow = false;
-					browserService.options.asset.allow = false;
 
 					break;
 
 				case 'volume':
 					browserService.options.volume.allow = false;
 					browserService.options.session.allow = true;
-					browserService.options.asset.allow = true;
-					browserService.options.asset.active = true;
 					break;
 			}
 
@@ -133,7 +123,6 @@ module.factory('browserService', [
 			browserService.updateVolumeSorts();
 			// TODO: record sorts...
 			browserService.updateSessionSorts();
-			// TODO: asset sorts...
 		};
 
 		browserService.updateVolumeSorts = function () {
@@ -241,12 +230,6 @@ module.factory('browserService', [
 					});
 					break;
 
-				case 'asset':
-					angular.forEach(raw, function (volume) {
-						callbackAssets(data, volume);
-					});
-					break;
-
 				default:
 					angular.forEach(raw, function (volume) {
 						callbackRecords(data, volume, groups);
@@ -327,10 +310,6 @@ module.factory('browserService', [
 				groups.push('session');
 			}
 
-			if (isGroupActive('asset')) {
-				groups.push('asset');
-			}
-
 			return groups;
 		};
 
@@ -355,10 +334,6 @@ module.factory('browserService', [
 
 			if (isGroupAllowed('session')) {
 				groups.push('session');
-			}
-
-			if (isGroupAllowed('asset')) {
-				groups.push('asset');
 			}
 
 			return groups;
@@ -419,11 +394,7 @@ module.factory('browserService', [
 
 			if (groups[data.level + 1] == 'session') {
 				callbackSessions(data, volume, groups);
-			}
-			else if (groups[data.level + 1] == 'asset') {
-				callbackAssets(data, volume);
-			}
-			else {
+			} else {
 				callbackRecords(data, volume, groups);
 			}
 
@@ -485,11 +456,7 @@ module.factory('browserService', [
 
 			if (groups[data.level + 1] == 'session') {
 				callbackSessions(data, volume, groups);
-			}
-			else if (groups[data.level + 1] == 'asset') {
-				callbackAssets(data, volume);
-			}
-			else {
+			} else {
 				callbackRecords(data, volume, groups);
 			}
 
@@ -513,45 +480,13 @@ module.factory('browserService', [
 				return data;
 			}
 
-			if (groups[data.level + 1] == 'asset') {
-				callbackAssets(data, volume);
-			}
-
 			browserService.loading = false;
-		};
-
-		var callbackAssets = function (data, volume) {
-			browserService.loading = true;
-			slot.get({
-				id: data.object.id,
-				segment: typeService.segmentJoin(data.segment),
-				assets: ''
-			}, function (object) {
-				angular.forEach(object.assets, function (asset) {
-					asset.container = object.container;
-					asset.segment = object.segment;
-					callbackItem(data, volume, undefined, asset, 'asset');
-				});
-
-				browserService.loading = false;
-			}, function (res) {
-				messages.addError({
-					body: constants.message('browser.assets.error'),
-					report: res,
-				});
-			});
-
-			return data;
 		};
 
 		var callbackItem = function (data, volume, sessions, object, group) {
 			var option = getOptionByGroup(group);
 
-			var id = 'data-' + group + '-' + (angular.isNumber(object.id) ? object.id : object.asset.id);
-
-			if (object.segment || (object.asset && object.asset.segment)) {
-				id += '-' + typeService.segmentString(object).replace(',', '-');
-			}
+			var id = 'data-' + group + '-' + object.id ;
 
 			var newData = {
 				parent: data,
@@ -569,11 +504,6 @@ module.factory('browserService', [
 				expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
 				limit: 10
 			};
-
-			if (group == 'asset') {
-				data.player = false;
-				data.played = undefined;
-			}
 
 			if (group == 'session') {
 				var newSegment;
@@ -731,7 +661,7 @@ module.factory('browserService', [
 			if (!data.expand && expand !== false) {
 				data.expand = true;
 
-				if (data.items === 0) {
+				if (!angular.isArray(data.items) || data.items.length === 0) {
 					browserService.updateData(data);
 				}
 			} else if (data.expand && expand !== true) {
@@ -757,9 +687,6 @@ module.factory('browserService', [
 
 		var getOptionByGroup = function (group) {
 			switch (group) {
-				case 'asset':
-					return browserService.options.asset;
-
 				case 'session':
 					return browserService.options.session;
 
@@ -889,10 +816,6 @@ module.factory('browserService', [
 							permission = volume.permission;
 						}
 						break;
-
-					case 'asset':
-						permission = object.permission;
-						break;
 				}
 			});
 
@@ -930,9 +853,6 @@ module.factory('browserService', [
 			if (angular.isUndefined(data)) {
 				newPlayed = undefined;
 				newPlayer = undefined;
-			} else if (data.group == 'asset') {
-				newPlayed = data;
-				newPlayer = data.parent;
 			} else {
 				newPlayed = data.items[0] || undefined;
 				newPlayer = data;

@@ -7,7 +7,7 @@ module.directive('authApplyForm', [
 
 			$scope.page = page;
 
-			form.party = page.$parse($attrs.party)($scope) || $scope.party || page.auth.user;
+			form.party = page.$parse($attrs.party)($scope) || $scope.party;
 			form.other = page.$parse($attrs.other)($scope) || undefined;
 
 			form.notFound = {

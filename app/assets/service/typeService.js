@@ -67,11 +67,11 @@ module.factory('typeService', [
 		};
 
 		typeService.isStudy = function (object) {
-			return typeService.isVolume(object) && object.hasOwnProperty('citation');
+			return typeService.isVolume(object) && angular.isObject(object.citation);
 		};
 
 		typeService.isDataset = function (object) {
-			return typeService.isVolume(object) && !object.hasOwnProperty('citation');
+			return typeService.isVolume(object) && !angular.isObject(object.citation);
 		};
 
 		typeService.isRecord = function (object) {
@@ -79,7 +79,7 @@ module.factory('typeService', [
 		};
 
 		typeService.isParty = function (object) {
-			return angular.isObject(object) && object.avatar;
+			return angular.isObject(object) && angular.isDefined(object.institution);
 		};
 
 		typeService.isToken = function (object) {
@@ -216,6 +216,12 @@ module.factory('typeService', [
 			}
 
 			return constants.message(object.top ? 'materials' : 'session') + (object.name ? ': ' + object.name : '');
+		};
+
+		//Real checking done on server, but some minimal standards (length >= 7) can be checked here
+		typeService.eligiblePassword = function(candidate){
+			return angular.isString(candidate) &&
+				candidate.length >= 7;
 		};
 
 		//

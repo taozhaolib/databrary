@@ -565,8 +565,8 @@ INSERT INTO "record_category" ("id", "name") VALUES (-200, 'group');
 INSERT INTO "record_category" ("id", "name") VALUES (-800, 'pilot');
 INSERT INTO "record_category" ("id", "name") VALUES (-700, 'exclusion');
 INSERT INTO "record_category" ("id", "name") VALUES (-400, 'condition');
-INSERT INTO "record_category" ("id", "name") VALUES (-100, 'location');
 INSERT INTO "record_category" ("id", "name") VALUES (-300, 'task');
+INSERT INTO "record_category" ("id", "name") VALUES (-100, 'context');
 
 CREATE TABLE "record" (
 	"id" serial NOT NULL Primary Key,
@@ -586,23 +586,24 @@ CREATE TABLE "metric" (
 	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL,
 	"type" data_type NOT NULL,
-	"options" text[] -- (suggested) options for text enumerations, not enforced
+	"options" text[], -- (suggested) options for text enumerations, not enforced
+	"assumed" text
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'RESTRICTED', 'date');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'SHARED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-510, 'language', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-580, 'gender', 'SHARED', 'text', ARRAY['Female','Male']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-520, 'disability', 'RESTRICTED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-150, 'country', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'SHARED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'PUBLIC', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'PUBLIC', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'SHARED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'PUBLIC', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-520, 'disability', 'RESTRICTED', 'text', 'typical');
+INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-510, 'language', 'SHARED', 'text', 'English');
+INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-150, 'country', 'SHARED', 'text', 'US');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,

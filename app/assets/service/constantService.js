@@ -37,6 +37,11 @@ module.factory('constantService', [
 				['NONE', 'SHARED'],
 				['PUBLIC', 'SHARED']
 			];
+			constants.data.everybody = {
+				id: constants.data.party.NOBODY,
+				name: 'Everybody',
+				permission: 3
+			};
 			constants.data.accessGlobal.parties = [
 				constants.data.party.NOBODY,
 				constants.data.party.ROOT

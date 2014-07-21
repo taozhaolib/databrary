@@ -164,6 +164,10 @@ module.factory('routerService', [
 				throw new Error('routerService.partyAvatar() requires Party as first argument');
 			}
 
+			if (!angular.isNumber(size)) {
+				size = 56;
+			}
+
 			data = {
 				id: data.id
 			};
@@ -171,14 +175,11 @@ module.factory('routerService', [
 			if (angular.isNumber(parseInt(size))) {
 				if (angular.isObject(data)) {
 					data.size = parseInt(size);
-				}
-				else if (angular.isArray(data)) {
+				} else if (angular.isArray(data)) {
 					data.push(parseInt(size));
-				}
-				else if (angular.isString(data)) {
+				} else if (angular.isString(data)) {
 					data = [data, size];
-				}
-				else {
+				} else {
 					data = '';
 				}
 			}

@@ -26,19 +26,19 @@ final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLAr
   def placeholders : String = terms.map(_.placeholder).mkString(", ")
 
   /** Terms appropriate for INSERT INTO statements.
-    * @returns `(arg, ...) VALUES (?, ...)`
+    * @return `(arg, ...) VALUES (?, ...)`
     */
   def insert =
     names + " VALUES (" + placeholders + ")"
   /** Terms appropriate for UPDATE or WHERE statements.
     * @param sep separator string, ", " for UPDATE (default), " AND " for WHERE
-    * @returns `arg = ? sep ...`
+    * @return `arg = ? sep ...`
     */
   def set(sep : String = ", ") =
     terms.map(t => t.name + " = " + t.placeholder).mkString(sep)
   def where = set(" AND ")
   /** Constant table.
-    * @returns `(VALUES (?, ...)) AS table (arg, ...)`
+    * @return `(VALUES (?, ...)) AS table (arg, ...)`
     */
   def values(implicit table : FromTable) : Selector[Unit] =
     Columns(FromTable("(VALUES (" + placeholders + ")) AS " + table + " " + names))

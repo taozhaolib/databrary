@@ -107,7 +107,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	    form.member.get,
 	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
 	  _ <- Authorize.Info.set(childId, id, form.info.get)
-	  _ <- async.when(Play.isProd && !c.exists(_.authorized),
+	  _ <- async.when(Play.isProd && form.site.get > Permission.PUBLIC && !c.exists(_.site > Permission.PUBLIC),
 	    Mail.send(
 	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
 	      subject = Messages("mail.authorized.subject"),
@@ -161,7 +161,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
 	} yield (Ok("request sent"))
       else for {
-	res <- models.Party.searchForAuthorize(form.name.get, request.obj.party, form.institution.get)
+	res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
         r <- if (request.isApi) async(Ok(JsonRecord.map[Party](_.json)(res)))
 	  else PartyHtml.viewAdmin(form +: res.map(e =>
 	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
@@ -346,9 +346,20 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.authorizeAdmin(part, pend.map(new AuthorizeAdminForm(_)), act, exp)))
   }
 
+  /** Resend the investigator agreement through Mail.investigator. */
   def investigator(i : models.Party.Id) =
     SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
       Mail.investigator(request.obj.party).map(HTTP.wsResult)
+    }
+
+  /** Issue a new password reset token with the "reissue" message. */
+  def reissue(i : models.Account.Id) =
+    SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
+      request.obj.party.account.fold(ANotFound) { a =>
+	TokenHtml.newPassword(Right(a), "reissue").map { t =>
+	  Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
+	}
+      }
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
@@ -374,11 +385,12 @@ object PartyApi extends PartyController with ApiController {
     extends ApiForm(routes.PartyApi.query) {
     val query = Field(Mappings.maybeText)
     val access = Field(OptionMapping(Mappings.enum(Permission)))
+    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
   }
 
   def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
-    Party.search(form.query.get, form.access.get).map(l =>
+    Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
       Ok(JsonRecord.map[Party](_.json)(l)))
   }
 

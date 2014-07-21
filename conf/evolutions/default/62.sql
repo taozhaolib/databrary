@@ -13,6 +13,8 @@ ALTER TABLE "party" DROP "url_old";
 
 COMMENT ON COLUMN "party"."duns" IS 'http://en.wikipedia.org/wiki/DUNS';
 
+UPDATE party SET duns = 0 WHERE id > 0 AND NOT EXISTS (SELECT * FROM account WHERE account.id = party.id);
+
 ALTER TABLE audit."party" ADD "duns" numeric(9);
 ALTER TABLE audit."party" RENAME "url" TO "url_old";
 ALTER TABLE audit."party" ADD "url" text;

@@ -20,16 +20,34 @@ module.directive('player', [
 				player.playable = [];
 				player.unplayable = [];
 
+				var makeUnplayableLists = function () {
+					if (player.unplayable.length === 0)
+						return;
+
+					var i = 0;
+					var l = player.unplayable.length;
+					var stack = Math.floor($items.outerHeight() / 24) || 1;
+
+					player.unplayableList = [];
+
+					while (i < l) {
+						player.unplayableList.push(player.unplayable.slice(i, i + stack));
+						i = i + stack;
+					}
+				};
+
+				player.isPlayable = function (asset) {
+					return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+				};
+
 				player.slot.assets.map(function (asset) {
 					return asset;
 				}).sort(function (a, b) {
 					if (isNothing(a.segment) && isNothing(b.segment)) {
 						return 0;
-					}
-					else if (isNothing(a.segment)) {
+					} else if (isNothing(a.segment)) {
 						return 1;
-					}
-					else if (isNothing(b.segment)) {
+					} else if (isNothing(b.segment)) {
 						return -1;
 					}
 
@@ -43,12 +61,14 @@ module.directive('player', [
 					if (asset.segment === null) {
 						return;
 					}
-					if (['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1) {
+
+					if (player.isPlayable(asset)) {
 						player.playable.push(asset);
-					}
-					else {
+					} else {
 						player.unplayable.push(asset);
 					}
+
+					makeUnplayableLists();
 				});
 
 				player.main.push(player.playable[0] || player.unplayable[0]);
@@ -133,8 +153,8 @@ module.directive('player', [
 					if (mainH < 48) {
 						mainH = 48;
 						listH = playerH - resizeH - mainH;
-					} else if (listH < 32) {
-						mainH = playerH - 32 - resizeH;
+					} else if (listH < 36) {
+						mainH = playerH - 36 - resizeH;
 						listH = playerH - resizeH - mainH;
 					}
 
@@ -143,13 +163,16 @@ module.directive('player', [
 
 					page.$timeout(function () {
 						updateScroll();
-						$element.find('img, video').each(function () {
-							var realW = this.naturalWidth;
-							var realH = this.naturalHeight;
-							var h = this.height;
 
-							$(this).width(h * (realW / realH));
+						$main.find('img, video').each(function () {
+							$(this).width(mainH * (this.naturalWidth / this.naturalHeight));
 						});
+
+						$list.find('img, video').each(function () {
+							$(this).width(this.height * (this.naturalWidth / this.naturalHeight));
+						});
+
+						makeUnplayableLists();
 					});
 
 					e.preventDefault();

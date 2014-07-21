@@ -134,15 +134,6 @@ module.directive('partyEditProfileForm', [
 				form.$setPristine();
 			};
 
-			form.replace = function () {
-				delete form.data.avatar;
-				form.$setDirty();
-			};
-
-			form.uploading = function () {
-				return !form.data.avatar || angular.isObject(form.data.avatar);
-			};
-
 			//
 
 			form.validator.client({
