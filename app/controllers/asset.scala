@@ -262,22 +262,22 @@ object AssetApi extends AssetController with ApiController {
     }
 
   class ChunkForm extends ApiForm(routes.AssetApi.uploadChunk) {
-    val resumableChunkNumber = Field(Forms.number(1))
-    val resumableChunkSize = Field(Forms.number(1024))
-    val resumableTotalSize = Field(Forms.longNumber(1))
-    val resumableIdentifier = Field(Forms.text)
-    val resumableFilename = Field(Forms.text)
+    val flowChunkNumber = Field(Forms.number(1))
+    val flowChunkSize = Field(Forms.number(1024))
+    val flowTotalSize = Field(Forms.longNumber(1))
+    val flowIdentifier = Field(Forms.text)
+    val flowFilename = Field(Forms.text)
   }
 
   private def uploadChunkPrepare[A](notfound : => A, write : Boolean = true)(run : (RandomAccessFile, Int) => A = ((f : RandomAccessFile, _ : Int) => f))(implicit request : play.api.mvc.Request[AnyContent] with AuthSite) : Future[A] = {
     val form = new ChunkForm()._bind
-    UploadToken.get(form.resumableIdentifier.get)
-    .map(_.filter(_.filename == form.resumableFilename.get).fold(notfound) { u =>
+    UploadToken.get(form.flowIdentifier.get)
+    .map(_.filter(_.filename == form.flowFilename.get).fold(notfound) { u =>
       val f = new RandomAccessFile(u.file, if (write) "rw" else "r")
-      if (f.length != form.resumableTotalSize.get)
-	form.resumableTotalSize.withError("size mismatch")._throw
-      f.seek(form.resumableChunkSize.get * (form.resumableChunkNumber.get-1))
-      run(f, form.resumableChunkSize.get)
+      if (f.length != form.flowTotalSize.get)
+	form.flowTotalSize.withError("size mismatch")._throw
+      f.seek(form.flowChunkSize.get * (form.flowChunkNumber.get-1))
+      run(f, form.flowChunkSize.get)
     })
   }
 
