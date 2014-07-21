@@ -22,13 +22,15 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
+  final val defaultThumbSize : Int = 480
+
+  private[controllers] def assetResult(asset : BackedAsset, size : Option[Int] = None, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
     val tag = asset.etag
     /* Assuming assets are immutable, any if-modified-since header is good enough */
     if (HTTP.notModified(tag, new Timestamp(0)))
       async(NotModified)
     else for {
-      data <- store.Asset.read(asset)
+      data <- store.Asset.read(asset, size)
       date = store.Asset.timestamp(asset)
     } yield {
       val size = data.size

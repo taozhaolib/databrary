@@ -221,7 +221,7 @@ Java_media_AV_00024__1frame(
 
 	av_init_packet(&pkt);
 
-	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening");
+	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening %s", infile);
 	CHECK(avformat_find_stream_info(in, NULL), "reading stream info");
 
 	int si = CHECK(av_find_best_stream(in, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0), "finding video stream");

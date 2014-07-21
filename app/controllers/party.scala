@@ -366,7 +366,7 @@ object PartyHtml extends PartyController with HtmlController {
     SiteAction.Unlocked.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
 	async(Found("/public/images/avatar.png")))(
-	AssetController.assetResult(_)))
+	AssetController.assetResult(_, Some(size))))
     }
 
 }
