@@ -16,8 +16,8 @@ object IngestController extends SiteController with HtmlController {
     SiteAction.rootAccess(Permission.ADMIN) andThen VolumeController.action(i, Permission.EDIT)
 
   trait CSVForm extends StructForm {
-    protected def CSVFile() : File = File()
-      .verifying(validation.Constraint[FilePart] { (f : FilePart) =>
+    protected def CSV[T <: FileMember[_]](f : T = File()) : T = f
+      .verifying(validation.Constraint[FilePart] { f : FilePart =>
 	val fmt = AssetFormat.getFilePart(f).map(_.mimetype).orElse(f.contentType)
 	if (!fmt.exists(_.equals("text/csv")))
 	  validation.Invalid(validation.ValidationError("file.format.unknown", fmt.getOrElse("unknown")))
@@ -30,7 +30,7 @@ object IngestController extends SiteController with HtmlController {
       routes.IngestController.curated(request.obj.id),
       views.html.ingest.curated(_))
     with CSVForm {
-    val file = CSVFile()
+    val file = CSV()
     val run = Field(Forms.boolean)
   }
 
@@ -66,8 +66,8 @@ object IngestController extends SiteController with HtmlController {
       routes.IngestController.adolph(request.obj.id),
       views.html.ingest.adolph(_))
     with CSVForm {
-    val sessions = CSVFile()
-    val participants = CSVFile()
+    val sessions = CSV()
+    val participants = CSV(OptionalFile())
     val run = Field(Forms.boolean)
   }
 
@@ -79,14 +79,14 @@ object IngestController extends SiteController with HtmlController {
     val volume = request.obj
     val form = new AdolphForm()._bind
     if (!form.run.get)
-      ingest.Adolph.parse(form.sessions.get.ref.file, form.participants.get.ref.file).map { r =>
+      ingest.Adolph.parse(form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
 	Ok(views.html.ingest.adolph(form, r.toString + " sessions found"))
       }.recover {
 	case e : IngestException =>
 	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
       }
     else 
-      ingest.Adolph.process(volume, form.sessions.get.ref.file, form.participants.get.ref.file).map { r =>
+      ingest.Adolph.process(volume, form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
 	Ok(views.html.ingest.result(volume, r))
       }.recover {
 	case e : PopulateException =>
