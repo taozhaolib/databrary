@@ -14,8 +14,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
   private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
-        /* round down to a 10-second boundry, which is our i-frame interval. */
-        val off = offset.fold[Offset](f => Offset(10000L*(f*ts.duration.millis/10000).toLong), o => o)
+        val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
