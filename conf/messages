@@ -432,7 +432,6 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
-asset.excerpt.invalid=Excerpts can not have a more restrictive classification than than the whole file.
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
 # objects

@@ -39,7 +39,7 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, excerpt : Option[Excerpt]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
   private[models] def sqlKey = asset.sqlKey
   final val segment = slot.segment * asset_segment
   final def context = slot.context
