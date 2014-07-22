@@ -2,7 +2,7 @@
 module.directive('flowDropper', ['pageService', function (page) {
 		var link = function($scope, $el, $attrs) {
 			var r = new page.flow.makeFlow($attrs.uploadTarget); //or do some singleton-y stuff in service?
-			var prepCall = page.flow.makePrepCall($attrs.prepTarget, $attrs.volume);
+			var prepCall = page.flow.makePrepCall($attrs.prepTarget);
 			var uploadCall = page.flow.makeUploadCall(r);
 			var assetCall = page.flow.makeAssetCall($attrs.assetTarget, $attrs.volume);
 			r.assignDrop($el);

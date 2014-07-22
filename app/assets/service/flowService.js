@@ -21,10 +21,8 @@ module.factory('flowService', [
 
 		flowS.makePrepCall = function(target, volume){
 			return function(file){
-				console.log(file);
 				var x = $http.post(target+
-						'?volume='+volume+
-						';filename='+file.name+
+						'?filename='+file.name+
 						';size='+file.size);
 				
 				x.then(function(res){
