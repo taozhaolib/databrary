@@ -12,7 +12,7 @@ fi
 
 while getopts 'a:d:hk:r:' opt ; do case "$opt" in
 	a) aid=$OPTARG ;;
-	d) cd $OPTARG ;;
+	d) dir=$OPTARG ;;
 	h) hpc=1 ;;
 	k) kill=$OPTARG ;;
 	r) url=$OPTARG ;;
@@ -22,6 +22,8 @@ if [[ $# -ge $OPTIND || -z $aid || -z $kill && -z $url ]] ; then
 	echo "$0: usage error: $*" >&2
 	exit 1
 fi
+
+cd $dir
 
 IN=$aid
 OUT=$aid.mp4
@@ -45,7 +47,7 @@ fi
 if [[ -n $hpc ]] ; then
 	rate=131072
 	sec=$[60+`stat -c %s "$IN"`/$rate]
-	exec qsub -d "$PWD" -q s48 -N "$aid" -v "aid=$aid,url=$url" -l walltime=$sec "$PBS"
+	exec qsub -q s48 -N "$aid" -v "dir=$PWD,aid=$aid,url=$url" -l walltime=$sec "$PBS"
 elif [[ -n $PBS_JOBNAME ]] ; then
 	PID=${PBS_JOBID%%.*}
 else
