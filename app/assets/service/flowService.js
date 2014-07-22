@@ -7,27 +7,27 @@ module.factory('flowService', [
 
 	function ($rootScope, $http){
 		var flowS = {};
-		var lastToken;
+		var PREP_TARGET = '/api/asset/start';
 
-		flowS.makeFlow = function(t) {
-			return new Flow({
-				target: t,
-				method: 'octet', 
-				maxFiles: 1, 
-				testChunks: false,
-				chunkRetryInterval: 5000,
-				permanentErrors: [400,403,404,415,500,501]});
+		flowS.options = {
+			target: '/api/asset/chunk',
+			method: 'octet', 
+			maxFiles: 1, 
+			testChunks: false,
+			chunkRetryInterval: 5000,
+			permanentErrors: [400,403,404,415,500,501]
 		};
 
-		flowS.makePrepCall = function(target, volume){
+		flowS.makeFlow = function() {return new Flow(flowS.options);};
+
+		flowS.makePrepCall = function(){
 			return function(file){
-				var x = $http.post(target+
+				var x = $http.post(PREP_TARGET+
 						'?filename='+file.name+
 						';size='+file.size);
 				
 				x.then(function(res){
 						file.uniqueIdentifier = res.data;
-						lastToken = res.data;
 				});
 				return x;
 			};
@@ -37,7 +37,6 @@ module.factory('flowService', [
 
 		flowS.makeAssetCall = function(target, volume){
 			return function(data){
-				data.upload = lastToken;
 				$http.post(target+'?volume='+volume, data);
 			};
 		};

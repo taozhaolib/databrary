@@ -1,22 +1,6 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate flow-prevent-drop>
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <div flow-init="{target: '/api/asset/chunk'}"
-	       flow-files-submitted="$flow.upload()"
-	            flow-file-success="$file.msg = $message">
-
-		    <input type="file" flow-btn flow-drop>
-		        Input OR Other element as upload button
-			  <span class="btn" flow-btn>Upload File</span>
-
-			    <table>
-				        <tr ng-repeat="file in $flow.files">
-						        <td>{{$index+1}}</td>
-							        <td>{{file.name}}</td>
-								        <td>{{file.msg}}</td>
-									    </tr>
-									      </table>
-								      </div>
 
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
@@ -29,7 +13,7 @@
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
 
- <div flow-dropper prep-target="/api/asset/start" upload-target="/api/asset/chunk" asset-target="/api/asset" volume="{{volumeEditMaterialsForm.volume.id}}" style="height: 150px; width: 150px"></div>
+ <div flow-dropper asset-target="/api/asset" volume="{{volumeEditMaterialsForm.volume.id}}" style="height: 150px; width: 150px"></div>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">
