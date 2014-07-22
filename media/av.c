@@ -175,7 +175,7 @@ Java_media_AV_00024__1probe(
 	jobjectArray jstreams = NULL;
 	int i;
 
-	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening");
+	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening %s", infile);
 	CHECK(avformat_find_stream_info(in, NULL), "reading stream info");
 
 	if (!(jstreams = (*env)->NewObjectArray(env, in->nb_streams, String.class, NULL)))
@@ -221,7 +221,9 @@ Java_media_AV_00024__1frame(
 
 	av_init_packet(&pkt);
 
-	CHECK(avformat_open_input(&in, infile, NULL, NULL), "opening %s", infile);
+	CHECK(avformat_open_input(&in, infile, isnan(offset) ? av_find_input_format("image2") : NULL, NULL), "opening %s", infile);
+	if (isnan(offset))
+		in->video_codec_id = AV_CODEC_ID_MJPEG;
 	CHECK(avformat_find_stream_info(in, NULL), "reading stream info");
 
 	int si = CHECK(av_find_best_stream(in, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0), "finding video stream");
@@ -233,8 +235,13 @@ Java_media_AV_00024__1frame(
 	av_dict_set(&opts, "threads", "1", 0);
 	CHECK(avcodec_open2(is->codec, codec, &opts), "opening input codec %s", codec->name);
 
-	int64_t off = offset*is->time_base.den/is->time_base.num;
-	CHECK(avformat_seek_file(in, 0, INT64_MIN, off, off, 0), "seeking to %ld", off);
+	int64_t off;
+	if (isnan(offset)) {
+		off = INT64_MIN;
+	} else {
+		off = offset*is->time_base.den/is->time_base.num;
+		CHECK(avformat_seek_file(in, 0, INT64_MIN, off, off, 0), "seeking to %ld", off);
+	}
 
 	frame = av_frame_alloc();
 	uint64_t pts = 0;
@@ -250,7 +257,7 @@ Java_media_AV_00024__1frame(
 		else
 			gpp = 0;
 		av_free_packet(&pkt);
-	} while (!gpp || pts < off);
+	} while (!gpp || (int64_t)pts < off);
 
 	CHECK(avformat_alloc_output_context2(&out, NULL, outfile ? "image2" : "image2pipe", outfile), "opening '%s'", outfile);
 	if (!outfile)
