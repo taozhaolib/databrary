@@ -79,9 +79,10 @@ object Transcode {
       SQL("DELETE FROM transcode WHERE asset = ? AND process = ? RETURNING owner")
       .apply(aid, pid).singleOpt(SQLCols[models.Party.Id])
       .flatMap(_.flatMapAsync(
+	/* we just need the user to assign audits -- we shouldn't check permissions here (hence superuser) */
 	models.Authorization._get(_)
 	.flatMap(_.flatMapAsync(a =>
-	  models.Asset.get(aid)(new LocalAuth(a))))))
+	  models.Asset.get(aid)(new LocalAuth(a, superuser = true))))))
       .flatMap(_.foreachAsync({ asset =>
 	val f = FileAsset.file(asset)
 	val t = TemporaryFile(new File(f.getPath + ".mp4"))
