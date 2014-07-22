@@ -12,7 +12,7 @@ module.factory('pageService', [
 			messages: $injector.get('messageService'),
 			models: $injector.get('modelService'),
 			panels: $injector.get('panelService'),
-			resumable: $injector.get('resumableService'),
+			flow: $injector.get('flowService'),
 			router: $injector.get('routerService'),
 			tooltips: $injector.get('tooltipService'),
 			types: $injector.get('typeService'),

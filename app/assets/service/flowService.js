@@ -1,16 +1,16 @@
 "use strict";
-/*globals Resumable*/
-module.factory('resumableService', [
+/* globals Flow */
+module.factory('flowService', [
 	'$rootScope', '$http',
 
-	//closure fucntions returning each of three calls
+	//closure functions returning each of three calls
 
 	function ($rootScope, $http){
-		var resumableS = {};
+		var flowS = {};
 		var lastToken;
 
-		resumableS.makeResumable = function(t) {
-			return new Resumable({
+		flowS.makeFlow = function(t) {
+			return new Flow({
 				target: t,
 				method: 'octet', 
 				maxFiles: 1, 
@@ -19,11 +19,12 @@ module.factory('resumableService', [
 				permanentErrors: [400,403,404,415,500,501]});
 		};
 
-		resumableS.makePrepCall = function(target, volume){
+		flowS.makePrepCall = function(target, volume){
 			return function(file){
+				console.log(file);
 				var x = $http.post(target+
 						'?volume='+volume+
-						';filename='+file.fileName+
+						';filename='+file.name+
 						';size='+file.size);
 				
 				x.then(function(res){
@@ -34,9 +35,9 @@ module.factory('resumableService', [
 			};
 		};
 
-		resumableS.makeUploadCall = function(r) {return function(){r.upload();};};
+		flowS.makeUploadCall = function(f) {return function(){f.upload();};};
 
-		resumableS.makeAssetCall = function(target, volume){
+		flowS.makeAssetCall = function(target, volume){
 			return function(data){
 				data.upload = lastToken;
 				$http.post(target+'?volume='+volume, data);
@@ -44,9 +45,9 @@ module.factory('resumableService', [
 		};
 
 
-		resumableS.isSupported = function() {return (new Resumable()).support;};
+		flowS.isSupported = function() {return (new Flow()).support;};
 
-		return resumableS;
+		return flowS;
 	}
 ]);
 
