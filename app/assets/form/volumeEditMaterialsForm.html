@@ -1,19 +1,22 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-prevent-drop>
+<form name="volumeEditMaterialsForm" bindonce novalidate>
   <messages form="volumeEditMaterialsForm"></messages>
 
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose flow-init flow-file-added="page.flow.fileAddedImmediateUpload($file)" flow-file-success="page.flow.makeAssetSuccessCall('/api/asset', volumeEditMaterialsForm.volume.id, volumeEditMaterialsForm.slot.container.id, asset)($file)">
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
+
+	<div flow-drop>Drag/drop, then upload w flow</div>
+	<input type="file" flow-btn />
 
     <validator form="form" name="file" label="'material.file' | message">
       <input type="file" name="file" file-model="asset.file" file-model-form="form" ng-if="!asset.asset.creation">
+
+
 
       <div ng-if="asset.asset.creation">
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
-
- <div flow-dropper asset-target="/api/asset" volume="{{volumeEditMaterialsForm.volume.id}}" style="height: 150px; width: 150px"></div>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">

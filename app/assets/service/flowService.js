@@ -1,11 +1,11 @@
 "use strict";
 /* globals Flow */
 module.factory('flowService', [
-	'$rootScope', '$http',
+	'$rootScope', '$http', 'constantService',
 
 	//closure functions returning each of three calls
 
-	function ($rootScope, $http){
+	function ($rootScope, $http, constants){
 		var flowS = {};
 		var PREP_TARGET = '/api/asset/start';
 
@@ -20,20 +20,22 @@ module.factory('flowService', [
 
 		flowS.makeFlow = function() {return new Flow(flowS.options);};
 
-		flowS.makePrepCall = function(){
-			return function(file){
-				var x = $http.post(PREP_TARGET+
-						'?filename='+file.name+
-						';size='+file.size);
-				
-				x.then(function(res){
-						file.uniqueIdentifier = res.data;
-				});
-				return x;
-			};
+		flowS.prepCall = function(file){
+			var x = $http.post(PREP_TARGET+
+					'?filename='+file.name+
+					';size='+file.size);
+		
+			x.then(function(res){
+					file.uniqueIdentifier = res.data;
+			});
+			return x;
 		};
 
-		flowS.makeUploadCall = function(f) {return function(){f.upload();};};
+		flowS.fileAddedImmediateUpload = function(file){
+			flowS.prepCall(file).then(function(){
+				file.flowObj.upload();
+			});
+		};
 
 		flowS.makeAssetCall = function(target, volume){
 			return function(data){
@@ -41,6 +43,16 @@ module.factory('flowService', [
 			};
 		};
 
+		flowS.makeAssetSuccessCall = function(target, volume, container, asset){
+			return function(file){
+				var data = {};
+				data.name = asset.name;
+				data.classification = constants.data.classification.indexOf(asset.classification);  //TODO: improve this!
+				data.container = container;
+				data.upload = file.uniqueIdentifier;
+				$http.post(target+'?volume='+volume, data);
+			};
+		};
 
 		flowS.isSupported = function() {return (new Flow()).support;};
 
