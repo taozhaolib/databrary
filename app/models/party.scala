@@ -97,8 +97,10 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def pageParent = party.pageParent
   def pageURL = party.pageURL
 
-  def json = party.json + 
-    ('permission -> permission)
+  def json = party.json - "email" ++ JsonObject.flatten(
+    Some(('permission, permission)),
+    party.account.filter(_ => checkPermission(Permission.SHARED)).map(a => ('email, a.email))
+  )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options
