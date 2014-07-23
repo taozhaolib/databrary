@@ -134,6 +134,7 @@ object Adolph extends Ingest {
 	case "BIRTH DATE" => measure(dateMeasureParser(Metric.Birthdate), null)
 	case "GENDER" => measure(Gender.measureParse)
 	case "RACE" => measure(Race.measureParse)
+	case "RACE (AS-IS)" => measure(measureParser(Metric.Race, trimmed))
 	case "ETHNICITY" => measure(Ethnicity.measureParse)
 	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(Metric.Disability, trimmed), "typical")
 	case "LANGUAGE" => measure(measureParser(Metric.Language, trimmed))
