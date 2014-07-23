@@ -81,11 +81,16 @@ private[ingest] object Parse {
   val file : Parser[java.io.File] = Parser(new java.io.File(_))
 
   private val dateFormat1 = time.format.DateTimeFormat.forPattern("yyyy-MM-dd")
-  private val dateFormat2 = time.format.DateTimeFormat.forPattern("MM/dd/yy").withPivotYear((new time.LocalDate).getYear - 49)
-  private def dateFormat(fmt : time.format.DateTimeFormatter) : Parser[Date] = Parser(s =>
-      fmt.parseLocalDate(s)
-    ).failingOn(classOf[IllegalArgumentException])
-  val date : Parser[Date] = dateFormat(dateFormat2) | dateFormat(dateFormat1)
+  private val dateFormat2 = time.format.DateTimeFormat.forPattern("yyyy/MM/dd")
+  private val dateFormat3 = time.format.DateTimeFormat.forPattern("MM/dd/yy").withPivotYear((new time.LocalDate).getYear - 49)
+  private def dateFormat(fmt : time.format.DateTimeFormatter) : Parser[Date] = Parser { s =>
+      val d = fmt.parseLocalDate(s)
+      if (d.getYear < 100)
+	fail("year too small")
+      else
+	d
+    }.failingOn(classOf[IllegalArgumentException])
+  val date : Parser[Date] = dateFormat(dateFormat1) | dateFormat(dateFormat2) | dateFormat(dateFormat3)
 
   def enum(enum : Enumeration, name : String) : Parser[enum.Value] =
     Parser(enum.withName(_)).failingOn(classOf[java.util.NoSuchElementException]) |

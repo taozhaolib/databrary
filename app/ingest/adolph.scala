@@ -132,6 +132,7 @@ object Adolph extends Ingest {
 	case "SUBJECT ID" => parseId
 	case "DATASET" => parseSet
 	case "BIRTH DATE" => measure(dateMeasureParser(Metric.Birthdate), null)
+	case "BIRTH DATE (OPTIONAL)" => measure(dateMeasureParser(Metric.Birthdate))
 	case "GENDER" => measure(Gender.measureParse)
 	case "RACE" => measure(Race.measureParse)
 	case "RACE (AS-IS)" => measure(measureParser(Metric.Race, trimmed))
