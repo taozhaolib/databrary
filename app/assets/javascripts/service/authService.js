@@ -85,18 +85,10 @@ module.factory('authService', [
 			return parseUserAuth() >= parseAuthLevel(level);
 		};
 
-		auth.isAuth = function (level) {
-			return parseUserAuth() == parseAuthLevel(level);
-		};
-
 		//
 
 		auth.hasAccess = function (level, object) {
 			return parseUserAuth(object) >= parseAuthLevel(level);
-		};
-
-		auth.isAccess = function (level, object) {
-			return parseUserAuth(object) == parseAuthLevel(level);
 		};
 
 		//
@@ -153,10 +145,6 @@ module.factory('authService', [
 
 		auth.isAuthorized = function () {
 			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
-		};
-
-		auth.isUnauthorized = function () {
-			return !auth.isAuthorized();
 		};
 
 		//
