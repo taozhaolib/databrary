@@ -37,12 +37,6 @@ module.factory('flowService', [
 			});
 		};
 
-		flowS.makeAssetCall = function(target, volume){
-			return function(data){
-				$http.post(target+'?volume='+volume, data);
-			};
-		};
-
 		flowS.makeAssetSuccessCall = function(target, volume, container, asset){
 			return function(file){
 				var data = {};
