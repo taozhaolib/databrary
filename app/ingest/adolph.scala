@@ -253,7 +253,8 @@ object Adolph extends Ingest {
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
 	pr <- records(RecordCategory.Participant.id.unId).populate(volume)
-	ms <- pr.slots
+	ps <- pr.slots
+	ms = ps.filter(_.container.date.equals(date))
 	_ <- check(ms.length <= 1,
 	  PopulateException("multiple existing sessions for participant", pr))
 	c <- ms.headOption.fold {
