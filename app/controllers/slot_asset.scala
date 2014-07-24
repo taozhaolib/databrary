@@ -11,19 +11,19 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
   private[controllers] def Action(i : Container.Id, segment : Segment, a : Asset.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction andThen action(i, segment, a, p)
 
-  private[controllers] def getFrame(offset : Either[Float,Offset])(implicit request : Request[_]) =
+  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
-          AssetController.assetResult(ts.sample(off))
+          AssetController.assetResult(ts.sample(off), Some(size.max(1).min(AssetController.defaultThumbSize)))
       case _ =>
         if (!offset.fold(_ => true, _ == Offset.ZERO))
           ANotFound
         else
-          AssetController.assetResult(request.obj)
+          AssetController.assetResult(request.obj, Some(size.max(1).min(AssetController.defaultThumbSize)))
     }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
@@ -32,15 +32,16 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 	_ <- request.obj.auditDownload
 	name <- request.obj.fileName
       } yield (Some(name)))
-      .flatMap(AssetController.assetResult(request.obj, _))
+      .flatMap(AssetController.assetResult(request.obj, None, _))
     }
 
-  def frame(i : Container.Id, o : Asset.Id, eo : Offset) = head(i, Range.singleton(eo), o)
-  def head(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.READ).async { implicit request =>
-    getFrame(Right(Offset.ZERO))
+  def frame(i : Container.Id, o : Asset.Id, eo : Offset, size : Int = AssetController.defaultThumbSize) =
+    head(i, Range.singleton(eo), o, size)
+  def head(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+    getFrame(Right(Offset.ZERO), size)
   }
-  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id) = Action(i, segment, o, Permission.READ).async { implicit request =>
-    getFrame(Left(0.25f))
+  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+    getFrame(Left(0.25f), size)
   }
 }
 

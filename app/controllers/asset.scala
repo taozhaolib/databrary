@@ -23,13 +23,15 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  private[controllers] def assetResult(asset : BackedAsset, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
+  final val defaultThumbSize : Int = 480
+
+  private[controllers] def assetResult(asset : BackedAsset, size : Option[Int] = None, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
     val tag = asset.etag
     /* Assuming assets are immutable, any if-modified-since header is good enough */
     if (HTTP.notModified(tag, new Timestamp(0)))
       async(NotModified)
     else for {
-      data <- store.Asset.read(asset)
+      data <- store.Asset.read(asset, size)
       date = store.Asset.timestamp(asset)
     } yield {
       val size = data.size
@@ -60,10 +62,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	form.container.withError("object.invalid", "container")._throw))
       _ <- asset.change(name = form.name.get, classification = form.classification.get)
       sa <- container.mapAsync(asset.link(_, form.position.get))
-      _ <- form.excerpt.get.foreachAsync { c =>
-	if (c.exists(_ < asset.classification)) form.excerpt.withError("asset.excerpt.invalid")._throw
-	else Excerpt.set(asset, Range.full, c)
-      }
+      _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _))
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
 
   def update(o : models.Asset.Id) =
@@ -159,6 +158,10 @@ object AssetController extends AssetController {
   sealed trait AssetUpdateForm extends AssetForm {
     def asset : Asset
     def volume = asset.volume
+    name.fill(Some(asset.name))
+    classification.fill(Some(asset.classification))
+    container.fill(None)
+    position.fill(None)
   }
 
   final class ChangeForm(implicit request : Request[_])
@@ -167,10 +170,6 @@ object AssetController extends AssetController {
     def actionName = "Update"
     override def formName = "Edit Asset"
     def asset = request.obj
-    name.fill(Some(request.obj.name))
-    classification.fill(Some(request.obj.classification))
-    container.fill(None)
-    position.fill(None)
   }
 
   sealed trait AssetUploadForm extends AssetForm {
@@ -194,10 +193,6 @@ object AssetController extends AssetController {
     with AssetUpdateForm with AssetUploadForm {
     def actionName = "Replace"
     def asset = request.obj
-    name.fill(Some(request.obj.name))
-    classification.fill(Some(request.obj.classification))
-    container.fill(None)
-    position.fill(None)
   }
 }
 
@@ -212,7 +207,11 @@ object AssetHtml extends AssetController with HtmlController {
 
   def edit(o : models.Asset.Id) =
     Action(o, Permission.EDIT).async { implicit request =>
-      new ChangeForm().Ok
+      request.obj.slot.flatMap { sa =>
+	val form = new ChangeForm()
+	form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
+	form.Ok
+      }
     }
 
   def replaceView(o : models.Asset.Id) =

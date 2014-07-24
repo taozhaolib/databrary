@@ -80,7 +80,7 @@ object IngestController extends SiteController with HtmlController {
     val form = new AdolphForm()._bind
     if (!form.run.get)
       ingest.Adolph.parse(form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
-	Ok(views.html.ingest.adolph(form, r.toString + " sessions found"))
+	Ok(views.html.ingest.adolph(form, r.toString + " records found"))
       }.recover {
 	case e : IngestException =>
 	  BadRequest(views.html.ingest.adolph(form, e.getMessage))

@@ -132,8 +132,10 @@ object Adolph extends Ingest {
 	case "SUBJECT ID" => parseId
 	case "DATASET" => parseSet
 	case "BIRTH DATE" => measure(dateMeasureParser(Metric.Birthdate), null)
+	case "BIRTH DATE (OPTIONAL)" => measure(dateMeasureParser(Metric.Birthdate))
 	case "GENDER" => measure(Gender.measureParse)
 	case "RACE" => measure(Race.measureParse)
+	case "RACE (AS-IS)" => measure(measureParser(Metric.Race, trimmed))
 	case "ETHNICITY" => measure(Ethnicity.measureParse)
 	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(Metric.Disability, trimmed), "typical")
 	case "LANGUAGE" => measure(measureParser(Metric.Language, trimmed))
@@ -251,7 +253,8 @@ object Adolph extends Ingest {
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
 	pr <- records(RecordCategory.Participant.id.unId).populate(volume)
-	ms <- pr.slots
+	ps <- pr.slots
+	ms = ps.filter(_.container.date.equals(date))
 	_ <- check(ms.length <= 1,
 	  PopulateException("multiple existing sessions for participant", pr))
 	c <- ms.headOption.fold {
