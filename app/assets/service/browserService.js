@@ -172,7 +172,7 @@ module.factory('browserService', [
 			}
 
 			angular.forEach(raw, function (volume) {
-				angular.forEach(volume.categories, function (sessions, category) {
+				angular.forEach(volume.categories, function (category) {
 					if (!browserService.options.record.categories.find({id: category})) {
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,

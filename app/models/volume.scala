@@ -72,11 +72,11 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   private[this] lazy val _sessions : Future[Seq[Volume.Session]] =
     Volume.Session.get(this)
 
-  lazy val sessions : Future[Seq[Volume.Session.Group]] = _sessions.map(Volume.Session.group)
+  def sessions : Future[Seq[Volume.Session.Group]] = _sessions.map(Volume.Session.group)
 
   private[this] type SessionRecord = (Record, Seq[Slot])
   /** The list of all records and their associated sessions on this volume. */
-  private[this] lazy val recordSlots : Future[Seq[SessionRecord]] = _sessions.map { sess =>
+  private[this] def recordSlots : Future[Seq[SessionRecord]] = _sessions.map { sess =>
     val l = sess.sortBy(_._2.map { case (_, r) => r.category.map(_.id.unId) -> r.id.unId })
     val r = l.genericBuilder[(Record,Seq[Slot])]
     @scala.annotation.tailrec def group(l : Seq[Volume.Session]) {
@@ -100,6 +100,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   def recordCategorySlots : Future[Seq[(RecordCategory,Seq[SessionRecord])]] =
     recordSlots.map(rs =>
       groupBy(rs.dropWhile(_._1.category.isEmpty), (sr : SessionRecord) => sr._1.category.get))
+
+  private[this] def recordCategories : Future[Seq[RecordCategory]] =
+    RecordCategory.getVolume(this)
 
   /** Basic summary information on this volume.
     * For now this only includes session (cross participant) information. */
@@ -176,8 +179,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
-      ("categories", opt => recordCategorySlots.map(l =>
-	JsObject(l.map { case (c, rl) => (c.id.toString, Json.toJson(rl.map(_._1.id))) }))),
+      ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
       ("records", opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
         r.json - "volume"
       })),

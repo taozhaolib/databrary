@@ -34,7 +34,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     list
 
   def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
-    SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL")
+    SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL ORDER BY category")
       .apply(volume.id)
       .list(SQLCols[RecordCategory.Id].map(get(_).get))
 
