@@ -13,8 +13,8 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.partyAuth = {
-			parents: {},
-			children: {},
+			parents: [],
+			children: [],
 		};
 
 		var actionMessages = {};
@@ -62,23 +62,14 @@ module.controller('NetworkPanel', [
 					children: ''
 				}, function (data) {
 					$scope.partyAuth = {
-						parents: {},
-						children: {}
+						parents: data.parents.map(function (party) {
+							return { party: party };
+						}),
+						children: data.children.map(function (party) {
+							return { party: party };
+						})
 					};
 
-					angular.forEach(data.parents, function (party) {
-						$scope.partyAuth.parents[party.id] = {
-							id: party.id,
-							party: party
-						};
-					});
-
-					angular.forEach(data.children, function (party) {
-						$scope.partyAuth.children[party.id] = {
-							id: party.id,
-							party: party
-						};
-					});
 				}, function (res) {
 					page.messages.addError({
 						body: page.constants.message('network.authquery.error'),
@@ -113,39 +104,23 @@ module.controller('NetworkPanel', [
 		};
 
 		//
+                
+                var userExists = function (list) {
+                        var user = page.auth.user.id;
+
+                        /* you always exist on your own page */
+                        return $scope.party.id <= 0 || $scope.party.id === user ||
+                                list.some(function (a) {
+                                        return a.party.id === user;
+                                });
+                };
 
 		$scope.canGrant = function () {
-			if (!$scope.isForeign()) {
-				return false;
-			}
-
-			var exists;
-
-			angular.forEach($scope.partyAuth.parents, function (parent) {
-				if (parent.party.id == page.auth.user.id) {
-					exists = true;
-					return false;
-				}
-			});
-
-			return !exists;
+                        return !userExists($scope.partyAuth.parents);
 		};
 
 		$scope.canApply = function () {
-			if (!$scope.isForeign()) {
-				return false;
-			}
-
-			var exists;
-
-			angular.forEach($scope.partyAuth.children, function (child) {
-				if (child.party.id == page.auth.user.id) {
-					exists = true;
-					return false;
-				}
-			});
-
-			return !exists;
+                        return !userExists($scope.partyAuth.children);
 		};
 
 		$scope.grant = function () {

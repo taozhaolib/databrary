@@ -105,10 +105,10 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options
     , "parents" -> (opt => party.authorizeParents()
-        .map(JsonRecord.map(_.parent.json))
+        .map(JsonArray.map(_.parent.json))
       )
     , "children" -> (opt => party.authorizeChildren()
-        .map(JsonRecord.map(_.child.json))
+        .map(JsonArray.map(_.child.json))
       )
     , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.site)) else async(JsNull))
     , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))

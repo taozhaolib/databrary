@@ -78,9 +78,8 @@ module.controller('registerView', [
 			page.models.partyAuthorize.query({
 				id: page.auth.user.id
 			}, function (data) {
-				angular.forEach(data.parents, function () {
+				if (data.parents.length)
 					user.pending = true;
-				});
 
 				$scope.updateWizard();
 			}, function (res) {

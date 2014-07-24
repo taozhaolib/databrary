@@ -252,8 +252,8 @@ module.config([
 						var deferred = page.$q.defer();
 
 						var empty = {
-							parents: {},
-							children: {},
+							parents: [],
+							children: [],
 						};
 
 						partyEditParty.then(function (party) {

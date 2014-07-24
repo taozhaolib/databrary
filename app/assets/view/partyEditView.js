@@ -15,8 +15,8 @@ module.controller('partyEditView', [
 		$scope.party = party;
 
 		partyAuth = partyAuth || {
-			parents: {},
-			children: {},
+			parents: [],
+			children: [],
 		};
 
 		//
