@@ -472,6 +472,14 @@ browser.noaccess=You do not have access to view this file.
 browser.assets.error=Could not retrieve assets for this session.
 session=Session
 
+mark.pilot.help=This session contains pilot data
+mark.exclusion.help=Some data in this session were excluded
+not.pilot=Not pilot
+not.exclusion=Included
+not.participant=No participants
+not.condition=No conditions
+not.group=Not grouped
+
 excerpts.title=Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
@@ -526,10 +534,6 @@ search.error=Could not complete your search.
 search.deep.info=You are in deep search mode. Press enter to submit new request, or click [X] to return to filter mode.
 
 return.volume=Return to volume
-
-# --- Notices
-notice.help.pilot=<strong>Pilot</strong>: This session contains pilot data.
-notice.help.exclusion=<strong>Exclusion</strong>: This session was excluded due to <em>{0}</em>.
 
 # --- Registration
 register.title=Register
