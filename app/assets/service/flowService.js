@@ -18,13 +18,14 @@ module.factory('flowService', [
 			permanentErrors: [400,403,404,415,500,501]
 		};
 
-		flowS.makeFlow = function() {return new Flow(flowS.options);};
-
 		flowS.prepCall = function(file){
-			var x = $http.post(PREP_TARGET+
-					'?filename='+file.name+
-					';size='+file.size);
-		
+			var x = $http.post(PREP_TARGET, undefined, {
+					params: {
+						filename:	file.name,
+						size:		file.size,
+					}
+			});
+
 			x.then(function(res){
 					file.uniqueIdentifier = res.data;
 			});
@@ -35,17 +36,6 @@ module.factory('flowService', [
 			flowS.prepCall(file).then(function(){
 				file.flowObj.upload();
 			});
-		};
-
-		flowS.makeAssetSuccessCall = function(target, volume, container, asset){
-			return function(file){
-				var data = {};
-				data.name = asset.name;
-				data.classification = constants.data.classification.indexOf(asset.classification);  //TODO: improve this!
-				data.container = container;
-				data.upload = file.uniqueIdentifier;
-				$http.post(target+'?volume='+volume, data);
-			};
 		};
 
 		flowS.assetCall = function(target, volumeId, data){
