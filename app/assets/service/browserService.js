@@ -259,7 +259,7 @@ module.factory('browserService', [
 					break;
 
 				case 'session':
-					callbackSessionChildren(data, data.volume, groups);
+					callbackSessionChildren(data);
 					break;
 
 				default:
@@ -469,13 +469,13 @@ module.factory('browserService', [
 			angular.forEach(sessions, function (session) {
 				var newData = callbackItem(data, volume, undefined, session, 'session');
 
-				callbackSessionChildren(newData, volume, groups);
+				callbackSessionChildren(newData);
 			});
 
 			return data;
 		};
 
-		var callbackSessionChildren = function (data, volume, groups) {
+		var callbackSessionChildren = function (data) {
 			if (!browserService.getItemExpand(data)) {
 				return data;
 			}

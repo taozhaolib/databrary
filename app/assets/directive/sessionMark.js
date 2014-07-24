@@ -6,7 +6,7 @@ module.directive('sessionMark', [
                         exclusion: 'purple',
                         pilot: 'red',
                 };
-		var link = function ($scope, $el, $attrs) {
+		var link = function ($scope, $el) {
                         var cat = page.constants.data.category[$scope.cat.id];
 			var type = types[cat.name];
 
