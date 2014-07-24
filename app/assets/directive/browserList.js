@@ -120,11 +120,12 @@ module.directive('browserList', [
 
 			$scope.recordIdentifier = function (record) {
 				if (record.id !== 0) {
-					switch (record.category) {
-						case -700:
+                                        // basically mirrors models.RecordCategory.ident definitions
+					switch (page.constants.data.category[record.category].name) {
+						case 'exclusion':
 							return record.measures.reason;
 
-						case -100:
+						case 'context':
 							var out = record.measures.setting;
 
 							if (record.measures.state) {
@@ -147,60 +148,48 @@ module.directive('browserList', [
 			};
 
 			$scope.getMeasures = function (data) {
-				if (measures) {
-					return measures;
-				}
+				var measures = {};
+                                angular.extend(measures, data.object.measures);
+                                
+                                delete measures.description;
 
-				// TODO: something with better performance!
-				var measures = {}, skip = ['description', 'pilot', 'exclusion'];
-
-				switch (data.object.category) {
-					case -700:
-						skip.push('reason');
+				switch (page.constants.data.category[data.object.category].name) {
+                                        case 'exclusion':
+                                                delete measures.reason;
 						break;
 
-					case -100:
-						skip.push('setting');
-						skip.push('state');
-						skip.push('country');
+                                        case 'context':
+						delete measures.setting;
+						delete measures.state;
+						delete measures.country;
 						break;
 
 					default:
-						skip.push('ident');
+						delete measures.ident;
 						break;
 				}
-
-				angular.forEach(data.object.measures, function (value, key) {
-					if (skip.indexOf(key) == -1) {
-						measures[key] = value;
-					}
-				});
 
 				return measures;
 			};
 
-			var sessionRecords = {};
-
 			$scope.getSessionRecords = function (data) {
-				if (sessionRecords[data.object.id]) {
-					return sessionRecords[data.object.id];
-				}
+                                if ('sessionRecords' in data)
+                                        return data.sessionRecords;
 
-				sessionRecords[data.object.id] = [];
-				var skip = ['-700', '-800'];
+				data.sessionRecords = [];
 				angular.forEach(data.object.categories, function (records, key) {
-					if (data.object.categories.hasOwnProperty(key) && skip.indexOf(key) == -1) {
-						sessionRecords[data.object.id].push({
+					if (data.object.categories.hasOwnProperty(key)) {
+						data.sessionRecords.push({
 							id: parseInt(key),
 							records: relevantRecords(data, key, records)
 						});
 					}
 				});
 
-				sessionRecords[data.object.id].sort(function (a, b) {
+				data.sessionRecords.sort(function (a, b) {
 					return a.id > b.id;
 				});
-				return sessionRecords[data.object.id];
+				return data.sessionRecords;
 			};
 
 			var relevantRecords = function (data, cat, records) {
@@ -212,40 +201,12 @@ module.directive('browserList', [
 
 			$scope.nameRecord = function (data) {
 				var category = page.constants.data.category[data.object.category],
-					name;
+					name = category.name;
 
 				if (data.object.id === 0) {
-					switch (category.id) {
-						case -800:
-							name = 'Not pilot';
-							break;
-
-						case -700:
-							name = 'Included';
-							break;
-
-						case -500:
-							name = 'No participants';
-							break;
-
-						case -400:
-							name = 'No conditions';
-							break;
-
-						case -200:
-							name = 'Not grouped';
-							break;
-
-						case -100:
-							name = 'No location';
-							break;
-
-						default:
-							name = 'No ' + category.name;
-							break;
-					}
+                                        name = page.constants.data.messages['not.' + name] || 'No ' + name;
 				} else {
-					name = $scope.capitalize(page.constants.data.category[data.object.category].name);
+					name = $scope.capitalize(name);
 				}
 
 				var identifier = $scope.recordIdentifier(data.object);

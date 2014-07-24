@@ -2,38 +2,34 @@
 
 module.directive('sessionMark', [
 	'pageService', function (page) {
+                var types = {
+                        exclusion: 'purple',
+                        pilot: 'red',
+                };
 		var link = function ($scope, $el, $attrs) {
-			$scope.mark = $attrs.mark;
-			var message = '', type = 'orange';
+                        var cat = page.constants.data.category[$scope.cat.id];
+			var type = types[cat.name];
 
-			switch ($scope.mark) {
-				case 'excluded':
-					if (!$scope.data.object.categories[-700]) {
-						return $el.remove();
-					}
+                        if (!type)
+                                return $el.remove();
 
-					message = page.constants.message('notice.help.exclusion', $scope.data.volume.records[$scope.data.object.categories[-700][0].id].measures.reason);
-					type = 'purple';
-					break;
-
-				case 'pilot':
-					if (!$scope.data.object.categories[-800]) {
-						return $el.remove();
-					}
-
-					message = page.constants.message('notice.help.pilot');
-					type = 'red';
-					break;
-
-				default:
-					return $el.remove();
-			}
+                        var message = "<strong>" + $scope.capitalize(cat.name) + "</strong>: " + page.constants.message('mark.' + cat.name + '.help');
+                        var extras = [];
+                        angular.forEach($scope.cat.records, function (r) {
+                                var i = $scope.recordIdentifier($scope.data.volume.records[r.id]);
+                                if (i)
+                                        extras.push(i);
+                        });
+                        if (extras.length)
+                                message += ": <em>" + extras.join(", ") + "</em>";
 
 			var tooltip = page.tooltips.add({
-				message: message,
+                                message: message,
 				type: type,
 				$target: $el
 			});
+
+                        $scope.cat.displayed = true;
 
 			//
 
@@ -43,13 +39,8 @@ module.directive('sessionMark', [
 
 			//
 
-			$scope.getMarkClasses = function () {
-				var classes = [];
-
-				classes.push('session-mark-' + $scope.mark);
-
-				return classes;
-			};
+			$scope.mark = cat.name;
+			$scope.markClass = 'session-mark-' + $scope.mark;
 		};
 
 		return {
