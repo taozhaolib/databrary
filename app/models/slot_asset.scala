@@ -98,7 +98,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
       owns <- volume.partyAccess(Permission.ADMIN)
       own = owns.headOption.map(_.party.name).map(last _)
       cite <- volume.citation
-      auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(_.equals(own))
+      auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(a => own.exists(_.equals(a)))
       name = { 
 	val n = volume.alias.getOrElse(volume.name)
 	n.take(Maybe(n.lastIndexOf(' ', 32)).orElse(32))
