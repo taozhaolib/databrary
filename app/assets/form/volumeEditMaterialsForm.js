@@ -50,6 +50,14 @@ module.directive('volumeEditMaterialsForm', [
 				page.upload.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
 			};
 
+			$scope.perFileProgress = function(file){
+				file.srcScope.$parent.progressFloat = file.progress();
+			};
+
+			$scope.totalProgress = function(){
+				form.totalProgress = $scope.$flow.progress();
+			};
+
 			form.filterAssets = function () {
 				if (!form.slot) {
 					return [];

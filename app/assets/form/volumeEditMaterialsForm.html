@@ -1,14 +1,14 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.upload.flowOptions" flow-file-added="page.upload.fileAddedImmediateUpload(addSourceScopeToFile($file,$event))" flow-file-success="assetCall($file)">
+<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.upload.flowOptions" flow-file-added="page.upload.fileAddedImmediateUpload(addSourceScopeToFile($file,$event))" flow-file-success="assetCall($file)" flow-file-progress="perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
 
+  <div><span>Progress: </span><span ng-bind="volumeEditMaterialsForm.totalProgress"></span></div>
 
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
       <input type="file" name="file" ng-if="!asset.asset.creation" flow-btn flow-drop>
-
-
+	<file-progress></file-progress>
 
       <div ng-if="asset.asset.creation">
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>

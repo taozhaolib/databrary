@@ -15,7 +15,9 @@ module.factory('uploadService', [
 			maxFiles: 1, 
 			testChunks: false,
 			chunkRetryInterval: 5000,
-			permanentErrors: [400,403,404,415,500,501]
+			permanentErrors: [400,403,404,415,500,501],
+			progressCallbacksInterval: 300,
+			prioritizeFirstAndLastChunk: true
 		};
 
 		uploadS.prepCall = function(file){
