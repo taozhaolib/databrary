@@ -1,8 +1,8 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate>
+<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.flow.options" flow-file-added="page.flow.fileAddedImmediateUpload(addSourceScopeToFile($file,$event))" flow-file-success="assetCall($file)">
   <messages form="volumeEditMaterialsForm"></messages>
 
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose flow-init="page.flow.options" flow-file-added="page.flow.fileAddedImmediateUpload($file)" flow-file-success="page.flow.makeAssetSuccessCall('/api/asset', volumeEditMaterialsForm.volume.id, volumeEditMaterialsForm.slot.container.id, asset)($file)">
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
     <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">

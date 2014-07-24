@@ -36,6 +36,20 @@ module.directive('volumeEditMaterialsForm', [
 				form.filterAssets();
 			});
 
+			$scope.addSourceScopeToFile = function (file, event){
+				file.srcScope = angular.element(event.srcElement).scope();
+				return file;
+			};
+
+			$scope.assetCall = function(file){
+				var data = {};
+				data.name = file.srcScope.asset.name;
+				data.classification = page.constants.data.classification.indexOf(file.srcScope.asset.classification);  //TODO: improve this!
+				data.container = file.srcScope.volumeEditMaterialsForm.slot.container.id;
+				data.upload = file.uniqueIdentifier;
+				page.flow.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
+			};
+
 			form.filterAssets = function () {
 				if (!form.slot) {
 					return [];

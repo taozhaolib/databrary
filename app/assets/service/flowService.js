@@ -48,6 +48,10 @@ module.factory('flowService', [
 			};
 		};
 
+		flowS.assetCall = function(target, volumeId, data){
+			$http.post(target, data, {params: {volume: volumeId}});
+		};
+
 		flowS.isSupported = function() {return (new Flow()).support;};
 
 		return flowS;
