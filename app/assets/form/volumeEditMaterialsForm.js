@@ -47,7 +47,7 @@ module.directive('volumeEditMaterialsForm', [
 				data.classification = page.constants.data.classification.indexOf(file.srcScope.asset.classification);  //TODO: improve this!
 				data.container = file.srcScope.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
-				page.flow.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
+				page.upload.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
 			};
 
 			form.filterAssets = function () {
