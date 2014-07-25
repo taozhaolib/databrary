@@ -1,4 +1,4 @@
-@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[(Slot,Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
+@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[Slot], records : Seq[Record], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
 

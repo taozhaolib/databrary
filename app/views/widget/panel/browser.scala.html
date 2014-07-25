@@ -1,25 +1,22 @@
-@(sessions : Seq[(Slot, Any)], records : Seq[(RecordCategory,Seq[(Record,Any)])])(implicit request : SiteRequest[_])
-
-@import play.api.templates.HtmlFormat._
-@import play.api.libs.concurrent.Execution.Implicits.defaultContext
+@(sessions : Seq[Slot], records : Seq[Record])(implicit request : SiteRequest[_])
 
     @if(sessions.nonEmpty){
         @widget.panel.raw("sessions", "")(title = Messages("browser.title")){
             <div class="col-full">
                 <ul>
-                    @sessions.map { case (slot, _)  =>
-			    <li>@display(slot)</li>
+                    @sessions.map { s =>
+                        <li>@display(s)</li>
                     }
                 </ul>
             </div>
         }
     }
 
-    @records.map { case (cat, rl)  =>
-	@widget.panel.raw(cat.name.toLowerCase, "")(title = Messages("browser.title") + " by " + cat.name.capitalize){
+    @groupBy(records, (r : Record) => r.category).map { case (cat, rl)  =>
+	@widget.panel.raw(cat.fold("")(_.name.toLowerCase), "")(title = Messages("browser.title") + cat.fold("")(" by " + _.name)){
 	    <div class="col-full">
 		<ul>
-		    @rl.map { case (r, _) =>
+		    @rl.map { r =>
 			<li>@display(r)</li>
 		    }
 		</ul>

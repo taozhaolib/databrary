@@ -74,33 +74,6 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 
   def sessions : Future[Seq[Volume.Session.Group]] = _sessions.map(Volume.Session.group)
 
-  private[this] type SessionRecord = (Record, Seq[Slot])
-  /** The list of all records and their associated sessions on this volume. */
-  private[this] def recordSlots : Future[Seq[SessionRecord]] = _sessions.map { sess =>
-    val l = sess.sortBy(_._2.map { case (_, r) => r.category.map(_.id.unId) -> r.id.unId })
-    val r = l.genericBuilder[(Record,Seq[Slot])]
-    @scala.annotation.tailrec def group(l : Seq[Volume.Session]) {
-      l.headOption match {
-	case None =>
-	case Some((c, None)) =>
-	  group(l.tail)
-	case Some((c, Some((seg, rec)))) =>
-	  val (p, s) = l.span(_._2.exists(_._2 === rec))
-	  r += rec -> p.map {
-	    case (cont, Some((seg, _))) => cont * seg
-	    case (cont, None) => cont // impossible
-	  }
-	  group(s)
-      }
-    }
-    group(l)
-    r.result
-  }
-
-  def recordCategorySlots : Future[Seq[(RecordCategory,Seq[SessionRecord])]] =
-    recordSlots.map(rs =>
-      groupBy(rs.dropWhile(_._1.category.isEmpty), (sr : SessionRecord) => sr._1.category.get))
-
   private[this] def recordCategories : Future[Seq[RecordCategory]] =
     RecordCategory.getVolume(this)
 
@@ -180,9 +153,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
-      ("records", opt => recordSlots.map(JsonRecord.map { case (r, ss) =>
-        r.json - "volume"
-      })),
+      ("records", opt => records().map(JsonRecord.map(_.json - "volume"))),
       ("sessions", opt => sessions.map(JsonRecord.map { case (cont, crs) =>
 	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
 	  (cat.fold("")(_.toString), JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
