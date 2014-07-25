@@ -23,6 +23,7 @@ module.directive('form', [
 								body: page.constants.message('error.generic'),
 								report: res,
 							});
+							return;
 						}
 
 						var name;
