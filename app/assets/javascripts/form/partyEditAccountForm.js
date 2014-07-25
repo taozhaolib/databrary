@@ -53,7 +53,7 @@ module.directive('partyEditAccountForm', [
 						}
 
 						form.$setPristine();
-						page.models.party.$cache.removeAll();
+						page.models.Party.$cache.removeAll();
 						form.clearPasswordFields();
 					}, function (res) {
 						form.validator.server(res);
