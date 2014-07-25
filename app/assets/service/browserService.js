@@ -16,12 +16,6 @@ module.factory('browserService', [
 		//
 		
 		var DEFAULT_OPTIONS = {
-			volume: {
-				allow: false,
-				active: true,
-				expand: false,
-			},
-
 			record: {
 				allow: true,
 				categories: new ArrayHelper([])
@@ -35,8 +29,6 @@ module.factory('browserService', [
 		};
 
 		var DEFAULT_CATEGORY = {
-			id: null,
-			name: null,
 			allow: true,
 			active: false,
 			expand: true,
@@ -44,10 +36,7 @@ module.factory('browserService', [
 
 		//
 
-		var raw = [];
-
-		var contexts = ['search', 'party', 'volume'];
-		browserService.context = undefined;
+		var volume;
 
 		//
 
@@ -59,80 +48,29 @@ module.factory('browserService', [
 
 		//
 
-		browserService.initialize = function (newContext, newData) {
+		browserService.initialize = function (newVolume) {
 			browserService.query = '';
 
-			newData.$promise.then(function (newData) {
-				initialize(newContext, newData);
-			});
+			newVolume.$promise.then(initialize);
 		};
 
-		var initialize = function (newContext, newData) {
-			initializeData(newData);
-			initializeOptions(newContext);
+		var initialize = function (newVolume) {
+                        volume = newVolume;
+
+			angular.extend(browserService.options, DEFAULT_OPTIONS);
+
+                        browserService.options.record.categories = new ArrayHelper(
+                                volume.categories.map(function (category) {
+                                        return angular.extend({
+                                                id: category,
+                                                name: constants.data.category[category].name,
+                                        }, DEFAULT_CATEGORY);
+                                }));
+
 			rebuildData();
 		};
 
 		//
-
-		var initializeOptions = function (newContext) {
-			if (contexts.indexOf(newContext) == -1) {
-				return false;
-			}
-
-			browserService.context = newContext;
-
-			angular.extend(browserService.options, DEFAULT_OPTIONS);
-
-			updateCategories();
-			browserService.options.record.categories.sort(function (a, b) {
-				return a.id - b.id;
-			});
-
-			switch (browserService.context) {
-				case 'party':
-				case 'search':
-					browserService.options.volume.allow = true;
-					browserService.options.session.allow = false;
-
-					break;
-
-				case 'volume':
-					browserService.options.volume.allow = false;
-					browserService.options.session.allow = true;
-					break;
-			}
-
-			return browserService.context;
-		};
-
-		var updateCategories = function () {
-			if (browserService.options.record) {
-				browserService.options.record.categories.length = 0;
-			}
-
-			angular.forEach(raw, function (volume) {
-				angular.forEach(volume.categories, function (category) {
-					if (!browserService.options.record.categories.find({id: category})) {
-						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
-							id: category,
-							name: constants.data.category[category].name,
-						}));
-					}
-				});
-			});
-		};
-
-		//
-
-		var initializeData = function (newData) {
-			if (newData.id) {
-				raw = [newData];
-			}
-			else if (angular.isArray(newData)) {
-				raw = newData;
-			}
-		};
 
 		var focus, focusInvert, focusPosition;
 
@@ -158,23 +96,10 @@ module.factory('browserService', [
 				browserService.groups[group] = [];
 			});
 
-			switch (groups[0]) {
-				case 'volume':
-					callbackVolumes(data, groups);
-					break;
-
-				case 'session':
-					angular.forEach(raw, function (volume) {
-						callbackSessions(data, volume);
-					});
-					break;
-
-				default:
-					angular.forEach(raw, function (volume) {
-						callbackRecords(data, volume, groups);
-					});
-					break;
-			}
+			if (groups[0] == 'session')
+                                callbackSessions(data, volume);
+                        else
+                                callbackRecords(data, volume, groups);
 
 			angular.extend(browserService.data, data);
 
@@ -192,19 +117,10 @@ module.factory('browserService', [
 				return undefined;
 			}
 
-			switch (data.group) {
-				case 'volume':
-					callbackVolumeChildren(data, data.object, groups);
-					break;
-
-				case 'session':
-					callbackSessionChildren(data);
-					break;
-
-				default:
-					callbackRecordChildren(data, data.volume, groups);
-					break;
-			}
+			if (data.group == 'session')
+                                callbackSessionChildren(data);
+                        else
+                                callbackRecordChildren(data, data.volume, groups);
 
 			return data;
 		};
@@ -220,10 +136,6 @@ module.factory('browserService', [
 		var getActiveGroups = function () {
 			var groups = [];
 
-			if (isGroupActive('volume')) {
-				groups.push('volume');
-			}
-
 			groups.push.apply(groups, getActiveRecordGroups());
 
 			if (isGroupActive('session')) {
@@ -235,10 +147,6 @@ module.factory('browserService', [
 
 		var getAllowedGroups = function () {
 			var groups = [];
-
-			if (isGroupAllowed('volume')) {
-				groups.push('volume');
-			}
 
 			groups.push.apply(groups, getAllowedRecordGroups());
 
@@ -284,32 +192,6 @@ module.factory('browserService', [
 		};
 
 		//
-
-		var callbackVolumes = function (data, groups) {
-			angular.forEach(raw, function (volume) {
-				if (volume.id) {
-					var newData = callbackItem(data, volume, volume.sessions, volume, 'volume');
-
-					callbackVolumeChildren(newData, volume, groups);
-				}
-			});
-
-			return data;
-		};
-
-		var callbackVolumeChildren = function (data, volume, groups) {
-			if (!browserService.getItemExpand(data)) {
-				return data;
-			}
-
-			if (groups[data.level + 1] == 'session') {
-				callbackSessions(data, volume);
-			} else {
-				callbackRecords(data, volume, groups);
-			}
-
-			return data;
-		};
 
 		var callbackRecords = function (data, volume, groups) {
 			var tempData = {};
@@ -492,20 +374,6 @@ module.factory('browserService', [
 
 		//
 
-		browserService.setGroupActive = function (type, active) {
-			if (!isItemType(type)) {
-				return undefined;
-			}
-
-			browserService.options[type].active =
-				angular.isUndefined(active) ?
-					!browserService.options[type].active : !!active;
-
-			rebuildData();
-
-			return true;
-		};
-
 		browserService.canAddRecordGroup = function () {
 			var canAdd = false;
 
@@ -592,16 +460,10 @@ module.factory('browserService', [
 		//
 
 		var getOptionByGroup = function (group) {
-			switch (group) {
-				case 'session':
-					return browserService.options.session;
-
-				case 'volume':
-					return browserService.options.volume;
-
-				default:
-					return browserService.options.record.categories.find({id: group});
-			}
+			if (group == 'session')
+                                return browserService.options.session;
+                        else
+                                return browserService.options.record.categories.find({id: group});
 		};
 
 		var getLevelByGroup = function (group) {
@@ -651,22 +513,6 @@ module.factory('browserService', [
 
 			return browserService.player;
 		};
-
-		//
-
-		$rootScope.$watch(function () {
-			var fullCount = 0;
-
-			angular.forEach(raw, function (volume) {
-				if (volume.full) {
-					fullCount++;
-				}
-			});
-
-			return fullCount;
-		}, function () {
-			updateCategories();
-		});
 
 		//
 

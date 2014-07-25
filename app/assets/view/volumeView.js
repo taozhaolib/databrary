@@ -29,6 +29,6 @@ module.controller('volumeView', [
 			},
 		];
 
-		page.browser.initialize('volume', volume);
+		page.browser.initialize(volume);
 	}
 ]);
