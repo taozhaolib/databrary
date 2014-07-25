@@ -51,6 +51,7 @@ object SiteApi extends SiteController {
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
     , ('party, JsonObject(('NOBODY, Party.NOBODY), ('ROOT,Party.ROOT)))
     , ('mode, json.JsString(current.mode.toString))
+    , ('locked, json.JsBoolean(Site.locked))
     , ('version, json.JsString(site.Site.version))
     ).js
 

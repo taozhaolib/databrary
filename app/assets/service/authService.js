@@ -133,10 +133,6 @@ module.factory('authService', [
 			return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
 		};
 
-		auth.isUnauthorized = function () {
-			return !auth.isAuthorized();
-		};
-
 		//
 
 		var enableSU = function (form) {
