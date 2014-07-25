@@ -5,7 +5,9 @@
 }
 
 @template.action(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
-    @widget.panel.search("", "") {
+
+@widget.panel.raw("search", "panel_search")(""){
+
         <section id="panel_search_filter" class="panel_search_filter col-full">
 	@widget.tag.form(form) {
 	    @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
@@ -19,4 +21,5 @@
         }
         </div>
     }
+
 }

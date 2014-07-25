@@ -2,7 +2,43 @@
 
 @defining(request.obj) { slot =>
 @template.crud("Session: " + slot.pageName, angular = Some(request.obj.json.js)) {
-    @widget.panel.slot(slot)
+
+@widget.panel.raw("overview", "panel_slot")(){
+    <div class="col-full panel_overview_actions">
+        <ul class="breadcrumbs">
+        @Path(slot).toHtml
+        </ul>
+
+        <ul class="actions">
+	        <li><a href="@slot.pageURL">view</a></li>
+	    @if(slot.checkPermission(Permission.EDIT)) {
+	        <li><a href="@controllers.routes.SlotHtml.edit(slot.containerId, slot.segment)">edit</a></li>
+		<li><a href="@controllers.routes.AssetHtml.create(slot.volumeId, Some(slot.containerId), slot.segment.lowerBound)">add file</a></li>
+	    }
+        </ul>
+    </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>
+
+    @widget.frame.raw("slot", "")("Metadata") {
+	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+	    <div class="metadata">
+		<dl class="flat">
+		    @slot.container.date.map { _ =>
+			<dt>Data collected</dt>
+			<dd><time>@display.date(slot)</time></dd>
+		    }
+
+		    @if(slot.consent != Consent.NONE) {
+			<dt>Release level</dt>
+			<dd>@Consent.message(slot.consent)</dd>
+		    }
+		</dl>
+	    </div>
+	</div>
+    }
+}
+
     @widget.panel.records(slot, records)
     @widget.panel.materials(assets)
     @widget.panel.tags(slot, tags = tags, form = tagForm)

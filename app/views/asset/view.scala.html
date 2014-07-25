@@ -1,7 +1,47 @@
 @(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
 
 @template.crud("Asset" + asset.asset.name.fold("")(": " + _)) {
-    @widget.panel.asset(asset)
+
+@widget.panel.raw("overview", "panel_asset")(){
+    <div class="col-full panel_overview_actions">
+        <ul class="breadcrumbs">
+        @Path(asset).toHtml
+        </ul>
+
+        <ul class="actions">
+	        <li><a href="@asset.pageURL">view</a></li>
+	    @if(asset.checkPermission(Permission.EDIT) && asset.entire) {
+	        <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
+	        <li><a href="@controllers.routes.AssetHtml.remove(asset.assetId)">remove</a></li>
+	    }
+        </ul>
+    </div>
+
+    <h1 class="col-full panel_title">@display.formatTitle(asset.pageName)</h1>
+
+    @widget.frame.raw("asset", "")("Metadata") {
+	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+	    <div class="metadata">
+		<dl class="flat">
+		    <dt>Classification</dt>
+		    <dd>@Classification.message(asset.classification)</dd>
+
+		    <dt>Format</dt>
+		    <dd>@asset.format.name</dd>
+
+		    <dt>Position</dt>
+		    <dd>@asset.relativeSegment</dd>
+
+		    @cast[SlotTimeseries](asset).map { ts =>
+			<dt>Duration</dt>
+			<dd>@ts.duration</dd>
+		    }
+		</dl>
+	    </div>
+	</div>
+    }
+}
+
     @widget.panel.materials(Seq(asset))
     @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)
 }
