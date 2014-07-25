@@ -79,18 +79,10 @@ module.factory('authService', [
 			return parseUserAuth() >= parseAuthLevel(level);
 		};
 
-		auth.isAuth = function (level) {
-			return parseUserAuth() == parseAuthLevel(level);
-		};
-
 		//
 
 		auth.hasAccess = function (level, object) {
 			return parseUserAuth(object) >= parseAuthLevel(level);
-		};
-
-		auth.isAccess = function (level, object) {
-			return parseUserAuth(object) == parseAuthLevel(level);
 		};
 
 		//
@@ -115,10 +107,6 @@ module.factory('authService', [
 			});
 		};
 
-		auth.showProfile = function () {
-			$location.path(router.profile());
-		};
-
 		//
 
 		auth.isLoggedIn = function () {
@@ -135,10 +123,6 @@ module.factory('authService', [
 			}
 
 			return play.object;
-		};
-
-		auth.isPasswordReset = function () {
-			return auth.hasToken() && play.object.reset;
 		};
 
 		auth.isPasswordPending = function () {
