@@ -200,7 +200,7 @@ module.config([
 							req.party = page.$window.$play.object.id;
 						}
 
-						if (page.auth.isUnauthorized()) {
+						if (page.constants.data.locked && !page.auth.isAuthorized()) {
 							return [];
 						}
 
@@ -252,8 +252,8 @@ module.config([
 						var deferred = page.$q.defer();
 
 						var empty = {
-							parents: {},
-							children: {},
+							parents: [],
+							children: [],
 						};
 
 						partyEditParty.then(function (party) {
@@ -417,9 +417,10 @@ module.config([
 
 module.run([
 	'pageService', function (page) {
+		if (page.constants.locked) {
 		page.$rootScope.$on('$routeChangeStart', function (event, next) {
 			if (page.auth.isLoggedIn()) {
-				if (page.auth.isUnauthorized()) {
+				if (!page.auth.isAuthorized()) {
 					if (!next.$$route) {
 						page.$location.url(page.router.register());
 					}
@@ -440,6 +441,7 @@ module.run([
 				}
 			}
 		});
+	}
 	}
 ]);
 

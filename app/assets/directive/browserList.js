@@ -35,10 +35,6 @@ module.directive('browserList', [
 				return classes;
 			};
 
-			$scope.setItemSelect = function (data) {
-				page.browser.setItemSelect(data);
-			};
-
 			//
 
 			$scope.setItemPlayer = function (data) {
@@ -55,46 +51,6 @@ module.directive('browserList', [
 			};
 
 			//
-
-			$scope.volumeClasses = function (data) {
-				var cls = [], study = false;
-
-				for (var prop in data.object.providers) {
-					if (data.object.providers.hasOwnProperty(prop)) {
-						study = true;
-						break;
-					}
-				}
-
-				if (study) {
-					cls.push('browser-study');
-				}
-				else {
-					cls.push('browser-dataset');
-				}
-
-				return cls;
-			};
-
-			//
-
-			$scope.getName = function (data) {
-				switch (page.types.getType(data.object)) {
-					case 'volume':
-						return (page.auth.hasAccess('CONTRIBUTE', data) && data.object.alias) ? data.object.alias : data.object.name;
-
-					case 'record':
-						var category = page.constants.data.category[data.object.category].name;
-						return category.charAt(0).toUpperCase() + category.slice(1) + ': ' + (data.object.measures.ident || data.object.id);
-
-					case 'session':
-						return 'Session: ' + (data.object.name || data.object.id);
-				}
-			};
-
-			$scope.formatAge = function (age) {
-				return page.$filter('age')(age);
-			};
 
 			$scope.formatSessionCategory = function (data, categoryID, records) {
 				var category = page.constants.data.category[categoryID];
@@ -216,32 +172,6 @@ module.directive('browserList', [
 				}
 
 				return name;
-			};
-
-			$scope.queryFilter = function (data) {
-				if (!page.browser.query) {
-					return true;
-				}
-
-				var regex = new RegExp(page.browser.query.toLowerCase().split(' ').join('|'), 'i');
-
-				if (!page.types.isVolume(data.object)) {
-					return true;
-				}
-
-				if (data.object.name && regex.test(data.object.name)) {
-					return true;
-				}
-
-				if (data.object.body && regex.test(data.object.body)) {
-					return true;
-				}
-
-				if (data.object.more && regex.test(data.object.more)) {
-					return true;
-				}
-
-				return false;
 			};
 
 			//

@@ -399,12 +399,8 @@ object PartyApi extends PartyController with ApiController {
       parents <- request.obj.party.authorizeParents(true)
       children <- request.obj.party.authorizeChildren(true)
     } yield (Ok(JsonObject(
-      'parents -> JsonRecord.map[Authorize](a => JsonRecord(a.parentId,
-        'party -> a.parent.json) ++
-        a.json)(parents),
-      'children -> JsonRecord.map[Authorize](a => JsonRecord(a.childId,
-        'party -> a.child.json) ++
-        a.json)(children)
-      ).obj))
+      'parents -> parents.map(a => a.json + ('party -> a.parent.json)),
+      'children -> children.map(a => a.json + ('party -> a.child.json)))
+      .js))
   }
 }

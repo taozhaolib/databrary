@@ -17,7 +17,7 @@
               <span class="permission-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
             </div>
 
-            <div ng-if="showExtended(true, parent)">
+            <div ng-if="showExtended()">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                 <div class="permission-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
                 <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[parent.site], 'their')"></div>
@@ -68,7 +68,7 @@
               <span class="permission-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
             </div>
 
-            <div ng-if="showExtended(false, child)">
+            <div ng-if="showExtended()">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                 <div class="permission-auth-heading" bo-html="'auth.site' | possessive:party"></div>
                 <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[child.site], party)"></div>

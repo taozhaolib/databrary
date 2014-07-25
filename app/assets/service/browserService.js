@@ -14,13 +14,12 @@ module.factory('browserService', [
 		var browserService = {};
 
 		//
-
+		
 		var DEFAULT_OPTIONS = {
 			volume: {
 				allow: false,
 				active: true,
 				expand: false,
-				sort: new ArrayHelper([])
 			},
 
 			record: {
@@ -32,7 +31,6 @@ module.factory('browserService', [
 				allow: true,
 				active: true,
 				expand: false,
-				sort: new ArrayHelper([])
 			}
 		};
 
@@ -42,15 +40,6 @@ module.factory('browserService', [
 			allow: true,
 			active: false,
 			expand: true,
-			//	filter: {},
-			sort: null // see updateCategories
-		};
-
-		var DEFAULT_SORT = {
-			name: null,
-			property: null,
-			active: false,
-			order: true
 		};
 
 		//
@@ -79,14 +68,14 @@ module.factory('browserService', [
 		};
 
 		var initialize = function (newContext, newData) {
-			browserService.initializeData(newData);
-			browserService.initializeOptions(newContext);
-			browserService.rebuildData();
+			initializeData(newData);
+			initializeOptions(newContext);
+			rebuildData();
 		};
 
 		//
 
-		browserService.initializeOptions = function (newContext) {
+		var initializeOptions = function (newContext) {
 			if (contexts.indexOf(newContext) == -1) {
 				return false;
 			}
@@ -95,9 +84,7 @@ module.factory('browserService', [
 
 			angular.extend(browserService.options, DEFAULT_OPTIONS);
 
-			browserService.updateSorts();
-
-			browserService.updateCategories();
+			updateCategories();
 			browserService.options.record.categories.sort(function (a, b) {
 				return a.id - b.id;
 			});
@@ -119,65 +106,17 @@ module.factory('browserService', [
 			return browserService.context;
 		};
 
-		browserService.updateSorts = function () {
-			browserService.updateVolumeSorts();
-			// TODO: record sorts...
-			browserService.updateSessionSorts();
-		};
-
-		browserService.updateVolumeSorts = function () {
-			var option = browserService.options.volume;
-
-			if (option) {
-				option.sort.length = 0;
-			}
-
-			option.sort.push(angular.extend({}, DEFAULT_SORT, {
-				name: 'Name',
-				property: ['name']
-			}));
-
-			option.sort.push(angular.extend({}, DEFAULT_SORT, {
-				name: 'Creation Date',
-				property: ['creation']
-			}));
-		};
-
-		browserService.updateSessionSorts = function () {
-			var option = browserService.options.session;
-
-			if (option) {
-				option.sort.length = 0;
-			}
-
-			option.sort.push(angular.extend({}, DEFAULT_SORT, {
-				name: 'Consent',
-				property: ['consent']
-			}));
-
-			option.sort.push(angular.extend({}, DEFAULT_SORT, {
-				name: 'Date',
-				property: ['date']
-			}));
-
-			option.sort.push(angular.extend({}, DEFAULT_SORT, {
-				name: 'Age',
-				property: ['age']
-			}));
-		};
-
-		browserService.updateCategories = function () {
+		var updateCategories = function () {
 			if (browserService.options.record) {
 				browserService.options.record.categories.length = 0;
 			}
 
 			angular.forEach(raw, function (volume) {
-				angular.forEach(volume.categories, function (sessions, category) {
+				angular.forEach(volume.categories, function (category) {
 					if (!browserService.options.record.categories.find({id: category})) {
 						browserService.options.record.categories.push(angular.extend({}, DEFAULT_CATEGORY, {
 							id: category,
 							name: constants.data.category[category].name,
-							sort: new ArrayHelper([])
 						}));
 					}
 				});
@@ -186,7 +125,7 @@ module.factory('browserService', [
 
 		//
 
-		browserService.initializeData = function (newData) {
+		var initializeData = function (newData) {
 			if (newData.id) {
 				raw = [newData];
 			}
@@ -197,7 +136,7 @@ module.factory('browserService', [
 
 		var focus, focusInvert, focusPosition;
 
-		browserService.rebuildData = function (focusGroup) {
+		var rebuildData = function (focusGroup) {
 			if (focusGroup) {
 				focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
 				focusPosition = getLevelByGroup(focusGroup.id);
@@ -226,7 +165,7 @@ module.factory('browserService', [
 
 				case 'session':
 					angular.forEach(raw, function (volume) {
-						callbackSessions(data, volume, groups);
+						callbackSessions(data, volume);
 					});
 					break;
 
@@ -242,7 +181,7 @@ module.factory('browserService', [
 			return data;
 		};
 
-		browserService.updateData = function (data) {
+		var updateData = function (data) {
 			if (!data.object) {
 				return undefined;
 			}
@@ -259,7 +198,7 @@ module.factory('browserService', [
 					break;
 
 				case 'session':
-					callbackSessionChildren(data, data.volume, groups);
+					callbackSessionChildren(data);
 					break;
 
 				default:
@@ -270,25 +209,6 @@ module.factory('browserService', [
 			return data;
 		};
 
-		browserService.filterDataGroup = function (level) {
-			var groups = getActiveGroups(),
-				parent = groups[level],
-				children = groups[level + 1],
-				sortables, filterables;
-
-			if (!children) {
-				return;
-			}
-
-			if (parent) {
-				sortables = browserService.groups[parent];
-			}
-			else {
-				sortables = [browserService.data];
-			}
-
-			filterables = browserService.groups[children];
-		};
 		var isGroupAllowed = function (group) {
 			return browserService.options[group] && browserService.options[group].allow;
 		};
@@ -311,16 +231,6 @@ module.factory('browserService', [
 			}
 
 			return groups;
-		};
-
-		browserService.getActiveGroups = getActiveGroups;
-
-		browserService.getFilterGroups = function () {
-			var groups = getActiveGroups(), output = [];
-
-			angular.forEach(groups, function (group) {
-				output.push(browserService.groups[group]);
-			});
 		};
 
 		var getAllowedGroups = function () {
@@ -393,7 +303,7 @@ module.factory('browserService', [
 			}
 
 			if (groups[data.level + 1] == 'session') {
-				callbackSessions(data, volume, groups);
+				callbackSessions(data, volume);
 			} else {
 				callbackRecords(data, volume, groups);
 			}
@@ -455,7 +365,7 @@ module.factory('browserService', [
 			}
 
 			if (groups[data.level + 1] == 'session') {
-				callbackSessions(data, volume, groups);
+				callbackSessions(data, volume);
 			} else {
 				callbackRecords(data, volume, groups);
 			}
@@ -463,19 +373,19 @@ module.factory('browserService', [
 			return data;
 		};
 
-		var callbackSessions = function (data, volume, groups) {
+		var callbackSessions = function (data, volume) {
 			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session) {
 				var newData = callbackItem(data, volume, undefined, session, 'session');
 
-				callbackSessionChildren(newData, volume, groups);
+				callbackSessionChildren(newData);
 			});
 
 			return data;
 		};
 
-		var callbackSessionChildren = function (data, volume, groups) {
+		var callbackSessionChildren = function (data) {
 			if (!browserService.getItemExpand(data)) {
 				return data;
 			}
@@ -542,12 +452,8 @@ module.factory('browserService', [
 
 		//
 
-		browserService.isItemType = function (type) {
+		var isItemType = function (type) {
 			return !!browserService.options[type];
-		};
-
-		browserService.isItemCategory = function (type) {
-			return !!browserService.options.record.categories.find({id: type + ''});
 		};
 
 		//
@@ -587,7 +493,7 @@ module.factory('browserService', [
 		//
 
 		browserService.setGroupActive = function (type, active) {
-			if (!browserService.isItemType(type)) {
+			if (!isItemType(type)) {
 				return undefined;
 			}
 
@@ -595,7 +501,7 @@ module.factory('browserService', [
 				angular.isUndefined(active) ?
 					!browserService.options[type].active : !!active;
 
-			browserService.rebuildData();
+			rebuildData();
 
 			return true;
 		};
@@ -621,7 +527,7 @@ module.factory('browserService', [
 
 			browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
 
-			browserService.rebuildData(group);
+			rebuildData(group);
 		};
 
 		browserService.canRemoveRecordGroup = function () {
@@ -636,7 +542,7 @@ module.factory('browserService', [
 			browserService.options.record.categories.splice(group_i, 1);
 			browserService.options.record.categories.push(group);
 
-			browserService.rebuildData();
+			rebuildData();
 		};
 
 		browserService.switchRecordGroup = function (group, maybe) {
@@ -652,7 +558,7 @@ module.factory('browserService', [
 
 			browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
 
-			browserService.rebuildData(maybe);
+			rebuildData(maybe);
 		};
 
 		//
@@ -662,7 +568,7 @@ module.factory('browserService', [
 				data.expand = true;
 
 				if (!angular.isArray(data.items) || data.items.length === 0) {
-					browserService.updateData(data);
+					updateData(data);
 				}
 			} else if (data.expand && expand !== true) {
 				data.expand = false;
@@ -698,149 +604,8 @@ module.factory('browserService', [
 			}
 		};
 
-		browserService.getSorts = function (group) {
-			return getOptionByGroup(group).sort;
-		};
-
-		var sortToggle;
-
-		browserService.setSortToggle = function (sort) {
-			sortToggle = angular.isUndefined(sortToggle) ? sort : undefined;
-		};
-
-		browserService.isSortToggle = function (sort) {
-			return sortToggle == sort;
-		};
-
-		browserService.switchSort = function (group, sort, maybe) {
-			browserService.setSortToggle(undefined);
-
-			var option = getOptionByGroup(group);
-
-			var sort_i = option.sort.index(sort),
-				maybe_i = option.sort.index(maybe);
-
-			if (sort.active != maybe.active) {
-				sort.active = !sort.active;
-				maybe.active = !maybe.active;
-			}
-
-			option.sort[sort_i] = option.sort.splice(maybe_i, 1, option.sort[sort_i])[0];
-
-			browserService.filterDataGroup(getLevelByGroup(group));
-		};
-
-		browserService.canReverseSort = function () {
-			return true;
-		};
-
-		browserService.reverseSort = function (group, sort) {
-			sort.order = !sort.order;
-
-			browserService.filterDataGroup(getLevelByGroup(group));
-		};
-
-		browserService.canRemoveSort = function () {
-			return true;
-		};
-
-		browserService.removeSort = function (group, sort) {
-			sort.active = false;
-
-			var option = getOptionByGroup(group);
-
-			// move to end
-			var sort_i = option.sort.index(sort);
-
-			option.sort.splice(sort_i, 1);
-			option.sort.push(sort);
-
-			browserService.filterDataGroup(getLevelByGroup(group));
-		};
-
-		browserService.canAddSort = function (group) {
-			var canAdd = false;
-
-			var option = getOptionByGroup(group);
-
-			angular.forEach(option.sort, function (sort) {
-				if (!canAdd && !sort.active) {
-					canAdd = true;
-				}
-			});
-
-			return canAdd;
-		};
-
-		browserService.addSort = function (group) {
-			var go = true;
-
-			var option = getOptionByGroup(group);
-
-			angular.forEach(option.sort, function (sort) {
-				if (go && !sort.active) {
-					sort.active = true;
-					go = false;
-				}
-			});
-
-			browserService.filterDataGroup(getLevelByGroup(group));
-		};
-
 		var getLevelByGroup = function (group) {
 			return getActiveGroups().indexOf(group);
-		};
-
-		//
-
-		browserService.getObjectPermission = function (object) {
-			var type = typeService.getType(object),
-				permission;
-
-			angular.forEach(raw, function (volume) {
-				switch (type) {
-					case 'volume':
-						if (volume.id == object.id) {
-							permission = volume.permission;
-						}
-						break;
-
-					case 'session':
-						if (volume.sessions.indexOf(object.id) > -1) {
-							permission = volume.permission;
-						}
-						break;
-
-					case 'record':
-						if (volume.records.indexOf(object.id) > -1) {
-							permission = volume.permission;
-						}
-						break;
-				}
-			});
-
-			return permission;
-		};
-
-		//
-
-		var itemSelect;
-
-		browserService.setItemSelect = function (data) {
-			if (angular.isDefined(itemSelect)) {
-				itemSelect.select = false;
-			}
-
-			if (itemSelect == data) {
-				return (itemSelect = undefined);
-			}
-
-			data.select = true;
-			return (itemSelect = data);
-		};
-
-		browserService.getItemSelect = function () {
-			return itemSelect;
 		};
 
 		//
@@ -887,10 +652,6 @@ module.factory('browserService', [
 			return browserService.player;
 		};
 
-		browserService.getItemPlayer = function () {
-			return browserService.player;
-		};
-
 		//
 
 		$rootScope.$watch(function () {
@@ -904,7 +665,7 @@ module.factory('browserService', [
 
 			return fullCount;
 		}, function () {
-			browserService.updateCategories();
+			updateCategories();
 		});
 
 		//

@@ -11,7 +11,7 @@ module.directive('partyEditGrantForm', [
 
 			form.init = function (party, children) {
 				form.party = form.party || party;
-				form.data = page.$filter('toArray')(children);
+                                form.data = children;
 			};
 
 			//
