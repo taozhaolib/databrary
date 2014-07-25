@@ -171,8 +171,15 @@ module.factory('typeService', [
 			return a;
 		};
 
-		typeService.overlaps = function (a, b) {
-			return !typeService.segmentEmpty(typeService.segmentIntersect(segmentNormalize(a), b));
+		typeService.segmentOverlaps = function (a, b) {
+                        if (typeService.segmentEmpty(a) || typeService.segmentEmpty(b))
+                                return false;
+                        if (angular.isUndefined(a) || angular.isUndefined(b))
+                                return true;
+			b = segmentNormalize(b);
+			return (angular.isNumber(a) && a >= b[0] && a < b[1]) ||
+                                (angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0]) <
+                                (angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1]);
 		};
 
 		/* If segments are disjoint, assume the excluded middle.

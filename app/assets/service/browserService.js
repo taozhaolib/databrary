@@ -194,26 +194,25 @@ module.factory('browserService', [
 		//
 
 		var callbackRecords = function (data, volume, groups) {
+                        var category = groups[data.level+1];
 			var tempData = {};
 			var sessions = data.sessions || volume.sessions;
 
-			angular.forEach(sessions, function (session) {
-				var categoryRecords = session.categories[groups[data.level + 1]];
-
-				if (angular.isDefined(categoryRecords)) {
-					angular.forEach(categoryRecords, function (record) {
-						if (!tempData[record.id]) {
+			angular.forEach(sessions, function (session, sid) {
+                                var any = false;
+                                angular.forEach(session.records, function (record) {
+                                        if (volume.records[record.id].category == category) {
+						if (!(record.id in tempData))
 							tempData[record.id] = {};
-						}
+						tempData[record.id][sid] = session;
+                                                any = true;
+                                        }
+                                });
 
-						tempData[record.id][session.id] = session;
-					});
-				} else {
-					if (!tempData['null']) {
+                                if (!any) {
+					if (!('null' in tempData))
 						tempData['null'] = {};
-					}
-
-					tempData['null'][session.id] = session;
+					tempData['null'][sid] = session;
 				}
 			});
 
@@ -221,15 +220,15 @@ module.factory('browserService', [
 				angular.forEach(tempData, function (newSessions, recordID) {
 					var newData;
 
-					if (volume.records[recordID]) {
-						newData = callbackItem(data, volume, newSessions, volume.records[recordID], groups[data.level + 1]);
+					if (recordID != 'null') {
+						newData = callbackItem(data, volume, newSessions, volume.records[recordID], category);
 					}
 					else {
 						newData = callbackItem(data, volume, newSessions, {
-							category: groups[data.level + 1],
+							category: category,
 							id: 0,
 							measures: {}
-						}, groups[data.level + 1]);
+						}, category);
 					}
 
 					callbackRecordChildren(newData, volume, groups);
@@ -299,20 +298,19 @@ module.factory('browserService', [
 
 			if (group == 'session') {
 				var newSegment;
-				var categories = volume.sessions[newData.object.id].categories;
+				var records = volume.sessions[newData.object.id].records;
 				var cur, obj;
 				var union = function (seg, c) {
-					if (c.id == obj.id) {
+					if (c.id === obj.id) {
 						/* if record coverage is disjoint we pretend it's continuous: */
 						seg = typeService.segmentUnion(seg, c.segment);
 					}
 					return seg;
 				};
 				for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
-					if (obj.id !== 0) {
-						newSegment = typeService.segmentIntersect(newSegment, 
-								categories[obj.category].reduce(union, null));
-					}
+                                        if (obj.id !== 0)
+                                                newSegment = typeService.segmentIntersect(newSegment, 
+                                                                records.reduce(union, null));
 				}
 				newData.segment = newSegment;
 				if (typeService.segmentEmpty(newSegment)) {
@@ -330,12 +328,6 @@ module.factory('browserService', [
 			}
 
 			return newData;
-		};
-
-		//
-
-		var isItemType = function (type) {
-			return !!browserService.options[type];
 		};
 
 		//

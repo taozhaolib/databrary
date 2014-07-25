@@ -60,7 +60,7 @@ module.controller('ExcerptsPanel', [
 			}
 
 			if (!found) {
-				return expandTo(page.browser.data.items[0].volume.sessions[asset.container.id], asset);
+				return expandTo(asset);
 			}
 
 			var $item = $('#' + found.id);
@@ -73,24 +73,24 @@ module.controller('ExcerptsPanel', [
 			page.browser.setItemExpand(found, true);
 		};
 
-		var expandTo = function (session, asset) {
+		var expandTo = function (asset) {
 			var dirty;
+			var records = $scope.volume.sessions[asset.container.id].records;
+			var volumeRecords = $scope.volume.records;
 
 			angular.forEach(page.browser.groups, function (objects, group) {
 				if (!$.isNumeric(group)) {
 					return;
 				}
 
-				var recordIDs = session.categories[group];
-
-				if (recordIDs) {
-					recordIDs = recordIDs.map(function (obj) {
-						return obj.id;
-					});
-				}
-				else {
+				/* XXX */
+				var recordIDs = records.filter(function (rec) {
+					return page.types.segmentOverlaps(asset.segment, rec.segment) && volumeRecords[rec.id].category === group;
+				}).map(function (obj) {
+					return obj.id;
+				});
+				if (!recordIDs.length)
 					recordIDs = [0];
-				}
 
 				angular.forEach(objects, function (data) {
 					if (recordIDs.indexOf(data.object.id) > -1) {

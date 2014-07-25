@@ -132,27 +132,24 @@ module.directive('browserList', [
                                 if ('sessionRecords' in data)
                                         return data.sessionRecords;
 
-				data.sessionRecords = [];
-				angular.forEach(data.object.categories, function (records, key) {
-					if (data.object.categories.hasOwnProperty(key)) {
-						data.sessionRecords.push({
-							id: parseInt(key),
-							records: relevantRecords(data, key, records)
-						});
-					}
-				});
+				var records = {};
+                                var categories = [];
+                                angular.forEach(data.object.records, function (rec) {
+                                        if (page.types.segmentOverlaps(rec.segment, data.segment)) {
+                                                var record = $scope.volume.records[rec.id];
+                                                if (!(record.category in records)) {
+                                                        records[record.category] = [];
+                                                        categories.push(record.category);
+                                                }
+                                                records[record.category].push(record);
+                                       }
+                                });
 
-				data.sessionRecords.sort(function (a, b) {
-					return a.id > b.id;
-				});
-				return data.sessionRecords;
-			};
-
-			var relevantRecords = function (data, cat, records) {
-				if (angular.isUndefined(data.segment)) return records; //no logical difference, just efficiency
-				return page.$filter('filter')(records, function (x) {
-					return page.types.overlaps(x.segment, data.segment);
-				});
+                                return (data.sessionRecords = categories.sort(function (a, b) {
+						return a - b;
+					}).map(function (cat) {
+						return { id: cat, records: records[cat] };
+					}));
 			};
 
 			$scope.nameRecord = function (data) {

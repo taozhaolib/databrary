@@ -154,15 +154,14 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
       ("records", opt => records().map(JsonRecord.map(_.json - "volume"))),
-      ("sessions", opt => sessions.map(JsonRecord.map { case (cont, crs) =>
-	cont.json - "volume" + ('categories -> JsObject(crs.map { case (cat, rs) =>
-	  (cat.fold("")(_.toString), JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
-	    JsonRecord.flatten(rec.id
-	    , if (seg.isFull) None else Some('segment -> seg)
-	    , rec.age(cont).map('age -> _)
-	    )
-	  }(rs))
-	}))
+      ("sessions", opt => sessions.map(JsonRecord.map { case (s, rs) =>
+	s.json - "volume" +
+	('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
+	  JsonRecord.flatten(rec.id
+	  , if (seg.isFull) None else Some('segment -> seg)
+	  , rec.age(s).map('age -> _)
+	  )
+	}(rs))
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume" - "top").obj)),
@@ -273,25 +272,15 @@ object Volume extends TableId[Volume]("volume") {
       .SELECT("ORDER BY container.top DESC, container.id, record.category NULLS LAST, record.id")
       .apply().list
 
-    type Group = (Container, Seq[(Option[RecordCategory.Id], Seq[(Segment, Record)])])
+    type Group = (Container, Seq[(Segment, Record)])
     private[Volume] def group(l : Seq[Session]) : Seq[Group] = {
       if (l.isEmpty)
 	return Nil
       val r = l.genericBuilder[Group]
       var c1 : Container = l.head._1.container
-      val r1 = Seq.newBuilder[(Option[RecordCategory.Id], Seq[(Segment, Record)])]
-      var c2 : Option[Option[RecordCategory.Id]] = None
-      val r2 = Seq.newBuilder[(Segment, Record)]
+      val r1 = Seq.newBuilder[(Segment, Record)]
       val rc = Seq.newBuilder[Record]
-      def next2(n2 : Option[Option[RecordCategory.Id]]) {
-	c2.foreach { c2s =>
-	  r1 += c2s -> r2.result
-	  r2.clear
-	}
-	c2 = n2
-      }
-      def next1() {
-	next2(None)
+      def next() {
 	c1._records.set(rc.result)
 	rc.clear
 	r += c1 -> r1.result
@@ -299,18 +288,15 @@ object Volume extends TableId[Volume]("volume") {
       }
       for ((c, or) <- l) {
 	if (!(c1.id === c.containerId)) {
-	  next1()
+	  next()
 	  c1 = c.container
 	}
 	or foreach { case (seg, rec) =>
-	  val cat = rec.categoryId
-	  if (!c2.exists(_.equals(cat)))
-	    next2(Some(cat))
-	  r2 += c.segment * seg -> rec
+	  r1 += c.segment * seg -> rec
 	  rc += rec
 	}
       }
-      next1()
+      next()
       r.result
     }
   }

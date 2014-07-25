@@ -16,7 +16,7 @@ module.directive('sessionMark', [
                         var message = "<strong>" + $scope.capitalize(cat.name) + "</strong>: " + page.constants.message('mark.' + cat.name + '.help');
                         var extras = [];
                         angular.forEach($scope.cat.records, function (r) {
-                                var i = $scope.recordIdentifier($scope.data.volume.records[r.id]);
+                                var i = $scope.recordIdentifier(r);
                                 if (i)
                                         extras.push(i);
                         });

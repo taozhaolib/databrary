@@ -26,7 +26,7 @@
         <dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
         <dd ng-repeat="record in cat.records" ng-if="record.id != 0">
-          <span bo-text="recordIdentifier(data.volume.records[record.id])"></span><span bo-if="record.age">&nbsp;<display-age value="{{record.age}}"></display-age></span>
+          <span bo-text="recordIdentifier(record)"></span><span bo-if="record.age">&nbsp;<display-age value="{{record.age}}"></display-age></span>
         </dd>
       </dl>
 
