@@ -13,21 +13,18 @@ module.factory('constantService', [
 
 		var invertArray = function (data) {
 			var r = {};
-			for (var id in data) {
-				if (data.hasOwnProperty(id)) {
-					r[data[id]] = id;
-				}
-			}
+			angular.forEach(data, function (x, id) {
+				r[x] = id;
+			});
 			return r;
 		};
 
 		var invertBy = function (data, field) {
 			var r = {};
-			for (var id in data) {
-				if (data.hasOwnProperty(id) && field in data[id]) {
-					r[data[id][field]] = data[id];
-				}
-			}
+			angular.forEach(data, function (x) {
+				if (field in x)
+					r[x[field]] = x;
+			});
 			return r;
 		};
 
@@ -53,6 +50,7 @@ module.factory('constantService', [
 			constants.data.classificationName = invertArray(constants.data.classification);
 			constants.data.consentName = invertArray(constants.data.consent);
 			constants.data.categoryName = invertBy(constants.data.category, "name");
+			constants.data.metricName = invertBy(constants.data.metric, "name");
 
 			/* convenient aliases: */
 			constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;

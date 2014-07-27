@@ -235,5 +235,5 @@ object Measures extends Table[Measures]("measures") {
     row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)
 
   implicit val jsonWrites : json.OWrites[Measures] =
-    json.OWrites[Measures](m => json.JsObject(m.list.map(m => (m.metric.name, json.JsString(m.datum)))))
+    json.OWrites[Measures](m => json.JsObject(m.list.map(m => (m.metricId.toString, json.JsString(m.datum)))))
 }

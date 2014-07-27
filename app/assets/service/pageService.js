@@ -23,6 +23,7 @@ module.factory('pageService', [
 		page.classification = page.constants.data.classificationName;
 		page.consent = page.constants.data.consentName;
 		page.category = page.constants.data.categoryName;
+		page.metric = page.constants.data.metricName;
 
 		//
 

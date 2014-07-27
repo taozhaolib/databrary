@@ -75,55 +75,26 @@ module.directive('browserList', [
 			};
 
 			$scope.recordIdentifier = function (record) {
-				if (record.id !== 0) {
-                                        // basically mirrors models.RecordCategory.ident definitions
-					switch (page.constants.data.category[record.category].name) {
-						case 'exclusion':
-							return record.measures.reason;
+				var ident = [];
+				angular.forEach(page.constants.data.category[record.category].ident || [page.metric.ident.id], function (i) {
+					if (i in record.measures)
+						ident.push(record.measures[i]);
+				});
 
-						case 'context':
-							var out = record.measures.setting;
-
-							if (record.measures.state) {
-								out += ' (' + record.measures.state;
-								if (record.measures.country) {
-									out += ', ' + record.measures.country;
-								}
-								out += ')';
-							}
-							else if (record.measures.country) {
-								out += ' (' + record.measures.country + ')';
-							}
-
-							return out;
-
-						default:
-							return record.measures.ident;
-					}
-				}
+				return ident.join(', ');
 			};
 
 			$scope.getMeasures = function (data) {
-				var measures = {};
-                                angular.extend(measures, data.object.measures);
-                                
-                                delete measures.description;
+				var ident = page.constants.data.category[data.object.category].ident.concat(page.metric.description.id);
 
-				switch (page.constants.data.category[data.object.category].name) {
-                                        case 'exclusion':
-                                                delete measures.reason;
-						break;
-
-                                        case 'context':
-						delete measures.setting;
-						delete measures.state;
-						delete measures.country;
-						break;
-
-					default:
-						delete measures.ident;
-						break;
-				}
+				var measures = [];
+				angular.forEach(data.object.measures, function (datum, metric) {
+					if (ident.indexOf(parseInt(metric)) === -1)
+						measures.push({
+							metric : page.constants.data.metric[metric],
+							datum : datum
+						});
+				});
 
 				return measures;
 			};

@@ -13,14 +13,15 @@
     </div>
 
     <div class="browser-item-main">
-      <dl class="comma cf" ng-repeat="(metric, value) in getMeasures(data)">
-        <dt bo-text="capitalize(metric)"></dt>
-        <dd bo-text="value"></dd>
+      <dl class="comma cf" ng-repeat="measure in getMeasures(data)">
+        <dt bo-text="capitalize(measure.metric.name)"></dt>
+        <dd bo-text="measure.datum"></dd>
       </dl>
 
-      <div class="browser-item-description" bo-if="data.object.measures.description">
+      <!-- TODO: combine this with above, using this class when measure.metric.long -->
+      <div class="browser-item-description" bo-if="data.object.measures[page.metric.description.id]">
         <div class="browser-item-description-title">Description:</div>
-        <div bo-text="data.object.measures.description"></div>
+        <div bo-text="data.object.measures[page.metric.description.id]"></div>
       </div>
     </div>
   </div>
