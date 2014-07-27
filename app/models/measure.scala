@@ -16,16 +16,16 @@ object DataType extends PGEnum("data_type") {
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] sealed abstract class MeasureType[T] private (val dataType : DataType.Value)(implicit val sqlType : SQLType[T]) {
+private[models] sealed abstract class MeasureType[T] private (final val dataType : DataType.Value)(implicit final val sqlType : SQLType[T]) {
   /** The name of this type, as used in database identifiers. */
-  val name = dataType.toString
+  final val name = dataType.toString
   /** The table storing measurements of this type. */
-  private[models] val table = "measure_" + name
-  protected implicit val tableName : FromTable = FromTable(table)
+  private[models] final val table = "measure_" + name
+  protected implicit final val tableName : FromTable = FromTable(table)
   /** Column access to values of this type in the specific measurement table. */
-  private[models] val select : SelectColumn[T] = SelectColumn[T]("datum")
+  private[models] final val select : SelectColumn[T] = SelectColumn[T]("datum")
   /** Column access to values of this type in the joint measurement table. */
-  private[models] val selectAll : SelectColumn[T] = SelectColumn[T]("measure_all", "datum_" + name)
+  private[models] final val selectAll : SelectColumn[T] = SelectColumn[T]("measure_all", "datum_" + name)
   private[models] def fromString(s : String) : T
 }
 private[models] object MeasureType {
@@ -55,24 +55,23 @@ private[models] object MeasureType {
   * @param classification privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-sealed class Metric[T] private[models] (val id : Metric.Id, val name : String, val classification : Classification.Value, val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
-  // val id = id_.coerce[MetricT[T]]
-  def dataType = measureType.dataType
-  def sqlType : SQLType[T] = measureType.sqlType
-  def assumed : Option[T] = _assumed.map(measureType.fromString)
-  val long : Boolean = false
-  Metric.add(this)
+final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val classification : Classification.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
+  final def dataType = measureType.dataType
+  final def sqlType : SQLType[T] = measureType.sqlType
+  final def assumed : Option[T] = _assumed.map(measureType.fromString)
+  def long : Boolean = name.equals("description")
+
+  final def json = JsonRecord.flatten(id
+    , Some('name -> name)
+    , Some('type -> dataType.toString)
+    , Some('classification -> classification)
+    , if (options.nonEmpty) Some('options -> options) else None
+    , _assumed.map('assumed -> _)
+    , if (long) Some('long -> true) else None
+    )
 }
 object Metric extends TableId[Metric[_]]("metric") {
-  /* XXX: we may wish to pre-populate these somehow. */
-  private val cache : concurrent.Map[Int, Metric[_]] = concurrent.TrieMap.empty[Int, Metric[_]]
-  private val cacheByName : concurrent.Map[String, Metric[_]] = concurrent.TrieMap.empty[String, Metric[_]]
-  protected def add(m : Metric[_]) = {
-    cache.update(m.id.unId, m)
-    cacheByName.update(m.name, m)
-  }
-
-  private[models] val row : Selector[Metric[_]] = Columns(
+  private val row : Selector[Metric[_]] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Classification.Value]("classification")
@@ -84,65 +83,34 @@ object Metric extends TableId[Metric[_]]("metric") {
       new Metric(id, name, classification, options.getOrElse(IndexedSeq.empty[String]), assumed)
     }
 
+  private val list : Seq[Metric[_]] =
+    async.AWAIT {
+      row.SELECT("ORDER BY id").apply().list
+    }
+  private val byId : scala.collection.immutable.Map[Int, Metric[_]] =
+    list.map(c => (c.id.unId, c)).toMap
+  private val byName : scala.collection.immutable.Map[String, Metric[_]] =
+    list.map(c => (c.name, c)).toMap
+
   /** Retrieve a single metric by id.
     * Metrics are strongly cached, so this provides a synchronous interface which may block on occasion. */
-  def get(id : Id) : Option[Metric[_]] =
-    cache.get(id.unId) orElse async.AWAIT {
-      row.SELECT("WHERE id = ?").apply(id).singleOpt
-    }
-  
+  def get(id : Id) : Option[Metric[_]] = byId.get(id.unId)
   /** Retrieve a single metric by name.
     * Like getAll, this only includes already-retrieved (by get) metrics. */
-  def getName(name : String) : Option[Metric[_]] =
-    cacheByName.get(name)
-
+  def getName(name : String) : Option[Metric[_]] = byName.get(name)
+  def _getName[T](name : String) : Metric[T] = byName(name).asInstanceOf[Metric[T]]
   /** Retrieve all metrics that have been retrieved. */
-  def getAll : Iterable[Metric[_]] =
-    cache.values // XXX incomplete but assymptotically correct
+  def getAll : Iterable[Metric[_]] = list
 
-  private val rowTemplate = row.from("metric JOIN record_template ON metric.id = record_template.metric")
-  /** This is not used as they are for now hard-coded in RecordCategory above. */
-  private def getTemplate(category : RecordCategory.Id) : Future[Seq[Metric[_]]] =
-    rowTemplate.SELECT("WHERE record_template.category = ? ORDER BY metric.id")
-      .apply(category).list
+  private[models] def getTemplate(category : RecordCategory.Id) : Future[Seq[(Metric[_], Boolean)]] =
+    SQL("SELECT metric, ident FROM record_template WHERE category = ?")
+    .apply(category)
+    .list(SQLCols[Metric.Id, Boolean].map { (m, i) =>
+      (byId(m.unId), i)
+    })
 
-  private final val IDENT       : Id = asId(-900)
-  private final val REASON      : Id = asId(-700)
-  private final val SUMMARY     : Id = asId(-650)
-  private final val DESCRIPTION : Id = asId(-600)
-  private final val BIRTHDATE   : Id = asId(-590)
-  private final val GENDER      : Id = asId(-580)
-  private final val RACE        : Id = asId(-550)
-  private final val ETHNICITY   : Id = asId(-540)
-  private final val DISABILITY  : Id = asId(-520)
-  private final val LANGUAGE    : Id = asId(-510)
-  private final val SETTING     : Id = asId(-180)
-  private final val COUNTRY     : Id = asId(-150)
-  private final val STATE       : Id = asId(-140)
-  private final val INFO        : Id = asId(-90)
-
-  /** Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
-    * [[Classification.SHARED]] implies these contain no identifying information, as per human subject regulations for identifiers. */
-  final val Ident       = new Metric[String](IDENT, "ident", Classification.SHARED)
-  final val Reason      = new Metric[String](REASON, "reason", Classification.SHARED, IndexedSeq("Did not meet inclusion criteria","Procedural/experimenter error","Withdrew/fussy/tired","Outlier"))
-  final val Summary     = new Metric[String](SUMMARY, "summary", Classification.PUBLIC)
-  final val Description = new Metric[String](DESCRIPTION, "description", Classification.PUBLIC) {
-    override val long = true
-  }
-  /** Date of birth for any records representing organisms or other entities with dates of origination.
-    * These are treated specially in combination with [[Container.date]] to compute ages.
-    * [[Classification.RESTRICTED]] implies all authorized researchers get full access to these. */
-  final val Birthdate   = new Metric[Date](BIRTHDATE, "birthdate", Classification.RESTRICTED)
-  /** Gender is treated as a text enumeration. */
-  final val Gender      = new Metric[String](GENDER, "gender", Classification.SHARED, IndexedSeq[String]("Female", "Male"))
-  final val Race        = new Metric[String](RACE, "race", Classification.SHARED, IndexedSeq[String]("American Indian or Alaska Native","Asian","Native Hawaiian or Other Pacific Islander","Black or African American","White","Multiple"))
-  final val Ethnicity   = new Metric[String](ETHNICITY, "ethnicity", Classification.SHARED, IndexedSeq[String]("Not Hispanic or Latino","Hispanic or Latino"))
-  final val Disability  = new Metric[String](DISABILITY, "disability", Classification.RESTRICTED, _assumed = Some("typical"))
-  final val Language    = new Metric[String](LANGUAGE, "language", Classification.SHARED, _assumed = Some("English"))
-  final val Setting     = new Metric[String](SETTING, "setting", Classification.PUBLIC, IndexedSeq("Lab","Home","Classroom","Outdoor","Clinic"))
-  final val Country     = new Metric[String](COUNTRY, "country", Classification.SHARED, _assumed = Some("US"))
-  final val State       = new Metric[String](STATE, "state", Classification.SHARED, IndexedSeq("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","MD","MA","MI","MN","MS","MO","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"))
-  final val Info        = new Metric[String](INFO, "info", Classification.PUBLIC)
+  final val Ident : Metric[String] = _getName[String]("ident")
+  final val Birthdate : Metric[Date] = _getName[Date]("birthdate")
 }
 
 /** A measurement value with a specific (unconverted) type.
@@ -201,16 +169,18 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
 
   private def make[T](metric : Metric[T], value : Any) =
     new MeasureV[T](metric, value.asInstanceOf[T])
-  private val row : Selector[MeasureV[_]] = Selector[MeasureV[_]](
-    Metric.row.selects ++ MeasureType.all.map(_.selectAll),
-    "measure_all JOIN metric ON measure_all.metric = metric.id",
-    new SQLLine[MeasureV[_]](Metric.row.length + MeasureType.all.length, { l =>
-      val (m, dl) = l.splitAt(Metric.row.length)
-      val metric = Metric.row.parse.get(m)
-      val d = dl(metric.dataType.id)
-      make(metric, metric.sqlType.get(d))
-    })
-  )
+  private val row : Selector[MeasureV[_]] = {
+    val mid = SelectColumn[Metric.Id]("measure_all", "metric")
+    Selector[MeasureV[_]](
+      mid +: MeasureType.all.map(_.selectAll),
+      "measure_all",
+      new SQLLine[MeasureV[_]](1 + MeasureType.all.length, { l =>
+	val metric = Metric.get(mid.get(l.head)).get
+	val d = l(1+metric.dataType.id)
+	make(metric, metric.sqlType.get(d))
+      })
+    )
+  }
   
   /** Retrieve the specific measure of the specified metric in the given record.
     * This does not check permissions so is unsafe.

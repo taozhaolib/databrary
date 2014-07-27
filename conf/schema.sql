@@ -586,10 +586,11 @@ CREATE TABLE "metric" (
 	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL,
 	"type" data_type NOT NULL,
-	"options" text[], -- (suggested) options for text enumerations, not enforced
+	"options" text[],
 	"assumed" text
 );
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
+COMMENT ON COLUMN "metric"."options" IS '(Suggested) options for text enumerations, not enforced.';
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'RESTRICTED', 'date');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
@@ -608,21 +609,24 @@ INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
 	"metric" integer References "metric" ON UPDATE CASCADE ON DELETE CASCADE,
+	"ident" boolean NOT NULL Default false,
 	Primary Key ("category", "metric")
 );
 COMMENT ON TABLE "record_template" IS 'Default set of measures defining a given record category.';
-INSERT INTO "record_template" ("category", "metric") VALUES (-500, -900);
-INSERT INTO "record_template" ("category", "metric") VALUES (-500, -590);
-INSERT INTO "record_template" ("category", "metric") VALUES (-500, -580);
-INSERT INTO "record_template" ("category", "metric") VALUES (-500, -550);
-INSERT INTO "record_template" ("category", "metric") VALUES (-500, -540);
-INSERT INTO "record_template" ("category", "metric") VALUES (-200, -900);
-INSERT INTO "record_template" ("category", "metric") VALUES (-800, -900);
-INSERT INTO "record_template" ("category", "metric") VALUES (-700, -700);
-INSERT INTO "record_template" ("category", "metric") VALUES (-400, -900);
-INSERT INTO "record_template" ("category", "metric") VALUES (-100, -180);
-INSERT INTO "record_template" ("category", "metric") VALUES (-100, -140);
-INSERT INTO "record_template" ("category", "metric") VALUES (-300, -600);
+INSERT INTO "record_template" VALUES (-500, -590);
+INSERT INTO "record_template" VALUES (-500, -580);
+INSERT INTO "record_template" VALUES (-500, -550);
+INSERT INTO "record_template" VALUES (-500, -540);
+INSERT INTO "record_template" VALUES (-300, -600);
+INSERT INTO "record_template" VALUES (-500, -900, true);
+INSERT INTO "record_template" VALUES (-200, -900, true);
+INSERT INTO "record_template" VALUES (-800, -900, true);
+INSERT INTO "record_template" VALUES (-400, -900, true);
+INSERT INTO "record_template" VALUES (-300, -900, true);
+INSERT INTO "record_template" VALUES (-700, -700, true);
+INSERT INTO "record_template" VALUES (-100, -180, true);
+INSERT INTO "record_template" VALUES (-100, -140, true);
+INSERT INTO "record_template" VALUES (-100, -150, true);
 
 CREATE TABLE "measure" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,

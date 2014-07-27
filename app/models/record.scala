@@ -11,63 +11,47 @@ import site._
   * Records that represent data buckets or other kinds of slot groupings (e.g., participants, days, conditions, etc.) can be assigned a particular RecordCategory for the purpose of display and templating.
   * For now, all instances are hard-coded.
   */
-sealed class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
+final class RecordCategory private (val id : RecordCategory.Id, val name : String) extends TableRowId[RecordCategory] {
   /** The default set of metrics which define records in this category. */
-  val ident : Seq[Metric[_]] = Seq(Metric.Ident)
-  def template : Seq[Metric[_]] = ident
+  private lazy val templates =
+    async.AWAIT(Metric.getTemplate(id))
+  final def ident : Seq[Metric[_]] = templates.filter(_._2).map(_._1)
+  final def template : Seq[Metric[_]] = templates.map(_._1)
 
-  val json = JsonRecord(id,
-      'name -> name
+  final val json = JsonRecord(id
+    , 'name -> name
+    , 'ident -> ident.map(_.id)
+    , 'template -> template.map(_.id)
     )
 }
 
 /** Interface to record categories.
   * These are all hard-coded so bypass the database, though they are stored in record_category. */
 object RecordCategory extends TableId[RecordCategory]("record_category") {
-  def get(id : Id) : Option[RecordCategory] =
-    byId.get(id.unId)
-  
-  def getName(name : String) : Option[RecordCategory] =
-    byName.get(name)
+  private val row = Columns(
+      SelectColumn[Id]("id")
+    , SelectColumn[String]("name")
+    ) map { (id, name) =>
+      new RecordCategory(id, name)
+    }
 
-  def getAll : Seq[RecordCategory] =
-    list
+  private val list : Seq[RecordCategory] =
+    async.AWAIT {
+      row.SELECT("ORDER BY id").apply().list
+    }
+  private val byId = list.map(c => (c.id.unId, c)).toMap
+  private val byName = list.map(c => (c.name, c)).toMap
+
+  def get(id : Id) : Option[RecordCategory] = byId.get(id.unId)
+  def getName(name : String) : Option[RecordCategory] = byName.get(name)
+  def getAll : Seq[RecordCategory] = list
 
   def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
     SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL ORDER BY category")
       .apply(volume.id)
-      .list(SQLCols[RecordCategory.Id].map(get(_).get))
+      .list(SQLCols[RecordCategory.Id].map(i => byId(i.unId)))
 
-  final val PILOT       : Id = asId(-800)
-  final val EXCLUSION   : Id = asId(-700)
-  final val PARTICIPANT : Id = asId(-500)
-  final val CONDITION   : Id = asId(-400)
-  final val TASK        : Id = asId(-300)
-  final val GROUP       : Id = asId(-200)
-  final val CONTEXT     : Id = asId(-100)
-
-  final val Pilot = new RecordCategory(PILOT, "pilot")
-  final val Exclusion = new RecordCategory(EXCLUSION, "exclusion") {
-    override val ident = Seq(Metric.Reason)
-  }
-  /** RecordCategory representing participants, individuals whose data is contained in a particular sesion.
-    * Participants usually are associated with birthdate, gender, and other demographics. */
-  final val Participant = new RecordCategory(PARTICIPANT, "participant") {
-    override val template = Seq(Metric.Ident, Metric.Birthdate, Metric.Gender, Metric.Race, Metric.Ethnicity)
-  }
-  final val Condition = new RecordCategory(CONDITION, "condition")
-  final val Task = new RecordCategory(TASK, "task") {
-    override val template = Seq(Metric.Ident, Metric.Description)
-  }
-  final val Group = new RecordCategory(GROUP, "group")
-  final val Context = new RecordCategory(CONTEXT, "context") {
-    override val ident = Seq(Metric.Setting, Metric.State, Metric.Country)
-    override val template = Seq(Metric.Setting, Metric.State)
-  }
-
-  private val list = Seq(Pilot, Exclusion, Participant, Condition, Task, Group, Context)
-  private val byId = Map[Int, RecordCategory](list.map(c => (c.id.unId, c)) : _*)
-  private val byName = Map[String, RecordCategory](list.map(c => (c.name, c)) : _*)
+  val Participant = byName("participant")
 }
 
 /** A set of Measures. */

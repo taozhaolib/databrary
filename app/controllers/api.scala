@@ -47,6 +47,7 @@ object SiteApi extends SiteController {
     , ('permission, json.Json.toJson(Permission.values.toSeq.map(_.toString)))
     , ('consent, json.Json.toJson(Consent.values.toSeq.map(_.toString)))
     , ('classification, json.Json.toJson(Classification.values.toSeq.map(_.toString)))
+    , ('metric, JsonRecord.map[Metric[_]](_.json)(Metric.getAll))
     , ('category, JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll))
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
     , ('party, JsonObject(('NOBODY, Party.NOBODY), ('ROOT,Party.ROOT)))

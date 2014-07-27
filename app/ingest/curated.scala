@@ -39,17 +39,19 @@ object Curated extends Ingest {
   private[this] def check(b : Boolean, t : => PopulateException) : Future[Unit] =
     if (b) async.void else Future.failed(t)
 
+  private val metricLanguage = Metric._getName[String]("language")
+
   private final case class Subject(id : String, gender : Gender.Value, birthdate : Date, race : Option[Race.Value], ethnicity : Option[Ethnicity.Value], language : Option[String]) extends KeyedData {
     def fields = Seq(id, gender.toString, birthdate.toString, optString(race) + "/" + optString(ethnicity), optString(language))
     def key = id
 
     private def measures : Seq[Measure[_]] = Seq(
         new MeasureV(Metric.Ident, id)
-      , new MeasureV(Metric.Gender, Gender.valueOf(gender))
+      , new MeasureV(Gender.metric, Gender.valueOf(gender))
       , new MeasureV(Metric.Birthdate, birthdate)) ++
-      race.map(r => new MeasureV(Metric.Race, Race.valueOf(r))) ++
-      ethnicity.map(e => new MeasureV(Metric.Ethnicity, Ethnicity.valueOf(e))) ++
-      language.map(new MeasureV(Metric.Language, _))
+      race.map(r => new MeasureV(Race.metric, Race.valueOf(r))) ++
+      ethnicity.map(e => new MeasureV(Ethnicity.metric, Ethnicity.valueOf(e))) ++
+      language.map(new MeasureV(metricLanguage, _))
     def populate(volume : Volume) : Future[models.Record] =
       models.Record.findMeasures(volume, Some(RecordCategory.Participant), measures.head).flatMap {
         case Nil =>

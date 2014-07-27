@@ -111,13 +111,25 @@ object Adolph extends Ingest {
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
 
+  private sealed class Category(name : String) {
+    final val category = RecordCategory.getName(name).get
+    final def id = category.id
+  }
+
+  private val metricInfo = Metric._getName[String]("info")
+  private val metricDisability = Metric._getName[String]("disability")
+  private val metricLanguage = Metric._getName[String]("language")
+  private val metricCountry = Metric._getName[String]("country")
+  private val metricState = Metric._getName[String]("state")
+
   private final case class Participant(measures : Map[Int,Measure[_]] = Map.empty)
-    extends Record(RecordCategory.Participant) {
-    def idents = getMeasure(Metric.Ident) ++ getMeasure(Metric.Info)
+    extends Record(Participant.category) {
+    def idents = getMeasure(Metric.Ident) ++ getMeasure(metricInfo)
     type Key = (String, String)
-    def key = (getMeasure(Metric.Ident).fold(fail("participant ID missing"))(_.datum), getMeasure(Metric.Info).fold("")(_.datum))
+    def key = (getMeasure(Metric.Ident).fold(fail("participant ID missing"))(_.datum), getMeasure(metricInfo).fold("")(_.datum))
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
+  private object Participant extends Category("participant")
 
   private type ParticipantMap = Map[(String, String), Participant]
 
@@ -126,7 +138,7 @@ object Adolph extends Ingest {
     private def measure[T](m : Parser[MeasureV[T]], nullif : String = "") : Parser[Participant => Participant] =
       ObjectParser.option[Participant,MeasureV[T]](_.withMeasure(_), m, nullif)
     val parseId = measure(measureParser(Metric.Ident, trimmed), null)
-    val parseSet = measure(measureParser(Metric.Info, trimmed))
+    val parseSet = measure(measureParser(metricInfo, trimmed))
     private[Adolph] def parseHeader(name : String) : Parser[Participant => Participant] =
       name match {
 	case "SUBJECT ID" => parseId
@@ -135,10 +147,10 @@ object Adolph extends Ingest {
 	case "BIRTH DATE (OPTIONAL)" => measure(dateMeasureParser(Metric.Birthdate))
 	case "GENDER" => measure(Gender.measureParse)
 	case "RACE" => measure(Race.measureParse)
-	case "RACE (AS-IS)" => measure(measureParser(Metric.Race, trimmed))
+	case "RACE (AS-IS)" => measure(measureParser(Race.metric, trimmed))
 	case "ETHNICITY" => measure(Ethnicity.measureParse)
-	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(Metric.Disability, trimmed), "typical")
-	case "LANGUAGE" => measure(measureParser(Metric.Language, trimmed))
+	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(metricDisability, trimmed), metricDisability.assumed.getOrElse(""))
+	case "LANGUAGE" => measure(measureParser(metricLanguage, trimmed))
 	case _ => fail("unknown header: " + name)
       }
     private def header : Parser[CellParser[Participant]] =
@@ -163,14 +175,14 @@ object Adolph extends Ingest {
       parseData(CSV.parseFile(f))
   }
 
-  private final case class Exclusion(measures : Map[Int,Measure[_]] = Map.empty) extends Record(RecordCategory.Exclusion) {
-    def idents = getMeasure(Metric.Reason)
+  private final case class Exclusion(measures : Map[Int,Measure[_]] = Map.empty) extends Record(Exclusion.category) {
+    def idents = getMeasure(Exclusion.Reason.metric)
     type Key = String
-    def key = getMeasure(Metric.Reason).fold(fail("exclusion reason missing"))(_.datum)
+    def key = getMeasure(Exclusion.Reason.metric).fold(fail("exclusion reason missing"))(_.datum)
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
-  private object Exclusion {
-    private object Reason extends MetricENUM(Metric.Reason) {
+  private object Exclusion extends Category("exclusion") {
+    private object Reason extends MetricENUM("reason") {
       val DID_NOT_MEET_CRITERIA,
 	PROCEDURAL_EXPERIMENTER_ERROR,
 	FUSSY_TIRED_WITHDREW,
@@ -181,7 +193,12 @@ object Adolph extends Ingest {
       Reason.measureParse.map(m => Exclusion(measureMap(m)))
   }
 
-  private object Setting extends MetricENUM(Metric.Setting) {
+  private object Context extends Category("context")
+  private object Pilot extends Category("pilot")
+  private object Condition extends Category("condition")
+  private object Group extends Category("group")
+
+  private object Setting extends MetricENUM("setting") {
     val LAB, HOME, MUSEUM, CLASSROOM, OUTDOOR, CLINIC = Value
   }
 
@@ -221,20 +238,20 @@ object Adolph extends Ingest {
 	fail("duplicate session consent: " + c)
       else copy(consent = Some(c))
     def withParticipant(f : Participant => Participant) = {
-      val i = RecordCategory.Participant.id.unId
+      val i = Participant.id.unId
       val p = records.get(i).fold(Participant())(_.asInstanceOf[Participant])
       copy(records = records.updated(i, f(p)))
     }
     def fillParticipant(pm : ParticipantMap) = {
-      val i = RecordCategory.Participant.id.unId
+      val i = Participant.id.unId
       records.get(i).fold(fail("no participant")) { p =>
 	copy(records = records.updated(i,
 	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
       }
     }
     def withLocation(f : Record => Record) = {
-      val i = RecordCategory.Context.id.unId
-      val p = records.getOrElse(i, TotalRecord(RecordCategory.Context))
+      val i = Context.id.unId
+      val p = records.getOrElse(i, TotalRecord(Context.category))
       copy(records = records.updated(i, f(p)))
     }
     def withRecord(r : Record) = {
@@ -252,7 +269,7 @@ object Adolph extends Ingest {
 
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
-	pr <- records(RecordCategory.Participant.id.unId).populate(volume)
+	pr <- records(Participant.id.unId).populate(volume)
 	ps <- pr.slots
 	ms = ps.filter(_.container.date.equals(date))
 	_ <- check(ms.length <= 1,
@@ -292,7 +309,7 @@ object Adolph extends Ingest {
 	  } yield (())
 	}
 	cr <- c.records.map(_.groupBy(_.category.map(_.id.unId)))
-	_ <- (records - RecordCategory.Participant.id.unId).values foreachAsync { r =>
+	_ <- (records - Participant.id.unId).values foreachAsync { r =>
 	  val crs = cr.getOrElse(Some(r.category.id.unId), Nil)
 	  for {
 	    _ <- check(crs.length <= 1,
@@ -321,7 +338,7 @@ object Adolph extends Ingest {
 	case "SESSION ID" => ObjectParser.option[Session, String](_.withName(_), trimmed)
 	case "RELEASE LEVEL" => ObjectParser.option[Session, Consent.Value](_.withConsent(_), consent)
 	case "PILOT" => ObjectParser.option[Session, Unit](
-	  (s, _) => s.withRecord(SingletonRecord(RecordCategory.Pilot)),
+	  (s, _) => s.withRecord(SingletonRecord(Pilot.category)),
 	  only("pilot"), "not pilot")
 	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
 	case "PATH" => ObjectParser.map[Session, File](_.withAssetPath(_), file)
@@ -337,11 +354,11 @@ object Adolph extends Ingest {
 	    }
 	  }
 	case "SETTING" => location(Setting.measureParse)
-	case "COUNTRY" => location(measureParser(Metric.Country, trimmed), "US")
-	case "STATE" => location(measureParser(Metric.State, trimmed))
-	case "CONDITION" => record(RecordCategory.Condition, trimmed)
-	case "GROUP" => record(RecordCategory.Group, trimmed)
-	case "STUDY LANGUAGE" => location(measureParser(Metric.Language, trimmed))
+	case "COUNTRY" => location(measureParser(metricCountry, trimmed), metricCountry.assumed.getOrElse(""))
+	case "STATE" => location(measureParser(metricState, trimmed))
+	case "CONDITION" => record(Condition.category, trimmed)
+	case "GROUP" => record(Group.category, trimmed)
+	case "STUDY LANGUAGE" => location(measureParser(metricLanguage, trimmed), metricLanguage.assumed.getOrElse(""))
 	case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
 	case _ => participant(Participants.parseHeader(name))
       }

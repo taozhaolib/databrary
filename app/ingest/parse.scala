@@ -186,19 +186,20 @@ private[ingest] class Ingest {
 
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */
-  protected class MetricENUM(val metric : Metric[String]) extends Parse.ENUM(metric.name) {
+  protected class MetricENUM(name : String) extends Parse.ENUM(name) {
+    val metric = Metric._getName[String](name)
     def valueOf(e : Value) = metric.options(e.id)
     def valueParse : Parse.Parser[String] = parse.map(valueOf)
     val measureParse : Parse.Parser[MeasureV[String]] = valueParse.map(new MeasureV(metric, _))
   }
 
-  protected object Gender extends MetricENUM(Metric.Gender) {
+  protected object Gender extends MetricENUM("gender") {
     val FEMALE, MALE = Value
   }
-  protected object Race extends MetricENUM(Metric.Race) {
+  protected object Race extends MetricENUM("race") {
     val INDIAN, ASIAN, PACIFIC, BLACK, WHITE, MULTIPLE = Value
   }
-  protected object Ethnicity extends MetricENUM(Metric.Ethnicity) {
+  protected object Ethnicity extends MetricENUM("ethnicity") {
     val NOT_HISPANIC_OR_LATINO, HISPANIC_OR_LATINO = Value
   }
   protected type RaceEthnicity = (Option[Race.Value], Option[Ethnicity.Value])

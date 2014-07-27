@@ -46,7 +46,7 @@ sealed abstract class TimeseriesFormat private[models] (id : AssetFormat.Id, mim
 
 /** Interface for non-timeseries file formats. */
 object AssetFormat extends TableId[AssetFormat]("format") {
-  private[models] val row = Columns(
+  private val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("mimetype")
     , SelectColumn[Option[String]]("extension")
@@ -54,33 +54,6 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     ) map { (id, mimetype, extension, name) =>
       new AssetFormat(id, mimetype, extension, name)
     } from "format"
-
-  /** Lookup a format by its id. */
-  def get(id : Id) : Option[AssetFormat] =
-    byId.get(id.unId)
-  private[models] def getTimeseries(id : Id) : Option[TimeseriesFormat] =
-    byId.get(id.unId).flatMap(cast[TimeseriesFormat](_))
-  /** Lookup a format by its mimetime. */
-  def getMimetype(mimetype : String) : Option[AssetFormat] =
-    byId.collectFirst { case (_, a) if a.mimetype.equals(mimetype) => a }
-  /** Lookup a format by its extension.
-    * @param ts include TimeseriesFormats. */
-  private def getExtension(ext : String) : Option[AssetFormat] = {
-    val extension = if (ext.equals("mpeg")) "mpg" else ext
-    byId.collectFirst { case (_, a) if a.extension.exists(_.equals(extension)) => a }
-  }
-  /** Get a list of all file formats in the database. */
-  def getAll : Iterable[AssetFormat] =
-    byId.values
-
-  def getFilename(filename : String) : Option[AssetFormat] =
-    Maybe(filename.lastIndexOf('.')).opt.flatMap { i =>
-      getExtension(filename.substring(i + 1).toLowerCase)
-    }
-  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_]) : Option[AssetFormat] =
-    file.contentType.flatMap(getMimetype(_)) orElse
-      getFilename(file.filename)
-
 
   private[models] final val IMAGE : Id = asId(-700)
   private[models] final val VIDEO : Id = asId(-800)
@@ -96,10 +69,37 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     override def description = "MPEG-4 video"
   }
 
+  private val list : Seq[AssetFormat] =
+    Seq(Video, Image) ++ async.AWAIT {
+      row.SELECT("WHERE id > 0 ORDER BY id").apply().list
+    }
   private val byId : scala.collection.immutable.Map[Int, AssetFormat] =
-    (Seq(Video, Image) ++ async.AWAIT {
-      row.SELECT("WHERE id > 0").apply().list
-    }).map(f => f.id.unId -> f).toMap
+    list.map(f => f.id.unId -> f).toMap
+
+  /** Lookup a format by its id. */
+  def get(id : Id) : Option[AssetFormat] =
+    byId.get(id.unId)
+  private[models] def getTimeseries(id : Id) : Option[TimeseriesFormat] =
+    byId.get(id.unId).flatMap(cast[TimeseriesFormat](_))
+  /** Lookup a format by its mimetime. */
+  def getMimetype(mimetype : String) : Option[AssetFormat] =
+    list.find(_.mimetype.equals(mimetype))
+  /** Lookup a format by its extension.
+    * @param ts include TimeseriesFormats. */
+  private def getExtension(ext : String) : Option[AssetFormat] = {
+    val extension = if (ext.equals("mpeg")) "mpg" else ext
+    list.find(_.extension.exists(_.equals(extension)))
+  }
+  /** Get a list of all file formats in the database. */
+  def getAll : Iterable[AssetFormat] = list
+
+  def getFilename(filename : String) : Option[AssetFormat] =
+    Maybe(filename.lastIndexOf('.')).opt.flatMap { i =>
+      getExtension(filename.substring(i + 1).toLowerCase)
+    }
+  def getFilePart(file : play.api.mvc.MultipartFormData.FilePart[_]) : Option[AssetFormat] =
+    file.contentType.flatMap(getMimetype(_)) orElse
+      getFilename(file.filename)
 }
 
 
