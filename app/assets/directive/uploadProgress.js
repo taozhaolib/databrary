@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('fileProgress', [
+module.directive('uploadProgress', [
 	'pageService', function (page) {
 		var link = function($scope, $attrs) {
 			$scope.progressFloat = undefined;
@@ -11,7 +11,7 @@ module.directive('fileProgress', [
 			scope: {
 				progressFloat: '=progressValue'
 			},
-			templateUrl: 'fileProgress.html',
+			templateUrl: 'uploadProgress.html',
 			link: link
 		};
 	}
