@@ -134,6 +134,10 @@ module.directive('partyEditProfileForm', [
 				form.$setPristine();
 			};
 
+			$scope.getAvatar = function(size){
+				return page.router.partyAvatar(form.party, size);
+			};
+
 			//
 
 			form.validator.client({
