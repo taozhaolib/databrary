@@ -6,8 +6,8 @@ module.directive('errors', [
       var that = this;
 
       page.events.listen($scope, 'displayService-error', function (event, error) {
-	page.display.title = page.constants.message('page.title.error');
-	that.error = error;
+        page.display.title = page.constants.message('page.title.error');
+        that.error = error;
       });
     }];
 

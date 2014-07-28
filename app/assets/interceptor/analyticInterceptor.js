@@ -4,13 +4,13 @@ module.factory('analyticInterceptor', [
   '$rootScope', 'analyticService', function ($rootScope, analytics) {
     return {
       request: function (config) {
-	var json = analytics.dump(config);
+        var json = analytics.dump(config);
 
-	if (json) {
-	  config.headers.Analytics = json;
-	}
+        if (json) {
+          config.headers.Analytics = json;
+        }
 
-	return config;
+        return config;
       }
     };
   }

@@ -8,11 +8,11 @@ module.controller('partyView', [
     page.display.title = party.name;
     page.display.toolbarLinks = [
       {
-	type: 'yellow',
-	html: page.constants.message('party.edit'),
-	url: page.router.partyEdit(party),
-	access: 'CONTRIBUTE',
-	object: party,
+        type: 'yellow',
+        html: page.constants.message('party.edit'),
+        url: page.router.partyEdit(party),
+        access: 'CONTRIBUTE',
+        object: party,
       },
     ];
   }

@@ -2,39 +2,39 @@
   <div class="browser-item-content">
     <div class="cf">
       <footer>
-				<span bo-if="data.object.consent">
-						<div class="browser-item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
+        <span bo-if="data.object.consent">
+            <div class="browser-item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
 
-						<div class="browser-item-meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">
-						  |
-						</div>
-				</span>
+            <div class="browser-item-meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">
+              |
+            </div>
+        </span>
 
-	<a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
+        <a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
       </footer>
 
       <header>
-	<browser-icon data="data"></browser-icon>
+        <browser-icon data="data"></browser-icon>
 
-	<h1 class="browser-item-title">
-	  <a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})" bo-text="page.types.slotName(data.object)"></a>&nbsp;
-	  <session-mark ng-repeat="cat in getSessionRecords(data)"></session-mark>
-	</h1>
+        <h1 class="browser-item-title">
+          <a bo-href="page.router.slot({vid: data.volume.id, id: data.object.id, segment: data.segment})" bo-text="page.types.slotName(data.object)"></a>&nbsp;
+          <session-mark ng-repeat="cat in getSessionRecords(data)"></session-mark>
+        </h1>
       </header>
     </div>
 
     <div class="browser-item-main">
       <dl class="comma cf" bindonce ng-repeat="cat in getSessionRecords(data)" ng-if="!cat.displayed">
-	<dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
+        <dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
-	<dd ng-repeat="record in cat.records" ng-if="record.id != 0">
-	  <span bo-text="recordIdentifier(record)"></span><span bo-if="record.age">&nbsp;<display-age value="{{record.age}}"></display-age></span>
-	</dd>
+        <dd ng-repeat="record in cat.records" ng-if="record.id != 0">
+          <span bo-text="recordIdentifier(record)"></span><span bo-if="record.age">&nbsp;<display-age value="{{record.age}}"></display-age></span>
+        </dd>
       </dl>
 
       <dl class="comma cf" bo-if="data.object.date">
-	<dt>Date</dt>
-	<dd bo-text="data.object.date"></dd>
+        <dt>Date</dt>
+        <dd bo-text="data.object.date"></dd>
       </dl>
     </div>
   </div>

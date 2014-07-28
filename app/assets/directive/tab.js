@@ -8,7 +8,7 @@ module.directive('tab', [
       $scope.active = false;
 
       $scope.enabled = !angular.isString($attr.access) ? true :
-	page.auth.hasAccess($attr.access, $scope.party ? $scope.party : $scope.volume);
+        page.auth.hasAccess($attr.access, $scope.party ? $scope.party : $scope.volume);
 
       //
 
@@ -17,13 +17,13 @@ module.directive('tab', [
       //
 
       $scope.tabClass = function () {
-	var cls = [];
+        var cls = [];
 
-	if ($scope.active) {
-	  cls.push('active');
-	}
+        if ($scope.active) {
+          cls.push('active');
+        }
 
-	return cls;
+        return cls;
       };
     };
 

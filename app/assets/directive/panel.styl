@@ -55,22 +55,22 @@
       cursor pointer
 
       &:before
-	transition transition
-	content ""
-	size 0
-	display block
-	float left
-	position relative
-	top b1 + b6
-	border b3 solid transparent
-	border-top-color black
-	margin-right f6
+        transition transition
+        content ""
+        size 0
+        display block
+        float left
+        position relative
+        top b1 + b6
+        border b3 solid transparent
+        border-top-color black
+        margin-right f6
 
       &:hover
-	color mix(blue, black, 25%)
+        color mix(blue, black, 25%)
 
-	&:before
-	  transform rotate(-45deg)
+        &:before
+          transform rotate(-45deg)
 
     .fold
       max-height 100000px
@@ -78,13 +78,13 @@
 
     &.folded
       .panel-header
-	&:before
-	  transform rotate(-90deg)
+        &:before
+          transform rotate(-90deg)
 
-	&:hover
-	  &:before
-	    transform rotate(-45deg)
+        &:hover
+          &:before
+            transform rotate(-45deg)
 
       .fold
-	overflow hidden
-	max-height 0
+        overflow hidden
+        max-height 0

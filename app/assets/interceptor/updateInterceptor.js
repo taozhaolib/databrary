@@ -7,26 +7,26 @@ module.factory('updateInterceptor', [
 
     return {
       response: function (res) {
-	if (!res.headers) {
-	  return res;
-	}
+        if (!res.headers) {
+          return res;
+        }
 
-	var newVersion = res.headers().server;
+        var newVersion = res.headers().server;
 
-	if (!newVersion) {
-	  return res;
-	}
+        if (!newVersion) {
+          return res;
+        }
 
-	newVersion = newVersion.split('/').pop();
+        newVersion = newVersion.split('/').pop();
 
-	if (!warning && typeof version !== 'undefined' && newVersion !== version) {
-	  $rootScope.$emit('displayService-updateApp');
-	  warning = true;
-	}
+        if (!warning && typeof version !== 'undefined' && newVersion !== version) {
+          $rootScope.$emit('displayService-updateApp');
+          warning = true;
+        }
 
-	version = newVersion;
+        version = newVersion;
 
-	return res;
+        return res;
       }
     };
   }

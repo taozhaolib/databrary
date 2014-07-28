@@ -33,9 +33,9 @@ module.factory('tooltipService', [
 
     tooltips.newValidate(function (tooltip) {
       return angular.isObject(tooltip) &&
-	tooltip.id && tooltip.type && tooltip.$target &&
-	angular.isString(tooltip.message) &&
-	tooltip.message.length > 0 ? tooltip : false;
+        tooltip.id && tooltip.type && tooltip.$target &&
+        angular.isString(tooltip.message) &&
+        tooltip.message.length > 0 ? tooltip : false;
     });
 
     //
@@ -44,7 +44,7 @@ module.factory('tooltipService', [
       var newTooltip = ArrayHelper.prototype.add.call(this, tooltip);
 
       if (newTooltip) {
-	tooltips.target(newTooltip);
+        tooltips.target(newTooltip);
       }
 
       return newTooltip;
@@ -64,7 +64,7 @@ module.factory('tooltipService', [
       var newtooltip = ArrayHelper.prototype.update.call(this, tooltip, obj);
 
       if (newtooltip) {
-	tooltips.target(newtooltip);
+        tooltips.target(newtooltip);
       }
 
       return newtooltip;
@@ -86,7 +86,7 @@ module.factory('tooltipService', [
 
     tooltips.show = function (tooltip, event) {
       if (!tooltip.enabled) {
-	return undefined;
+        return undefined;
       }
 
       tooltips.position(tooltip, [event.clientX, event.clientY]);
@@ -102,43 +102,43 @@ module.factory('tooltipService', [
 
     tooltips.position = function (tooltip, loc) {
       if (loc === false) {
-	return;
+        return;
       }
 
       var $t = tooltip.$target,
-	$e = $('#' + tooltip.id),
-	$w = $(window);
+        $e = $('#' + tooltip.id),
+        $w = $(window);
 
       if (!loc) {
-	loc = [
-	  $t.offset().left,
-	  $t.offset().top
-	];
+        loc = [
+          $t.offset().left,
+          $t.offset().top
+        ];
       }
 
       var center = {
-	left: loc[0],
-	top: loc[1],
-	right: $w.width() - loc[0],
-	bottom: $w.height() - loc[1]
+        left: loc[0],
+        top: loc[1],
+        right: $w.width() - loc[0],
+        bottom: $w.height() - loc[1]
       };
 
       tooltip.position = [];
 
       if (center.left > center.right) {
-	tooltip.style.left = (loc[0] + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
-	tooltip.position.push('left');
+        tooltip.style.left = (loc[0] + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
+        tooltip.position.push('left');
       } else {
-	tooltip.style.left = (loc[0] + $(window).scrollLeft() - padW) + 'px';
-	tooltip.position.push('right');
+        tooltip.style.left = (loc[0] + $(window).scrollLeft() - padW) + 'px';
+        tooltip.position.push('right');
       }
 
       if (center.top > center.bottom) {
-	tooltip.style.top = (loc[1] + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
-	tooltip.position.push('top');
+        tooltip.style.top = (loc[1] + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
+        tooltip.position.push('top');
       } else {
-	tooltip.style.top = (loc[1] + $(window).scrollTop() + padH) + 'px';
-	tooltip.position.push('bottom');
+        tooltip.style.top = (loc[1] + $(window).scrollTop() + padH) + 'px';
+        tooltip.position.push('bottom');
       }
     };
 
@@ -146,39 +146,39 @@ module.factory('tooltipService', [
 
     var getTargetEvents = function (tooltip) {
       if (!tooltip.$target) {
-	return [];
+        return [];
       }
 
       var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
-	namespace = '.tooltipTarget';
+        namespace = '.tooltipTarget';
 
       if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0) {
-	return [
-	    'focusin' + namespace + '-' + tooltip.id,
-	    'focusout' + namespace + '-' + tooltip.id
-	];
+        return [
+            'focusin' + namespace + '-' + tooltip.id,
+            'focusout' + namespace + '-' + tooltip.id
+        ];
       }
 
       return [
-	  'mouseenter' + namespace + '-' + tooltip.id,
-	  'mouseleave' + namespace + '-' + tooltip.id
+          'mouseenter' + namespace + '-' + tooltip.id,
+          'mouseleave' + namespace + '-' + tooltip.id
       ];
     };
 
     var removeEvents = function (tooltip) {
       if (tooltip.$target) {
-	if (tooltip.live) {
-	  $doc.off(getTargetEvents(tooltip).join(' '), tooltip.$target);
-	}
-	else {
-	  tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
-	}
+        if (tooltip.live) {
+          $doc.off(getTargetEvents(tooltip).join(' '), tooltip.$target);
+        }
+        else {
+          tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
+        }
       }
     };
 
     tooltips.target = function (tooltip, $newTarget) {
       if (tooltips.index(tooltip) == -1) {
-	return undefined;
+        return undefined;
       }
 
       removeEvents(tooltip);
@@ -188,8 +188,8 @@ module.factory('tooltipService', [
       var $target = tooltip.$target;
 
       if (!tooltip.live && $target.length === 0) {
-	tooltips.disable(tooltip);
-	return (tooltip.$target = false);
+        tooltips.disable(tooltip);
+        return (tooltip.$target = false);
       }
 
       var events = getTargetEvents(tooltip);
@@ -197,31 +197,31 @@ module.factory('tooltipService', [
       var timeout;
 
       if (tooltip.live) {
-	$doc.on(events[0], tooltip.$target, function (event) {
-	  timeout = $timeout(function () {
-	    tooltips.show(tooltip, event);
-	  }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
-	});
+        $doc.on(events[0], tooltip.$target, function (event) {
+          timeout = $timeout(function () {
+            tooltips.show(tooltip, event);
+          }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
+        });
 
-	$doc.on(events[1], tooltip.$target, function (event) {
-	  $rootScope.$apply(function () {
-	    $timeout.cancel(timeout);
-	    tooltips.hide(tooltip, event);
-	  });
-	});
+        $doc.on(events[1], tooltip.$target, function (event) {
+          $rootScope.$apply(function () {
+            $timeout.cancel(timeout);
+            tooltips.hide(tooltip, event);
+          });
+        });
       } else {
-	$target.bind(events[0], function (event) {
-	  timeout = $timeout(function () {
-	    tooltips.show(tooltip, event);
-	  }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
-	});
+        $target.bind(events[0], function (event) {
+          timeout = $timeout(function () {
+            tooltips.show(tooltip, event);
+          }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
+        });
 
-	$target.bind(events[1], function (event) {
-	  $rootScope.$apply(function () {
-	    $timeout.cancel(timeout);
-	    tooltips.hide(tooltip, event);
-	  });
-	});
+        $target.bind(events[1], function (event) {
+          $rootScope.$apply(function () {
+            $timeout.cancel(timeout);
+            tooltips.hide(tooltip, event);
+          });
+        });
       }
 
       tooltips.hide(tooltip);
@@ -233,16 +233,16 @@ module.factory('tooltipService', [
 
     $rootScope.$watch(function () {
       angular.forEach(tooltips, function (tooltip) {
-	if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length === 0) {
-	  removeEvents(tooltip);
-	  tooltips.remove(tooltip);
-	}
+        if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length === 0) {
+          removeEvents(tooltip);
+          tooltips.remove(tooltip);
+        }
       });
     });
 
     $rootScope.$on('$routeChangeStart', function () {
       angular.forEach(tooltips, function (tooltip) {
-	tooltips.hide(tooltip);
+        tooltips.hide(tooltip);
       });
     });
 

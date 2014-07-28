@@ -12,15 +12,15 @@ module.directive('authSearchForm', [
       form.principal = $attrs.principal;
 
       $scope.$watch(function () {
-	return form.principal;
+        return form.principal;
       }, function (principal) {
-	form.nameVal = '';
-	form.found = [];
-	form.validator.client({
-	  name: {
-	    tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
-	  }
-	}, true);
+        form.nameVal = '';
+        form.found = [];
+        form.validator.client({
+          name: {
+            tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
+          }
+        }, true);
       });
 
       //
@@ -29,33 +29,33 @@ module.directive('authSearchForm', [
       var sentSearch;
 
       var fin = function () {
-	sentSearch = undefined;
+        sentSearch = undefined;
 
-	if (recentSearch) {
-	  recentSearch = undefined;
-	  form.search();
-	}
+        if (recentSearch) {
+          recentSearch = undefined;
+          form.search();
+        }
       };
 
       form.search = function () {
-	if (!form.nameVal || form.nameVal.length < 3) {
-	  form.found = [];
-	} else if (sentSearch) {
-	  recentSearch = form.nameVal;
-	} else {
-	  sentSearch = page.models.partyAuthorize.search({
-	    id: form.id || page.auth.user.id,
-	    name: form.nameVal,
-	    institution: form.principal === 'principal' ? true :
-		form.principal === 'affiliate' ? false : undefined,
-	  }, function (data) {
-	    form.found = data;
+        if (!form.nameVal || form.nameVal.length < 3) {
+          form.found = [];
+        } else if (sentSearch) {
+          recentSearch = form.nameVal;
+        } else {
+          sentSearch = page.models.partyAuthorize.search({
+            id: form.id || page.auth.user.id,
+            name: form.nameVal,
+            institution: form.principal === 'principal' ? true :
+                form.principal === 'affiliate' ? false : undefined,
+          }, function (data) {
+            form.found = data;
 
-	    fin();
-	  }, function (res) {
-	    fin(res);
-	  });
-	}
+            fin();
+          }, function (res) {
+            fin(res);
+          });
+        }
       };
 
       //
@@ -63,12 +63,12 @@ module.directive('authSearchForm', [
       form.selectFn = undefined;
 
       form.select = function (found) {
-	form.nameVal = '';
-	form.search();
+        form.nameVal = '';
+        form.search();
 
-	if (angular.isFunction(form.selectFn)) {
-	  form.selectFn(found, form);
-	}
+        if (angular.isFunction(form.selectFn)) {
+          form.selectFn(found, form);
+        }
       };
 
       //
@@ -76,22 +76,22 @@ module.directive('authSearchForm', [
       form.notFoundFn = undefined;
 
       form.notFound = function () {
-	var query = form.nameVal;
+        var query = form.nameVal;
 
-	form.nameVal = '';
-	form.search();
+        form.nameVal = '';
+        form.search();
 
-	if (angular.isFunction(form.notFoundFn)) {
-	  form.notFoundFn(query, form);
-	}
+        if (angular.isFunction(form.notFoundFn)) {
+          form.notFoundFn(query, form);
+        }
       };
 
       //
 
       form.validator.client({
-	name: {
-	  tips: page.constants.message('auth.search.name.help'),
-	},
+        name: {
+          tips: page.constants.message('auth.search.name.help'),
+        },
       }, true);
 
       //

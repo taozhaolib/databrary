@@ -2,22 +2,22 @@
   <div class="row" ng-if="page.auth.user.id !== -1">
     <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
       <footer class="panel-comments-meta" ng-init="party = page.auth.user">
-	<portrait extra="'comments.prompt' | message"></portrait>
+        <portrait extra="'comments.prompt' | message"></portrait>
       </footer>
 
       <div class="panel-comments-body">
-	<messages form="commentReplyForm"></messages>
+        <messages form="commentReplyForm"></messages>
 
-	<validator form="commentReplyForm" name="text" label="'comments.text.title' | message">
-	  <textarea name="text" ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
-	</validator>
+        <validator form="commentReplyForm" name="text" label="'comments.text.title' | message">
+          <textarea name="text" ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
+        </validator>
 
-	<button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">
-	  {{'comments.post' | message}}
-	</button>
-	<button class="yellow" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.data.parent">
-	  {{'comments.cancel' | message}}
-	</button>
+        <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">
+          {{'comments.post' | message}}
+        </button>
+        <button class="yellow" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.data.parent">
+          {{'comments.cancel' | message}}
+        </button>
       </div>
     </div>
   </div>

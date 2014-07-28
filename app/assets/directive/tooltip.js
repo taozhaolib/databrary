@@ -12,7 +12,7 @@ module.directive('tooltip', [
       tooltip.$target = $element;
 
       if (tooltip.message) {
-	page.tooltips.add(tooltip);
+        page.tooltips.add(tooltip);
       }
     };
 

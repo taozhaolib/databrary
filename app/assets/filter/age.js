@@ -9,7 +9,7 @@ module.filter('age', [
 
     return function (age, outputFormat, inputFormat, decimals) {
       if (!angular.isNumber(parseFloat(age))) {
-	return age;
+        return age;
       }
 
       var formats = ['seconds', 'days', 'months', 'years', 'science'];
@@ -22,7 +22,7 @@ module.filter('age', [
       //
 
       var fix = function (value) {
-	return value.toFixed(decimals);
+        return value.toFixed(decimals);
       };
 
       //
@@ -30,15 +30,15 @@ module.filter('age', [
       var days, seconds;
 
       switch (inputFormat) {
-	case 'seconds':
-	  seconds = age;
-	  days = age / 86400;
-	  break;
+        case 'seconds':
+          seconds = age;
+          days = age / 86400;
+          break;
 
-	default:
-	  seconds = age * 86400;
-	  days = age;
-	  break;
+        default:
+          seconds = age * 86400;
+          days = age;
+          break;
       }
 
       var months = days / daysTo.months;
@@ -49,36 +49,36 @@ module.filter('age', [
       var output;
 
       switch (outputFormat) {
-	case 'years':
-	  output = fix(years) + ' years';
-	  break;
+        case 'years':
+          output = fix(years) + ' years';
+          break;
 
-	case 'months':
-	  output = fix(months) + ' months';
-	  break;
+        case 'months':
+          output = fix(months) + ' months';
+          break;
 
-	case 'days':
-	  output = fix(days) + ' days';
-	  break;
+        case 'days':
+          output = fix(days) + ' days';
+          break;
 
-	case 'seconds':
-	  output = fix(seconds) + ' days';
-	  break;
+        case 'seconds':
+          output = fix(seconds) + ' days';
+          break;
 
-	default:
-	  if (months < 3) {
-	    output = fix(days) + ' days';
-	  }
-	  else if (months < 37) {
-	    output = fix(months) + ' months';
-	  }
-	  else if (years >= 90) {
-	    output = '90+ years';
-	  }
-	  else {
-	    output = fix(years) + ' years';
-	  }
-	  break;
+        default:
+          if (months < 3) {
+            output = fix(days) + ' days';
+          }
+          else if (months < 37) {
+            output = fix(months) + ' months';
+          }
+          else if (years >= 90) {
+            output = '90+ years';
+          }
+          else {
+            output = fix(years) + ' years';
+          }
+          break;
       }
 
       return output;

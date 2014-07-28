@@ -4,10 +4,10 @@ module.directive('panel', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs, ctrl, transclude) {
       if (angular.isDefined($attrs.id)) {
-	$scope.id = $attrs.id;
-	$element.addClass($attrs.id);
+        $scope.id = $attrs.id;
+        $element.addClass($attrs.id);
       } else {
-	$scope.id = '';
+        $scope.id = '';
       }
 
       $scope.title = $attrs.panelTitle || '';
@@ -17,18 +17,18 @@ module.directive('panel', [
       //
 
       $scope.getPanelClasses = function () {
-	var classes = {};
+        var classes = {};
 
-	classes.panel = true;
-	classes[$scope.id] = true;
+        classes.panel = true;
+        classes[$scope.id] = true;
 
-	return classes;
+        return classes;
       };
 
       //
 
       transclude($scope, function ($clone) {
-	$element.find('[panel-body]').append($clone);
+        $element.find('[panel-body]').append($clone);
       });
 
       page.panels.add($scope);

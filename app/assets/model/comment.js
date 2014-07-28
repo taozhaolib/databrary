@@ -4,10 +4,10 @@ module.factory('comment', [
   '$resource', '$route', function ($resource, $route) {
     return $resource('/api/comment/:id', {
       segment: function () {
-	return $route.current.params.segment || ',';
+        return $route.current.params.segment || ',';
       },
       container: function () {
-	return $route.current.params.container || ',';
+        return $route.current.params.container || ',';
       }
     });
   }

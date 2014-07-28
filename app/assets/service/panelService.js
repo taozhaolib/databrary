@@ -16,11 +16,11 @@ module.factory('panelService', [
       var newPanel = ArrayHelper.prototype.add.call(this, panel);
 
       if (angular.isFunction(newPanel.bootPanel)) {
-	newPanel.bootPanel();
+        newPanel.bootPanel();
       }
 
       if (angular.isFunction(newPanel.refreshPanel)) {
-	newPanel.refreshPanel();
+        newPanel.refreshPanel();
       }
 
       return newPanel;
@@ -40,7 +40,7 @@ module.factory('panelService', [
 
     panels.toggleFold = function (panel, state) {
       if (!panel.foldable) {
-	return undefined;
+        return undefined;
       }
 
       return panel.toggleFold(state);
@@ -50,7 +50,7 @@ module.factory('panelService', [
 
     panels.focus = function (panel) {
       if (angular.isFunction(panel.toggleFold)) {
-	panel.toggleFold(false);
+        panel.toggleFold(false);
       }
 
       var $document = $(document);
@@ -58,16 +58,16 @@ module.factory('panelService', [
       var newHeight = 0;
 
       var checkHeight = function () {
-	newHeight = $document.innerHeight();
+        newHeight = $document.innerHeight();
 
-	if (oldHeight == newHeight) {
-	  display.scrollTo(panel.id);
-	} else {
-	  $timeout(function () {
-	    checkHeight();
-	  }, 150);
-	  oldHeight = newHeight;
-	}
+        if (oldHeight == newHeight) {
+          display.scrollTo(panel.id);
+        } else {
+          $timeout(function () {
+            checkHeight();
+          }, 150);
+          oldHeight = newHeight;
+        }
       };
 
       checkHeight();
@@ -79,9 +79,9 @@ module.factory('panelService', [
 
     panels.refresh = function () {
       angular.forEach(panels, function (panel) {
-	if (angular.isFunction(panel.refresh)) {
-	  panel.refreshPanel();
-	}
+        if (angular.isFunction(panel.refresh)) {
+          panel.refreshPanel();
+        }
       });
     };
 

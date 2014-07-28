@@ -10,35 +10,35 @@ module.factory('typeService', [
 
     typeService.getType = function (object, volumeType) {
       if (!angular.isObject(object)) {
-	return undefined;
+        return undefined;
       }
 
       if (typeService.isParty(object)) {
-	return 'party';
+        return 'party';
       }
 
       if (typeService.isRecord(object)) {
-	return 'record';
+        return 'record';
       }
 
       if (typeService.isVolume(object)) {
-	return volumeType ? typeService.getVolumeType(object) : 'volume';
+        return volumeType ? typeService.getVolumeType(object) : 'volume';
       }
 
       if (typeService.isAsset(object)) {
-	return 'asset';
+        return 'asset';
       }
 
       if (typeService.isToken(object)) {
-	return 'token';
+        return 'token';
       }
 
       if (typeService.isComment(object)) {
-	return 'comment';
+        return 'comment';
       }
 
       if (typeService.isSession(object)) {
-	return 'session';
+        return 'session';
       }
 
       return undefined;
@@ -46,11 +46,11 @@ module.factory('typeService', [
 
     typeService.getVolumeType = function (object) {
       if (typeService.isStudy(object)) {
-	return 'study';
+        return 'study';
       }
 
       if (typeService.isDataset(object)) {
-	return 'dataset';
+        return 'dataset';
       }
 
       return undefined;
@@ -98,17 +98,17 @@ module.factory('typeService', [
 
     typeService.assetProperty = function (object, property, dig) {
       if (!typeService.isAsset(object)) {
-	throw new Error('typeService.assetFormat() requires Asset as first argument');
+        throw new Error('typeService.assetFormat() requires Asset as first argument');
       }
 
       if (dig === true) {
-	return object.asset[property];
+        return object.asset[property];
       }
       else if (dig === false || property in object) {
-	return object[property];
+        return object[property];
       }
       else {
-	return object.asset[property];
+        return object.asset[property];
       }
     };
 
@@ -116,13 +116,13 @@ module.factory('typeService', [
       var segment;
 
       if (typeService.isAsset(object)) {
-	segment = typeService.assetProperty(object, 'segment', dig);
+        segment = typeService.assetProperty(object, 'segment', dig);
       }
       else if (typeService.isSession(object) || typeService.isComment(object)) {
-	segment = object.segment;
+        segment = object.segment;
       }
       else {
-	throw new Error('typeService.segmentString() requires Asset or Session as first argument');
+        throw new Error('typeService.segmentString() requires Asset or Session as first argument');
       }
 
       return typeService.segmentJoin(segment);
@@ -131,14 +131,14 @@ module.factory('typeService', [
 
     typeService.segmentJoin = function (segment) {
       if (typeService.segmentEmpty(segment))
-	return '';
+        return '';
       if (angular.isUndefined(segment))
-	return ',';
+        return ',';
       if (angular.isNumber(segment))
-	return segment;
+        return segment;
       return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? Math.floor(segment[0]) : '') +
-	',' +
-	(angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
+        ',' +
+        (angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
     };
 
     typeService.segmentEmpty = function (seg) {
@@ -148,24 +148,24 @@ module.factory('typeService', [
     /* always returns a new array */
     var segmentNormalize = function (seg) {
       if (seg === null)
-	return [0, -1];
+        return [0, -1];
       if (angular.isUndefined(seg))
-	return [-Infinity, Infinity];
+        return [-Infinity, Infinity];
       if (angular.isNumber(seg))
-	return [seg, seg + 0.1];
+        return [seg, seg + 0.1];
       return [angular.isNumber(seg[0]) ? seg[0] : -Infinity,
-	angular.isNumber(seg[1]) ? seg[1] : Infinity];
+        angular.isNumber(seg[1]) ? seg[1] : Infinity];
     };
 
     /* may modify and/or return a */
     typeService.segmentIntersect = function (a, b) {
       if (a === null)
-	return a;
+        return a;
       b = segmentNormalize(b);
       if (angular.isUndefined(a))
-	return b;
+        return b;
       if (angular.isNumber(a) && a >= b[0] && a < b[1])
-	return a;
+        return a;
       a[0] = angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0];
       a[1] = angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1];
       return a;
@@ -173,25 +173,25 @@ module.factory('typeService', [
 
     typeService.segmentOverlaps = function (a, b) {
       if (typeService.segmentEmpty(a) || typeService.segmentEmpty(b))
-	return false;
+        return false;
       if (angular.isUndefined(a) || angular.isUndefined(b))
-	return true;
+        return true;
       b = segmentNormalize(b);
       return (angular.isNumber(a) && a >= b[0] && a < b[1]) ||
-	(angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0]) <
-	(angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1]);
+        (angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0]) <
+        (angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1]);
     };
 
     /* If segments are disjoint, assume the excluded middle.
      * may modify and/or return a */
     typeService.segmentUnion = function (a, b) {
       if (angular.isUndefined(a))
-	return a;
+        return a;
       b = segmentNormalize(b);
       if (a === null)
-	return b;
+        return b;
       if (angular.isNumber(a))
-	a = [a, a];
+        a = [a, a];
       if (angular.isNumber(a[0])) a[0] = Math.min(a[0], b[0]);
       if (angular.isNumber(a[1])) a[1] = Math.max(a[1], b[1]);
       return a;
@@ -215,7 +215,7 @@ module.factory('typeService', [
 
     typeService.slotName = function (object) {
       if (!typeService.isSession(object)) {
-	throw new Error('typeService.slotName() requires Slot as first argument');
+        throw new Error('typeService.slotName() requires Slot as first argument');
       }
 
       return constants.message(object.top ? 'materials' : 'session') + (object.name ? ': ' + object.name : '');
@@ -224,7 +224,7 @@ module.factory('typeService', [
     //Real checking done on server, but some minimal standards (length >= 7) can be checked here
     typeService.eligiblePassword = function (candidate) {
       return angular.isString(candidate) &&
-	candidate.length >= 7;
+        candidate.length >= 7;
     };
 
     //

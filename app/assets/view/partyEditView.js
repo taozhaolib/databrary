@@ -6,9 +6,9 @@ module.controller('partyEditView', [
 
     page.display.toolbarLinks = [
       {
-	type: 'yellow',
-	html: page.constants.message('party.view'),
-	url: page.router.party(party),
+        type: 'yellow',
+        html: page.constants.message('party.view'),
+        url: page.router.party(party),
       }
     ];
 
@@ -27,16 +27,16 @@ module.controller('partyEditView', [
       return page.$location.search().page;
     }, function (val, old) {
       if (!updateQuery) {
-	updateQuery = true;
+        updateQuery = true;
       }
 
       if (val && val !== old) {
-	for (var step in $scope.wizard.steps) {
-	  if ($scope.wizard.steps.hasOwnProperty(step) && $scope.wizard.steps[step].id.indexOf(val) > -1) {
-	    $scope.wizard.activateStep($scope.wizard.steps[step]);
-	    break;
-	  }
-	}
+        for (var step in $scope.wizard.steps) {
+          if ($scope.wizard.steps.hasOwnProperty(step) && $scope.wizard.steps[step].id.indexOf(val) > -1) {
+            $scope.wizard.activateStep($scope.wizard.steps[step]);
+            break;
+          }
+        }
       }
     });
 
@@ -51,30 +51,30 @@ module.controller('partyEditView', [
 
     var activateFn = function (step) {
       if (updateQuery) {
-	page.$location.search('page', step.id.split('-').pop());
+        page.$location.search('page', step.id.split('-').pop());
       }
     };
 
     $scope.updateWizard = function () {
       if ($scope.wizard.newStep) {
-	$scope.wizard.newStep.complete = false;
-	$scope.wizard.newStep.allow = true;
+        $scope.wizard.newStep.complete = false;
+        $scope.wizard.newStep.allow = true;
 
-	if (page.$location.search().page && $scope.wizard.newStep.id.indexOf(page.$location.search().page) > -1) {
-	  $scope.wizard.activateStep($scope.wizard.newStep);
-	} else if ($scope.wizard.newStep.id === 'party-edit-profile') {
-	  $scope.wizard.activateStep($scope.wizard.newStep);
-	}
+        if (page.$location.search().page && $scope.wizard.newStep.id.indexOf(page.$location.search().page) > -1) {
+          $scope.wizard.activateStep($scope.wizard.newStep);
+        } else if ($scope.wizard.newStep.id === 'party-edit-profile') {
+          $scope.wizard.activateStep($scope.wizard.newStep);
+        }
 
-	if (angular.isFunction($scope.prepareStep[$scope.wizard.newStep.id])) {
-	  $scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
-	}
+        if (angular.isFunction($scope.prepareStep[$scope.wizard.newStep.id])) {
+          $scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
+        }
       }
 
       angular.forEach($scope.wizard.steps, function (step) {
-	if (angular.isFunction($scope.updateStep[step.id])) {
-	  $scope.updateStep[step.id](step);
-	}
+        if (angular.isFunction($scope.updateStep[step.id])) {
+          $scope.updateStep[step.id](step);
+        }
       });
     };
 
@@ -87,13 +87,13 @@ module.controller('partyEditView', [
 
     page.display.navigationFn = function (event, val) {
       if (!party || val.indexOf('/party/' + party.id + '/edit') > -1) {
-	return;
+        return;
       }
 
       for (var id in forms) {
-	if (forms.hasOwnProperty(id) && forms[id] && forms[id].form && forms[id].form.$dirty) {
-	  return false;
-	}
+        if (forms.hasOwnProperty(id) && forms[id] && forms[id].form && forms[id].form.$dirty) {
+          return false;
+        }
       }
 
       return true;
@@ -101,17 +101,17 @@ module.controller('partyEditView', [
 
     $scope.$watch(function () {
       angular.forEach(forms, function (form) {
-	if (!form || !form.form) {
-	  return;
-	}
+        if (!form || !form.form) {
+          return;
+        }
 
-	if (form.form.$invalid) {
-	  form.step.complete = false;
-	} else if (form.form.$dirty) {
-	  form.step.complete = undefined;
-	} else if (form.step.allow) {
-	  form.step.complete = true;
-	}
+        if (form.form.$invalid) {
+          form.step.complete = false;
+        } else if (form.form.$dirty) {
+          form.step.complete = undefined;
+        } else if (form.step.allow) {
+          form.step.complete = true;
+        }
       });
     });
 
@@ -119,43 +119,43 @@ module.controller('partyEditView', [
 
     $scope.prepareStep = {
       'party-edit-profile': function (step) {
-	step.enable = true;
+        step.enable = true;
 
-	forms.profile = {
-	  step: step,
-	  form: step.partyEditProfileForm,
-	};
-	forms.profile.form.init(party);
+        forms.profile = {
+          step: step,
+          form: step.partyEditProfileForm,
+        };
+        forms.profile.form.init(party);
       },
 
       'party-edit-account': function (step) {
-	step.enable = page.auth.user.id == party.id || (page.auth.hasAuth('SUPER') && !party.institution);
+        step.enable = page.auth.user.id == party.id || (page.auth.hasAuth('SUPER') && !party.institution);
 
-	forms.account = {
-	  step: step,
-	  form: step.partyEditAccountForm,
-	};
-	forms.account.form.init(party);
+        forms.account = {
+          step: step,
+          form: step.partyEditAccountForm,
+        };
+        forms.account.form.init(party);
       },
 
       'party-edit-apply': function (step) {
-	step.enable = page.auth.hasAccess('ADMIN', party);
+        step.enable = page.auth.hasAccess('ADMIN', party);
 
-	forms.apply = {
-	  step: step,
-	  form: step.partyEditApplyForm,
-	};
-	forms.apply.form.init(party, partyAuth.parents);
+        forms.apply = {
+          step: step,
+          form: step.partyEditApplyForm,
+        };
+        forms.apply.form.init(party, partyAuth.parents);
       },
 
       'party-edit-grant': function (step) {
-	step.enable = page.auth.hasAccess('ADMIN', party);
+        step.enable = page.auth.hasAccess('ADMIN', party);
 
-	forms.grant = {
-	  step: step,
-	  form: step.partyEditGrantForm,
-	};
-	forms.grant.form.init(party, partyAuth.children);
+        forms.grant = {
+          step: step,
+          form: step.partyEditGrantForm,
+        };
+        forms.grant.form.init(party, partyAuth.children);
       },
     };
 
@@ -163,19 +163,19 @@ module.controller('partyEditView', [
 
     $scope.updateStep = {
       'party-edit-profile': function () {
-	forms.profile.form.init(party);
+        forms.profile.form.init(party);
       },
 
       'party-edit-account': function () {
-	forms.account.form.init(party);
+        forms.account.form.init(party);
       },
 
       'party-edit-apply': function () {
-	forms.apply.form.init(party, partyAuth.parents);
+        forms.apply.form.init(party, partyAuth.parents);
       },
 
       'party-edit-grant': function () {
-	forms.grant.form.init(party, partyAuth.children);
+        forms.grant.form.init(party, partyAuth.children);
       },
     };
   }

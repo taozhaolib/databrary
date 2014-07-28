@@ -9,13 +9,13 @@ module.controller('loginView', [
       form = $scope.loginForm;
 
       form.validator.client({
-	email: {
-	  tips: page.constants.message('login.email.help'),
-	  errors: page.constants.message('login.email.error'),
-	},
-	password: {
-	  tips: page.constants.message('login.password.help'),
-	},
+        email: {
+          tips: page.constants.message('login.email.help'),
+          errors: page.constants.message('login.email.error'),
+        },
+        password: {
+          tips: page.constants.message('login.password.help'),
+        },
       }, true);
 
       //
@@ -42,22 +42,22 @@ module.controller('loginView', [
 
     $scope.submitForm = function () {
       page.models.party.login(angular.extend({
-	email: '',
-	password: '',
-	openid: '',
+        email: '',
+        password: '',
+        openid: '',
       }, $scope.loginData), function (data) {
-	form.validator.server({});
+        form.validator.server({});
 
-	page.auth.parseUser(data);
+        page.auth.parseUser(data);
 
-	if (page.auth.next) {
-	  page.$location.path(page.auth.next);
-	  page.auth.next = undefined;
-	} else {
-	  page.$location.path('/');
-	}
+        if (page.auth.next) {
+          page.$location.path(page.auth.next);
+          page.auth.next = undefined;
+        } else {
+          page.$location.path('/');
+        }
       }, function (res) {
-	form.validator.server(res, true);
+        form.validator.server(res, true);
       });
     };
   }

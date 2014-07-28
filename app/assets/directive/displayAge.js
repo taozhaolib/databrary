@@ -6,13 +6,13 @@ module.directive('displayAge', [
       $scope.change = page.display.toggleAge;
 
       var formatAge = function () {
-	$scope.age = page.display.formatAge($scope.value);
+        $scope.age = page.display.formatAge($scope.value);
       };
 
       formatAge();
 
       page.events.listen($scope, 'displayService-toggleAge', function () {
-	formatAge();
+        formatAge();
       });
     };
 
@@ -21,7 +21,7 @@ module.directive('displayAge', [
       templateUrl: 'displayAge.html',
       replace: true,
       scope: {
-	value: '@'
+        value: '@'
       },
       link: link
     };

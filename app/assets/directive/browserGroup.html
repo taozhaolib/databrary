@@ -5,10 +5,10 @@
         <a class="browser-group-pill left" ng-click="page.browser.setRecordGroupToggle(group)" click-elsewhere="page.browser.clearRecordGroupToggle()" bo-text="group.name"></a>
 
         <ul class="browser-group-record-options">
-	  <li ng-repeat="maybe in page.browser.options.record.categories">
-	    <a ng-click="page.browser.switchRecordGroup(group, maybe)" bo-text="maybe.name"></a>
-	  </li>
-	</ul>
+          <li ng-repeat="maybe in page.browser.options.record.categories">
+            <a ng-click="page.browser.switchRecordGroup(group, maybe)" bo-text="maybe.name"></a>
+          </li>
+        </ul>
 
         <a class="browser-group-pill right" ng-click="page.browser.removeRecordGroup(group)" ng-if="page.browser.canRemoveRecordGroup()">x</a>
     </span>
@@ -17,9 +17,9 @@
         <a class="browser-group-pill add" ng-click="page.browser.setRecordGroupToggle('add')" click-elsewhere="page.browser.clearRecordGroupToggle()" bo-text="'browser.group' | message"></a>
 
         <ul class="browser-group-record-options">
-	  <li ng-repeat="maybe in page.browser.options.record.categories.toArray() | filter:{active: false, allow: true}">
-	    <a ng-click="page.browser.addRecordGroup(maybe)" bo-text="maybe.name"></a>
-	  </li>
-	</ul>
+          <li ng-repeat="maybe in page.browser.options.record.categories.toArray() | filter:{active: false, allow: true}">
+            <a ng-click="page.browser.addRecordGroup(maybe)" bo-text="maybe.name"></a>
+          </li>
+        </ul>
     </span>
 </div>

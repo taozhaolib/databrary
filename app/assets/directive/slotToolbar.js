@@ -4,7 +4,7 @@ module.directive('slotToolbar', [
   'pageService', function (page) {
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
-	      
+
       }
     ];
 

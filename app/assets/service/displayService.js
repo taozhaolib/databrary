@@ -31,7 +31,7 @@ module.factory('displayService', [
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
       if (display.toolbarLinks) {
-	display.toolbarLinks = [];
+        display.toolbarLinks = [];
       }
     });
 
@@ -50,8 +50,8 @@ module.factory('displayService', [
 
     events.listen($rootScope, 'displayService-updateApp', function () {
       messages.add({
-	type: 'yellow',
-	body: constants.message('app.update') + ' <a href="" onclick="window.location.reload()">Reload</a>.'
+        type: 'yellow',
+        body: constants.message('app.update') + ' <a href="" onclick="window.location.reload()">Reload</a>.'
       });
     });
 
@@ -65,10 +65,10 @@ module.factory('displayService', [
 
     display.scrollTo = function (id) {
       $timeout(function () {
-	var target = angular.isNumber(id) ? id : (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
-	$scroll.animate({
-	  scrollTop: target
-	}, 500);
+        var target = angular.isNumber(id) ? id : (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
+        $scroll.animate({
+          scrollTop: target
+        }, 500);
       }, 1);
     };
 
@@ -78,15 +78,15 @@ module.factory('displayService', [
 
     $rootScope.$on('$locationChangeStart', function (event, url) {
       if (!angular.isFunction(display.navigationFn)) {
-	return;
+        return;
       }
 
       var result = display.navigationFn(event, url);
 
       if (angular.isUndefined(result)) {
-	return;
+        return;
       } else if (result === true || confirm(constants.message('navigation.confirmation'))) {
-	return (display.navigationFn = undefined);
+        return (display.navigationFn = undefined);
       }
 
       event.preventDefault();

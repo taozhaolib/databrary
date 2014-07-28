@@ -7,17 +7,17 @@ module.directive('scroll', [
       var timeout = $.isNumeric($attrs.scrollTimeout) ? parseInt($attrs.scrollTimeout) : 100;
 
       $element.on('resize scroll', function ($event) {
-	page.$timeout.cancel(timer);
-	timer = page.$timeout(function () {
-	  $scope.$eval($attrs.scroll, {
-	    $scroll: {
-	      $event: $event,
-	      $scope: $scope,
-	      $element: $element,
-	      $attrs: $attrs
-	    }
-	  });
-	}, timeout);
+        page.$timeout.cancel(timer);
+        timer = page.$timeout(function () {
+          $scope.$eval($attrs.scroll, {
+            $scroll: {
+              $event: $event,
+              $scope: $scope,
+              $element: $element,
+              $attrs: $attrs
+            }
+          });
+        }, timeout);
       });
     };
 

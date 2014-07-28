@@ -15,39 +15,39 @@ module.directive('fundingSearchForm', [
       var sentSearch;
 
       var fin = function (res) {
-	form.validator.server(res || {});
+        form.validator.server(res || {});
 
-	sentSearch = undefined;
+        sentSearch = undefined;
 
-	if (recentSearch) {
-	  recentSearch = undefined;
-	  form.search();
-	}
+        if (recentSearch) {
+          recentSearch = undefined;
+          form.search();
+        }
       };
 
       form.search = function (all) {
-	var data = {
-	  query: form.nameVal,
-	};
+        var data = {
+          query: form.nameVal,
+        };
 
-	if (all) {
-	  data.all = 'true';
-	}
+        if (all) {
+          data.all = 'true';
+        }
 
-	if (!all && (!form.nameVal || form.nameVal.length < 3)) {
-	  form.found = [];
-	} else if (sentSearch) {
-	  recentSearch = form.nameVal;
-	} else {
-	  sentSearch = page.models.volumeAccess.searchFunding(data,
-	    function (data) {
-	      form.found = data;
+        if (!all && (!form.nameVal || form.nameVal.length < 3)) {
+          form.found = [];
+        } else if (sentSearch) {
+          recentSearch = form.nameVal;
+        } else {
+          sentSearch = page.models.volumeAccess.searchFunding(data,
+            function (data) {
+              form.found = data;
 
-	      fin();
-	    }, function (res) {
-	      fin(res);
-	    });
-	}
+              fin();
+            }, function (res) {
+              fin(res);
+            });
+        }
       };
 
       //
@@ -55,14 +55,14 @@ module.directive('fundingSearchForm', [
       form.selectFn = undefined;
 
       form.select = function (found) {
-	form.nameVal = '';
-	form.search();
+        form.nameVal = '';
+        form.search();
 
-	if (angular.isFunction(form.selectFn)) {
-	  form.selectFn(found, form);
-	}
+        if (angular.isFunction(form.selectFn)) {
+          form.selectFn(found, form);
+        }
 
-	form.$setPristine();
+        form.$setPristine();
       };
 
       //
@@ -70,21 +70,21 @@ module.directive('fundingSearchForm', [
       form.notFoundFn = undefined;
 
       form.notFound = function (found) {
-	if (angular.isFunction(form.notFoundFn)) {
-	  form.notFoundFn(found, form);
-	}
+        if (angular.isFunction(form.notFoundFn)) {
+          form.notFoundFn(found, form);
+        }
 
-	form.search(true);
+        form.search(true);
 
-	form.$setPristine();
+        form.$setPristine();
       };
 
       //
 
       form.validator.client({
-	name: {
-	  tips: page.constants.message('funding.search.name.help'),
-	},
+        name: {
+          tips: page.constants.message('funding.search.name.help'),
+        },
       }, true);
 
       //

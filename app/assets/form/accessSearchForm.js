@@ -11,8 +11,8 @@ module.directive('accessSearchForm', [
       form.institution = $element.attr('institution') === 'true';
 
       $attrs.$observe('institution', function () {
-	form.nameVal = '';
-	form.found = [];
+        form.nameVal = '';
+        form.found = [];
       });
 
       //
@@ -21,34 +21,34 @@ module.directive('accessSearchForm', [
       var sentSearch;
 
       var fin = function (res) {
-	form.validator.server(res || {});
+        form.validator.server(res || {});
 
-	sentSearch = undefined;
+        sentSearch = undefined;
 
-	if (recentSearch) {
-	  recentSearch = undefined;
-	  form.search();
-	}
+        if (recentSearch) {
+          recentSearch = undefined;
+          form.search();
+        }
       };
 
       form.search = function () {
-	if (!form.nameVal || form.nameVal.length < 3) {
-	  form.found = [];
-	} else if (sentSearch) {
-	  recentSearch = form.nameVal;
-	} else {
-	  sentSearch = page.models.volumeAccess.search({
-	    id: form.id,
-	    name: form.nameVal,
-	    institution: form.institution,
-	  }, function (data) {
-	    form.found = data;
+        if (!form.nameVal || form.nameVal.length < 3) {
+          form.found = [];
+        } else if (sentSearch) {
+          recentSearch = form.nameVal;
+        } else {
+          sentSearch = page.models.volumeAccess.search({
+            id: form.id,
+            name: form.nameVal,
+            institution: form.institution,
+          }, function (data) {
+            form.found = data;
 
-	    fin();
-	  }, function (res) {
-	    fin(res);
-	  });
-	}
+            fin();
+          }, function (res) {
+            fin(res);
+          });
+        }
       };
 
       //
@@ -56,14 +56,14 @@ module.directive('accessSearchForm', [
       form.selectFn = undefined;
 
       form.select = function (found) {
-	form.nameVal = '';
-	form.search();
+        form.nameVal = '';
+        form.search();
 
-	if (angular.isFunction(form.selectFn)) {
-	  form.selectFn(found, form);
-	}
+        if (angular.isFunction(form.selectFn)) {
+          form.selectFn(found, form);
+        }
 
-	form.$setPristine();
+        form.$setPristine();
       };
 
       //
@@ -71,30 +71,30 @@ module.directive('accessSearchForm', [
       form.notFoundFn = undefined;
 
       form.notFound = function () {
-	form.messages.add({
-	  type: 'yellow',
-	  countdown: 3000,
-	  body: page.constants.message('access.grant.notfound.message'),
-	});
+        form.messages.add({
+          type: 'yellow',
+          countdown: 3000,
+          body: page.constants.message('access.grant.notfound.message'),
+        });
 
-	var query = form.nameVal;
+        var query = form.nameVal;
 
-	form.nameVal = '';
-	form.search();
+        form.nameVal = '';
+        form.search();
 
-	if (angular.isFunction(form.notFoundFn)) {
-	  form.notFoundFn(query, form);
-	}
+        if (angular.isFunction(form.notFoundFn)) {
+          form.notFoundFn(query, form);
+        }
 
-	form.$setPristine();
+        form.$setPristine();
       };
 
       //
 
       form.validator.client({
-	name: {
-	  tips: page.constants.message('access.search.name.help'),
-	},
+        name: {
+          tips: page.constants.message('access.search.name.help'),
+        },
       }, true);
 
       //

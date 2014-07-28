@@ -2,11 +2,11 @@
   <div class="row">
     <div class="wizard-list col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-2">
       <ul class="flat">
-	<li ng-repeat="step in steps | filter:{enable: true}" ng-class="getListItemClasses(step)" ng-click="activateStep(step)">
-	  <strong class="wizard-list-name">{{step.name || 'wizard.'+step.id+'.name' | message}}</strong>
+        <li ng-repeat="step in steps | filter:{enable: true}" ng-class="getListItemClasses(step)" ng-click="activateStep(step)">
+          <strong class="wizard-list-name">{{step.name || 'wizard.'+step.id+'.name' | message}}</strong>
 
-	  <p class="wizard-list-description">{{step.description || 'wizard.'+step.id+'.description' | message}}</p>
-	</li>
+          <p class="wizard-list-description">{{step.description || 'wizard.'+step.id+'.description' | message}}</p>
+        </li>
       </ul>
     </div>
 

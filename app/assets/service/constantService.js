@@ -5,7 +5,7 @@ module.factory('constantService', [
     var constants = {
       data: constantData,
       regex: {
-	doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
+        doi: /^(?:[dD][oO][iI]:|(?:http:\/\/)?dx\.doi\.org\/)?(10\.[0-9\.]+\/\S+)\s*$/,
       },
     };
 
@@ -14,7 +14,7 @@ module.factory('constantService', [
     var invertArray = function (data) {
       var r = {};
       angular.forEach(data, function (x, id) {
-	r[x] = id;
+        r[x] = id;
       });
       return r;
     };
@@ -22,26 +22,26 @@ module.factory('constantService', [
     var invertBy = function (data, field) {
       var r = {};
       angular.forEach(data, function (x) {
-	if (field in x)
-	  r[x[field]] = x;
+        if (field in x)
+          r[x[field]] = x;
       });
       return r;
     };
 
     var makePresets = function () {
       constants.data.accessGlobal = [
-	['NONE', 'NONE'],
-	['NONE', 'SHARED'],
-	['PUBLIC', 'SHARED']
+        ['NONE', 'NONE'],
+        ['NONE', 'SHARED'],
+        ['PUBLIC', 'SHARED']
       ];
       constants.data.everybody = {
-	id: constants.data.party.NOBODY,
-	name: 'Everybody',
-	permission: 3
+        id: constants.data.party.NOBODY,
+        name: 'Everybody',
+        permission: 3
       };
       constants.data.accessGlobal.parties = [
-	constants.data.party.NOBODY,
-	constants.data.party.ROOT
+        constants.data.party.NOBODY,
+        constants.data.party.ROOT
       ];
     };
 
@@ -65,12 +65,12 @@ module.factory('constantService', [
       var msg = constants.data.messages[key];
 
       if (!angular.isDefined(msg)) {
-	$log.info('Message key [' + key + '] is undefined.');
-	return '[' + key + ']';
+        $log.info('Message key [' + key + '] is undefined.');
+        return '[' + key + ']';
       }
 
       for (var i = 1, length = arguments.length; i < length; i++) {
-	msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
+        msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
       }
 
       return msg;

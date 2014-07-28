@@ -2,26 +2,26 @@
   <div class="browser-item-content">
     <div class="cf">
       <footer>
-	<a bo-href="editLink(data)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
+        <a bo-href="editLink(data)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
       </footer>
 
       <header>
-	<browser-icon data="data"></browser-icon>
+        <browser-icon data="data"></browser-icon>
 
-	<h1 class="browser-item-title" bo-text="nameRecord(data)"></h1></h1>
+        <h1 class="browser-item-title" bo-text="nameRecord(data)"></h1></h1>
       </header>
     </div>
 
     <div class="browser-item-main">
       <dl class="comma cf" ng-repeat="measure in getMeasures(data)">
-	<dt bo-text="capitalize(measure.metric.name)"></dt>
-	<dd bo-text="measure.datum"></dd>
+        <dt bo-text="capitalize(measure.metric.name)"></dt>
+        <dd bo-text="measure.datum"></dd>
       </dl>
 
       <!-- TODO: combine this with above, using this class when measure.metric.long -->
       <div class="browser-item-description" bo-if="data.object.measures[page.metric.description.id]">
-	<div class="browser-item-description-title">Description:</div>
-	<div bo-text="data.object.measures[page.metric.description.id]"></div>
+        <div class="browser-item-description-title">Description:</div>
+        <div bo-text="data.object.measures[page.metric.description.id]"></div>
       </div>
     </div>
   </div>

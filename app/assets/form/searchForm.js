@@ -6,24 +6,24 @@ module.directive('searchForm', [
       var form = $scope.searchForm;
 
       form.data = {
-	query: page.$location.search().query
+        query: page.$location.search().query
       };
 
       form.focus = function () {
-	if (page.$location.path() !== '/search') {
-	  page.$location.path('/search');
-	  page.$sessionStorage.searchFocus = true;
-	}
+        if (page.$location.path() !== '/search') {
+          page.$location.path('/search');
+          page.$sessionStorage.searchFocus = true;
+        }
       };
 
       form.blur = function () {
-	if (page.$location.path() === '/search') {
-	  page.$sessionStorage.searchFocus = false;
-	}
+        if (page.$location.path() === '/search') {
+          page.$sessionStorage.searchFocus = false;
+        }
       };
 
       $scope.$watch('searchForm.data.query', function () {
-	page.$location.search('query', form.data.query || undefined);
+        page.$location.search('query', form.data.query || undefined);
       });
 
       //

@@ -7,16 +7,16 @@ module.directive('idle', [
       var timeout;
 
       var fn = function () {
-	$scope.$apply($attrs.idle);
+        $scope.$apply($attrs.idle);
       };
 
       $element.bind('input', function () {
-	page.$timeout.cancel(timeout);
-	timeout = page.$timeout(fn, after);
+        page.$timeout.cancel(timeout);
+        timeout = page.$timeout(fn, after);
       });
 
       $element.on('$destroy', function () {
-	page.$timeout.cancel(timeout);
+        page.$timeout.cancel(timeout);
       });
     };
 

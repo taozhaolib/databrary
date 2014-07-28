@@ -9,13 +9,13 @@ module.controller('helpFormatsView', [
       var general = format.mimetype.split('/').shift();
 
       if (!$scope.groups.hasOwnProperty(general)) {
-	$scope.groups[general] = [];
+        $scope.groups[general] = [];
       }
 
       $scope.groups[general].push({
-	format: format,
-	description: format.name == 'Image' ? 'Joint Photographic Experts Group' :
-	    format.name == 'Video' ? 'Moving Picture Expert Group-4' : format.name,
+        format: format,
+        description: format.name == 'Image' ? 'Joint Photographic Experts Group' :
+            format.name == 'Video' ? 'Moving Picture Expert Group-4' : format.name,
       });
     });
   }

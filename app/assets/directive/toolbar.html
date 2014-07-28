@@ -2,72 +2,71 @@
   <div class="wrap">
     <div class="row">
       <div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-	<h1 class="toolbar-site">
-	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
-	</h1>
+        <h1 class="toolbar-site">
+          <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
+        </h1>
 
-	<nav class="toolbar-nav cf">
-	  <ul class="toolbar-nav-ul inline-block flat cf">
-	    <li ng-repeat="link in toolbar.links()" bindonce>
-	      <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target"><span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
-		<span class="text" bo-html="link.html.toLowerCase()"></span></a></li>
-	  </ul>
-	</nav>
+        <nav class="toolbar-nav cf">
+          <ul class="toolbar-nav-ul inline-block flat cf">
+            <li ng-repeat="link in toolbar.links()" bindonce>
+              <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target"><span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
+                <span class="text" bo-html="link.html.toLowerCase()"></span></a></li>
+          </ul>
+        </nav>
       </div>
 
       <div class="toolbar-user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-2">
-				<span ng-if="!page.auth.isLoggedIn()">
-					<a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
+        <span ng-if="!page.auth.isLoggedIn()">
+          <a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
 
-				  <span class="sep">|</span>
+          <span class="sep">|</span>
 
           <a bo-href="page.router.register()" bo-html="'toolbar.register' | message">login</a>
-				</span>
+        </span>
 
-				<span ng-if="page.auth.isLoggedIn()">
-					<a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
-					  <span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
-					  <span class="username show-mobile" bo-text="'me' | message"></span>
-					  <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-avatar">
-					</a>
-				</span>
+        <span ng-if="page.auth.isLoggedIn()">
+          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
+            <span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
+            <span class="username show-mobile" bo-text="'me' | message"></span>
+            <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-avatar"> </a>
+        </span>
 
-	<span class="sep">|</span>
+        <span class="sep">|</span>
 
-	<a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar-contact" target="_blank" tooltip tooltip-message="{{'toolbar.contact' | message}}" tooltip-type="green"></a>
+        <a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar-contact" target="_blank" tooltip tooltip-message="{{'toolbar.contact' | message}}" tooltip-type="green"></a>
       </div>
 
       <section class="toolbar-hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
-	<div class="row">
-	  <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
-	    <ul class="flat">
-	      <li><strong bo-text="page.auth.user.name"></strong></li>
-	      <li>
-		<a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-html="'toolbar.profile' | message"></a>
-	      </li>
-	      <li>
-		<a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
-	      </li>
-	      <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
+        <div class="row">
+          <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+            <ul class="flat">
+              <li><strong bo-text="page.auth.user.name"></strong></li>
+              <li>
+                <a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-html="'toolbar.profile' | message"></a>
+              </li>
+              <li>
+                <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
+              </li>
+              <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
-	      <li ng-if="page.auth.hasAuth('ADMIN')" class="toolbar-password-form">
-		<form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" messages="default" novalidate>
-		  <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
-		  <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
-		    activate SU
-		  </button>
-		</form>
+              <li ng-if="page.auth.hasAuth('ADMIN')" class="toolbar-password-form">
+                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" messages="default" novalidate>
+                  <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
+                  <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
+                    activate SU
+                  </button>
+                </form>
 
-		<a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
-		  SU</a>
-	      </li>
-	    </ul>
-	  </div>
+                <a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
+                  SU</a>
+              </li>
+            </ul>
+          </div>
 
-	  <div class="user-icon col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-	    <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-hover-avatar">
-	  </div>
-	</div>
+          <div class="user-icon col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+            <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-hover-avatar">
+          </div>
+        </div>
       </section>
     </div>
   </div>

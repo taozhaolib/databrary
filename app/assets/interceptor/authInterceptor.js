@@ -4,11 +4,11 @@ module.factory('authInterceptor', [
   '$rootScope', '$q', '$location', function ($rootScope, $q, $location) {
     return {
       responseError: function (response) {
-	if (response.status === 403 && $location.url() !== '/login') {
-	  $location.url('/login');
-	}
+        if (response.status === 403 && $location.url() !== '/login') {
+          $location.url('/login');
+        }
 
-	return $q.reject(response);
+        return $q.reject(response);
       }
     };
   }

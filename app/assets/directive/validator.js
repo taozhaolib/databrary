@@ -21,149 +21,149 @@ module.directive('validator', [
       validator.clientTips = [];
 
       var on = function () {
-	$scope.$apply(function () {
-	  validator.focus = true;
-	});
+        $scope.$apply(function () {
+          validator.focus = true;
+        });
       };
 
       var off = function () {
-	$scope.$apply(function () {
-	  if (!validator.$element.is(":focus")) {
-	    validator.focus = false;
-	  }
-	});
+        $scope.$apply(function () {
+          if (!validator.$element.is(":focus")) {
+            validator.focus = false;
+          }
+        });
       };
 
       validator.$element
-	.focus(on)
-	.blur(off)
-	.mouseenter(on)
-	.mouseleave(off);
+        .focus(on)
+        .blur(off)
+        .mouseenter(on)
+        .mouseleave(off);
 
       validator.iconClasses = function () {
-	var cls = [];
+        var cls = [];
 
-	if (!validator.name) {
-	  return cls;
-	}
+        if (!validator.name) {
+          return cls;
+        }
 
-	if (validator.name.$dirty) {
-	  cls.push('show');
-	}
+        if (validator.name.$dirty) {
+          cls.push('show');
+        }
 
-	if (validator.name.$valid) {
-	  cls.push('valid');
-	} else {
-	  cls.push('invalid');
-	}
+        if (validator.name.$valid) {
+          cls.push('valid');
+        } else {
+          cls.push('invalid');
+        }
 
-	return cls;
+        return cls;
       };
 
       //
 
       validator.show = function () {
-	return validator.showClientErrors() || validator.showClientTips() || validator.showServerErrors();
+        return validator.showClientErrors() || validator.showClientTips() || validator.showServerErrors();
       };
 
       validator.showServerErrors = function () {
-	return validator.serverErrors.length > 0 && !validator.changed;
+        return validator.serverErrors.length > 0 && !validator.changed;
       };
 
       validator.showClientErrors = function () {
-	return validator.clientErrors.length > 0 && validator.name && validator.name.$invalid && validator.focus;
+        return validator.clientErrors.length > 0 && validator.name && validator.name.$invalid && validator.focus;
       };
 
       validator.showClientTips = function () {
-	return validator.clientTips.length > 0 && validator.name && (!validator.name.$invalid || (validator.clientErrors.length === 0 && validator.serverErrors.length === 0)) && validator.focus;
+        return validator.clientTips.length > 0 && validator.name && (!validator.name.$invalid || (validator.clientErrors.length === 0 && validator.serverErrors.length === 0)) && validator.focus;
       };
 
       //
 
       var changeWatch = function () {
-	validator.changed = true;
-	validator.$element.off('keypress.validator');
+        validator.changed = true;
+        validator.$element.off('keypress.validator');
 
-	if (validator.name) {
-	  validator.name.$setValidity('serverResponse', true);
-	}
+        if (validator.name) {
+          validator.name.$setValidity('serverResponse', true);
+        }
       };
 
       validator.server = function (data, replace) {
-	if (replace !== false) {
-	  validator.changed = false;
-	  validator.serverErrors.splice(0, validator.serverErrors.length);
-	  validator.$element.off('keypress.validator');
+        if (replace !== false) {
+          validator.changed = false;
+          validator.serverErrors.splice(0, validator.serverErrors.length);
+          validator.$element.off('keypress.validator');
 
-	  if (validator.name) {
-	    validator.name.$setValidity('serverResponse', true);
-	  }
-	}
+          if (validator.name) {
+            validator.name.$setValidity('serverResponse', true);
+          }
+        }
 
-	if (!data || $.isEmptyObject(data)) {
-	  return;
-	}
+        if (!data || $.isEmptyObject(data)) {
+          return;
+        }
 
-	validator.$element.on('keypress.validator', changeWatch);
+        validator.$element.on('keypress.validator', changeWatch);
 
-	if (validator.name) {
-	  validator.name.$setValidity('serverResponse', false);
-	}
+        if (validator.name) {
+          validator.name.$setValidity('serverResponse', false);
+        }
 
-	if (angular.isString(data)) {
-	  data = [data];
-	}
+        if (angular.isString(data)) {
+          data = [data];
+        }
 
-	angular.forEach(data, function (error) {
-	  validator.serverErrors.push(validator.prefix + error);
-	});
+        angular.forEach(data, function (error) {
+          validator.serverErrors.push(validator.prefix + error);
+        });
       };
 
       validator.client = function (data, replace) {
-	if (replace) {
-	  validator.clientErrors = [];
-	  validator.clientTips = [];
-	}
+        if (replace) {
+          validator.clientErrors = [];
+          validator.clientTips = [];
+        }
 
-	if (!data) {
-	  return;
-	}
+        if (!data) {
+          return;
+        }
 
-	if (angular.isArray(data)) {
-	  data = {
-	    errors: data,
-	  };
-	}
+        if (angular.isArray(data)) {
+          data = {
+            errors: data,
+          };
+        }
 
-	if (angular.isString(data.errors)) {
-	  data.errors = [data.errors];
-	}
+        if (angular.isString(data.errors)) {
+          data.errors = [data.errors];
+        }
 
-	if (angular.isString(data.tips)) {
-	  data.tips = [data.tips];
-	}
+        if (angular.isString(data.tips)) {
+          data.tips = [data.tips];
+        }
 
-	if (angular.isArray(data.errors)) {
-	  angular.forEach(data.errors, function (error) {
-	    validator.clientErrors.push(validator.prefix + error);
-	  });
-	}
+        if (angular.isArray(data.errors)) {
+          angular.forEach(data.errors, function (error) {
+            validator.clientErrors.push(validator.prefix + error);
+          });
+        }
 
-	if (angular.isArray(data.tips)) {
-	  angular.forEach(data.tips, function (tip) {
-	    validator.clientTips.push(validator.prefix + tip);
-	  });
-	}
+        if (angular.isArray(data.tips)) {
+          angular.forEach(data.tips, function (tip) {
+            validator.clientTips.push(validator.prefix + tip);
+          });
+        }
       };
 
       //
 
       if (validator.form && validator.form.validator) {
-	validator.form.validator.add($attrs.name, validator);
+        validator.form.validator.add($attrs.name, validator);
       }
 
       if (validator.name) {
-	validator.name.validator = validator;
+        validator.name.validator = validator;
       }
     };
 
@@ -176,8 +176,8 @@ module.directive('validator', [
       transclude: true,
       templateUrl: 'validator.html',
       link: {
-	pre: pre,
-	post: post,
+        pre: pre,
+        post: post,
       },
     };
   }

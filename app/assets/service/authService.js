@@ -23,32 +23,32 @@ module.factory('authService', [
       var reload = true;
 
       if (user) {
-	user.superuser = !!user.superuser;
+        user.superuser = !!user.superuser;
 
-	if (auth.user.id === user.id && auth.user.superuser == user.superuser) {
-	  reload = false;
-	}
+        if (auth.user.id === user.id && auth.user.superuser == user.superuser) {
+          reload = false;
+        }
       } else if (!user && !auth.user) {
-	reload = false;
+        reload = false;
       }
 
       auth.user = user || auth.everybody;
 
       if (reload) {
-	$cacheFactory.removeAll();
-	$route.reload();
+        $cacheFactory.removeAll();
+        $route.reload();
       }
     };
 
     auth.updateUser = function (user) {
       if (user) {
-	return auth.parseUser(user);
+        return auth.parseUser(user);
       }
 
       party.user(function (data) {
-	auth.parseUser(angular.isString(data) ? auth.everybody : data);
+        auth.parseUser(angular.isString(data) ? auth.everybody : data);
       }, function () {
-	auth.parseUser(auth.everybody);
+        auth.parseUser(auth.everybody);
       });
     };
 
@@ -58,16 +58,16 @@ module.factory('authService', [
 
     var parseAuthLevel = function (level) {
       return $.isNumeric(level) ? parseInt(level) :
-	angular.isString(level) ? constants.data.permissionName[level.toUpperCase()] : -1;
+        angular.isString(level) ? constants.data.permissionName[level.toUpperCase()] : -1;
     };
 
     var parseUserAuth = function (object) {
       if (auth.user.superuser) {
-	return constants.data.permissionName.SUPER;
+        return constants.data.permissionName.SUPER;
       }
 
       if (angular.isObject(object) && object.permission) {
-	return object.permission;
+        return object.permission;
       }
 
       return auth.user.access;
@@ -89,21 +89,21 @@ module.factory('authService', [
 
     auth.logout = function () {
       party.logout(function (data) {
-	auth.parseUser(data);
-	$location.url('/login');
+        auth.parseUser(data);
+        $location.url('/login');
 
-	messages.add({
-	  body: constants.message('logout.success'),
-	  type: 'yellow',
-	  countdown: 3000
-	});
+        messages.add({
+          body: constants.message('logout.success'),
+          type: 'yellow',
+          countdown: 3000
+        });
       }, function (res) {
-	$location.url('/');
+        $location.url('/');
 
-	messages.add({
-	  body: constants.message('logout.error'),
-	  report: res,
-	});
+        messages.add({
+          body: constants.message('logout.error'),
+          report: res,
+        });
       });
     };
 
@@ -119,7 +119,7 @@ module.factory('authService', [
 
     auth.getToken = function () {
       if (!auth.hasToken()) {
-	return;
+        return;
       }
 
       return play.object;
@@ -137,46 +137,46 @@ module.factory('authService', [
 
     var enableSU = function (form) {
       party.superuserOn({
-	  auth: form.auth
-	},
-	function (data) {
-	  auth.parseUser(data);
+          auth: form.auth
+        },
+        function (data) {
+          auth.parseUser(data);
 
-	  messages.add({
-	    body: constants.message('superuser.on.success'),
-	    type: 'green',
-	    countdown: 2000
-	  });
-	}, function (res) {
-	  messages.addError({
-	    body: constants.message('superuser.on.error'),
-	    report: res,
-	  });
-	});
+          messages.add({
+            body: constants.message('superuser.on.success'),
+            type: 'green',
+            countdown: 2000
+          });
+        }, function (res) {
+          messages.addError({
+            body: constants.message('superuser.on.error'),
+            report: res,
+          });
+        });
     };
 
     var disableSU = function () {
       party.superuserOff(function (data) {
-	auth.parseUser(data);
+        auth.parseUser(data);
 
-	messages.add({
-	  body: constants.message('superuser.off.success'),
-	  type: 'green',
-	  countdown: 2000
-	});
+        messages.add({
+          body: constants.message('superuser.off.success'),
+          type: 'green',
+          countdown: 2000
+        });
       }, function (res) {
-	messages.addError({
-	  body: constants.message('superuser.off.error'),
-	  report: res,
-	});
+        messages.addError({
+          body: constants.message('superuser.off.error'),
+          report: res,
+        });
       });
     };
 
     auth.toggleSU = function (form) {
       if (angular.isDefined(form)) {
-	enableSU(form);
+        enableSU(form);
       } else {
-	disableSU();
+        disableSU();
       }
     };
 

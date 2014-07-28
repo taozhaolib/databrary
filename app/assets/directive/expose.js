@@ -5,10 +5,10 @@ module.directive('expose', [
     return {
       restrict: 'A',
       link: {
-	pre: function ($scope, $element, $attrs) {
-	  $scope.$element = $element;
-	  $scope.$attrs = $attrs;
-	}
+        pre: function ($scope, $element, $attrs) {
+          $scope.$element = $element;
+          $scope.$attrs = $attrs;
+        }
       }
     };
   }

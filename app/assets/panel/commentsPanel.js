@@ -11,17 +11,17 @@ module.controller('CommentsPanel', [
 
     $scope.refreshPanel = function () {
       switch (page.$route.current.controller) {
-	case 'volumeView':
-	  $scope.comments = $scope.volume.comments;
+        case 'volumeView':
+          $scope.comments = $scope.volume.comments;
 
-	  $scope.enabled = page.auth.isLoggedIn() || !$.isEmptyObject($scope.comments);
-	  break;
+          $scope.enabled = page.auth.isLoggedIn() || !$.isEmptyObject($scope.comments);
+          break;
 
-	case 'partyView':
-	  $scope.comments = $scope.party.comments;
+        case 'partyView':
+          $scope.comments = $scope.party.comments;
 
-	  $scope.enabled = !$.isEmptyObject($scope.comments);
-	  break;
+          $scope.enabled = !$.isEmptyObject($scope.comments);
+          break;
       }
     };
 
@@ -29,23 +29,23 @@ module.controller('CommentsPanel', [
 
     $scope.pullComments = function () {
       switch (page.$route.current.controller) {
-	case 'volumeView':
-	  page.models.volume.$cache.removeAll();
+        case 'volumeView':
+          page.models.volume.$cache.removeAll();
 
-	  page.models.volume.get({
-	    id: $scope.volume.id,
-	    comments: ''
-	  }, function (data) {
-	    $scope.volume.comments = data.comments;
-	    $scope.refreshPanel();
-	  }, function (res) {
-	    form.messages.addError({
-	      body: page.constants.message('comments.update.error'),
-	      report: res,
-	    });
-	  });
+          page.models.volume.get({
+            id: $scope.volume.id,
+            comments: ''
+          }, function (data) {
+            $scope.volume.comments = data.comments;
+            $scope.refreshPanel();
+          }, function (res) {
+            form.messages.addError({
+              body: page.constants.message('comments.update.error'),
+              report: res,
+            });
+          });
 
-	  break;
+          break;
       }
     };
 
@@ -58,11 +58,11 @@ module.controller('CommentsPanel', [
 
     $scope.commentParty = function (comment) {
       switch (page.$route.current.controller) {
-	case 'partyView':
-	  return $scope.party;
+        case 'partyView':
+          return $scope.party;
 
-	default:
-	  return comment.who;
+        default:
+          return comment.who;
       }
     };
 
@@ -73,25 +73,25 @@ module.controller('CommentsPanel', [
       var meta = '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
 
       if (isTop && !isParty) {
-	return meta;
+        return meta;
       }
 
       meta += ' <span class="sep">|</span>';
 
       var volumeID = isParty ?
-	(comment.volume ? comment.volume.id : 0) :
-	($scope.volume ? $scope.volume.id : 0);
+        (comment.volume ? comment.volume.id : 0) :
+        ($scope.volume ? $scope.volume.id : 0);
 
       if (isParty) {
-	meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
+        meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
       }
 
       if (isParty && !isTop) {
-	meta += ' <span class="sep">/</span>';
+        meta += ' <span class="sep">/</span>';
       }
 
       if (!isTop) {
-	meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
+        meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
       }
 
       return meta;
@@ -104,8 +104,8 @@ module.controller('CommentsPanel', [
 
     $scope.getReply = function (comment) {
       return page.auth.isLoggedIn() &&
-	page.$route.current.controller != 'partyView' &&
-	replyTo == comment;
+        page.$route.current.controller != 'partyView' &&
+        replyTo == comment;
     };
 
     $scope.setReply = function (comment) {
@@ -138,26 +138,26 @@ module.controller('CommentsPanel', [
       var classes = [];
 
       if (page.$route.current.controller != 'partyView') {
-	if (!comment.parent) {
-	  comment.parent = 0;
-	}
+        if (!comment.parent) {
+          comment.parent = 0;
+        }
 
-	var index = parents.indexOf(comment.parent);
+        var index = parents.indexOf(comment.parent);
 
-	if (index > -1) {
-	  parents = parents.slice(0, index + 1);
-	}
-	else {
-	  parents.push(comment.parent);
-	}
+        if (index > -1) {
+          parents = parents.slice(0, index + 1);
+        }
+        else {
+          parents.push(comment.parent);
+        }
 
-	if (parents.length >= 5) {
-	  comment.stop = true;
-	}
+        if (parents.length >= 5) {
+          comment.stop = true;
+        }
 
-	classes.push('depth-' + (parents.length - 1));
+        classes.push('depth-' + (parents.length - 1));
       } else {
-	comment.stop = true;
+        comment.stop = true;
       }
 
       return classes;

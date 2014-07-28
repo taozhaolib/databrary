@@ -17,14 +17,14 @@ module.factory('browserService', [
 
     var DEFAULT_OPTIONS = {
       record: {
-	allow: true,
-	categories: new ArrayHelper([])
+        allow: true,
+        categories: new ArrayHelper([])
       },
 
       session: {
-	allow: true,
-	active: true,
-	expand: false,
+        allow: true,
+        active: true,
+        expand: false,
       }
     };
 
@@ -60,12 +60,12 @@ module.factory('browserService', [
       angular.extend(browserService.options, DEFAULT_OPTIONS);
 
       browserService.options.record.categories = new ArrayHelper(
-	volume.categories.map(function (category) {
-	  return angular.extend({
-	    id: category,
-	    name: constants.data.category[category].name,
-	  }, DEFAULT_CATEGORY);
-	}));
+        volume.categories.map(function (category) {
+          return angular.extend({
+            id: category,
+            name: constants.data.category[category].name,
+          }, DEFAULT_CATEGORY);
+        }));
 
       rebuildData();
     };
@@ -76,30 +76,30 @@ module.factory('browserService', [
 
     var rebuildData = function (focusGroup) {
       if (focusGroup) {
-	focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
-	focusPosition = getLevelByGroup(focusGroup.id);
+        focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
+        focusPosition = getLevelByGroup(focusGroup.id);
       }
 
       focus = focusGroup;
 
       var groups = getActiveGroups(),
-	data = {
-	  items: [],
-	  level: -1,
-	  group: 'browser',
-	  limit: 20
-	};
+        data = {
+          items: [],
+          level: -1,
+          group: 'browser',
+          limit: 20
+        };
 
       browserService.groups = {};
 
       angular.forEach(groups, function (group) {
-	browserService.groups[group] = [];
+        browserService.groups[group] = [];
       });
 
       if (groups[0] == 'session')
-	callbackSessions(data, volume);
+        callbackSessions(data, volume);
       else
-	callbackRecords(data, volume, groups);
+        callbackRecords(data, volume, groups);
 
       angular.extend(browserService.data, data);
 
@@ -108,19 +108,19 @@ module.factory('browserService', [
 
     var updateData = function (data) {
       if (!data.object) {
-	return undefined;
+        return undefined;
       }
 
       var groups = getActiveGroups();
 
       if (!groups[data.level]) {
-	return undefined;
+        return undefined;
       }
 
       if (data.group == 'session')
-	callbackSessionChildren(data);
+        callbackSessionChildren(data);
       else
-	callbackRecordChildren(data, data.volume, groups);
+        callbackRecordChildren(data, data.volume, groups);
 
       return data;
     };
@@ -139,7 +139,7 @@ module.factory('browserService', [
       groups.push.apply(groups, getActiveRecordGroups());
 
       if (isGroupActive('session')) {
-	groups.push('session');
+        groups.push('session');
       }
 
       return groups;
@@ -151,7 +151,7 @@ module.factory('browserService', [
       groups.push.apply(groups, getAllowedRecordGroups());
 
       if (isGroupAllowed('session')) {
-	groups.push('session');
+        groups.push('session');
       }
 
       return groups;
@@ -161,9 +161,9 @@ module.factory('browserService', [
       var groups = [];
 
       angular.forEach(browserService.options.record.categories, function (category) {
-	if (category.allow && category.active) {
-	  groups.push(category.id);
-	}
+        if (category.allow && category.active) {
+          groups.push(category.id);
+        }
       });
 
       return groups;
@@ -173,9 +173,9 @@ module.factory('browserService', [
       var groups = [];
 
       angular.forEach(browserService.options.record.categories, function (category) {
-	if (category.allow) {
-	  groups.push(category.id);
-	}
+        if (category.allow) {
+          groups.push(category.id);
+        }
       });
 
       return groups;
@@ -199,42 +199,42 @@ module.factory('browserService', [
       var sessions = data.sessions || volume.sessions;
 
       angular.forEach(sessions, function (session, sid) {
-	var any = false;
-	angular.forEach(session.records, function (record) {
-	  if (volume.records[record.id].category == category) {
-	    if (!(record.id in tempData))
-	      tempData[record.id] = {};
-	    tempData[record.id][sid] = session;
-	    any = true;
-	  }
-	});
+        var any = false;
+        angular.forEach(session.records, function (record) {
+          if (volume.records[record.id].category == category) {
+            if (!(record.id in tempData))
+              tempData[record.id] = {};
+            tempData[record.id][sid] = session;
+            any = true;
+          }
+        });
 
-	if (!any) {
-	  if (!('null' in tempData))
-	    tempData['null'] = {};
-	  tempData['null'][sid] = session;
-	}
+        if (!any) {
+          if (!('null' in tempData))
+            tempData['null'] = {};
+          tempData['null'][sid] = session;
+        }
       });
 
       if (!$.isEmptyObject(tempData)) {
-	angular.forEach(tempData, function (newSessions, recordID) {
-	  var newData;
+        angular.forEach(tempData, function (newSessions, recordID) {
+          var newData;
 
-	  if (recordID != 'null') {
-	    newData = callbackItem(data, volume, newSessions, volume.records[recordID], category);
-	  }
-	  else {
-	    newData = callbackItem(data, volume, newSessions, {
-	      category: category,
-	      id: 0,
-	      measures: {}
-	    }, category);
-	  }
+          if (recordID != 'null') {
+            newData = callbackItem(data, volume, newSessions, volume.records[recordID], category);
+          }
+          else {
+            newData = callbackItem(data, volume, newSessions, {
+              category: category,
+              id: 0,
+              measures: {}
+            }, category);
+          }
 
-	  callbackRecordChildren(newData, volume, groups);
-	});
+          callbackRecordChildren(newData, volume, groups);
+        });
 
-	data.items.reverse();
+        data.items.reverse();
       }
 
       return data;
@@ -242,13 +242,13 @@ module.factory('browserService', [
 
     var callbackRecordChildren = function (data, volume, groups) {
       if (!browserService.getItemExpand(data)) {
-	return data;
+        return data;
       }
 
       if (groups[data.level + 1] == 'session') {
-	callbackSessions(data, volume);
+        callbackSessions(data, volume);
       } else {
-	callbackRecords(data, volume, groups);
+        callbackRecords(data, volume, groups);
       }
 
       return data;
@@ -258,9 +258,9 @@ module.factory('browserService', [
       var sessions = data.sessions || volume.sessions;
 
       angular.forEach(sessions, function (session) {
-	var newData = callbackItem(data, volume, undefined, session, 'session');
+        var newData = callbackItem(data, volume, undefined, session, 'session');
 
-	callbackSessionChildren(newData);
+        callbackSessionChildren(newData);
       });
 
       return data;
@@ -268,7 +268,7 @@ module.factory('browserService', [
 
     var callbackSessionChildren = function (data) {
       if (!browserService.getItemExpand(data)) {
-	return data;
+        return data;
       }
 
       browserService.loading = false;
@@ -280,51 +280,51 @@ module.factory('browserService', [
       var id = 'data-' + group + '-' + object.id;
 
       var newData = {
-	parent: data,
-	volume: volume,
-	sessions: sessions,
-	level: data.level + 1,
+        parent: data,
+        volume: volume,
+        sessions: sessions,
+        level: data.level + 1,
 
-	id: id,
-	object: object,
-	permission: object.permission || volume.permission,
-	group: group,
-	items: [],
+        id: id,
+        object: object,
+        permission: object.permission || volume.permission,
+        group: group,
+        items: [],
 
-	select: false,
-	expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
-	limit: 10
+        select: false,
+        expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
+        limit: 10
       };
 
       if (group == 'session') {
-	var newSegment;
-	var records = volume.sessions[newData.object.id].records;
-	var cur, obj;
-	var union = function (seg, c) {
-	  if (c.id === obj.id) {
-	    /* if record coverage is disjoint we pretend it's continuous: */
-	    seg = typeService.segmentUnion(seg, c.segment);
-	  }
-	  return seg;
-	};
-	for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
-	  if (obj.id !== 0)
-	    newSegment = typeService.segmentIntersect(newSegment,
-	      records.reduce(union, null));
-	}
-	newData.segment = newSegment;
-	if (typeService.segmentEmpty(newSegment)) {
-	  return newData; //in order to not push empty segmented things (contradictory constraints) onto list
-	}
+        var newSegment;
+        var records = volume.sessions[newData.object.id].records;
+        var cur, obj;
+        var union = function (seg, c) {
+          if (c.id === obj.id) {
+            /* if record coverage is disjoint we pretend it's continuous: */
+            seg = typeService.segmentUnion(seg, c.segment);
+          }
+          return seg;
+        };
+        for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
+          if (obj.id !== 0)
+            newSegment = typeService.segmentIntersect(newSegment,
+              records.reduce(union, null));
+        }
+        newData.segment = newSegment;
+        if (typeService.segmentEmpty(newSegment)) {
+          return newData; //in order to not push empty segmented things (contradictory constraints) onto list
+        }
       }
 
       browserService.groups[group].push(newData);
 
       if (group == 'session' && object.top) {
-	data.items.unshift(newData);
+        data.items.unshift(newData);
       }
       else {
-	data.items.push(newData);
+        data.items.push(newData);
       }
 
       return newData;
@@ -336,19 +336,19 @@ module.factory('browserService', [
 
     browserService.setRecordGroupToggle = function (group) {
       if (group == 'add') {
-	var c = 0, maybe;
+        var c = 0, maybe;
 
-	angular.forEach(browserService.options.record.categories, function (recordGroup) {
-	  if (!recordGroup.active) {
-	    maybe = recordGroup;
-	    c++;
-	  }
-	});
+        angular.forEach(browserService.options.record.categories, function (recordGroup) {
+          if (!recordGroup.active) {
+            maybe = recordGroup;
+            c++;
+          }
+        });
 
-	if (c == 1) {
-	  browserService.addRecordGroup(maybe);
-	  return true;
-	}
+        if (c == 1) {
+          browserService.addRecordGroup(maybe);
+          return true;
+        }
       }
 
       recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
@@ -356,7 +356,7 @@ module.factory('browserService', [
 
     browserService.clearRecordGroupToggle = function () {
       if (angular.isDefined(recordGroupToggle)) {
-	recordGroupToggle = undefined;
+        recordGroupToggle = undefined;
       }
     };
 
@@ -370,9 +370,9 @@ module.factory('browserService', [
       var canAdd = false;
 
       angular.forEach(browserService.options.record.categories, function (recordGroup) {
-	if (!canAdd && !recordGroup.active) {
-	  canAdd = true;
-	}
+        if (!canAdd && !recordGroup.active) {
+          canAdd = true;
+        }
       });
 
       return canAdd;
@@ -409,11 +409,11 @@ module.factory('browserService', [
       browserService.setRecordGroupToggle(undefined);
 
       var group_i = browserService.options.record.categories.index(group),
-	maybe_i = browserService.options.record.categories.index(maybe);
+        maybe_i = browserService.options.record.categories.index(maybe);
 
       if (group.active != maybe.active) {
-	group.active = !group.active;
-	maybe.active = !maybe.active;
+        group.active = !group.active;
+        maybe.active = !maybe.active;
       }
 
       browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
@@ -425,17 +425,17 @@ module.factory('browserService', [
 
     browserService.setItemExpand = function (data, expand) {
       if (!data.expand && expand !== false) {
-	data.expand = true;
+        data.expand = true;
 
-	if (!angular.isArray(data.items) || data.items.length === 0) {
-	  updateData(data);
-	}
+        if (!angular.isArray(data.items) || data.items.length === 0) {
+          updateData(data);
+        }
       } else if (data.expand && expand !== true) {
-	data.expand = false;
+        data.expand = false;
 
-	if (data == browserService.player) {
-	  browserService.setItemPlayer(undefined);
-	}
+        if (data == browserService.player) {
+          browserService.setItemPlayer(undefined);
+        }
       }
 
       return data;
@@ -453,9 +453,9 @@ module.factory('browserService', [
 
     var getOptionByGroup = function (group) {
       if (group == 'session')
-	return browserService.options.session;
+        return browserService.options.session;
       else
-	return browserService.options.record.categories.find({id: group});
+        return browserService.options.record.categories.find({id: group});
     };
 
     var getLevelByGroup = function (group) {
@@ -470,38 +470,38 @@ module.factory('browserService', [
       var newPlayer, newPlayed;
 
       if (angular.isUndefined(data)) {
-	newPlayed = undefined;
-	newPlayer = undefined;
+        newPlayed = undefined;
+        newPlayer = undefined;
       } else {
-	newPlayed = data.items[0] || undefined;
-	newPlayer = data;
+        newPlayed = data.items[0] || undefined;
+        newPlayer = data;
       }
 
       if (angular.isUndefined(browserService.player)) {
-	browserService.player = newPlayer;
+        browserService.player = newPlayer;
 
-	browserService.player.player = true;
+        browserService.player.player = true;
 
-	browserService.player.played = newPlayed;
+        browserService.player.played = newPlayed;
       } else if (browserService.player != newPlayer) {
-	browserService.player.player = false;
+        browserService.player.player = false;
 
-	browserService.player = newPlayer;
+        browserService.player = newPlayer;
 
-	if (angular.isDefined(browserService.player)) {
-	  browserService.player.player = true;
-	  browserService.player.played = newPlayed;
-	}
+        if (angular.isDefined(browserService.player)) {
+          browserService.player.player = true;
+          browserService.player.played = newPlayed;
+        }
       } else if (browserService.player.played != newPlayed) {
-	browserService.player.played = newPlayed;
+        browserService.player.played = newPlayed;
       } else {
-	browserService.player.player = false;
+        browserService.player.player = false;
 
-	browserService.player = undefined;
+        browserService.player = undefined;
       }
 
       if (data && data.parent && data.parent.id)
-	display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
+        display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
       return browserService.player;
     };

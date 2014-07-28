@@ -6,7 +6,7 @@ module.controller('ExcerptsPanel', [
   function ($scope, page) {
     $scope.bootPanel = function () {
       if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0) {
-	$scope.current = $scope.volume.excerpts[0] || undefined;
+        $scope.current = $scope.volume.excerpts[0] || undefined;
       }
     };
 
@@ -22,7 +22,7 @@ module.controller('ExcerptsPanel', [
 
     $scope.getMimeGroup = function (asset) {
       var mimetype = page.types.assetFormat(asset).mimetype,
-	type = mimetype.split('/')[0];
+        type = mimetype.split('/')[0];
 
       return type == 'text' ? mimetype[1] : type;
     };
@@ -39,11 +39,11 @@ module.controller('ExcerptsPanel', [
       var cls = [];
 
       if ($scope.getMimeGroup(excerpt) == 'video') {
-	cls.push('video');
+        cls.push('video');
       }
 
       if (excerpt === $scope.current) {
-	cls.push('panel-excerpts-list-current');
+        cls.push('panel-excerpts-list-current');
       }
 
       return cls;
@@ -53,20 +53,20 @@ module.controller('ExcerptsPanel', [
       var found;
 
       for (var i = 0, l = page.browser.groups.session.length; i < l; i++) {
-	if (page.browser.groups.session[i].object.id == asset.container.id) {
-	  found = page.browser.groups.session[i];
-	  break;
-	}
+        if (page.browser.groups.session[i].object.id == asset.container.id) {
+          found = page.browser.groups.session[i];
+          break;
+        }
       }
 
       if (!found) {
-	return expandTo(asset);
+        return expandTo(asset);
       }
 
       var $item = $('#' + found.id);
 
       if ($item.length === 0) {
-	return addTo(found, asset);
+        return addTo(found, asset);
       }
 
       page.display.scrollTo($item);
@@ -79,31 +79,31 @@ module.controller('ExcerptsPanel', [
       var volumeRecords = $scope.volume.records;
 
       angular.forEach(page.browser.groups, function (objects, group) {
-	if (!$.isNumeric(group)) {
-	  return;
-	}
+        if (!$.isNumeric(group)) {
+          return;
+        }
 
-	/* XXX */
-	var recordIDs = records.filter(function (rec) {
-	  return page.types.segmentOverlaps(asset.segment, rec.segment) && volumeRecords[rec.id].category === group;
-	}).map(function (obj) {
-	  return obj.id;
-	});
-	if (!recordIDs.length)
-	  recordIDs = [0];
+        /* XXX */
+        var recordIDs = records.filter(function (rec) {
+          return page.types.segmentOverlaps(asset.segment, rec.segment) && volumeRecords[rec.id].category === group;
+        }).map(function (obj) {
+          return obj.id;
+        });
+        if (!recordIDs.length)
+          recordIDs = [0];
 
-	angular.forEach(objects, function (data) {
-	  if (recordIDs.indexOf(data.object.id) > -1) {
-	    page.browser.setItemExpand(data, true);
-	    dirty = true;
-	  }
-	});
+        angular.forEach(objects, function (data) {
+          if (recordIDs.indexOf(data.object.id) > -1) {
+            page.browser.setItemExpand(data, true);
+            dirty = true;
+          }
+        });
       });
 
       if (dirty) {
-	page.$timeout(function () {
-	  $scope.jump(asset);
-	}, 1);
+        page.$timeout(function () {
+          $scope.jump(asset);
+        }, 1);
       }
     };
 
@@ -111,18 +111,18 @@ module.controller('ExcerptsPanel', [
       var data = session.parent, index;
 
       for (var i = 0, l = data.items.length; i < l; i++) {
-	if (data.items[i] == session) {
-	  index = i;
-	  break;
-	}
+        if (data.items[i] == session) {
+          index = i;
+          break;
+        }
       }
 
       if (index) {
-	data.items.splice(9, 0, data.items.splice(index, 1)[0]);
+        data.items.splice(9, 0, data.items.splice(index, 1)[0]);
 
-	page.$timeout(function () {
-	  $scope.jump(asset);
-	}, 1);
+        page.$timeout(function () {
+          $scope.jump(asset);
+        }, 1);
       }
     };
   }

@@ -54,24 +54,24 @@ module.factory('clockService', [
 
     var registerFn = function (clock, fns, fn) {
       if (!angular.isFunction(fn))
-	throw new Error('Clock callbacks must be callable.');
+        throw new Error('Clock callbacks must be callable.');
 
       if (fns.indexOf(fn) === -1) {
-	return fns.push(fn);
+        return fns.push(fn);
       }
 
       return function cancelFn() {
-	var index;
+        var index;
 
-	if ((index = fns.indexOf(fn)) > -1) {
-	  return fns.splice(index, 1);
-	}
+        if ((index = fns.indexOf(fn)) > -1) {
+          return fns.splice(index, 1);
+        }
       };
     };
 
     var callFn = function (clock, fns) {
       angular.forEach(fns, function (fn) {
-	fn(clock);
+        fn(clock);
       });
     };
 
@@ -79,14 +79,14 @@ module.factory('clockService', [
 
     var ticker = function (clock) {
       return function () {
-	clock.time();
-	clock.ticker = $timeout(ticker(clock), clock.interval);
+        clock.time();
+        clock.ticker = $timeout(ticker(clock), clock.interval);
       };
     };
 
     var tickerOn = function (clock) {
       if (clock.ticker) {
-	tickerOff(clock);
+        tickerOff(clock);
       }
 
       clock.ticker = $timeout(ticker(clock), clock.interval);

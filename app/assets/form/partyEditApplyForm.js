@@ -10,8 +10,8 @@ module.directive('partyEditApplyForm', [
       //
 
       form.init = function (party, parents) {
-	form.party = form.party || party;
-	form.data = parents;
+        form.party = form.party || party;
+        form.data = parents;
       };
 
       //
@@ -19,128 +19,128 @@ module.directive('partyEditApplyForm', [
       var subforms = [];
 
       $scope.$watch(function () {
-	var clean = true;
+        var clean = true;
 
-	angular.forEach(subforms, function (subform) {
-	  if (subform.$dirty) {
-	    clean = false;
-	    return false;
-	  }
-	});
+        angular.forEach(subforms, function (subform) {
+          if (subform.$dirty) {
+            clean = false;
+            return false;
+          }
+        });
 
-	if (clean) {
-	  form.$setPristine();
-	}
+        if (clean) {
+          form.$setPristine();
+        }
       });
 
       form.saveAll = function () {
-	angular.forEach(subforms, function (subform) {
-	  if (subform.$dirty) {
-	    subform.save(false);
-	  }
-	});
+        angular.forEach(subforms, function (subform) {
+          if (subform.$dirty) {
+            subform.save(false);
+          }
+        });
       };
 
       form.resetAll = function () {
-	angular.forEach(subforms, function (subform) {
-	  if (subform.$dirty) {
-	    subform.cancel();
-	  }
-	});
+        angular.forEach(subforms, function (subform) {
+          if (subform.$dirty) {
+            subform.cancel();
+          }
+        });
       };
 
       form.scrollToFuture = function (party) {
-	var remove = $scope.$watch(function () {
-	  return subforms[subforms.length - 1];
-	}, function (subform) {
-	  if (subform && subform.other && subform.other.party == party) {
-	    page.display.scrollTo(subform.$element);
-	    remove();
-	  }
-	});
+        var remove = $scope.$watch(function () {
+          return subforms[subforms.length - 1];
+        }, function (subform) {
+          if (subform && subform.other && subform.other.party == party) {
+            page.display.scrollTo(subform.$element);
+            remove();
+          }
+        });
       };
 
       //
 
       form.presetName = function (type, name, party) {
-	if (angular.isString(party)) {
-	  return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
-	} else {
-	  return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
-	}
+        if (angular.isString(party)) {
+          return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
+        } else {
+          return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
+        }
       };
 
       //
 
       page.events.listen($scope, 'authApplyForm-init', function (event, grantForm) {
-	subforms.push(grantForm);
+        subforms.push(grantForm);
 
-	grantForm.successFn = function () {
-	  form.messages.add({
-	    body: page.constants.message('auth.apply.save.success'),
-	    type: 'green',
-	    countdown: 3000,
-	  });
-	};
+        grantForm.successFn = function () {
+          form.messages.add({
+            body: page.constants.message('auth.apply.save.success'),
+            type: 'green',
+            countdown: 3000,
+          });
+        };
 
-	grantForm.cancelFn = function (applyForm) {
-	  form.messages.add({
-	    body: page.constants.message('auth.apply.remove.success'),
-	    type: 'green',
-	    countdown: 3000,
-	  });
+        grantForm.cancelFn = function (applyForm) {
+          form.messages.add({
+            body: page.constants.message('auth.apply.remove.success'),
+            type: 'green',
+            countdown: 3000,
+          });
 
-	  form.data.splice(form.data.indexOf(applyForm.other), 1);
-	  subforms.splice(subforms.indexOf(applyForm), 1);
-	};
+          form.data.splice(form.data.indexOf(applyForm.other), 1);
+          subforms.splice(subforms.indexOf(applyForm), 1);
+        };
 
-	event.stopPropagation();
+        event.stopPropagation();
       });
 
       page.events.listen($scope, 'authSearchForm-init', function (event, searchForm) {
-	if (searchForm.principal == 'child') {
-	  return;
-	}
+        if (searchForm.principal == 'child') {
+          return;
+        }
 
-	searchForm.selectFn = function (found, query) {
-	  var present = false;
+        searchForm.selectFn = function (found, query) {
+          var present = false;
 
-	  angular.forEach(form.data, function (access, i) {
-	    if (access.party.id === found.id) {
-	      var el = form.data.splice(i, 1)[0];
-	      form.data.push(el);
-	      present = true;
+          angular.forEach(form.data, function (access, i) {
+            if (access.party.id === found.id) {
+              var el = form.data.splice(i, 1)[0];
+              form.data.push(el);
+              present = true;
 
-	      searchForm.messages.add({
-		type: 'yellow',
-		countdown: 3000,
-		body: page.constants.message('access.search.repeat', found.name),
-	      });
+              searchForm.messages.add({
+                type: 'yellow',
+                countdown: 3000,
+                body: page.constants.message('access.search.repeat', found.name),
+              });
 
-	      return false;
-	    }
-	  });
+              return false;
+            }
+          });
 
-	  if (!present) {
-	    form.data.push({
-	      new: true,
-	      party: found,
-	      site: 0,
-	      member: 0,
-	      query: angular.isString(query) ? query : undefined,
-	    });
-	  }
-	};
+          if (!present) {
+            form.data.push({
+              new: true,
+              party: found,
+              site: 0,
+              member: 0,
+              query: angular.isString(query) ? query : undefined,
+            });
+          }
+        };
 
-	searchForm.notFoundFn = function (query) {
-	  searchForm.selectFn({
-	    id: -1,
-	    name: page.constants.message('auth.request.notfound.user'),
-	    avatar: '/party/-1/avatar'
-	  }, query);
-	};
+        searchForm.notFoundFn = function (query) {
+          searchForm.selectFn({
+            id: -1,
+            name: page.constants.message('auth.request.notfound.user'),
+            avatar: '/party/-1/avatar'
+          }, query);
+        };
 
-	event.stopPropagation();
+        event.stopPropagation();
       });
 
       //

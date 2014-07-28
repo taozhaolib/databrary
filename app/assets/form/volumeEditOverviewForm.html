@@ -25,8 +25,8 @@
 
     <div ng-repeat="author in volumeEditOverviewForm.authors">
       <validator form="volumeEditOverviewForm" name="citation.author">
-	<input type="text" name="citation.author" ng-model="author.name" bo-attr bo-attr-placeholder="'volume.edit.citation.author.placeholder' | message">
-	<button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="red mini pull"></button>
+        <input type="text" name="citation.author" ng-model="author.name" bo-attr bo-attr-placeholder="'volume.edit.citation.author.placeholder' | message">
+        <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-html="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
     <button ng-click="volumeEditOverviewForm.addAuthor()" bo-html="'volume.edit.citation.author.add' | message" class="orange mini add_f2"></button>

@@ -8,12 +8,12 @@ module.controller('searchView', [
 
     var updateData = function (data) {
       angular.forEach(data, function (volume) {
-	volume.more = '';
+        volume.more = '';
 
-	angular.forEach(volume.access, function (access) {
-	  volume.more += ' ' + access.party.name + ' ' + access.party.email +
-	    (access.party.affiliation ? ' ' + access.party.affiliation : '');
-	});
+        angular.forEach(volume.access, function (access) {
+          volume.more += ' ' + access.party.name + ' ' + access.party.email +
+            (access.party.affiliation ? ' ' + access.party.affiliation : '');
+        });
       });
 
       $scope.volumes = data;

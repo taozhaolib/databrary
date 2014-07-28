@@ -2,11 +2,11 @@
   <div class="row">
     <div class="col">
       <div class="search-form-logo">
-	<a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary.png"></a>
+        <a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary.png"></a>
       </div>
 
       <div class="search-form-search" ng-if="!page.constants.data.locked || page.auth.isAuthorized()">
-	<input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" ng-focus="searchForm.focus()" ng-blur="searchForm.blur()" focus="page.$sessionStorage.searchFocus">
+        <input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" ng-focus="searchForm.focus()" ng-blur="searchForm.blur()" focus="page.$sessionStorage.searchFocus">
       </div>
     </div>
   </div>

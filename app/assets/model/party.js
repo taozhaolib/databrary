@@ -4,49 +4,49 @@ module.factory('party', [
   'resourceFactory', '$route', '$http', function (resource, $route, $http) {
     var party = resource('/api/party/:id', {
       id: function () {
-	return ($route.current && $route.current.params.id) || undefined;
+        return ($route.current && $route.current.params.id) || undefined;
       }
     }, {
       query: {
-	method: 'GET',
-	isArray: false
+        method: 'GET',
+        isArray: false
       },
       password: {
-	method: 'POST',
-	url: '/api/party/:id/password'
+        method: 'POST',
+        url: '/api/party/:id/password'
       },
       profile: {
-	method: 'GET',
-	url: '/api/profile'
+        method: 'GET',
+        url: '/api/profile'
       },
       user: {
-	method: 'GET',
-	url: '/api/user'
+        method: 'GET',
+        url: '/api/user'
       },
       login: {
-	method: 'POST',
-	url: '/api/user/login'
+        method: 'POST',
+        url: '/api/user/login'
       },
       logout: {
-	method: 'POST',
-	url: '/api/user/logout'
+        method: 'POST',
+        url: '/api/user/logout'
       },
       superuserOn: {
-	method: 'POST',
-	url: '/api/user/superuser/on'
+        method: 'POST',
+        url: '/api/user/superuser/on'
       },
       superuserOff: {
-	method: 'POST',
-	url: '/api/user/superuser/off'
+        method: 'POST',
+        url: '/api/user/superuser/off'
       }
     }, 'party');
 
     party.upload = function (party, fd) {
       return $http.post('/api/party/' + party.id, fd, {
-	transformRequest: angular.identity,
-	headers: {
-	  'Content-Type': undefined
-	},
+        transformRequest: angular.identity,
+        headers: {
+          'Content-Type': undefined
+        },
       });
     };
 

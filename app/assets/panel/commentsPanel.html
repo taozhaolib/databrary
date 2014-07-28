@@ -4,15 +4,15 @@
   <article bindonce ng-repeat="comment in comments" class="panel-comments-comment" ng-class="getCommentClasses(comment)">
     <div class="row">
       <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
-	<footer class="panel-comments-meta" ng-init="party = commentParty(comment)">
-	  <portrait extra="commentMeta(comment)"></portrait>
-	</footer>
+        <footer class="panel-comments-meta" ng-init="party = commentParty(comment)">
+          <portrait extra="commentMeta(comment)"></portrait>
+        </footer>
 
-	<div class="panel-comments-body" bo-html="comment.text | format"></div>
+        <div class="panel-comments-body" bo-html="comment.text | format"></div>
 
-	<div class="panel-comments-body" ng-if="!comment.stop && !getReply(comment)">
-	  <button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
-	</div>
+        <div class="panel-comments-body" ng-if="!comment.stop && !getReply(comment)">
+          <button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
+        </div>
       </div>
     </div>
 

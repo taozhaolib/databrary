@@ -8,14 +8,14 @@ module.directive('accessGrantForm', [
       form.access = page.$parse($attrs.access)($scope) || undefined;
 
       form.data = {
-	individual: form.access.individual || 0,
-	children: form.access.children || 0,
+        individual: form.access.individual || 0,
+        children: form.access.children || 0,
       };
 
       $scope.canGrantAccess = function (p) {
-	return  p == page.constants.data.permissionName.READ ||
-	  p == page.constants.data.permissionName.EDIT ||
-	  p == page.constants.data.permissionName.ADMIN;
+        return  p == page.constants.data.permissionName.READ ||
+          p == page.constants.data.permissionName.EDIT ||
+          p == page.constants.data.permissionName.ADMIN;
       };
 
       form.data.extend = form.data.children !== 0;
@@ -25,9 +25,9 @@ module.directive('accessGrantForm', [
       //
 
       form.canChange = function () {
-	return form.access.individual != 5 || (form.access.party.id != page.auth.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
-	  return access.individual == 5;
-	}).length >= 2);
+        return form.access.individual != 5 || (form.access.party.id != page.auth.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
+          return access.individual == 5;
+        }).length >= 2);
       };
 
       //
@@ -37,59 +37,59 @@ module.directive('accessGrantForm', [
       form.errorFn = undefined;
 
       form.save = function () {
-	form.data.children = form.data.extend ? form.data.individual : 0;
+        form.data.children = form.data.extend ? form.data.individual : 0;
 
-	if (angular.isFunction(form.saveFn)) {
-	  form.saveFn(form);
-	}
+        if (angular.isFunction(form.saveFn)) {
+          form.saveFn(form);
+        }
 
-	page.models.volumeAccess.save({
-	  id: form.volume.id,
-	  partyId: form.access.party.id,
-	}, form.data, function () {
-	  if (angular.isFunction(form.successFn)) {
-	    form.successFn(form, arguments);
-	  }
+        page.models.volumeAccess.save({
+          id: form.volume.id,
+          partyId: form.access.party.id,
+        }, form.data, function () {
+          if (angular.isFunction(form.successFn)) {
+            form.successFn(form, arguments);
+          }
 
-	  form.messages.add({
-	    body: page.constants.message('access.grant.save.success'),
-	    type: 'green',
-	    countdown: 3000,
-	  });
+          form.messages.add({
+            body: page.constants.message('access.grant.save.success'),
+            type: 'green',
+            countdown: 3000,
+          });
 
-	  backup = $.extend(true, {}, form.data);
-	  form.$setPristine();
-	  page.models.volume.$cache.removeAll();
-	}, function (res) {
-	  form.messages.addError({
-	    body: page.constants.message('access.grant.save.error'),
-	    report: res,
-	  });
+          backup = $.extend(true, {}, form.data);
+          form.$setPristine();
+          page.models.volume.$cache.removeAll();
+        }, function (res) {
+          form.messages.addError({
+            body: page.constants.message('access.grant.save.error'),
+            report: res,
+          });
 
-	  if (angular.isFunction(form.errorFn)) {
-	    form.errorFn(form, arguments);
-	  }
+          if (angular.isFunction(form.errorFn)) {
+            form.errorFn(form, arguments);
+          }
 
-	  page.display.scrollTo(form.$element);
-	});
+          page.display.scrollTo(form.$element);
+        });
       };
 
       form.resetFn = undefined;
 
       form.reset = function () {
-	if (angular.isFunction(form.resetFn)) {
-	  form.resetFn(form);
-	}
+        if (angular.isFunction(form.resetFn)) {
+          form.resetFn(form);
+        }
 
-	form.validator.clearServer();
+        form.validator.clearServer();
 
-	form.data = $.extend(true, {}, backup);
+        form.data = $.extend(true, {}, backup);
 
-	if (form.access.new) {
-	  form.remove();
-	} else {
-	  form.$setPristine();
-	}
+        if (form.access.new) {
+          form.remove();
+        } else {
+          form.$setPristine();
+        }
       };
 
       //
@@ -99,38 +99,38 @@ module.directive('accessGrantForm', [
       form.removeErrorFn = undefined;
 
       form.remove = function () {
-	if (angular.isFunction(form.removeFn)) {
-	  form.removeFn(form);
-	}
+        if (angular.isFunction(form.removeFn)) {
+          form.removeFn(form);
+        }
 
-	page.models.volumeAccess.delete({
-	  id: form.volume.id,
-	  partyId: form.access.party.id,
-	}, {}, function () {
-	  if (angular.isFunction(form.removeSuccessFn)) {
-	    form.removeSuccessFn(form, arguments, form.access);
-	  }
+        page.models.volumeAccess.delete({
+          id: form.volume.id,
+          partyId: form.access.party.id,
+        }, {}, function () {
+          if (angular.isFunction(form.removeSuccessFn)) {
+            form.removeSuccessFn(form, arguments, form.access);
+          }
 
-	  form.messages.add({
-	    body: page.constants.message('access.grant.remove.success'),
-	    type: 'green',
-	    countdown: 3000,
-	  });
+          form.messages.add({
+            body: page.constants.message('access.grant.remove.success'),
+            type: 'green',
+            countdown: 3000,
+          });
 
-	  form.$setPristine();
-	  page.models.volume.$cache.removeAll();
-	}, function (res) {
-	  form.messages.addError({
-	    body: page.constants.message('access.grant.remove.error'),
-	    report: res,
-	  });
+          form.$setPristine();
+          page.models.volume.$cache.removeAll();
+        }, function (res) {
+          form.messages.addError({
+            body: page.constants.message('access.grant.remove.error'),
+            report: res,
+          });
 
-	  if (angular.isFunction(form.removeErrorFn)) {
-	    form.removeErrorFn(form, arguments, form.access);
-	  }
+          if (angular.isFunction(form.removeErrorFn)) {
+            form.removeErrorFn(form, arguments, form.access);
+          }
 
-	  page.display.scrollTo(form.$element);
-	});
+          page.display.scrollTo(form.$element);
+        });
       };
 
       //

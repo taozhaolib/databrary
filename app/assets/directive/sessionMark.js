@@ -11,22 +11,22 @@ module.directive('sessionMark', [
       var type = types[cat.name];
 
       if (!type)
-	return $el.remove();
+        return $el.remove();
 
       var message = "<strong>" + $scope.capitalize(cat.name) + "</strong>: " + page.constants.message('mark.' + cat.name + '.help');
       var extras = [];
       angular.forEach($scope.cat.records, function (r) {
-	var i = $scope.recordIdentifier(r);
-	if (i)
-	  extras.push(i);
+        var i = $scope.recordIdentifier(r);
+        if (i)
+          extras.push(i);
       });
       if (extras.length)
-	message += ": <em>" + extras.join(", ") + "</em>";
+        message += ": <em>" + extras.join(", ") + "</em>";
 
       var tooltip = page.tooltips.add({
-	message: message,
-	type: type,
-	$target: $el
+        message: message,
+        type: type,
+        $target: $el
       });
 
       $scope.cat.displayed = true;
@@ -34,7 +34,7 @@ module.directive('sessionMark', [
       //
 
       $scope.$on('$destroy', function () {
-	page.tooltips.remove(tooltip);
+        page.tooltips.remove(tooltip);
       });
 
       //

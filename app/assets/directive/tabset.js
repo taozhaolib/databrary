@@ -11,91 +11,91 @@ module.directive('tabset', [
       //
 
       ctrl.addTab = function (tab) {
-	$scope.tabList.push(tab);
-	$scope.tabHash[tab.id] = tab;
+        $scope.tabList.push(tab);
+        $scope.tabHash[tab.id] = tab;
 
-	if (tab.active) {
-	  return ctrl.activateTab(tab);
-	}
+        if (tab.active) {
+          return ctrl.activateTab(tab);
+        }
 
-	//
+        //
 
-	var anyActive;
+        var anyActive;
 
-	angular.forEach($scope.tabList, function (thisTab) {
-	  if (thisTab.active) {
-	    anyActive = true;
-	  }
-	});
+        angular.forEach($scope.tabList, function (thisTab) {
+          if (thisTab.active) {
+            anyActive = true;
+          }
+        });
 
-	if (anyActive) {
-	  return true;
-	}
+        if (anyActive) {
+          return true;
+        }
 
-	for (var i = 0; i < $scope.tabList.length; i = i + 1) {
-	  if ($scope.tabList[i].enabled) {
-	    return ctrl.activateTab($scope.tabList[0]);
-	  }
-	}
+        for (var i = 0; i < $scope.tabList.length; i = i + 1) {
+          if ($scope.tabList[i].enabled) {
+            return ctrl.activateTab($scope.tabList[0]);
+          }
+        }
       };
 
       ctrl.removeTab = function (tab) {
-	var i = $scope.tabList.indexOf(tab);
+        var i = $scope.tabList.indexOf(tab);
 
-	if (i == -1) {
-	  return false;
-	}
+        if (i == -1) {
+          return false;
+        }
 
-	delete $scope.tabHash[tab.id];
-	$scope.tabList.splice($scope.tabList.indexOf(tab), 1);
+        delete $scope.tabHash[tab.id];
+        $scope.tabList.splice($scope.tabList.indexOf(tab), 1);
 
-	return true;
+        return true;
       };
 
       ctrl.activateTab = function (tab) {
-	if (!tab.enabled) {
-	  return false;
-	}
+        if (!tab.enabled) {
+          return false;
+        }
 
-	angular.forEach($scope.tabList, function (thisTab) {
-	  thisTab.active = thisTab == tab;
-	});
+        angular.forEach($scope.tabList, function (thisTab) {
+          thisTab.active = thisTab == tab;
+        });
 
-	return true;
+        return true;
       };
 
       //
 
       ctrl.checkTabList = function () {
-	var c = 0;
+        var c = 0;
 
-	for (var i = 0; i < $scope.tabList.length; i = i + 1) {
-	  if ($scope.tabList[i].enabled) {
-	    c++;
-	  }
+        for (var i = 0; i < $scope.tabList.length; i = i + 1) {
+          if ($scope.tabList[i].enabled) {
+            c++;
+          }
 
-	  if (c == 2) {
-	    return true;
-	  }
-	}
+          if (c == 2) {
+            return true;
+          }
+        }
 
-	return false;
+        return false;
       };
 
       ctrl.tabListFilter = function (tab) {
-	return tab.enabled;
+        return tab.enabled;
       };
 
       //
 
       ctrl.tabListClass = function (tab) {
-	var cls = [];
+        var cls = [];
 
-	if (tab.active) {
-	  cls.push('active');
-	}
+        if (tab.active) {
+          cls.push('active');
+        }
 
-	return cls;
+        return cls;
       };
 
       //

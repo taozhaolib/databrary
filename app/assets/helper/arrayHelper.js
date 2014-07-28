@@ -4,7 +4,7 @@ module.factory('ArrayHelper', [
   '$filter', function ($filter) {
     var ArrayHelper = function (array) {
       if (!angular.isArray(array)) {
-	array = [];
+        array = [];
       }
 
       array.unshift(0, this.length);
@@ -54,20 +54,20 @@ module.factory('ArrayHelper', [
       this.catalog = {};
 
       if (angular.isString(this.catalogKey)) {
-	var that = this;
-	angular.forEach(this, function (item) {
-	  that.catalogAdd(item);
-	});
+        var that = this;
+        angular.forEach(this, function (item) {
+          that.catalogAdd(item);
+        });
       }
     };
     ArrayHelper.prototype.catalogAdd = function (item) {
       if (item[this.catalogKey]) {
-	this.catalog[item[this.catalogKey]] = item;
+        this.catalog[item[this.catalogKey]] = item;
       }
     };
     ArrayHelper.prototype.catalogRemove = function (item) {
       if (item[this.catalogKey]) {
-	delete this.catalog[item[this.catalogKey]];
+        delete this.catalog[item[this.catalogKey]];
       }
     };
     ArrayHelper.prototype.useCatalog = function (item) {
@@ -78,14 +78,14 @@ module.factory('ArrayHelper', [
 
     ArrayHelper.prototype.index = function (item) {
       if (this.useCatalog(item)) {
-	item = this.catalog[item];
+        item = this.catalog[item];
       }
 
       return this.indexOf(item);
     };
     ArrayHelper.prototype.find = function (item, strict) {
       if (this.useCatalog(item)) {
-	return this.catalog[item];
+        return this.catalog[item];
       }
 
       strict = angular.isUndefined(strict) ? true : strict;
@@ -94,14 +94,14 @@ module.factory('ArrayHelper', [
     };
     ArrayHelper.prototype.has = function (item) {
       if (this.useCatalog(item)) {
-	return this.catalog[item];
+        return this.catalog[item];
       }
 
       return this[this.index(item)];
     };
     ArrayHelper.prototype.add = function (item) {
       if (!(item = this.validate(this.transform(item)))) {
-	return false;
+        return false;
       }
 
       this.push(item);
@@ -115,11 +115,11 @@ module.factory('ArrayHelper', [
       var i = this.index(item);
 
       if (!~i) {
-	return undefined;
+        return undefined;
       }
 
       if (!angular.isObject(obj)) {
-	return false;
+        return false;
       }
 
       this.catalogRemove(item);
@@ -132,13 +132,13 @@ module.factory('ArrayHelper', [
     };
     ArrayHelper.prototype.replace = function (old, item) {
       if (!(item = this.validate(this.transform(item)))) {
-	return false;
+        return false;
       }
 
       var i = this.index(old);
 
       if (!~i) {
-	return undefined;
+        return undefined;
       }
 
       this[i] = item;
@@ -153,7 +153,7 @@ module.factory('ArrayHelper', [
       var i = this.index(item);
 
       if (!~i) {
-	return undefined;
+        return undefined;
       }
 
       var obj = {};
@@ -166,7 +166,7 @@ module.factory('ArrayHelper', [
       var i = this.index(item);
 
       if (!~i) {
-	return undefined;
+        return undefined;
       }
 
       this.catalogRemove(item);

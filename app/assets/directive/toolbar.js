@@ -6,16 +6,16 @@ module.directive('toolbar', [
       this.hoverUser = false;
 
       this.hideHover = function () {
-	this.hoverUser = false;
+        this.hoverUser = false;
       };
 
       //
 
       this.links = function () {
-	return page.$filter('filter')(page.display.toolbarLinks, function (link) {
-	  return link.access && link.object ? page.auth.hasAccess(link.access, link.object) :
-	    link.auth ? page.auth.hasAuth(link.auth) : true;
-	});
+        return page.$filter('filter')(page.display.toolbarLinks, function (link) {
+          return link.access && link.object ? page.auth.hasAccess(link.access, link.object) :
+            link.auth ? page.auth.hasAuth(link.auth) : true;
+        });
       };
     }];
 

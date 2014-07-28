@@ -14,7 +14,7 @@ module.factory('eventService', [
       var listener = $rootScope.$on(eventName, callback);
 
       $scope.$on('$destroy', function () {
-	listener();
+        listener();
       });
 
       return listener;

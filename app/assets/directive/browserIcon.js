@@ -4,31 +4,31 @@ module.directive('browserIcon', [
   'pageService', function (page) {
     var link = function ($scope) {
       $scope.toggleExpand = function (data) {
-	if (data.group !== 'session')
-	  $scope.data = page.browser.setItemExpand($scope.data);
+        if (data.group !== 'session')
+          $scope.data = page.browser.setItemExpand($scope.data);
       };
 
       $scope.iconLink = function (data) {
-	if (data.group === 'session')
-	  return page.router.slot({
-	    vid: data.volume.id,
-	    id: data.object.id,
-	    segment: data.segment,
-	  });
+        if (data.group === 'session')
+          return page.router.slot({
+            vid: data.volume.id,
+            id: data.object.id,
+            segment: data.segment,
+          });
       };
 
       $scope.expanderClasses = function (data) {
-	var classes = [];
+        var classes = [];
 
-	if (page.browser.canExpand(data)) {
-	  classes.push('enabled');
-	}
+        if (page.browser.canExpand(data)) {
+          classes.push('enabled');
+        }
 
-	if (data.expand) {
-	  classes.push('active');
-	}
+        if (data.expand) {
+          classes.push('active');
+        }
 
-	return classes;
+        return classes;
       };
     };
 

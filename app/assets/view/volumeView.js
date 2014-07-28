@@ -21,11 +21,11 @@ module.controller('volumeView', [
     page.display.title = volume.name;
     page.display.toolbarLinks = [
       {
-	type: 'yellow',
-	html: page.constants.message('volume.edit'),
-	url: page.router.volumeEdit(volume),
-	access: 'CONTRIBUTE',
-	object: volume,
+        type: 'yellow',
+        html: page.constants.message('volume.edit'),
+        url: page.router.volumeEdit(volume),
+        access: 'CONTRIBUTE',
+        object: volume,
       },
     ];
 

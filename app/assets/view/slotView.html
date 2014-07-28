@@ -2,14 +2,14 @@
   <div class="wrap">
     <div class="row">
       <div class="col">
-	<hgroup>
-	  <h1 class="view-title smaller with-link" bo-text="page.types.slotName(slot)"></h1>
-	  <a class="view-link" bo-href="page.router.volume({id: slot.container.volume})" bo-text="'return.volume' | message"></a>
-	</hgroup>
+        <hgroup>
+          <h1 class="view-title smaller with-link" bo-text="page.types.slotName(slot)"></h1>
+          <a class="view-link" bo-href="page.router.volume({id: slot.container.volume})" bo-text="'return.volume' | message"></a>
+        </hgroup>
 
-	<slot-player slot="slot" clock="clock"></slot-player>
-	<slot-toolbar slot="slot" clock="clock"></slot-toolbar>
-	<slot-timeline slot="slot" clock="clock"></slot-timeline>
+        <slot-player slot="slot" clock="clock"></slot-player>
+        <slot-toolbar slot="slot" clock="clock"></slot-toolbar>
+        <slot-timeline slot="slot" clock="clock"></slot-timeline>
       </div>
     </div>
   </div>

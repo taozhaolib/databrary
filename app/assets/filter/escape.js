@@ -12,11 +12,11 @@ module.filter('escape', [
   function () {
     return function (input) {
       if (!angular.isString(input)) {
-	return '';
+        return '';
       }
 
       return input.replace(/[&<>"']/g, function (c) {
-	return ent[c];
+        return ent[c];
       });
     };
   }
