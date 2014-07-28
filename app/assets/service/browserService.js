@@ -14,7 +14,7 @@ module.factory('browserService', [
 		var browserService = {};
 
 		//
-		
+
 		var DEFAULT_OPTIONS = {
 			record: {
 				allow: true,
@@ -55,17 +55,17 @@ module.factory('browserService', [
 		};
 
 		var initialize = function (newVolume) {
-                        volume = newVolume;
+			volume = newVolume;
 
 			angular.extend(browserService.options, DEFAULT_OPTIONS);
 
-                        browserService.options.record.categories = new ArrayHelper(
-                                volume.categories.map(function (category) {
-                                        return angular.extend({
-                                                id: category,
-                                                name: constants.data.category[category].name,
-                                        }, DEFAULT_CATEGORY);
-                                }));
+			browserService.options.record.categories = new ArrayHelper(
+				volume.categories.map(function (category) {
+					return angular.extend({
+						id: category,
+						name: constants.data.category[category].name,
+					}, DEFAULT_CATEGORY);
+				}));
 
 			rebuildData();
 		};
@@ -97,9 +97,9 @@ module.factory('browserService', [
 			});
 
 			if (groups[0] == 'session')
-                                callbackSessions(data, volume);
-                        else
-                                callbackRecords(data, volume, groups);
+				callbackSessions(data, volume);
+			else
+				callbackRecords(data, volume, groups);
 
 			angular.extend(browserService.data, data);
 
@@ -118,9 +118,9 @@ module.factory('browserService', [
 			}
 
 			if (data.group == 'session')
-                                callbackSessionChildren(data);
-                        else
-                                callbackRecordChildren(data, data.volume, groups);
+				callbackSessionChildren(data);
+			else
+				callbackRecordChildren(data, data.volume, groups);
 
 			return data;
 		};
@@ -194,22 +194,22 @@ module.factory('browserService', [
 		//
 
 		var callbackRecords = function (data, volume, groups) {
-                        var category = groups[data.level+1];
+			var category = groups[data.level + 1];
 			var tempData = {};
 			var sessions = data.sessions || volume.sessions;
 
 			angular.forEach(sessions, function (session, sid) {
-                                var any = false;
-                                angular.forEach(session.records, function (record) {
-                                        if (volume.records[record.id].category == category) {
+				var any = false;
+				angular.forEach(session.records, function (record) {
+					if (volume.records[record.id].category == category) {
 						if (!(record.id in tempData))
 							tempData[record.id] = {};
 						tempData[record.id][sid] = session;
-                                                any = true;
-                                        }
-                                });
+						any = true;
+					}
+				});
 
-                                if (!any) {
+				if (!any) {
 					if (!('null' in tempData))
 						tempData['null'] = {};
 					tempData['null'][sid] = session;
@@ -277,7 +277,7 @@ module.factory('browserService', [
 		var callbackItem = function (data, volume, sessions, object, group) {
 			var option = getOptionByGroup(group);
 
-			var id = 'data-' + group + '-' + object.id ;
+			var id = 'data-' + group + '-' + object.id;
 
 			var newData = {
 				parent: data,
@@ -308,9 +308,9 @@ module.factory('browserService', [
 					return seg;
 				};
 				for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
-                                        if (obj.id !== 0)
-                                                newSegment = typeService.segmentIntersect(newSegment, 
-                                                                records.reduce(union, null));
+					if (obj.id !== 0)
+						newSegment = typeService.segmentIntersect(newSegment,
+							records.reduce(union, null));
 				}
 				newData.segment = newSegment;
 				if (typeService.segmentEmpty(newSegment)) {
@@ -453,9 +453,9 @@ module.factory('browserService', [
 
 		var getOptionByGroup = function (group) {
 			if (group == 'session')
-                                return browserService.options.session;
-                        else
-                                return browserService.options.record.categories.find({id: group});
+				return browserService.options.session;
+			else
+				return browserService.options.record.categories.find({id: group});
 		};
 
 		var getLevelByGroup = function (group) {
