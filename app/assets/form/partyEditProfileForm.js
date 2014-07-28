@@ -169,5 +169,4 @@ module.directive('partyEditProfileForm', [
       link: link
     };
   }
->>>>>>> b7ee23cfd11d68f39da8511baaba3e2a2288f423
 ]);
