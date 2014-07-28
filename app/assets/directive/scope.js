@@ -1,10 +1,10 @@
 'use strict';
 
 module.directive('scope', [
-	function () {
-		return {
-			restrict: 'AE',
-			scope: true
-		};
-	}
+  function () {
+    return {
+      restrict: 'AE',
+      scope: true
+    };
+  }
 ]);

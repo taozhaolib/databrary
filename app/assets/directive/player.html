@@ -2,13 +2,13 @@
   <div class="player-main" ng-repeat="media in player.main track by media.asset.id">
     <div class="player-main-media" ng-switch="page.types.assetMimeArray(media)[0]">
       <div ng-switch-when="image">
-        <img bo-src="page.router.assetLink(media, true)">
+	<img bo-src="page.router.assetLink(media, true)">
       </div>
 
       <div ng-switch-when="video">
-        <video bo-if="page.display.videoSupported()" controls>
-          <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
-        </video>
+	<video bo-if="page.display.videoSupported()" controls>
+	  <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
+	</video>
       </div>
     </div>
 
@@ -18,23 +18,25 @@
           <img bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}">
         </span>
 
-        <span class="filename" bo-text="page.types.assetDisplayName(media)"></span>
+	<span class="filename" bo-text="page.types.assetDisplayName(media)"></span>
       </h1>
 
       <div class="player-main-info-support" bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>
 
       <dl class="player-main-info-list">
-        <dt>Classification</dt>
-        <dd><span class="classification icon" bo-class="page.constants.data.classification[media.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[media.asset.classification]}}"></span>&nbsp;<span bo-html="page.constants.data.classification[media.asset.classification]"></span></dd>
+	<dt>Classification</dt>
+	<dd>
+	  <span class="classification icon" bo-class="page.constants.data.classification[media.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[media.asset.classification]}}"></span>&nbsp;<span bo-html="page.constants.data.classification[media.asset.classification]"></span>
+	</dd>
 
-        <dt>File Type</dt>
-        <dd bo-text="page.types.assetFormat(media).name"></dd>
+	<dt>File Type</dt>
+	<dd bo-text="page.types.assetFormat(media).name"></dd>
 
-        <dt>Mime Type</dt>
-        <dd bo-text="page.types.assetFormat(media).mimetype"></dd>
+	<dt>Mime Type</dt>
+	<dd bo-text="page.types.assetFormat(media).mimetype"></dd>
 
-        <dt bo-if="media.asset.duration">Duration</dt>
-        <dd bo-if="media.asset.duration" bo-text="media.asset.duration | timecode"></dd>
+	<dt bo-if="media.asset.duration">Duration</dt>
+	<dd bo-if="media.asset.duration" bo-text="media.asset.duration | timecode"></dd>
 
       </dl>
 
@@ -58,17 +60,17 @@
 
     <div class="player-list-inner">
       <ul class="player-list-items flat cf">
-        <li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
-          <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
-        </li>
+	<li class="player-list-item player-list-item-playable" ng-repeat="media in player.playable">
+	  <img bo-src="page.router.assetThumb(media)" ng-click="player.select(media)">
+	</li>
 
-        <li class="player-list-item player-list-item-unplayable" ng-repeat="list in player.unplayableList">
-          <ul class="player-unplayable-items flat">
-            <li class="player-unplayable-item" ng-repeat="media in list">
-              <a ng-click="player.select(media)"><img class="icon" bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}"><span bo-text="page.types.assetDisplayName(media)"></span></a>
-            </li>
-          </ul>
-        </li>
+	<li class="player-list-item player-list-item-unplayable" ng-repeat="list in player.unplayableList">
+	  <ul class="player-unplayable-items flat">
+	    <li class="player-unplayable-item" ng-repeat="media in list">
+	      <a ng-click="player.select(media)"><img class="icon" bo-src="page.types.assetIcon(media)" hint="format-{{page.types.assetFormat(media).extension}}"><span bo-text="page.types.assetDisplayName(media)"></span></a>
+	    </li>
+	  </ul>
+	</li>
       </ul>
     </div>
   </div>

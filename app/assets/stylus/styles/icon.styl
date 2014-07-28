@@ -1,121 +1,109 @@
 // STYLES
 
 .icon
-	display inline-block
-	position relative
-	background transparent no-repeat 0 0
-	size b23
+  display inline-block
+  position relative
+  background transparent no-repeat 0 0
+  size b23
 
-	&.public,
-	&.excerpt
-		padding-left b1 - b6
+  &.public,
+  &.excerpt
+    padding-left b1 - b6
 
+  &.excerpts
+    padding-left b1
 
-	&.excerpts
-		padding-left b1
+  &.classification.restricted,
+  &.classification.shared
+    padding-left b1 - b12
 
+  &.dataset,
+  &.record,
+  &.session,
+  &.study
+    size b1
 
-	&.classification.restricted,
-	&.classification.shared
-		padding-left b1 - b12
+  &.contact
+    background-image url('/public/images/icon/contact.png')
 
+  &.edit
+    background-image url('/public/images/icon/contribute.png')
 
-	&.dataset,
-	&.record,
-	&.session,
-	&.study
-		size b1
+  &.close
+    background-image url('/public/images/icon/close.png')
 
+  &.access.admin
+    background-image url('/public/images/icon/admin.png')
 
-	&.contact
-		background-image url('/public/images/icon/contact.png')
+  &.access.edit
+    background-image url('/public/images/icon/contribute.png')
 
-	&.edit
-		background-image url('/public/images/icon/contribute.png')
+  &.access.read
+    background-image url('/public/images/icon/download.png')
 
-	&.close
-		background-image url('/public/images/icon/close.png')
+  &.access.shared
+    background-image url('/public/images/icon/download.png')
 
+  &.access.public
+    background-image url('/public/images/icon/view.png')
 
-	&.access.admin
-		background-image url('/public/images/icon/admin.png')
+  &.consent.public
+    background-image url('/public/images/icon/public.png')
 
-	&.access.edit
-		background-image url('/public/images/icon/contribute.png')
+  &.consent.excerpts
+    background-image url('/public/images/icon/excerpts.png')
 
-	&.access.read
-		background-image url('/public/images/icon/download.png')
+  &.consent.shared
+    background-image url('/public/images/icon/shared.png')
 
-	&.access.shared
-		background-image url('/public/images/icon/download.png')
+  &.consent.private
+    background-image url('/public/images/icon/private.png')
 
-	&.access.public
-		background-image url('/public/images/icon/view.png')
+  &.classification.private
+    background-image url('/public/images/icon/private.png')
 
+  &.classification.restricted
+    background-image url('/public/images/icon/identified.png')
 
-	&.consent.public
-		background-image url('/public/images/icon/public.png')
+  &.classification.shared
+    background-image url('/public/images/icon/deidentified.png')
 
-	&.consent.excerpts
-		background-image url('/public/images/icon/excerpts.png')
+  &.classification.public
+    background-image url('/public/images/icon/material.png')
 
-	&.consent.shared
-		background-image url('/public/images/icon/shared.png')
+  &.dataset
+    background-image url('/public/images/icon/dataset.png')
 
-	&.consent.private
-		background-image url('/public/images/icon/private.png')
+  &.record
+    background-image url('/public/images/icon/record.png')
 
+  &.session
+    background-image url('/public/images/icon/session.png')
 
-	&.classification.private
-		background-image url('/public/images/icon/private.png')
+  &.study
+    background-image url('/public/images/icon/study.png')
 
-	&.classification.restricted
-		background-image url('/public/images/icon/identified.png')
+  &.download
+    background-image url('/public/images/icon/download.png')
 
-	&.classification.shared
-		background-image url('/public/images/icon/deidentified.png')
+  &.jump
+    background-image url('/public/images/icon/jump.png')
 
-	&.classification.public
-		background-image url('/public/images/icon/material.png')
+  &.line
+    size(b1)
+    background-position 4px 4px
 
+    &.public,
+    &.excerpt
+      background-position 2px 4px
 
-	&.dataset
-		background-image url('/public/images/icon/dataset.png')
+    &.consent.excerpts
+      padding-left b1 + 2px
+      background-position 1px 4px
 
-	&.record
-		background-image url('/public/images/icon/record.png')
-
-	&.session
-		background-image url('/public/images/icon/session.png')
-
-	&.study
-		background-image url('/public/images/icon/study.png')
-
-
-	&.download
-		background-image url('/public/images/icon/download.png')
-
-	&.jump
-		background-image url('/public/images/icon/jump.png')
-
-
-	&.line
-		size(b1)
-		background-position 4px 4px
-
-		&.public,
-		&.excerpt
-			background-position 2px 4px
-
-
-		&.consent.excerpts
-			padding-left b1 + 2px
-			background-position 1px 4px
-
-
-		&.classification.restricted,
-		&.classification.shared
-			background-position 1px 4px
+    &.classification.restricted,
+    &.classification.shared
+      background-position 1px 4px
 
 
 

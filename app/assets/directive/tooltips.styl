@@ -6,101 +6,101 @@ point = 0
 // mixins
 
 tooltip-color(color)
-	color color
-	border-color mix(color, gray, 75%)
+  color color
+  border-color mix(color, gray, 75%)
 
-	a
-		&:link, &.link,
-		&:visited, &.visited
-			color mix(color, black, 75%)
+  a
+    &:link, &.link,
+    &:visited, &.visited
+      color mix(color, black, 75%)
 
-		&:hover, &.hover
-			color mix(color, gray, 75%)
+    &:hover, &.hover
+      color mix(color, gray, 75%)
 
-		&:active, &.active
-			color mix(color, pale, 75%)
+    &:active, &.active
+      color mix(color, pale, 75%)
 
 // styles
 
 .tooltips
-	position absolute
-	top 0
-	left 0
-	right 0
-	height 0
-	overflow visible
-	z-index 2000
-	pointer-events none
+  position absolute
+  top 0
+  left 0
+  right 0
+  height 0
+  overflow visible
+  z-index 2000
+  pointer-events none
 
 .tooltip
-	position absolute
-	top -1000px
-	left -1000px
-	opacity 0
-	background-color white
-	border-radius b6
-	box-shadow box-shadow-def
-	padding f6
-	font-line f34 f34
-	z-index 2000
-	max-width 10
+  position absolute
+  top -1000px
+  left -1000px
+  opacity 0
+  background-color white
+  border-radius b6
+  box-shadow box-shadow-def
+  padding f6
+  font-line f34 f34
+  z-index 2000
+  max-width 10
 
-	&.tooltip-visible
-		opacity 1
+  &.tooltip-visible
+    opacity 1
 
-	&:after
-	&:before
-		content ""
-		size 0
-		border b4 solid transparent
-		position absolute
-		pointer-events none
+  &:after
+  &:before
+    content ""
+    size 0
+    border b4 solid transparent
+    position absolute
+    pointer-events none
 
 .tooltip-blue
-	tooltip-color(blue)
+  tooltip-color(blue)
 
 .tooltip-green
-	tooltip-color(green)
+  tooltip-color(green)
 
 .tooltip-red
-	tooltip-color(red)
+  tooltip-color(red)
 
 .tooltip-orange
-	tooltip-color(orange)
+  tooltip-color(orange)
 
 .tooltip-yellow
-	tooltip-color(yellow)
+  tooltip-color(yellow)
 
 .tooltip-purple
-	tooltip-color(purple)
+  tooltip-color(purple)
 
 .tooltip-neutral
-	tooltip-color(neutral)
+  tooltip-color(neutral)
 
 .tooltip-left
-	&:after
-	&:before
-		right b1 + b12
+  &:after
+  &:before
+    right b1 + b12
 
 .tooltip-right
-	&:after
-	&:before
-		left b1 + b12
+  &:after
+  &:before
+    left b1 + b12
 
 &.tooltip-top
-	&:after
-		border-top-color white
-		bottom -b2
+  &:after
+    border-top-color white
+    bottom -b2
 
-	&:before
-		border-top-color gray
-		bottom -b2 - 1px
+  &:before
+    border-top-color gray
+    bottom -b2 - 1px
 
 &.tooltip-bottom
-	&:after
-		border-bottom-color white
-		top -b2
+  &:after
+    border-bottom-color white
+    top -b2
 
-	&:before
-		border-bottom-color gray
-		top -b2 - 1px
+  &:before
+    border-bottom-color gray
+    top -b2 - 1px

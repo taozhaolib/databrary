@@ -4,43 +4,43 @@
 
     <article bo-id="'network-parent-'+parent.id" class="permission-auth cf" ng-repeat="parent in partyAuth.parents">
       <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure class="figure-avatar" fill>
-            <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
-          </figure>
-        </div>
+	<div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+	  <figure class="figure-avatar" fill>
+	    <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
+	  </figure>
+	</div>
 
-        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div class="row">
-            <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <a bo-href="page.router.party(parent.party)" class="permission-auth-username">{{parent.party.name}}</a>
-              <span class="permission-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
-            </div>
+	<div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+	  <div class="row">
+	    <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+	      <a bo-href="page.router.party(parent.party)" class="permission-auth-username">{{parent.party.name}}</a>
+	      <span class="permission-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
+	    </div>
 
-            <div ng-if="showExtended()">
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="permission-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
-                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[parent.site], 'their')"></div>
-              </div>
+	    <div ng-if="showExtended()">
+	      <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+		<div class="permission-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
+		<div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[parent.site], 'their')"></div>
+	      </div>
 
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.member !== 0">
-                <div class="permission-auth-heading" bo-html="'auth.member' | message:'their'"></div>
-                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[parent.member], 'their')"></div>
-              </div>
+	      <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.member !== 0">
+		<div class="permission-auth-heading" bo-html="'auth.member' | message:'their'"></div>
+		<div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[parent.member], 'their')"></div>
+	      </div>
 
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.member === 0">
-                &nbsp;
-              </div>
+	      <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.member === 0">
+		&nbsp;
+	      </div>
 
-              <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                <div class="permission-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
-                <div class="permission-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
-                <div class="permission-auth-expiration" ng-if="!parent.expires" ng-bind-html="'auth.expiration.none' | message"></div>
-                <div class="permission-auth-expiration" ng-if="!parent.member && !parent.site" ng-bind-html="'auth.pending' | message"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+	      <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
+		<div class="permission-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
+		<div class="permission-auth-expiration" ng-bind-html="parent.expires | date:'longDate'"></div>
+		<div class="permission-auth-expiration" ng-if="!parent.expires" ng-bind-html="'auth.expiration.none' | message"></div>
+		<div class="permission-auth-expiration" ng-if="!parent.member && !parent.site" ng-bind-html="'auth.pending' | message"></div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
       </div>
     </article>
 
@@ -55,39 +55,39 @@
 
     <article bo-id="'network-child-'+child.id" class="permission-auth cf" ng-repeat="child in partyAuth.children">
       <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-          <figure class="figure-avatar">
-            <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
-          </figure>
-        </div>
+	<div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+	  <figure class="figure-avatar">
+	    <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
+	  </figure>
+	</div>
 
-        <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-          <div class="row">
-            <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <a bo-href="page.router.party(child.party)" class="permission-auth-username" bo-text="child.party.name"></a>
-              <span class="permission-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
-            </div>
+	<div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+	  <div class="row">
+	    <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
+	      <a bo-href="page.router.party(child.party)" class="permission-auth-username" bo-text="child.party.name"></a>
+	      <span class="permission-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
+	    </div>
 
-            <div ng-if="showExtended()">
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="permission-auth-heading" bo-html="'auth.site' | possessive:party"></div>
-                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[child.site], party)"></div>
-              </div>
+	    <div ng-if="showExtended()">
+	      <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+		<div class="permission-auth-heading" bo-html="'auth.site' | possessive:party"></div>
+		<div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[child.site], party)"></div>
+	      </div>
 
-              <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
-                <div class="permission-auth-heading" bo-html="'auth.member' | possessive:party"></div>
-                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[child.member], party)"></div>
-              </div>
+	      <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
+		<div class="permission-auth-heading" bo-html="'auth.member' | possessive:party"></div>
+		<div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[child.member], party)"></div>
+	      </div>
 
-              <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
-                <div class="permission-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
-                <div class="permission-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
-                <div class="permission-auth-expiration" ng-if="!child.expires" ng-bind-html="'auth.expiration.none' | message"></div>
-                <div class="permission-auth-expiration" ng-if="!child.member && !child.site" ng-bind-html="'auth.pending' | message"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+	      <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">
+		<div class="permission-auth-heading expiration" bo-html="'auth.expiration' | message"></div>
+		<div class="permission-auth-expiration" ng-bind-html="child.expires | date:'longDate'"></div>
+		<div class="permission-auth-expiration" ng-if="!child.expires" ng-bind-html="'auth.expiration.none' | message"></div>
+		<div class="permission-auth-expiration" ng-if="!child.member && !child.site" ng-bind-html="'auth.pending' | message"></div>
+	      </div>
+	    </div>
+	  </div>
+	</div>
       </div>
     </article>
 
