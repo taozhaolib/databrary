@@ -5,12 +5,14 @@ module.directive('slotPlayer', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var player = this;
+        player.slot = page.$parse($attrs.slot)($scope);
+        player.clock = page.$parse($attrs.clock)($scope);
+        
         var $player = $element.find('.player');
         var $list = $player.find('.player-list');
         var $items = $player.find('.player-list-items');
         var $resize = $player.find('.player-resize-main');
 
-        player.slot = page.$parse($attrs.slot)($scope);
         player.main = [];
         player.playable = [];
         player.unplayable = [];
