@@ -50,7 +50,7 @@ module.directive('volumeEditMaterialsForm', [
 			$scope.assetCall = function(file){
 				var data = {};
 				data.name = file.srcScope.asset.name;
-				data.classification = page.constants.data.classification.indexOf(file.srcScope.asset.classification);  //TODO: improve this!
+				data.classification = page.constants.data.classificationName[file.srcScope.asset.classification];
 				data.container = file.srcScope.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
 				page.upload.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
