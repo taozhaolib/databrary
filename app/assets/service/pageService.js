@@ -6,6 +6,7 @@ module.factory('pageService', [
 			analytics: $injector.get('analyticService'),
 			auth: $injector.get('authService'),
 			browser: $injector.get('browserService'),
+			clock: $injector.get('clockService'),
 			constants: $injector.get('constantService'),
 			display: $injector.get('displayService'),
 			events: $injector.get('eventService'),
