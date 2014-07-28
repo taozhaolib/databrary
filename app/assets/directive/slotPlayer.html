@@ -1,4 +1,4 @@
-<section class="player" bindonce>
+<section class="slot-player" bindonce>
   <div class="player-main" ng-repeat="media in player.main track by media.asset.id">
     <div class="player-main-media" ng-switch="page.types.assetMimeArray(media)[0]">
       <div ng-switch-when="image">

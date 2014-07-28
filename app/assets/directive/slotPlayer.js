@@ -1,11 +1,7 @@
 'use strict';
 
-module.directive('player', [
+module.directive('slotPlayer', [
   'pageService', function (page) {
-    var isNothing = function (val) {
-      return angular.isUndefined(val) || val === null;
-    };
-
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 	var player = this;
@@ -42,11 +38,11 @@ module.directive('player', [
 	player.slot.assets.map(function (asset) {
 	  return asset;
 	}).sort(function (a, b) {
-	  if (isNothing(a.segment) && isNothing(b.segment)) {
+	  if (angular.isNothing(a.segment) && angular.isNothing(b.segment)) {
 	    return 0;
-	  } else if (isNothing(a.segment)) {
+	  } else if (angular.isNothing(a.segment)) {
 	    return 1;
-	  } else if (isNothing(b.segment)) {
+	  } else if (angular.isNothing(b.segment)) {
 	    return -1;
 	  }
 
@@ -190,7 +186,7 @@ module.directive('player', [
     return {
       restrict: 'E',
       scope: true,
-      templateUrl: 'player.html',
+      templateUrl: 'slotPlayer.html',
       controller: controller,
       controllerAs: 'player',
     };

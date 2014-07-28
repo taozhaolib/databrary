@@ -7,7 +7,9 @@
 	  <a class="view-link" bo-href="page.router.volume({id: slot.container.volume})" bo-text="'return.volume' | message"></a>
 	</hgroup>
 
-	<player slot="slot"></player>
+	<slot-player slot="slot" clock="clock"></slot-player>
+	<slot-toolbar slot="slot" clock="clock"></slot-toolbar>
+	<slot-timeline slot="slot" clock="clock"></slot-timeline>
       </div>
     </div>
   </div>
