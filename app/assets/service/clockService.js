@@ -4,7 +4,7 @@ module.factory('clockService', [
 	'$timeout', function ($timeout) {
 		// Clock
 
-		var Clock = function ($scope, slot) {
+		var Clock = function () {
 			var clock = this;
 
 			this.playFns = [];
@@ -89,8 +89,6 @@ module.factory('clockService', [
 				tickerOff(clock);
 			}
 
-			console.log(clock);
-
 			clock.ticker = $timeout(ticker(clock), clock.interval);
 		};
 
@@ -100,8 +98,6 @@ module.factory('clockService', [
 
 		// Service
 
-		return function ClockMaker($scope, slot) {
-			return new Clock($scope, slot);
-		};
+		return Clock;
 	}
 ]);

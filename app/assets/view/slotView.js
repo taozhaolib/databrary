@@ -7,6 +7,6 @@ module.controller('slotView', [
 		page.display.title = page.types.slotName(slot);
 		page.display.toolbarLinks = [];
 
-		$scope.clock = new page.clock($scope, slot);
+		$scope.clock = new page.clock();
 	}
 ]);
