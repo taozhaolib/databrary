@@ -10,10 +10,9 @@ module.directive('player', [
 			'$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
 				var player = this;
 				var $player = $element.find('.player');
-				var $main = $element.find('.player-main');
-				var $list = $element.find('.player-list');
-				var $items = $element.find('.player-list-items');
-				var $resize = $element.find('.player-resize-main');
+				var $list = $player.find('.player-list');
+				var $items = $player.find('.player-list-items');
+				var $resize = $player.find('.player-resize-main');
 
 				player.slot = page.$parse($attrs.slot)($scope);
 				player.main = [];
@@ -144,6 +143,7 @@ module.directive('player', [
 				};
 
 				var resizeMove = function (e) {
+					var $main = $player.find('.player-main');
 					var playerH = $player.outerHeight();
 					var playerT = $player.offset().top;
 					var resizeH = $resize.outerHeight(true);
