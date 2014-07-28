@@ -1,7 +1,7 @@
 'use strict';
 
 module.factory('tag', [
-	'$resource', function ($resource) {
-		return $resource('/api/tag/:id', {});
-	}
+  '$resource', function ($resource) {
+    return $resource('/api/tag/:id', {});
+  }
 ]);

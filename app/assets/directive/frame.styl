@@ -5,51 +5,51 @@ pad = f2
 // styles
 
 .frame-header
-	font-weight normal
-	font-line 1 1.5
-	text-transform uppercase
-	letter-spacing 1px
-	margin 0
-	display inline-block
+  font-weight normal
+  font-line 1 1.5
+  text-transform uppercase
+  letter-spacing 1px
+  margin 0
+  display inline-block
 
 .frame
-	&.foldable
-		.folder
-			cursor pointer
+  &.foldable
+    .folder
+      cursor pointer
 
-			&:before
-				transition transition
-				content ""
-				size 0
-				display block
-				float left
-				position relative
-				top b2
-				border b4 solid transparent
-				border-top-color black
-				margin-right f4
+      &:before
+        transition transition
+        content ""
+        size 0
+        display block
+        float left
+        position relative
+        top b2
+        border b4 solid transparent
+        border-top-color black
+        margin-right f4
 
-			&:hover
-				color gray
+      &:hover
+        color gray
 
-				&:before
-					transform rotate(-45deg)
+        &:before
+          transform rotate(-45deg)
 
-		.fold
-			max-height 10000px
-			transition transition
+    .fold
+      max-height 10000px
+      transition transition
 
-	&.folded
-		.folder
-			&:before
-				transform rotate(-90deg)
+  &.folded
+    .folder
+      &:before
+        transform rotate(-90deg)
 
-			&:hover
-				color gray
+      &:hover
+        color gray
 
-				&:before
-					transform rotate(-45deg)
+        &:before
+          transform rotate(-45deg)
 
-		.fold
-			overflow hidden
-			max-height 0
+    .fold
+      overflow hidden
+      max-height 0

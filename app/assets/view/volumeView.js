@@ -1,34 +1,34 @@
 'use strict';
 
 module.controller('volumeView', [
-	'$scope', 'volume', 'pageService', function ($scope, volume, page) {
-		$scope.volume = volume;
+  '$scope', 'volume', 'pageService', function ($scope, volume, page) {
+    $scope.volume = volume;
 
-		$scope.volumeType = volume.citation ? "study" : "volume";
-		$scope.volumeMessage = function (msg /*, args...*/) {
-			arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.data.messages) ? $scope.volumeType : "volume") + "." + msg;
-			return page.constants.message.apply(this, arguments);
-		};
+    $scope.volumeType = volume.citation ? "study" : "volume";
+    $scope.volumeMessage = function (msg /*, args...*/) {
+      arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.data.messages) ? $scope.volumeType : "volume") + "." + msg;
+      return page.constants.message.apply(this, arguments);
+    };
 
-		$scope.viewClass = function () {
-			var cls = [];
+    $scope.viewClass = function () {
+      var cls = [];
 
-			cls.push(page.types.getVolumeType(volume));
+      cls.push(page.types.getVolumeType(volume));
 
-			return cls;
-		};
+      return cls;
+    };
 
-		page.display.title = volume.name;
-		page.display.toolbarLinks = [
-			{
-				type: 'yellow',
-				html: page.constants.message('volume.edit'),
-				url: page.router.volumeEdit(volume),
-				access: 'CONTRIBUTE',
-				object: volume,
-			},
-		];
+    page.display.title = volume.name;
+    page.display.toolbarLinks = [
+      {
+        type: 'yellow',
+        html: page.constants.message('volume.edit'),
+        url: page.router.volumeEdit(volume),
+        access: 'CONTRIBUTE',
+        object: volume,
+      },
+    ];
 
-		page.browser.initialize(volume);
-	}
+    page.browser.initialize(volume);
+  }
 ]);

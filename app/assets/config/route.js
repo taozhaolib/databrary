@@ -1,448 +1,448 @@
 'use strict';
 
 module.config([
-	'$routeProvider',
-	function ($routeProvider) {
-		$routeProvider.when('/', {
-			controller: 'homeView',
-			templateUrl: 'homeView.html',
-			resolve: {
-				parties: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+  '$routeProvider',
+  function ($routeProvider) {
+    $routeProvider.when('/', {
+      controller: 'homeView',
+      templateUrl: 'homeView.html',
+      resolve: {
+        parties: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						page.models.party.query({
-                                                        access: page.permission.CONTRIBUTE,
-                                                        institution: false
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.party.query({
+              access: page.permission.CONTRIBUTE,
+              institution: false
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						return deferred.promise;
-					}
-				],
-				volume: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+            return deferred.promise;
+          }
+        ],
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						if (page.auth.isAuthorized()) {
-							page.models.volume.get({
-								id: 8,
-								access: ''
-							}, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
-						} else {
-							deferred.resolve({});
-						}
+            if (page.auth.isAuthorized()) {
+              page.models.volume.get({
+                id: 8,
+                access: ''
+              }, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            } else {
+              deferred.resolve({});
+            }
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: false
-		});
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: false
+    });
 
-		//
+    //
 
-		$routeProvider.when('/login', {
-			controller: 'loginView',
-			templateUrl: 'loginView.html',
-			reloadOnSearch: false
-		});
+    $routeProvider.when('/login', {
+      controller: 'loginView',
+      templateUrl: 'loginView.html',
+      reloadOnSearch: false
+    });
 
-		//
+    //
 
-		$routeProvider.when('/register', {
-			controller: 'registerView',
-			templateUrl: 'registerView.html',
-			reloadOnSearch: false
-		});
+    $routeProvider.when('/register', {
+      controller: 'registerView',
+      templateUrl: 'registerView.html',
+      reloadOnSearch: false
+    });
 
-		//
+    //
 
-		$routeProvider.when('/password', {
-			controller: 'resetView',
-			templateUrl: 'resetView.html',
-			reloadOnSearch: false
-		});
+    $routeProvider.when('/password', {
+      controller: 'resetView',
+      templateUrl: 'resetView.html',
+      reloadOnSearch: false
+    });
 
-		//
+    //
 
-		$routeProvider.when('/asset/formats', {
-			controller: 'helpFormatsView',
-			templateUrl: 'helpFormatsView.html',
-			reloadOnSearch: false,
-			authenticate: true,
-		});
+    $routeProvider.when('/asset/formats', {
+      controller: 'helpFormatsView',
+      templateUrl: 'helpFormatsView.html',
+      reloadOnSearch: false,
+      authenticate: true,
+    });
 
-		//
+    //
 
-		$routeProvider.when('/token/:id', {
-			controller: (function () {
-				return window.$play.object && window.$play.object.reset ? 'resetView' : 'registerView';
-			}()),
-			templateUrl: function () {
-				return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
-			},
-			resolve: {
-				token: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    $routeProvider.when('/token/:id', {
+      controller: (function () {
+        return window.$play.object && window.$play.object.reset ? 'resetView' : 'registerView';
+      }()),
+      templateUrl: function () {
+        return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
+      },
+      resolve: {
+        token: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						if (page.$window.$play.object && page.$window.$play.object.auth) {
-							deferred.resolve(page.$window.$play.object);
-						} else {
-							page.$http
-								.get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
-								.success(function (res) {
-									page.$window.$play.object = res;
-									deferred.resolve(res);
-								})
-								.error(function (res) {
-									deferred.reject(res);
-									page.$location.url('/');
-								});
-						}
+            if (page.$window.$play.object && page.$window.$play.object.auth) {
+              deferred.resolve(page.$window.$play.object);
+            } else {
+              page.$http
+                .get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
+                .success(function (res) {
+                  page.$window.$play.object = res;
+                  deferred.resolve(res);
+                })
+                .error(function (res) {
+                  deferred.reject(res);
+                  page.$location.url('/');
+                });
+            }
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false
-		});
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false
+    });
 
-		//
+    //
 
-		$routeProvider.when('/search', {
-			controller: 'searchView',
-			templateUrl: 'searchView.html',
-			resolve: {
-				volumes: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    $routeProvider.when('/search', {
+      controller: 'searchView',
+      templateUrl: 'searchView.html',
+      resolve: {
+        volumes: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						page.models.volume.query({}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.volume.query({}, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		});
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
 
-		//
+    //
 
-		var partyView = {
-			controller: 'partyView',
-			templateUrl: 'partyView.html',
-			resolve: {
-				party: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    var partyView = {
+      controller: 'partyView',
+      templateUrl: 'partyView.html',
+      resolve: {
+        party: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						var req = {
-							comments: '',
-							access: '',
-							openid: '',
-							parents: '',
-							children: '',
-						};
+            var req = {
+              comments: '',
+              access: '',
+              openid: '',
+              parents: '',
+              children: '',
+            };
 
-						if (page.$route.current.params.id) {
-							req.id = page.$route.current.params.id;
-						} else if (page.auth.isLoggedIn()) {
-							req.id = page.auth.user.id;
-						} else if (page.types.isParty(page.$window.$play.object)) {
-							req.id = page.$window.$play.object.id;
-						}
+            if (page.$route.current.params.id) {
+              req.id = page.$route.current.params.id;
+            } else if (page.auth.isLoggedIn()) {
+              req.id = page.auth.user.id;
+            } else if (page.types.isParty(page.$window.$play.object)) {
+              req.id = page.$window.$play.object.id;
+            }
 
-						if (page.$route.current.params.id) {
-							page.models.party.get(req, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
-						} else {
-							page.models.party.profile(req, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
-						}
+            if (page.$route.current.params.id) {
+              page.models.party.get(req, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            } else {
+              page.models.party.profile(req, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            }
 
-						return deferred.promise;
-					}
-				],
-				volumes: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+            return deferred.promise;
+          }
+        ],
+        volumes: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						var req = {
-							id: null
-						};
+            var req = {
+              id: null
+            };
 
-						if (page.$route.current.params.id) {
-							req.party = page.$route.current.params.id;
-						} else if (page.auth.isLoggedIn()) {
-							req.party = page.auth.user.id;
-						} else if (page.types.isParty(page.$window.$play.object)) {
-							req.party = page.$window.$play.object.id;
-						}
+            if (page.$route.current.params.id) {
+              req.party = page.$route.current.params.id;
+            } else if (page.auth.isLoggedIn()) {
+              req.party = page.auth.user.id;
+            } else if (page.types.isParty(page.$window.$play.object)) {
+              req.party = page.$window.$play.object.id;
+            }
 
-						if (page.constants.data.locked && !page.auth.isAuthorized()) {
-							return [];
-						}
+            if (page.constants.data.locked && !page.auth.isAuthorized()) {
+              return [];
+            }
 
-						page.models.volume.query(req, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.volume.query(req, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		};
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    };
 
-		$routeProvider.when('/party/:id', partyView);
-		$routeProvider.when('/profile', partyView);
+    $routeProvider.when('/party/:id', partyView);
+    $routeProvider.when('/profile', partyView);
 
-		//
+    //
 
-		var partyEditParty;
+    var partyEditParty;
 
-		$routeProvider.when('/party/:id/edit', {
-			controller: 'partyEditView',
-			templateUrl: 'partyEditView.html',
-			resolve: {
-				party: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    $routeProvider.when('/party/:id/edit', {
+      controller: 'partyEditView',
+      templateUrl: 'partyEditView.html',
+      resolve: {
+        party: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						page.models.party.get({
-							id: page.$route.current.params.id,
-							parents: '',
-							children: '',
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.party.get({
+              id: page.$route.current.params.id,
+              parents: '',
+              children: '',
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						partyEditParty = deferred.promise;
-						return deferred.promise;
-					}
-				],
-				partyAuth: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+            partyEditParty = deferred.promise;
+            return deferred.promise;
+          }
+        ],
+        partyAuth: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						var empty = {
-							parents: [],
-							children: [],
-						};
+            var empty = {
+              parents: [],
+              children: [],
+            };
 
-						partyEditParty.then(function (party) {
-							if (page.auth.hasAccess('ADMIN', party)) {
-								page.models.partyAuthorize.query(function (res) {
-									deferred.resolve(res);
-								}, function (res) {
-									deferred.reject(res);
-								});
-							} else {
-								deferred.resolve(empty);
-							}
-						}, function () {
-							deferred.resolve(empty);
-						});
+            partyEditParty.then(function (party) {
+              if (page.auth.hasAccess('ADMIN', party)) {
+                page.models.partyAuthorize.query(function (res) {
+                  deferred.resolve(res);
+                }, function (res) {
+                  deferred.reject(res);
+                });
+              } else {
+                deferred.resolve(empty);
+              }
+            }, function () {
+              deferred.resolve(empty);
+            });
 
-						return deferred.promise;
-					}
-				],
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		});
+            return deferred.promise;
+          }
+        ],
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
 
-		//
+    //
 
-		var volumeEditVolume;
+    var volumeEditVolume;
 
-		var volumeEdit = {
-			controller: 'volumeEditView',
-			templateUrl: 'volumeEditView.html',
-			resolve: {
-				volume: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    var volumeEdit = {
+      controller: 'volumeEditView',
+      templateUrl: 'volumeEditView.html',
+      resolve: {
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						if (!page.$route.current.params.id) {
-							deferred.resolve();
-						} else {
-							page.models.volume.get({
-								access: '',
-								citation: '',
-								top: '',
-								funding: '',
-							}, function (res) {
-								deferred.resolve(res);
-							}, function (res) {
-								deferred.reject(res);
-							});
-						}
+            if (!page.$route.current.params.id) {
+              deferred.resolve();
+            } else {
+              page.models.volume.get({
+                access: '',
+                citation: '',
+                top: '',
+                funding: '',
+              }, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            }
 
-						volumeEditVolume = deferred.promise;
-						return volumeEditVolume;
-					}
-				],
-				slot: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+            volumeEditVolume = deferred.promise;
+            return volumeEditVolume;
+          }
+        ],
+        slot: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						if (!page.$route.current.params.id) {
-							deferred.resolve();
-						} else {
-							volumeEditVolume.then(function (volume) {
-								page.models.slot.get({
-									id: volume.top.id,
-									vid: volume.id,
-									assets: '',
-								}, function (res) {
-									deferred.resolve(res);
-								}, function (res) {
-									deferred.reject(res);
-								});
-							});
-						}
+            if (!page.$route.current.params.id) {
+              deferred.resolve();
+            } else {
+              volumeEditVolume.then(function (volume) {
+                page.models.slot.get({
+                  id: volume.top.id,
+                  vid: volume.id,
+                  assets: '',
+                }, function (res) {
+                  deferred.resolve(res);
+                }, function (res) {
+                  deferred.reject(res);
+                });
+              });
+            }
 
-						return deferred.promise;
-					}
-				],
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		};
+            return deferred.promise;
+          }
+        ],
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    };
 
-		$routeProvider.when('/volume/create', volumeEdit);
-		$routeProvider.when('/volume/:id/edit', volumeEdit);
+    $routeProvider.when('/volume/create', volumeEdit);
+    $routeProvider.when('/volume/:id/edit', volumeEdit);
 
-		//
+    //
 
-		$routeProvider.when('/volume/:id', {
-			controller: 'volumeView',
-			templateUrl: 'volumeView.html',
-			resolve: {
-				volume: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    $routeProvider.when('/volume/:id', {
+      controller: 'volumeView',
+      templateUrl: 'volumeView.html',
+      resolve: {
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						page.models.volume.get({
-							access: '',
-							citation: '',
-							funding: '',
-							providers: '',
-							consumers: '',
-							top: '',
-							tags: '',
-							excerpts: '',
-							comments: '',
-							records: '',
-							summary: '',
-							sessions: '',
-							categories: ''
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.volume.get({
+              access: '',
+              citation: '',
+              funding: '',
+              providers: '',
+              consumers: '',
+              top: '',
+              tags: '',
+              excerpts: '',
+              comments: '',
+              records: '',
+              summary: '',
+              sessions: '',
+              categories: ''
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		});
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
 
-		//
+    //
 
-		$routeProvider.when('/volume/:vid/slot/:id', {
-			controller: 'slotView',
-			templateUrl: 'slotView.html',
-			resolve: {
-				slot: [
-					'pageService', function (page) {
-						var deferred = page.$q.defer();
+    $routeProvider.when('/volume/:vid/slot/:id', {
+      controller: 'slotView',
+      templateUrl: 'slotView.html',
+      resolve: {
+        slot: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
 
-						page.models.slot.get({
-							assets: '',
-							records: '',
-							tags: '',
-							comments: '',
-						}, function (res) {
-							deferred.resolve(res);
-						}, function (res) {
-							deferred.reject(res);
-						});
+            page.models.slot.get({
+              assets: '',
+              records: '',
+              tags: '',
+              comments: '',
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
 
-						return deferred.promise;
-					}
-				]
-			},
-			reloadOnSearch: false,
-			authenticate: true
-		});
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
 
-		//
+    //
 
-		$routeProvider.otherwise({
-			redirectTo: '/search'
-		});
-	}
+    $routeProvider.otherwise({
+      redirectTo: '/search'
+    });
+  }
 ]);
 
 module.run([
-	'pageService', function (page) {
-		if (page.constants.locked) {
-		page.$rootScope.$on('$routeChangeStart', function (event, next) {
-			if (page.auth.isLoggedIn()) {
-				if (!page.auth.isAuthorized()) {
-					if (!next.$$route) {
-						page.$location.url(page.router.register());
-					}
+  'pageService', function (page) {
+    if (page.constants.locked) {
+      page.$rootScope.$on('$routeChangeStart', function (event, next) {
+        if (page.auth.isLoggedIn()) {
+          if (!page.auth.isAuthorized()) {
+            if (!next.$$route) {
+              page.$location.url(page.router.register());
+            }
 
-					var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
+            var controller = angular.isFunction(next.$$route.controller) ? next.$$route.controller() : next.$$route.controller;
 
-					if (controller !== 'registerView') {
-						page.$location.url(page.router.register());
-					}
-				} else if (!next.authenticate && next.$$route.controller !== 'errorView' && next.$$route.originalPath !== '/profile') {
-					page.$location.url(page.router.index());
-				}
-			} else {
-				if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'registerView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'registerView')) {
-					page.$location.url(page.router.register());
-				} else if (next.authenticate) {
-					page.$location.url(page.router.index());
-				}
-			}
-		});
-	}
-	}
+            if (controller !== 'registerView') {
+              page.$location.url(page.router.register());
+            }
+          } else if (!next.authenticate && next.$$route.controller !== 'errorView' && next.$$route.originalPath !== '/profile') {
+            page.$location.url(page.router.index());
+          }
+        } else {
+          if (page.auth.isPasswordPending() && next.$$route && next.$$route.controller != 'registerView' && (!angular.isFunction(next.$$route.controller) || next.$$route.controller() != 'registerView')) {
+            page.$location.url(page.router.register());
+          } else if (next.authenticate) {
+            page.$location.url(page.router.index());
+          }
+        }
+      });
+    }
+  }
 ]);
 
 

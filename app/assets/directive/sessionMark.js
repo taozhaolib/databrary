@@ -1,54 +1,54 @@
 'use strict';
 
 module.directive('sessionMark', [
-	'pageService', function (page) {
-                var types = {
-                        exclusion: 'purple',
-                        pilot: 'red',
-                };
-		var link = function ($scope, $el) {
-                        var cat = page.constants.data.category[$scope.cat.id];
-			var type = types[cat.name];
+  'pageService', function (page) {
+    var types = {
+      exclusion: 'purple',
+      pilot: 'red',
+    };
+    var link = function ($scope, $el) {
+      var cat = page.constants.data.category[$scope.cat.id];
+      var type = types[cat.name];
 
-                        if (!type)
-                                return $el.remove();
+      if (!type)
+        return $el.remove();
 
-                        var message = "<strong>" + $scope.capitalize(cat.name) + "</strong>: " + page.constants.message('mark.' + cat.name + '.help');
-                        var extras = [];
-                        angular.forEach($scope.cat.records, function (r) {
-                                var i = $scope.recordIdentifier(r);
-                                if (i)
-                                        extras.push(i);
-                        });
-                        if (extras.length)
-                                message += ": <em>" + extras.join(", ") + "</em>";
+      var message = "<strong>" + $scope.capitalize(cat.name) + "</strong>: " + page.constants.message('mark.' + cat.name + '.help');
+      var extras = [];
+      angular.forEach($scope.cat.records, function (r) {
+        var i = $scope.recordIdentifier(r);
+        if (i)
+          extras.push(i);
+      });
+      if (extras.length)
+        message += ": <em>" + extras.join(", ") + "</em>";
 
-			var tooltip = page.tooltips.add({
-                                message: message,
-				type: type,
-				$target: $el
-			});
+      var tooltip = page.tooltips.add({
+        message: message,
+        type: type,
+        $target: $el
+      });
 
-                        $scope.cat.displayed = true;
+      $scope.cat.displayed = true;
 
-			//
+      //
 
-			$scope.$on('$destroy', function () {
-				page.tooltips.remove(tooltip);
-			});
+      $scope.$on('$destroy', function () {
+        page.tooltips.remove(tooltip);
+      });
 
-			//
+      //
 
-			$scope.mark = cat.name;
-			$scope.markClass = 'session-mark-' + $scope.mark;
-		};
+      $scope.mark = cat.name;
+      $scope.markClass = 'session-mark-' + $scope.mark;
+    };
 
-		return {
-			restrict: 'E',
-			templateUrl: 'sessionMark.html',
-			scope: false,
-			replace: true,
-			link: link
-		};
-	}
+    return {
+      restrict: 'E',
+      templateUrl: 'sessionMark.html',
+      scope: false,
+      replace: true,
+      link: link
+    };
+  }
 ]);

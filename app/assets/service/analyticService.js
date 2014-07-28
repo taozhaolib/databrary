@@ -1,76 +1,76 @@
 'use strict';
 
 module.factory('analyticService', [
-	'$rootScope',
-	'$location',
-	'$cacheFactory',
-	function ($rootScope, $location, $cacheFactory) {
-		var analytics = {};
-		var queue = [];
+  '$rootScope',
+  '$location',
+  '$cacheFactory',
+  function ($rootScope, $location, $cacheFactory) {
+    var analytics = {};
+    var queue = [];
 
-		//
+    //
 
-		analytics.dump = function (config) {
-			if (!queue.length) {
-				return false;
-			}
+    analytics.dump = function (config) {
+      if (!queue.length) {
+        return false;
+      }
 
-			if (config.url.indexOf('null') > -1) {
-				return JSON.stringify(queue.splice(0, queue.length));
-			}
+      if (config.url.indexOf('null') > -1) {
+        return JSON.stringify(queue.splice(0, queue.length));
+      }
 
-			var info = $cacheFactory.info();
-			var cache, key;
+      var info = $cacheFactory.info();
+      var cache, key;
 
-			for (key in info) {
-				if (config.url.indexOf(key) > -1) {
-					cache = $cacheFactory.get(key);
+      for (key in info) {
+        if (config.url.indexOf(key) > -1) {
+          cache = $cacheFactory.get(key);
 
-					if (!cache.get(config.url)) {
-						return JSON.stringify(queue.splice(0, queue.length));
-					}
+          if (!cache.get(config.url)) {
+            return JSON.stringify(queue.splice(0, queue.length));
+          }
 
-					break;
-				}
-			}
+          break;
+        }
+      }
 
-			return false;
-		};
+      return false;
+    };
 
-		analytics.add = function (action, route, data) {
-			var analytic = {};
+    analytics.add = function (action, route, data) {
+      var analytic = {};
 
-			analytic.action = action;
-			analytic.route = angular.isString(route) ? route : $location.url();
-			analytic.data = angular.isObject(route) ? route : data || {};
+      analytic.action = action;
+      analytic.route = angular.isString(route) ? route : $location.url();
+      analytic.data = angular.isObject(route) ? route : data || {};
 
-			if (analytic.data.error && angular.isString(analytic.data.error.data) && analytic.data.error.data.length > 512) {
-				return;
-			}
+      if (analytic.data.error && angular.isString(analytic.data.error.data) && analytic.data.error.data.length > 512) {
+        return;
+      }
 
-			queue.push(analytic);
-		};
+      queue.push(analytic);
+    };
 
-		//
+    //
 
-		$rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
-			analytics.add('open', $location.url(), {
-				current: current && current.controller,
-				previous: previous && previous.controller,
-			});
-		});
+    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
+      analytics.add('open', $location.url(), {
+        current: current && current.controller,
+        previous: previous && previous.controller,
+      });
+    });
 
-		$rootScope.$on('$routeChangeError', function (event, next, current, error) {
-			analytics.add('close', $location.url(), {
-				next: next && next.controller,
-				current: current && current.controller,
-				error: error,
-			});
-		});
+    $rootScope.$on('$routeChangeError', function (event, next, current, error) {
+      analytics.add('close', $location.url(), {
+        next: next && next.controller,
+        current: current && current.controller,
+        error: error,
+      });
+    });
 
-		//
+    //
 
-		return analytics;
-	}
+    return analytics;
+  }
 ]);
 

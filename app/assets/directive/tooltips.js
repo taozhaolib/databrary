@@ -1,57 +1,57 @@
 'use strict';
 
 module.directive('tooltips', [
-	'pageService', function (page) {
-		var controller = ['$scope', function ($scope) {
-			var Region = function () {
-				this.enabled = true;
+  'pageService', function (page) {
+    var controller = ['$scope', function ($scope) {
+      var Region = function () {
+        this.enabled = true;
 
-				//
+        //
 
-				this.getControllerClasses = function () {
-					var classes = [];
+        this.getControllerClasses = function () {
+          var classes = [];
 
-					if ($scope.enabled) {
-						classes.push('tooltips-enabled');
-					}
+          if ($scope.enabled) {
+            classes.push('tooltips-enabled');
+          }
 
-					return classes;
-				};
+          return classes;
+        };
 
-				//
+        //
 
-				this.getTooltipClasses = function (tooltip) {
-					var classes = tooltip.cls.split(' ');
+        this.getTooltipClasses = function (tooltip) {
+          var classes = tooltip.cls.split(' ');
 
-					classes.push('tooltip');
-					classes.push('tooltip-' + tooltip.type);
+          classes.push('tooltip');
+          classes.push('tooltip-' + tooltip.type);
 
-					if (tooltip.position) {
-						classes.push('tooltip-' + tooltip.position[0]);
-						classes.push('tooltip-' + tooltip.position[1]);
-					}
+          if (tooltip.position) {
+            classes.push('tooltip-' + tooltip.position[0]);
+            classes.push('tooltip-' + tooltip.position[1]);
+          }
 
-					if (tooltip.visible) {
-						classes.push('tooltip-visible');
-					}
+          if (tooltip.visible) {
+            classes.push('tooltip-visible');
+          }
 
-					return classes;
-				};
-			};
+          return classes;
+        };
+      };
 
-			Region.prototype = page.tooltips;
+      Region.prototype = page.tooltips;
 
-			return new Region();
-		}];
+      return new Region();
+    }];
 
-		//
+    //
 
-		return {
-			restrict: 'E',
-			replace: true,
-			templateUrl: 'tooltips.html',
-			controller: controller,
-			controllerAs: 'tooltips',
-		};
-	}
+    return {
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'tooltips.html',
+      controller: controller,
+      controllerAs: 'tooltips',
+    };
+  }
 ]);

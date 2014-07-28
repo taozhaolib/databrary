@@ -1,513 +1,513 @@
 'use strict';
 
 module.factory('browserService', [
-	'$rootScope',
-	'ArrayHelper',
-	'slot',
-	'typeService',
-	'messageService',
-	'constantService',
-	'tooltipService',
-	'$timeout',
-	'displayService',
-	function ($rootScope, ArrayHelper, slot, typeService, messages, constants, tooltips, $timeout, display) {
-		var browserService = {};
+  '$rootScope',
+  'ArrayHelper',
+  'slot',
+  'typeService',
+  'messageService',
+  'constantService',
+  'tooltipService',
+  '$timeout',
+  'displayService',
+  function ($rootScope, ArrayHelper, slot, typeService, messages, constants, tooltips, $timeout, display) {
+    var browserService = {};
 
-		//
-		
-		var DEFAULT_OPTIONS = {
-			record: {
-				allow: true,
-				categories: new ArrayHelper([])
-			},
+    //
 
-			session: {
-				allow: true,
-				active: true,
-				expand: false,
-			}
-		};
+    var DEFAULT_OPTIONS = {
+      record: {
+        allow: true,
+        categories: new ArrayHelper([])
+      },
 
-		var DEFAULT_CATEGORY = {
-			allow: true,
-			active: false,
-			expand: true,
-		};
+      session: {
+        allow: true,
+        active: true,
+        expand: false,
+      }
+    };
 
-		//
+    var DEFAULT_CATEGORY = {
+      allow: true,
+      active: false,
+      expand: true,
+    };
 
-		var volume;
+    //
 
-		//
+    var volume;
 
-		browserService.options = {};
+    //
 
-		browserService.data = {};
+    browserService.options = {};
 
-		browserService.groups = {};
+    browserService.data = {};
 
-		//
+    browserService.groups = {};
 
-		browserService.initialize = function (newVolume) {
-			browserService.query = '';
+    //
 
-			newVolume.$promise.then(initialize);
-		};
+    browserService.initialize = function (newVolume) {
+      browserService.query = '';
 
-		var initialize = function (newVolume) {
-                        volume = newVolume;
+      newVolume.$promise.then(initialize);
+    };
 
-			angular.extend(browserService.options, DEFAULT_OPTIONS);
+    var initialize = function (newVolume) {
+      volume = newVolume;
 
-                        browserService.options.record.categories = new ArrayHelper(
-                                volume.categories.map(function (category) {
-                                        return angular.extend({
-                                                id: category,
-                                                name: constants.data.category[category].name,
-                                        }, DEFAULT_CATEGORY);
-                                }));
+      angular.extend(browserService.options, DEFAULT_OPTIONS);
 
-			rebuildData();
-		};
+      browserService.options.record.categories = new ArrayHelper(
+        volume.categories.map(function (category) {
+          return angular.extend({
+            id: category,
+            name: constants.data.category[category].name,
+          }, DEFAULT_CATEGORY);
+        }));
 
-		//
+      rebuildData();
+    };
 
-		var focus, focusInvert, focusPosition;
+    //
 
-		var rebuildData = function (focusGroup) {
-			if (focusGroup) {
-				focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
-				focusPosition = getLevelByGroup(focusGroup.id);
-			}
+    var focus, focusInvert, focusPosition;
 
-			focus = focusGroup;
+    var rebuildData = function (focusGroup) {
+      if (focusGroup) {
+        focusInvert = (focus == focusGroup && getLevelByGroup(focusGroup.id) == focusPosition) ? !focusInvert : undefined;
+        focusPosition = getLevelByGroup(focusGroup.id);
+      }
 
-			var groups = getActiveGroups(),
-				data = {
-					items: [],
-					level: -1,
-					group: 'browser',
-					limit: 20
-				};
+      focus = focusGroup;
 
-			browserService.groups = {};
+      var groups = getActiveGroups(),
+        data = {
+          items: [],
+          level: -1,
+          group: 'browser',
+          limit: 20
+        };
 
-			angular.forEach(groups, function (group) {
-				browserService.groups[group] = [];
-			});
+      browserService.groups = {};
 
-			if (groups[0] == 'session')
-                                callbackSessions(data, volume);
-                        else
-                                callbackRecords(data, volume, groups);
+      angular.forEach(groups, function (group) {
+        browserService.groups[group] = [];
+      });
 
-			angular.extend(browserService.data, data);
+      if (groups[0] == 'session')
+        callbackSessions(data, volume);
+      else
+        callbackRecords(data, volume, groups);
 
-			return data;
-		};
+      angular.extend(browserService.data, data);
 
-		var updateData = function (data) {
-			if (!data.object) {
-				return undefined;
-			}
+      return data;
+    };
 
-			var groups = getActiveGroups();
+    var updateData = function (data) {
+      if (!data.object) {
+        return undefined;
+      }
 
-			if (!groups[data.level]) {
-				return undefined;
-			}
+      var groups = getActiveGroups();
 
-			if (data.group == 'session')
-                                callbackSessionChildren(data);
-                        else
-                                callbackRecordChildren(data, data.volume, groups);
+      if (!groups[data.level]) {
+        return undefined;
+      }
 
-			return data;
-		};
+      if (data.group == 'session')
+        callbackSessionChildren(data);
+      else
+        callbackRecordChildren(data, data.volume, groups);
 
-		var isGroupAllowed = function (group) {
-			return browserService.options[group] && browserService.options[group].allow;
-		};
-
-		var isGroupActive = function (group) {
-			return isGroupAllowed(group) && browserService.options[group].active;
-		};
-
-		var getActiveGroups = function () {
-			var groups = [];
-
-			groups.push.apply(groups, getActiveRecordGroups());
+      return data;
+    };
 
-			if (isGroupActive('session')) {
-				groups.push('session');
-			}
+    var isGroupAllowed = function (group) {
+      return browserService.options[group] && browserService.options[group].allow;
+    };
+
+    var isGroupActive = function (group) {
+      return isGroupAllowed(group) && browserService.options[group].active;
+    };
+
+    var getActiveGroups = function () {
+      var groups = [];
+
+      groups.push.apply(groups, getActiveRecordGroups());
 
-			return groups;
-		};
-
-		var getAllowedGroups = function () {
-			var groups = [];
-
-			groups.push.apply(groups, getAllowedRecordGroups());
-
-			if (isGroupAllowed('session')) {
-				groups.push('session');
-			}
-
-			return groups;
-		};
-
-		var getActiveRecordGroups = function () {
-			var groups = [];
-
-			angular.forEach(browserService.options.record.categories, function (category) {
-				if (category.allow && category.active) {
-					groups.push(category.id);
-				}
-			});
+      if (isGroupActive('session')) {
+        groups.push('session');
+      }
 
-			return groups;
-		};
+      return groups;
+    };
+
+    var getAllowedGroups = function () {
+      var groups = [];
+
+      groups.push.apply(groups, getAllowedRecordGroups());
+
+      if (isGroupAllowed('session')) {
+        groups.push('session');
+      }
+
+      return groups;
+    };
+
+    var getActiveRecordGroups = function () {
+      var groups = [];
+
+      angular.forEach(browserService.options.record.categories, function (category) {
+        if (category.allow && category.active) {
+          groups.push(category.id);
+        }
+      });
 
-		var getAllowedRecordGroups = function () {
-			var groups = [];
+      return groups;
+    };
 
-			angular.forEach(browserService.options.record.categories, function (category) {
-				if (category.allow) {
-					groups.push(category.id);
-				}
-			});
+    var getAllowedRecordGroups = function () {
+      var groups = [];
 
-			return groups;
-		};
+      angular.forEach(browserService.options.record.categories, function (category) {
+        if (category.allow) {
+          groups.push(category.id);
+        }
+      });
 
-		browserService.isLastGroup = function (group) {
-			var groups = getAllowedGroups();
+      return groups;
+    };
 
-			return groups.indexOf(group) == groups.length - 1;
-		};
+    browserService.isLastGroup = function (group) {
+      var groups = getAllowedGroups();
 
-		browserService.showList = function (data) {
-			return !!getActiveGroups()[data.level + 1];
-		};
-
-		//
+      return groups.indexOf(group) == groups.length - 1;
+    };
 
-		var callbackRecords = function (data, volume, groups) {
-                        var category = groups[data.level+1];
-			var tempData = {};
-			var sessions = data.sessions || volume.sessions;
+    browserService.showList = function (data) {
+      return !!getActiveGroups()[data.level + 1];
+    };
+
+    //
 
-			angular.forEach(sessions, function (session, sid) {
-                                var any = false;
-                                angular.forEach(session.records, function (record) {
-                                        if (volume.records[record.id].category == category) {
-						if (!(record.id in tempData))
-							tempData[record.id] = {};
-						tempData[record.id][sid] = session;
-                                                any = true;
-                                        }
-                                });
-
-                                if (!any) {
-					if (!('null' in tempData))
-						tempData['null'] = {};
-					tempData['null'][sid] = session;
-				}
-			});
-
-			if (!$.isEmptyObject(tempData)) {
-				angular.forEach(tempData, function (newSessions, recordID) {
-					var newData;
-
-					if (recordID != 'null') {
-						newData = callbackItem(data, volume, newSessions, volume.records[recordID], category);
-					}
-					else {
-						newData = callbackItem(data, volume, newSessions, {
-							category: category,
-							id: 0,
-							measures: {}
-						}, category);
-					}
-
-					callbackRecordChildren(newData, volume, groups);
-				});
-
-				data.items.reverse();
-			}
-
-			return data;
-		};
-
-		var callbackRecordChildren = function (data, volume, groups) {
-			if (!browserService.getItemExpand(data)) {
-				return data;
-			}
-
-			if (groups[data.level + 1] == 'session') {
-				callbackSessions(data, volume);
-			} else {
-				callbackRecords(data, volume, groups);
-			}
-
-			return data;
-		};
-
-		var callbackSessions = function (data, volume) {
-			var sessions = data.sessions || volume.sessions;
-
-			angular.forEach(sessions, function (session) {
-				var newData = callbackItem(data, volume, undefined, session, 'session');
-
-				callbackSessionChildren(newData);
-			});
-
-			return data;
-		};
-
-		var callbackSessionChildren = function (data) {
-			if (!browserService.getItemExpand(data)) {
-				return data;
-			}
-
-			browserService.loading = false;
-		};
-
-		var callbackItem = function (data, volume, sessions, object, group) {
-			var option = getOptionByGroup(group);
-
-			var id = 'data-' + group + '-' + object.id ;
-
-			var newData = {
-				parent: data,
-				volume: volume,
-				sessions: sessions,
-				level: data.level + 1,
-
-				id: id,
-				object: object,
-				permission: object.permission || volume.permission,
-				group: group,
-				items: [],
-
-				select: false,
-				expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
-				limit: 10
-			};
-
-			if (group == 'session') {
-				var newSegment;
-				var records = volume.sessions[newData.object.id].records;
-				var cur, obj;
-				var union = function (seg, c) {
-					if (c.id === obj.id) {
-						/* if record coverage is disjoint we pretend it's continuous: */
-						seg = typeService.segmentUnion(seg, c.segment);
-					}
-					return seg;
-				};
-				for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
-                                        if (obj.id !== 0)
-                                                newSegment = typeService.segmentIntersect(newSegment, 
-                                                                records.reduce(union, null));
-				}
-				newData.segment = newSegment;
-				if (typeService.segmentEmpty(newSegment)) {
-					return newData; //in order to not push empty segmented things (contradictory constraints) onto list
-				}
-			}
-
-			browserService.groups[group].push(newData);
-
-			if (group == 'session' && object.top) {
-				data.items.unshift(newData);
-			}
-			else {
-				data.items.push(newData);
-			}
-
-			return newData;
-		};
+    var callbackRecords = function (data, volume, groups) {
+      var category = groups[data.level + 1];
+      var tempData = {};
+      var sessions = data.sessions || volume.sessions;
 
-		//
-
-		var recordGroupToggle;
+      angular.forEach(sessions, function (session, sid) {
+        var any = false;
+        angular.forEach(session.records, function (record) {
+          if (volume.records[record.id].category == category) {
+            if (!(record.id in tempData))
+              tempData[record.id] = {};
+            tempData[record.id][sid] = session;
+            any = true;
+          }
+        });
+
+        if (!any) {
+          if (!('null' in tempData))
+            tempData['null'] = {};
+          tempData['null'][sid] = session;
+        }
+      });
+
+      if (!$.isEmptyObject(tempData)) {
+        angular.forEach(tempData, function (newSessions, recordID) {
+          var newData;
+
+          if (recordID != 'null') {
+            newData = callbackItem(data, volume, newSessions, volume.records[recordID], category);
+          }
+          else {
+            newData = callbackItem(data, volume, newSessions, {
+              category: category,
+              id: 0,
+              measures: {}
+            }, category);
+          }
+
+          callbackRecordChildren(newData, volume, groups);
+        });
+
+        data.items.reverse();
+      }
+
+      return data;
+    };
+
+    var callbackRecordChildren = function (data, volume, groups) {
+      if (!browserService.getItemExpand(data)) {
+        return data;
+      }
+
+      if (groups[data.level + 1] == 'session') {
+        callbackSessions(data, volume);
+      } else {
+        callbackRecords(data, volume, groups);
+      }
+
+      return data;
+    };
+
+    var callbackSessions = function (data, volume) {
+      var sessions = data.sessions || volume.sessions;
+
+      angular.forEach(sessions, function (session) {
+        var newData = callbackItem(data, volume, undefined, session, 'session');
+
+        callbackSessionChildren(newData);
+      });
+
+      return data;
+    };
+
+    var callbackSessionChildren = function (data) {
+      if (!browserService.getItemExpand(data)) {
+        return data;
+      }
+
+      browserService.loading = false;
+    };
+
+    var callbackItem = function (data, volume, sessions, object, group) {
+      var option = getOptionByGroup(group);
+
+      var id = 'data-' + group + '-' + object.id;
+
+      var newData = {
+        parent: data,
+        volume: volume,
+        sessions: sessions,
+        level: data.level + 1,
+
+        id: id,
+        object: object,
+        permission: object.permission || volume.permission,
+        group: group,
+        items: [],
+
+        select: false,
+        expand: (focus && focus.id == group) ? ((angular.isDefined(focusInvert)) ? focusInvert : false) : option.expand,
+        limit: 10
+      };
+
+      if (group == 'session') {
+        var newSegment;
+        var records = volume.sessions[newData.object.id].records;
+        var cur, obj;
+        var union = function (seg, c) {
+          if (c.id === obj.id) {
+            /* if record coverage is disjoint we pretend it's continuous: */
+            seg = typeService.segmentUnion(seg, c.segment);
+          }
+          return seg;
+        };
+        for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
+          if (obj.id !== 0)
+            newSegment = typeService.segmentIntersect(newSegment,
+              records.reduce(union, null));
+        }
+        newData.segment = newSegment;
+        if (typeService.segmentEmpty(newSegment)) {
+          return newData; //in order to not push empty segmented things (contradictory constraints) onto list
+        }
+      }
+
+      browserService.groups[group].push(newData);
+
+      if (group == 'session' && object.top) {
+        data.items.unshift(newData);
+      }
+      else {
+        data.items.push(newData);
+      }
+
+      return newData;
+    };
 
-		browserService.setRecordGroupToggle = function (group) {
-			if (group == 'add') {
-				var c = 0, maybe;
-
-				angular.forEach(browserService.options.record.categories, function (recordGroup) {
-					if (!recordGroup.active) {
-						maybe = recordGroup;
-						c++;
-					}
-				});
-
-				if (c == 1) {
-					browserService.addRecordGroup(maybe);
-					return true;
-				}
-			}
-
-			recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
-		};
+    //
+
+    var recordGroupToggle;
 
-		browserService.clearRecordGroupToggle = function () {
-			if (angular.isDefined(recordGroupToggle)) {
-				recordGroupToggle = undefined;
-			}
-		};
-
-		browserService.isRecordGroupToggle = function (group) {
-			return recordGroupToggle == group;
-		};
-
-		//
+    browserService.setRecordGroupToggle = function (group) {
+      if (group == 'add') {
+        var c = 0, maybe;
+
+        angular.forEach(browserService.options.record.categories, function (recordGroup) {
+          if (!recordGroup.active) {
+            maybe = recordGroup;
+            c++;
+          }
+        });
+
+        if (c == 1) {
+          browserService.addRecordGroup(maybe);
+          return true;
+        }
+      }
+
+      recordGroupToggle = angular.isUndefined(recordGroupToggle) ? group : undefined;
+    };
 
-		browserService.canAddRecordGroup = function () {
-			var canAdd = false;
+    browserService.clearRecordGroupToggle = function () {
+      if (angular.isDefined(recordGroupToggle)) {
+        recordGroupToggle = undefined;
+      }
+    };
+
+    browserService.isRecordGroupToggle = function (group) {
+      return recordGroupToggle == group;
+    };
+
+    //
 
-			angular.forEach(browserService.options.record.categories, function (recordGroup) {
-				if (!canAdd && !recordGroup.active) {
-					canAdd = true;
-				}
-			});
-
-			return canAdd;
-		};
+    browserService.canAddRecordGroup = function () {
+      var canAdd = false;
 
-		browserService.addRecordGroup = function (group) {
-			browserService.setRecordGroupToggle(undefined);
+      angular.forEach(browserService.options.record.categories, function (recordGroup) {
+        if (!canAdd && !recordGroup.active) {
+          canAdd = true;
+        }
+      });
+
+      return canAdd;
+    };
 
-			var i = browserService.options.record.categories.index(group);
+    browserService.addRecordGroup = function (group) {
+      browserService.setRecordGroupToggle(undefined);
 
-			group.active = true;
+      var i = browserService.options.record.categories.index(group);
 
-			browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
+      group.active = true;
 
-			rebuildData(group);
-		};
+      browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
 
-		browserService.canRemoveRecordGroup = function () {
-			return true;
-		};
+      rebuildData(group);
+    };
 
-		browserService.removeRecordGroup = function (group) {
-			group.active = false;
-
-			var group_i = browserService.options.record.categories.index(group);
-
-			browserService.options.record.categories.splice(group_i, 1);
-			browserService.options.record.categories.push(group);
+    browserService.canRemoveRecordGroup = function () {
+      return true;
+    };
 
-			rebuildData();
-		};
+    browserService.removeRecordGroup = function (group) {
+      group.active = false;
+
+      var group_i = browserService.options.record.categories.index(group);
+
+      browserService.options.record.categories.splice(group_i, 1);
+      browserService.options.record.categories.push(group);
 
-		browserService.switchRecordGroup = function (group, maybe) {
-			browserService.setRecordGroupToggle(undefined);
+      rebuildData();
+    };
 
-			var group_i = browserService.options.record.categories.index(group),
-				maybe_i = browserService.options.record.categories.index(maybe);
+    browserService.switchRecordGroup = function (group, maybe) {
+      browserService.setRecordGroupToggle(undefined);
 
-			if (group.active != maybe.active) {
-				group.active = !group.active;
-				maybe.active = !maybe.active;
-			}
+      var group_i = browserService.options.record.categories.index(group),
+        maybe_i = browserService.options.record.categories.index(maybe);
 
-			browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
+      if (group.active != maybe.active) {
+        group.active = !group.active;
+        maybe.active = !maybe.active;
+      }
 
-			rebuildData(maybe);
-		};
+      browserService.options.record.categories[group_i] = browserService.options.record.categories.splice(maybe_i, 1, browserService.options.record.categories[group_i])[0];
 
-		//
+      rebuildData(maybe);
+    };
 
-		browserService.setItemExpand = function (data, expand) {
-			if (!data.expand && expand !== false) {
-				data.expand = true;
+    //
 
-				if (!angular.isArray(data.items) || data.items.length === 0) {
-					updateData(data);
-				}
-			} else if (data.expand && expand !== true) {
-				data.expand = false;
+    browserService.setItemExpand = function (data, expand) {
+      if (!data.expand && expand !== false) {
+        data.expand = true;
 
-				if (data == browserService.player) {
-					browserService.setItemPlayer(undefined);
-				}
-			}
+        if (!angular.isArray(data.items) || data.items.length === 0) {
+          updateData(data);
+        }
+      } else if (data.expand && expand !== true) {
+        data.expand = false;
 
-			return data;
-		};
+        if (data == browserService.player) {
+          browserService.setItemPlayer(undefined);
+        }
+      }
 
-		browserService.getItemExpand = function (data) {
-			return data.expand;
-		};
+      return data;
+    };
 
-		browserService.canExpand = function (data) {
-			return data.level >= 0 && getActiveGroups()[data.level + 1];
-		};
+    browserService.getItemExpand = function (data) {
+      return data.expand;
+    };
 
-		//
+    browserService.canExpand = function (data) {
+      return data.level >= 0 && getActiveGroups()[data.level + 1];
+    };
 
-		var getOptionByGroup = function (group) {
-			if (group == 'session')
-                                return browserService.options.session;
-                        else
-                                return browserService.options.record.categories.find({id: group});
-		};
+    //
 
-		var getLevelByGroup = function (group) {
-			return getActiveGroups().indexOf(group);
-		};
+    var getOptionByGroup = function (group) {
+      if (group == 'session')
+        return browserService.options.session;
+      else
+        return browserService.options.record.categories.find({id: group});
+    };
 
-		//
+    var getLevelByGroup = function (group) {
+      return getActiveGroups().indexOf(group);
+    };
 
-		browserService.player = undefined;
+    //
 
-		browserService.setItemPlayer = function (data) {
-			var newPlayer, newPlayed;
+    browserService.player = undefined;
 
-			if (angular.isUndefined(data)) {
-				newPlayed = undefined;
-				newPlayer = undefined;
-			} else {
-				newPlayed = data.items[0] || undefined;
-				newPlayer = data;
-			}
+    browserService.setItemPlayer = function (data) {
+      var newPlayer, newPlayed;
 
-			if (angular.isUndefined(browserService.player)) {
-				browserService.player = newPlayer;
+      if (angular.isUndefined(data)) {
+        newPlayed = undefined;
+        newPlayer = undefined;
+      } else {
+        newPlayed = data.items[0] || undefined;
+        newPlayer = data;
+      }
 
-				browserService.player.player = true;
+      if (angular.isUndefined(browserService.player)) {
+        browserService.player = newPlayer;
 
-				browserService.player.played = newPlayed;
-			} else if (browserService.player != newPlayer) {
-				browserService.player.player = false;
+        browserService.player.player = true;
 
-				browserService.player = newPlayer;
+        browserService.player.played = newPlayed;
+      } else if (browserService.player != newPlayer) {
+        browserService.player.player = false;
 
-				if (angular.isDefined(browserService.player)) {
-					browserService.player.player = true;
-					browserService.player.played = newPlayed;
-				}
-			} else if (browserService.player.played != newPlayed) {
-				browserService.player.played = newPlayed;
-			} else {
-				browserService.player.player = false;
+        browserService.player = newPlayer;
 
-				browserService.player = undefined;
-			}
+        if (angular.isDefined(browserService.player)) {
+          browserService.player.player = true;
+          browserService.player.played = newPlayed;
+        }
+      } else if (browserService.player.played != newPlayed) {
+        browserService.player.played = newPlayed;
+      } else {
+        browserService.player.player = false;
 
-			if (data && data.parent && data.parent.id)
-				display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
+        browserService.player = undefined;
+      }
 
-			return browserService.player;
-		};
+      if (data && data.parent && data.parent.id)
+        display.scrollTo($('#' + data.parent.id).find('.browser-controller'));
 
-		//
+      return browserService.player;
+    };
 
-		return browserService;
-	}
+    //
+
+    return browserService;
+  }
 ]);

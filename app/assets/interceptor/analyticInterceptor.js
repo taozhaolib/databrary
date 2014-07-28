@@ -1,23 +1,23 @@
 'use strict';
 
 module.factory('analyticInterceptor', [
-	'$rootScope', 'analyticService', function ($rootScope, analytics) {
-		return {
-			request: function (config) {
-				var json = analytics.dump(config);
+  '$rootScope', 'analyticService', function ($rootScope, analytics) {
+    return {
+      request: function (config) {
+        var json = analytics.dump(config);
 
-				if (json) {
-					config.headers.Analytics = json;
-				}
+        if (json) {
+          config.headers.Analytics = json;
+        }
 
-				return config;
-			}
-		};
-	}
+        return config;
+      }
+    };
+  }
 ]);
 
 module.config([
-	'$httpProvider', function ($httpProvider) {
-		$httpProvider.interceptors.push('analyticInterceptor');
-	}
+  '$httpProvider', function ($httpProvider) {
+    $httpProvider.interceptors.push('analyticInterceptor');
+  }
 ]);

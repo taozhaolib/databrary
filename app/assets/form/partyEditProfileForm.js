@@ -1,173 +1,173 @@
 'use strict';
 
 module.directive('partyEditProfileForm', [
-	'pageService', function (page) {
-		var link = function ($scope) {
-			var form = $scope.partyEditProfileForm;
+  'pageService', function (page) {
+    var link = function ($scope) {
+      var form = $scope.partyEditProfileForm;
 
-			form.data = {};
-			form.authors = [];
-			var backup = {};
+      form.data = {};
+      form.authors = [];
+      var backup = {};
 
-			form.saveFn = undefined;
-			form.resetFn = undefined;
-			form.successFn = undefined;
-			form.errorFn = undefined;
+      form.saveFn = undefined;
+      form.resetFn = undefined;
+      form.successFn = undefined;
+      form.errorFn = undefined;
 
-			//
+      //
 
-			form.init = function (party) {
-				form.party = form.party || party;
-				form.data = {
-					name: party.name,
-					orcid: party.orcid,
-					affiliation: party.affiliation,
-					avatar: party.avatar,
-					url: party.url
-				};
+      form.init = function (party) {
+        form.party = form.party || party;
+        form.data = {
+          name: party.name,
+          orcid: party.orcid,
+          affiliation: party.affiliation,
+          avatar: party.avatar,
+          url: party.url
+        };
 
-				backup = $.extend(true, {}, form.data);
-			};
+        backup = $.extend(true, {}, form.data);
+      };
 
-			//
+      //
 
-			form.save = function () {
-				if (angular.isFunction(form.saveFn)) {
-					form.saveFn(form);
-				}
+      form.save = function () {
+        if (angular.isFunction(form.saveFn)) {
+          form.saveFn(form);
+        }
 
-				if (angular.isObject(form.data.avatar)) {
-					var fd = new FormData();
+        if (angular.isObject(form.data.avatar)) {
+          var fd = new FormData();
 
-					fd.append('avatar', form.data.avatar[0]);
-					form.data.avatar = undefined;
+          fd.append('avatar', form.data.avatar[0]);
+          form.data.avatar = undefined;
 
-					for (var prop in form.data) {
-						if (form.data.hasOwnProperty(prop) && angular.isDefined(form.data[prop]) && form.data[prop] !== null) {
-							fd.append(prop, form.data[prop]);
-						}
-					}
+          for (var prop in form.data) {
+            if (form.data.hasOwnProperty(prop) && angular.isDefined(form.data[prop]) && form.data[prop] !== null) {
+              fd.append(prop, form.data[prop]);
+            }
+          }
 
-					var msg = form.messages.add({
-						type: 'yellow',
-						body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
-					});
+          var msg = form.messages.add({
+            type: 'yellow',
+            body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
+          });
 
-					page.models.party.upload(form.party, fd)
-						.then(function (res) {
-							form.validator.server({});
+          page.models.party.upload(form.party, fd)
+            .then(function (res) {
+              form.validator.server({});
 
-							form.messages.add({
-								type: 'green',
-								countdown: 3000,
-								body: page.constants.message('party.edit.profile.success'),
-							});
+              form.messages.add({
+                type: 'green',
+                countdown: 3000,
+                body: page.constants.message('party.edit.profile.success'),
+              });
 
-							form.data.avatar = res.data.avatar;
+              form.data.avatar = res.data.avatar;
 
-							backup = $.extend(true, {}, form.data);
+              backup = $.extend(true, {}, form.data);
 
-							if (page.auth.user.id == form.party.id)
-								page.auth.user.name = res.name;
+              if (page.auth.user.id == form.party.id)
+                page.auth.user.name = res.name;
 
-							form.messages.remove(msg);
+              form.messages.remove(msg);
 
-							if (angular.isFunction(form.successFn)) {
-								form.successFn(form, res);
-							}
+              if (angular.isFunction(form.successFn)) {
+                form.successFn(form, res);
+              }
 
-							form.$setPristine();
-							page.models.party.$cache.removeAll();
-						}, function (res) {
-							form.validator.server(res);
-							page.display.scrollTo(form.$element);
+              form.$setPristine();
+              page.models.party.$cache.removeAll();
+            }, function (res) {
+              form.validator.server(res);
+              page.display.scrollTo(form.$element);
 
-							form.messages.remove(msg);
+              form.messages.remove(msg);
 
-							if (angular.isFunction(form.errorFn)) {
-								form.errorFn(form, res);
-							}
-						});
-				} else {
-					page.models.party.save({
-							id: form.party.id,
-						}, form.data,
-						function (res) {
-							form.validator.server({});
+              if (angular.isFunction(form.errorFn)) {
+                form.errorFn(form, res);
+              }
+            });
+        } else {
+          page.models.party.save({
+              id: form.party.id,
+            }, form.data,
+            function (res) {
+              form.validator.server({});
 
-							form.messages.add({
-								type: 'green',
-								countdown: 3000,
-								body: page.constants.message('party.edit.profile.success'),
-							});
+              form.messages.add({
+                type: 'green',
+                countdown: 3000,
+                body: page.constants.message('party.edit.profile.success'),
+              });
 
-							backup = $.extend(true, {}, form.data);
+              backup = $.extend(true, {}, form.data);
 
-							if (page.auth.user.id == form.party.id)
-								page.auth.user.name = res.name;
+              if (page.auth.user.id == form.party.id)
+                page.auth.user.name = res.name;
 
-							if (angular.isFunction(form.successFn)) {
-								form.successFn(form, res);
-							}
+              if (angular.isFunction(form.successFn)) {
+                form.successFn(form, res);
+              }
 
-							form.$setPristine();
-							page.models.party.$cache.removeAll();
-						}, function (res) {
-							form.validator.server(res);
-							page.display.scrollTo(form.$element);
+              form.$setPristine();
+              page.models.party.$cache.removeAll();
+            }, function (res) {
+              form.validator.server(res);
+              page.display.scrollTo(form.$element);
 
-							if (angular.isFunction(form.errorFn)) {
-								form.errorFn(form, res);
-							}
-						});
-				}
-			};
+              if (angular.isFunction(form.errorFn)) {
+                form.errorFn(form, res);
+              }
+            });
+        }
+      };
 
-			form.reset = function () {
-				if (angular.isFunction(form.resetFn)) {
-					form.resetFn(form);
-				}
+      form.reset = function () {
+        if (angular.isFunction(form.resetFn)) {
+          form.resetFn(form);
+        }
 
-				form.validator.clearServer();
+        form.validator.clearServer();
 
-				form.data = $.extend(true, {}, backup);
-				form.$setPristine();
-			};
+        form.data = $.extend(true, {}, backup);
+        form.$setPristine();
+      };
 
-			$scope.getAvatar = function(size){
-				return page.router.partyAvatar(form.party, size);
-			};
+      //
 
-			//
+      form.validator.client({
+        name: {
+          tips: page.constants.message('party.edit.name.help')
+        },
+        affiliation: {
+          tips: page.constants.message('party.edit.affiliation.help')
+        },
+        orcid: {
+          tips: page.constants.message('party.edit.orcid.help')
+        },
+        url: {
+          tips: page.constants.message('party.edit.url.help')
+        }
+      }, true);
 
-			form.validator.client({
-				name: {
-					tips: page.constants.message('party.edit.name.help')
-				},
-				affiliation: {
-					tips: page.constants.message('party.edit.affiliation.help')
-				},
-				orcid: {
-					tips: page.constants.message('party.edit.orcid.help')
-				},
-				url: {
-					tips: page.constants.message('party.edit.url.help')
-				}
-			}, true);
+      //
+      $scope.getAvatar = function(size){
+          return page.router.partyAvatar(form.party, size);
+      };
 
-			//
+      page.events.talk('partyEditProfileForm-init', form, $scope);
+    };
 
-			page.events.talk('partyEditProfileForm-init', form, $scope);
-		};
+    //
 
-		//
-
-		return {
-			restrict: 'E',
-			templateUrl: 'partyEditProfileForm.html',
-			scope: false,
-			replace: true,
-			link: link
-		};
-	}
+    return {
+      restrict: 'E',
+      templateUrl: 'partyEditProfileForm.html',
+      scope: false,
+      replace: true,
+      link: link
+    };
+  }
+>>>>>>> b7ee23cfd11d68f39da8511baaba3e2a2288f423
 ]);

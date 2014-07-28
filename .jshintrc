@@ -2,6 +2,7 @@
 "predef": ["angular","module","$"],
 "strict": true,
 "globalstrict": true,
+"smarttabs": true,
 "browser": true,
 "devel": true
 }
