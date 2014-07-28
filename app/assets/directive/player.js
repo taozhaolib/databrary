@@ -164,7 +164,7 @@ module.directive('player', [
 					page.$timeout(function () {
 						updateScroll();
 
-						$main.find('img, video').each(function () {
+						$main.find('.player-main-media img, .player-main-media video').each(function () {
 							$(this).width(mainH * (this.naturalWidth / this.naturalHeight));
 						});
 
