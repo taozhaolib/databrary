@@ -8,6 +8,9 @@ module.directive('fileProgress', [
 
 		return {
 			restrict: 'E',
+			scope: {
+				progressFloat: '=progressValue'
+			},
 			templateUrl: 'fileProgress.html',
 			link: link
 		};

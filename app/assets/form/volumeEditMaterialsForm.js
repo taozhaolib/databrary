@@ -41,6 +41,12 @@ module.directive('volumeEditMaterialsForm', [
 				return file;
 			};
 
+			$scope.addedCall = function(file, event){
+				$scope.addSourceScopeToFile(file,event);
+				file.srcScope.asset.file = file.file;
+				page.upload.fileAddedImmediateUpload(file);
+			};
+
 			$scope.assetCall = function(file){
 				var data = {};
 				data.name = file.srcScope.asset.name;
@@ -51,7 +57,7 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			$scope.perFileProgress = function(file){
-				file.srcScope.$parent.progressFloat = file.progress();
+				file.srcScope.$parent.fileUploadProgress = file.progress();
 			};
 
 			$scope.totalProgress = function(){

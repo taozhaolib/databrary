@@ -1,4 +1,4 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.upload.flowOptions" flow-file-added="page.upload.fileAddedImmediateUpload(addSourceScopeToFile($file,$event))" flow-file-success="assetCall($file)" flow-file-progress="perFileProgress($file)" flow-progress="totalProgress()">
+<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.upload.flowOptions" flow-file-added="addedCall($file,$event)" flow-file-success="assetCall($file)" flow-file-progress="perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
 
   <div><span>Progress: </span><span ng-bind="volumeEditMaterialsForm.totalProgress"></span></div>
@@ -14,6 +14,7 @@
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
+    <file-progress progress-value="fileUploadProgress"></file-progress>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">
