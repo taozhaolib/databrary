@@ -50,9 +50,11 @@ module.directive('volumeEditMaterialsForm', [
 			$scope.assetCall = function(file){
 				var data = {};
 				data.name = file.srcScope.asset.name;
-				data.classification = page.constants.data.classificationName[file.srcScope.asset.classification];
+				data.classification = page.classification[form.excerptsMode ? 'RESTRICTED' : file.srcScope.asset.classification];
 				data.container = file.srcScope.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
+				data.excerpt = form.excerptsMode ? page.classification[file.srcScope.asset.classification] : '';
+
 				page.upload.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
 			};
 
