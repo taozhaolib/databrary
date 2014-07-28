@@ -15,10 +15,6 @@ module.directive('browserPlayer', [
 
 				return type == 'text' ? mimetype[1] : type;
 			};
-
-			$scope.supported = function () {
-				return page.$window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || page.$window.navigator.platform.toLowerCase().indexOf('mac') == -1;
-			};
 		};
 
 		return {

@@ -6,7 +6,7 @@
       </div>
 
       <div ng-switch-when="video">
-        <video bo-if="page.types.videoSupported()" controls>
+        <video bo-if="page.display.videoSupported()" controls>
           <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
         </video>
       </div>
@@ -21,7 +21,7 @@
         <span class="filename" bo-text="page.types.assetDisplayName(media)"></span>
       </h1>
 
-      <div class="player-main-info-support" bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
+      <div class="player-main-info-support" bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>
 
       <dl class="player-main-info-list">
         <dt>Classification</dt>

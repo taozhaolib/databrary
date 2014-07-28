@@ -21,11 +21,11 @@
             </div>
 
             <div ng-switch-when="video">
-              <video bo-if="page.types.videoSupported()" controls excerpt="current">
+              <video bo-if="page.display.videoSupported()" controls excerpt="current">
                 <source ng-src="{{srcRoute}}" type="{{page.types.assetFormat(current).mimetype}}">
               </video>
 
-              <div bo-if="!page.types.videoSupported()" bo-html="'video.unsupported' | message"></div>
+              <div bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>
             </div>
 
             <div ng-switch-default></div>

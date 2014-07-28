@@ -10,7 +10,8 @@ module.factory('displayService', [
 	'routerService',
 	'$location',
 	'$timeout',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout) {
+	'$window',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout, $window) {
 		var display = {};
 
 		//
@@ -104,6 +105,16 @@ module.factory('displayService', [
 
 		display.formatAge = function (value) {
 			return $filter('age')(value, ageKey);
+		};
+
+		//
+
+		display.isMobile = function () {
+			return typeof $window.orientation !== 'undefined';
+		};
+
+		display.videoSupported = function () {
+			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
 		};
 
 		//

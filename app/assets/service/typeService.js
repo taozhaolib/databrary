@@ -213,10 +213,6 @@ module.factory('typeService', [
 			return '/public/images/filetype/16px/' + typeService.assetFormat(object).extension + '.png';
 		};
 
-		typeService.videoSupported = function () {
-			return $window.navigator.userAgent.toLowerCase().indexOf('firefox') == -1 || $window.navigator.platform.toLowerCase().indexOf('mac') == -1;
-		};
-
 		typeService.slotName = function (object) {
 			if (!typeService.isSession(object)) {
 				throw new Error('typeService.slotName() requires Slot as first argument');
