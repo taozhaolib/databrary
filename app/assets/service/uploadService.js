@@ -12,15 +12,16 @@ module.factory('uploadService', [
 		uploadS.flowOptions = {
 			target: '/api/asset/chunk',
 			method: 'octet', 
-			maxFiles: 1, 
+			simultaneousUploads: 3, 
 			testChunks: false,
 			chunkRetryInterval: 5000,
 			permanentErrors: [400,403,404,415,500,501],
 			progressCallbacksInterval: 300,
-			prioritizeFirstAndLastChunk: true
+			prioritizeFirstAndLastChunk: true 
 		};
 
 		uploadS.prepCall = function(file){
+			file.pause();
 			var x = $http.post(PREP_TARGET, undefined, {
 					params: {
 						filename:	file.name,
@@ -28,15 +29,14 @@ module.factory('uploadService', [
 					}
 			});
 
-			x.then(function(res){
+			return x.then(function(res){
 					file.uniqueIdentifier = res.data;
 			});
-			return x;
 		};
 
 		uploadS.fileAddedImmediateUpload = function(file){
 			uploadS.prepCall(file).then(function(){
-				file.flowObj.upload();
+				file.resume();
 			});
 		};
 
