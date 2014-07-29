@@ -21,11 +21,12 @@
     </validator>
 
     <validator form="partyEditProfileForm" name="avatar" label="'party.edit.avatar.title' | message">
+      <figure class="editpage-avatar">
+	   <img ng-src="{{partyEditProfileForm.avatarUrl || partyEditProfileForm.getAvatar()}}"></img>
+      </figure>
       <input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar" file-model-form="partyEditProfileForm">
    </validator>
-   <figure class="figure-avatar">
-	   <img ng-src="{{partyEditProfileForm.avatarUrl || partyEditProfileForm.getAvatar()}}"></img>
-   </figure>
+
   </fieldset>
 
   <fieldset class="clean">
