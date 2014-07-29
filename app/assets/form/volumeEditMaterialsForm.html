@@ -24,7 +24,7 @@
       <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
     </validator>
 
-    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="volumeEditMaterialsForm.saveText(this)" class="green" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
+    <button ng-click="volumeEditMaterialsForm.save(this)" ng-bind="'save' | message" class="green" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
     <button ng-click="volumeEditMaterialsForm.reset(this)" bo-html="'revert' | message" class="yellow" ng-disabled="volumeEditMaterialsForm.disableButton(this)"></button>
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
   </fieldset>

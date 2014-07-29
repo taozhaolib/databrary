@@ -80,10 +80,6 @@ module.directive('volumeEditMaterialsForm', [
 				}), 'asset.id');
 			};
 
-			form.saveText = function (subform) {
-				return subform.asset.asset && subform.asset.asset.creation ? page.constants.message('save') : page.constants.message('upload');
-			};
-
 			form.disableButton = function (subform) {
 				if (subform.form.$dirty) {
 					if (subform.asset.asset && subform.asset.asset.creation) {
