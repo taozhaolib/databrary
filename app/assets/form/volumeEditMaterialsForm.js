@@ -37,29 +37,29 @@ module.directive('volumeEditMaterialsForm', [
 			});
 
 			$scope.addSourceScopeToFile = function (file, event){
-				file.srcScope = angular.element(event.srcElement).scope();
+				file.srcForm = angular.element(event.srcElement).scope().form.subform;
 				return file;
 			};
 
 			$scope.addedCall = function(file, event){
 				$scope.addSourceScopeToFile(file,event);
-				file.srcScope.asset.file = file.file;
+				file.srcForm.asset.file = file.file;
 				page.upload.fileAddedImmediateUpload(file);
 			};
 
 			$scope.assetCall = function(file){
 				var data = {};
-				data.name = file.srcScope.asset.name;
-				data.classification = page.classification[form.excerptsMode ? 'RESTRICTED' : file.srcScope.asset.classification];
-				data.container = file.srcScope.volumeEditMaterialsForm.slot.container.id;
+				data.name = file.srcForm.asset.name;
+				data.classification = page.classification[form.excerptsMode ? 'RESTRICTED' : file.srcForm.asset.classification];
+				data.excerpt = form.excerptsMode ? page.classification[file.srcForm.asset.classification] : '';
+				data.container = file.srcForm.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
-				data.excerpt = form.excerptsMode ? page.classification[file.srcScope.asset.classification] : '';
 
-				page.upload.assetCall('/api/asset', file.srcScope.volumeEditMaterialsForm.volume.id, data);
+				page.upload.assetCall('/api/asset', file.srcForm.volumeEditMaterialsForm.volume.id, data);
 			};
 
 			$scope.perFileProgress = function(file){
-				file.srcScope.$parent.fileUploadProgress = file.progress();
+				file.srcForm.fileUploadProgress = file.progress();
 			};
 
 			$scope.totalProgress = function(){
