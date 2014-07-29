@@ -105,7 +105,7 @@ module.directive('volumeEditMaterialsForm', [
 				var excerpt = form.excerptsMode ? page.classification[subform.asset.classification] : '';
 				if (subform.asset.file) {
 					var fd = new FormData();
-					fd.append('file', subform.asset.file[0]);
+					fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this
 					fd.append('name', subform.asset.name || '');
 					fd.append('classification', classification);
 					fd.append('excerpt', excerpt);
