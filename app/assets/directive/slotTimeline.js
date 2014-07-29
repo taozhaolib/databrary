@@ -5,8 +5,7 @@ module.directive('slotTimeline', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var timeline = this;
-        timeline.slot = page.$parse($attrs.slot)($scope);
-        timeline.clock = page.$parse($attrs.clock)($scope);
+        var ctrl = page.$parse($attrs.ctrl)($scope);
       }
     ];
 

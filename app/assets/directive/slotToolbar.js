@@ -5,8 +5,13 @@ module.directive('slotToolbar', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var toolbar = this;
-        toolbar.slot = page.$parse($attrs.slot)($scope);
-        toolbar.clock = page.$parse($attrs.clock)($scope);
+        var ctrl = page.$parse($attrs.ctrl)($scope);
+
+        toolbar.action = {
+          play: function () {
+            ctrl.clock.play();
+          },
+        }
       }
     ];
 

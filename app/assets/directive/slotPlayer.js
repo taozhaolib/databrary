@@ -5,8 +5,7 @@ module.directive('slotPlayer', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var player = this;
-        player.slot = page.$parse($attrs.slot)($scope);
-        player.clock = page.$parse($attrs.clock)($scope);
+        var ctrl = page.$parse($attrs.ctrl)($scope);
 
         var $player = $element.find('.slot-player');
         var $list = $player.find('.player-list');
@@ -37,7 +36,7 @@ module.directive('slotPlayer', [
           return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
         };
 
-        player.slot.assets.map(function (asset) {
+        ctrl.slot.assets.map(function (asset) {
           return asset;
         }).sort(function (a, b) {
           if (angular.isNothing(a.segment) && angular.isNothing(b.segment)) {
@@ -53,7 +52,7 @@ module.directive('slotPlayer', [
           return aSeg < bSeg;
         }).forEach(function (asset) {
           // TODO: Type and TypeList classes that do this sort of thing
-          asset.container = player.slot.container;
+          asset.container = ctrl.slot.container;
 
           if (asset.segment === null) {
             return;
