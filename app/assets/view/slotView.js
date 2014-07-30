@@ -8,10 +8,13 @@ module.controller('slotView', [
     $scope.ctrl = {
       slot: slot,
       clock: new page.slotClock(slot),
-      media: new page.slotMedia(slot),
       state: {
         selection: null,
       },
     };
+
+    $scope.ctrl.media = new page.slotMedia(slot, $scope.ctrl.clock);
+
+    return $scope.ctrl;
   }
 ]);

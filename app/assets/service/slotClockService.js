@@ -5,11 +5,21 @@ module.factory('slotClockService', [
     // Clock
 
     var Clock = function () {
+      var clock = this;
+
       this.playFns = [];
       this.pauseFns = [];
       this.timeFns = [];
 
-      this.position = 0;
+      this.begun = 0;
+
+      Object.defineProperties(this, {
+        position: {
+          get: function () {
+            return Date.now() - clock.begun;
+          }
+        }
+      });
 
       // ticker
       this.interval = 25;
@@ -19,6 +29,7 @@ module.factory('slotClockService', [
     // Clock behaviors
 
     Clock.prototype.play = function () {
+      this.begun = Date.now();
       tickerOn(this);
       callFn(this, this.playFns);
     };

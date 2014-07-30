@@ -2,11 +2,11 @@
   <div class="player-main" ng-repeat="media in ctrl.media.current track by media.asset.id">
     <div class="player-main-media" ng-switch="page.types.assetMimeArray(media)[0]">
       <div ng-switch-when="image">
-        <img bo-src="page.router.assetLink(media, true)">
+        <img bo-src="page.router.assetLink(media, true)" slot-media="media">
       </div>
 
       <div ng-switch-when="video">
-        <video bo-if="page.display.videoSupported()" controls>
+        <video bo-if="page.display.videoSupported()" slot-media="media">
           <source bo-src="page.router.assetLink(media, true)" bo-attr bo-attr-type="page.types.assetFormat(media).mimetype">
         </video>
       </div>
