@@ -9,6 +9,8 @@ module.directive('partyEditProfileForm', [
       form.authors = [];
       var backup = {};
 
+      form.AVATAR_SIZE = 100;
+
       form.saveFn = undefined;
       form.resetFn = undefined;
       form.successFn = undefined;
@@ -78,6 +80,7 @@ module.directive('partyEditProfileForm', [
 
               form.$setPristine();
               page.models.party.$cache.removeAll();
+              form.updateAvatarUrl();
             }, function (res) {
               form.validator.server(res);
               page.display.scrollTo(form.$element);
@@ -152,8 +155,12 @@ module.directive('partyEditProfileForm', [
       }, true);
 
       //
-      $scope.getAvatar = function(size){
-          return page.router.partyAvatar(form.party, size);
+      form.getAvatar = function(nonce){
+	  return page.router.partyAvatar(form.party, form.AVATAR_SIZE, nonce);
+      };
+
+      form.updateAvatarUrl = function() {
+	      form.avatarUrl = form.getAvatar(Date.now());
       };
 
       page.events.talk('partyEditProfileForm-init', form, $scope);
