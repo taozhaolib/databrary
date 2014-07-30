@@ -3,11 +3,11 @@
 
   <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses.overForm = true" flow-drag-leave="dropClasses.overForm = false" ng-init="dropClasses={dropZone: true, overForm: false, overZone: false};" novalidate expose>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true, 'over-form': false, 'over-zone': false};" novalidate expose>
 	  <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
-        <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses.overZone = true" flow-drag-leave="dropClasses.overZone = false" ng-class="dropClasses">
+      <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
 	      <span ng-if="!asset.file">Drop here or click to browse.</span>
 	      <span ng-if="asset.file" ng-bind="asset.file.name"</span>
       </div>
