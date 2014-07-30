@@ -36,18 +36,13 @@ module.directive('volumeEditMaterialsForm', [
 				form.filterAssets();
 			});
 
-			$scope.addSourceScopeToFile = function (file, event){
+			form.addedCall = function(file, event){
 				file.srcForm = angular.element(event.srcElement).scope().form.subform;
-				return file;
+				file.srcForm.asset.file = file.file; //improve with ng-model
+				page.models.asset.fileAddedImmediateUpload(file);
 			};
 
-			$scope.addedCall = function(file, event){
-				$scope.addSourceScopeToFile(file,event);
-				file.srcForm.asset.file = file.file;
-				page.upload.fileAddedImmediateUpload(file);
-			};
-
-			$scope.assetCall = function(file){
+			form.assetCall = function(file){
 				var data = {};
 				data.name = file.srcForm.asset.name;
 				data.classification = page.classification[form.excerptsMode ? 'RESTRICTED' : file.srcForm.asset.classification];
@@ -55,10 +50,10 @@ module.directive('volumeEditMaterialsForm', [
 				data.container = file.srcForm.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
 
-				page.upload.assetCall('/api/asset', file.srcForm.volumeEditMaterialsForm.volume.id, data);
+				page.models.asset.assetCall(file.srcForm.volumeEditMaterialsForm.volume.id, data);
 			};
 
-			$scope.perFileProgress = function(file){
+			form.perFileProgress = function(file){
 				file.srcForm.fileUploadProgress = file.progress();
 			};
 
