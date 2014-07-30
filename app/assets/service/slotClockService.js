@@ -1,12 +1,10 @@
 'use strict';
 
-module.factory('clockService', [
+module.factory('slotClockService', [
   '$timeout', function ($timeout) {
     // Clock
 
     var Clock = function () {
-      var clock = this;
-
       this.playFns = [];
       this.pauseFns = [];
       this.timeFns = [];

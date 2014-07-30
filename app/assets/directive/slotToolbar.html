@@ -1,23 +1,20 @@
-<section class="slot-toolbar" bindonce>
-  <div class="slot-toolbar-seekbar">
-    SEEKBAR
-  </div>
-
-  <div class="slot-toolbar-actions">
-    <div class="slot-toolbar-left">
-      <div class="slot-toolbar-group slot-toolbar-group-player">
-        <div name="play" scope="slotToolbar-registerButton" class="slot-toolbar-button" ng-click="toolbar.action.play()"></div>
-      </div>
-
-      <div class="slot-toolbar-group slot-toolbar-group-timeline">
-        TIMELINE BUTTONS
-      </div>
+<section class="slot-toolbar cf" bindonce>
+  <div class="slot-toolbar-left">
+    <div class="slot-toolbar-group slot-toolbar-group-player">
+      <slot-toolbar-button name="play" click="toolbar.action.play"></slot-toolbar-button>
+      <slot-toolbar-button name="pause" click="toolbar.action.pause"></slot-toolbar-button>
     </div>
 
-    <div class="slot-toolbar-right">
-      <div class="slot-toolbar-group slot-toolbar-group-right slot-toolbar-group-display">
-        DISPLAY BUTTONS
-      </div>
+    <div class="slot-toolbar-sep"></div>
+
+    <div class="slot-toolbar-group slot-toolbar-group-timeline">
+
+    </div>
+  </div>
+
+  <div class="slot-toolbar-right">
+    <div class="slot-toolbar-group slot-toolbar-group-right slot-toolbar-group-display">
+
     </div>
   </div>
 </section>

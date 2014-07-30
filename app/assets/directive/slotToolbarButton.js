@@ -2,20 +2,29 @@
 
 module.directive('slotToolbarButton', [
   'pageService', function (page) {
-    var controller = [
-      '$scope', '$element', '$attrs', function ($scope, $element, $attrs, $transclude, slotToolbar) {
-        var button = this;
+    var link = function ($scope, $element, $attrs, slotToolbar) {
+        var button = {};
+        $scope.button = button;
 
-        button.name = $attrs.name || undefined;
+        if (!$attrs.name) {
+          throw new Error('Every slotToolbarButton must have a name.');
+        }
+
+        button.name = $attrs.name;
+
         button.enabled = page.$parse($attrs.enabled)($scope) || true;
         button.$element = $element;
 
+        button.bindClasses = function () {
+          return [
+            'icon',
+            button.name,
+            $attrs.icon
+          ];
+        };
+
         button.classes = function () {
           var cls = [];
-
-          if (button.name) {
-            cls.push(button.name);
-          }
 
           if (!button.enabled) {
             cls.push('hide');
@@ -26,12 +35,10 @@ module.directive('slotToolbarButton', [
 
         //
 
-        $element.attrs('id', button.name);
-
         if ($attrs.click) {
           $element.click(function (e) {
             $scope.$apply(function () {
-              
+              page.$parse($attrs.click)($scope)(e);
             });
           });
         }
@@ -39,9 +46,7 @@ module.directive('slotToolbarButton', [
         //
 
         slotToolbar.registerButton(button);
-        return button;
-      }
-    ];
+      };
 
     //
 
@@ -49,8 +54,7 @@ module.directive('slotToolbarButton', [
       restrict: 'E',
       scope: true,
       templateUrl: 'slotToolbarButton.html',
-      controller: controller,
-      controllerAs: 'button',
+      link: link,
       require: '^slotToolbar',
     };
   }

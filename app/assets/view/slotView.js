@@ -7,7 +7,8 @@ module.controller('slotView', [
 
     $scope.ctrl = {
       slot: slot,
-      clock: new page.clock(),
+      clock: new page.slotClock(slot),
+      media: new page.slotMedia(slot),
       state: {
         selection: null,
       },

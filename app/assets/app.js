@@ -8,3 +8,4 @@ var module = angular.module('databraryModule', [
   'ngResource',
   'pasvaz.bindonce'
 ]);
+
