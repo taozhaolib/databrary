@@ -3,17 +3,17 @@
 
   <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" novalidate expose>
-    <messages ng-init="this.form = volumeEditMaterialsForm['asset-'+$index]; this.form.subform = this; volumeEditMaterialsForm.store(this)"></messages>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.filtered" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses.overForm = true" flow-drag-leave="dropClasses.overForm = false" ng-init="dropClasses={dropZone: true, overForm: false, overZone: false};" novalidate expose>
+	  <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
-        <div ng-if="!asset.asset.creation" style="border-style: solid; border-width: 2px;" flow-drop flow-btn  flow-drag-enter="style={border:'4px solid green'}" flow-drag-leave="style={border:'2px solid black'}" ng-style="style">
-	      <span ng-if="!asset.file" >Drop here or click to browse.</span>
+        <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses.overZone = true" flow-drag-leave="dropClasses.overZone = false" ng-class="dropClasses">
+	      <span ng-if="!asset.file">Drop here or click to browse.</span>
 	      <span ng-if="asset.file" ng-bind="asset.file.name"</span>
       </div>
 
       <div ng-if="asset.asset.creation">
-        <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
+        <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" ng-model="asset.file" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
     <upload-progress progress-value="fileUploadProgress"></upload-progress>
