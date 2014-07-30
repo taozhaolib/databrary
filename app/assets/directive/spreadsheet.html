@@ -1,5 +1,28 @@
-<div bindonce>
-  <ol>
-    <li ng-repeat="id in data.id track by $index">{{id}}</li>
-  </ol>
+<div style="overflow-x: scroll">
+  <table>
+    <tr>
+      <th rowspan="2">session</th>
+      <th>date</th>
+      <td ng-repeat="date in meta.date track by $index" ng-bind="date"></td>
+    </tr>
+    <tr>
+      <th>consent</th>
+      <td ng-repeat="consent in meta.consent track by $index" bo-class="page.constants.data.consent[consent].toLowerCase()" hint="consent-{{page.constants.data.consent[consent]}}" ng-bind="page.constants.data.consent[consent]"></td>
+    </tr>
+    <tr ng-repeat-start="record in meta.records">
+      <th rowspan="{{record.metrics.length+2}}" ng-bind="record.category.name"></th>
+    </tr>
+      <tr ng-repeat="metric in record.metrics" ng-if="page.constants.data.metric[metric]">
+	<th ng-bind="page.constants.data.metric[metric].name"></th>
+	<td ng-repeat="value in records[record.id][metric] track by $index" ng-bind="value"></td>
+      </tr>
+      <tr ng-if="records[record.id].age">
+	<th>age</th>
+	<td ng-repeat="value in records[record.id].age track by $index">
+	  <display-age ng-if="value" value="{{value}}"></display-age>
+	</td>
+      </tr>
+    <tr ng-repeat-end>
+    </tr>
+  </table>
 </div>
