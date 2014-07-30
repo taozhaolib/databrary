@@ -2,51 +2,44 @@
 
 module.directive('slotToolbarButton', [
   'pageService', function (page) {
-    var link = function ($scope, $element, $attrs, slotToolbar) {
-        var button = {};
-        $scope.button = button;
+    var pre = function ($scope, $element, $attrs, slotToolbar) {
+      var button = {};
+      $scope.button = button;
 
-        if (!$attrs.name) {
-          throw new Error('Every slotToolbarButton must have a name.');
+      if (!$attrs.name) {
+        throw new Error('Every slotToolbarButton must have a name.');
+      }
+
+      button.name = $attrs.name;
+      button.icon = $attrs.icon || $attrs.name;
+
+      button.enabled = page.$parse($attrs.enabled)($scope) || true;
+      button.$element = $element;
+
+      button.classes = function () {
+        var cls = [];
+
+        if (!button.enabled) {
+          cls.push('hide');
         }
 
-        button.name = $attrs.name;
-
-        button.enabled = page.$parse($attrs.enabled)($scope) || true;
-        button.$element = $element;
-
-        button.bindClasses = function () {
-          return [
-            'icon',
-            button.name,
-            $attrs.icon
-          ];
-        };
-
-        button.classes = function () {
-          var cls = [];
-
-          if (!button.enabled) {
-            cls.push('hide');
-          }
-
-          return cls;
-        };
-
-        //
-
-        if ($attrs.click) {
-          $element.click(function (e) {
-            $scope.$apply(function () {
-              page.$parse($attrs.click)($scope)(e);
-            });
-          });
-        }
-
-        //
-
-        slotToolbar.registerButton(button);
+        return cls;
       };
+
+      //
+
+      if ($attrs.click) {
+        $element.click(function () {
+          $scope.$apply(function () {
+            page.$parse($attrs.click)($scope)();
+          });
+        });
+      }
+
+      //
+
+      slotToolbar.registerButton(button);
+    };
 
     //
 
@@ -54,7 +47,9 @@ module.directive('slotToolbarButton', [
       restrict: 'E',
       scope: true,
       templateUrl: 'slotToolbarButton.html',
-      link: link,
+      link: {
+        pre: pre
+      },
       require: '^slotToolbar',
     };
   }

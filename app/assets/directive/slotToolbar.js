@@ -33,13 +33,13 @@ module.directive('slotToolbar', [
         // watchers
 
         ctrl.clock.playFn(function () {
-          toolbar.buttons.play.enabled = true;
-          toolbar.buttons.pause.enabled = false;
+          toolbar.buttons.play.enabled = false;
+          toolbar.buttons.pause.enabled = true;
         });
 
         ctrl.clock.pauseFn(function () {
-          toolbar.buttons.play.enabled = false;
-          toolbar.buttons.pause.enabled = true;
+          toolbar.buttons.play.enabled = true;
+          toolbar.buttons.pause.enabled = false;
         });
 
         // controller
