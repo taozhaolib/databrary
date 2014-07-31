@@ -12,11 +12,13 @@ module.factory('slotClockService', [
       this.timeFns = [];
 
       this.begun = 0;
+      this.duration = 0;
 
       Object.defineProperties(this, {
         position: {
           get: function () {
-            return Date.now() - clock.begun;
+            var actual = Date.now() - clock.begun;
+            return actual < clock.duration ? actual : clock.duration;
           }
         }
       });
@@ -89,6 +91,11 @@ module.factory('slotClockService', [
     var ticker = function (clock) {
       return function () {
         clock.time();
+
+        if (clock.position >= clock.duration) {
+          return clock.pause();
+        }
+
         clock.ticker = $timeout(ticker(clock), clock.interval);
       };
     };

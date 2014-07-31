@@ -6,10 +6,6 @@ module.directive('slotPlayer', [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var player = this;
         var ctrl = page.$parse($attrs.ctrl)($scope);
-
-        player.isPlayable = function (asset) {
-          return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
-        };
       }
     ];
 

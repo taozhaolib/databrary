@@ -7,19 +7,9 @@
   box-shadow box-shadow-def
   text-align center
 
-.player-main-media
-  margin 0 auto
-  display inline-block
-
-  img
-  video
-    transition none
-    display block
-    max-width 100%
-    width auto
-
-  video
-    margin-bottom 0
+  .slot-media
+    display inline-block
+    margin 0 auto
 
 .player-main-info
   text-align left
@@ -60,43 +50,3 @@
 .player-main-info-link
   link-color orange
   display inline-block
-
-.player-resize
-  width 100%
-  margin-height f12
-  position relative
-  cursor row-resize
-
-  &:after
-    content ''
-    border-top 1px solid pale
-    display block
-    position absolute
-    float left
-    width 100%
-    bottom b12
-    z-index -1
-
-.player-resize-grip
-  margin 0 auto
-  width f1
-  height f6 + f24
-  background gray
-  position relative
-  border-radius b1
-
-  &:before
-  &:after
-    content ''
-    border-top 1px solid pale
-    display block
-    position absolute
-    float left
-    width f23
-    left b6
-
-  &:before
-    top b24
-
-  &:after
-    bottom b24

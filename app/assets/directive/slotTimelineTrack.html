@@ -1,0 +1,15 @@
+<div class="slot-timeline-track" bo-class="{last: $last}" bindonce>
+  <div class="slot-track" ng-class="track.classes()">
+    <div class="slot-track-asset" ng-style="track.styles()">
+      <div class="slot-track-asset-info">
+        <div bo-if="ctrl.media.hasDisplay(track.asset)">
+          <slot-media asset="track.asset"></slot-media>
+        </div>
+
+        <div bo-if="!ctrl.media.hasDisplay(track.asset)">
+          <div class="slot-track-asset-info-name" bo-text="page.types.assetDisplayName(track.asset)"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

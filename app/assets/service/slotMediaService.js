@@ -1,13 +1,13 @@
 'use strict';
 
 module.factory('slotMediaService', [
-  '$timeout', function ($timeout) {
+  '$timeout', 'typeService', function ($timeout, types) {
     // Media
 
     var Media = function (slot, clock) {
+      var media = this;
       this.slot = slot;
       this.clock = clock;
-      this.begun = undefined;
 
       Object.defineProperties(this, {
         media: {
@@ -23,9 +23,13 @@ module.factory('slotMediaService', [
         },
       });
 
-      // TODO: hack until type classes
       this.slot.assets.forEach(function (asset) {
+        // TODO: hack until type classes
         asset.container = slot.container;
+
+        if (media.hasDuration(asset)) {
+          media.clock.duration = media.clock.duration >= asset.segment[1] ? media.clock.duration : asset.segment[1];
+        }
       });
 
       this.setCurrent(this.slot.assets[0]);
@@ -44,6 +48,32 @@ module.factory('slotMediaService', [
       this.current[0] = asset;
     };
 
+    // tests
+
+    var getAsset = function (media) {
+      return media.element ? media.asset : media;
+    };
+
+    Media.prototype.hasPosition = function (media) {
+      var asset = getAsset(media);
+      return asset.segment;
+    };
+
+    Media.prototype.hasDuration = function (media) {
+      var asset = getAsset(media);
+      return angular.isArray(asset.segment);
+    };
+
+    Media.prototype.hasDisplay = function (media) {
+      var asset = getAsset(media);
+      return ['video', 'image'].indexOf(types.assetMimeArray(asset, true)[0]) > -1;
+    };
+
+    Media.prototype.hasTime = function (media) {
+      var asset = getAsset(media);
+      return ['video'].indexOf(types.assetMimeArray(asset, true)[0]) > -1;
+    };
+
     // callbacks
 
     Media.prototype.callbackPlay = function () {
@@ -51,7 +81,7 @@ module.factory('slotMediaService', [
 
       return function () {
         that.media.forEach(function (media) {
-          if(media.element.nodeName === 'VIDEO' && angular.isArray(media.asset.segment)) {
+          if(that.hasTime(media) && that.hasDuration(media)) {
             if (that.clock.position > media.asset.segment[0] && that.clock.position < media.asset.segment[1]) {
               media.element.currentTime = (that.clock.position - media.asset.segment[0]) / 1000;
               media.element.play();
@@ -68,7 +98,7 @@ module.factory('slotMediaService', [
 
       return function () {
         that.media.forEach(function (media) {
-          if(media.element.nodeName === 'VIDEO' && angular.isArray(media.asset.segment)) {
+          if(that.hasTime(media) && that.hasDuration(media)) {
             media.element.pause();
           }
         });

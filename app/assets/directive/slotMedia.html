@@ -1,0 +1,11 @@
+<div class="slot-media" bo-switch="page.types.assetMimeArray(media.asset)[0]" bindonce>
+  <div bo-switch-when="image">
+    <img bo-src="page.router.assetLink(media.asset, true)">
+  </div>
+
+  <div bo-switch-when="video">
+    <video bo-if="page.display.videoSupported()">
+      <source bo-src="page.router.assetLink(media.asset, true)" bo-attr bo-attr-type="page.types.assetFormat(media.asset).mimetype">
+    </video>
+  </div>
+</div>

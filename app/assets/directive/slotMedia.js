@@ -3,14 +3,20 @@
 module.directive('slotMedia', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
+      var $media;
       var media = {
-        asset: page.$parse($attrs.slotMedia)($scope),
-        element: $element[0],
+        asset: page.$parse($attrs.asset)($scope),
         $scope: $scope,
-        $element: $element,
       };
 
-      $scope.ctrl.media.registerMedia(media);
+      $scope.media = media;
+
+      page.$timeout(function () {
+        media.$element = $element.find('video, img');
+        media.element = media.$element[0];
+
+        $scope.ctrl.media.registerMedia(media);
+      });
 
       // controller
 
@@ -20,7 +26,9 @@ module.directive('slotMedia', [
     //
 
     return {
-      restrict: 'A',
+      restrict: 'E',
+      scope: true,
+      templateUrl: 'slotMedia.html',
       link: {
         pre: pre
       },

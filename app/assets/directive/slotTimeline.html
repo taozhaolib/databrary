@@ -1,3 +1,3 @@
 <section class="slot-timeline" bindonce>
-TIMELINE
+  <slot-timeline-track ng-repeat="asset in timeline.tracks" ctrl="ctrl" asset="asset"></slot-timeline-track>
 </section>
