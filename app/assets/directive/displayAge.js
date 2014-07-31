@@ -21,7 +21,7 @@ module.directive('displayAge', [
       templateUrl: 'displayAge.html',
       replace: true,
       scope: {
-        value: '@'
+        value: '='
       },
       link: link
     };

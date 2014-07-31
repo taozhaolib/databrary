@@ -4,6 +4,16 @@ module.directive('spreadsheet', [
   'pageService', function (page) {
     var MAXREC = 100; // maximum number of records per category per slot
     var byNumber = function(a,b) { return a-b; };
+    var byString = function(a,b) { return a>b?1:a<b?-1:0; };
+    var byType = function(a,b) {
+      var ta = typeof a;
+      var tb = typeof b;
+      if (ta > tb) return 1;
+      if (ta < tb) return -1;
+      if (ta == 'number') return a-b;
+      return a>b?1:a<b?-1:0;
+    };
+
     var controller = [
       '$scope', function ($scope) {
 
@@ -85,7 +95,7 @@ module.directive('spreadsheet', [
 	};
 
 	var populateCols = function () {
-	  meta.records = Object.keys(records).sort(byNumber).map(function (c) {
+	  $scope.recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var cat = page.constants.data.category[Math.floor(c)];
 	    return {
 	      id: c,
@@ -98,6 +108,48 @@ module.directive('spreadsheet', [
 	var populate = function () {
 	  angular.forEach(slots, populateSlot);
 	  populateCols();
+	};
+
+	var sort = function (f, reverse, compare) {
+	  if (!compare)
+	    compare = byType;
+	  var i = Object.keys(meta.id).sort(function (i, j) {
+	    return compare(f(i), f(j));
+	  });
+	  if (reverse)
+	    i.reverse();
+	  angular.forEach(meta, function (l, f) {
+	    meta[f] = i.map(function (i) {
+	      return l[i];
+	    });
+	  });
+	  angular.forEach(records, function (r) {
+	    angular.forEach(r, function (l, m) {
+	      r[m] = i.map(function (i) {
+		return l[i];
+	      });
+	    });
+	  });
+	};
+
+	var currentSort;
+
+	var sortBy = function (name, f) {
+	  var rev = currentSort === name;
+	  sort(f, rev);
+	  currentSort = name + (rev ? ':rev' : '');
+	};
+
+	$scope.sortByMeta = function (f) {
+	  sortBy('meta:' + f, function (i) {
+	    return meta[f][i];
+	  });
+	};
+
+	$scope.sortByMetric = function (rc, m) {
+	  sortBy('metric:' + rc + ':' + m, function (i) {
+	    return records[rc][m][i];
+	  });
 	};
 
 	populate();

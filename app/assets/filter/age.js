@@ -8,7 +8,7 @@ module.filter('age', [
     };
 
     return function (age, outputFormat, inputFormat, decimals) {
-      if (!angular.isNumber(parseFloat(age))) {
+      if (!angular.isNumber(age)) {
         return age;
       }
 

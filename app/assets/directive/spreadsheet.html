@@ -2,24 +2,24 @@
   <table>
     <tr>
       <th rowspan="2">session</th>
-      <th>date</th>
+      <th><a href="" ng-click="sortByMeta('date')">date</a></th>
       <td ng-repeat="date in meta.date track by $index" ng-bind="date"></td>
     </tr>
     <tr>
-      <th>consent</th>
+      <th><a href="" ng-click="sortByMeta('consent')">consent</a></th>
       <td ng-repeat="consent in meta.consent track by $index" bo-class="page.constants.data.consent[consent].toLowerCase()" hint="consent-{{page.constants.data.consent[consent]}}" ng-bind="page.constants.data.consent[consent]"></td>
     </tr>
-    <tr ng-repeat-start="record in meta.records">
+    <tr ng-repeat-start="record in recordCols">
       <th rowspan="{{record.metrics.length+2}}" ng-bind="record.category.name"></th>
     </tr>
       <tr ng-repeat="metric in record.metrics" ng-if="page.constants.data.metric[metric]">
-	<th ng-bind="page.constants.data.metric[metric].name"></th>
+	<th><a href="" ng-click="sortByMetric(record.id, metric)" ng-bind="page.constants.data.metric[metric].name"></a></th>
 	<td ng-repeat="value in records[record.id][metric] track by $index" ng-bind="value"></td>
       </tr>
       <tr ng-if="records[record.id].age">
-	<th>age</th>
+	<th><a href="" ng-click="sortByMetric(record.id, 'age')">age</a></th>
 	<td ng-repeat="value in records[record.id].age track by $index">
-	  <display-age ng-if="value" value="{{value}}"></display-age>
+	  <display-age ng-if="value" value="value"></display-age>
 	</td>
       </tr>
     <tr ng-repeat-end>
