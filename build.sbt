@@ -25,13 +25,12 @@ lazy val dbrary = project
 lazy val media = project
   .dependsOn(dbrary)
 
-lazy val logbackAccess = project in file("logback-access")
-
 lazy val databrary = (project in file("."))
   .enablePlugins(PlayScala, SbtWeb)
-  .dependsOn(macros, dbrary, media, logbackAccess)
+  .dependsOn(macros, dbrary, media)
 
 libraryDependencies ++= Seq(
+  "org.databrary" %% "play-logback-access" % "0.2",
   "org.mindrot" % "jbcrypt" % "0.3m",
   ws,
   "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",

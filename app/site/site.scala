@@ -21,7 +21,7 @@ object Site {
     play.api.Play.current.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
 
   lazy val accessLog = 
-    play.api.Play.current.plugin[play.logback.access.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
+    play.api.Play.current.plugin[org.databrary.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
 }
 
 /** An effective authorization of identity by target. */
