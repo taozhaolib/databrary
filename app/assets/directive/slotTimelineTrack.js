@@ -52,6 +52,16 @@ module.directive('slotTimelineTrack', [
 
           return styles;
         };
+
+        track.registerMedia = function (media) {
+          track.media = media;
+        };
+
+        // behavior
+
+        track.select = function () {
+          $scope.ctrl.media.setCurrent(track.asset);
+        };
       }
     ];
 

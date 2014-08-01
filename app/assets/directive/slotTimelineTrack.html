@@ -1,14 +1,11 @@
 <div class="slot-timeline-track" bo-class="{last: $last}" bindonce>
   <div class="slot-track" ng-class="track.classes()">
-    <div class="slot-track-asset" ng-style="track.styles()">
+    <div class="slot-track-asset" ng-click="track.select()" ng-style="track.styles()">
       <div class="slot-track-asset-info">
-        <div bo-if="ctrl.media.hasDisplay(track.asset)">
-          <slot-media asset="track.asset"></slot-media>
-        </div>
+        <img class="slot-track-asset-thumb" bo-if="ctrl.media.hasDisplay(track.asset)" bo-src="page.router.assetThumb(asset)">
+        <img class="slot-track-asset-icon" bo-if="!ctrl.media.hasDisplay(track.asset)" bo-src="page.types.assetIcon(track.asset)">
 
-        <div bo-if="!ctrl.media.hasDisplay(track.asset)">
-          <div class="slot-track-asset-info-name" bo-text="page.types.assetDisplayName(track.asset)"></div>
-        </div>
+        <div class="slot-track-asset-info-name" bo-text="page.types.assetDisplayName(track.asset)"></div>
       </div>
     </div>
   </div>

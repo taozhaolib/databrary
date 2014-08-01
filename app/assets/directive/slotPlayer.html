@@ -1,6 +1,6 @@
 <section class="slot-player" bindonce>
   <div class="player-main" ng-repeat="asset in ctrl.media.current track by asset.asset.id">
-    <slot-media asset="asset"></slot-media>
+    <slot-media asset="asset" bo-if="ctrl.media.hasDisplay(asset)"></slot-media>
 
     <div class="player-main-info" bo-class="{playable: ctrl.media.hasDisplay(asset)}">
       <nav class="player-main-info-actions">

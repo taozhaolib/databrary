@@ -24,7 +24,7 @@ module.factory('slotClockService', [
       });
 
       // ticker
-      this.interval = 25;
+      this.interval = 100;
       this.ticker = null;
     };
 

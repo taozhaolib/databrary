@@ -37,6 +37,7 @@ module.factory('slotMediaService', [
       //
 
       clock.playFn(this.callbackPlay());
+      clock.timeFn(this.callbackTime());
       clock.pauseFn(this.callbackPause());
     };
 
@@ -59,6 +60,10 @@ module.factory('slotMediaService', [
 
     Media.prototype.setCurrent = function (asset) {
       this.current[0] = asset;
+    };
+
+    Media.prototype.select = function (media) {
+      this.current[0] = media.asset;
     };
 
     // tests
@@ -89,20 +94,34 @@ module.factory('slotMediaService', [
 
     // callbacks
 
+    var mediaUpdateFn = function (media) {
+      media.media.forEach(function (m) {
+        if(media.hasTime(m) && media.hasDuration(m)) {
+          if (media.clock.position > m.asset.segment[0] && media.clock.position < m.asset.segment[1]) {
+            if (m.element.paused) {
+              m.element.currentTime = (media.clock.position - m.asset.segment[0]) / 1000;
+              m.element.play();
+            }
+          } else {
+            m.element.pause();
+          }
+        }
+      });
+    };
+
     Media.prototype.callbackPlay = function () {
       var that = this;
 
       return function () {
-        that.media.forEach(function (media) {
-          if(that.hasTime(media) && that.hasDuration(media)) {
-            if (that.clock.position > media.asset.segment[0] && that.clock.position < media.asset.segment[1]) {
-              media.element.currentTime = (that.clock.position - media.asset.segment[0]) / 1000;
-              media.element.play();
-            } else {
-              media.element.pause();
-            }
-          }
-        });
+        mediaUpdateFn(that);
+      };
+    };
+
+    Media.prototype.callbackTime = function () {
+      var that = this;
+
+      return function () {
+        mediaUpdateFn(that);
       };
     };
 

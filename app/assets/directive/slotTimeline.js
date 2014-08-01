@@ -6,6 +6,13 @@ module.directive('slotTimeline', [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var timeline = this;
         var ctrl = page.$parse($attrs.ctrl)($scope);
+        var $now;
+
+        var nowListener = $scope.$on('shout-slotTimelineNow', function (e, $scope, $element) {
+          $now = $element;
+          nowListener();
+          e.stopPropagation();
+        });
 
         timeline.tracks = [];
 
@@ -41,6 +48,18 @@ module.directive('slotTimeline', [
           timeline.tracks.splice.apply(timeline.tracks, [0, timeline.tracks.length].concat(page.$filter('toArray')(ctrl.slot.assets)));
           timeline.sortTracks();
         };
+
+        // listeners
+
+        var nowMoveFn = function (clock) {
+          $now.css({
+            left: ((clock.position / clock.duration) * 100) + '%',
+          });
+        };
+
+        ctrl.clock.playFn(nowMoveFn);
+        ctrl.clock.pauseFn(nowMoveFn);
+        ctrl.clock.timeFn(nowMoveFn);
 
         // init
 

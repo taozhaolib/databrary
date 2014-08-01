@@ -4,3 +4,39 @@
   background-color white
   box-shadow box-shadow-def
   overflow hidden
+  position relative
+
+.slot-timeline-ruler
+  width 100%
+  padding-width b6
+  background white
+  box-shadow box-shadow-def
+
+.slot-ruler
+  border-left 1px solid gray
+  height 2
+
+.slot-timeline-now-zone
+  position absolute
+  top 0
+  bottom 0
+  left b6
+  right b6
+  pointer-events none
+
+.slot-timeline-now
+  position absolute
+  z-index 100
+  top 2 * b1
+  left 0
+  height 1000
+  border-left 1px solid green
+
+  &:before
+    content ''
+    border-radius b1
+    size b3
+    position absolute
+    top -b3
+    left -b6
+    background-color green
