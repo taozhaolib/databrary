@@ -41,7 +41,20 @@ module.factory('slotMediaService', [
     };
 
     Media.prototype.registerMedia = function (media) {
+      var that = this;
       this.media.push(media);
+
+      media.$scope.$on('$destroy', function () {
+        that.deregisterMedia(media);
+      });
+    };
+
+    Media.prototype.deregisterMedia = function (media) {
+      var i = this.media.indexOf(media);
+
+      if (i > -1) {
+        this.media.splice(i, 1);
+      }
     };
 
     Media.prototype.setCurrent = function (asset) {
