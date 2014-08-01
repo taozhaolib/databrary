@@ -72,6 +72,12 @@ module.factory('slotMediaService', [
       return media.element ? media.asset : media;
     };
 
+    var getMedia = function (media) {
+      return media.element ? media : this.media.filter(function (m) {
+        return m.asset === media;
+      }).pop();
+    };
+
     Media.prototype.hasPosition = function (media) {
       var asset = getAsset(media);
       return asset.segment;
@@ -92,13 +98,34 @@ module.factory('slotMediaService', [
       return ['video'].indexOf(types.assetMimeArray(asset, true)[0]) > -1;
     };
 
+    Media.prototype.isNowPlayable = function (media) {
+      var asset = getAsset(media);
+      return this.clock.position > asset.segment[0] && this.clock.position < asset.segment[1];
+    };
+
+    Media.prototype.isPaused = function (media) {
+      media = getMedia(media);
+      return media.element.paused && media.element.readyState >= 4;
+    };
+
     // callbacks
 
     var mediaUpdateFn = function (media) {
+      var asset = !media.hasPosition(media.current[0]) ? media.current[0] : undefined;
+
       media.media.forEach(function (m) {
-        if(media.hasTime(m) && media.hasDuration(m)) {
-          if (media.clock.position > m.asset.segment[0] && media.clock.position < m.asset.segment[1]) {
-            if (m.element.paused) {
+        if (asset) {
+          if (m.asset === asset) {
+            if (media.isPaused(m)) {
+              m.element.currentTime = 0;
+              m.element.play();
+            }
+          } else {
+            m.element.pause();
+          }
+        } else if (media.hasTime(m) && media.hasDuration(m)) {
+          if (media.isNowPlayable(m)) {
+            if (media.isPaused(m)) {
               m.element.currentTime = (media.clock.position - m.asset.segment[0]) / 1000;
               m.element.play();
             }
@@ -130,7 +157,7 @@ module.factory('slotMediaService', [
 
       return function () {
         that.media.forEach(function (media) {
-          if(that.hasTime(media) && that.hasDuration(media)) {
+          if (that.hasTime(media) && that.hasDuration(media)) {
             media.element.pause();
           }
         });

@@ -13,6 +13,7 @@ module.factory('slotClockService', [
 
       this.begun = 0;
       this.duration = 0;
+      this.paused = 0;
 
       Object.defineProperties(this, {
         position: {
@@ -30,8 +31,19 @@ module.factory('slotClockService', [
 
     // Clock behaviors
 
-    Clock.prototype.play = function () {
-      this.begun = Date.now();
+    Clock.prototype.play = function (when, asset) {
+      if (angular.isNumber(when)) {
+        this.begun = Date.now() - when;
+      } else if (when || !this.begun) {
+        this.begun = Date.now();
+      } else {
+        this.begun = Date.now() - this.paused;
+      }
+
+      if (asset) {
+        this.setTempDuration(asset.asset.duration);
+      }
+
       tickerOn(this);
       callFn(this, this.playFns);
     };
@@ -40,10 +52,26 @@ module.factory('slotClockService', [
       return registerFn(this, this.playFns, fn);
     };
 
+    Clock.prototype.setTempDuration = function (duration) {
+      this._duration = this.duration;
+      this.duration = duration;
+    };
+
+    Clock.prototype.unsetTempDuration = function () {
+      this.duration = this._duration;
+      this._duration = undefined;
+    };
+
     //
 
     Clock.prototype.pause = function () {
+      this.paused = this.position;
       tickerOff(this);
+
+      if (this._duration) {
+        this.unsetTempDuration();
+      }
+
       callFn(this, this.pauseFns);
     };
 
