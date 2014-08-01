@@ -4,7 +4,6 @@ module.directive('volumeEditMaterialsForm', [
 	'pageService', function (page) {
 		var link = function ($scope, $el, $attrs) {
 			var form = $scope.volumeEditMaterialsForm;
-			form.excerptsMode = $attrs.mode === 'excerpts';
 
 			form.data = {};
 			form.volume = undefined;
@@ -30,12 +29,6 @@ module.directive('volumeEditMaterialsForm', [
 				form.volume = form.volume || volume;
 			};
 
-			$scope.$watchCollection(function () {
-				return form.data.assets;
-			}, function () {
-				form.filterAssets();
-			});
-
 			form.addedCall = function(file, event){
 				file.srcForm = angular.element(event.srcElement).scope().form.subform;
 				file.srcForm.asset.file = file.file; //improve with ng-model
@@ -45,8 +38,8 @@ module.directive('volumeEditMaterialsForm', [
 			form.assetCall = function(file){
 				var data = {};
 				data.name = file.srcForm.asset.name;
-				data.classification = page.classification[form.excerptsMode ? 'RESTRICTED' : file.srcForm.asset.classification];
-				data.excerpt = form.excerptsMode ? page.classification[file.srcForm.asset.classification] : '';
+				data.classification = page.classification[file.srcForm.asset.classification];
+				data.excerpt = page.classification[file.srcForm.asset.excerpt]; 
 				data.container = file.srcForm.volumeEditMaterialsForm.slot.container.id;
 				data.upload = file.uniqueIdentifier;
 
@@ -57,22 +50,24 @@ module.directive('volumeEditMaterialsForm', [
 				file.srcForm.fileUploadProgress = file.progress();
 			};
 
-			$scope.totalProgress = function(){
-				form.totalProgress = $scope.$flow.progress();
+			form.updateExcerptChoice = function(sub){
+				if(sub.excerptOn){ 
+					sub.asset.excerpt = page.constants.data.classification[0];
+				}
+				else{
+					sub.asset.excerpt = "";
+				}
 			};
 
-			form.filterAssets = function () {
-				if (!form.slot) {
-					return [];
-				}
+			form.excerptOptions = function(cName){
+				var f = function(x) {return page.classification[x] > page.classification[cName];}; //string compare. if we get more than 10 must use parseInt
+				var l =  page.$filter('filter')(page.constants.data.classification, f);
+				l.unshift(page.constants.data.classification[0]);
+				return l;
+			};
 
-				form.filtered = page.$filter('orderBy')(page.$filter('filter')(form.slot.assets, function (asset) {
-					var e = angular.isDefined(asset.excerpt);
-					if (!asset.classification) {
-						asset.classification = page.constants.data.classification[e ? asset.excerpt : asset.asset.classification];
-					}
-					return e === form.excerptsMode;
-				}), 'asset.id');
+			$scope.totalProgress = function(){
+				form.totalProgress = $scope.$flow.progress();
 			};
 
 			form.disableButton = function (subform) {
@@ -96,8 +91,8 @@ module.directive('volumeEditMaterialsForm', [
 					form.saveFn(form, subform);
 				}
 
-				var classification = page.classification[form.excerptsMode ? 'RESTRICTED' : subform.asset.classification];
-				var excerpt = form.excerptsMode ? page.classification[subform.asset.classification] : '';
+				var classification = page.classification[subform.asset.classification];
+				var excerpt = page.classification[subform.asset.excerpt]; 
 				if (subform.asset.file) {
 					var fd = new FormData();
 					fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this
@@ -303,7 +298,7 @@ module.directive('volumeEditMaterialsForm', [
 
 				return form.data.assets.push({
 					classification: 'SHARED',
-					excerpt: form.excerptsMode ? page.classification.SHARED : undefined
+					excerpt: '' 
 				});
 			};
 
