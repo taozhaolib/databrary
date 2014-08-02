@@ -13,8 +13,6 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.1")
 
-lazy val angularTemplates = project in file("angular-templates")
+addSbtPlugin("org.databrary" % "sbt-angular-templates" % "0.1")
 
-libraryDependencies += "com.googlecode.htmlcompressor" % "htmlcompressor" % "1.5.2"
-
-lazy val root = (project in file(".")).dependsOn(angularTemplates)
+lazy val root = (project in file("."))
