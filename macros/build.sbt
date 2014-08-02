@@ -1,3 +1,3 @@
 libraryDependencies ++= Seq(
-  "org.scala-lang" % "scala-reflect" % "2.11.1"
+  "org.scala-lang" % "scala-reflect" % "2.11.2"
 )
