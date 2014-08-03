@@ -134,6 +134,25 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)
 
+  lazy val fileName : Future[String] = {
+    def last(s : String) =
+      Maybe(s.lastIndexOf(' ')).fold(s)(i => s.substring(i+1))
+    for {
+      owns <- partyAccess(Permission.ADMIN)
+      own = owns.headOption.map(_.party.name).map(last _)
+      cite <- citation
+      auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(a => own.exists(_.equals(a)))
+      nme = { 
+	val n = alias.getOrElse(name)
+	n.take(Maybe(n.lastIndexOf(' ', 32)).orElse(32))
+      }
+    } yield {
+      (Seq("databrary" + id) ++
+	own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme)
+      .mkString("-")
+    }
+  }
+
   lazy val json : JsonRecord =
     JsonRecord.flatten(id,
       Some('name -> name),

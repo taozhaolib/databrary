@@ -4,4 +4,8 @@ package object store {
       Some(new java.io.File(u.getFile))
     else
       None
+
+  private final val fileNamePad = "[\u0000-,/?\\\\]+".r
+  def sanitizeFileName(s : String) : String =
+    fileNamePad.replaceAllIn(s, "_")
 }

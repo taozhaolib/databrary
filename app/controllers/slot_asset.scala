@@ -31,7 +31,7 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
       (if (inline) macros.async(None) else for {
 	_ <- request.obj.auditDownload
 	name <- request.obj.fileName
-      } yield (Some(name)))
+      } yield (Some(store.sanitizeFileName(name))))
       .flatMap(AssetController.assetResult(request.obj, None, _))
     }
 
