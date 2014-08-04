@@ -1,8 +1,6 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.models.asset.flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
-
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true, 'over-form': false, 'over-zone': false};" novalidate expose>
 	  <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
@@ -16,7 +14,7 @@
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
       </div>
-    <upload-progress progress-value="fileUploadProgress"></upload-progress>
+    <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">
@@ -36,9 +34,11 @@
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
   </fieldset>
 
-  <fieldset class="clean">
+  <fieldset class="clean" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-init="dropClasses={'drop-zone': true, 'over-form': false, 'over-zone': false};">
     <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="yellow" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-    <button ng-click="volumeEditMaterialsForm.add()" bo-html="'add' | message" class="orange"></button>
+
+  <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">Drop file here, or click and browse, to create new asset</div>
+  <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
   </fieldset>
 </form>

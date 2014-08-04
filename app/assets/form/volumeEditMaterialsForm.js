@@ -30,24 +30,24 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.addedCall = function(file, event){
-				file.srcForm = angular.element(event.srcElement).scope().form.subform;
-				file.srcForm.asset.file = file.file; //improve with ng-model
+				file.asset = form.data.assets[form.add()-1];
+				file.asset.file = file.file; //improve with ng-model
 				page.models.asset.fileAddedImmediateUpload(file);
 			};
 
 			form.assetCall = function(file){
 				var data = {};
-				data.name = file.srcForm.asset.name;
-				data.classification = page.classification[file.srcForm.asset.classification];
-				data.excerpt = page.classification[file.srcForm.asset.excerpt]; 
-				data.container = file.srcForm.volumeEditMaterialsForm.slot.container.id;
+				data.name = file.asset.name;
+				data.classification = page.classification[file.asset.classification];
+				data.excerpt = page.classification[file.asset.excerpt]; 
+				data.container = form.slot.container.id;
 				data.upload = file.uniqueIdentifier;
 
-				page.models.asset.assetCall(file.srcForm.volumeEditMaterialsForm.volume.id, data);
+				page.models.asset.assetCall(form.volume.id, data);
 			};
 
 			form.perFileProgress = function(file){
-				file.srcForm.fileUploadProgress = file.progress();
+				file.asset.fileUploadProgress = file.progress();
 			};
 
 			form.updateExcerptChoice = function(sub){
