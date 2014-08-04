@@ -17,12 +17,12 @@ object Zip {
   private def enum[A](a : A, e2 : Future[Enumerator[A]]) : Enumerator[A] =
     Enumerator(a) >>> Enumerator.flatten(e2)
 
-  private def slotAssets(slot : Slot, prefix : String) : Future[Seq[ZipFile.DeflatedStreamEntry]] =
+  private def slotAssets(slot : Slot, prefix : String) : Future[Enumerator[ZipFile.StreamEntry]] =
     slot.assets.map { assets =>
       val names = mutable.Set.empty[String]
-      assets.filter(_.checkPermission(Permission.READ)).map { sa =>
+      Enumerator(assets.filter(_.checkPermission(Permission.READ)).map { sa =>
 	val base = sa.asset.name.getOrElse(sa.asset.format.name)
-	val ext = "." + sa.format.extension
+	val ext = sa.format.extension.fold("")("." + _)
 	var name = base + ext
 	var i = 1
 	while (!names.add(name)) {
@@ -33,7 +33,7 @@ object Zip {
 	  Enumerator.flatten(Asset.read(sa)),
 	  Asset.timestamp(sa),
 	  comment = comment(sa))
-      }
+      } : _*)
     }
 
   private def slotName(slot : Slot, names : scala.collection.Set[String] = Set.empty[String]) : Future[String] =
@@ -54,8 +54,10 @@ object Zip {
   private def slotEntries(slot : Slot, prefix : String, names : scala.collection.Set[String] = Set.empty[String]) : Future[(String, Enumerator[ZipFile.StreamEntry])] =
     slotName(slot, names).map { name =>
       name ->
-      enum(new ZipFile.DirEntry(prefix + name, comment = comment(slot)),
-	slotAssets(slot, prefix + Maybe(name).fold("")(_ + "/")).map(Enumerator(_ : _*)))
+      (if (name.nonEmpty)
+	enum(new ZipFile.DirEntry(prefix + name, comment = comment(slot)),
+	  slotAssets(slot, prefix + name + "/"))
+      else Enumerator.flatten(slotAssets(slot, prefix)))
     }
 
   def slot(slot : Slot) : Enumerator[Array[Byte]] = zip(slot) {
