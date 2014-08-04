@@ -68,8 +68,11 @@ object SlotController extends SlotController {
     with ContainerForm {
     def actionName = "Create"
   }
-}
 
+  def zip(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment) { implicit request =>
+    AssetController.zipResult(store.Zip.slot(request.obj), "databrary-" + request.obj.volumeId + "-" + request.obj.containerId + request.obj.pageCrumbName.fold("")("-" + _))
+  }
+}
 
 object SlotHtml extends SlotController with HtmlController {
   import SlotController._

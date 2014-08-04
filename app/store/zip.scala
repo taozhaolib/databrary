@@ -7,7 +7,7 @@ import org.databrary.iteratee.ZipFile
 import site._
 import models._
 
-object Archive {
+object Zip {
   implicit val executionContext = context.process
 
   private def comment(obj : SiteObject) : String =
@@ -57,14 +57,14 @@ object Archive {
 	slotAssets(slot, prefix + name + "/").map(Enumerator(_ : _*)))
     }
 
-  def slotZip(slot : Slot) : Enumerator[Array[Byte]] = zip(slot) {
+  def slot(slot : Slot) : Enumerator[Array[Byte]] = zip(slot) {
     slot.volume.fileName.map { vname =>
       enum(new ZipFile.DirEntry(vname, comment = comment(slot.volume)),
 	slotEntries(slot, vname + "/").map(_._2))
     }
   }
 
-  def volumeZip(vol : Volume) = zip(vol) {
+  def volume(vol : Volume) = zip(vol) {
     vol.fileName.map { vname =>
       enum(new ZipFile.DirEntry(vname, comment = comment(vol)),
 	vol.containers.map { slots =>

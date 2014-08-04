@@ -22,39 +22,6 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  final val defaultThumbSize : Int = 480
-
-  private[controllers] def assetResult(asset : BackedAsset, size : Option[Int] = None, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
-    val tag = asset.etag
-    /* Assuming assets are immutable, any if-modified-since header is good enough */
-    if (HTTP.notModified(tag, new Timestamp(0)))
-      async(NotModified)
-    else for {
-      data <- store.Asset.read(asset, size)
-      date = store.Asset.timestamp(asset)
-    } yield {
-      val size = data.size
-      val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
-          request.headers.get(RANGE).flatMap(HTTP.parseRange(_, size))
-        else
-          None
-      val subdata = range.fold(data)((data.range _).tupled)
-      val headers = Seq[Option[(String, String)]](
-        Some(CONTENT_LENGTH -> subdata.size.toString),
-        range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + size.toString)),
-        Some(CONTENT_TYPE -> asset.format.mimetype),
-        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
-        Some(LAST_MODIFIED -> HTTP.date(new Timestamp(date))),
-        Some(ETAG -> HTTP.quote(tag)),
-        Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
-      ).flatten
-        Result(
-          header = ResponseHeader(range.fold(OK)(r => if (r._1 >= size) REQUESTED_RANGE_NOT_SATISFIABLE else PARTIAL_CONTENT),
-            Map(headers : _*)),
-          body = subdata)
-      }
-  }
-
   private def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
       container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
@@ -186,6 +153,47 @@ object AssetController extends AssetController {
     def actionName = "Replace"
     def asset = request.obj
   }
+
+  final val defaultThumbSize : Int = 480
+
+  private[controllers] def assetResult(asset : BackedAsset, size : Option[Int] = None, saveAs : Option[String] = None)(implicit request : SiteRequest[_]) : Future[Result] = {
+    val tag = asset.etag
+    /* Assuming assets are immutable, any if-modified-since header is good enough */
+    if (HTTP.notModified(tag, new Timestamp(0)))
+      async(NotModified)
+    else for {
+      data <- store.Asset.read(asset, size)
+      date = store.Asset.timestamp(asset)
+    } yield {
+      val size = data.size
+      val range = if (request.headers.get(IF_RANGE).forall(HTTP.unquote(_).equals(tag)))
+          request.headers.get(RANGE).flatMap(HTTP.parseRange(_, size))
+        else
+          None
+      val subdata = range.fold(data)((data.range _).tupled)
+      val headers = Seq[Option[(String, String)]](
+        Some(CONTENT_LENGTH -> subdata.size.toString),
+        range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + size.toString)),
+        Some(CONTENT_TYPE -> asset.format.mimetype),
+        saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
+        Some(LAST_MODIFIED -> HTTP.date(new Timestamp(date))),
+        Some(ETAG -> HTTP.quote(tag)),
+        Some(CACHE_CONTROL -> "max-age=31556926, private") /* this needn't be private for public data */
+      ).flatten
+        Result(
+          header = ResponseHeader(range.fold(OK)(r => if (r._1 >= size) REQUESTED_RANGE_NOT_SATISFIABLE else PARTIAL_CONTENT),
+            Map(headers : _*)),
+          body = subdata)
+      }
+  }
+
+  private[controllers] def zipResult(zip : Enumerator[Array[Byte]], name : String) : Result =
+    Result(
+      header = ResponseHeader(OK, Map(
+	CONTENT_TYPE -> "application/zip",
+	CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".zip")),
+	CACHE_CONTROL -> "max-age=31556926, private")),
+      body = zip)
 }
 
 object AssetHtml extends AssetController with HtmlController {

@@ -179,6 +179,10 @@ object VolumeController extends VolumeController {
     val name = Field(Mappings.nonEmptyText)
   }
 
+  def zip(i : Volume.Id) = Action(i) { implicit request =>
+    AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
+  }
+
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) = Action(v, Permission.VIEW).async { implicit request =>
     request.obj.thumb.flatMap(_.fold(
       Assets.at("/public", "images/draft.png")(request))(

@@ -10,7 +10,9 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 
   private[controllers] def Action(i : Container.Id, segment : Segment, a : Asset.Id, p : Permission.Value = Permission.VIEW) =
     SiteAction andThen action(i, segment, a, p)
+}
 
+object SlotAssetController extends SlotAssetController {
   private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[_]) =
     request.obj match {
       case ts : SlotTimeseries =>
@@ -44,8 +46,6 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
     getFrame(Left(0.25f), size)
   }
 }
-
-object SlotAssetController extends SlotAssetController
 
 object SlotAssetHtml extends SlotAssetController with HtmlController {
   def view(i : Container.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>

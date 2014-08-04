@@ -50,6 +50,7 @@ POST    /volume/$vID<[0-9]+>/edit                                               
 GET     /volume/$vID<[0-9]+>/access                                                               controllers.VolumeHtml.admin(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/access/search                                                        controllers.VolumeHtml.accessSearch(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
+GET     /volume/$vID<[0-9]+>/zip                                                                  controllers.VolumeController.zip(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
 
 # slots
@@ -59,6 +60,7 @@ GET     /volume/$vID<[0-9]+>/slot/container                                     
 GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.SlotHtml.view(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
 GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(sID : models.Container.Id, segment : dbrary.Segment)
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Container.Id, segment : dbrary.Segment)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/zip                                                controllers.SlotController.zip(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
 
 # assets
 GET     /volume/$vID<[0-9]+>/asset/create                                                         controllers.AssetHtml.create(vID : models.Volume.Id, container : Option[models.Container.Id] ?= None, position : Option[dbrary.Offset] ?= None)
@@ -75,10 +77,10 @@ POST    /asset/$aID<[0-9]+>/replace                                             
 GET     /asset/formats	                                                                          controllers.AssetHtml.formats
 
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetHtml.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetHtml.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetHtml.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetHtml.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetController.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetController.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetController.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetController.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset, size : Int ?= controllers.AssetController.defaultThumbSize)
 
 # annotations
 POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.CommentHtml.post(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
