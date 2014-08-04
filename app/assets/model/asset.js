@@ -37,7 +37,7 @@ module.factory('asset', [
 		};
 
 		asset.assetCall = function(volumeId, data){
-			$http.post('/api/asset', data, {params: {volume: volumeId}});
+			return $http.post('/api/asset', data, {params: {volume: volumeId}});
 		};
 
 		asset.flowOptions = {

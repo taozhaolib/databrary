@@ -43,7 +43,10 @@ module.directive('volumeEditMaterialsForm', [
 				data.container = form.slot.container.id;
 				data.upload = file.uniqueIdentifier;
 
-				page.models.asset.assetCall(form.volume.id, data);
+				page.models.asset.assetCall(form.volume.id, data).then(function(res){
+					file.asset.asset = res.data.asset;
+					file.asset.asset.creation = {date: Date.now(), name: file.file.name};	
+				});
 			};
 
 			form.perFileProgress = function(file){
@@ -92,7 +95,7 @@ module.directive('volumeEditMaterialsForm', [
 				}
 
 				var classification = page.classification[subform.asset.classification];
-				var excerpt = page.classification[subform.asset.excerpt]; 
+				var excerpt = page.classification[subform.asset.excerpt] || ""; 
 				if (subform.asset.file) {
 					var fd = new FormData();
 					fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this
