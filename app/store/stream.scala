@@ -37,9 +37,9 @@ object StreamEnumerator {
     def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = 
       Enumerator.fromStream(input, chunkSize)(site.context.process).apply[A](it)
     override def range(start : Long = 0, end : Long = size - 1) = new Range(start, end) {
-      input.skip(start)
+      val pos = input.skip(start)
       override def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = {
-        parent.through(org.databrary.iteratee.Enumeratee.range(0, stop-start)).apply[A](it)
+        parent.through(org.databrary.iteratee.Enumeratee.range(start-pos, stop-pos)).apply[A](it)
       }
     }
   }
