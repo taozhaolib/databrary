@@ -178,7 +178,8 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
     rowVolume(slot.volume)
-    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id")
+    .SQL((sel, src) => unwords("SELECT DISTINCT ON (record.category, record.id)", sel,
+      "FROM", src, "JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id"))
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve all the categorized records associated with the given volume.
