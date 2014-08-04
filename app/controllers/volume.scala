@@ -180,6 +180,7 @@ object VolumeController extends VolumeController {
   }
 
   def zip(i : Volume.Id) = Action(i) { implicit request =>
+    /* TODO audit */
     AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
   }
 

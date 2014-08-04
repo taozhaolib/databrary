@@ -37,7 +37,7 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   /** List of parties access to this volume, sorted by level (ADMIN first). */
   def partyAccess(access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] = VolumeAccess.getParties(this, access)
 
-  /** List of containers within this volume, except the top. */
+  /** List of containers within this volume. */
   def containers : Future[Seq[Container]] = Container.getVolume(this)
   /** The master container corresponding to this volume, which serves as a proxy target for many annotations. */
   def top : Future[Container] = Container.getTop(this)

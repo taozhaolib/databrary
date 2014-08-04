@@ -78,9 +78,9 @@ object Container extends TableId[Container]("container") {
     row.SELECT("WHERE container.id = ? AND", Volume.condition)
     .apply(i).singleOpt
 
-  /** Retrieve all the (non-top) containers in a given volume. */
+  /** Retrieve all the containers in a given volume. */
   private[models] def getVolume(v : Volume) : Future[Seq[Container]] =
-    rowVolume(v).SELECT("WHERE NOT container.top ORDER BY container.date NULLS FIRST")
+    rowVolume(v).SELECT("ORDER BY container.top DESC")
     .apply().list
 
   /** Retrieve the top container in a given volume. */

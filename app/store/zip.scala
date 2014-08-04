@@ -4,6 +4,7 @@ import scala.collection.mutable
 import scala.concurrent.Future
 import play.api.libs.iteratee._
 import org.databrary.iteratee.ZipFile
+import macros._
 import site._
 import models._
 
@@ -54,7 +55,7 @@ object Zip {
     slotName(slot, names).map { name =>
       name ->
       enum(new ZipFile.DirEntry(prefix + name, comment = comment(slot)),
-	slotAssets(slot, prefix + name + "/").map(Enumerator(_ : _*)))
+	slotAssets(slot, prefix + Maybe(name).fold("")(_ + "/")).map(Enumerator(_ : _*)))
     }
 
   def slot(slot : Slot) : Enumerator[Array[Byte]] = zip(slot) {

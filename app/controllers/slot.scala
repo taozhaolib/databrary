@@ -70,6 +70,7 @@ object SlotController extends SlotController {
   }
 
   def zip(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment) { implicit request =>
+    /* TODO audit */
     AssetController.zipResult(store.Zip.slot(request.obj), "databrary-" + request.obj.volumeId + "-" + request.obj.containerId + request.obj.pageCrumbName.fold("")("-" + _))
   }
 }
