@@ -102,7 +102,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   def pageURL = controllers.routes.SlotHtml.view(volumeId, containerId, segment)
 
   def fileName : Future[String] =
-    idents.map(i => (container.name ++: i).mkString("-"))
+    idents.map(i => store.fileName(container.name ++: i : _*))
 
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),

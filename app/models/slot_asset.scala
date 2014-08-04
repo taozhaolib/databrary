@@ -96,7 +96,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
       vol <- volume.fileName
       slot <- super.fileName
     } yield {
-      (Seq(vol) ++ Maybe(slot).opt ++ asset.name).mkString("-")
+      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name : _*)
     }
 
   override def json : JsonObject = JsonObject.flatten(
@@ -159,7 +159,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all assets within the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     row(Slot.fixed(slot))
-    .SELECT("WHERE asset.volume = ?")
+    .SELECT("WHERE asset.volume = ? ORDER BY slot.segment")
     .apply(slot.volumeId).list
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */

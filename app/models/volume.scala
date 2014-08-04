@@ -147,9 +147,8 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 	n.take(Maybe(n.lastIndexOf(' ', 32)).orElse(32))
       }
     } yield {
-      (Seq("databrary" + id) ++
-	own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme)
-      .mkString("-")
+      store.fileName(Seq("databrary" + id) ++
+	own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme : _*)
     }
   }
 

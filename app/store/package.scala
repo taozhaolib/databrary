@@ -6,6 +6,6 @@ package object store {
       None
 
   private final val fileNamePad = "[\u0000-,/?\\\\]+".r
-  def sanitizeFileName(s : String) : String =
-    fileNamePad.replaceAllIn(s, "_")
+  def fileName(s : String*) : String =
+    fileNamePad.replaceAllIn(s.mkString("-"), "_")
 }

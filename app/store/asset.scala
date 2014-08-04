@@ -129,7 +129,7 @@ private[store] object Segment extends StoreDir("store.cache") {
 }
 
 object Asset {
-  def read(o : BackedAsset, size : Option[Int]) : Future[StreamEnumerator] = o match {
+  def read(o : BackedAsset, size : Option[Int] = None) : Future[StreamEnumerator] = o match {
     case t : TimeseriesData if !t.entire => Segment.read(t, size)
     case _ => size match {
       case Some(z) if o.format === AssetFormat.Image => Segment.resize(o, z)

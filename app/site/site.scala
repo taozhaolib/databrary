@@ -18,10 +18,14 @@ object Site {
 
   type DB = com.github.mauricio.async.db.Connection
   lazy val dbPool : DB = 
-    play.api.Play.current.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
+    Play.current.plugin[PostgresAsyncPlugin].fold(throw new Exception("PostgresAsyncPlugin not registered"))(_.pool)
 
   lazy val accessLog = 
-    play.api.Play.current.plugin[org.databrary.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
+    Play.current.plugin[org.databrary.LogbackAccessPlugin].fold(throw new Exception("LogbackAccessPlugin not registered"))(_.api)
+
+  val url = Play.current.configuration.getString("site.url").getOrElse("")
+  def url(call : Call) : String =
+    url + call.url
 }
 
 /** An effective authorization of identity by target. */
