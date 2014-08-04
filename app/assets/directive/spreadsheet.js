@@ -110,14 +110,13 @@ module.directive('spreadsheet', [
 	  populateCols();
 	};
 
-	var sort = function (f, reverse, compare) {
+	var sort = function (values, reverse, compare) {
 	  if (!compare)
 	    compare = byType;
+	  var rev = reverse ? -1 : 1;
 	  var i = Object.keys(meta.id).sort(function (i, j) {
-	    return compare(f(i), f(j));
+	    return rev*compare(values[i], values[j]);
 	  });
-	  if (reverse)
-	    i.reverse();
 	  angular.forEach(meta, function (l, f) {
 	    meta[f] = i.map(function (i) {
 	      return l[i];
@@ -134,22 +133,18 @@ module.directive('spreadsheet', [
 
 	var currentSort;
 
-	var sortBy = function (name, f) {
+	var sortBy = function (name, values) {
 	  var rev = currentSort === name;
-	  sort(f, rev);
+	  sort(values, rev);
 	  currentSort = name + (rev ? ':rev' : '');
 	};
 
 	$scope.sortByMeta = function (f) {
-	  sortBy('meta:' + f, function (i) {
-	    return meta[f][i];
-	  });
+	  sortBy('meta:' + f, meta[f]);
 	};
 
 	$scope.sortByMetric = function (rc, m) {
-	  sortBy('metric:' + rc + ':' + m, function (i) {
-	    return records[rc][m][i];
-	  });
+	  sortBy('metric:' + rc + ':' + m, records[rc][m]);
 	};
 
 	populate();
