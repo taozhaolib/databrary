@@ -1,7 +1,7 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.models.asset.flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true, 'over-form': false, 'over-zone': false};" novalidate expose>
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose>
 	  <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
@@ -34,7 +34,7 @@
     <button ng-click="volumeEditMaterialsForm.remove(this)" bo-html="'remove' | message" class="red"></button>
   </fieldset>
 
-  <fieldset class="clean" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true, 'over-form': false, 'over-zone': false};">
+  <fieldset class="clean" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
     <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="yellow" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
 
