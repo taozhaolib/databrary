@@ -92,7 +92,17 @@ module.factory('slotClockService', [
 
     //
 
-    Clock.prototype.time = function () {
+    Clock.prototype.time = function (pos) {
+      if (angular.isNumber(pos)) {
+        if (pos < 0) {
+          this.begun = Date.now();
+        } else if (pos > this.duration) {
+          this.begun = Date.now() - this.duration;
+        } else {
+          this.begun = Date.now() - pos;
+        }
+      }
+
       callFn(this, this.timeFns);
     };
 

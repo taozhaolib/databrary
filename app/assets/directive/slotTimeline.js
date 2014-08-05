@@ -64,7 +64,9 @@ module.directive('slotTimeline', [
         // jump
 
         timeline.jump = function ($event) {
-          console.log($event);
+          var $el = $element.find('.slot-timeline');
+          var position = ($event.clientX - $el.offset().left - 4) / ($el.outerWidth() - 8);
+          ctrl.clock.time(position * ctrl.clock.duration);
         };
 
         // init
