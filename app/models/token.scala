@@ -19,7 +19,10 @@ object Token extends Table[Token]("token") {
   private final val length = 64
 
   private[models] def clean() : Future[Boolean] =
-    SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").apply().execute
+    for {
+      u <- UploadToken.clean
+      r <- SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").apply().execute
+    } yield (u && r)
 
   private final val rawLength = store.Base64.decodedLength(length)
   private final val random = new java.security.SecureRandom
@@ -131,4 +134,45 @@ object SessionToken extends TokenTable[SessionToken]("session") {
       insert(SQLTerms('account -> account.id),
         columns.map(_(account, access)))
     }
+}
+
+/** A token issued as a resumable upload identifier.
+  */
+final class UploadToken protected (id : Token.Id, val filename : String, expires : Timestamp, account : Account) extends AccountToken(id, expires, account) {
+  def file = store.Upload.file(id)
+  def remove = UploadToken.delete(id)
+}
+
+object UploadToken extends TokenTable[UploadToken]("upload") {
+  private val columns = (tokenColumns ~+
+      SelectColumn[String]("filename")
+    ).map { (token, expires, filename) =>
+      (account : Account) => new UploadToken(token, filename, expires, account)
+    }
+  protected val row = columns
+    .join(Account.row, "session.account = account.id")
+    .map(tupleApply)
+  protected def rowAccount(account : Account) = columns
+    .map(_(account))
+
+  private[models] def clean() : Future[Boolean] =
+    SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING id")
+      .apply().list(SQLCols[String])
+      .map(_.map(store.Upload.file(_).delete).forall(identity))
+
+  def get(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
+    rowAccount(site.account)
+    .SELECT("WHERE token = ? AND account = ?")
+    .apply(token, site.identity.id).singleOpt
+
+  def take(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
+    rowAccount(site.account)
+    .SQL((select, source) =>
+      "DELETE FROM upload WHERE token = ? AND account = ? RETURNING " + select)
+    .apply(token, site.identity.id).singleOpt
+
+  /** Issue a new token for a new upload. */
+  def create(filename : String)(implicit site : AuthSite) : Future[UploadToken] =
+    insert(SQLTerms('account -> site.account.id, 'filename -> filename),
+      rowAccount(site.account))
 }

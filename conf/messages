@@ -14,7 +14,7 @@ error.missing=Field value has not been filled
 error.offset=Position in seconds expected
 error.date=
 citation.invalid=Invalid citation: at least citation or DOI is required
-file.format.unknown=File format ''{0}'' is not supported.
+file.format.unknown=File format is not supported.
 file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
 measure.unknown=Invalid or unknown type of measure.
@@ -26,6 +26,7 @@ funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
 url.invalid=Invalid. Please check your typing.
+file.notfound=File not found
 
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
@@ -428,6 +429,11 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
+classification.excerpt.PRIVATE=Same release level
+classification.excerpt.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
+classification.excerpt.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
+classification.excerpt.PUBLIC=Public: available to anybody for unrestricted use.
+
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
 # objects
@@ -633,10 +639,6 @@ volume.edit.alias.placeholder=
 volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
 
-wizard.volume-edit-excerpts.name=Excerpts
-wizard.volume-edit-excerpts.description=Upload representative videos and images.
-wizard.volume-edit-excerpts.instructions=Provide excerpts related to this study.  Excerpts are video clips or still images that contain identifying information (such as faces). Each excerpt must have explicit consent for release by the depicted individuals. See our <a href="/asset/formats">list of accepted file types</a>.\n\nYou can share non-excerpt files in the Materials section.
-
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload stimuli, documents, and other materials.
 wizard.volume-edit-materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms). See our <a href="/asset/formats">list of accepted file types</a>.
@@ -647,6 +649,7 @@ material.name=Caption
 material.name.help=You may optionally provide a brief description of this file for other users.
 material.name.placeholder=
 material.classification=Classification
+material.excerpt=
 
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.

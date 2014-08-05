@@ -1,0 +1,5 @@
+<div ng-if="progressFloat">
+	<span>Progress: </span>
+	<span><progress max="1" value={{progressFloat}}></progress>
+	<span>({{(progressFloat*100).toFixed(1)+'%'}})</span>
+</div>

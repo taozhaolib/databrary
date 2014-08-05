@@ -45,6 +45,12 @@ object Stage extends StoreDir("store.stage") {
   }
 }
 
+object Upload extends StoreDir("store.upload") {
+  baseDir.mkdir
+  def file(token : Token.Id) : File =
+    new File(baseDir, token)
+}
+
 object FileAsset extends StoreDir("store.master") {
   private def relativeFile(asset : models.Asset) : File = {
     val i = asset.sha1
