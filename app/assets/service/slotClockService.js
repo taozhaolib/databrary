@@ -4,8 +4,10 @@ module.factory('slotClockService', [
   '$timeout', function ($timeout) {
     // Clock
 
-    var Clock = function () {
+    var Clock = function (slot, ctrl) {
       var clock = this;
+      this.slot = slot;
+      this.ctrl = ctrl;
 
       this.playFns = [];
       this.pauseFns = [];
@@ -21,6 +23,15 @@ module.factory('slotClockService', [
             var actual = Date.now() - clock.begun;
             return actual < clock.duration ? actual : clock.duration;
           }
+        }
+      });
+
+      slot.assets.forEach(function (asset) {
+        // TODO: hack until type classes
+        asset.container = slot.container;
+
+        if (ctrl.hasDuration(asset)) {
+          clock.duration = clock.duration >= asset.segment[1] ? clock.duration : asset.segment[1];
         }
       });
 

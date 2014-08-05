@@ -15,7 +15,7 @@ module.directive('slotMedia', [
         media.$element = $element.find('video, img, aside');
         media.element = media.$element[0];
 
-        $scope.ctrl.media.registerMedia(media);
+        $scope.ctrl.registerMedia(media);
 
         if (slotTimelineTrack) {
           slotTimelineTrack.registerMedia(media);

@@ -18,24 +18,24 @@ module.directive('slotTimeline', [
 
         timeline.sortTracks = function () {
           timeline.tracks.sort(function sortTracksFn(a, b) {
-            if (ctrl.media.hasPosition(a)) {
-              if (ctrl.media.hasPosition(b)) {
-                var aPos = ctrl.media.hasDuration(a) ? a.segment[0] : a.segment;
-                var bPos = ctrl.media.hasDuration(b) ? b.segment[0] : b.segment;
+            if (ctrl.hasPosition(a)) {
+              if (ctrl.hasPosition(b)) {
+                var aPos = ctrl.hasDuration(a) ? a.segment[0] : a.segment;
+                var bPos = ctrl.hasDuration(b) ? b.segment[0] : b.segment;
 
                 if (aPos !== bPos) {
                   return aPos - bPos;
                 }
 
-                var aDur = ctrl.media.hasDuration(a) ? a.segment[1] - a.segment[0] : 0;
-                var bDur = ctrl.media.hasDuration(b) ? b.segment[1] - b.segment[0] : 0;
+                var aDur = ctrl.hasDuration(a) ? a.segment[1] - a.segment[0] : 0;
+                var bDur = ctrl.hasDuration(b) ? b.segment[1] - b.segment[0] : 0;
 
                 return !aDur && !bDur ? a.asset.id - b.asset.id : aDur - bDur;
               } else {
                 return -1;
               }
             } else {
-              if (ctrl.media.hasPosition(b)) {
+              if (ctrl.hasPosition(b)) {
                 return 1;
               } else {
                 return a.asset.id - b.asset.id;

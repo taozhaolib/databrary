@@ -1,8 +1,8 @@
 <section class="slot-player" bindonce>
-  <div class="player-main" ng-repeat="asset in ctrl.media.current track by asset.asset.id">
-    <slot-media asset="asset" bo-if="ctrl.media.hasDisplay(asset)"></slot-media>
+  <div class="player-main" ng-repeat="asset in ctrl.current track by asset.asset.id">
+    <slot-media asset="asset" bo-if="ctrl.hasDisplay(asset)"></slot-media>
 
-    <div class="player-main-info" bo-class="{playable: ctrl.media.hasDisplay(asset)}">
+    <div class="player-main-info" bo-class="{playable: ctrl.hasDisplay(asset)}">
       <nav class="player-main-info-actions">
         <a bo-href="page.router.assetLink(asset, true)" target="_self" ng-if="page.auth.hasAccess('READ', asset)" class="player-main-info-link">download</a>&nbsp;
         <a bo-href="page.router.assetEdit(asset)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', asset)" class="player-main-info-link">edit</a>

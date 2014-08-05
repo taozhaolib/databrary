@@ -12,11 +12,11 @@ module.directive('slotTimelineTrack', [
         track.classes = function () {
           var cls = [];
 
-          if (ctrl.media.hasPosition(track.asset)) {
+          if (ctrl.hasPosition(track.asset)) {
             cls.push('slot-track-positioned');
           }
 
-          if (ctrl.media.hasDisplay(track.asset)) {
+          if (ctrl.hasDisplay(track.asset)) {
             cls.push('slot-track-display');
           }
 
@@ -26,10 +26,10 @@ module.directive('slotTimelineTrack', [
         var left, right;
 
         track.getPosition = function () {
-          if (ctrl.media.hasDuration(track.asset)) {
+          if (ctrl.hasDuration(track.asset)) {
             left = track.asset.segment[0] / ctrl.clock.duration;
             right = ((ctrl.clock.duration - track.asset.segment[1]) / ctrl.clock.duration);
-          } else if (ctrl.media.hasPosition(track.asset)) {
+          } else if (ctrl.hasPosition(track.asset)) {
             left = track.asset.segment[0] / ctrl.clock.duration;
             right = left;
           }
@@ -60,7 +60,7 @@ module.directive('slotTimelineTrack', [
         // behavior
 
         track.select = function () {
-          $scope.ctrl.media.setCurrent(track.asset);
+          $scope.ctrl.setCurrent(track.asset);
         };
       }
     ];
