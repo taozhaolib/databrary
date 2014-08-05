@@ -61,6 +61,12 @@ module.directive('slotTimeline', [
         ctrl.clock.pauseFn(nowMoveFn);
         ctrl.clock.timeFn(nowMoveFn);
 
+        // jump
+
+        timeline.jump = function ($event) {
+          console.log($event);
+        };
+
         // init
 
         timeline.parseTracks();

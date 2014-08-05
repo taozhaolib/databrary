@@ -5,6 +5,18 @@ module.controller('slotView', [
     page.display.title = page.types.slotName(slot);
     page.display.toolbarLinks = [];
 
+    // helpers
+
+    var getAsset = function (media) {
+      return media.element ? media.asset : media;
+    };
+
+    var getMedia = function (media) {
+      return media.element ? media : ctrl.filter(function (m) {
+        return m.asset === media;
+      }).pop();
+    };
+
     // controller
 
     var ctrl = {
@@ -18,7 +30,7 @@ module.controller('slotView', [
       },
 
       registerMedia: function (media) {
-        ctrl.push(media);
+        ctrl.media.push(media);
 
         media.$scope.$on('$destroy', function () {
           ctrl.deregisterMedia(media);
@@ -26,10 +38,10 @@ module.controller('slotView', [
       },
 
       deregisterMedia: function (media) {
-        var i = ctrl.indexOf(media);
+        var i = ctrl.media.indexOf(media);
 
         if (i > -1) {
-          ctrl.splice(i, 1);
+          ctrl.media.splice(i, 1);
         }
       },
 
@@ -53,12 +65,12 @@ module.controller('slotView', [
 
       hasDisplay: function (media) {
         var asset = getAsset(media);
-        return ['video', 'image'].indexOf(types.assetMimeArray(asset, true)[0]) > -1;
+        return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
       },
 
       hasTime: function (media) {
         var asset = getAsset(media);
-        return ['video'].indexOf(types.assetMimeArray(asset, true)[0]) > -1;
+        return ['video'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
       },
 
       isNowPlayable: function (media) {
@@ -74,19 +86,7 @@ module.controller('slotView', [
 
     // clock
 
-    ctrl.clock = page.slotClock(slot, ctrl);
-
-    // helpers
-
-    var getAsset = function (media) {
-      return media.element ? media.asset : media;
-    };
-
-    var getMedia = function (media) {
-      return media.element ? media : ctrl.filter(function (m) {
-        return m.asset === media;
-      }).pop();
-    };
+    ctrl.clock = new page.slotClock(slot, ctrl);
 
     // callbacks
 
