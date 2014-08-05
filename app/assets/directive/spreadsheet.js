@@ -1,8 +1,11 @@
 'use strict';
 
+/* Remember, angular.forEach is 8-10x slower: http://jsperf.com/angularloops */
+
 module.directive('spreadsheet', [
   'pageService', function (page) {
     var MAXREC = 100; // maximum number of records per category per slot
+    var MAXLEN = 32; // maximum number of records per category per slot
     var byNumber = function(a,b) { return a-b; };
     var byString = function(a,b) { return a>b?1:a<b?-1:0; };
     var byType = function(a,b) {
@@ -33,9 +36,11 @@ module.directive('spreadsheet', [
 
 	var slots = [];
 	angular.forEach(volume.sessions, function (s) {
-	  slots.push(s);
+	  slots.push(/*getSlot*/(s));
 	});
-	// slots = slots.map(getSlot);
+
+	var count = slots.length;
+	var order = Object.keys(slots);
 
 	// all arrays indexed over row (column-major)
 	var meta = {
@@ -46,9 +51,12 @@ module.directive('spreadsheet', [
 	  consent: [],
 	};
 	var records = {}; // [category + count/MAXREC][metric] = []
+	var recordCols = [], metricCols = [];
 	var depends = {}; // [recordid] = rows
 
-	var populateSlot = function (slot, i) {
+	var populateSlot = function (i) {
+	  var slot = slots[i];
+	  
 	  // populate meta:
 	  meta.id[i] = slot.id;
 	  meta.segment[i] = slot.segment;
@@ -57,8 +65,8 @@ module.directive('spreadsheet', [
 	  meta.consent[i] = slot.consent;
 
 	  var counts = {};
-	  angular.forEach(slot.records, function (rec) {
-	    var record = volume.records[rec.id];
+	  for (var ri = 0; ri < slot.records.length; ri ++) {
+	    var record = volume.records[slot.records[ri].id];
 
 	    // populate records:
 	    if (!(record.category in counts))
@@ -70,73 +78,127 @@ module.directive('spreadsheet', [
 	    var c = record.category + (counts[record.category]++)/MAXREC;
 	    var r;
 	    if (!(c in records)) {
-	      r = records[c] = {/*id: []*/};
+	      r = records[c] = {id: []};
 	      if (record.category === page.category.participant.id)
 		r.age = [];
 	    } else
 	      r = records[c];
 
 	    // populate measures:
-	    /*r.id[i] = rec.id;*/
+	    r.id[i] = record.id;
 	    if ('age' in r)
-	      r.age[i] = rec.age;
-	    angular.forEach(record.measures, function (v, m) {
+	      r.age[i] = slot.records[ri].age;
+	    for (var m in record.measures) {
 	      if (!(m in r))
 		r[m] = [];
-	      r[m][i] = v;
-	    });
+	      r[m][i] = record.measures[m];
+	    }
 
 	    // populate depends:
 	    if (!(record.id in depends))
 	      depends[record.id] = [i];
 	    else
 	      depends[record.id].push(i);
-	  });
+	  }
 	};
 
 	var populateCols = function () {
-	  $scope.recordCols = Object.keys(records).sort(byNumber).map(function (c) {
+	  metricCols = [];
+	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var cat = page.constants.data.category[Math.floor(c)];
+	    var metrics = Object.keys(records[c]).filter(function (m) {
+	      return m !== 'id' && !(m in page.constants.data.metric && page.constants.data.metric[m].long);
+	    });
+	    if (metrics.length)
+	      metrics.sort(byNumber);
+	    else
+	      metrics = ['id'];
+	    metricCols.push.apply(metricCols, metrics.map(function (metric) {
+	      return {
+		record: c,
+		metric: metric
+	      };
+	    }));
 	    return {
 	      id: c,
 	      category: cat,
-	      metrics: Object.keys(records[c]).sort(byNumber)
+	      metrics: metrics
 	    };
 	  });
 	};
 
 	var populate = function () {
-	  angular.forEach(slots, populateSlot);
+	  for (var i = 0; i < count; i ++)
+	    populateSlot(i);
 	  populateCols();
 	};
 
-	var sort = function (values, reverse, compare) {
+	var rows = [];
+
+	var generateCell = function (r, c, i) {
+	  var td = r.appendChild(document.createElement('td'));
+	  if (!angular.isUndefined(c)) {
+	    if (typeof c === 'string' && c.length >= MAXLEN)
+	      c = c.substr(0, MAXLEN) + '...';
+	    td.appendChild(document.createTextNode(c));
+	  }
+	  td.id = i;
+	  return td;
+	};
+	
+	var generateRow = function (i) {
+	  var row = rows[i] = document.createElement('tr');
+	  row.className = 'ss-row:' + i;
+	  if (meta.top[i])
+	    row.classList.add('ss-top');
+	  generateCell(row, meta.date[i], 'ss-date:' + i);
+	  var consentName = page.constants.data.consent[meta.consent[i]];
+	  var consent = generateCell(row, consentName, 'ss-consent:' + i);
+	  if (consentName) {
+	    consent.classList.add(consentName.toLowerCase());
+	    consent.setAttribute('hint', 'consent-' + consentName);
+	  }
+	  var ri, mi;
+	  for (ri = 0; ri < recordCols.length; ri ++) {
+	    var record = recordCols[ri];
+	    var metrics = record.metrics;
+	    var rec = records[record.id];
+	    for (mi = 0; mi < metrics.length; mi ++) {
+	      generateCell(row, rec[metrics[mi]][i], 'ss-rec:' + record.id + ':' + metrics[mi] + ':' + i);
+	    }
+	  }
+	};
+
+	var generate = function () {
+	  for (var i = 0; i < count; i ++)
+	    generateRow(i);
+	};
+
+	var fill = function () {
+	  var ss = document.getElementById('ss');
+
+	  for (var i = 0; i < count; i ++)
+	    ss.appendChild(rows[order[i]]);
+	};
+
+	var sort = function (values, compare) {
 	  if (!compare)
 	    compare = byType;
-	  var rev = reverse ? -1 : 1;
-	  var i = Object.keys(meta.id).sort(function (i, j) {
-	    return rev*compare(values[i], values[j]);
-	  });
-	  angular.forEach(meta, function (l, f) {
-	    meta[f] = i.map(function (i) {
-	      return l[i];
-	    });
-	  });
-	  angular.forEach(records, function (r) {
-	    angular.forEach(r, function (l, m) {
-	      r[m] = i.map(function (i) {
-		return l[i];
-	      });
-	    });
+	  order.sort(function (i, j) {
+	    return compare(values[i], values[j]);
 	  });
 	};
 
 	var currentSort;
 
 	var sortBy = function (name, values) {
-	  var rev = currentSort === name;
-	  sort(values, rev);
-	  currentSort = name + (rev ? ':rev' : '');
+	  if (currentSort === name)
+	    order.reverse();
+	  else {
+	    sort(values);
+	    currentSort = name;
+	  }
+	  fill();
 	};
 
 	$scope.sortByMeta = function (f) {
@@ -148,8 +210,10 @@ module.directive('spreadsheet', [
 	};
 
 	populate();
-	$scope.meta = meta;
-	$scope.records = records;
+	generate();
+	fill();
+	$scope.recordCols = recordCols;
+	$scope.metricCols = metricCols;
       }
     ];
 

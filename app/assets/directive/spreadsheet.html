@@ -1,28 +1,26 @@
 <div style="overflow-x: scroll">
   <table>
-    <tr>
-      <th rowspan="2">session</th>
-      <th><a href="" ng-click="sortByMeta('date')">date</a></th>
-      <td ng-repeat="date in meta.date track by $index" ng-bind="date"></td>
-    </tr>
-    <tr>
-      <th><a href="" ng-click="sortByMeta('consent')">consent</a></th>
-      <td ng-repeat="consent in meta.consent track by $index" bo-class="page.constants.data.consent[consent].toLowerCase()" hint="consent-{{page.constants.data.consent[consent]}}" ng-bind="page.constants.data.consent[consent]"></td>
-    </tr>
-    <tr ng-repeat-start="record in recordCols">
-      <th rowspan="{{record.metrics.length+2}}" ng-bind="record.category.name"></th>
-    </tr>
-      <tr ng-repeat="metric in record.metrics" ng-if="page.constants.data.metric[metric]">
-	<th><a href="" ng-click="sortByMetric(record.id, metric)" ng-bind="page.constants.data.metric[metric].name"></a></th>
-	<td ng-repeat="value in records[record.id][metric] track by $index" ng-bind="value"></td>
+    <colgroup>
+      <col/>
+      <col class="consent icon"/>
+    </colgroup>
+    <colgroup ng-repeat="record in recordCols track by record.id">
+      <col ng-repeat="metric in record.metrics"/>
+    </colgroup>
+    <thead>
+      <tr>
+	<th colspan="2">session</th>
+	<th ng-repeat="record in recordCols track by record.id" colspan="{{record.metrics.length}}" ng-bind="record.category.name"></th>
       </tr>
-      <tr ng-if="records[record.id].age">
-	<th><a href="" ng-click="sortByMetric(record.id, 'age')">age</a></th>
-	<td ng-repeat="value in records[record.id].age track by $index">
-	  <display-age ng-if="value" value="value"></display-age>
-	</td>
+      <tr>
+	<th><a href="" ng-click="sortByMeta('date')">date</a></th>
+	<th><a href="" ng-click="sortByMeta('consent')">consent</a></th>
+	<th ng-repeat="col in metricCols track by $index">
+	  <a href="" ng-click="sortByMetric(col.record, col.metric)" ng-bind="page.constants.data.metric[col.metric] ? page.constants.data.metric[col.metric].name : col.metric"></a>
+	</th>
       </tr>
-    <tr ng-repeat-end>
-    </tr>
+    </thead>
+    <tbody id="ss">
+    </tbody>
   </table>
 </div>
