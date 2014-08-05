@@ -148,7 +148,7 @@ module.directive('spreadsheet', [
 	
 	var generateRow = function (i) {
 	  var row = rows[i] = document.createElement('tr');
-	  row.className = 'ss-row:' + i;
+	  row.id = 'ss-row:' + i;
 	  if (meta.top[i])
 	    row.classList.add('ss-top');
 	  generateCell(row, meta.date[i], 'ss-date:' + i);
@@ -161,10 +161,28 @@ module.directive('spreadsheet', [
 	  var ri, mi;
 	  for (ri = 0; ri < recordCols.length; ri ++) {
 	    var record = recordCols[ri];
+	    var r = record.id;
+	    var rec = records[r];
 	    var metrics = record.metrics;
-	    var rec = records[record.id];
 	    for (mi = 0; mi < metrics.length; mi ++) {
-	      generateCell(row, rec[metrics[mi]][i], 'ss-rec:' + record.id + ':' + metrics[mi] + ':' + i);
+	      var m = metrics[mi];
+	      var v = rec[m][i];
+	      if (m === 'age')
+		v = page.display.formatAge(v);
+	      generateCell(row, v, 'ss-rec:' + r + ':' + m + ':' + i);
+	    }
+	  }
+	};
+
+	var regenerateAges = function () {
+	  for (var mi = 0; mi < metricCols.length; mi ++) {
+	    var m = metricCols[mi];
+	    if (m.metric !== 'age')
+	      continue;
+	    for (var i = 0; i < count; i ++) {
+	      var v = records[m.record][m.metric][i];
+	      if (!angular.isUndefined(v))
+		document.getElementById('ss-rec:' + m.record + ':age:' + i).firstChild.replaceWholeText(page.display.formatAge(v));
 	    }
 	  }
 	};
@@ -214,6 +232,8 @@ module.directive('spreadsheet', [
 	fill();
 	$scope.recordCols = recordCols;
 	$scope.metricCols = metricCols;
+
+	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
       }
     ];
 
