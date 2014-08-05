@@ -7,7 +7,7 @@
     <validator form="form" name="file" label="'material.file' | message">
       <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
 	      <span ng-if="!asset.file">Drop here or click to browse.</span>
-	      <span ng-if="asset.file" ng-bind="asset.file.name"</span>
+	      <span ng-if="asset.file" ng-bind="asset.file.name"</span><span> (in progress)</span>
       </div>
 
       <div ng-if="asset.asset.creation">

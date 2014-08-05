@@ -30,9 +30,20 @@ module.directive('volumeEditMaterialsForm', [
 			};
 
 			form.addedCall = function(file, event){
-				file.asset = form.data.assets[form.add()-1];
-				file.asset.file = file.file; //improve with ng-model
-				page.models.asset.fileAddedImmediateUpload(file);
+				if (angular.element(event.srcElement).scope().form){
+					//replace - wip
+					form.save(angular.element(event.srcElement).scope().form.subform);
+					file.asset = angular.element(event.srcElement).scope().form.subform.asset;
+					file.asset.asset = {id: file.asset.id};
+					file.asset.asset.creation = {date: Date.now(), name: file.file.name};	
+
+				}
+				else{
+					//new asset
+					file.asset = form.data.assets[form.add()-1];
+					file.asset.file = file.file; //improve with ng-model
+					page.models.asset.fileAddedImmediateUpload(file);
+				}
 			};
 
 			form.assetCall = function(file){
@@ -245,6 +256,8 @@ module.directive('volumeEditMaterialsForm', [
 
 			form.replace = function (subform) {
 				delete subform.asset.asset.creation;
+				subform.asset.file = undefined;
+				subform.asset.fileUploadProgress = undefined;
 				form.$setDirty();
 			};
 
