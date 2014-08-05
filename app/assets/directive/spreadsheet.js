@@ -4,7 +4,7 @@
 
 module.directive('spreadsheet', [
   'pageService', function (page) {
-    var MAXREC = 100; // maximum number of records per category per slot
+    var MAXREC = 64; // maximum number of records per category per slot
     var MAXLEN = 32; // maximum number of records per category per slot
     var byNumber = function(a,b) { return a-b; };
     var byString = function(a,b) { return a>b?1:a<b?-1:0; };
