@@ -43,7 +43,6 @@ module.factory('displayService', [
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
-      events.talk('displayService-error', error);
     });
 
     //
