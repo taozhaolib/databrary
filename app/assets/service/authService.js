@@ -16,23 +16,25 @@ module.factory('authService', [
 
     //
 
-    auth.everybody = constants.data.everybody;
-    auth.user = auth.everybody;
+    auth.user = undefined;
 
     auth.parseUser = function (user) {
       var reload = true;
 
+      if (!angular.isObject(user))
+	user = undefined;
+
       if (user) {
         user.superuser = !!user.superuser;
 
-        if (auth.user.id === user.id && auth.user.superuser == user.superuser) {
+        if (auth.user && auth.user.id === user.id && auth.user.superuser == user.superuser) {
           reload = false;
         }
       } else if (!user && !auth.user) {
         reload = false;
       }
 
-      auth.user = user || auth.everybody;
+      auth.user = user;
 
       if (reload) {
         $cacheFactory.removeAll();
@@ -46,9 +48,9 @@ module.factory('authService', [
       }
 
       party.user(function (data) {
-        auth.parseUser(angular.isString(data) ? auth.everybody : data);
+        auth.parseUser(data);
       }, function () {
-        auth.parseUser(auth.everybody);
+        auth.parseUser(undefined);
       });
     };
 
@@ -62,13 +64,16 @@ module.factory('authService', [
     };
 
     var parseUserAuth = function (object) {
-      if (auth.user.superuser) {
+      if (auth.user && auth.user.superuser) {
         return constants.data.permissionName.SUPER;
       }
 
-      if (angular.isObject(object) && object.permission) {
+      if (angular.isObject(object) && 'permission' in object) {
         return object.permission;
       }
+
+      if (!(auth.user && 'access' in auth.user))
+	return -1;
 
       return auth.user.access;
     };
@@ -88,9 +93,9 @@ module.factory('authService', [
     //
 
     auth.logout = function () {
-      party.logout(function (data) {
-        auth.parseUser(data);
-        $location.url('/login');
+      party.logout(function () {
+        auth.parseUser();
+        $location.url('/');
 
         messages.add({
           body: constants.message('logout.success'),
@@ -110,7 +115,7 @@ module.factory('authService', [
     //
 
     auth.isLoggedIn = function () {
-      return auth.user.id !== auth.everybody.id;
+      return !!(auth.user && auth.user.id != constants.data.party.NOBODY);
     };
 
     auth.hasToken = function () {

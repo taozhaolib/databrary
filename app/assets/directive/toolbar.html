@@ -36,7 +36,7 @@
         <a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar-contact" target="_blank" tooltip tooltip-message="{{'toolbar.contact' | message}}" tooltip-type="green"></a>
       </div>
 
-      <section class="toolbar-hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
+      <section class="toolbar-hover user" ng-if="page.auth.isLoggedIn() && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
         <div class="row">
           <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
             <ul class="flat">
