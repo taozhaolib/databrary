@@ -14,7 +14,7 @@
 			</div>
 
 			<div class="toolbar_user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-2">
-				<span ng-if="!page.auth.hasAuth('NONE')">
+				<span ng-if="!page.auth.isLoggedIn()">
 					<a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
 
 				  <span class="sep">|</span>
@@ -22,7 +22,7 @@
           <a bo-href="page.router.register()" bo-html="'toolbar.register' | message">login</a>
 				</span>
 
-				<span ng-if="page.auth.hasAuth('NONE')">
+				<span ng-if="page.auth.isLoggedIn()">
 					<a href="" class="toolbar_user_link" ng-class="{superuser: page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
 						<span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
 						<span class="username show-mobile" bo-text="'me' | message"></span>
@@ -35,7 +35,7 @@
 				<a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar_contact" target="_blank" tooltip tooltip-message="{{'toolbar.contact' | message}}" tooltip-type="green"></a>
 			</div>
 
-			<section class="toolbar_hover user" ng-if="page.auth.hasAuth('NONE') && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
+			<section class="toolbar_hover user" ng-if="page.auth.isLoggedIn() && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
 				<div class="row">
 					<div class="user_links col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
 						<ul class="flat">

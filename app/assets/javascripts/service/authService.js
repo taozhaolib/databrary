@@ -19,6 +19,9 @@ module.factory('authService', [
 		auth.parseUser = function (user) {
 			var reload = true;
 
+			if (!angular.isObject(user))
+				user = undefined;
+
 			if (user) {
 				user.superuser = !!user.superuser;
 
@@ -29,7 +32,7 @@ module.factory('authService', [
 				reload = false;
 			}
 
-			auth.user = user || undefined;
+			auth.user = user;
 
 			if (reload) {
 				$cacheFactory.removeAll();
@@ -43,12 +46,7 @@ module.factory('authService', [
 			}
 
 			Party.user(function (data) {
-				if (data.id == -1 || angular.isString(data)) {
-					auth.parseUser(undefined);
-				}
-				else {
-					auth.parseUser(data);
-				}
+				auth.parseUser(data);
 			}, function () {
 				auth.parseUser(undefined);
 			});
@@ -64,17 +62,16 @@ module.factory('authService', [
 		};
 
 		var parseUserAuth = function (object) {
-			if (!auth.user || !auth.user.id || auth.user.id == -1) {
-				return -1;
-			}
-
-			if (auth.user.superuser) {
+			if (auth.user && auth.user.superuser) {
 				return constants.data.permissionName.SUPER;
 			}
 
-			if (angular.isObject(object) && object.permission) {
+			if (angular.isObject(object) && 'permission' in object) {
 				return object.permission;
 			}
+
+			if (!(auth.user && 'access' in auth.user))
+				return -1;
 
 			return auth.user.access;
 		};
@@ -94,9 +91,9 @@ module.factory('authService', [
 		//
 
 		auth.logout = function () {
-			Party.logout(function (data) {
-				auth.parseUser(data);
-				$location.url('/login');
+			Party.logout(function () {
+				auth.parseUser(undefined);
+				$location.url('/');
 
 				messages.add({
 					body: constants.message('logout.success'),
@@ -120,7 +117,7 @@ module.factory('authService', [
 		//
 
 		auth.isLoggedIn = function () {
-			return !!(auth.user && auth.user.id && auth.user.id != -1);
+			return !!(auth.user && auth.user.id != -1);
 		};
 
 		auth.hasToken = function () {
