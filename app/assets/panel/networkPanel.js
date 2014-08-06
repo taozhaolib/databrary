@@ -26,7 +26,7 @@ module.controller('NetworkPanel', [
     });
 
     var getPartyAuth = function () {
-      if (page.auth.hasAccess('ADMIN', $scope.party)) {
+      if (page.auth.hasAccess(page.permission.ADMIN, $scope.party)) {
         page.models.partyAuthorize.$cache.removeAll();
         page.models.partyAuthorize.query(function (data) {
           $scope.partyAuth = data;
@@ -82,7 +82,7 @@ module.controller('NetworkPanel', [
     //
 
     var isAdmin = function () {
-      return page.auth.hasAccess('ADMIN', $scope.party);
+      return page.auth.hasAccess(page.permission.ADMIN, $scope.party);
     };
 
     $scope.isForeign = function () {

@@ -5,12 +5,12 @@
         <span bo-if="data.object.consent">
             <div class="browser-item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
 
-            <div class="browser-item-meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">
+            <div class="browser-item-meta sep" bo-if="page.auth.hasAccess(page.permission.CONTRIBUTE, data)">
               |
             </div>
         </span>
 
-        <a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">edit</a>
+        <a bo-href="editLink(data)" target="_self" bo-if="page.auth.hasAccess(page.permission.CONTRIBUTE, data)">edit</a>
       </footer>
 
       <header>

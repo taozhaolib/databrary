@@ -58,11 +58,6 @@ module.factory('authService', [
 
     //
 
-    var parseAuthLevel = function (level) {
-      return $.isNumeric(level) ? parseInt(level) :
-        angular.isString(level) ? constants.data.permissionName[level.toUpperCase()] : -1;
-    };
-
     var parseUserAuth = function (object) {
       if (auth.user && auth.user.superuser) {
         return constants.data.permissionName.SUPER;
@@ -81,13 +76,13 @@ module.factory('authService', [
     //
 
     auth.hasAuth = function (level) {
-      return parseUserAuth() >= parseAuthLevel(level);
+      return parseUserAuth() >= level;
     };
 
     //
 
     auth.hasAccess = function (level, object) {
-      return parseUserAuth(object) >= parseAuthLevel(level);
+      return parseUserAuth(object) >= level;
     };
 
     //

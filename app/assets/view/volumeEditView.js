@@ -180,7 +180,7 @@ module.controller('volumeEditView', [
       },
 
       'volume-edit-funding': function (step) {
-        step.enable = page.auth.hasAccess('ADMIN', volume);
+        step.enable = page.auth.hasAccess(page.permission.ADMIN, volume);
 
         if (!volume) {
           return;
@@ -195,7 +195,7 @@ module.controller('volumeEditView', [
       },
 
       'volume-edit-access': function (step) {
-        step.enable = page.auth.hasAccess('ADMIN', volume);
+        step.enable = page.auth.hasAccess(page.permission.ADMIN, volume);
 
         if (!volume) {
           return;

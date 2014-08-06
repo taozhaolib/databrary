@@ -24,7 +24,7 @@ module.controller('volumeView', [
         type: 'yellow',
         html: page.constants.message('volume.edit'),
         url: page.router.volumeEdit(volume),
-        access: 'CONTRIBUTE',
+        access: page.permission.CONTRIBUTE,
         object: volume,
       },
     ];

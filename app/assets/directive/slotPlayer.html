@@ -4,8 +4,8 @@
 
     <div class="player-main-info" bo-class="{playable: ctrl.hasDisplay(asset)}">
       <nav class="player-main-info-actions">
-        <a bo-href="page.router.assetLink(asset, true)" target="_self" ng-if="page.auth.hasAccess('READ', asset)" class="player-main-info-link">download</a>&nbsp;
-        <a bo-href="page.router.assetEdit(asset)" target="_self" ng-if="page.auth.hasAccess('CONTRIBUTE', asset)" class="player-main-info-link">edit</a>
+        <a bo-href="page.router.assetLink(asset, true)" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, asset)" class="player-main-info-link">download</a>&nbsp;
+        <a bo-href="page.router.assetEdit(asset)" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, asset)" class="player-main-info-link">edit</a>
       </nav>
 
       <h1 class="player-main-info-name">

@@ -11,7 +11,7 @@ module.controller('partyView', [
         type: 'yellow',
         html: page.constants.message('party.edit'),
         url: page.router.partyEdit(party),
-        access: 'CONTRIBUTE',
+        access: page.permission.CONTRIBUTE,
         object: party,
       },
     ];

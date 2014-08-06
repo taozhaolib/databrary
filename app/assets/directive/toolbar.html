@@ -25,7 +25,7 @@
         </span>
 
         <span ng-if="page.auth.isLoggedIn()">
-          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth('ADMIN'), on: page.auth.hasAuth('SUPER')}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
+          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth(page.permission.ADMIN), on: page.auth.hasAuth(page.permission.SUPER)}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
             <span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
             <span class="username show-mobile" bo-text="'me' | message"></span>
             <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-avatar"> </a>
@@ -49,15 +49,15 @@
               </li>
               <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
 
-              <li ng-if="page.auth.hasAuth('ADMIN')" class="toolbar-password-form">
-                <form name="superuserForm" ng-if="!page.auth.hasAuth('SUPER')" class="cf" messages="default" novalidate>
+              <li ng-if="page.auth.hasAuth(page.permission.ADMIN)" class="toolbar-password-form">
+                <form name="superuserForm" ng-if="!page.auth.hasAuth(page.permission.SUPER)" class="cf" messages="default" novalidate>
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
                   <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
                     activate SU
                   </button>
                 </form>
 
-                <a ng-if="page.auth.hasAuth('SUPER')" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
+                <a ng-if="page.auth.hasAuth(page.permission.SUPER)" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
                   SU</a>
               </li>
             </ul>

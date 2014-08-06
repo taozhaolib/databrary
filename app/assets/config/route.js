@@ -257,7 +257,7 @@ module.config([
             };
 
             partyEditParty.then(function (party) {
-              if (page.auth.hasAccess('ADMIN', party)) {
+              if (page.auth.hasAccess(page.permission.ADMIN, party)) {
                 page.models.partyAuthorize.query(function (res) {
                   deferred.resolve(res);
                 }, function (res) {
