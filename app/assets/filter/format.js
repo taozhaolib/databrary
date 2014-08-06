@@ -12,7 +12,7 @@ module.filter('format', [
       }
 
       if (lineMode) {
-        return input.replace(/: /g, ': <br>');
+        return input;
       }
 
       return '<p>' + input.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
