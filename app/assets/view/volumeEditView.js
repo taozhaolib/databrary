@@ -109,7 +109,7 @@ module.controller('volumeEditView', [
       access: undefined,
     };
 
-    page.display.navigationFn = function (event, val) {
+    page.display.navigationFn = function () {
       for (var id in forms) {
         if (forms.hasOwnProperty(id) && forms[id] && forms[id].form && forms[id].form.$dirty) {
           return false;

@@ -2,7 +2,7 @@
 
 module.directive('volumeEditMaterialsForm', [
   'pageService', function (page) {
-    var link = function ($scope, $el, $attrs) {
+    var link = function ($scope) {
       var form = $scope.volumeEditMaterialsForm;
 
       form.data = {};

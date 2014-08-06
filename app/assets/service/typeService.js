@@ -2,8 +2,7 @@
 
 module.factory('typeService', [
   'constantService',
-  '$window',
-  function (constants, $window) {
+  function (constants) {
     var typeService = {};
 
     //

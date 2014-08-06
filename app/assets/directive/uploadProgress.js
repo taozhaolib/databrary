@@ -2,7 +2,7 @@
 
 module.directive('uploadProgress', [
 	'pageService', function (page) {
-		var link = function($scope, $attrs) {
+		var link = function($scope) {
 			$scope.progressFloat = undefined;
 		};
 
