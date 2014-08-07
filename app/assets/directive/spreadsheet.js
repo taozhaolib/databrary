@@ -34,26 +34,42 @@ module.directive('spreadsheet', [
 	  return slot;
 	};
 
-	var slots = [];
+	/*
+	 * We use the following types of data structures:
+	 *   Row = index of slot in slots and rows
+	 *   Data[Row] = scalar value (array over Row)
+	 *   Slot_id = Database id of container
+	 *   Segment = standard time range (see type service)
+	 *   Record_id = Database id of record
+	 *   Category_id = Database id of record category
+	 *   Index = index of record within category for slot
+	 *   Rec_id = Category + Index/MAXREC of record within row
+	 *   Metric_id = Database id of metric, or "id" for Record_id, or "age"
+	 */
+
+	var slots = []; // [Row] = Slot
 	angular.forEach(volume.sessions, function (s) {
 	  slots.push(/*getSlot*/(s));
 	});
 
 	var count = slots.length;
-	var order = Object.keys(slots);
+	var order = Object.keys(slots); // Permutation Array of Row in display order
 
-	// all arrays indexed over row (column-major)
 	var meta = {
-	  id: [],
-	  segment: [],
-	  date: [],
-	  top: [],
-	  consent: [],
+	  id: [], // :: Data of Record_id
+	  segment: [], // :: Data of Segment
+	  date: [], // :: Data of container.date
+	  top: [], // :: Data of container.top
+	  consent: [], // :: Data of consent (entire slot only)
 	};
-	var records = {}; // [category + count/MAXREC][metric] = []
-	var recordCols = [], metricCols = [];
-	var depends = {}; // [recordid] = rows
+	var records = {}; // [Rec_id][Metric_id] :: Data
+	var recordCols = [], // [Index] Array over records :: {id: Rec_id, category: Category, metrics[]: Array of Metric_id}
+	    metricCols = []; // [] Array over metrics :: {record: Rec_id, metric: Metric_id} (flattened version of recordCols)
+	var depends = {}; // [Record_id] :: Array of Row
 
+	var rows = []; // [Row] :: DOM Element tr
+
+	/* Fill all Data values for Row i */
 	var populateSlot = function (i) {
 	  var slot = slots[i];
 	  
@@ -102,16 +118,19 @@ module.directive('spreadsheet', [
 	  }
 	};
 
+	/* Fill metricCols and recordCols from records */
 	var populateCols = function () {
 	  metricCols = [];
 	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var cat = page.constants.data.category[Math.floor(c)];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
+	      // filter out 'id' and long metrics (e.g., Description)
 	      return m !== 'id' && !(m in page.constants.data.metric && page.constants.data.metric[m].long);
 	    });
 	    if (metrics.length)
 	      metrics.sort(byNumber);
 	    else
+	      // put id back if there's nothing else
 	      metrics = ['id'];
 	    metricCols.push.apply(metricCols, metrics.map(function (metric) {
 	      return {
@@ -127,14 +146,14 @@ module.directive('spreadsheet', [
 	  });
 	};
 
+	/* Call all populate* functions */
 	var populate = function () {
 	  for (var i = 0; i < count; i ++)
 	    populateSlot(i);
 	  populateCols();
 	};
 
-	var rows = [];
-
+	/* Add a td element to tr r with value c and id i */
 	var generateCell = function (r, c, i) {
 	  var td = r.appendChild(document.createElement('td'));
 	  if (!angular.isUndefined(c)) {
@@ -146,6 +165,7 @@ module.directive('spreadsheet', [
 	  return td;
 	};
 	
+	/* Fill out rows[i]. Should only be called once. */
 	var generateRow = function (i) {
 	  var row = rows[i] = document.createElement('tr');
 	  row.id = 'ss-row:' + i;
@@ -174,6 +194,7 @@ module.directive('spreadsheet', [
 	  }
 	};
 
+	/* Update all age displays. */
 	var regenerateAges = function () {
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var m = metricCols[mi];
@@ -187,18 +208,24 @@ module.directive('spreadsheet', [
 	  }
 	};
 
+	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
+
+	/* Generate all rows. Should only be called once. */
 	var generate = function () {
 	  for (var i = 0; i < count; i ++)
 	    generateRow(i);
 	};
 
+	/* Place all rows into spreadsheet. */
 	var fill = function () {
 	  var ss = document.getElementById('ss');
 
+	  // appendChild removes as well
 	  for (var i = 0; i < count; i ++)
 	    ss.appendChild(rows[order[i]]);
 	};
 
+	/* Populate order based on compare function applied to values. */
 	var sort = function (values, compare) {
 	  if (!compare)
 	    compare = byType;
@@ -209,6 +236,7 @@ module.directive('spreadsheet', [
 
 	var currentSort;
 
+	/* Sort by values, called name. */
 	var sortBy = function (name, values) {
 	  if (currentSort === name)
 	    order.reverse();
@@ -219,10 +247,12 @@ module.directive('spreadsheet', [
 	  fill();
 	};
 
+	/* Sort by one of the container columns. */
 	$scope.sortByMeta = function (f) {
 	  sortBy('meta:' + f, meta[f]);
 	};
 
+	/* Sort by Rec_id rc's Metric_id m */
 	$scope.sortByMetric = function (rc, m) {
 	  sortBy('metric:' + rc + ':' + m, records[rc][m]);
 	};
@@ -232,8 +262,6 @@ module.directive('spreadsheet', [
 	fill();
 	$scope.recordCols = recordCols;
 	$scope.metricCols = metricCols;
-
-	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
       }
     ];
 
