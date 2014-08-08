@@ -94,21 +94,20 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   def fileName : Future[String] = {
     def last(s : String) =
       Maybe(s.lastIndexOf(' ')).fold(s)(i => s.substring(i+1))
+    def trunc(s : String) =
+      s.take(Maybe(s.lastIndexOf(' ', 32)).orElse(32))
     for {
       owns <- volume.partyAccess(Permission.ADMIN)
       own = owns.headOption.map(_.party.name).map(last _)
       cite <- volume.citation
       auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(a => own.exists(_.equals(a)))
-      name = { 
-	val n = volume.alias.getOrElse(volume.name)
-	n.take(Maybe(n.lastIndexOf(' ', 32)).orElse(32))
-      }
+      name = trunc(volume.alias.getOrElse(volume.name))
       ids <- idents
     } yield {
       SlotAsset.fileNamePad.replaceAllIn(
 	(Seq("databrary" + volume.id) ++
 	own ++ auth ++ cite.flatMap(_.year).map(_.toString) ++
-	(name +: (ids ++ asset.name))).mkString("-"),
+	(name +: (ids ++ asset.name.map(trunc)))).mkString("-"),
 	"_")
     }
   }
