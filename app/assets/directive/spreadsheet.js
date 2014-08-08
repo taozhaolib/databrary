@@ -54,19 +54,19 @@ module.directive('spreadsheet', [
 	var order = Object.keys(slots); // Permutation Array of Row in display order
 
 	var meta = {
-	  id: [], // :: Data of Record_id
-	  segment: [], // :: Data of Segment
-	  date: [], // :: Data of container.date
-	  top: [], // :: Data of container.top
-	  consent: [], // :: Data of consent (entire slot only)
+	  id: new Array(count), // :: Data of Record_id
+	  segment: new Array(count), // :: Data of Segment
+	  date: new Array(count), // :: Data of container.date
+	  top: new Array(count), // :: Data of container.top
+	  consent: new Array(count), // :: Data of consent (entire slot only)
 	};
 	var records = {}; // [Category_id][Metric_id][Count] :: Data
-	var counts = {}; // [Category_id][Row] :: Count
+	var counts = new Array(count); // [Row][Category_id] :: Count
 	var recordCols = [], // [] Array over records :: {category: Category_id, metrics[]: Array of Metric_id}
 	    metricCols = []; // [] Array over metrics :: {category: Category_id, metric: Metric_id} (flattened version of recordCols)
 	var depends = {}; // [Record_id] :: Array of Row
 
-	var rows = []; // [Row] :: DOM Element tr
+	var rows = new Array(count); // [Row] :: DOM Element tr
 
 	var ss = document.getElementById('ss');
 
@@ -89,6 +89,7 @@ module.directive('spreadsheet', [
 	      r[m][c] = [];
 	    r[m][c][i] = v;
 	  };
+	  var count = counts[i] = {};
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
@@ -99,16 +100,15 @@ module.directive('spreadsheet', [
 	      r = records[cat] = {id: []};
 	      if (cat === page.category.participant.id)
 		r.age = [];
-	      counts[cat] = [];
 	    } else
 	      r = records[cat];
 
 	    // determine Count:
-	    if (!(i in counts[cat])) {
-	      counts[cat][i] = 1;
+	    if (!(cat in count)) {
+	      count[cat] = 1;
 	      c = 0;
 	    } else
-	      c = counts[cat][i] ++;
+	      c = count[cat] ++;
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
@@ -158,12 +158,12 @@ module.directive('spreadsheet', [
 	};
 
 	/* Add a td element to tr r with value c and id i */
-	var generateCell = function (r, c, i) {
+	var generateCell = function (r, v, i) {
 	  var td = r.appendChild(document.createElement('td'));
-	  if (!angular.isUndefined(c)) {
-	    if (typeof c === 'string' && c.length >= MAXLEN)
-	      c = c.substr(0, MAXLEN) + '...';
-	    td.appendChild(document.createTextNode(c));
+	  if (!angular.isUndefined(v)) {
+	    if (typeof v === 'string' && v.length >= MAXLEN)
+	      v = v.substr(0, MAXLEN) + '...';
+	    td.appendChild(document.createTextNode(v));
 	  }
 	  td.id = i;
 	  return td;
@@ -176,29 +176,32 @@ module.directive('spreadsheet', [
 	  row.data = i;
 	  if (meta.top[i])
 	    row.classList.add('ss-top');
-	  generateCell(row, meta.date[i], 'ss-date:' + i);
+	  generateCell(row, meta.date[i], 'ss-meta:date:' + i);
 	  var consentName = page.constants.data.consent[meta.consent[i]];
-	  var consent = generateCell(row, consentName, 'ss-consent:' + i);
+	  var consent = generateCell(row, consentName, 'ss-meta:consent:' + i);
 	  if (consentName) {
 	    consent.classList.add(consentName.toLowerCase());
 	    consent.setAttribute('hint', 'consent-' + consentName);
 	  }
-	  for (var ri = 0; ri < recordCols.length; ri ++) {
-	    var c = recordCols[ri].category;
-	    var rec = records[c];
-	    var metrics = recordCols[ri].metrics;
-	    for (var mi = 0; mi < metrics.length; mi ++) {
-	      var m = metrics[mi];
-	      var v;
-	      if (m === 'count')
-		v = counts[c][i];
-	      else
-		v = rec[m][0][i];
+	  for (var mi = 0; mi < metricCols.length; mi ++) {
+	    var col = metricCols[mi];
+	    var c = col.category;
+	    var m = col.metric;
+	    var v;
+	    if (m === 'count')
+	      v = counts[i][c];
+	    else {
+	      v = records[c][m][0][i];
 	      if (m === 'age')
 		v = page.display.formatAge(v);
-	      generateCell(row, v, 'ss-rec:' + c + ':' + m + ':' + i);
 	    }
+	    generateCell(row, v, 'ss-rec:' + c + ':' + m + ':' + i);
 	  }
+	};
+
+	var regenerateAge = function (id, v) {
+	  if (!angular.isUndefined(v))
+	    document.getElementById('ss-rec:' + id).firstChild.replaceWholeText(page.display.formatAge(v));
 	};
 
 	/* Update all age displays. */
@@ -207,10 +210,12 @@ module.directive('spreadsheet', [
 	    var m = metricCols[mi];
 	    if (m.metric !== 'age')
 	      continue;
-	    for (var i = 0; i < count; i ++) {
-	      var v = records[m.record][m.metric][0][i];
-	      if (!angular.isUndefined(v))
-		document.getElementById('ss-rec:' + m.record + ':age:' + i).firstChild.replaceWholeText(page.display.formatAge(v));
+	    for (var i = 0; i < count; i ++)
+	      regenerateAge(m.record + ':age:' + i, records[m.record][m.metric][0][i]);
+	    if (expanded !== null) {
+	      for (var n = 1; n < counts[expanded][m.category]; n ++)
+		regenerateAge(m.record + ':age:' + expanded + ':' + n,
+		   records[m.record][m.metric][n][expanded]);
 	    }
 	  }
 	};
@@ -262,7 +267,7 @@ module.directive('spreadsheet', [
 	  sortBy('metric:' + c + ':' + m, records[c][m][0]);
 	};
 
-	var expanded; // Row of currently expanded row
+	var expanded = null; // Row of currently expanded row
 	var expansion = []; // Additional TRs needed by expansion
 
 	/* Expand (or collapse) a row */
@@ -271,8 +276,14 @@ module.directive('spreadsheet', [
 	  if (angular.isUndefined(i))
 	    return;
 
-	  if (expanded) {
-	    expansion.forEach(ss.removeChild);
+	  var cell;
+	  if (expanded !== null) {
+	    // collapse
+	    for (cell = rows[expanded].firstChild; cell.id.lastIndexOf("ss-meta:", 0) === 0; cell = cell.nextSibling)
+	      cell.removeAttribute("rowspan");
+	    expansion.forEach(function (e) {
+	      ss.removeChild(e);
+	    });
 	    expansion = [];
 	  }
 	  if (expanded === i) {
@@ -280,20 +291,34 @@ module.directive('spreadsheet', [
 	    return;
 	  }
 
+	  var count = counts[i];
+	  var max = 0;
+	  angular.forEach(count, function (n) {
+	    max = Math.max(max, n);
+	  });
 	  var next = row.nextSibling;
+	  for (var n = 1; n < max; n ++) {
+	    var e = ss.insertBefore(document.createElement('tr'), next);
 
-	  for (var ri = 0; ri < recordCols.length; ri ++) {
-	    var record = recordCols[ri];
-	    var count = counts[record.category][i];
-	    for (var ci = 0; ci < count; ci ++) {
-	      var e;
-	      if (!(ci in expansion))
-		e = expansion[ci] = document.createElement('tr');
-	      else
-		e = expansion[ci];
-	      ss.insertBefore(e, next);
+	    for (var mi = 0; mi < metricCols.length; mi ++) {
+	      var col = metricCols[mi];
+	      var c = col.category;
+	      var m = col.metric;
+	      var v;
+	      if (m !== 'count' && n < count[c]) {
+		v = records[c][m][n][i];
+		if (m === 'age')
+		  v = page.display.formatAge(v);
+	      } else
+		v = undefined;
+	      generateCell(e, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
 	    }
+
+	    expansion.push(e);
 	  }
+
+	  for (cell = row.firstChild; cell.id.lastIndexOf("ss-meta:", 0) === 0; cell = cell.nextSibling)
+	    cell.setAttribute("rowspan", max);
 
 	  expanded = i;
 	};
