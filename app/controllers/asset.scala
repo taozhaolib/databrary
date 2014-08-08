@@ -218,10 +218,10 @@ object AssetHtml extends AssetController with HtmlController {
     }
 
   def transcode(a : models.Asset.Id, stop : Boolean = false) =
-    (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)) { implicit request =>
-      if (stop) store.Transcode.stop(request.obj.id)
-      else      store.Transcode.start(request.obj)
-      Ok("transcoding")
+    (SiteAction.rootAccess(Permission.ADMIN) ~> action(a, Permission.EDIT)).async { implicit request =>
+      (if (stop) store.Transcode.stop(request.obj.id)
+      else       store.Transcode.start(request.obj))
+      .map(_ => Ok("transcoding"))
     }
 
   def formats = SiteAction.Unlocked {implicit request =>

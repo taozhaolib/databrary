@@ -27,9 +27,10 @@ trait Asset {
 		_ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
 	      } yield (a)
 	    case Asset.TranscodableFileInfo(_, fmt, _) =>
-	      models.Asset.create(volume, fmt, classification, n, infile).andThen {
-		case scala.util.Success(a) => store.Transcode.start(a)
-	      }
+	      for {
+		a <- models.Asset.create(volume, fmt, classification, n, infile)
+		_ <- store.Transcode.start(a)
+	      } yield (a)
 	    case Asset.FileInfo(_, fmt) =>
 	      models.Asset.create(volume, fmt, classification, n, infile)
 	  }
