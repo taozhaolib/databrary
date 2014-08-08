@@ -4,23 +4,23 @@
       <col/>
       <col class="consent icon"/>
     </colgroup>
-    <colgroup ng-repeat="record in recordCols track by record.id">
+    <colgroup ng-repeat="record in recordCols track by record.category">
       <col ng-repeat="metric in record.metrics"/>
     </colgroup>
     <thead>
       <tr>
 	<th colspan="2">session</th>
-	<th ng-repeat="record in recordCols track by record.id" colspan="{{record.metrics.length}}" ng-bind="record.category.name"></th>
+	<th ng-repeat="record in recordCols track by record.category" colspan="{{record.metrics.length}}" ng-bind="page.constants.data.category[record.category].name"></th>
       </tr>
       <tr>
 	<th><a href="" ng-click="sortByMeta('date')">date</a></th>
 	<th><a href="" ng-click="sortByMeta('consent')">consent</a></th>
 	<th ng-repeat="col in metricCols track by $index">
-	  <a href="" ng-click="sortByMetric(col.record, col.metric)" ng-bind="page.constants.data.metric[col.metric] ? page.constants.data.metric[col.metric].name : col.metric"></a>
+	  <a href="" ng-click="sortByMetric(col.category, col.metric)" ng-bind="page.constants.data.metric[col.metric] ? page.constants.data.metric[col.metric].name : col.metric"></a>
 	</th>
       </tr>
     </thead>
-    <tbody id="ss">
+    <tbody id="ss" ng-click="click($event)">
     </tbody>
   </table>
 </div>
