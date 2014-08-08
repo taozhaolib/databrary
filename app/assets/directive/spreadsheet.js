@@ -160,7 +160,9 @@ module.directive('spreadsheet', [
 	/* Add a td element to tr r with value c and id i */
 	var generateCell = function (r, v, i) {
 	  var td = r.appendChild(document.createElement('td'));
-	  if (!angular.isUndefined(v)) {
+	  if (v === null) {
+	    td.className = "null";
+	  } else if (!angular.isUndefined(v)) {
 	    if (typeof v === 'string' && v.length >= MAXLEN)
 	      v = v.substr(0, MAXLEN) + '...';
 	    td.appendChild(document.createTextNode(v));
@@ -188,7 +190,9 @@ module.directive('spreadsheet', [
 	    var c = col.category;
 	    var m = col.metric;
 	    var v;
-	    if (m === 'count')
+	    if (!counts[i][c])
+	      v = null;
+	    else if (m === 'count')
 	      v = counts[i][c];
 	    else {
 	      v = records[c][m][0][i];
@@ -200,8 +204,9 @@ module.directive('spreadsheet', [
 	};
 
 	var regenerateAge = function (id, v) {
-	  if (!angular.isUndefined(v))
-	    document.getElementById('ss-rec:' + id).firstChild.replaceWholeText(page.display.formatAge(v));
+	  var el;
+	  if (!angular.isUndefined(v) && (el = document.getElementById(id)))
+	    el.firstChild.replaceWholeText(page.display.formatAge(v));
 	};
 
 	/* Update all age displays. */
@@ -210,12 +215,15 @@ module.directive('spreadsheet', [
 	    var m = metricCols[mi];
 	    if (m.metric !== 'age')
 	      continue;
-	    for (var i = 0; i < count; i ++)
-	      regenerateAge(m.record + ':age:' + i, records[m.record][m.metric][0][i]);
-	    if (expanded !== null) {
-	      for (var n = 1; n < counts[expanded][m.category]; n ++)
-		regenerateAge(m.record + ':age:' + expanded + ':' + n,
-		   records[m.record][m.metric][n][expanded]);
+	    var c = m.category;
+	    var r = records[c][m.metric];
+	    var p = 'ss-rec:' + c + ':age:';
+	    for (var i = 0; i < count; i ++) {
+	      var id = p + i;
+	      regenerateAge(id, r[0][i]);
+	      for (var n = 1; n < counts[i][c]; n ++)
+		regenerateAge(id + ':' + n,
+		   r[n][i]);
 	    }
 	  }
 	};
@@ -230,9 +238,11 @@ module.directive('spreadsheet', [
 
 	/* Place all rows into spreadsheet. */
 	var fill = function () {
-	  // appendChild removes as well
-	  for (var i = 0; i < count; i ++)
-	    ss.appendChild(rows[order[i]]);
+	  for (var i = 0; i < count; i ++) {
+	    var row = rows[order[i]];
+	    collapse(row);
+	    ss.appendChild(row);
+	  }
 	};
 
 	/* Populate order based on compare function applied to values. */
@@ -267,67 +277,71 @@ module.directive('spreadsheet', [
 	  sortBy('metric:' + c + ':' + m, records[c][m][0]);
 	};
 
-	var expanded = null; // Row of currently expanded row
-	var expansion = []; // Additional TRs needed by expansion
+	/* Collapse a row and return true if it was previously expanded. */
+	var collapse = function (row) {
+	  var i = row.data;
+	  var el;
+	  if (!((el = row.nextSibling) && el.data === i))
+	    return false;
+	  do {
+	    ss.removeChild(el);
+	  } while ((el = row.nextSibling) && el.data === i);
+
+	  for (el = row.firstChild; el && el.id.lastIndexOf("ss-meta:", 0) === 0; el = el.nextSibling)
+	    el.removeAttribute("rowspan");
+	  return true;
+	};
 
 	/* Expand (or collapse) a row */
 	var expand = function (row) {
 	  var i = row.data;
-	  if (angular.isUndefined(i))
+	  if (row.parentNode !== ss || angular.isUndefined(i))
 	    return;
+	  row = rows[i]; // could've been expanded row
 
-	  var cell;
-	  if (expanded !== null) {
-	    // collapse
-	    for (cell = rows[expanded].firstChild; cell.id.lastIndexOf("ss-meta:", 0) === 0; cell = cell.nextSibling)
-	      cell.removeAttribute("rowspan");
-	    expansion.forEach(function (e) {
-	      ss.removeChild(e);
-	    });
-	    expansion = [];
-	  }
-	  if (expanded === i) {
-	    expanded = null;
+	  if (collapse(row))
 	    return;
-	  }
 
 	  var count = counts[i];
 	  var max = 0;
 	  angular.forEach(count, function (n) {
-	    max = Math.max(max, n);
+	    max = Math.max(max, n || 0);
 	  });
+	  if (max <= 1)
+	    return;
 	  var next = row.nextSibling;
+	  var el;
 	  for (var n = 1; n < max; n ++) {
-	    var e = ss.insertBefore(document.createElement('tr'), next);
+	    el = ss.insertBefore(document.createElement('tr'), next);
+	    el.data = i;
 
 	    for (var mi = 0; mi < metricCols.length; mi ++) {
 	      var col = metricCols[mi];
 	      var c = col.category;
 	      var m = col.metric;
 	      var v;
-	      if (m !== 'count' && n < count[c]) {
+	      if (n >= (count[c] || 0))
+		v = null;
+	      else if (m === 'count')
+		v = undefined;
+	      else {
 		v = records[c][m][n][i];
 		if (m === 'age')
 		  v = page.display.formatAge(v);
-	      } else
-		v = undefined;
-	      generateCell(e, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
+	      }
+	      generateCell(el, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
 	    }
-
-	    expansion.push(e);
 	  }
 
-	  for (cell = row.firstChild; cell.id.lastIndexOf("ss-meta:", 0) === 0; cell = cell.nextSibling)
-	    cell.setAttribute("rowspan", max);
-
-	  expanded = i;
+	  for (el = row.firstChild; el.id.lastIndexOf("ss-meta:", 0) === 0; el = el.nextSibling)
+	    el.setAttribute("rowspan", max);
 	};
 
 	$scope.click = function (event) {
-	  var cell = event.target;
-	  if (cell.tagName !== 'TD')
+	  var el = event.target;
+	  if (el.tagName !== 'TD')
 	    return;
-	  var row = cell.parentElement;
+	  var row = el.parentElement;
 	  expand(row);
 	};
 
