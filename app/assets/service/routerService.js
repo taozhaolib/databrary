@@ -160,7 +160,6 @@ module.factory('routerService', [
 
     router.partyAvatar = function (data, size, nonce) {
       if (!type.isParty(data)) {
-        console.log(data);
         throw new Error('routerService.partyAvatar() requires Party as first argument');
       }
 
@@ -183,7 +182,7 @@ module.factory('routerService', [
           data = '';
         }
       }
-	
+
       if (nonce) {
 	data.nonce = nonce;
       }
