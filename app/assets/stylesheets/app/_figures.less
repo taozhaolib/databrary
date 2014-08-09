@@ -28,34 +28,32 @@ figure, .figure {
 		}
 	}
 
-	&.square,
-	&.wide {
-	}
-
 	&.square {
 		.scalar {
 			margin-top: 0;
 		}
 	}
 
-	&.wide {
-	}
-
-	&.tube {
-	}
-
-	&.hoverable {
+	&.inst {
+		> a,
+		.media,
 		.text {
-			opacity: 0;
-			background: @red;
+			.inner {
+				width: 100%;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin-left: 0;
+
+				* {
+					margin: 0 auto;
+				}
+			}
 		}
 
-		&:hover, &.hover {
-			.box-shadow();
-
-			.text {
-				opacity: 1;
-			}
+		img {
+			width: 100%;
+			height: auto;
 		}
 	}
 }

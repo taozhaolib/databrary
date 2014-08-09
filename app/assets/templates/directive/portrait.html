@@ -1,5 +1,5 @@
 <aside bindonce class="portrait ng-cloak">
-  <figure ng-if="avatar" baseline="square" class="figure_avatar">
+  <figure ng-if="avatar" baseline="square" class="figure_avatar" bo-class="{inst: party.institution}">
     <figmedia><img bo-src="page.router.partyAvatar(party, 216)"></figmedia>
     <figcaption ng-if="caption" bo-text="caption"></figcaption>
   </figure>

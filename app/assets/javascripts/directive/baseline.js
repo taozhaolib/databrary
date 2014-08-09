@@ -35,6 +35,7 @@ module.directive('baseline', [
 			$element.addClass(ratioClass);
 
 			$scope.triggerBaseline = function () {
+
 				var width = $element.outerWidth(false),
 					height;
 
@@ -58,13 +59,23 @@ module.directive('baseline', [
 				var imgWidth = $img.width(),
 					imgHeight = $img.height();
 
+				if ($element.hasClass('inst')) {
+					if (imgWidth < imgHeight) {
+						$img.css({
+							'width': 'auto',
+							'height': '100%'
+						});
+					}
+
+					return;
+				}
+
 				if (imgWidth >= imgHeight) {
 					$img.css({
 						'width': 'auto',
 						'height': height + 'px'
 					});
-				}
-				else {
+				} else {
 					$img.css({
 						'width': width + 'px',
 						'height': 'auto'
@@ -78,6 +89,7 @@ module.directive('baseline', [
 
 			$scope.timeoutBaseline = function () {
 				page.$timeout.cancel(timeout);
+
 				timeout = page.$timeout(function () {
 					$scope.triggerBaseline();
 				}, pauseTime);
@@ -93,13 +105,13 @@ module.directive('baseline', [
 				page.$timeout.cancel(timeout);
 			});
 
-			$scope.triggerBaseline();
+			$scope.timeoutBaseline();
 		};
 
 		return {
 			restrict: 'A',
 			scope: true,
-			priority: 150,
+			priority: 50,
 			link: link
 		};
 	}

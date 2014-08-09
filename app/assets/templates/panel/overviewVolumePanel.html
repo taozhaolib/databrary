@@ -63,7 +63,7 @@
         <div class="row">
           <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
             <aside class="portrait portrait_vertical portrait_small ng-cloak" tooltip tooltip-message="{{shareMessage(volumeAccess)}}">
-              <figure baseline="square" class="figure_avatar" ng-href="{{page.router.party(party)}}">
+              <figure baseline="square" class="figure_avatar" ng-href="{{page.router.party(party)}}" bo-class="{inst: party.institution}">
                 <figmedia><img ng-src="{{page.router.partyAvatar(party, 216)}}"></figmedia>
               </figure>
 
