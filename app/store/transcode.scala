@@ -101,7 +101,7 @@ object Transcode {
       }, false))
       .recoverWith { case e : Throwable =>
 	logger.error("collecting " + aid, e)
-	SQL("INSERT INTO transcode (asset, result) VALUES (?, ?)")
+	SQL("INSERT INTO transcode (asset, owner, result) VALUES (?, -1, ?)")
 	  .apply(aid, e.toString + "\n" + log).execute
       }
     }
