@@ -9,8 +9,13 @@ module.controller('SearchView', [
 				volume.more = '';
 
 				angular.forEach(volume.access, function (access) {
-					volume.more += ' ' + access.party.name + ' ' + access.party.email +
-						(access.party.affiliation ? ' ' + access.party.affiliation : '');
+				    if (access.individual >= page.permission.ADMIN) {
+					volume.more += ' ' + access.party.name;
+					if ('email' in access.party)
+					    volume.more += ' ' + access.party.email;
+					if ('affiliation' in access.party)
+					    volume.more += ' ' + access.party.affiliation;
+				    }
 				});
 			});
 
