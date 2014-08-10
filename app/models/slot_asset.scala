@@ -96,7 +96,7 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
       vol <- volume.fileName
       slot <- super.fileName
     } yield {
-      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name : _*)
+      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name.map(store.truncate(_)) : _*)
     }
 
   override def json : JsonObject = JsonObject.flatten(

@@ -8,4 +8,7 @@ package object store {
   private final val fileNamePad = "[\u0000-,/?\\\\]+".r
   def fileName(s : String*) : String =
     fileNamePad.replaceAllIn(s.mkString("-"), "_")
+
+  def truncate(s : String, max : Int = 32) : String =
+    s.take(macros.Maybe(s.lastIndexOf(' ', 32)).orElse(32))
 }

@@ -23,7 +23,7 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   final def isImage = mimetype.startsWith("image/")
   final def isVideo = mimetype.startsWith("video/")
   final def isAudio = mimetype.startsWith("audio/")
-  final def isTranscodable = isVideo || isAudio
+  final def isTranscodable = isVideo // || isAudio
   
   def description = name
 

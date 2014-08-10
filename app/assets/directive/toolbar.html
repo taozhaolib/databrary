@@ -47,7 +47,8 @@
               <li>
                 <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
               </li>
-              <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a></li>
+              <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a>
+	      </li>
 
               <li ng-if="page.auth.hasAuth(page.permission.ADMIN)" class="toolbar-password-form">
                 <form name="superuserForm" ng-if="!page.auth.hasAuth(page.permission.SUPER)" class="cf" messages="default" novalidate>
@@ -57,8 +58,7 @@
                   </button>
                 </form>
 
-                <a ng-if="page.auth.hasAuth(page.permission.SUPER)" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate
-                  SU</a>
+                <a ng-if="page.auth.hasAuth(page.permission.SUPER)" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate SU</a>
               </li>
             </ul>
           </div>

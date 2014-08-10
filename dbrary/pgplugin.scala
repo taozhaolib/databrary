@@ -10,7 +10,7 @@ class PostgresAsyncPlugin(app : Application) extends Plugin {
       db.pool.PoolConfiguration(
         config.getInt("max").getOrElse(16),
         config.getMilliseconds("idle").getOrElse(600000),
-        config.getInt("queue").getOrElse(8)
+        config.getInt("queue").getOrElse(16)
       ))
   }
 
