@@ -19,6 +19,13 @@ module.controller('searchView', [
 					    volume.more += ' ' + access.party.affiliation;
 				    }
         });
+
+	if (volume.citation) {
+	  angular.forEach(volume.citation, function (v) {
+	    volume.more += ' ' + v;
+	  });
+	}
+
       });
 
       $scope.volumes = data;
