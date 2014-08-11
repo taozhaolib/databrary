@@ -46,14 +46,14 @@ SELECT audit.SET_PRIVILEGES ('audit');
 CREATE INDEX "audit_login_idx" ON audit."audit" ("audit_user", "audit_time") WHERE "audit_action" IN ('attempt', 'open');
 COMMENT ON INDEX audit."audit_login_idx" IS 'Allow efficient determination of recent login attempts for security.';
 
-CREATE FUNCTION audit.CREATE_TABLE (name) RETURNS void LANGUAGE plpgsql AS $create$
+CREATE FUNCTION audit.CREATE_TABLE (name, "parent" name = 'audit') RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
 	table_name CONSTANT text := quote_ident($1);
 BEGIN
-	EXECUTE $$CREATE TABLE audit.$$ || table_name || $$ (LIKE public.$$ || table_name || $$) INHERITS (audit."audit") WITH (OIDS = FALSE)$$;
+	EXECUTE $$CREATE TABLE audit.$$ || table_name || $$ (LIKE public.$$ || table_name || $$) INHERITS (audit. $$ || quote_ident(parent) || $$) WITH (OIDS = FALSE)$$;
 	PERFORM audit.SET_PRIVILEGES($1);
 END; $create$;
-COMMENT ON FUNCTION audit.CREATE_TABLE (name) IS 'Create an audit.$1 table mirroring public.$1.';
+COMMENT ON FUNCTION audit.CREATE_TABLE (name, name) IS 'Create an audit.$1 table mirroring public.$1.';
 
 ----------------------------------------------------------- users
 
@@ -215,6 +215,7 @@ COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
 COMMENT ON COLUMN "volume"."alias" IS 'Short, internal, code name for this volume, for contributors to reference their own data.';
 
 SELECT audit.CREATE_TABLE ('volume');
+ALTER TABLE audit."volume" ALTER "name" DROP NOT NULL;
 CREATE INDEX "volume_creation_idx" ON audit."volume" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
@@ -342,6 +343,7 @@ CREATE TABLE "slot" ( -- ABSTRACT
 ALTER TABLE "slot" ALTER COLUMN "segment" SET STORAGE plain;
 COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal sub-sections of a container.  Inherit from this table to use the functions below.';
 
+SELECT audit.CREATE_TABLE ('slot');
 
 CREATE TABLE "slot_consent" (
 	"container" integer NOT NULL References "container",
@@ -352,7 +354,7 @@ CREATE TABLE "slot_consent" (
 ) INHERITS ("slot");
 COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
 
-SELECT audit.CREATE_TABLE ('slot_consent');
+SELECT audit.CREATE_TABLE ('slot_consent', 'slot');
 
 
 ----------------------------------------------------------- studies
@@ -365,7 +367,7 @@ CREATE TABLE "volume_inclusion" (
 ) INHERITS ("slot");
 COMMENT ON TABLE "volume_inclusion" IS 'Inclusions of slots (sessions) from "dataset" (provider) volumes in "study" (consumer/reuse) volumes.';
 
-SELECT audit.CREATE_TABLE ('volume_inclusion');
+SELECT audit.CREATE_TABLE ('volume_inclusion', 'slot');
 
 
 ----------------------------------------------------------- assets
@@ -428,7 +430,7 @@ CREATE TABLE "slot_asset" (
 CREATE INDEX "slot_asset_slot_idx" ON "slot_asset" ("container", "segment");
 COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case of timeseries data, should match asset.duration.';
 
-SELECT audit.CREATE_TABLE ('slot_asset');
+SELECT audit.CREATE_TABLE ('slot_asset', 'slot');
 
 CREATE TABLE "asset_revision" (
 	-- consider uniques on these
@@ -766,7 +768,7 @@ CREATE TABLE "slot_record" (
 CREATE INDEX "slot_record_slot_idx" ON "slot_record" ("container", "segment");
 COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
-SELECT audit.CREATE_TABLE ('slot_record');
+SELECT audit.CREATE_TABLE ('slot_record', 'slot');
 
 -- TODO review this: other places we may effectively enforce the much looser MAX(consent) with &&
 CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
