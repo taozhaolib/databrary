@@ -69,9 +69,10 @@ object SlotController extends SlotController {
     def actionName = "Create"
   }
 
-  def zip(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment) { implicit request =>
-    /* TODO audit */
-    AssetController.zipResult(store.Zip.slot(request.obj), "databrary-" + request.obj.volumeId + "-" + request.obj.containerId + request.obj.pageCrumbName.fold("")("-" + _))
+  def zip(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
+    request.obj.auditDownload.map { _ =>
+      AssetController.zipResult(store.Zip.slot(request.obj), "databrary-" + request.obj.volumeId + "-" + request.obj.containerId + request.obj.pageCrumbName.fold("")("-" + _))
+    }
   }
 }
 

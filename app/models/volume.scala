@@ -130,6 +130,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       "WHERE volume_access.volume = ? AND authorize_view.member = 'ADMIN' AND volume_access.individual = 'ADMIN' AND (authorize_view.site = 'ADMIN' OR volume_access.children = 'ADMIN')")
     .apply(id).list
 
+  final def auditDownload(implicit site : Site) : Future[Boolean] =
+    Audit.download("volume", 'id -> id)
+
   def pageName = alias.getOrElse(name)
   def pageParent = None
   def pageURL = controllers.routes.VolumeHtml.view(id)

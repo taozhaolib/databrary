@@ -84,8 +84,8 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
   }
   final def inContainer : SlotAsset = in(container)
 
-  final def auditDownload(implicit site : Site) : Future[Boolean] =
-    Audit.action(Audit.Action.open, "slot_asset", SQLTerms('container -> containerId, 'segment -> segment, 'asset -> assetId)).execute
+  final override def auditDownload(implicit site : Site) : Future[Boolean] =
+    Audit.download("slot_asset", 'container -> containerId, 'segment -> segment, 'asset -> assetId)
 
   override def pageName = asset.pageName
   override def pageParent = Some(slot)

@@ -103,4 +103,7 @@ object Audit extends Table[Audit[_]]("audit.audit") {
   private[models] def changeOrAdd(table : String, sets : SQLTerms, ids : SQLTerms)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     if (sets.isEmpty) SQLResult.empty
     else DBUtil.updateOrInsert(change(table, sets, ids)(site, _, _))(add(table, sets ++ ids)(site, _, _))(dbc, exc)
+
+  private[models] def download(table : String, ids : SQLTerm[_]*)(implicit site : Site, exc : ExecutionContext) : Future[Boolean] =
+    action(Action.open, table, SQLTerms(ids : _*)).execute
 }

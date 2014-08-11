@@ -83,6 +83,9 @@ trait Slot extends TableRow with InVolume with SiteObject {
       r <- t.weight(this)
     } yield (Some(r)))
 
+  def auditDownload(implicit site : Site) : Future[Boolean] =
+    Audit.download("slot", 'container -> containerId, 'segment -> segment)
+
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
   def idents : Future[Seq[String]] =
@@ -97,7 +100,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     else
       "Slot"
   }
-  override final def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
+  final override def pageCrumbName : Option[String] = if (isFull) None else Some(segment.lowerBound.fold("")(_.toString) + "-" + segment.upperBound.fold("")(_.toString))
   def pageParent : Option[SitePage] = Some(container)
   def pageURL = controllers.routes.SlotHtml.view(volumeId, containerId, segment)
 
@@ -124,7 +127,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
 trait ContextSlot extends Slot {
   // override val container : Container
-  override final def context = this
+  final override def context = this
   // override val consent : Consent.Value
 
   override def pageParent = Some(volume)

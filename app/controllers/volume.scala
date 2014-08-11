@@ -179,9 +179,10 @@ object VolumeController extends VolumeController {
     val name = Field(Mappings.nonEmptyText)
   }
 
-  def zip(i : Volume.Id) = Action(i) { implicit request =>
-    /* TODO audit */
-    AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
+  def zip(i : Volume.Id) = Action(i).async { implicit request =>
+    request.obj.auditDownload.map { _ =>
+      AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
+    }
   }
 
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =
