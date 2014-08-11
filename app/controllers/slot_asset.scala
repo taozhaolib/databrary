@@ -17,24 +17,24 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 }
 
 object SlotAssetController extends SlotAssetController {
-  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] =
-    request.obj match {
+  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] = {
+    val a = request.obj
+    val s = a match {
       case ts : SlotTimeseries =>
-        val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
-        if (off < Offset.ZERO || off > ts.duration)
-          ANotFound
-        else if (ts.format.isVideo)
-          AssetController.assetResult(ts.sample(off), Some(size.max(1).min(AssetController.defaultThumbSize)))
-	else
-	  async(Found("/public/images/filetype/16px/" + ts.format.extension.getOrElse("_blank") + ".png"))
+	val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
+	if (off < Offset.ZERO || off > ts.duration)
+	  throw NotFoundException
+	ts.sample(off)
       case a =>
-        if (!offset.fold(_ => true, _ == Offset.ZERO))
-          ANotFound
-	else if (a.format.isImage)
-          AssetController.assetResult(a, Some(size.max(1).min(AssetController.defaultThumbSize)))
-	else
-	  async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png"))
+	if (!offset.fold(_ => true, _ == Offset.ZERO))
+	  throw NotFoundException
+	a
     }
+    if (s.format.isImage)
+      AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
+    else
+      async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png"))
+  }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.READ).async { implicit request =>
