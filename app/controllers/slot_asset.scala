@@ -19,12 +19,14 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 object SlotAssetController extends SlotAssetController {
   private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] =
     request.obj match {
-      case ts : SlotTimeseries if ts.format.isVideo =>
+      case ts : SlotTimeseries =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           ANotFound
-        else
+        else if (ts.format.isVideo)
           AssetController.assetResult(ts.sample(off), Some(size.max(1).min(AssetController.defaultThumbSize)))
+	else
+	  async(Found("/public/images/filetype/16px/" + ts.format.extension.getOrElse("_blank") + ".png"))
       case a =>
         if (!offset.fold(_ => true, _ == Offset.ZERO))
           ANotFound
