@@ -1,6 +1,10 @@
 package controllers
 
+import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.mvc.Result
+import play.api.mvc.AnyContent
+import macros._
 import dbrary._
 import models._
 
@@ -13,19 +17,21 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 }
 
 object SlotAssetController extends SlotAssetController {
-  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[_]) =
+  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] =
     request.obj match {
-      case ts : SlotTimeseries =>
+      case ts : SlotTimeseries if ts.format.isVideo =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           ANotFound
         else
           AssetController.assetResult(ts.sample(off), Some(size.max(1).min(AssetController.defaultThumbSize)))
-      case _ =>
+      case a =>
         if (!offset.fold(_ => true, _ == Offset.ZERO))
           ANotFound
-        else
-          AssetController.assetResult(request.obj, Some(size.max(1).min(AssetController.defaultThumbSize)))
+	else if (a.format.isImage)
+          AssetController.assetResult(a, Some(size.max(1).min(AssetController.defaultThumbSize)))
+	else
+	  async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png"))
     }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =

@@ -191,7 +191,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
     excerpts(volume)
     .SELECT("JOIN format ON asset.format = format.id",
       "WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)",
-        "AND (asset.duration IS NOT NULL OR format.mimetype LIKE 'image/%')",
+        "AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(volume.permission).singleOpt
 }

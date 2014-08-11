@@ -184,11 +184,12 @@ object VolumeController extends VolumeController {
     AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
   }
 
-  def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) = Action(v, Permission.VIEW).async { implicit request =>
-    request.obj.thumb.flatMap(_.fold(
-      Assets.at("/public", "images/draft.png")(request))(
-      a => SlotAssetController.getFrame(Left(0.25f), size)(request.withObj(a))))
-  }
+  def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =
+    Action(v).async { implicit request =>
+      request.obj.thumb.flatMap(_.fold(
+	async(Found("/public/images/draft.png")))(
+	a => SlotAssetController.getFrame(Left(0.25f), size)(request.withObj(a))))
+    }
 }
 
 object VolumeHtml extends VolumeController with HtmlController {
