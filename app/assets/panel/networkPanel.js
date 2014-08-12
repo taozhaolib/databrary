@@ -86,6 +86,7 @@ module.controller('NetworkPanel', [
     };
 
     $scope.isForeign = function () {
+      if (!page.auth.user) return true;
       return $scope.party.id != page.auth.user.id;
     };
 
@@ -106,6 +107,7 @@ module.controller('NetworkPanel', [
     //
 
     var userExists = function (list) {
+      if (!page.auth.user) return false;
       var user = page.auth.user.id;
 
       /* you always exist on your own page */
