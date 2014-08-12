@@ -5,7 +5,7 @@
     <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
-      <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
+      <div ng-if="!asset.asset.creation">
 	<span ng-if="asset.file" ng-bind="asset.file.name"</span><span>{{'material.upload-progress' | message}}</span>
       </div>
 
