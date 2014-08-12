@@ -650,6 +650,10 @@ material.name.help=You may optionally provide a brief description of this file f
 material.name.placeholder=
 material.classification=Classification
 material.excerpt=
+material.excerpt.checkbox-label=Release as excerpt
+material.add-drop=Drop file here, or click and browse, to create new asset
+material.upload-progress=(in progress)
+
 
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.

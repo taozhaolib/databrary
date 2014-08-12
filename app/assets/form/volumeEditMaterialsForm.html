@@ -6,8 +6,7 @@
 
     <validator form="form" name="file" label="'material.file' | message">
       <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
-        <span ng-if="!asset.file">Drop here or click to browse.</span>
-        <span ng-if="asset.file" ng-bind="asset.file.name"</span><span> (in progress)</span>
+	<span ng-if="asset.file" ng-bind="asset.file.name"</span><span>{{'material.upload-progress' | message}}</span>
       </div>
 
       <div ng-if="asset.asset.creation">
@@ -20,7 +19,7 @@
     <validator form="form" name="classification" label="'material.classification' | message">
       <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in page.constants.data.classification" ng-init="asset.classification = page.constants.data.classification[asset.asset && asset.asset.classification || 0]" ng-required></select>
     </validator>
-    <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">Release as excerpt</input>
+    <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">{{'material.excerpt.checkbox-label' | message}}</input>
     <validator form="form" name="excerpt" ng-show="excerptOn" label="'material.excerpt' | message">
       <select name="excerpt" ng-model="asset.excerpt"  ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
     </validator>
@@ -38,7 +37,7 @@
     <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="yellow" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
 
-  <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">Drop file here, or click and browse, to create new asset</div>
+    <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">{{'material.add-drop' | message}}</div>
   <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
   </fieldset>
 </form>
