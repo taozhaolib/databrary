@@ -252,7 +252,7 @@ module.controller('NetworkPanel', [
 		//
 
 		$scope.canGrant = function () {
-			if (!$scope.isForeign()) {
+			if (!$scope.isForeign() || $scope.party.institution) {
 				return false;
 			}
 
