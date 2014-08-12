@@ -6,7 +6,7 @@ module.controller('homeView', [
 
     var lastName = function (p) {
       var s = p.name;
-      return s ? s.substr(s.lastIndexOf(' ')) : '';
+      return s ? s.substr(s.lastIndexOf(' ')+1) : '';
     };
 
     $scope.parties = page.$filter('toArray')(parties, lastName);

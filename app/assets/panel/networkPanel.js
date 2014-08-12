@@ -116,7 +116,7 @@ module.controller('NetworkPanel', [
     };
 
     $scope.canGrant = function () {
-      return !userExists($scope.partyAuth.parents);
+      return !($scope.party.institution || userExists($scope.partyAuth.parents));
     };
 
     $scope.canApply = function () {
