@@ -3,11 +3,7 @@ module.controller('HomeView', [
 		page.display.title = page.constants.message('page.title.home');
 
 		var lastName = function (s) {
-			if (!s) {
-				return '';
-			}
-			return s.substr(s.lastIndexOf(' '));
-
+			return s ? s.substr(s.lastIndexOf(' ')+1) : '';
 		}
 
 		angular.forEach(parties, function (v, k) {
