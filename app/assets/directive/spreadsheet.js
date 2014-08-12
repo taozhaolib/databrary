@@ -21,6 +21,8 @@ module.directive('spreadsheet', [
 
 	var volume = $scope.volume;
 
+	var editable = volume.permission >= page.permission.EDIT;
+
 	var getSlot = function (slot) {
 	  if ('records' in slot)
 	    return slot;
@@ -59,9 +61,11 @@ module.directive('spreadsheet', [
 	  date: new Array(count), // :: Data of container.date
 	  top: new Array(count), // :: Data of container.top
 	  consent: new Array(count), // :: Data of consent (entire slot only)
+	  name: new Array(count), // :: Data of container.name (created as needed)
 	};
 	var records = {}; // [Category_id][Metric_id][Count] :: Data
 	var counts = new Array(count); // [Row][Category_id] :: Count
+	var maxCount = new Uint8Array(count); // [Row] = counts.map(_.maxiumum)
 	var recordCols = [], // [] Array over records :: {category: Category_id, metrics[]: Array of Metric_id}
 	    metricCols = []; // [] Array over metrics :: {category: Category_id, metric: Metric_id} (flattened version of recordCols)
 	var depends = {}; // [Record_id] :: Array of Row
@@ -80,6 +84,7 @@ module.directive('spreadsheet', [
 	  meta.date[i] = slot.date;
 	  meta.top[i] = slot.top;
 	  meta.consent[i] = slot.consent;
+	  meta.name[i] = slot.name;
 
 	  var r, c;
 	  var populateMeasure = function (m, v) {
@@ -90,6 +95,7 @@ module.directive('spreadsheet', [
 	    r[m][c][i] = v;
 	  };
 	  var count = counts[i] = {};
+	  var max = 0;
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
@@ -109,6 +115,7 @@ module.directive('spreadsheet', [
 	      c = 0;
 	    } else
 	      c = count[cat] ++;
+	    max = Math.max(max, c+1);
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
@@ -123,6 +130,8 @@ module.directive('spreadsheet', [
 	    else
 	      depends[record.id].push(i);
 	  }
+
+	  maxCount[i] = max;
 	};
 
 	/* Fill metricCols and recordCols from records */
@@ -170,36 +179,47 @@ module.directive('spreadsheet', [
 	  td.id = i;
 	  return td;
 	};
-	
+
 	/* Fill out rows[i]. Should only be called once. */
 	var generateRow = function (i) {
 	  var row = rows[i] = document.createElement('tr');
+	  var cell;
 	  row.id = 'ss-row:' + i;
 	  row.data = i;
 	  if (meta.top[i])
 	    row.classList.add('ss-top');
+
+	  cell = generateCell(row, meta.name[i], 'ss-meta:name:' + i);
+	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
+	  cell.setAttribute('href', page.router.slot({vid: volume.id, id: meta.id[i], segment: meta.segment[i]}));
+	  cell.classList.add('link', 'icon');
+
 	  generateCell(row, meta.date[i], 'ss-meta:date:' + i);
 	  var consentName = page.constants.data.consent[meta.consent[i]];
-	  var consent = generateCell(row, consentName, 'ss-meta:consent:' + i);
+	  cell = generateCell(row, consentName, 'ss-meta:consent:' + i);
 	  if (consentName) {
-	    consent.classList.add(consentName.toLowerCase());
-	    consent.setAttribute('hint', 'consent-' + consentName);
+	    cell.classList.add(consentName.toLowerCase());
+	    cell.setAttribute('hint', 'consent-' + consentName);
 	  }
+	  var count = counts[i];
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var col = metricCols[mi];
 	    var c = col.category;
 	    var m = col.metric;
 	    var v;
-	    if (!counts[i][c])
+	    if (!count[c])
 	      v = null;
-	    else if (m === 'count')
-	      v = counts[i][c];
 	    else {
 	      v = records[c][m][0][i];
 	      if (m === 'age')
 		v = page.display.formatAge(v);
 	    }
 	    generateCell(row, v, 'ss-rec:' + c + ':' + m + ':' + i);
+	  }
+	  if (maxCount[i] > 1) {
+	    cell = row.appendChild(document.createElement('td'));
+	    cell.appendChild(document.createTextNode('+'));
+	    cell.id = 'ss-exp:' + i;
 	  }
 	};
 
@@ -293,22 +313,16 @@ module.directive('spreadsheet', [
 	};
 
 	/* Expand (or collapse) a row */
-	var expand = function (row) {
-	  var i = row.data;
-	  if (row.parentNode !== ss || i === undefined)
-	    return;
-	  row = rows[i]; // could've been expanded row
+	var expand = function (i) {
+	  var row = rows[i];
 
 	  if (collapse(row))
 	    return;
 
-	  var count = counts[i];
-	  var max = 0;
-	  angular.forEach(count, function (n) {
-	    max = Math.max(max, n || 0);
-	  });
+	  var max = maxCount[i];
 	  if (max <= 1)
 	    return;
+	  var count = counts[i];
 	  var next = row.nextSibling;
 	  var el;
 	  for (var n = 1; n < max; n ++) {
@@ -322,8 +336,6 @@ module.directive('spreadsheet', [
 	      var v;
 	      if (n >= (count[c] || 0))
 		v = null;
-	      else if (m === 'count')
-		v = undefined;
 	      else {
 		v = records[c][m][n][i];
 		if (m === 'age')
@@ -342,7 +354,14 @@ module.directive('spreadsheet', [
 	  if (el.tagName !== 'TD')
 	    return;
 	  var row = el.parentElement;
-	  expand(row);
+	  if (row.parentNode !== ss)
+	    return;
+	  row = row.data;
+	  if (row === undefined)
+	    return;
+
+	  if (el.id.startsWith('ss-exp:'))
+	    expand(row);
 	};
 
 	populate();
