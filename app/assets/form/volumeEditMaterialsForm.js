@@ -63,13 +63,17 @@ module.directive('volumeEditMaterialsForm', [
         file.asset.fileUploadProgress = file.progress();
       };
 
-      form.updateExcerptChoice = function(sub){
-        if(sub.excerptOn){ 
+      form.updateExcerptChoice = function(sub, first){
+	if (first && sub.asset.asset){
+	  sub.asset.excerpt = page.constants.data.classification[sub.asset.excerpt];
+	  return;
+	}
+	else if(sub.excerptOn){ 
           sub.asset.excerpt = page.constants.data.classification[0];
         }
         else{
           sub.asset.excerpt = "";
-          }
+        }
       };
 
       form.excerptOptions = function(cName){
@@ -105,7 +109,13 @@ module.directive('volumeEditMaterialsForm', [
         }
 
         var classification = page.classification[subform.asset.classification];
-        var excerpt = page.classification[subform.asset.excerpt] || ""; 
+	var excerpt;
+	if (subform.asset.excerpt !== undefined){
+	  excerpt = page.classification[subform.asset.excerpt];
+	}
+	else {
+	  excerpt = "";
+	}
         if (subform.asset.file) {
           var fd = new FormData();
           fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this

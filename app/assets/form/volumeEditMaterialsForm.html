@@ -20,7 +20,7 @@
     <validator form="form" name="classification" label="'material.classification' | message">
       <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in page.constants.data.classification" ng-init="asset.classification = page.constants.data.classification[asset.asset && asset.asset.classification || 0]" ng-required></select>
     </validator>
-      <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">Release as excerpt</input>
+    <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">Release as excerpt</input>
     <validator form="form" name="excerpt" ng-show="excerptOn" label="'material.excerpt' | message">
       <select name="excerpt" ng-model="asset.excerpt"  ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
     </validator>
