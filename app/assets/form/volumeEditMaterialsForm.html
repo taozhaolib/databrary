@@ -2,12 +2,12 @@
   <messages form="volumeEditMaterialsForm"></messages>
 
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose>
-	  <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
+    <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
       <div ng-if="!asset.asset.creation" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
-	      <span ng-if="!asset.file">Drop here or click to browse.</span>
-	      <span ng-if="asset.file" ng-bind="asset.file.name"</span><span> (in progress)</span>
+        <span ng-if="!asset.file">Drop here or click to browse.</span>
+        <span ng-if="asset.file" ng-bind="asset.file.name"</span><span> (in progress)</span>
       </div>
 
       <div ng-if="asset.asset.creation">
