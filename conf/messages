@@ -429,9 +429,9 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
-classification.excerpt.PRIVATE=Same release level
-classification.excerpt.RESTRICTED=Restricted: potentially identifying data; only shared with appropriate participant release.
-classification.excerpt.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
+classification.excerpt.PRIVATE=No additional sharing
+classification.excerpt.RESTRICTED=Restricted: shared with appropriate participant release.
+classification.excerpt.SHARED=Shared: shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Public: available to anybody for unrestricted use.
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
@@ -640,8 +640,8 @@ volume.edit.overview.success=Volume saved successfully.
 volume.edit.overview.error=Unable to save volume.
 
 wizard.volume-edit-materials.name=Materials
-wizard.volume-edit-materials.description=Upload stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=Provide other non-data files related to this study that do not contain identifying information (e.g., stimuli or displays used during data collection, blank questionnaire forms). See our <a href="/asset/formats">list of accepted file types</a>.
+wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
+wizard.volume-edit-materials.instructions=Provide any files related to this study.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).\n\nAny representative video clips or still images may additionally be selected as exceprts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.\n\nSee our <a href="/asset/formats">list of accepted file types</a>.
 
 material.file=File
 material.file.help=Select the file you wish to upload.
@@ -650,8 +650,8 @@ material.name.help=You may optionally provide a brief description of this file f
 material.name.placeholder=
 material.classification=Classification
 material.excerpt=
-material.excerpt.checkbox-label=Release as excerpt
-material.add-drop=Drop file here, or click and browse, to create new asset
+material.excerpt.checkbox-label=Select for display as highlighted excerpt
+material.add-drop=Drop file here or click to upload a new file.
 material.upload-progress=(in progress)
 
 
