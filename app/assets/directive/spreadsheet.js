@@ -1,7 +1,5 @@
 'use strict';
 
-/* Remember, angular.forEach is 8-10x slower: http://jsperf.com/angularloops */
-
 module.directive('spreadsheet', [
   'pageService', function (page) {
     var MAXLEN = 32; // maximum number of records per category per slot
@@ -20,6 +18,7 @@ module.directive('spreadsheet', [
       '$scope', function ($scope) {
 
 	var volume = $scope.volume;
+	$scope.page = page;
 
 	var editable = volume.permission >= page.permission.EDIT;
 
@@ -55,14 +54,6 @@ module.directive('spreadsheet', [
 	var count = slots.length;
 	var order = Object.keys(slots); // Permutation Array of Row in display order
 
-	var meta = {
-	  id: new Array(count), // :: Data of Record_id
-	  segment: new Array(count), // :: Data of Segment
-	  date: new Array(count), // :: Data of container.date
-	  top: new Array(count), // :: Data of container.top
-	  consent: new Array(count), // :: Data of consent (entire slot only)
-	  name: new Array(count), // :: Data of container.name (created as needed)
-	};
 	var records = {}; // [Category_id][Metric_id][Count] :: Data
 	var counts = new Array(count); // [Row][Category_id] :: Count
 	var maxCount = new Uint8Array(count); // [Row] = counts.map(_.maxiumum)
@@ -74,18 +65,12 @@ module.directive('spreadsheet', [
 
 	var ss = document.getElementById('ss');
 
+	///////////////////////////////// Populate data structures 
+
 	/* Fill all Data values for Row i */
 	var populateSlot = function (i) {
 	  var slot = slots[i];
 	  
-	  // populate meta:
-	  meta.id[i] = slot.id;
-	  meta.segment[i] = slot.segment;
-	  meta.date[i] = slot.date;
-	  meta.top[i] = slot.top;
-	  meta.consent[i] = slot.consent;
-	  meta.name[i] = slot.name;
-
 	  var r, c;
 	  var populateMeasure = function (m, v) {
 	    if (!(m in r))
@@ -166,67 +151,88 @@ module.directive('spreadsheet', [
 	  populateCols();
 	};
 
+	///////////////////////////////// Generate HTML
+	
+	/* Find the text content of cell c with element t */
+	var cellText = function (c, t) {
+	  var el = c.lastChild;
+	  if (el && el.nodeType === 3)
+	    c.replaceChild(t, el);
+	  else
+	    c.appendChild(t);
+	};
+
+	/* Add or replace the text contents of cell c for measure/type m with value v */
+	var generateText = function (c, m, v) {
+	  if (v === undefined)
+	    v = '';
+	  else if (m === 'age')
+	    v = page.display.formatAge(v);
+	  else if (typeof v === 'string' && v.length >= MAXLEN)
+	    v = v.substr(0, MAXLEN) + '...';
+	  cellText(c, document.createTextNode(v));
+	};
+
 	/* Add a td element to tr r with value c and id i */
-	var generateCell = function (r, v, i) {
+	var generateCell = function (r, m, v, i) {
 	  var td = r.appendChild(document.createElement('td'));
-	  if (v === null) {
+	  if (v === null)
 	    td.className = "null";
-	  } else if (v !== undefined) {
-	    if (typeof v === 'string' && v.length >= MAXLEN)
-	      v = v.substr(0, MAXLEN) + '...';
-	    td.appendChild(document.createTextNode(v));
+	  else {
+	    generateText(td, m, v);
+	    td.id = i;
 	  }
-	  td.id = i;
 	  return td;
 	};
 
-	/* Fill out rows[i]. Should only be called once. */
-	var generateRow = function (i) {
-	  var row = rows[i] = document.createElement('tr');
-	  var cell;
-	  row.id = 'ss-row:' + i;
-	  row.data = i;
-	  if (meta.top[i])
-	    row.classList.add('ss-top');
-
-	  cell = generateCell(row, meta.name[i], 'ss-meta:name:' + i);
-	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
-	  cell.setAttribute('href', page.router.slot({vid: volume.id, id: meta.id[i], segment: meta.segment[i]}));
-	  cell.classList.add('link', 'icon');
-
-	  generateCell(row, meta.date[i], 'ss-meta:date:' + i);
-	  var consentName = page.constants.data.consent[meta.consent[i]];
-	  cell = generateCell(row, consentName, 'ss-meta:consent:' + i);
-	  if (consentName) {
-	    cell.classList.add(consentName.toLowerCase());
-	    cell.setAttribute('hint', 'consent-' + consentName);
-	  }
+	/* Add all the record/measure tds to row i for count n */
+	var generateRecords = function (row, i, n) {
 	  var count = counts[i];
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var col = metricCols[mi];
 	    var c = col.category;
 	    var m = col.metric;
 	    var v;
-	    if (!count[c])
+	    if (n >= (count[c] || 0))
 	      v = null;
-	    else {
-	      v = records[c][m][0][i];
-	      if (m === 'age')
-		v = page.display.formatAge(v);
+	    else
+	      v = records[c][m][n][i];
+	    var cell = generateCell(row, m, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
+	    if (v !== null) {
+	      var ri = 'ss-rec:' + records[c].id[n][i];
+	      cell.classList.add(ri, ri + ':' + m);
 	    }
-	    generateCell(row, v, 'ss-rec:' + c + ':' + m + ':' + i);
 	  }
+	};
+
+	/* Fill out rows[i]. Should only be called once. */
+	var generateRow = function (i) {
+	  var slot = slots[i];
+	  var row = rows[i] = document.createElement('tr');
+	  var cell;
+	  row.id = 'ss:' + i;
+	  row.data = i;
+	  if (slot.top)
+	    row.classList.add('ss-top');
+
+	  cell = generateCell(row, 'name', slot.name, 'ss-name:' + i);
+	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
+	  cell.setAttribute('href', page.router.slot({vid: volume.id, id: slot.id, segment: slot.segment}));
+	  cell.classList.add('link', 'icon');
+
+	  generateCell(row, 'date', slot.date, 'ss-date:' + i);
+	  var consentName = page.constants.data.consent[slot.consent];
+	  cell = generateCell(row, 'consent', consentName, 'ss-consent:' + i);
+	  if (consentName) {
+	    cell.classList.add(consentName.toLowerCase());
+	    cell.setAttribute('hint', 'consent-' + consentName);
+	  }
+	  generateRecords(row, i, 0);
 	  if (maxCount[i] > 1) {
 	    cell = row.appendChild(document.createElement('td'));
 	    cell.appendChild(document.createTextNode('+'));
 	    cell.id = 'ss-exp:' + i;
 	  }
-	};
-
-	var regenerateAge = function (id, v) {
-	  var el;
-	  if (v !== undefined && (el = document.getElementById(id)))
-	    el.firstChild.replaceWholeText(page.display.formatAge(v));
 	};
 
 	/* Update all age displays. */
@@ -240,10 +246,12 @@ module.directive('spreadsheet', [
 	    var p = 'ss-rec:' + c + ':age:';
 	    for (var i = 0; i < count; i ++) {
 	      var id = p + i;
-	      regenerateAge(id, r[0][i]);
-	      for (var n = 1; n < counts[i][c]; n ++)
-		regenerateAge(id + ':' + n,
-		   r[n][i]);
+	      for (var n = 0; n < counts[i][c]; n ++) {
+		var el = document.getElementById(id + ':' + n);
+		if (!el)
+		  break;
+		generateText(el, 'age', r[n][i]);
+	      }
 	    }
 	  }
 	};
@@ -255,6 +263,8 @@ module.directive('spreadsheet', [
 	  for (var i = 0; i < count; i ++)
 	    generateRow(i);
 	};
+
+	///////////////////////////////// Place DOM elements
 
 	/* Place all rows into spreadsheet. */
 	var fill = function () {
@@ -288,14 +298,16 @@ module.directive('spreadsheet', [
 	};
 
 	/* Sort by one of the container columns. */
-	$scope.sortByMeta = function (f) {
-	  sortBy('meta:' + f, meta[f]);
+	$scope.sortBySlot = function (f) {
+	  sortBy(f, slots.map(function (s) { return s[f]; }));
 	};
 
 	/* Sort by Category_id c's Metric_id m */
 	$scope.sortByMetric = function (c, m) {
-	  sortBy('metric:' + c + ':' + m, records[c][m][0]);
+	  sortBy(c + ':' + m, records[c][m][0]);
 	};
+
+	///////////////////////////////// Interaction
 
 	/* Collapse a row and return true if it was previously expanded. */
 	var collapse = function (row) {
@@ -307,7 +319,7 @@ module.directive('spreadsheet', [
 	    ss.removeChild(el);
 	  } while ((el = row.nextSibling) && el.data === i);
 
-	  for (el = row.firstChild; el && el.id.startsWith("ss-meta:"); el = el.nextSibling)
+	  for (el = row.firstChild; el && !el.id.startsWith("ss-rec:"); el = el.nextSibling)
 	    el.removeAttribute("rowspan");
 	  return true;
 	};
@@ -328,25 +340,55 @@ module.directive('spreadsheet', [
 	  for (var n = 1; n < max; n ++) {
 	    el = ss.insertBefore(document.createElement('tr'), next);
 	    el.data = i;
-
-	    for (var mi = 0; mi < metricCols.length; mi ++) {
-	      var col = metricCols[mi];
-	      var c = col.category;
-	      var m = col.metric;
-	      var v;
-	      if (n >= (count[c] || 0))
-		v = null;
-	      else {
-		v = records[c][m][n][i];
-		if (m === 'age')
-		  v = page.display.formatAge(v);
-	      }
-	      generateCell(el, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
-	    }
+	    generateRecords(el, i, n);
 	  }
 
-	  for (el = row.firstChild; el.id.startsWith("ss-meta:"); el = el.nextSibling)
+	  for (el = row.firstChild; !el.id.startsWith("ss-rec:"); el = el.nextSibling)
 	    el.setAttribute("rowspan", max);
+	};
+
+	var editScope = $scope.$new(true);
+	editScope.page = page;
+	var editCell = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
+	var editing;
+
+	var unedit = function () {
+	  if (!editing)
+	    return;
+	  var cell = editing.parentNode;
+	  var value = editScope.value;
+	  cell.removeChild(editing);
+	  editing = undefined;
+
+	  // TODO:
+	  cellText(cell, document.createTextNode(value));
+	};
+
+	editScope.unedit = unedit;
+
+	var edit = function (cell, i) {
+	  var slot = slots[i];
+	  unedit();
+	  if (cell.id.startsWith('ss-name:')) {
+	    editScope.type = 'text';
+	    editScope.value = slot.name;
+	  } else if (cell.id.startsWith('ss-date:')) {
+	    editScope.type = 'date';
+	    editScope.value = slot.date;
+	  } else if (cell.id.startsWith('ss-consent:')) {
+	    editScope.type = 'consent';
+	    editScope.value = slot.consent + '';
+	  } else
+	    return;
+	  var edit = editCell(editScope, function (edit) {
+	    cellText(cell, editing = edit[0]);
+	  });
+
+	  page.$timeout(function () {
+	    var input = edit.children('[name=edit]');
+	    input.focus();
+	    input.change(unedit);
+	  }, 0);
 	};
 
 	$scope.click = function (event) {
@@ -362,7 +404,11 @@ module.directive('spreadsheet', [
 
 	  if (el.id.startsWith('ss-exp:'))
 	    expand(row);
+	  else
+	    edit(el, row);
 	};
+
+	///////////////////////////////// main
 
 	populate();
 	generate();
@@ -374,7 +420,9 @@ module.directive('spreadsheet', [
 
     return {
       restrict: 'E',
-      scope: true,
+      scope: {
+	volume: '=',
+      },
       templateUrl: 'spreadsheet.html',
       controller: controller,
     };
