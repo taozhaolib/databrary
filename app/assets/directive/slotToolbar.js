@@ -23,11 +23,7 @@ module.directive('slotToolbar', [
 
         toolbar.action = {
           play: function () {
-            if (ctrl.hasPosition(ctrl.current[0])) {
-              ctrl.clock.play();
-            } else {
-              ctrl.clock.play(true, ctrl.current[0]);
-            }
+            ctrl.clock.play();
           },
           pause: function () {
             ctrl.clock.pause();

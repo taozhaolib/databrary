@@ -12,16 +12,17 @@ module.factory('slotClockService', [
       this.playFns = [];
       this.pauseFns = [];
       this.timeFns = [];
+      this.jumpFns = [];
 
-      this.begun = 0;
+      this.begun = Date.now();
+      this.changed = this.begun;
       this.duration = 0;
-      this.paused = 0;
 
       Object.defineProperties(this, {
         position: {
           get: function () {
-            var actual = Date.now() - clock.begun;
-            return actual < clock.duration ? actual : clock.duration;
+            clock.changed = Date.now() - clock.begun; console.log(clock.changed);
+            return clock.changed < clock.duration ? clock.changed : clock.duration;
           }
         }
       });
@@ -42,17 +43,9 @@ module.factory('slotClockService', [
 
     // Clock behaviors
 
-    Clock.prototype.play = function (when, asset) {
-      if (angular.isNumber(when)) {
-        this.begun = Date.now() - when;
-      } else if (when || !this.begun) {
-        this.begun = Date.now();
-      } else {
-        this.begun = Date.now() - this.paused;
-      }
-
-      if (asset) {
-        this.setTempDuration(asset.asset.duration);
+    Clock.prototype.play = function (pos) {
+      if (angular.isNumber(pos)) {
+        this.jump(pos);
       }
 
       tickerOn(this);
@@ -63,26 +56,11 @@ module.factory('slotClockService', [
       return registerFn(this, this.playFns, fn);
     };
 
-    Clock.prototype.setTempDuration = function (duration) {
-      this._duration = this.duration;
-      this.duration = duration;
-    };
-
-    Clock.prototype.unsetTempDuration = function () {
-      this.duration = this._duration;
-      this._duration = undefined;
-    };
-
     //
 
     Clock.prototype.pause = function () {
-      this.paused = this.position;
+      this.changed = this.position;
       tickerOff(this);
-
-      if (this._duration) {
-        this.unsetTempDuration();
-      }
-
       callFn(this, this.pauseFns);
     };
 
@@ -94,13 +72,7 @@ module.factory('slotClockService', [
 
     Clock.prototype.time = function (pos) {
       if (angular.isNumber(pos)) {
-        if (pos < 0) {
-          this.begun = Date.now();
-        } else if (pos > this.duration) {
-          this.begun = Date.now() - this.duration;
-        } else {
-          this.begun = Date.now() - pos;
-        }
+        this.jump(pos);
       }
 
       callFn(this, this.timeFns);
@@ -108,6 +80,29 @@ module.factory('slotClockService', [
 
     Clock.prototype.timeFn = function (fn) {
       return registerFn(this, this.timeFns, fn);
+    };
+
+    //
+
+    Clock.prototype.jump = function (pos) {
+      if (angular.isNumber(pos)) {
+        this.changed = Date.now();
+
+        if (pos < 0) {
+          this.begun = this.changed;
+        } else if (pos > this.duration) {
+          this.begun = this.changed - this.duration;
+        } else {
+          this.begun = this.changed - pos;
+        }
+      }
+
+      callFn(this, this.timeFns);
+      callFn(this, this.jumpFns);
+    };
+
+    Clock.prototype.jumpFn = function (fn) {
+      return registerFn(this, this.jumpFns, fn);
     };
 
     // Callback helpers

@@ -90,50 +90,36 @@ module.controller('slotView', [
 
     // callbacks
 
-    var mediaUpdateFn = function (ctrl) {
-      var asset = !ctrl.hasPosition(ctrl.current[0]) ? ctrl.current[0] : undefined;
-
+    var callbackPlay = function () {
       ctrl.media.forEach(function (m) {
-        if (asset) {
-          if (m.asset === asset) {
-            if (ctrl.isPaused(m)) {
-//              m.element.currentTime = 0;
-              m.element.play();
-            }
-          } else {
-            m.element.pause();
-          }
-        } else if (ctrl.hasTime(m) && ctrl.hasDuration(m)) {
+        if (ctrl.hasTime(m) && ctrl.hasDuration(m)) {
           if (ctrl.isNowPlayable(m)) {
-            if (ctrl.isPaused(m)) {
-//              m.element.currentTime = (ctrl.clock.position - m.asset.segment[0]) / 1000;
-              m.element.play();
-            }
-          } else {
+            m.element.play();
+          } else if (!ctrl.isPaused(m)) {
             m.element.pause();
           }
         }
       });
     };
 
-    var callbackPlay = function () {
-        mediaUpdateFn(ctrl);
-    };
-
-    var callbackTime = function () {
-        mediaUpdateFn(ctrl);
+    var callbackJump = function () {
+      ctrl.media.forEach(function (m) {
+        if (ctrl.hasTime(m) && ctrl.hasDuration(m) && ctrl.isNowPlayable(m)) {
+          m.element.currentTime = (ctrl.clock.position - m.asset.segment[0]) / 1000;
+        }
+      });
     };
 
     var callbackPause = function () {
-        ctrl.media.forEach(function (media) {
-          if (ctrl.hasTime(media) && ctrl.hasDuration(media)) {
-            media.element.pause();
-          }
-        });
+      ctrl.media.forEach(function (media) {
+        if (ctrl.hasTime(media) && ctrl.hasDuration(media)) {
+          media.element.pause();
+        }
+      });
     };
 
     ctrl.clock.playFn(callbackPlay);
-    ctrl.clock.timeFn(callbackTime);
+    ctrl.clock.jumpFn(callbackJump);
     ctrl.clock.pauseFn(callbackPause);
 
     // return
