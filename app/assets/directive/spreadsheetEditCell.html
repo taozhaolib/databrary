@@ -1,5 +1,5 @@
 <div ng-switch="type">
-  <input ng-switch-when="text" name="edit" type="text" ng-model="value" ng-blur="unedit()"/>
-  <input ng-switch-when="date" name="edit" type="date" ng-model="value" ng-blur="unedit()"/>
-  <select ng-switch-when="consent" name="edit" ng-model="value" ng-options="id as name for (id, name) in page.constants.data.consent"/>
+  <input ng-switch-when="text" name="edit" type="text" ng-model="input.value" ng-blur="unedit()"/>
+  <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" ng-blur="unedit()"/>
+  <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="id as name for (id, name) in page.constants.data.consent"/>
 </div>

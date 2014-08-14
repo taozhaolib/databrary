@@ -20,7 +20,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = volume.permission >= page.permission.EDIT;
+	var editable = true || volume.permission >= page.permission.EDIT;
 
 	var getSlot = function (slot) {
 	  if ('records' in slot)
@@ -164,13 +164,21 @@ module.directive('spreadsheet', [
 
 	/* Add or replace the text contents of cell c for measure/type m with value v */
 	var generateText = function (c, m, v) {
+	  var cls = '';
 	  if (v === undefined)
 	    v = '';
 	  else if (m === 'age')
 	    v = page.display.formatAge(v);
-	  else if (typeof v === 'string' && v.length >= MAXLEN)
+	  else if (m === 'consent') {
+	    if (v in page.constants.data.consent) {
+	      var cn = page.constants.data.consent[v].toLowerCase();
+	      cls = cn + ' consent icon hint-consent-' + cn;
+	      v = '';
+	    }
+	  } else if (typeof v === 'string' && v.length >= MAXLEN)
 	    v = v.substr(0, MAXLEN) + '...';
 	  cellText(c, document.createTextNode(v));
+	  c.className = cls;
 	};
 
 	/* Add a td element to tr r with value c and id i */
@@ -197,10 +205,10 @@ module.directive('spreadsheet', [
 	      v = null;
 	    else
 	      v = records[c][m][n][i];
-	    var cell = generateCell(row, m, v, 'ss-rec:' + c + ':' + m + ':' + i + ':' + n);
+	    var cell = generateCell(row, m, v, 'ss-rec_' + c + '_' + m + '_' + i + '_' + n);
 	    if (v !== null) {
-	      var ri = 'ss-rec:' + records[c].id[n][i];
-	      cell.classList.add(ri, ri + ':' + m);
+	      var ri = 'ss-rec_' + records[c].id[n][i];
+	      cell.classList.add(ri, ri + '_' + m);
 	    }
 	  }
 	};
@@ -210,28 +218,23 @@ module.directive('spreadsheet', [
 	  var slot = slots[i];
 	  var row = rows[i] = document.createElement('tr');
 	  var cell;
-	  row.id = 'ss:' + i;
+	  row.id = 'ss_' + i;
 	  row.data = i;
 	  if (slot.top)
 	    row.classList.add('ss-top');
 
-	  cell = generateCell(row, 'name', slot.name, 'ss-name:' + i);
+	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
 	  cell.setAttribute('href', page.router.slot({vid: volume.id, id: slot.id, segment: slot.segment}));
 	  cell.classList.add('link', 'icon');
 
-	  generateCell(row, 'date', slot.date, 'ss-date:' + i);
-	  var consentName = page.constants.data.consent[slot.consent];
-	  cell = generateCell(row, 'consent', consentName, 'ss-consent:' + i);
-	  if (consentName) {
-	    cell.classList.add(consentName.toLowerCase());
-	    cell.setAttribute('hint', 'consent-' + consentName);
-	  }
+	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
+	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
 	  generateRecords(row, i, 0);
 	  if (maxCount[i] > 1) {
 	    cell = row.appendChild(document.createElement('td'));
 	    cell.appendChild(document.createTextNode('+'));
-	    cell.id = 'ss-exp:' + i;
+	    cell.id = 'ss-exp_' + i;
 	  }
 	};
 
@@ -243,11 +246,11 @@ module.directive('spreadsheet', [
 	      continue;
 	    var c = m.category;
 	    var r = records[c][m.metric];
-	    var p = 'ss-rec:' + c + ':age:';
+	    var p = 'ss-rec_' + c + '_age_';
 	    for (var i = 0; i < count; i ++) {
 	      var id = p + i;
 	      for (var n = 0; n < counts[i][c]; n ++) {
-		var el = document.getElementById(id + ':' + n);
+		var el = document.getElementById(id + '_' + n);
 		if (!el)
 		  break;
 		generateText(el, 'age', r[n][i]);
@@ -304,7 +307,7 @@ module.directive('spreadsheet', [
 
 	/* Sort by Category_id c's Metric_id m */
 	$scope.sortByMetric = function (c, m) {
-	  sortBy(c + ':' + m, records[c][m][0]);
+	  sortBy(c + '_' + m, records[c][m][0]);
 	};
 
 	///////////////////////////////// Interaction
@@ -319,7 +322,7 @@ module.directive('spreadsheet', [
 	    ss.removeChild(el);
 	  } while ((el = row.nextSibling) && el.data === i);
 
-	  for (el = row.firstChild; el && !el.id.startsWith("ss-rec:"); el = el.nextSibling)
+	  for (el = row.firstChild; el && !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.removeAttribute("rowspan");
 	  return true;
 	};
@@ -334,7 +337,6 @@ module.directive('spreadsheet', [
 	  var max = maxCount[i];
 	  if (max <= 1)
 	    return;
-	  var count = counts[i];
 	  var next = row.nextSibling;
 	  var el;
 	  for (var n = 1; n < max; n ++) {
@@ -343,45 +345,59 @@ module.directive('spreadsheet', [
 	    generateRecords(el, i, n);
 	  }
 
-	  for (el = row.firstChild; !el.id.startsWith("ss-rec:"); el = el.nextSibling)
+	  for (el = row.firstChild; !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.setAttribute("rowspan", max);
 	};
 
 	var editScope = $scope.$new(true);
 	editScope.page = page;
+	var editInput = editScope.input = {};
 	var editCell = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
 	var editing;
 
 	var unedit = function () {
-	  if (!editing)
+	  var edit;
+	  if (!(edit = editing))
 	    return;
-	  var cell = editing.parentNode;
-	  var value = editScope.value;
-	  cell.removeChild(editing);
 	  editing = undefined;
+	  var cell = edit.parentNode;
+	  if (!cell)
+	    return;
+	  var value = editInput.value;
+	  cell.removeChild(edit);
 
 	  // TODO:
-	  cellText(cell, document.createTextNode(value));
+	  var type;
+	  if (cell.id.startsWith('ss-name_'))
+	    type = 'name';
+	  else if (cell.id.startsWith('ss-date_'))
+	    type = 'date';
+	  else if (cell.id.startsWith('ss-consent_'))
+	    type = 'consent';
+	  else
+	    return;
+	  generateText(cell, type, value);
 	};
 
 	editScope.unedit = unedit;
 
 	var edit = function (cell, i) {
 	  var slot = slots[i];
-	  unedit();
-	  if (cell.id.startsWith('ss-name:')) {
+	  if (cell.id.startsWith('ss-name_')) {
 	    editScope.type = 'text';
-	    editScope.value = slot.name;
-	  } else if (cell.id.startsWith('ss-date:')) {
+	    editInput.value = slot.name;
+	  } else if (cell.id.startsWith('ss-date_')) {
 	    editScope.type = 'date';
-	    editScope.value = slot.date;
-	  } else if (cell.id.startsWith('ss-consent:')) {
+	    editInput.value = slot.date;
+	  } else if (cell.id.startsWith('ss-consent_')) {
 	    editScope.type = 'consent';
-	    editScope.value = slot.consent + '';
+	    editInput.value = slot.consent + '';
 	  } else
 	    return;
 	  var edit = editCell(editScope, function (edit) {
 	    cellText(cell, editing = edit[0]);
+	    cell.className = "editing";
+	    page.tooltips.clear();
 	  });
 
 	  page.$timeout(function () {
@@ -389,6 +405,33 @@ module.directive('spreadsheet', [
 	    input.focus();
 	    input.change(unedit);
 	  }, 0);
+	};
+
+	var selectStyles = document.head.appendChild(document.createElement('style')).sheet;
+
+	var unselect = function () {
+	  while (selectStyles.cssRules.length)
+	    selectStyles.deleteRule(0);
+
+	  unedit();
+	};
+
+	var select = function (cell, i) {
+	  unselect();
+
+	  if (cell.id.startsWith('ss-rec_')) {
+	    var cl = cell.classList;
+	    for (var ci = 0; ci < cl.length; ci ++) {
+	      var c = cl[ci];
+	      if (c.startsWith('ss-rec_'))
+		selectStyles.insertRule('.' + c + '{background-color:' +
+		  ((c.indexOf('_', 7) === -1) ? '#ffff88' : '#88ff88') + 
+		  ';\n}', selectStyles.cssRules.length);
+	    }
+	  }
+
+	  if (editable)
+	    edit(cell, i);
 	};
 
 	$scope.click = function (event) {
@@ -402,10 +445,10 @@ module.directive('spreadsheet', [
 	  if (row === undefined)
 	    return;
 
-	  if (el.id.startsWith('ss-exp:'))
+	  if (el.id.startsWith('ss-exp_'))
 	    expand(row);
 	  else
-	    edit(el, row);
+	    select(el, row);
 	};
 
 	///////////////////////////////// main
