@@ -21,6 +21,8 @@
   border 1px solid orange32
   background-color orange51
   padding b6
+  cursor pointer
+  transition box-shadow, background-color, border-color trans-time trans-ease
 
 .slot-track-asset-info
   overflow ellipsis
@@ -46,3 +48,13 @@
     top 0
     bottom 0
 
+.slot-track-select
+  .slot-track-asset
+    border 1px solid orange33
+    background-color orange52
+    box-shadow box-shadow-def
+
+  &.slot-track-positioned
+    .slot-track-asset
+      border-color blue33
+      background-color blue52

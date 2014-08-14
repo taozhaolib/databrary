@@ -6,13 +6,29 @@
   padding b4
   box-shadow box-shadow-def
   text-align center
+  position relative
 
   .slot-media
     display inline-block
     margin 0 auto
 
+  &:hover
+    .player-main-float
+      opacity 1
+
+.player-main-float
+  position absolute
+  top b1
+  left b1
+  right b1
+  opacity 0
+  transition opacity trans-time trans-ease
+  background white
+  box-shadow box-shadow-def
+
 .player-main-info
   text-align left
+  height 4
 
   &.playable
     border-top 1px solid pale
@@ -25,8 +41,7 @@
   margin-top b8
 
 .player-main-info-name
-  font-line 1.5 1
-  margin-bottom b4
+  font-line 1.5
 
 .player-main-info-list
   margin-bottom 0

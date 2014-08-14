@@ -46,7 +46,13 @@ module.directive('slotTimeline', [
 
         timeline.parseTracks = function () {
           timeline.tracks.splice.apply(timeline.tracks, [0, timeline.tracks.length].concat(page.$filter('toArray')(ctrl.slot.assets)));
+          timeline.time.right = ctrl.clock.duration;
           timeline.sortTracks();
+        };
+
+        timeline.time = {
+          left: 0,
+          right: null,
         };
 
         // listeners

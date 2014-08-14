@@ -1,37 +1,41 @@
 <section class="slot-player" bindonce>
-  <div class="player-main" ng-repeat="asset in ctrl.current track by asset.asset.id">
-    <slot-media asset="asset" bo-if="ctrl.hasDisplay(asset)"></slot-media>
+  <div class="player-main">
+    <div class="player-main-viewport">
+      <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
+    </div>
 
-    <div class="player-main-info" bo-class="{playable: ctrl.hasDisplay(asset)}">
-      <nav class="player-main-info-actions">
-        <a bo-href="page.router.assetLink(asset, true)" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, asset)" class="player-main-info-link">download</a>&nbsp;
-        <a bo-href="page.router.assetEdit(asset)" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, asset)" class="player-main-info-link">edit</a>
-      </nav>
-
+    <div class="player-main-float">
       <h1 class="player-main-info-name">
         <span class="filetype">
-          <img bo-src="page.types.assetIcon(asset)" hint="format-{{page.types.assetFormat(asset).extension}}">
+          <img ng-src="page.types.assetIcon(asset)" hint="format-{{page.types.assetFormat(asset).extension}}">
         </span>
 
-        <span class="filename" bo-text="page.types.assetDisplayName(asset)"></span>
+        <span class="filename" ng-text="page.types.assetDisplayName(asset)"></span>
       </h1>
+    </div>
 
-      <div class="player-main-info-support" bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>
+    <div class="player-main-info" ng-class="{playable: ctrl.hasDisplay(asset)}" ng-if="ctrl.current[0]">
+      <nav class="player-main-info-actions">
+        <a ng-href="page.router.assetLink(ctrl.current[0], true)" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link">download</a>&nbsp;
+        <a ng-href="page.router.assetEdit(ctrl.current[0])" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link">edit</a>
+      </nav>
+
+      <div class="player-main-info-support" ng-if="!page.display.videoSupported()" ng-bind="'video.unsupported' | message"></div>
 
       <dl class="player-main-info-list cf">
         <dt>Classification</dt>
         <dd>
-          <span class="classification icon" bo-class="page.constants.data.classification[asset.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[asset.asset.classification]}}"></span>&nbsp;<span bo-html="page.constants.data.classification[asset.asset.classification]"></span>
+          <span class="classification icon" ng-class="page.constants.data.classification[ctrl.current[0].asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[ctrl.current[0].asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.data.classification[ctrl.current[0].asset.classification]"></span>
         </dd>
 
         <dt>File Type</dt>
-        <dd bo-text="page.types.assetFormat(asset).name"></dd>
+        <dd ng-text="page.types.assetFormat(ctrl.current[0]).name"></dd>
 
         <dt>Mime Type</dt>
-        <dd bo-text="page.types.assetFormat(asset).mimetype"></dd>
+        <dd ng-text="page.types.assetFormat(ctrl.current[0]).mimetype"></dd>
 
-        <dt bo-if="asset.asset.duration">Duration</dt>
-        <dd bo-if="asset.asset.duration" bo-text="asset.asset.duration | timecode"></dd>
+        <dt ng-if="ctrl.current[0].asset.duration">Duration</dt>
+        <dd ng-if="ctrl.current[0].asset.duration" ng-text="ctrl.current[0].asset.duration | timecode"></dd>
       </dl>
     </div>
   </div>
