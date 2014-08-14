@@ -9,4 +9,3 @@ var module = angular.module('databraryModule', [
 	'pasvaz.bindonce',
 	'flow'
 ]);
-

@@ -1,6 +1,9 @@
-<section class="slot-timeline" bindonce ng-click="timeline.jump($event)">
-  <div class="slot-timeline-ruler">
-    <div class="slot-ruler"></div>
+<section class="slot-timeline" bindonce>
+  <slot-timeline-ruler ctrl="ctrl"></slot-timeline-ruler>
+
+  <div class="slot-timeline-ruler" ng-click="timeline.jump($event)">
+    <div class="slot-timeline-ruler-time left" ng-bind="timeline.time.left | timecode"></div>
+    <div class="slot-timeline-ruler-time right" ng-bind="timeline.time.right | timecode"></div>
   </div>
 
   <div class="slot-timeline-tracks">

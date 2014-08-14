@@ -19,6 +19,10 @@ module.directive('slotTimelineTrack', [
           if (ctrl.hasDisplay(track.asset)) {
             cls.push('slot-track-display');
           }
+          
+          if (ctrl.isCurrent(track.asset)) {
+            cls.push('slot-track-select');
+          }
 
           return cls;
         };

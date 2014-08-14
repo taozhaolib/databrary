@@ -49,6 +49,13 @@ module.controller('slotView', [
         ctrl.current[0] = asset;
       },
 
+      isCurrent: function (media) {
+        if (media.asset && media.asset.id)
+          return ctrl.current[0] === media;
+        else
+          return ctrl.current[0] === media.asset;
+      },
+
       select: function (media) {
         ctrl.current[0] = media.asset;
       },

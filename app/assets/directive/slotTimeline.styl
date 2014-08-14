@@ -5,16 +5,26 @@
   box-shadow box-shadow-def
   overflow hidden
   position relative
+  user-select none
 
 .slot-timeline-ruler
   width 100%
   padding-width b6
-  background white
   box-shadow box-shadow-def
-
-.slot-ruler
-  border-left 1px solid gray
   height 2
+  cursor default
+
+.slot-timeline-ruler-time
+  margin-top b1 + b8
+  font-size f23
+
+  &.left
+    float left
+    margin-left b12
+
+  &.right
+    float right
+    margin-right b12
 
 .slot-timeline-now-zone
   position absolute
@@ -31,6 +41,7 @@
   left 0
   height 1000
   border-left 1px solid green
+  transition left .05s linear
 
   &:before
     content ''
@@ -40,3 +51,8 @@
     top -b3
     left -b6
     background-color green
+
+.slot-timeline-canvas
+  position absolute
+  top 0
+  left 0
