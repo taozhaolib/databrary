@@ -8,7 +8,8 @@ module.factory('displayService', [
 	'routerService',
 	'$location',
 	'$timeout',
-	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout) {
+	'$window',
+	function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout, $window) {
 		var display = {};
 
 		//
@@ -107,6 +108,21 @@ module.factory('displayService', [
 		};
 
 		//
+		
+		display.getUA = function() {return $window.navigator.userAgent;};
+
+		display.getPlatform = function() {return $window.navigator.platform;};
+
+		display.isInternetExplorer = function() {
+			return /msei/i.test(display.getUA()) ||
+			  /trident/i.test(display.getUA()) && $window.navigator.appName == 'Netscape';
+		};
+
+		display.videoSupported = function() {
+		        //the only non-supporting browser, as far as we know, is firefox on mac
+		        //so the only false response is when both match
+		        return !(/mac/i.test(display.getPlatform()) &&  /firefox/i.test(display.getUA()));
+		};
 
 		return display;
 	}
