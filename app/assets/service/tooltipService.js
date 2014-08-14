@@ -198,8 +198,10 @@ module.factory('tooltipService', [
 
       if (tooltip.live) {
         $doc.on(events[0], tooltip.$target, function (event) {
+	  var target = $(event.target);
           timeout = $timeout(function () {
-            tooltips.show(tooltip, event);
+	    if (target.is(tooltip.$target)) // may have changed
+	      tooltips.show(tooltip, event);
           }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
         });
 
@@ -233,18 +235,20 @@ module.factory('tooltipService', [
 
     $rootScope.$watch(function () {
       angular.forEach(tooltips, function (tooltip) {
-        if (!angular.isString(tooltip.$target) && tooltip.$target.closest(document.documentElement).length === 0) {
+        if (!angular.isString(tooltip.$target) && !document.contains(tooltip.$target[0])) {
           removeEvents(tooltip);
           tooltips.remove(tooltip);
         }
       });
     });
 
-    $rootScope.$on('$routeChangeStart', function () {
+    tooltips.clear = function () {
       angular.forEach(tooltips, function (tooltip) {
         tooltips.hide(tooltip);
       });
-    });
+    };
+
+    $rootScope.$on('$routeChangeStart', tooltips.clear);
 
     //
 
