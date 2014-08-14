@@ -643,7 +643,7 @@ material.file=File
 material.file.help=Select the file you wish to upload.
 material.name=Caption
 material.name.help=You may optionally provide a brief description of this file for other users.
-material.name.placeholder=
+material.name.placeholder= 
 material.classification=Classification
 
 volume.edit.materials.update.success=Updated {0} successfully.
