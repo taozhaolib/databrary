@@ -12,6 +12,7 @@
       <div ng-if="asset.asset.creation">
         <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
         <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
+	<img ng-src="{{page.router.assetThumb(volumeEditMaterialsForm.makeThumbData(this))}}"   trashable height="50" width="50"></img>
       </div>
     <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
     </validator>
@@ -39,5 +40,7 @@
 
     <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">{{'material.add-drop' | message}}</div>
   <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
+  <div>spacer</div>
+  <div trash indicator-var="trashCanText" style="border: 2px solid;"><span>{{trashCanText}}</span>!</div>
   </fieldset>
 </form>

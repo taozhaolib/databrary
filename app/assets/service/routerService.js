@@ -122,7 +122,8 @@ module.factory('routerService', [
       data = {
         sid: data.container.id,
         id: data.asset.id,
-        segment: type.segmentString(data)
+        segment: type.segmentString(data),
+	size: data.size
       };
 
       return router.makeUrl('/slot/:sid/asset/:id/thumb', data);
