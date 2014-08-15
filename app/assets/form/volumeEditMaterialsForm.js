@@ -389,11 +389,10 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.makeThumbData = function(context){
-	    context = context.$parent.$parent;
-	    var data = {};
-	    data.container = context.volumeEditMaterialsForm.slot.container;
-	    data.asset = context.asset.asset;
-	    return data;
+	    return{
+	      container: context.volumeEditMaterialsForm.slot.container,
+	      asset: context.asset.asset
+	    };
       };
 
       //
