@@ -97,7 +97,7 @@ module.factory('typeService', [
 
     typeService.assetProperty = function (object, property, dig) {
       if (!typeService.isAsset(object)) {
-        throw new Error('typeService.assetFormat() requires Asset as first argument');
+        throw new Error('typeService.assetProperty() requires Asset as first argument');
       }
 
       if (dig === true) {

@@ -8,11 +8,11 @@ module.controller('slotView', [
     // helpers
 
     var getAsset = function (media) {
-      return media.element ? media.asset : media;
+      return media && media.element ? media.asset : media;
     };
 
     var getMedia = function (media) {
-      return media.element ? media : ctrl.filter(function (m) {
+      return media && media.element ? media : ctrl.filter(function (m) {
         return m.asset === media;
       }).pop();
     };
@@ -58,6 +58,11 @@ module.controller('slotView', [
 
       select: function (media) {
         ctrl.current[0] = media.asset;
+      },
+
+      jump: function (asset) {
+        var $track = $('#slot-timeline-track-' + asset.asset.id);
+        page.display.scrollTo($track);
       },
 
       hasPosition: function (media) {
