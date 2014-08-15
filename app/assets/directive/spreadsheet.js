@@ -14,6 +14,24 @@ module.directive('spreadsheet', [
       return a>b?1:a<b?-1:0;
     };
 
+    var stripPrefix = function (s, prefix) {
+      return s.startsWith(prefix) ? s.substr(prefix.length) : undefined;
+    };
+
+    var parseCellId = function (id) {
+      var info = {};
+      var s = id.split('_');
+      if ((info.type = stripPrefix(s[0], 'ss-')) === undefined ||
+	  isNaN(info.i = parseInt(s[1])))
+	return;
+      if (info.type === 'rec') {
+	info.n = parseInt(s[2]);
+	info.category = parseInt(s[3]);
+	info.metric = parseInt(s[4]);
+      }
+      return info;
+    };
+
     var controller = [
       '$scope', function ($scope) {
 
@@ -205,7 +223,7 @@ module.directive('spreadsheet', [
 	      v = null;
 	    else
 	      v = records[c][m][n][i];
-	    var cell = generateCell(row, m, v, 'ss-rec_' + c + '_' + m + '_' + i + '_' + n);
+	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + c + '_' + m);
 	    if (v !== null) {
 	      var ri = 'ss-rec_' + records[c].id[n][i];
 	      cell.classList.add(ri, ri + '_' + m);
@@ -273,7 +291,7 @@ module.directive('spreadsheet', [
 	var fill = function () {
 	  for (var i = 0; i < count; i ++) {
 	    var row = rows[order[i]];
-	    collapse(row);
+	    collapse(order[i], row);
 	    ss.appendChild(row);
 	  }
 	};
@@ -311,10 +329,9 @@ module.directive('spreadsheet', [
 	};
 
 	///////////////////////////////// Interaction
-
+	
 	/* Collapse a row and return true if it was previously expanded. */
-	var collapse = function (row) {
-	  var i = row.data;
+	var collapse = function (i, row) {
 	  var el;
 	  if (!((el = row.nextSibling) && el.data === i))
 	    return false;
@@ -331,7 +348,7 @@ module.directive('spreadsheet', [
 	var expand = function (i) {
 	  var row = rows[i];
 
-	  if (collapse(row))
+	  if (collapse(i, row))
 	    return;
 
 	  var max = maxCount[i];
@@ -347,6 +364,29 @@ module.directive('spreadsheet', [
 
 	  for (el = row.firstChild; !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.setAttribute("rowspan", max);
+	};
+
+	var save = function (cell, value) {
+	  var type;
+	  var info = parseCellId(cell.id);
+	  var slot = slots[info.i];
+	  if (value === '')
+	    value = undefined;
+	  switch (info.type) {
+	    case 'name':
+	      slot.name = value;
+	      break;
+	    case 'date':
+	      slot.date = value = value && page.$filter('date')(value, 'yyyy-MM-dd');
+	      break;
+	    case 'consent':
+	      slot.consent = value = parseInt(value);
+	      break;
+	    case 'rec':
+	      /* TODO */
+	      return;
+	  }
+	  generateText(cell, info.metric || info.type, value);
 	};
 
 	var editScope = $scope.$new(true);
@@ -366,34 +406,29 @@ module.directive('spreadsheet', [
 	  var value = editInput.value;
 	  cell.removeChild(edit);
 
-	  // TODO:
-	  var type;
-	  if (cell.id.startsWith('ss-name_'))
-	    type = 'name';
-	  else if (cell.id.startsWith('ss-date_'))
-	    type = 'date';
-	  else if (cell.id.startsWith('ss-consent_'))
-	    type = 'consent';
-	  else
-	    return;
-	  generateText(cell, type, value);
+	  save(cell, value);
 	};
 
 	editScope.unedit = unedit;
 
-	var edit = function (cell, i) {
-	  var slot = slots[i];
-	  if (cell.id.startsWith('ss-name_')) {
-	    editScope.type = 'text';
-	    editInput.value = slot.name;
-	  } else if (cell.id.startsWith('ss-date_')) {
-	    editScope.type = 'date';
-	    editInput.value = slot.date;
-	  } else if (cell.id.startsWith('ss-consent_')) {
-	    editScope.type = 'consent';
-	    editInput.value = slot.consent + '';
-	  } else
-	    return;
+	var edit = function (cell, info) {
+	  var slot = slots[info.i];
+	  switch (info.type) {
+	    case 'name':
+	      editScope.type = 'text';
+	      editInput.value = slot.name;
+	      break;
+	    case 'date':
+	      editScope.type = 'date';
+	      editInput.value = slot.date;
+	      break;
+	    case 'consent':
+	      editScope.type = 'consent';
+	      editInput.value = slot.consent + '';
+	      break;
+	    case 'rec':
+	      return;
+	  }
 	  var edit = editCell(editScope, function (edit) {
 	    cellText(cell, editing = edit[0]);
 	    cell.className = "editing";
@@ -416,10 +451,10 @@ module.directive('spreadsheet', [
 	  unedit();
 	};
 
-	var select = function (cell, i) {
+	var select = function (cell, info) {
 	  unselect();
 
-	  if (cell.id.startsWith('ss-rec_')) {
+	  if (info.type === 'rec') {
 	    var cl = cell.classList;
 	    for (var ci = 0; ci < cl.length; ci ++) {
 	      var c = cl[ci];
@@ -431,24 +466,23 @@ module.directive('spreadsheet', [
 	  }
 
 	  if (editable)
-	    edit(cell, i);
+	    edit(cell, info);
 	};
 
 	$scope.click = function (event) {
 	  var el = event.target;
 	  if (el.tagName !== 'TD')
 	    return;
-	  var row = el.parentElement;
-	  if (row.parentNode !== ss)
+	  if (el.parentElement.parentElement !== ss)
 	    return;
-	  row = row.data;
-	  if (row === undefined)
+	  var info = parseCellId(el.id);
+	  if (!info)
 	    return;
 
-	  if (el.id.startsWith('ss-exp_'))
-	    expand(row);
+	  if (info.type === 'exp')
+	    expand(info.i);
 	  else
-	    select(el, row);
+	    select(el, info);
 	};
 
 	///////////////////////////////// main
