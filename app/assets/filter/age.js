@@ -2,86 +2,37 @@
 
 module.filter('age', [
   function () {
-    var daysTo = {
-      months: 30.436849,
-      years: 365.24219
-    };
+    var YEAR = 365.24219;
+    var MONTH = YEAR/12;
+    var LIMIT = 90*YEAR;
 
-    return function (age, outputFormat, inputFormat, decimals) {
-      if (!angular.isNumber(age)) {
-        return age;
+    return function (days, outputFormat) {
+      if (!angular.isNumber(days)) {
+        return days;
       }
 
-      var formats = ['seconds', 'days', 'months', 'years', 'science'];
-
-      age = parseFloat(age);
-      outputFormat = formats.indexOf(outputFormat) > -1 ? outputFormat : 'science';
-      inputFormat = ['days', 'months'].indexOf(inputFormat) > -1 ? inputFormat : 'days';
-      decimals = $.isNumeric(decimals) ? parseInt(decimals) : 1;
-
-      //
-
-      var fix = function (value) {
-        return value.toFixed(decimals);
-      };
-
-      //
-
-      var days, seconds;
-
-      switch (inputFormat) {
-        case 'seconds':
-          seconds = age;
-          days = age / 86400;
-          break;
-
-        default:
-          seconds = age * 86400;
-          days = age;
-          break;
-      }
-
-      var months = days / daysTo.months;
-      var years = days / daysTo.years;
-
-      //
-
-      var output;
+      if (days >= LIMIT) 
+	return "90+ yrs";
 
       switch (outputFormat) {
         case 'years':
-          output = fix(years) + ' years';
-          break;
+          return (days/YEAR).toFixed(1) + ' yrs';
 
         case 'months':
-          output = fix(months) + ' months';
-          break;
+          return (days/MONTH).toFixed(1) + ' mos';
 
         case 'days':
-          output = fix(days) + ' days';
-          break;
-
-        case 'seconds':
-          output = fix(seconds) + ' days';
-          break;
+          return days.toFixed() + ' dys';
 
         default:
-          if (months < 3) {
-            output = fix(days) + ' days';
-          }
-          else if (months < 37) {
-            output = fix(months) + ' months';
-          }
-          else if (years >= 90) {
-            output = '90+ years';
-          }
-          else {
-            output = fix(years) + ' years';
-          }
-          break;
+	  var months = days / MONTH;
+          if (months < 3)
+            return days.toFixed() + ' dys';
+	  else if (months < 37)
+            return months.toFixed(1) + ' mos';
+          else
+            return (days/YEAR).toFixed(1) + ' yrs';
       }
-
-      return output;
     };
   }
 ]);

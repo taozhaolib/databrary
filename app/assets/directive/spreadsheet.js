@@ -27,7 +27,8 @@ module.directive('spreadsheet', [
       if (info.type === 'rec') {
 	info.n = parseInt(s[2]);
 	info.category = parseInt(s[3]);
-	info.metric = parseInt(s[4]);
+	if (isNaN(info.metric = parseInt(s[4])))
+	  info.metric = s[4];
       }
       return info;
     };
@@ -264,11 +265,11 @@ module.directive('spreadsheet', [
 	      continue;
 	    var c = m.category;
 	    var r = records[c][m.metric];
-	    var p = 'ss-rec_' + c + '_age_';
+	    var post = '_' + c + '_age';
 	    for (var i = 0; i < count; i ++) {
-	      var id = p + i;
+	      var pre = 'ss-rec_' + i + '_';
 	      for (var n = 0; n < counts[i][c]; n ++) {
-		var el = document.getElementById(id + '_' + n);
+		var el = document.getElementById(pre + n + post);
 		if (!el)
 		  break;
 		generateText(el, 'age', r[n][i]);
@@ -367,7 +368,6 @@ module.directive('spreadsheet', [
 	};
 
 	var save = function (cell, value) {
-	  var type;
 	  var info = parseCellId(cell.id);
 	  var slot = slots[info.i];
 	  if (value === '')
@@ -481,6 +481,8 @@ module.directive('spreadsheet', [
 
 	  if (info.type === 'exp')
 	    expand(info.i);
+	  else if (info.metric === 'age')
+	    page.display.toggleAge();
 	  else
 	    select(el, info);
 	};

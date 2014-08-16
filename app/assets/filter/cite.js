@@ -7,35 +7,43 @@ module.filter('cite', [
         return '';
       }
 
-      var names = [];
+      var cite = '';
 
-      angular.forEach(volume.access, function (access) {
-        if (angular.isUndefined(access.individual) || access.individual < page.permission.ADMIN) {
-          return;
+      var ai = 0;
+      var access = volume.access[ai];
+      while (access) {
+	var next = volume.access[++ai];
+        if (next && (next.individual || 0) < page.permission.ADMIN)
+	  next = undefined;
+
+	if (cite !== '') {
+	  cite += ', ';
+	  if (!next)
+	    cite += ' & ';
+	}
+
+        var parts = access.party.name.split(' ');
+	cite += parts.pop();
+
+        if (parts.length) {
+	  cite += ', ';
+	  do {
+	    cite += parts.pop().charAt(0) + '.';
+	  } while (parts.length);
         }
 
-        var parts = access.party.name.split(' '),
-          name = parts.pop();
-
-        if (parts.length > 0) {
-          name += ', ' + parts.map(function (n) {
-            return n.charAt(0);
-          }).join('. ') + '.';
-        }
-
-        names.push(name);
-      });
-
-      names = names.join(', ');
+	access = next;
+      }
 
       //
 
-      var created = page.$filter('date')(new Date(volume.creation), 'yyyy');
+      cite += ' (' + page.$filter('date')(volume.creation, 'yyyy') + '). ';
+      cite += volume.name + '. ';
       var retrieved = page.$filter('date')(new Date(), 'longDate');
 
       //
 
-      return page.$filter('escape')(names) + ', ' + created + '. ' + page.$filter('escape')(volume.name) + '. <em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '" title="' + page.$filter('escape')(volume.name) + '">http://databrary.org/volume/' + volume.id + '</a>.';
+      return page.$filter('escape')(cite) + '<em>Databrary</em>. Retrieved ' + retrieved + ' from <a href="http://databrary.org/volume/' + volume.id + '">http://databrary.org/volume/' + volume.id + '</a>.';
     };
   }
 ]);
