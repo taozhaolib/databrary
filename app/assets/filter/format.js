@@ -2,20 +2,18 @@
 
 module.filter('format', [
   'pageService', function (page) {
+    var esc = page.$filter('escape');
     return function (input, lineMode, raw) {
-      if (!angular.isString(input)) {
-        return '';
-      }
+      if (input === undefined || input === null)
+	return '';
 
-      if (!raw) {
-        input = page.$filter('escape')(input);
-      }
+      if (!raw)
+        input = esc(input);
 
-      if (lineMode) {
+      if (lineMode)
         return input;
-      }
-
-      return '<p>' + input.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+      else
+	return '<p>' + input.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
     };
   }
 ]);

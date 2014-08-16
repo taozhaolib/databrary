@@ -2,47 +2,37 @@
 
 module.filter('timecode', [
   function () {
+    var pad = function (s, n, d) {
+      var p;
+      if (d === undefined || (p = s.indexOf(d)) === -1)
+	p = s.length;
+      while (p++ < n)
+	s = '0' + s;
+      return s;
+    };
+
     return function (input, showMilli) {
       if (!angular.isNumber(input)) {
         return input;
       }
 
-      var time = [];
-
-      var millTo = {
-        days: 86400000,
-        hours: 3600000,
-        minutes: 60000,
-        seconds: 1000
-      };
-
-      if (input > millTo.days) {
-        time.push(Math.floor(input / millTo.days));
-        input = input % millTo.days;
+      var i = Math.abs(input);
+      var s = (i%60000)/1000;
+      if (!showMilli)
+	s |= 0;
+      i = 0|i/60000;
+      s = (i%60) + ':' + pad(s.toString(), 2, '.');
+      i = 0|i/60;
+      if (i) {
+	s = (i%24) + ':' + pad(s, 2, ':');
+	i = 0|i/24;
+	if (i)
+	  s = i + ':' + pad(s, 2, ':');
       }
+      if (input < 0)
+	s = '-' + s;
 
-      if (input > millTo.hours) {
-        time.push(Math.floor(input / millTo.hours));
-        input = input % millTo.hours;
-      }
-
-      time.push(Math.floor(input / millTo.minutes));
-      input = input % millTo.minutes;
-
-      time.push(Math.floor(input / millTo.seconds));
-      input = input % millTo.seconds;
-
-      angular.forEach(time, function (input, k) {
-        if (k !== 0 && time.length > 1) {
-          time[k] = new Array(3 - input.toString().length).join('0') + input;
-        }
-      });
-
-      if (showMilli) {
-        time.push(new Array(4 - input.toString().length).join('0') + input);
-      }
-
-      return time.join(':');
+      return s;
     };
   }
 ]);

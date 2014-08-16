@@ -9,7 +9,7 @@ module.filter('possessive', [
         replace = party + "'s";
       } else if (!page.types.isParty(party)) {
         replace = "one's";
-      } else if (page.auth.user.id == party.id) {
+      } else if (page.auth.user.id === party.id) {
         replace = 'my';
       } else {
         replace = (name ? name : party.name) + "'s";

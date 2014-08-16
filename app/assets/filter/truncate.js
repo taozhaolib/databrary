@@ -2,32 +2,22 @@
 
 module.filter('truncate', [
   function () {
-    return function (text, length, type, end) {
+    return function (text, max) {
       if (!text) {
         return text;
       }
 
-      length = angular.isNumber(parseInt(length)) ? parseInt(length) : 10;
-      type = ['characters', 'words'].indexOf(type) ? type : 'characters';
-      end = angular.isDefined(end) ? end : "...";
+      max = parseInt(max);
+      if (isNaN(max))
+	max = 10;
 
-      switch (type) {
-        case 'words':
-          var words = text.split(' ');
-
-          return words.length < length ?
-            text :
-            words.splice(0, length).join(' ') + end;
-
-        default:
-          if (text.length <= length || text.length - end.length <= length) {
-            return text;
-          }
-          else {
-            return String(text).substring(0, length - end.length) + end;
-          }
-      }
-
+      if (text.length <= max)
+	return text;
+      
+      var p = text.lastIndexOf(' ', max);
+      if (p <= max/2)
+	p = max;
+      return text.substr(0, p) + '...';
     };
   }
 ]);

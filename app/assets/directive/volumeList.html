@@ -15,7 +15,7 @@
           </ul>
         </div>
 
-        <div class="volume-list-body" bo-text="volume.body.replace('\n', ' ') | truncate:30:'words'" bo-if="page.$location.path() !== '/profile'"></div>
+        <div class="volume-list-body" bo-text="volume.body.replace('\n', ' ') | truncate:200" bo-if="page.$location.path() !== '/profile'"></div>
       </article>
     </li>
   </ul>
