@@ -1,4 +1,4 @@
-@(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(requestOption: Option[SiteRequest[_]] = None)(body : Html)
+@(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(body : Html)(implicit request : RequestHeader)
 
 <!DOCTYPE html>
 <html ng-app="databraryModule">
@@ -27,12 +27,16 @@
   <script src="/constants.js"></script>
 	
   <script>
-	window.$play = {
+    window.$play = {
       object: @format.raw(obj.toString),
-      @requestOption.map { request =>
-      user: @format.raw(request.json.toString),
+      @request match {
+	case site : Site => {
+	  user: @format.raw(site.json.toString),
+	}
+	case _ => {
+	}
       }
-	};
+    };
   </script>
   }
 </head>
@@ -48,8 +52,8 @@
         </div>
 
         <div class="toolbar-user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4">
-          @requestOption match {
-            case Some(request : SiteRequest.Auth[_]) => {
+          @request match {
+            case request : SiteRequest.Auth[_] => {
               <a href="@routes.PartyHtml.profile" class="toolbar-user-link">
                 <span class="username hide-mobile hide-tablet">@Messages("me")</span>
                 <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">

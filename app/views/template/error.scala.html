@@ -1,7 +1,7 @@
-@(title : String = "There's been an error!")(body : Html)
+@(title : String = "There's been an error!")(body : Html)(request : RequestHeader)
 
-@template.raw(title)(None) {
+@template.raw(title) {
     <article class="article article_error">
         @body
     </article>
-}
+}(request)

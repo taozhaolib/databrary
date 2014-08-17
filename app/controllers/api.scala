@@ -8,6 +8,7 @@ import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
 import play.api.mvc._
+import org.apache.commons.{io => IO}
 import macros._
 import macros.async._
 import dbrary._
@@ -19,7 +20,7 @@ object SiteApi extends SiteController {
     Play.resourceAsStream("/public/" + name)
     .fold(
       throw new RuntimeException("missing: " + name))(
-      org.apache.commons.io.IOUtils.toString _)
+      IO.IOUtils.toString _)
 
   private def static[A : play.api.http.Writeable](name : String, content : => A) = {
     if (Play.isDev)
@@ -60,7 +61,8 @@ object SiteApi extends SiteController {
   val constantsJs = static("constants",
     views.js.constants(constantsJson))
 
-  val jsDepends = Seq(
+  private val jsDebug = current.configuration.getBoolean("js.debug").getOrElse(false)
+  private val jsLibs = Seq(
     "lib/jquery/jquery.min.js",
     "lib/angularjs/angular.min.js",
     "lib/angularjs/angular-route.min.js",
@@ -71,6 +73,25 @@ object SiteApi extends SiteController {
     "lib/ng-flow/ng-flow-standalone.min.js",
     "app.min.js",
     "templates.js")
+
+  private lazy val jsDebugLibs = {
+    import IO.filefilter.FileFilterUtils._
+    import scala.collection.JavaConversions.asScalaIterator
+    val dir = Play.resource("/public/app.js").flatMap(store.urlFile).get.getParentFile
+    val dirp = dir.getPath + "/"
+    jsLibs.takeWhile(_.startsWith("lib/")).map { js =>
+      if (js.endsWith(".min.js")) js.dropRight(7) + ".js" else js
+    } ++ IO.FileUtils.iterateFiles(dir,
+      and(suffixFileFilter(".js"), notFileFilter(suffixFileFilter(".min.js"))),
+      notFileFilter(nameFileFilter("lib")))
+      .map(_.getPath.stripPrefix(dirp)).toSeq.sorted
+  }
+
+  def jsDepends(implicit request : RequestHeader) =
+    if (Play.isDev && request.getQueryString("js.debug").fold(jsDebug)(j =>
+	!j.equals("0") && j.nonEmpty && !"false".startsWith(j.toLowerCase)))
+      jsDebugLibs
+    else jsLibs
 
   private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
     case json.JsObject(f) =>

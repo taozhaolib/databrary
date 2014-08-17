@@ -18,7 +18,7 @@ object Global extends GlobalSettings {
     if (Play.isDev)
       super.onError(request, throwable)
     else
-      Future.successful(InternalServerError(views.html.error.on500(throwable)))
+      Future.successful(InternalServerError(views.html.error.on500(request, throwable)))
   }
 
   override def onHandlerNotFound(request: RequestHeader) = {
