@@ -45,7 +45,7 @@
                 <a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-html="'toolbar.profile' | message"></a>
               </li>
               <li>
-                <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
+                <a href="" ng-click="page.$location.url(page.router.volumeCreate(undefined,true));toolbar.hideHover()" bo-html="'volume.edit.create' | message | lowercase" ng-if="page.auth.hasAuth(page.permission.PUBLIC)"></a>
               </li>
               <li><a href="" ng-click="page.auth.logout()" bo-html="'toolbar.logout' | message"></a>
 	      </li>

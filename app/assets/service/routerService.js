@@ -14,7 +14,7 @@ module.factory('routerService', [
 
     //
 
-    router.makeUrl = function (url, params, stripQuery) {
+    var makeUrl = function (url, params) {
       if (!params) {
         return url;
       }
@@ -26,7 +26,7 @@ module.factory('routerService', [
       var parts = [];
 
       angular.forEach(params, function (value, key) {
-        if (value === null || angular.isUndefined(value)) {
+        if (value === null || value === undefined) {
           return;
         }
 
@@ -34,7 +34,7 @@ module.factory('routerService', [
           value = [value];
         }
 
-        angular.forEach(value, function (v) {
+        value.forEach(function (v) {
           if (angular.isObject(v)) {
             v = angular.toJson(v);
           }
@@ -50,21 +50,22 @@ module.factory('routerService', [
         });
       });
 
-      if (stripQuery !== false && parts.length > 0) {
+      if (parts.length > 0) {
         url += ((url.indexOf('?') == -1) ? '?' : '&');
+	url += parts.join('&');
       }
 
-      return url + parts.join('&');
+      return url;
     };
 
     //
 
     var makeRoute = function (route) {
-      return function (params, stripQuery, setPrev) {
+      return function (params, setPrev) {
         if (setPrev) {
           prevUrl = $location.path();
         }
-        return router.makeUrl(route, params, stripQuery);
+        return makeUrl(route, params);
       };
     };
 
@@ -99,7 +100,7 @@ module.factory('routerService', [
         id: data.id
       };
 
-      return router.makeUrl('/record/:id', data);
+      return makeUrl('/record/:id', data);
     };
 
     router.volumeThumb = function (data) {
@@ -111,7 +112,7 @@ module.factory('routerService', [
         id: data.id
       };
 
-      return router.makeUrl('/volume/:id/thumb', data);
+      return makeUrl('/volume/:id/thumb', data);
     };
 
     router.assetThumb = function (data) {
@@ -126,7 +127,7 @@ module.factory('routerService', [
 	size: data.size
       };
 
-      return router.makeUrl('/slot/:sid/asset/:id/thumb', data);
+      return makeUrl('/slot/:sid/asset/:id/thumb', data);
     };
 
     router.assetHead = function (data) {
@@ -140,7 +141,7 @@ module.factory('routerService', [
         segment: type.segmentString(data)
       };
 
-      return router.makeUrl('/slot/:sid/asset/:id/head', data);
+      return makeUrl('/slot/:sid/asset/:id/head', data);
     };
 
     router.assetLink = function (data, inline) {
@@ -156,7 +157,7 @@ module.factory('routerService', [
 
       data.inline = data.inline || inline || false;
 
-      return router.makeUrl('/slot/:sid/asset/:id/download', data);
+      return makeUrl('/slot/:sid/asset/:id/download', data);
     };
 
     router.partyAvatar = function (data, size, nonce) {
@@ -188,7 +189,7 @@ module.factory('routerService', [
 	data.nonce = nonce;
       }
 
-      return router.makeUrl('/party/:id/avatar', data);
+      return makeUrl('/party/:id/avatar', data);
     };
 
     router.slotEdit = function (data) {
@@ -201,7 +202,7 @@ module.factory('routerService', [
         segment: type.segmentString(data)
       };
 
-      return router.makeUrl('/slot/:id/edit', data);
+      return makeUrl('/slot/:id/edit', data);
     };
 
     router.assetEdit = function (data) {
@@ -213,7 +214,7 @@ module.factory('routerService', [
         id: data.asset.id
       };
 
-      return router.makeUrl('/asset/:id/edit', data);
+      return makeUrl('/asset/:id/edit', data);
     };
 
     router.recordEdit = function (data) {
@@ -225,7 +226,7 @@ module.factory('routerService', [
         id: data.id
       };
 
-      return router.makeUrl('/record/:id/edit', data);
+      return makeUrl('/record/:id/edit', data);
     };
 
     router.volumeEdit = function (data, page) {
@@ -241,7 +242,7 @@ module.factory('routerService', [
         data.page = page;
       }
 
-      return router.makeUrl('/volume/:id/edit', data);
+      return makeUrl('/volume/:id/edit', data);
     };
 
     router.partyEdit = function (data, page) {
@@ -257,7 +258,7 @@ module.factory('routerService', [
         data.page = page;
       }
 
-      return router.makeUrl('/party/:id/edit', data);
+      return makeUrl('/party/:id/edit', data);
     };
 
     router.party = function (data) {
@@ -269,7 +270,7 @@ module.factory('routerService', [
         id: data.id
       };
 
-      return router.makeUrl('/party/:id', data);
+      return makeUrl('/party/:id', data);
     };
 
     router.partyAuthorize = function (data) {
@@ -281,7 +282,7 @@ module.factory('routerService', [
         id: data.id
       };
 
-      return router.makeUrl('/party/:id/authorize', data);
+      return makeUrl('/party/:id/authorize', data);
     };
 
     //
