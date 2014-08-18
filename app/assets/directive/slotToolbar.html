@@ -3,6 +3,7 @@
     <div class="slot-toolbar-group slot-toolbar-group-player">
       <slot-toolbar-button name="play" click="toolbar.action.play"></slot-toolbar-button>
       <slot-toolbar-button name="pause" click="toolbar.action.pause"></slot-toolbar-button>
+      <div class="slot-toolbar-time" ng-bind="toolbar.time"></div>
     </div>
 
     <div class="slot-toolbar-sep"></div>

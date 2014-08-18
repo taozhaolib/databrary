@@ -558,7 +558,7 @@ module.provider('routerService', [
 	    throw new Error('routerService.assetThumb() requires Asset as first argument');
 	  }
 
-	  return routes.assetThumb([data.container.id, data.asset.id, type.segmentString(data), data.size]);
+	  return routes.assetThumb([data.container.id, type.segmentString(data), data.asset.id, data.size]);
 	};
 
 	router.assetLink = function (data, inline) {
