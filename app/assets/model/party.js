@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('party', [
-  'resourceFactory', '$route', '$http', function (resource, $route, $http) {
-    var party = resource('/api/party/:id', {
+  '$resource', '$route', '$http', function ($resource, $route, $http) {
+    var party = $resource('/api/party/:id', {
       id: function () {
         return ($route.current && $route.current.params.id) || undefined;
       }
@@ -39,7 +39,9 @@ module.factory('party', [
         method: 'POST',
         url: '/api/user/superuser/off'
       }
-    }, 'party');
+    }, null, {
+      cache: 'party'
+    });
 
     party.upload = function (party, fd) {
       return $http.post('/api/party/' + party.id, fd, {

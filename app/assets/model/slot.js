@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('slot', [
-  'resourceFactory', '$route', function (resource, $route) {
-    return resource('/api/volume/:vid/slot/:id', {
+  '$resource', '$route', function ($resource, $route) {
+    return $resource('/api/volume/:vid/slot/:id', {
       id: function () {
         return $route.current.params.id || undefined;
       },
@@ -12,6 +12,8 @@ module.factory('slot', [
       segment: function () {
         return $route.current.params.segment || ',';
       }
-    }, 'slot');
+    }, null, {
+      cache: 'slot'
+    });
   }
 ]);
