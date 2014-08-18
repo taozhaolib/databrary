@@ -13,6 +13,7 @@ module.provider('routerService', [
         replace(/%20/g, '+');
     }
 
+    /* Add the query params to the url. */
     function urlParams(url, params) {
       if (!params) {
         return url;
@@ -42,9 +43,15 @@ module.provider('routerService', [
       return url;
     }
 
+    /* Apply a jsroute (from play's routeData) given the names of its arguments and optional data (or placeholders). */
     function getRoute(route, argNames, data) {
       var args;
-      if (data === undefined || data === null)
+      if (!argNames)
+	argNames = [];
+      var ph = arguments.length < 3;
+      if (ph)
+	args = argNames.map(function (a) { return ':' + a; });
+      else if (data === undefined || data === null)
 	args = [];
       else if (Array.isArray(data))
 	args = data;
@@ -54,20 +61,20 @@ module.provider('routerService', [
 	});
       } else
 	args = [data];
-      return route.apply(null, args);
+      var r = route.apply(null, args);
+      if (ph) {
+	var q = r.url.indexOf('?');
+	if (q !== -1)
+	  r.url = r.url.substr(0, q);
+	r.url = r.url.replace(/%3A/gi, ':');
+      }
+      return r;
     }
 
-    function getUrl(route, argNames) {
-      var url = route.apply(null, argNames.map(function (a) { return ':' + a; })).url;
-      var q = url.indexOf('?');
-      if (q !== -1)
-	url = url.substr(0, q);
-      return url.replace(/%3A/gi, ':');
-    }
-
+    /* Add a route to $routeProvider and return a function to get a url given parameters. */
     function makeRoute(route, argNames, handler) {
       if (handler)
-	$routeProvider.when(getUrl(route, argNames), handler);
+	$routeProvider.when(getRoute(route, argNames).url, handler);
 
       return function (data, params) {
 	return urlParams(getRoute(route, argNames, data).url, params);
