@@ -17,21 +17,20 @@ module.config([
           actions.get = actions.get || {method: 'GET'};
           actions.query = actions.query || {method: 'GET', isArray: true};
 
-          if (options.cache && !options.cache.info) {
-            options.cache = options.cache || '$http';
+          if (angular.isString(options.cache)) {
             options.cache = $cacheFactory.get(options.cache) || $cacheFactory(options.cache);
           }
 
           for (var prop in actions) {
-            if (actions.hasOwnProperty(prop) && actions[prop].method.toUpperCase() === 'GET') {
+            if (actions.hasOwnProperty(prop) && actions[prop].method.toUpperCase() === 'GET' && !('cache' in actions[prop])) {
               actions[prop].cache = options.cache;
             }
           }
 
           var resource = $resource.apply($resource, arguments);
 
-          if (options.cache && options.cache.info) {
-            resource.$cache = options.cache;
+          if (options.cache) {
+	    resource.$cache = angular.isObject(options.cache) ? options.cache : $cacheFactory.get('$http');
           }
 
           return resource;
