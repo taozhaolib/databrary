@@ -2,23 +2,23 @@
 
 module.directive('spreadsheet', [
   'pageService', function (page) {
-    var MAXLEN = 32; // maximum number of records per category per slot
-    var byNumber = function(a,b) { return a-b; };
-    var byString = function(a,b) { return a>b?1:a<b?-1:0; };
-    var byType = function(a,b) {
+    var MAXLEN = 16; // maximum number of records per category per slot
+    function byNumber(a,b) { return a-b; }
+    function byString(a,b) { return a>b?1:a<b?-1:0; }
+    function byType(a,b) {
       var ta = typeof a;
       var tb = typeof b;
       if (ta > tb) return 1;
       if (ta < tb) return -1;
       if (ta == 'number') return a-b;
       return a>b?1:a<b?-1:0;
-    };
+    }
 
-    var stripPrefix = function (s, prefix) {
+    function stripPrefix(s, prefix) {
       return s.startsWith(prefix) ? s.substr(prefix.length) : undefined;
-    };
+    }
 
-    var parseCellId = function (id) {
+    function parseCellId(id) {
       var info = {};
       var s = id.split('_');
       if ((info.type = stripPrefix(s[0], 'ss-')) === undefined ||
@@ -31,7 +31,26 @@ module.directive('spreadsheet', [
 	  info.metric = s[4];
       }
       return info;
+    }
+
+    var pseudoMetrics = {
+      id: {
+	id: 'id',
+	name: 'name',
+	type: 'number',
+	classification: page.classification.PUBLIC
+      },
+      age: {
+	id: 'age',
+	name: 'age',
+	type: 'number',
+	classification: page.classification.SHARED
+      },
     };
+
+    function getMetric(m) {
+      return pseudoMetrics[m] || page.constants.data.metric[m];
+    }
 
     var controller = [
       '$scope', function ($scope) {
@@ -41,7 +60,7 @@ module.directive('spreadsheet', [
 
 	var editable = true || volume.permission >= page.permission.EDIT;
 
-	var getSlot = function (slot) {
+	function getSlot(slot) {
 	  if ('records' in slot)
 	    return slot;
 	  angular.extend(slot, volume.sessions[slot.id]);
@@ -51,18 +70,18 @@ module.directive('spreadsheet', [
 	    });
 	  }
 	  return slot;
-	};
+	}
 
 	/*
 	 * We use the following types of data structures:
-	 *   Row = index of slot in slots and rows
+	 *   Row = index of slot in slots and rows (i)
 	 *   Data[Row] = scalar value (array over Row)
 	 *   Slot_id = Database id of container
 	 *   Segment = standard time range (see type service)
 	 *   Record_id = Database id of record
-	 *   Category_id = Database id of record category
-	 *   Count = index of record within category for slot
-	 *   Metric_id = Database id of metric, or "id" for Record_id, or "age"
+	 *   Category_id = Database id of record category (c)
+	 *   Count = index of record within category for slot (n)
+	 *   Metric_id = Database id of metric, or "id" for Record_id, or "age" (m)
 	 */
 
 	var slots = []; // [Row] = Slot
@@ -77,8 +96,8 @@ module.directive('spreadsheet', [
 	var counts = new Array(count); // [Row][Category_id] :: Count
 	var maxCount = new Uint8Array(count); // [Row] = counts.map(_.maxiumum)
 	var recordCols = [], // [] Array over records :: {category: Category_id, metrics[]: Array of Metric_id}
-	    metricCols = []; // [] Array over metrics :: {category: Category_id, metric: Metric_id} (flattened version of recordCols)
-	var depends = {}; // [Record_id] :: Array of Row
+	    metricCols = []; // [] Array over metrics :: {category: Category, metric: Metric} (flattened version of recordCols)
+	var depends = {}; // [Record_id][Row] :: Count
 
 	var rows = new Array(count); // [Row] :: DOM Element tr
 
@@ -87,39 +106,41 @@ module.directive('spreadsheet', [
 	///////////////////////////////// Populate data structures 
 
 	/* Fill all Data values for Row i */
-	var populateSlot = function (i) {
+	function populateSlot(i) {
 	  var slot = slots[i];
 	  
-	  var r, c;
-	  var populateMeasure = function (m, v) {
+	  var r, n;
+	  function populateMeasure(m, v) {
 	    if (!(m in r))
 	      r[m] = [];
-	    if (!(c in r[m]))
-	      r[m][c] = [];
-	    r[m][c][i] = v;
-	  };
+	    if (!(n in r[m]))
+	      r[m][n] = [];
+	    r[m][n][i] = v;
+	  }
 	  var count = counts[i] = {};
 	  var max = 0;
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
-	    var cat = record.category;
+	    var c = record.category;
 
 	    // populate records:
-	    if (!(cat in records)) {
-	      r = records[cat] = {id: []};
-	      if (cat === page.category.participant.id)
+	    if (c in records)
+	      r = records[c];
+	    else {
+	      r = records[c] = {id: []};
+	      if (c === page.category.participant.id)
 		r.age = [];
-	    } else
-	      r = records[cat];
+	    }
 
 	    // determine Count:
-	    if (!(cat in count)) {
-	      count[cat] = 1;
-	      c = 0;
-	    } else
-	      c = count[cat] ++;
-	    max = Math.max(max, c+1);
+	    if (c in count)
+	      n = count[c] ++;
+	    else {
+	      count[c] = 1;
+	      n = 0;
+	    }
+	    max = Math.max(max, n+1);
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
@@ -129,31 +150,32 @@ module.directive('spreadsheet', [
 	      populateMeasure(m, record.measures[m]);
 
 	    // populate depends:
-	    if (!(record.id in depends))
-	      depends[record.id] = [i];
+	    if (record.id in depends)
+	      depends[record.id][i] = n;
 	    else
-	      depends[record.id].push(i);
+	      depends[record.id] = {i:n};
 	  }
 
 	  maxCount[i] = max;
-	};
+	}
 
 	/* Fill metricCols and recordCols from records */
-	var populateCols = function () {
+	function populateCols() {
 	  metricCols = [];
 	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
+	    var category = page.constants.data.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
-	      return m !== 'id' && !(m in page.constants.data.metric && page.constants.data.metric[m].long);
+	      return m !== 'id' && !getMetric(m).long;
 	    });
 	    if (metrics.length)
 	      metrics.sort(byNumber);
 	    else // add id if there's nothing else
 	      metrics = ['id'];
-	    metricCols.push.apply(metricCols, metrics.map(function (metric) {
+	    metricCols.push.apply(metricCols, metrics.map(function (m) {
 	      return {
-		category: c,
-		metric: metric
+		category: category,
+		metric: getMetric(m),
 	      };
 	    }));
 	    return {
@@ -161,79 +183,85 @@ module.directive('spreadsheet', [
 	      metrics: metrics
 	    };
 	  });
-	};
+	}
 
 	/* Call all populate* functions */
-	var populate = function () {
+	function populate() {
 	  for (var i = 0; i < count; i ++)
 	    populateSlot(i);
 	  populateCols();
-	};
+	}
 
 	///////////////////////////////// Generate HTML
 	
 	/* Find the text content of cell c with element t */
-	var cellText = function (c, t) {
+	function cellText(c, t) {
 	  var el = c.lastChild;
 	  if (el && el.nodeType === 3)
 	    c.replaceChild(t, el);
 	  else
 	    c.appendChild(t);
-	};
+	}
 
 	/* Add or replace the text contents of cell c for measure/type m with value v */
-	var generateText = function (c, m, v) {
-	  var cls = '';
+	function generateText(c, m, v, assumed) {
+	  if (assumed)
+	    c.classList.remove('assumed');
 	  if (v === undefined)
-	    v = '';
+	  {
+	    if (assumed) {
+	      v = assumed;
+	      c.classList.add('assumed');
+	    } else
+	      v = '';
+	  }
 	  else if (m === 'age')
 	    v = page.display.formatAge(v);
 	  else if (m === 'consent') {
 	    if (v in page.constants.data.consent) {
 	      var cn = page.constants.data.consent[v].toLowerCase();
-	      cls = cn + ' consent icon hint-consent-' + cn;
+	      c.className = cn + ' consent icon hint-consent-' + cn;
 	      v = '';
 	    }
 	  } else if (typeof v === 'string' && v.length >= MAXLEN)
 	    v = v.substr(0, MAXLEN) + '...';
 	  cellText(c, document.createTextNode(v));
-	  c.className = cls;
-	};
+	}
 
 	/* Add a td element to tr r with value c and id i */
-	var generateCell = function (r, m, v, i) {
+	function generateCell(r, m, v, i, assumed) {
 	  var td = r.appendChild(document.createElement('td'));
 	  if (v === null)
-	    td.className = "null";
+	    td.className = 'null';
 	  else {
-	    generateText(td, m, v);
+	    generateText(td, m, v, assumed);
 	    td.id = i;
 	  }
 	  return td;
-	};
+	}
 
 	/* Add all the record/measure tds to row i for count n */
-	var generateRecords = function (row, i, n) {
+	function generateRecords(row, i, n) {
 	  var count = counts[i];
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var col = metricCols[mi];
-	    var c = col.category;
-	    var m = col.metric;
+	    var c = col.category.id;
+	    var m = col.metric.id;
 	    var v;
 	    if (n >= (count[c] || 0))
 	      v = null;
 	    else
 	      v = records[c][m][n][i];
-	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + c + '_' + m);
+	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + c + '_' + m, col.metric.assumed);
 	    if (v !== null) {
 	      var ri = 'ss-rec_' + records[c].id[n][i];
 	      cell.classList.add(ri, ri + '_' + m);
 	    }
 	  }
-	};
+	}
 
 	/* Fill out rows[i]. Should only be called once. */
-	var generateRow = function (i) {
+	function generateRow(i) {
 	  var slot = slots[i];
 	  var row = rows[i] = document.createElement('tr');
 	  var cell;
@@ -255,16 +283,16 @@ module.directive('spreadsheet', [
 	    cell.appendChild(document.createTextNode('+'));
 	    cell.id = 'ss-exp_' + i;
 	  }
-	};
+	}
 
 	/* Update all age displays. */
-	var regenerateAges = function () {
+	function regenerateAges() {
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var m = metricCols[mi];
-	    if (m.metric !== 'age')
+	    if (m.metric.id !== 'age')
 	      continue;
-	    var c = m.category;
-	    var r = records[c][m.metric];
+	    var c = m.category.id;
+	    var r = records[c][m.metric.id];
 	    var post = '_' + c + '_age';
 	    for (var i = 0; i < count; i ++) {
 	      var pre = 'ss-rec_' + i + '_';
@@ -276,40 +304,40 @@ module.directive('spreadsheet', [
 	      }
 	    }
 	  }
-	};
+	}
 
 	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
 
 	/* Generate all rows. Should only be called once. */
-	var generate = function () {
+	function generate() {
 	  for (var i = 0; i < count; i ++)
 	    generateRow(i);
-	};
+	}
 
 	///////////////////////////////// Place DOM elements
 
 	/* Place all rows into spreadsheet. */
-	var fill = function () {
+	function fill() {
 	  for (var i = 0; i < count; i ++) {
 	    var row = rows[order[i]];
 	    collapse(order[i], row);
 	    ss.appendChild(row);
 	  }
-	};
+	}
 
 	/* Populate order based on compare function applied to values. */
-	var sort = function (values, compare) {
+	function sort(values, compare) {
 	  if (!compare)
 	    compare = byType;
 	  order.sort(function (i, j) {
 	    return compare(values[i], values[j]);
 	  });
-	};
+	}
 
 	var currentSort;
 
 	/* Sort by values, called name. */
-	var sortBy = function (name, values) {
+	function sortBy(name, values) {
 	  if (currentSort === name)
 	    order.reverse();
 	  else {
@@ -317,7 +345,7 @@ module.directive('spreadsheet', [
 	    currentSort = name;
 	  }
 	  fill();
-	};
+	}
 
 	/* Sort by one of the container columns. */
 	$scope.sortBySlot = function (f) {
@@ -332,7 +360,7 @@ module.directive('spreadsheet', [
 	///////////////////////////////// Interaction
 	
 	/* Collapse a row and return true if it was previously expanded. */
-	var collapse = function (i, row) {
+	function collapse(i, row) {
 	  var el;
 	  if (!((el = row.nextSibling) && el.data === i))
 	    return false;
@@ -343,10 +371,10 @@ module.directive('spreadsheet', [
 	  for (el = row.firstChild; el && !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.removeAttribute("rowspan");
 	  return true;
-	};
+	}
 
 	/* Expand (or collapse) a row */
-	var expand = function (i) {
+	function expand(i) {
 	  var row = rows[i];
 
 	  if (collapse(i, row))
@@ -365,9 +393,9 @@ module.directive('spreadsheet', [
 
 	  for (el = row.firstChild; !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.setAttribute("rowspan", max);
-	};
+	}
 
-	var save = function (cell, value) {
+	function save(cell, value) {
 	  var info = parseCellId(cell.id);
 	  var slot = slots[info.i];
 	  if (value === '')
@@ -383,11 +411,29 @@ module.directive('spreadsheet', [
 	      slot.consent = value = parseInt(value);
 	      break;
 	    case 'rec':
-	      /* TODO */
+	      var m = info.metric;
+	      var metric = page.constants.data.metric[m];
+	      var ri = records[info.category].id[info.n][info.i];
+	      switch (metric.type) {
+		case 'date':
+		  value = value && page.$filter('date')(value, 'yyyy-MM-dd');
+		  break;
+		case 'number':
+		  value = value && parseFloat(value);
+		  break;
+	      }
+	      volume.records[ri].measures[m] = value;
+
+	      angular.forEach(depends[ri], function (n, i) {
+		records[info.category][m][n][i] = value;
+	      });
+	      var l = ss.getElementsByClassName('ss-rec_' + ri + '_' + m);
+	      for (var li = 0; li < l.length; li ++)
+		generateText(l[li], info.metric, value, metric.assumed);
 	      return;
 	  }
-	  generateText(cell, info.metric || info.type, value);
-	};
+	  generateText(cell, info.type, value);
+	}
 
 	var editScope = $scope.$new(true);
 	editScope.page = page;
@@ -395,7 +441,7 @@ module.directive('spreadsheet', [
 	var editCell = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
 	var editing;
 
-	var unedit = function () {
+	function unedit() {
 	  var edit;
 	  if (!(edit = editing))
 	    return;
@@ -405,13 +451,15 @@ module.directive('spreadsheet', [
 	    return;
 	  var value = editInput.value;
 	  cell.removeChild(edit);
+	  cell.classList.remove('editing');
+	  page.tooltips.clear();
 
 	  save(cell, value);
-	};
+	}
 
 	editScope.unedit = unedit;
 
-	var edit = function (cell, info) {
+	function edit(cell, info) {
 	  var slot = slots[info.i];
 	  switch (info.type) {
 	    case 'name':
@@ -427,31 +475,41 @@ module.directive('spreadsheet', [
 	      editInput.value = slot.consent + '';
 	      break;
 	    case 'rec':
-	      return;
+	      var metric = page.constants.data.metric[info.metric];
+	      if (!metric)
+		return;
+	      var ri = records[info.category].id[info.n][info.i];
+	      editInput.value = volume.records[ri].measures[metric.id];
+	      if (metric.options) {
+		editScope.type = 'select';
+		editScope.options = metric.options;
+	      } else
+		editScope.type = metric.type;
+	      break;
 	  }
-	  var edit = editCell(editScope, function (edit) {
-	    cellText(cell, editing = edit[0]);
-	    cell.className = "editing";
+	  var e = editCell(editScope, function (e) {
+	    cellText(cell, editing = e[0]);
+	    cell.classList.add('editing');
 	    page.tooltips.clear();
 	  });
 
 	  page.$timeout(function () {
-	    var input = edit.children('[name=edit]');
+	    var input = e.children('[name=edit]');
 	    input.focus();
 	    input.change(unedit);
 	  }, 0);
-	};
+	}
 
 	var selectStyles = document.head.appendChild(document.createElement('style')).sheet;
 
-	var unselect = function () {
+	function unselect() {
 	  while (selectStyles.cssRules.length)
 	    selectStyles.deleteRule(0);
 
 	  unedit();
-	};
+	}
 
-	var select = function (cell, info) {
+	function select(cell, info) {
 	  unselect();
 
 	  if (info.type === 'rec') {
@@ -467,7 +525,7 @@ module.directive('spreadsheet', [
 
 	  if (editable)
 	    edit(cell, info);
-	};
+	}
 
 	$scope.click = function (event) {
 	  var el = event.target;
