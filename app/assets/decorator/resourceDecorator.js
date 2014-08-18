@@ -35,7 +35,7 @@ module.config([
           }
 
           return resource;
-        }
+        };
       }
     ]);
   }
