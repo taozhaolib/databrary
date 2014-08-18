@@ -36,8 +36,8 @@ module.factory('typeService', [
         return 'comment';
       }
 
-      if (typeService.isSession(object)) {
-        return 'session';
+      if (typeService.isSlot(object)) {
+        return 'slot';
       }
 
       return undefined;
@@ -89,7 +89,7 @@ module.factory('typeService', [
       return angular.isObject(object) && object.text && object.time;
     };
 
-    typeService.isSession = function (object) {
+    typeService.isSlot = function (object) {
       return angular.isObject(object) && !object.asset && !object.body && !object.measures && !object.avatar && !object.auth && !object.text;
     };
 
@@ -117,7 +117,7 @@ module.factory('typeService', [
       if (typeService.isAsset(object)) {
         segment = typeService.assetProperty(object, 'segment', dig);
       }
-      else if (typeService.isSession(object) || typeService.isComment(object)) {
+      else if (typeService.isSlot(object) || typeService.isComment(object)) {
         segment = object.segment;
       }
       else {
@@ -125,7 +125,6 @@ module.factory('typeService', [
       }
 
       return typeService.segmentJoin(segment);
-
     };
 
     typeService.segmentJoin = function (segment) {
@@ -213,7 +212,7 @@ module.factory('typeService', [
     };
 
     typeService.slotName = function (object) {
-      if (!typeService.isSession(object)) {
+      if (!typeService.isSlot(object)) {
         throw new Error('typeService.slotName() requires Slot as first argument');
       }
 

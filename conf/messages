@@ -440,7 +440,7 @@ asset.untranscoded=This video is being converted to Databrary''s standard format
 object.tip.dataset=Datasets are collections of raw data.
 object.tip.study=Studies extend datasets with analysis, documents, and publications.
 object.tip.record=A metadata label applied to set of related sessions.
-object.tip.session=Sessions group files and data collected at the same time.
+object.tip.slot=Sessions group files and data collected at the same time.
 object.tip.asset=Files can potentially contain a lot of valuable data.
 
 # Volume page

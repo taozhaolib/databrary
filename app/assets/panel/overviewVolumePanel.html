@@ -88,7 +88,7 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.consumers">
-                  <a bo-href="page.router.volume({id: ext.id})"> <img src="/public/images/browser/icon-study.png">&nbsp;
+                  <a bo-href="page.router.volume(ext.id)"> <img src="/public/images/browser/icon-study.png">&nbsp;
                     <span bo-text="ext.name"></span></a>
                 </li>
               </ul>
@@ -99,7 +99,7 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.providers">
-                  <a bo-href="page.router.volume({id: ext.id})"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
+                  <a bo-href="page.router.volume(ext.id)"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
                     <span bo-text="ext.name"></span></a>
                 </li>
               </ul>

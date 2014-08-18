@@ -57,9 +57,38 @@ object SiteApi extends SiteController {
     , ('version, json.JsString(site.Site.version))
     ).js
 
-  val constants = static("constants", constantsJson)
+  private val routesJs = {
+    import routes.javascript._
+    play.api.Routes.javascriptRouter("routes", None, site.Site.url.stripPrefix("http://")
+    , Site.start
+    , LoginHtml.view
+    , LoginHtml.registration
+    , TokenHtml.getPassword
+    , TokenHtml.token
+    , PartyHtml.profile
+    , PartyHtml.view
+    , PartyHtml.edit
+    , PartyHtml.avatar
+    , VolumeHtml.search
+    , VolumeHtml.view
+    , VolumeHtml.add
+    , VolumeHtml.edit
+    , VolumeController.thumb
+    , SlotHtml.view
+    , SlotHtml.edit
+    , AssetHtml.formats
+    , AssetHtml.view
+    , AssetHtml.edit
+    , SlotAssetHtml.view
+    , SlotAssetController.thumb
+    , SlotAssetController.download
+    , RecordHtml.view
+    , RecordHtml.edit
+    )
+  }
+
   val constantsJs = static("constants",
-    views.js.constants(constantsJson))
+    views.js.constants(constantsJson, routesJs))
 
   private val jsDebug = current.configuration.getBoolean("js.debug").getOrElse(false)
   private val jsLibs = Seq(

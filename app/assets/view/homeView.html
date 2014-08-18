@@ -17,11 +17,11 @@
     <div class="row" bo-if="page.auth.isAuthorized()">
       <article class="home-feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="home-feature-inner">
-          <img bo-src="page.router.volumeThumb(volume)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
+          <img bo-src="page.router.volumeThumb(volume.id)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume(volume.id))">
 
           <div class="home-feature-info">
             <div class="home-feature-message" bo-html="'featured' | message"></div>
-            <h1><a bo-href="page.router.volume({id: volume.id})" bo-text="volume.name"></a></h1>
+            <h1><a bo-href="page.router.volume(volume.id)" bo-text="volume.name"></a></h1>
 
             <div class="home-feature-investigators">
               <ul class="inline-block comma">

@@ -105,8 +105,6 @@ POST    /volume/$vID<[0-9]+>/ingest/adolph                                      
 # ===== API ===== #
 
 GET     /constants.js                                                                             controllers.SiteApi.constantsJs
-# GET
-GET     /api/constants                                                                            controllers.SiteApi.constants
 # takes nothing, does nothing (except side-effects: authorization, analytics, etc.), returns nothing
 GET     /api/null                                                                                 controllers.SiteApi.void
 

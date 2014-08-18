@@ -152,7 +152,7 @@ module.directive('browserList', [
           case 'record':
             return page.router.recordEdit(data.object);
 
-          case 'session':
+          case 'slot':
             return page.router.slotEdit(data.object);
 
           case 'asset':

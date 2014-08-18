@@ -244,7 +244,7 @@ module.directive('spreadsheet', [
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
-	  cell.setAttribute('href', page.router.slot({vid: volume.id, id: slot.id, segment: slot.segment}));
+	  cell.setAttribute('href', page.router.slot(volume.id, slot));
 	  cell.classList.add('link', 'icon');
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);

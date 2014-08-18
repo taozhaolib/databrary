@@ -1,29 +1,24 @@
 'use strict';
 
-module.factory('routerService', [
-  '$rootScope',
-  '$route',
-  '$filter',
-  '$location',
-  'typeService',
-  function ($rootScope, $route, $filter, $location, type) {
-    var router = {};
-    var prevUrl = '/';
+module.provider('routerService', [
+  '$routeProvider',
+  'routeData',
+  function RouterProvider($routeProvider, controllers) {
+    function encodeUri(val) {
+      return encodeURIComponent(val).
+        replace(/%40/g, '@').
+        replace(/%3A/gi, ':').
+        replace(/%24/g, '$').
+        replace(/%2C/gi, ',').
+        replace(/%20/g, '+');
+    }
 
-    router.$route = $route;
-
-    //
-
-    var makeUrl = function (url, params) {
+    function urlParams(url, params) {
       if (!params) {
         return url;
       }
 
-      if (!angular.isObject(params) || angular.isArray(params)) {
-        throw new Error('routerService.makeUrl passed non-object "params" for ' + url);
-      }
-
-      var parts = [];
+      var q = url.indexOf('?') !== -1;
 
       angular.forEach(params, function (value, key) {
         if (value === null || value === undefined) {
@@ -39,254 +34,597 @@ module.factory('routerService', [
             v = angular.toJson(v);
           }
 
-          var m = url.indexOf(':' + key);
-          if (m >= 0) {
-            var e = m + 1 + key.length;
-            url = url.slice(0, m) + v + url.slice(e + (url[e] === '*'));
-          } else {
-            parts.push($filter('uri')(key, true) + '=' +
-              $filter('uri')(v, true));
-          }
+	  url += (q ? '&' : '?') + encodeUri(key) + '=' + encodeUri(v);
+	  q = true;
         });
       });
 
-      if (parts.length > 0) {
-        url += ((url.indexOf('?') == -1) ? '?' : '&');
-	url += parts.join('&');
-      }
-
       return url;
-    };
+    }
+
+    function getRoute(route, argNames, data) {
+      var args;
+      if (data === undefined || data === null)
+	args = [];
+      else if (Array.isArray(data))
+	args = data;
+      else if (typeof data === 'object') {
+	args = argNames.map(function (k) {
+	  return k in data ? data[k] : null;
+	});
+      } else
+	args = [data];
+      return route.apply(null, args);
+    }
+
+    function makeRoute(route, argNames, handler) {
+      if (handler) {
+	var url = route.apply(null, argNames.map(function (a) { return ':' + a; })).url;
+	var q = url.indexOf('?');
+	if (q !== -1)
+	  url = url.substr(0, q);
+	$routeProvider.when(url, handler);
+      }
+
+      return function (data, params) {
+	return urlParams(getRoute(route, argNames, data).url, params);
+      };
+    }
+
+    var routes = {};
+
+    routes.index = makeRoute(controllers.Site.start, [], {
+      controller: 'homeView',
+      templateUrl: 'homeView.html',
+      resolve: {
+        parties: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.party.query({
+              access: page.permission.CONTRIBUTE,
+              institution: false
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ],
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            if (page.auth.isAuthorized()) {
+              page.models.volume.get({
+                id: 8,
+                access: ''
+              }, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            } else {
+              deferred.resolve({});
+            }
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: false
+    });
 
     //
 
-    var makeRoute = function (route) {
-      return function (params, setPrev) {
-        if (setPrev) {
-          prevUrl = $location.path();
-        }
-        return makeUrl(route, params);
-      };
-    };
+    routes.login = makeRoute(controllers.LoginHtml.view, [], {
+      controller: 'loginView',
+      templateUrl: 'loginView.html',
+      reloadOnSearch: false
+    });
 
     //
 
-    router.index = makeRoute('/');
-    router.login = makeRoute('/login');
-    router.register = makeRoute('/register');
-    router.password = makeRoute('/password');
-    router.profile = makeRoute('/profile');
-    router.error = makeRoute('/error');
-
-    router.search = makeRoute('/search');
-    router.asset = makeRoute('/asset/:id');
-    router.volume = makeRoute('/volume/:id');
-    router.volumeCreate = makeRoute('/volume/create');
-    router.slot = makeRoute('/volume/:vid/slot/:id');
-    router.slotAsset = makeRoute('/slot/:sid/asset/:id');
-    router.helpFormats = makeRoute('/asset/formats');
-
-    router.prevUrl = function () {
-      return prevUrl;
-    };
-    //
-
-    router.record = function (data) {
-      if (!type.isRecord(data)) {
-        throw new Error('routerService.record() requires Record as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      return makeUrl('/record/:id', data);
-    };
-
-    router.volumeThumb = function (data) {
-      if (!type.isVolume(data)) {
-        throw new Error('routerService.volumeThumb() requires Volume as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      return makeUrl('/volume/:id/thumb', data);
-    };
-
-    router.assetThumb = function (data) {
-      if (!type.isAsset(data)) {
-        throw new Error('routerService.assetThumb() requires Asset as first argument');
-      }
-
-      data = {
-        sid: data.container.id,
-        id: data.asset.id,
-        segment: type.segmentString(data),
-	size: data.size
-      };
-
-      return makeUrl('/slot/:sid/asset/:id/thumb', data);
-    };
-
-    router.assetHead = function (data) {
-      if (!type.isAsset(data)) {
-        throw new Error('routerService.assetHead() requires Asset as first argument');
-      }
-
-      data = {
-        sid: data.container.id,
-        id: data.asset.id,
-        segment: type.segmentString(data)
-      };
-
-      return makeUrl('/slot/:sid/asset/:id/head', data);
-    };
-
-    router.assetLink = function (data, inline) {
-      if (type.isAsset(data)) {
-        data = {
-          sid: data.container.id,
-          id: data.asset.id,
-          segment: type.segmentString(data)
-        };
-      } else if (!data || !data.sid || !data.id) {
-        throw new Error('routerService.assetLink() requires Asset or object.id/.sid/.segment as first argument');
-      }
-
-      data.inline = data.inline || inline || false;
-
-      return makeUrl('/slot/:sid/asset/:id/download', data);
-    };
-
-    router.partyAvatar = function (data, size, nonce) {
-      if (!type.isParty(data)) {
-        throw new Error('routerService.partyAvatar() requires Party as first argument');
-      }
-
-      if (!angular.isNumber(size)) {
-        size = 56;
-      }
-
-      data = {
-        id: data.id
-      };
-
-      if (angular.isNumber(parseInt(size))) {
-        if (angular.isObject(data)) {
-          data.size = parseInt(size);
-        } else if (angular.isArray(data)) {
-          data.push(parseInt(size));
-        } else if (angular.isString(data)) {
-          data = [data, size];
-        } else {
-          data = '';
-        }
-      }
-
-      if (nonce) {
-	data.nonce = nonce;
-      }
-
-      return makeUrl('/party/:id/avatar', data);
-    };
-
-    router.slotEdit = function (data) {
-      if (!type.isSession(data)) {
-        throw new Error('routerService.slotEdit() requires Slot as first argument');
-      }
-
-      data = {
-        id: data.id,
-        segment: type.segmentString(data)
-      };
-
-      return makeUrl('/slot/:id/edit', data);
-    };
-
-    router.assetEdit = function (data) {
-      if (!type.isAsset(data)) {
-        throw new Error('routerService.assetEdit() requires Asset as first argument');
-      }
-
-      data = {
-        id: data.asset.id
-      };
-
-      return makeUrl('/asset/:id/edit', data);
-    };
-
-    router.recordEdit = function (data) {
-      if (!type.isRecord(data)) {
-        throw new Error('routerService.recordEdit() requires Record as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      return makeUrl('/record/:id/edit', data);
-    };
-
-    router.volumeEdit = function (data, page) {
-      if (!type.isVolume(data)) {
-        throw new Error('routerService.volumeEdit() requires Volume as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      if (page) {
-        data.page = page;
-      }
-
-      return makeUrl('/volume/:id/edit', data);
-    };
-
-    router.partyEdit = function (data, page) {
-      if (!type.isParty(data)) {
-        throw new Error('routerService.partyEdit() requires Party as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      if (page) {
-        data.page = page;
-      }
-
-      return makeUrl('/party/:id/edit', data);
-    };
-
-    router.party = function (data) {
-      if (!type.isParty(data)) {
-        throw new Error('routerService.party() requires Party as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      return makeUrl('/party/:id', data);
-    };
-
-    router.partyAuthorize = function (data) {
-      if (!type.isParty(data)) {
-        throw new Error('routerService.partyAuthorize() requires Party as first argument');
-      }
-
-      data = {
-        id: data.id
-      };
-
-      return makeUrl('/party/:id/authorize', data);
-    };
+    routes.register = makeRoute(controllers.LoginHtml.registration, [], {
+      controller: 'registerView',
+      templateUrl: 'registerView.html',
+      reloadOnSearch: false
+    });
 
     //
 
-    return router;
+    routes.password = makeRoute(controllers.TokenHtml.getPassword, [], {
+      controller: 'resetView',
+      templateUrl: 'resetView.html',
+      reloadOnSearch: false
+    });
+
+    //
+
+    routes.helpFormats = makeRoute(controllers.AssetHtml.formats, [], {
+      controller: 'helpFormatsView',
+      templateUrl: 'helpFormatsView.html',
+      reloadOnSearch: false,
+      authenticate: true,
+    });
+
+    //
+
+    makeRoute(controllers.TokenHtml.token, ['id'], {
+      controller: (function () {
+        return window.$play.object && window.$play.object.reset ? 'resetView' : 'registerView';
+      }()),
+      templateUrl: function () {
+        return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
+      },
+      resolve: {
+        token: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            if (page.$window.$play.object && page.$window.$play.object.auth) {
+              deferred.resolve(page.$window.$play.object);
+            } else {
+              page.$http
+                .get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
+                .success(function (res) {
+                  page.$window.$play.object = res;
+                  deferred.resolve(res);
+                })
+                .error(function (res) {
+                  deferred.reject(res);
+                  page.$location.url('/');
+                });
+            }
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false
+    });
+
+    //
+
+    routes.search = makeRoute(controllers.VolumeHtml.search, [], {
+      controller: 'searchView',
+      templateUrl: 'searchView.html',
+      resolve: {
+        volumes: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.volume.query({}, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
+
+    //
+
+    var partyView = {
+      controller: 'partyView',
+      templateUrl: 'partyView.html',
+      resolve: {
+        party: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            var req = {
+              comments: '',
+              access: '',
+              openid: '',
+              parents: '',
+              children: '',
+            };
+
+            if (page.$route.current.params.id) {
+              req.id = page.$route.current.params.id;
+            } else if (page.auth.isLoggedIn()) {
+              req.id = page.auth.user.id;
+            } else if (page.types.isParty(page.$window.$play.object)) {
+              req.id = page.$window.$play.object.id;
+            }
+
+            if (page.$route.current.params.id) {
+              page.models.party.get(req, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            } else {
+              page.models.party.profile(req, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            }
+
+            return deferred.promise;
+          }
+        ],
+        volumes: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            var req = {
+              id: null
+            };
+
+            if (page.$route.current.params.id) {
+              req.party = page.$route.current.params.id;
+            } else if (page.auth.isLoggedIn()) {
+              req.party = page.auth.user.id;
+            } else if (page.types.isParty(page.$window.$play.object)) {
+              req.party = page.$window.$play.object.id;
+            }
+
+            if (page.constants.data.locked && !page.auth.isAuthorized()) {
+              return [];
+            }
+
+            page.models.volume.query(req, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    };
+
+    routes.profile = makeRoute(controllers.PartyHtml.profile, [], partyView);
+    routes.party = makeRoute(controllers.PartyHtml.view, ['id'], partyView);
+
+    //
+
+    var partyEditParty;
+    routes.partyEdit = makeRoute(controllers.PartyHtml.edit, ['id'], {
+      controller: 'partyEditView',
+      templateUrl: 'partyEditView.html',
+      resolve: {
+        party: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.party.get({
+              id: page.$route.current.params.id,
+              parents: '',
+              children: '',
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            partyEditParty = deferred.promise;
+            return deferred.promise;
+          }
+        ],
+        partyAuth: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            var empty = {
+              parents: [],
+              children: [],
+            };
+
+            partyEditParty.then(function (party) {
+              if (page.auth.hasAccess(page.permission.ADMIN, party)) {
+                page.models.partyAuthorize.query(function (res) {
+                  deferred.resolve(res);
+                }, function (res) {
+                  deferred.reject(res);
+                });
+              } else {
+                deferred.resolve(empty);
+              }
+            }, function () {
+              deferred.resolve(empty);
+            });
+
+            return deferred.promise;
+          }
+        ],
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
+
+    //
+
+    var volumeEditVolume;
+    var volumeEdit = {
+      controller: 'volumeEditView',
+      templateUrl: 'volumeEditView.html',
+      resolve: {
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            if (!page.$route.current.params.id) {
+              deferred.resolve();
+            } else {
+              page.models.volume.get({
+                access: '',
+                citation: '',
+                top: '',
+                funding: '',
+              }, function (res) {
+                deferred.resolve(res);
+              }, function (res) {
+                deferred.reject(res);
+              });
+            }
+
+            volumeEditVolume = deferred.promise;
+            return volumeEditVolume;
+          }
+        ],
+        slot: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            if (!page.$route.current.params.id) {
+              deferred.resolve();
+            } else {
+              volumeEditVolume.then(function (volume) {
+                page.models.slot.get({
+                  id: volume.top.id,
+                  vid: volume.id,
+                  assets: '',
+                }, function (res) {
+                  deferred.resolve(res);
+                }, function (res) {
+                  deferred.reject(res);
+                });
+              });
+            }
+
+            return deferred.promise;
+          }
+        ],
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    };
+
+    routes.volumeCreate = makeRoute(controllers.VolumeHtml.add, ['owner'], volumeEdit);
+    routes.volumeEdit = makeRoute(controllers.VolumeHtml.edit, ['id'], volumeEdit);
+
+    //
+
+    routes.volume = makeRoute(controllers.VolumeHtml.view, ['id'], {
+      controller: 'volumeView',
+      templateUrl: 'volumeView.html',
+      resolve: {
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.volume.get({
+              access: '',
+              citation: '',
+              funding: '',
+              providers: '',
+              consumers: '',
+              top: '',
+              tags: '',
+              excerpts: '',
+              comments: '',
+              records: '',
+              summary: '',
+              sessions: '',
+              categories: ''
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
+
+    //
+
+    routes.slot = makeRoute(controllers.SlotHtml.view, ['vid', 'id', 'segment'], {
+      controller: 'slotView',
+      templateUrl: 'slotView.html',
+      resolve: {
+        slot: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.slot.get({
+              assets: '',
+              records: '',
+              tags: '',
+              comments: '',
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ]
+      },
+      reloadOnSearch: false,
+      authenticate: true
+    });
+
+    //
+
+    routes.slotAsset = makeRoute(controllers.SlotAssetHtml.view, ['sid', 'segment', 'id']);
+    routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
+    routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
+    routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
+    routes.assetLink = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
+    routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
+    routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['id', 'segment']);
+    routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
+    routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
+
+    //
+
+    $routeProvider.otherwise({
+      redirectTo: '/search'
+    });
+
+    this.$get = [
+      '$location',
+      'typeService',
+      function ($location, type) {
+	var router = {};
+	angular.extend(router, routes);
+
+	var prevUrl = '/';
+	router.prevUrl = function () {
+	  return prevUrl;
+	};
+
+	router.party = function (data) {
+	  if (!type.isParty(data)) {
+	    throw new Error('routerService.party() requires Party as first argument');
+	  }
+
+	  return routes.party([data.id]);
+	};
+
+	router.partyEdit = function (data, page) {
+	  if (!type.isParty(data)) {
+	    throw new Error('routerService.partyEdit() requires Party as first argument');
+	  }
+
+	  var params = {};
+	  if (page)
+	    params.page = page;
+
+	  return routes.partyEdit([data.id], params);
+	};
+
+	router.volumeCreate = function (owner) {
+	  prevUrl = $location.path();
+	  return routes.volumeCreate([owner]);
+	};
+
+	router.volumeEdit = function (data, page) {
+	  if (!type.isVolume(data)) {
+	    throw new Error('routerService.volumeEdit() requires Volume as first argument');
+	  }
+
+	  var params = {};
+	  if (page)
+	    params.page = page;
+
+	  return routes.volumeEdit([data.id], params);
+	};
+
+	router.record = function (data) {
+	  if (!type.isRecord(data)) {
+	    throw new Error('routerService.record() requires Record as first argument');
+	  }
+
+	  return routes.record([data.id]);
+	};
+
+	router.assetThumb = function (data) {
+	  if (!type.isAsset(data)) {
+	    throw new Error('routerService.assetThumb() requires Asset as first argument');
+	  }
+
+	  return routes.assetThumb([data.container.id, data.asset.id, type.segmentString(data), data.size]);
+	};
+
+	router.assetLink = function (data, inline) {
+	  inline = data.inline || inline;
+	  if (!type.isAsset(data)) {
+	    if (!data || !data.sid || !data.id)
+	      throw new Error('routerService.assetLink() requires Asset or object.id/.sid/.segment as first argument');
+
+	    return routes.assetLink([data.sid, type.segmentJoin(data.segment), data.id, inline]);
+	  }
+
+	  return routes.assetLink([data.container.id, type.segmentString(data), data.asset.id, inline]);
+	};
+
+	router.partyAvatar = function (data, size, nonce) {
+	  if (!type.isParty(data)) {
+	    throw new Error('routerService.partyAvatar() requires Party as first argument');
+	  }
+
+	  if (!angular.isNumber(size)) {
+	    size = 56;
+	  }
+
+	  var params = {};
+	  if (nonce) {
+	    params.nonce = nonce;
+	  }
+
+	  return routes.partyAvatar([data.id, size], params);
+	};
+
+	router.slot = function (volume, data, segment) {
+	  if (type.isVolume(volume))
+	    volume = volume.id;
+
+	  if (type.isSlot(data)) {
+	    segment = data.segment;
+	    data = data.id;
+	  }
+
+	  return routes.slot([volume, data, type.segmentJoin(segment)]);
+	};
+
+	router.slotEdit = function (data) {
+	  if (!type.isSlot(data)) {
+	    throw new Error('routerService.slotEdit() requires Slot as first argument');
+	  }
+
+	  return routes.slotEdit([data.id, type.segmentString(data)]);
+	};
+
+	router.assetEdit = function (data) {
+	  if (!type.isAsset(data)) {
+	    throw new Error('routerService.assetEdit() requires Asset as first argument');
+	  }
+
+	  return routes.assetEdit([data.asset.id]);
+	};
+
+	router.recordEdit = function (data) {
+	  if (!type.isRecord(data)) {
+	    throw new Error('routerService.recordEdit() requires Record as first argument');
+	  }
+
+	  return routes.recordEdit([data.id]);
+	};
+
+	return router;
+      }
+    ];
   }
 ]);

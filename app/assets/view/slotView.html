@@ -4,7 +4,7 @@
       <div class="col">
         <hgroup>
           <h1 class="view-title smaller with-link" bo-text="page.types.slotName(ctrl.slot)"></h1>
-          <a class="view-link" bo-href="page.router.volume({id: ctrl.slot.container.volume})" bo-text="'return.volume' | message"></a>
+          <a class="view-link" bo-href="page.router.volume(ctrl.slot.container.volume)" bo-text="'return.volume' | message"></a>
         </hgroup>
 
         <slot-player ctrl="ctrl"></slot-player>

@@ -39,7 +39,7 @@ module.directive('hint', [
       };
     });
 
-    angular.forEach(['dataset', 'study', 'record', 'session', 'asset'], function (a) {
+    angular.forEach(['dataset', 'study', 'record', 'slot', 'asset'], function (a) {
       hints['object-' + a] = {
         class: 'hint-object-' + a,
         message: page.constants.message('object.tip.' + a),

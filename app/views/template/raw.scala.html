@@ -24,7 +24,7 @@
     @SiteApi.jsDepends.map { js =>
       <script src="@routes.Assets.at(js)"></script>
     }
-  <script src="/constants.js"></script>
+  <script src="@routes.SiteApi.constantsJs"></script>
 	
   <script>
     window.$play = {

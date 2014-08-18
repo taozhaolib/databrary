@@ -83,7 +83,7 @@ module.controller('CommentsPanel', [
         ($scope.volume ? $scope.volume.id : 0);
 
       if (isParty) {
-        meta += ' <a href="' + page.router.volume({id: volumeID}) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
+        meta += ' <a href="' + page.router.volume(volumeID) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
       }
 
       if (isParty && !isTop) {
@@ -91,7 +91,7 @@ module.controller('CommentsPanel', [
       }
 
       if (!isTop) {
-        meta += ' <a href="' + page.router.volume({id: volumeID}) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
+        meta += ' <a href="' + page.router.volume(volumeID) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
       }
 
       return meta;
