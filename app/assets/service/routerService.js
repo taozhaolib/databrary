@@ -57,14 +57,17 @@ module.provider('routerService', [
       return route.apply(null, args);
     }
 
+    function getUrl(route, argNames) {
+      var url = route.apply(null, argNames.map(function (a) { return ':' + a; })).url;
+      var q = url.indexOf('?');
+      if (q !== -1)
+	url = url.substr(0, q);
+      return url.replace(/%3A/gi, ':');
+    }
+
     function makeRoute(route, argNames, handler) {
-      if (handler) {
-	var url = route.apply(null, argNames.map(function (a) { return ':' + a; })).url;
-	var q = url.indexOf('?');
-	if (q !== -1)
-	  url = url.substr(0, q);
-	$routeProvider.when(url, handler);
-      }
+      if (handler)
+	$routeProvider.when(getUrl(route, argNames), handler);
 
       return function (data, params) {
 	return urlParams(getRoute(route, argNames, data).url, params);
