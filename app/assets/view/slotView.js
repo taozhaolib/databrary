@@ -90,9 +90,14 @@ module.controller('slotView', [
         return ctrl.clock.position > asset.segment[0] && ctrl.clock.position < asset.segment[1];
       },
 
+      isReady: function (media) {
+        media = getMedia(media);
+        return media.element.readyState >= 4;
+      },
+
       isPaused: function (media) {
         media = getMedia(media);
-        return media.element.paused && media.element.readyState >= 4;
+        return media.element.paused;
       },
     };
 
@@ -102,37 +107,50 @@ module.controller('slotView', [
 
     // callbacks
 
-    var callbackPlay = function () {
-      ctrl.media.forEach(function (m) {
-        if (ctrl.hasTime(m) && ctrl.hasDuration(m)) {
-          if (ctrl.isNowPlayable(m)) {
-            m.element.play();
-          } else if (!ctrl.isPaused(m)) {
-            m.element.pause();
-          }
-        }
-      });
-    };
+//    var callbackPlay = function () {
+//      ctrl.media.forEach(function (m) {
+//        if (ctrl.hasTime(m) && ctrl.hasDuration(m)) {
+//          if (ctrl.isNowPlayable(m)) {
+//            m.element.play();
+//          } else if (!ctrl.isPaused(m)) {
+//            m.element.pause();
+//          }
+//        }
+//      });
+//    };
+//
+//    var callbackJump = function () {
+//      ctrl.media.forEach(function (m) {
+//        if (ctrl.hasTime(m) && ctrl.hasDuration(m) && ctrl.isNowPlayable(m)) {
+//          m.element.currentTime = (ctrl.clock.position - m.asset.segment[0]) / 1000;
+//        }
+//      });
+//    };
+//
+//    var callbackPause = function () {
+//      ctrl.media.forEach(function (media) {
+//        if (ctrl.hasTime(media) && ctrl.hasDuration(media)) {
+//          media.element.pause();
+//        }
+//      });
+//    };
 
-    var callbackJump = function () {
-      ctrl.media.forEach(function (m) {
-        if (ctrl.hasTime(m) && ctrl.hasDuration(m) && ctrl.isNowPlayable(m)) {
-          m.element.currentTime = (ctrl.clock.position - m.asset.segment[0]) / 1000;
-        }
-      });
-    };
+    var callbackTime = function () {
+      var isTimed = ctrl.hasDuration(ctrl.current[0]);
 
-    var callbackPause = function () {
       ctrl.media.forEach(function (media) {
-        if (ctrl.hasTime(media) && ctrl.hasDuration(media)) {
-          media.element.pause();
+        if (isTimed) { // one of many timed assets
+
+        } else if (ctrl.isCurrent(media)) { // the one untimed asset
+
         }
       });
     };
 
-    ctrl.clock.playFn(callbackPlay);
-    ctrl.clock.jumpFn(callbackJump);
-    ctrl.clock.pauseFn(callbackPause);
+//    ctrl.clock.playFn(callbackPlay);
+//    ctrl.clock.jumpFn(callbackJump);
+//    ctrl.clock.pauseFn(callbackPause);
+    ctrl.clock.timeFn(callbackTime);
 
     // return
 

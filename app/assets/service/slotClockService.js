@@ -21,7 +21,7 @@ module.factory('slotClockService', [
       Object.defineProperties(this, {
         position: {
           get: function () {
-            clock.changed = Date.now() - clock.begun; console.log(clock.changed);
+            clock.changed = Date.now() - clock.begun;
             return clock.changed < clock.duration ? clock.changed : clock.duration;
           }
         }
@@ -38,7 +38,7 @@ module.factory('slotClockService', [
 
       // ticker
       this.interval = 100;
-      this.ticker = null;
+      this.playing = false;
     };
 
     // Clock behaviors
@@ -140,20 +140,21 @@ module.factory('slotClockService', [
           return clock.pause();
         }
 
-        clock.ticker = $timeout(ticker(clock), clock.interval);
+        clock.playing = $timeout(ticker(clock), clock.interval);
       };
     };
 
     var tickerOn = function (clock) {
-      if (clock.ticker) {
+      if (clock.playing) {
         tickerOff(clock);
       }
 
-      clock.ticker = $timeout(ticker(clock), clock.interval);
+      clock.playing = $timeout(ticker(clock), clock.interval);
     };
 
     var tickerOff = function (clock) {
-      return $timeout.cancel(clock.ticker);
+      $timeout.cancel(clock.playing);
+      clock.playing = false;
     };
 
     // Service

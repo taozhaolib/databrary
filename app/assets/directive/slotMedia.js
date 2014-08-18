@@ -3,7 +3,6 @@
 module.directive('slotMedia', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs, slotTimelineTrack) {
-      var $media;
       var media = {
         asset: page.$parse($attrs.asset)($scope),
         $scope: $scope,

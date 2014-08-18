@@ -8,6 +8,7 @@ module.directive('slotToolbar', [
         var ctrl = page.$parse($attrs.ctrl)($scope);
 
         toolbar.buttons = {};
+        toolbar.time = page.$filter('timecode')(ctrl.clock.position);
 
         toolbar.registerButton = function (button) {
           toolbar.buttons[button.name] = button;
@@ -40,6 +41,10 @@ module.directive('slotToolbar', [
         ctrl.clock.pauseFn(function () {
           toolbar.buttons.play.enabled = true;
           toolbar.buttons.pause.enabled = false;
+        });
+
+        ctrl.clock.timeFn(function () {
+          toolbar.time = page.$filter('timecode')(ctrl.clock.position);
         });
 
         // controller
