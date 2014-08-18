@@ -235,9 +235,11 @@ module.factory('tooltipService', [
 
     $rootScope.$watch(function () {
       angular.forEach(tooltips, function (tooltip) {
-        if (!angular.isString(tooltip.$target) && !document.contains(tooltip.$target[0])) {
-          removeEvents(tooltip);
-          tooltips.remove(tooltip);
+        if (!angular.isString(tooltip.$target) &&
+	  (document.contains && !document.contains(tooltip.$target[0])) ||
+	  tooltip.$target.closest(document.documentElement).length === 0) {
+	    removeEvents(tooltip);
+	    tooltips.remove(tooltip);
         }
       });
     });
