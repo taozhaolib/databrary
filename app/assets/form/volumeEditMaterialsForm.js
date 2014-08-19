@@ -395,7 +395,19 @@ module.directive('volumeEditMaterialsForm', [
 	    };
       };
 
-      //
+      var r = 0;
+      window.onscroll = function(){
+	    var x = $('#sticky-buttons');
+	    if(window.pageYOffset + 50 >= x.offset().top){
+		x.addClass('stick');
+		if(r === 0) r = window.pageYOffset;
+	    }
+	    if(window.pageYOffset < r){
+		x.removeClass('stick');
+	    }
+      };
+
+      window.onresize = function() {r = 0;};
 
       page.events.talk('volumeEditMaterialsForm-init', form, $scope);
     };

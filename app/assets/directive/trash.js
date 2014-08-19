@@ -32,7 +32,7 @@ module.directive('trash', [
 				  $scope.outside.remove(angElScope.form.subform);
 				}
 				else{
-				  //an error thru messaging function determined by attribute?
+				  //TODO: an error thru messaging function determined by attribute?
 				  console.log("no");
 				}
 				$scope.indicator = indicatorOff;
