@@ -3,15 +3,15 @@
 @widget.panel.raw("form", "panel_form")(controller){
     @if(title.nonEmpty) {
         @if(context.nonEmpty) {
-            <hgroup class="col-full">
+            <hgroup class="col">
             @if(title.nonEmpty) {
-                <h1 class="panel_context">@context</h1>
+                <h1 class="view-context">@context</h1>
 
-                <h2 class="panel_title with_context">@display.formatTitle(title)</h2>
+                <h2 class="view-title">@display.formatTitle(title)</h2>
             }
             </hgroup>
         } else {
-            <h1 class="col-full panel_title">@display.formatTitle(title)</h1>
+            <h1 class="col view-title">@display.formatTitle(title)</h1>
         }
     }
 

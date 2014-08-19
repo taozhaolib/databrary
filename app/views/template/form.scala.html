@@ -3,7 +3,7 @@
 @defining(target.map(_.pageName)) { title =>
 @template.crud(context + title.fold("")(": " + _), angular = angular) {
 	@widget.panel.form(title.getOrElse(""), context) {
-		<div class="col-full">
+		<div class="col">
 			@body
 		</div>
 	}

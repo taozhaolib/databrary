@@ -5,21 +5,21 @@
 }
 
 @template.action(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
-
 @widget.panel.raw("search", "panel_search")(""){
-
-        <section id="panel_search_filter" class="panel_search_filter col-full">
+    <div class="search-form search-form-search col">
 	@widget.tag.form(form) {
 	    @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
 	    @widget.formErrors(form)
 	}
-        </section>
-
-        <div class="col-full">
+    </div>
+    <div class="volume-list">
+      <ul class="flat">
         @list.map { case (volume, access) =>
+	  <li>
             @widget.frame.compactVolume(volume, access)
+	  </li>
         }
-        </div>
-    }
-
+      </ul>
+    </div>
+}
 }

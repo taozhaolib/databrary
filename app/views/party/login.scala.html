@@ -6,7 +6,7 @@
 
 @template.action(Messages("login.title"), angular = Some(play.api.libs.json.JsNull)) {
     @widget.panel.form(Messages("login.title.sub"), Messages("login.title")) {
-        <div class="col-full">
+        <div>
             @widget.tag.form(form) {
 
 		@widget.tag.inputText(form.email(), 'placeholder -> Messages("email"))

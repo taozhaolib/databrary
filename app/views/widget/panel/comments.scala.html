@@ -8,7 +8,7 @@
 @widget.panel.raw("comments", "")(title = Messages("comments.title")){
     @post.map { form =>
         @if(request.access.site >= Permission.PUBLIC) {
-            <div class="comment col-full">
+            <div class="comment col">
                 <div class="row">
                     @widget.portrait.maximal(request.identity, "comment_author")
 
@@ -36,7 +36,7 @@
     }
 
     @comments.map { c =>
-        <article class="comment col-full">
+        <article class="comment col">
             <div class="row">
                 @* col-3 *@
                 @widget.portrait.maximal(c.who.party, "comment_author")
