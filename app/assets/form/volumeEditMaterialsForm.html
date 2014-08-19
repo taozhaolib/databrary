@@ -6,7 +6,8 @@
 
     <validator form="form" name="file" label="'material.file' | message">
       <div ng-if="!asset.asset.creation">
-	<span ng-if="asset.file" ng-bind="asset.file.name"</span><span>{{'material.upload-progress' | message}}</span>
+	<div ng-if="asset.file" ng-bind="asset.file.name"</span><span>{{'material.upload-progress' | message}}</span></div>
+        <div ng-if="!asset.file" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>{{'material.add-drop.replace' | message}}</div>
       </div>
 
       <div ng-if="asset.asset.creation">
