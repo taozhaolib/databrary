@@ -19,7 +19,7 @@ module.directive('dateModel', [
             ngModel[period] = new Date().getTime();
             break;
 
-          case $attrs[period].indexOf('year') > 0 || $attrs[period].indexOf('years') > 0:
+          case $attrs[period].contains('year', 1):
             ngModel[period] = new Date().setYear(new Date().getFullYear() + parseInt($attrs[period]));
             break;
         }

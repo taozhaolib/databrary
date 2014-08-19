@@ -15,7 +15,7 @@ module.factory('analyticService', [
         return false;
       }
 
-      if (config.url.indexOf('null') > -1) {
+      if (config.url.contains('/api/null')) {
         return JSON.stringify(queue.splice(0, queue.length));
       }
 
@@ -23,7 +23,7 @@ module.factory('analyticService', [
       var cache, key;
 
       for (key in info) {
-        if (config.url.indexOf(key) > -1) {
+        if (config.url.contains(key)) {
           cache = $cacheFactory.get(key);
 
           if (!cache.get(config.url)) {

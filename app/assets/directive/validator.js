@@ -129,7 +129,7 @@ module.directive('validator', [
           return;
         }
 
-        if (angular.isArray(data)) {
+        if (Array.isArray(data)) {
           data = {
             errors: data,
           };
@@ -143,13 +143,13 @@ module.directive('validator', [
           data.tips = [data.tips];
         }
 
-        if (angular.isArray(data.errors)) {
+        if (Array.isArray(data.errors)) {
           angular.forEach(data.errors, function (error) {
             validator.clientErrors.push(validator.prefix + error);
           });
         }
 
-        if (angular.isArray(data.tips)) {
+        if (Array.isArray(data.tips)) {
           angular.forEach(data.tips, function (tip) {
             validator.clientTips.push(validator.prefix + tip);
           });

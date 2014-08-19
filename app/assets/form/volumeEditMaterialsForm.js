@@ -257,7 +257,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.saveAll = function () {
         angular.forEach(form, function (subform, id) {
-          if (id.indexOf('asset-') === 0 && form[id] && form[id].$dirty) {
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty) {
             form.save(subform.subform);
           }
         });
@@ -335,7 +335,7 @@ module.directive('volumeEditMaterialsForm', [
         var pristine = true;
 
         angular.forEach(form, function (subform, id) {
-          if (id.indexOf('asset-') === 0 && form[id] && form[id].$dirty) {
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty) {
             pristine = false;
             return false;
           }
@@ -382,7 +382,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.resetAll = function () {
         angular.forEach(form, function (subform, id) {
-          if (id.indexOf('asset-') === 0 && form[id].$dirty) {
+          if (id.startsWith('asset-') && form[id].$dirty) {
             form.reset(subform.subform);
           }
         });
