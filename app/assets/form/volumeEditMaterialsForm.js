@@ -110,7 +110,7 @@ module.directive('volumeEditMaterialsForm', [
 
         var classification = page.classification[subform.asset.classification];
 	var excerpt;
-	if (subform.asset.excerpt !== undefined){
+	if (subform.asset.excerpt === 0 || subform.asset.excerpt){
 	  excerpt = page.classification[subform.asset.excerpt];
 	}
 	else {
