@@ -33,6 +33,7 @@ module.directive('fundingSearchForm', [
         if (all) {
           data.all = 'true';
         }
+	$scope.all = all;
 
         if (!all && (!form.nameVal || form.nameVal.length < 3)) {
           form.found = [];
