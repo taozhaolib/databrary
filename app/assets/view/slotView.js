@@ -69,7 +69,7 @@ module.controller('slotView', [
 
       hasPosition: function (media) {
         var asset = getAsset(media);
-        return asset.segment;
+        return !angular.isNothing(asset.segment);
       },
 
       hasDuration: function (media) {
