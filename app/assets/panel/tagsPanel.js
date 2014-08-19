@@ -229,12 +229,9 @@ module.controller('TagsPanel', [
     $scope.autoSelect = undefined;
 
     var updateAuto = function (form) {
-      page.$http
-        .get('/api/tag', {
-          params: {
-            query: form.newNameVal
-          }
-        }).success(function (data) {
+      page.router.http(page.router.controllers.TagApi.search,
+	  form.newNameVal)
+	.success(function (data) {
           emptyAuto();
 
           if (form.newNameVal) {

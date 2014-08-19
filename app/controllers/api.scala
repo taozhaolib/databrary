@@ -63,12 +63,18 @@ object SiteApi extends SiteController {
     , Site.start
     , LoginHtml.view
     , LoginHtml.registration
+    , LoginHtml.register
     , TokenHtml.getPassword
+    , TokenHtml.issuePassword
     , TokenHtml.token
+    , TokenApi.token
+    , TokenApi.password
     , PartyHtml.profile
     , PartyHtml.view
     , PartyHtml.edit
     , PartyHtml.avatar
+    , PartyApi.authorizeSearch
+    , PartyApi.update
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add
@@ -79,11 +85,17 @@ object SiteApi extends SiteController {
     , AssetHtml.formats
     , AssetHtml.view
     , AssetHtml.edit
+    , AssetApi.uploadStart
+    , AssetApi.uploadChunk
+    , AssetApi.upload
+    , AssetApi.replace
     , SlotAssetHtml.view
     , SlotAssetController.thumb
     , SlotAssetController.download
     , RecordHtml.view
     , RecordHtml.edit
+    , TagApi.search
+    , routes.javascript.SiteApi.cite
     )
   }
 

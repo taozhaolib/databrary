@@ -1,11 +1,11 @@
 'use strict';
 
 module.factory('asset', [
-  '$resource', '$http', function ($resource, $http) {
+  '$resource', 'routerService', function ($resource, router) {
     var asset = $resource('/api/asset/:id');
 
-    asset.oldUpload = function (volume, fd) {
-      return $http.post('/api/asset?volume=' + volume.id, fd, {
+    asset.upload = function (volume, fd) {
+      return router.http(router.controllers.AssetApi.upload, volume.id, fd, {
         transformRequest: angular.identity,
         headers: {
           'Content-Type': undefined
@@ -14,7 +14,7 @@ module.factory('asset', [
     };
 
     asset.replace = function (asset, fd) {
-      return $http.post('/api/asset/' + asset.asset.id + '/replace', fd, {
+      return router.http(router.controllers.AssetApi.replace, asset.asset.id, fd, {
         transformRequest: angular.identity,
         headers: {
           'Content-Type': undefined
@@ -24,12 +24,10 @@ module.factory('asset', [
 
     asset.fileAddedImmediateUpload = function (file) {
       file.pause();
-      $http.post('/api/asset/start', undefined, {
-        params: {
-          filename: file.name,
-          size: file.size,
-        }
-      }).then(function (res) {
+      router.http(router.controllers.AssetApi.uploadStart,
+	  file.name,
+          file.size
+      ).then(function (res) {
         file.uniqueIdentifier = res.data;
       }).then(function () {
         file.resume();
@@ -37,11 +35,11 @@ module.factory('asset', [
     };
 
     asset.assetCall = function (volumeId, data) {
-      return $http.post('/api/asset', data, {params: {volume: volumeId}});
+      return router.http(router.controllers.AssetApi.upload, volumeId, data);
     };
 
     asset.flowOptions = {
-      target: '/api/asset/chunk',
+      target: router.controllers.AssetApi.uploadChunk().url,
       method: 'octet',
       simultaneousUploads: 3,
       testChunks: false,

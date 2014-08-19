@@ -1,11 +1,12 @@
 'use strict';
 
 module.factory('cite', [
-  '$http', '$q', function ($http, $q) {
+  '$q', 'routerService', function ($q, router) {
     return function (url) {
       var deferred = $q.defer();
 
-      $http.get('/api/cite?url=' + encodeURIComponent(url), {
+      router.http(router.controllers.SiteApi.cite, {
+	url: url }, {
         cache: false
       }).success(function (res) {
         deferred.resolve(res);

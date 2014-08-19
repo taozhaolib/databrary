@@ -33,8 +33,8 @@ module.directive('userPasswordForm', [
           form.resetFn(form);
         }
 
-        page.$http
-          .post('/password', $scope.userPasswordForm.data)
+        page.router.http(page.router.controllers.TokenHtml.issuePassword,
+	    $scope.userPasswordForm.data)
           .success(function () {
             form.validator.server({});
 
@@ -71,8 +71,8 @@ module.directive('userPasswordForm', [
           form.saveFn(form);
         }
 
-        page.$http
-          .post('/api/party/' + token.party + '/password', $scope.userPasswordForm.data)
+        page.router.http(page.router.controllers.TokenApi.password,
+	    token.party, $scope.userPasswordForm.data)
           .success(function (data) {
             form.validator.server({});
 

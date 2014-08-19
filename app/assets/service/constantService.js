@@ -1,7 +1,7 @@
 'use strict';
 
 module.factory('constantService', [
-  '$http', '$log', 'constantData', function ($http, $log, constantData) {
+  '$log', 'constantData', function ($log, constantData) {
     var constants = {
       data: constantData,
       regex: {

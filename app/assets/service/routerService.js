@@ -178,9 +178,9 @@ module.provider('routerService', [
             if (page.$window.$play.object && page.$window.$play.object.auth) {
               deferred.resolve(page.$window.$play.object);
             } else {
-              page.$http
-                .get('/api/token/' + page.$route.current.params.id + '?auth=' + page.$route.current.params.auth)
-                .success(function (res) {
+	      page.router.http(page.router.controllers.TokenApi.token,
+		page.$route.current.params.id, page.$route.current.params.auth)
+		.success(function (res) {
                   page.$window.$play.object = res;
                   deferred.resolve(res);
                 })
@@ -505,14 +505,40 @@ module.provider('routerService', [
 
     this.$get = [
       '$location',
+      '$http',
       'typeService',
-      function ($location, type) {
-	var router = {};
+      function ($location, $http, type) {
+	var router = {
+	  controllers: controllers,
+	  prevUrl: '/',
+	};
 	angular.extend(router, routes);
 
-	var prevUrl = '/';
-	router.prevUrl = function () {
-	  return prevUrl;
+	/* Simple wrapper to $http(route(...)).
+	 * Non-object arguments (or an initial array) are passed to route.
+	 * The next argument is passed as data (POST) or params.
+	 * An additional argument is passed as extra config to $http.
+	 */
+	router.http = function (route, args/*...*/) {
+	  var i;
+	  if (Array.isArray(args))
+	    i = 2;
+	  else {
+	    for (i = 1; i < arguments.length; i ++)
+	      if (angular.isObject(arguments[i]))
+		break;
+	    args = Array.prototype.slice.call(arguments, 1, i);
+	  }
+	  var r = route.apply(null, args);
+	  if (i < arguments.length) {
+	    if (r.method === 'POST' || r.method === 'PUT')
+	      r.data = arguments[i];
+	    else
+	      r.params = arguments[i];
+	    if (++i < arguments.length)
+	      angular.extend(r, arguments[i]);
+	  }
+	  return $http(r);
 	};
 
 	router.party = function (data) {
@@ -536,7 +562,7 @@ module.provider('routerService', [
 	};
 
 	router.volumeCreate = function (owner) {
-	  prevUrl = $location.path();
+	  router.prevUrl = $location.path();
 	  return routes.volumeCreate([owner]);
 	};
 

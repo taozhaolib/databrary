@@ -141,8 +141,8 @@ module.controller('registerView', [
         step.proceed = function () {
           $scope.registerForm.data.agreement = true;
 
-          page.$http
-            .post('/register', $scope.registerForm.data)
+          page.router.http(page.router.controllers.LoginHtml.register,
+	      $scope.registerForm.data)
             .success(function () {
               $scope.registerForm.sent = true;
               $scope.updateWizard();
@@ -230,15 +230,12 @@ module.controller('registerView', [
         };
 
         $scope.infoForm.proceed = function () {
-          page.$http
-            .get('/api/party/' + page.auth.user.id + '/authorize/search', {
-              params: {
-                apply: true,
+          page.router.http(page.router.controllers.PartyApi.authorizeSearch,
+	      page.auth.user.id, true, {
                 notfound: true,
                 name: $scope.infoForm.data.query,
                 info: $scope.infoForm.data.info
-              }
-            })
+	      })
             .success(function () {
               $scope.authApplyForm.successFn();
             })

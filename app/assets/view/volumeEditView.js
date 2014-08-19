@@ -17,7 +17,7 @@ module.controller('volumeEditView', [
         {
           type: 'yellow',
           html: page.constants.message('volume.edit.cancel'),
-          url: page.router.prevUrl(),
+          url: page.router.prevUrl,
         }
       ];
     }

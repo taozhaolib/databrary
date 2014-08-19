@@ -1,7 +1,7 @@
 'use strict';
 
 module.factory('party', [
-  '$resource', '$route', '$http', function ($resource, $route, $http) {
+  '$resource', '$route', 'routerService', function ($resource, $route, router) {
     var party = $resource('/api/party/:id', {
       id: function () {
         return ($route.current && $route.current.params.id) || undefined;
@@ -44,7 +44,7 @@ module.factory('party', [
     });
 
     party.upload = function (party, fd) {
-      return $http.post('/api/party/' + party.id, fd, {
+      return router.http(router.controllers.PartyApi.update, party.id, fd, {
         transformRequest: angular.identity,
         headers: {
           'Content-Type': undefined
