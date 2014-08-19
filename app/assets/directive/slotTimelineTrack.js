@@ -65,9 +65,6 @@ module.directive('slotTimelineTrack', [
 
         track.select = function () {
           $scope.ctrl.setCurrent(track.asset);
-          page.$timeout(function () {
-            $scope.ctrl.clock.play();
-          });
         };
       }
     ];

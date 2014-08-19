@@ -4,7 +4,10 @@
   </div>
 
   <div bo-switch-when="video">
-    <video bo-if="page.display.videoSupported()">
+    <video bo-if="page.display.videoSupported() && ctrl.hasDuration(media)">
+      <source bo-src="page.router.assetLink(media.asset, true)" bo-attr bo-attr-type="page.types.assetFormat(media.asset).mimetype">
+    </video>
+    <video bo-if="page.display.videoSupported() && !ctrl.hasDuration(media)" controls>
       <source bo-src="page.router.assetLink(media.asset, true)" bo-attr bo-attr-type="page.types.assetFormat(media.asset).mimetype">
     </video>
   </div>

@@ -1,7 +1,7 @@
 <section class="slot-timeline" bindonce>
-  <slot-timeline-ruler ctrl="ctrl"></slot-timeline-ruler>
+  <slot-timeline-ruler ctrl="ctrl" ng-show="ctrl.hasPosition(ctrl.current[0])"></slot-timeline-ruler>
 
-  <div class="slot-timeline-ruler" ng-click="timeline.jump($event)">
+  <div class="slot-timeline-ruler" ng-click="timeline.jump($event)" ng-show="ctrl.hasPosition(ctrl.current[0])">
     <div class="slot-timeline-ruler-time left" ng-bind="timeline.time.left | timecode"></div>
     <div class="slot-timeline-ruler-time right" ng-bind="timeline.time.right | timecode"></div>
   </div>
@@ -11,6 +11,6 @@
   </div>
 
   <div class="slot-timeline-now-zone">
-    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow"></div>
+    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow" ng-show="ctrl.hasPosition(ctrl.current[0])"></div>
   </div>
 </section>

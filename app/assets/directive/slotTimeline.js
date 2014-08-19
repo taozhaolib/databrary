@@ -58,9 +58,10 @@ module.directive('slotTimeline', [
         // listeners
 
         var nowMoveFn = function (clock) {
-          $now.css({
-            left: ((clock.position / clock.duration) * 100) + '%',
-          });
+          if ($now && $now.length > 0)
+            $now.css({
+              left: ((clock.position / clock.duration) * 100) + '%',
+            });
         };
 
         ctrl.clock.playFn(nowMoveFn);

@@ -23,6 +23,8 @@ module.controller('slotView', [
       slot: slot,
 
       media: [],
+
+      // TODO: current can be used for multiple assets with minor mods
       current: [slot.assets[0]],
 
       state: {
@@ -135,14 +137,37 @@ module.controller('slotView', [
 //      });
 //    };
 
+    var setPlay = function (media) {
+      if (ctrl.isNowPlayable(media)) {
+        if (!ctrl.clock.playing) {
+          media.element.play();
+        }
+      } else if (ctrl.clock.playing) {
+        media.element.pause();
+      }
+    };
+
     var callbackTime = function () {
       var isTimed = ctrl.hasDuration(ctrl.current[0]);
+      var switched = false;
 
       ctrl.media.forEach(function (media) {
+        if (!ctrl.hasDisplay(media)) {
+          return;
+        }
+
+        var isCurrent = ctrl.isCurrent(media);
+
         if (isTimed) { // one of many timed assets
+          if (isCurrent) {
+            setPlay(media);
+          }
+        } else {
+          if (isCurrent) { // the one untimed asset
 
-        } else if (ctrl.isCurrent(media)) { // the one untimed asset
+          } else {
 
+          }
         }
       });
     };
