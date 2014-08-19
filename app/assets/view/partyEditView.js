@@ -86,7 +86,7 @@ module.controller('partyEditView', [
     };
 
     page.display.navigationFn = function (event, val) {
-      if (!party || val.indexOf('/party/' + party.id + '/edit') > -1) {
+      if (!party || val.contains('/party/' + party.id + '/edit')) {
         return;
       }
 

@@ -427,7 +427,7 @@ module.factory('browserService', [
       if (!data.expand && expand !== false) {
         data.expand = true;
 
-        if (!angular.isArray(data.items) || data.items.length === 0) {
+        if (!Array.isArray(data.items) || data.items.length === 0) {
           updateData(data);
         }
       } else if (data.expand && expand !== true) {

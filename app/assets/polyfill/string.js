@@ -22,8 +22,8 @@ if (!String.prototype.endsWith) {
 
 if (!String.prototype.contains) {
   Object.defineProperty(String.prototype, 'contains', {
-      value: function (substring) {
-	return this.indexOf(substring) !== -1;
+      value: function () {
+	return this.indexOf.apply(this, arguments) !== -1;
       }
   });
 }

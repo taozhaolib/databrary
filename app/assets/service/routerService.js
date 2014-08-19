@@ -19,14 +19,14 @@ module.provider('routerService', [
         return url;
       }
 
-      var q = url.indexOf('?') !== -1;
+      var q = url.contains('?');
 
       angular.forEach(params, function (value, key) {
         if (value === null || value === undefined) {
           return;
         }
 
-        if (!angular.isArray(value)) {
+        if (!Array.isArray(value)) {
           value = [value];
         }
 

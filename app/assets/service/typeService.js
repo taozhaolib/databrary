@@ -140,7 +140,7 @@ module.factory('typeService', [
     };
 
     typeService.segmentEmpty = function (seg) {
-      return seg === null || angular.isArray(seg) && seg[0] !== null && seg[1] !== null && seg[0] >= seg[1];
+      return seg === null || Array.isArray(seg) && seg[0] !== null && seg[1] !== null && seg[0] >= seg[1];
     };
 
     /* always returns a new array */

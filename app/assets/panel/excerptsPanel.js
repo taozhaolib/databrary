@@ -5,13 +5,13 @@ module.controller('ExcerptsPanel', [
   'pageService',
   function ($scope, page) {
     $scope.bootPanel = function () {
-      if (angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0) {
+      if (Array.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0) {
         $scope.current = $scope.volume.excerpts[0] || undefined;
       }
     };
 
     $scope.refreshPanel = function () {
-      $scope.enabled = angular.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0;
+      $scope.enabled = Array.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0;
     };
 
     //

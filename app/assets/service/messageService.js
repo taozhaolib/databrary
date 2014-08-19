@@ -12,7 +12,7 @@ module.factory('messageService', [
 
     var transformFn = function (message) {
       message.id = message.id || 'message-' + Math.random().toString(36).substring(2);
-      message.type = types.indexOf(message.type) != -1 ? message.type : 'blue';
+      message.type = types.indexOf(message.type) !== -1 ? message.type : 'blue';
       message.target = angular.isString(message.target) ? message.target : undefined;
       message.closeable = angular.isDefined(message.closeable) && !!message.closeable;
       message.countdown = parseInt(message.countdown) || false;
@@ -46,7 +46,7 @@ module.factory('messageService', [
     };
 
     var orderFn = function (a, b) {
-      return (types.indexOf(a.type) < types.indexOf(b.type)) ? -1 : (types.indexOf(a.type) > types.indexOf(b.type)) ? 1 : 0;
+      return types.indexOf(a.type) - types.indexOf(b.type);
     };
 
     //

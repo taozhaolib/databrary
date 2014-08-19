@@ -74,7 +74,7 @@ module.controller('slotView', [
 
       hasDuration: function (media) {
         var asset = getAsset(media);
-        return angular.isArray(asset.segment);
+        return Array.isArray(asset.segment);
       },
 
       hasDisplay: function (media) {

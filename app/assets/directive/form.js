@@ -34,7 +34,7 @@ module.directive('form', [
                 form.messages.add({
                   type: 'red',
                   closeable: true,
-                  body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+                  body: Array.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
                 });
               }
             }
@@ -46,7 +46,7 @@ module.directive('form', [
                 form.messages.add({
                   type: 'red',
                   closeable: true,
-                  body: angular.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+                  body: Array.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
                 });
               }
             }
