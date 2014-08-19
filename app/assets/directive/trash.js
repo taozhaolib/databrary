@@ -10,13 +10,19 @@ module.directive('trash', [
 
 			$el.addClass("trash");
 
-			$el.bind('dragenter', function(e){
+			$el.bind('dragenter', function(){
 				if($scope.outside.thumbDragged){
 				    $scope.indicator = indicatorOn;
 				}
 			});
 
-			$el.bind('dragleave', function(e){
+			$el.bind('dragover', function(){
+				if($scope.outside.thumbDragged){
+				    $scope.indicator = indicatorOn;
+				}
+			});
+
+			$el.bind('dragleave', function(){
 				$scope.indicator = indicatorOff;
 			});
 

@@ -7,11 +7,11 @@ module.directive('trashable', [
 
 		  $el.addClass("trashable");
 
-		  $el.bind('dragstart', function(e){
+		  $el.bind('dragstart', function(){
 			$scope.outside.thumbDragged = this;
 		  });
 
-		  $el.bind('dragend', function(e){
+		  $el.bind('dragend', function(){
 			$scope.outside.thumbDragged = undefined;
 		  });
 
