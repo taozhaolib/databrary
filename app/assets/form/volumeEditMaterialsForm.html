@@ -37,10 +37,15 @@
   <fieldset class="clean" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
     <button ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" class="green" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     <button ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" class="yellow" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-
-    <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">{{'material.add-drop' | message}}</div>
     <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
-    <div>spacer. remove when properly styled</div>
-    <div trash indicator="trashCanText" outside="volumeEditMaterialsForm"><span>{{trashCanText}}</span>!</div>
+    <div class="row fix-bottom">
+      <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile2">
+	<div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses"><img src="/public/images/add.png"></div>
+      </div>
+      <div class="col-desktop-1 col-laptop-1 col-tablet-1 colmobile-1"></div>
+      <div class="col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+        <div trash indicator="trashImage" outside="volumeEditMaterialsForm" indicator-on="/public/images/trashopen.png" indicator-off="/public/images/trashclosed.png"><img ng-src="{{trashImage}}"></div>
+      </div>
+    </div>
   </fieldset>
 </form>
