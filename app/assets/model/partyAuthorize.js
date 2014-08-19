@@ -19,7 +19,7 @@ module.factory('partyAuthorize', [
         method: 'POST',
         url: '/api/party/:id/authorize/:partyId/apply'
       }
-    }, null, {
+    }, {
       cache: 'partyAuthorize'
     });
   }
