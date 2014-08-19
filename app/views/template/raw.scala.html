@@ -1,5 +1,5 @@
 @(title : String = "The Databrary Project", angular : Option[play.api.libs.json.JsValue] = None)(body : Html)(implicit request : RequestHeader)
-
+@defining(angular.nonEmpty && SiteApi.jsEnabled) { js =>
 <!DOCTYPE html>
 <html ng-app="databraryModule">
 <head>
@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   @defining("Databrary: The Open Data Library for Developmental Science"){ tail =>
-  <title @if(angular){ng-bind="page.display.title + ' || @tail'"}>@title || @tail</title>
+  <title @if(js){ng-bind="page.display.title + ' || @tail'"}>@title || @tail</title>
   }
   
   <!-- icons -->
@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="@routes.Assets.at("app.min.css")">
   
   <!-- js -->
-  @angular.map { obj =>
+  @if(js) {
     @SiteApi.jsDepends.map { js =>
       <script src="@routes.Assets.at(js)"></script>
     }
@@ -28,7 +28,7 @@
 	
   <script>
     window.$play = {
-      object: @format.raw(obj.toString),
+      object: @format.raw(angular.get.toString),
       @request match {
 	case site : Site => {
 	  user: @format.raw(site.json.toString),
@@ -42,20 +42,20 @@
 </head>
 
 <body class="@if(play.api.Play.isDev(play.api.Play.current)){dev}" flow-prevent-drop>
-  <section toolbar id="toolbar" class="toolbar" class="cf">
+  <section toolbar id="toolbar" class="toolbar cf">
     <div class="wrap">
       <div class="row">
-        <div class="title cf col-desktop-10 col-laptop-7 col-tablet-6 col-mobile-2">
+        <div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
           <h1 class="toolbar-site">
             <a href="@routes.Site.start" title="Databrary: An Open Data Library"></a>
           </h1>
         </div>
 
-        <div class="toolbar-user col-desktop-5 col-laptop-5 col-tablet-3 col-mobile-4">
+        <div class="toolbar-user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-2">
           @request match {
             case request : SiteRequest.Auth[_] => {
               <a href="@routes.PartyHtml.profile" class="toolbar-user-link">
-                <span class="username hide-mobile hide-tablet">@Messages("me")</span>
+                <span class="username">@request.identity.name</span>
                 <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">
               </a>
 
@@ -81,12 +81,12 @@
               <span class="sep">|</span>
 
               @widget.tag.form(LoginController.LogoutForm) {
-                <button type="submit" class="link">logout</button>
+                <button type="submit" class="link">@Messages("toolbar.logout")</button>
               }
             }
 
             case _ => {
-              <a href="@routes.LoginHtml.view">login</a>
+              <a href="@routes.LoginHtml.view">@Messages("toolbar.login")</a>
             }
           }
         </div>
@@ -95,16 +95,22 @@
   </section>
 
   <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error">
-    @if(angular){
+    @if(js){
       <noscript>
 	      @body
       </noscript>
     }else{
+      @if(angular) {
+	<div>
+	  Our site works best with modern browsers (Firefox, Chrome, Safari, IE &ge;10, and others).
+	  You are viewing the simple version of our site: some functionality may not be available.
+	</div>
+      }
       @body
     }
   </main>
 
-  @if(angular) {
+  @if(js) {
     <errors></errors>
   }
 
@@ -131,7 +137,7 @@
     </div>
   </footer>
 
-  @if(angular){
+  @if(js){
     <messages default></messages>
     <tooltips></tooltips>
 
@@ -153,3 +159,4 @@
   }
 </body>
 </html>
+}

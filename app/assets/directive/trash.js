@@ -4,20 +4,20 @@
 module.directive('trash', [
 	'pageService', function (page) {
 		var link = function ($scope, $el, $attr) {
-			var INDICATOR_ON = "trash can open";
-			var INDICATOR_OFF = "trash can closed";
-			$scope.indicator = INDICATOR_OFF;
+			var indicatorOn = $attr.indicatorOn || "trash can open";
+			var indicatorOff = $attr.indicatorOff || "trash can closed";
+			$scope.indicator = indicatorOff;
 
 			$el.addClass("trash");
 
 			$el.bind('dragenter', function(e){
 				if($scope.outside.thumbDragged){
-				    $scope.indicator = INDICATOR_ON;
+				    $scope.indicator = indicatorOn;
 				}
 			});
 
 			$el.bind('dragleave', function(e){
-				$scope.indicator = INDICATOR_OFF;
+				$scope.indicator = indicatorOff;
 			});
 
 			$el.bind('drop', function(e){
@@ -29,7 +29,7 @@ module.directive('trash', [
 				  //an error thru messaging function determined by attribute?
 				  console.log("no");
 				}
-				$scope.indicator = INDICATOR_OFF;
+				$scope.indicator = indicatorOff;
 				e.stopPropagation();
 				e.preventDefault();
 			});

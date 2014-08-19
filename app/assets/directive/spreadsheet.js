@@ -518,7 +518,7 @@ module.directive('spreadsheet', [
 	      var c = cl[ci];
 	      if (c.startsWith('ss-rec_'))
 		selectStyles.insertRule('.' + c + '{background-color:' +
-		  ((c.indexOf('_', 7) === -1) ? '#ffff88' : '#88ff88') + 
+		  (!c.contains('_', 7) ? '#ffff88' : '#88ff88') + 
 		  ';\n}', selectStyles.cssRules.length);
 	    }
 	  }

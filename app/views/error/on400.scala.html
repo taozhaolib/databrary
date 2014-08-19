@@ -3,7 +3,7 @@
 @template.error(Messages("error.badrequest.title")) {
     @widget.panel.error(Messages("error.badrequest.title")) {
 	@HtmlFormat.raw(Messages("error.badrequest.body"))
-        <div class="col-full panel_error_error">@error</div>
-        <div class="col-full panel_error_error">@request.path</div>
+        <div>@error</div>
+        <div>@request.path</div>
     }
 }(request)

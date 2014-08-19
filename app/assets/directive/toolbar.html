@@ -17,11 +17,11 @@
 
       <div class="toolbar-user col-desktop-4 col-laptop-4 col-tablet-4 col-mobile-2">
         <span ng-if="!page.auth.isLoggedIn()">
-          <a bo-href="page.router.login()" bo-html="'toolbar.login' | message">login</a>
+          <a bo-href="page.router.login()" bo-html="'toolbar.login' | message"></a>
 
           <span class="sep">|</span>
 
-          <a bo-href="page.router.register()" bo-html="'toolbar.register' | message">login</a>
+          <a bo-href="page.router.register()" bo-html="'toolbar.register' | message"></a>
         </span>
 
         <span ng-if="page.auth.isLoggedIn()">

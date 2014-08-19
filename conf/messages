@@ -652,6 +652,7 @@ material.classification=Classification
 material.excerpt=
 material.excerpt.checkbox-label=Select for display as highlighted excerpt
 material.add-drop=Drop file here or click to upload a new file.
+material.add-drop.replace=Drop file here or click to upload replacement file.
 material.upload-progress=(in progress)
 
 

@@ -16,6 +16,16 @@ import site._
 import models._
 
 object SiteApi extends SiteController {
+  private def parseBool(s : String) : Boolean =
+    !s.equals("0") && !"false".startsWith(s.toLowerCase)
+
+  private val browserBlacklist = """^Mozilla/.* \(.*\<MSIE [0-9]\.[0-9]""".r.pattern
+
+  def jsEnabled(implicit request : RequestHeader) : Boolean =
+    request.getQueryString("js").fold(
+      !request.headers.get("User-Agent").exists(browserBlacklist.matcher(_).lookingAt))(
+      parseBool)
+
   private def publicResource(name : String) =
     Play.resourceAsStream("/public/" + name)
     .fold(
@@ -129,8 +139,7 @@ object SiteApi extends SiteController {
   }
 
   def jsDepends(implicit request : RequestHeader) =
-    if (Play.isDev && request.getQueryString("js.debug").fold(jsDebug)(j =>
-	!j.equals("0") && j.nonEmpty && !"false".startsWith(j.toLowerCase)))
+    if (Play.isDev && request.getQueryString("js.debug").fold(jsDebug)(parseBool))
       jsDebugLibs
     else jsLibs
 

@@ -10,7 +10,7 @@
       <a href="" class="auth-found" ng-click="fundingSearchForm.select(found)" bo-text="found.name"></a>
     </li>
 
-    <li>
+    <li ng-if="!all">
       <a href="" class="auth-found" ng-click="fundingSearchForm.notFound()" bo-text="'funding.search.more' | message"></a>
     </li>
   </ul>

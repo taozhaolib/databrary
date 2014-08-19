@@ -39,7 +39,7 @@ module.factory('party', [
         method: 'POST',
         url: '/api/user/superuser/off'
       }
-    }, null, {
+    }, {
       cache: 'party'
     });
 

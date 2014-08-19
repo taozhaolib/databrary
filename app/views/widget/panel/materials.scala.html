@@ -4,7 +4,7 @@
 
 @if(assets.nonEmpty) {
     @widget.panel.raw("materials", "")(title = Messages("materials")) {
-        <div class="panel_materials_list col-full">
+        <div class="panel_materials_list col">
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
                 @assets.map { link =>
@@ -22,7 +22,7 @@
             </ul>
         </div>
 
-        <div class="panel_materials_display col-full">
+        <div class="panel_materials_display col">
             @if(assets.nonEmpty) {
                 <span ng-init="currentAsset = @assets.head.sourceId.toString"></span>
 

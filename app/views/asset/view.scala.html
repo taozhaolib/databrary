@@ -3,7 +3,7 @@
 @template.crud("Asset" + asset.asset.name.fold("")(": " + _)) {
 
 @widget.panel.raw("overview", "panel_asset")(){
-    <div class="col-full panel_overview_actions">
+    <div class="col panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(asset).toHtml
         </ul>
@@ -17,7 +17,7 @@
         </ul>
     </div>
 
-    <h1 class="col-full panel_title">@display.formatTitle(asset.pageName)</h1>
+    <h1 class="col panel_title">@display.formatTitle(asset.pageName)</h1>
 
     @widget.frame.raw("asset", "")("Metadata") {
 	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">

@@ -2,7 +2,7 @@
 
 @if(records.nonEmpty) {
     @widget.panel.raw("records", "")(title = "Records"){
-        <div class="col-full">
+        <div class="col">
 	    <ul>
 	    @records.map { r =>
 		<li>@display(r)</li>

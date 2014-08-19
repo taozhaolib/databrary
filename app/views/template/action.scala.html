@@ -1,7 +1,7 @@
 @(title : String = "", angular : Option[play.api.libs.json.JsValue] = None)(body : Html)(implicit request: SiteRequest[_])
 
 @template.html5(title, angular = angular) {
-    <article class="article article_crud article_action">
+    <article class="view">
         @body
     </article>
 }

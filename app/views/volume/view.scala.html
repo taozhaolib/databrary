@@ -3,8 +3,8 @@
 @defining(request.obj) { volume =>
 @template.crud("Volume: " + volume.name, angular = Some(request.obj.json.js)) {
 
-@widget.panel.raw("overview", "panel_volume")(Messages("volume.overview.title")){
-    <div class="col-full panel_overview_actions">
+@widget.panel.raw("overview-volume", "")(Messages("volume.overview.title")){
+    <div class="col">
         <ul class="breadcrumbs">
         @Path(volume).toHtml
         </ul>
@@ -24,9 +24,9 @@
 
     @widget.figure.thumbVolume(volume, classes = "panel_overview_thumbnail")
 
-    <h1 class="col-full panel_title">@display.formatTitle(volume.name)</h1>
+    <h1 class="col panel-title">@display.formatTitle(volume.name)</h1>
     @volume.alias.map { a =>
-    <h2 class="col-full">@a</h2>
+    <h2 class="col">@a</h2>
     }
 
     @widget.frame.raw("people", "")(Messages("volume.contributors.title")) {
@@ -44,7 +44,7 @@
 }
 
 @widget.frame.raw("volume", "")(Messages("volume.body")) {
-    <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
         <div class="description">
             @volume.body.map(display.plainText _)
         </div>
@@ -79,7 +79,7 @@
 
     @if(sessions.nonEmpty){
         @widget.panel.raw("sessions", "")(title = Messages("browser.title")){
-            <div class="col-full">
+            <div class="col">
                 <ul>
                     @sessions.map { s =>
                         <li>@display(s)</li>
@@ -91,7 +91,7 @@
 
     @groupBy(records, (r : Record) => r.category).map { case (cat, rl)  =>
 	@widget.panel.raw(cat.fold("")(_.name.toLowerCase), "")(title = Messages("browser.title") + cat.fold("")(" by " + _.name)){
-	    <div class="col-full">
+	    <div class="col">
 		<ul>
 		    @rl.map { r =>
 			<li>@display(r)</li>
@@ -105,7 +105,7 @@
 
     @citation.map { citation =>
         @widget.panel.raw("citation", "")(Messages("volume.citation.title")){
-            <div class=" col-full">
+            <div class=" col">
                     <div class="citation">
                         <a @citation.url.map{ u => href="dbrary.url.normalize(u)" } title="@citation.title" class="cit_link">@citation.head</a>
                     </div>

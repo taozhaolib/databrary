@@ -3,7 +3,7 @@
 module.factory('ArrayHelper', [
   '$filter', function ($filter) {
     var ArrayHelper = function (array) {
-      if (!angular.isArray(array)) {
+      if (!Array.isArray(array)) {
         array = [];
       }
 

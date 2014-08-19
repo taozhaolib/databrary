@@ -4,7 +4,7 @@
 @template.crud("Session: " + slot.pageName, angular = Some(request.obj.json.js)) {
 
 @widget.panel.raw("overview", "panel_slot")(){
-    <div class="col-full panel_overview_actions">
+    <div class="col panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(slot).toHtml
         </ul>
@@ -18,7 +18,7 @@
         </ul>
     </div>
 
-    <h1 class="col-full panel_title">@display.formatTitle(slot.pageName)</h1>
+    <h1 class="col panel_title">@display.formatTitle(slot.pageName)</h1>
 
     @widget.frame.raw("slot", "")("Metadata") {
 	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">

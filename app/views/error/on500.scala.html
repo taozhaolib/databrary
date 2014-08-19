@@ -3,7 +3,7 @@
 @template.error(Messages("error.internal.title")) {
     @widget.panel.error(Messages("error.internal.title")) {
 	@HtmlFormat.raw(Messages("error.internal.body"))
-        <div class="col-full panel_error_error">Error code: @throwable.toString</div>
-        <div class="col-full panel_error_error">@throwable.getMessage</div>
+        <div>Error code: @throwable.toString</div>
+        <div>@throwable.getMessage</div>
     }
 }(request)
