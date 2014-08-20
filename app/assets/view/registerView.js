@@ -30,7 +30,7 @@ module.controller('registerView', [
         name: step.name
       });
 
-      page.models.analytic.send();
+      page.models.analytic.get();
     });
 
     //
