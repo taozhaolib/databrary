@@ -98,7 +98,7 @@ module.directive('volumeEditOverviewForm', [
           var volume = new page.models.volume(form.data);
 
           volume.$save({
-            owner: page.auth.user.id
+	    owner: page.$routeParams.owner || page.auth.user.id
           }, function (res) {
             form.validator.server({});
 

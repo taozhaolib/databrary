@@ -50,11 +50,12 @@ object Transcode {
       _ <- SQL("INSERT INTO transcode (asset, owner) VALUES (?, ?)")
 	.apply(asset.id, request.identity.id).execute
       src = FileAsset.file(asset)
-      pid = scala.util.control.Exception.catching(classOf[RuntimeException]) either {
-	ctl(asset.id,
+      pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
+	val r = ctl(asset.id,
 	  "-f", src.getAbsolutePath,
 	  "-r", new controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL(play.api.Play.isProd))
-      }
+	Maybe.toInt(r.trim).toRight(new RuntimeException("Unexpected transcode result: " + r))
+      }.joinRight
       _ = logger.debug("running " + asset.id + ": " + pid.merge.toString)
       r <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
 	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
