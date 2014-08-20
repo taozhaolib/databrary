@@ -7,6 +7,8 @@
         <div class="item_meta sep" bo-if="data.object.asset.duration">|</div>
 
         <div class="item_meta classification icon bb" bo-class="page.constants.data.classification[data.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[data.object.asset.classification]}}"></div>
+        <div class="item_meta sep" bo-if="page.auth.hasAccess(page.permission.READ, data.object)">|</div>
+        <a bo-if="page.auth.hasAccess(page.permission.READ, data.object)" ng-href="{{page.router.assetLink(data.object, false)}}" class="icon download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
 
         <div class="item_meta sep" bo-if="page.auth.hasAccess('CONTRIBUTE', data)">|
         </div>
