@@ -1,7 +1,7 @@
 'use strict';
 
 module.factory('volumeAccess', [
-  '$resource', '$route', function ($resource, $route) {
+  '$resource', '$route', 'routerService', function ($resource, $route, router) {
     return $resource('/api/volume/:id/access/:partyId', {
       id: function () {
         return $route.current.params.id || undefined;
@@ -10,26 +10,10 @@ module.factory('volumeAccess', [
         return $route.current.params.partyId || undefined;
       }
     }, {
-      search: {
-        method: 'GET',
-        url: '/api/volume/:id/access/:partyId/search',
-      },
-
-      saveFunding: {
-        method: 'POST',
-        url: '/api/volume/:id/funding/:funderId',
-      },
-
-      deleteFunding: {
-        method: 'DELETE',
-        url: '/api/volume/:id/funding/:funderId',
-      },
-
-      searchFunding: {
-        method: 'GET',
-        url: '/api/funder',
-        isArray: true,
-      },
+      search: router.action(router.controllers.VolumeApi.accessSearch, ['id'], {isArray: true}),
+      saveFunding: router.action(router.controllers.VolumeApi.fundingChange, ['id', 'funderId']),
+      deleteFunding: router.action(router.controllers.VolumeApi.fundingDelete, ['id', 'funderId']),
+      searchFunding: router.action(router.controllers.VolumeApi.funderSearch, [], {isArray: true}),
     }, 'volumeAccess');
   }
 ]);

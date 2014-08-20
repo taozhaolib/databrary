@@ -74,6 +74,11 @@ object SiteApi extends SiteController {
     , LoginHtml.view
     , LoginHtml.registration
     , LoginHtml.register
+    , LoginApi.get
+    , LoginApi.post
+    , LoginApi.logout
+    , LoginApi.superuserOn
+    , LoginApi.superuserOff
     , TokenHtml.getPassword
     , TokenHtml.issuePassword
     , TokenHtml.token
@@ -83,13 +88,20 @@ object SiteApi extends SiteController {
     , PartyHtml.view
     , PartyHtml.edit
     , PartyHtml.avatar
+    , PartyApi.profile
+    , PartyApi.authorizeGet
     , PartyApi.authorizeSearch
+    , PartyApi.authorizeApply
     , PartyApi.update
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add
     , VolumeHtml.edit
     , VolumeController.thumb
+    , VolumeApi.accessSearch
+    , VolumeApi.funderSearch
+    , VolumeApi.fundingChange
+    , VolumeApi.fundingDelete
     , SlotHtml.view
     , SlotHtml.edit
     , AssetHtml.formats

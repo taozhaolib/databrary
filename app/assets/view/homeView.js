@@ -9,7 +9,7 @@ module.controller('homeView', [
       return s ? s.substr(s.lastIndexOf(' ')+1) : '';
     };
 
-    $scope.parties = page.$filter('toArray')(parties, lastName);
+    $scope.parties = page.$filter('orderBy')(parties, lastName);
     $scope.volume = volume;
 
   }
