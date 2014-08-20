@@ -541,6 +541,14 @@ module.provider('routerService', [
 	  return $http(r);
 	};
 
+	/* Construct a (resource) action from and route. */
+	router.action = function (route, argNames, config) {
+	  var r = getRoute(route, argNames);
+	  if (config)
+	    angular.extend(r, config);
+	  return r;
+	};
+
 	router.party = function (data) {
 	  if (!type.isParty(data)) {
 	    throw new Error('routerService.party() requires Party as first argument');

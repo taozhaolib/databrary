@@ -162,7 +162,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 	} yield (Ok("request sent"))
       else for {
 	res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
-        r <- if (request.isApi) async(Ok(JsonRecord.map[Party](_.json)(res)))
+        r <- if (request.isApi) async(Ok(JsonArray.map[Party, JsonRecord](_.json)(res)))
 	  else PartyHtml.viewAdmin(form +: res.map(e =>
 	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
 	    .map(Ok(_))
@@ -391,7 +391,7 @@ object PartyApi extends PartyController with ApiController {
   def query = SiteAction.Unlocked.async { implicit request =>
     val form = new SearchForm()._bind
     Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
-      Ok(JsonRecord.map[Party](_.json)(l)))
+      Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
   }
 
   def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
