@@ -1,5 +1,7 @@
-<div class="slot-annotations">
-  <div class="slot-note-display"></div>
+<div class="slot-annotations" bindonce>
+  <div class="slot-note-display">
+    <div class="slot-note" ng-repeat="note in notes.list track by note.record.id" bo-html="note.record.id" bo-style="notes.noteStyle(note)"></div>
+  </div>
 
   <div class="slot-note-head">
     <div class="slot-note-mode" ng-bind="page.constants.data.category[ctrl.noteMode].name"></div>
