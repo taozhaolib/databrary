@@ -1,9 +1,13 @@
 <section class="slot-timeline" bindonce>
-  <slot-timeline-ruler ctrl="ctrl" ng-show="ctrl.hasPosition(ctrl.current[0])"></slot-timeline-ruler>
+  <div class="slot-timeline-temporal" ng-show="ctrl.hasPosition(ctrl.current[0])">
+    <slot-timeline-ruler ctrl="ctrl"></slot-timeline-ruler>
 
-  <div class="slot-timeline-ruler" ng-click="timeline.jump($event)" ng-show="ctrl.hasPosition(ctrl.current[0])">
-    <div class="slot-timeline-ruler-time left" ng-bind="timeline.time.left | timecode"></div>
-    <div class="slot-timeline-ruler-time right" ng-bind="timeline.time.right | timecode"></div>
+    <div class="slot-timeline-ruler" ng-click="timeline.jump($event)">
+      <div class="slot-timeline-ruler-time left" ng-bind="timeline.time.left | timecode"></div>
+      <div class="slot-timeline-ruler-time right" ng-bind="timeline.time.right | timecode"></div>
+    </div>
+
+    <slot-annotations ctrl="ctrl"></slot-annotations>
   </div>
 
   <div class="slot-timeline-tracks">

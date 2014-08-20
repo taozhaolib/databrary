@@ -15,7 +15,7 @@
 
   <div class="slot-toolbar-right">
     <div class="slot-toolbar-group slot-toolbar-group-right slot-toolbar-group-display">
-
+      <select class="slot-toolbar-note-mode" ng-options="key as val for (key, val) in ctrl.noteOptions" ng-model="ctrl.noteMode"></select>
     </div>
   </div>
 </section>
