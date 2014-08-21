@@ -139,6 +139,22 @@ module.factory('typeService', [
         (angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
     };
 
+    typeService.segmentParse = function (string) {
+      if (string.contains(',')) {
+        string.split(',').forEach(function (point, i) {
+          if (point === '') {
+            string[i] = undefined;
+          }
+        });
+      }
+
+      if (string.length === 0) {
+        return;
+      }
+
+      return string;
+    };
+
     typeService.segmentEmpty = function (seg) {
       return seg === null || Array.isArray(seg) && seg[0] !== null && seg[1] !== null && seg[0] >= seg[1];
     };

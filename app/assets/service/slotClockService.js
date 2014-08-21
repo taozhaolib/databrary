@@ -17,6 +17,7 @@ module.factory('slotClockService', [
       this.begun = Date.now();
       this.changed = this.begun;
       this.duration = 0;
+      this.start = undefined;
 
       Object.defineProperties(this, {
         position: {
@@ -33,8 +34,10 @@ module.factory('slotClockService', [
 
         if (ctrl.hasDuration(asset)) {
           clock.duration = clock.duration >= asset.segment[1] ? clock.duration : asset.segment[1];
+          clock.start = clock.start <= asset.segment[0] && angular.isNumber(clock.start) ? clock.start : asset.segment[0];
         } else if (ctrl.hasPosition(asset)) {
 	  clock.duration = clock.duration >= asset.segment ? clock.duration : asset.segment;
+	  clock.start = clock.start <= asset.segment && angular.isNumber(clock.start) ? clock.start : asset.segment;
 	}
       });
 

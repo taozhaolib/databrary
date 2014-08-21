@@ -21,6 +21,7 @@ module.controller('slotView', [
 
     var ctrl = {
       slot: slot,
+      segment: page.types.segmentParse(page.$routeParams.segment),
 
       media: [],
 
@@ -107,25 +108,25 @@ module.controller('slotView', [
 
     ctrl.clock = new page.slotClock(slot, ctrl);
 
-		// sort records
+    // sort records
 
-		var sortRecords = function () {
-			ctrl.records = {};
-			ctrl.noteOptions = {
-				'comments': 'comments',
-			};
+    var sortRecords = function () {
+      ctrl.records = {};
+      ctrl.noteOptions = {
+        'comments': 'comments',
+      };
 
-			angular.forEach(slot.records, function (record) {
-				if (!(record.category in ctrl.records)) {
-					ctrl.records[record.category] = [];
-					ctrl.noteOptions[record.category] = page.constants.data.category[record.category].name;
-				}
+      angular.forEach(slot.records, function (record) {
+        if (!(record.category in ctrl.records)) {
+          ctrl.records[record.category] = [];
+          ctrl.noteOptions[record.category] = page.constants.data.category[record.category].name;
+        }
 
-				ctrl.records[record.category].push(record);
-			});
-		};
+        ctrl.records[record.category].push(record);
+      });
+    };
 
-		sortRecords();
+    sortRecords();
 
     // callbacks
 
