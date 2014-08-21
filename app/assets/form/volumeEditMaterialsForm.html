@@ -1,23 +1,25 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.models.asset.flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
   <fieldset class="clean" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
-    <div id="sticky-buttons" class="row fixable" z-index="50">
-      <div class="col-desktop-7 col-laptop-5 col-tablet-2 col-mobile-1">
-	<div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
-	  <img src="/public/images/add.png" width="30" height="50">
-	  <span>{{'material.add-drop' | message}}</span>
+    <div class="fixable-parent">
+      <div id="sticky-buttons" class="row fixable" z-index="50">
+	<div class="col-desktop-7 col-laptop-5 col-tablet-2 col-mobile-1">
+	  <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
+	    <img src="/public/images/add.png" width="30" height="50">
+	    <span>{{'material.add-drop' | message}}</span>
+	    <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
+	  </div>
+	</div>
+	<button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+	<button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 yellow"ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+	<div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+	  <div trash indicator="trashImage" outside="volumeEditMaterialsForm" indicator-on="/public/images/trashopen.png" indicator-off="/public/images/trashclosed.png"><img ng-src="{{trashImage}}"></div>
 	</div>
       </div>
-      <button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save.all' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-      <button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 yellow"ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert.all' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-      <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-        <div trash indicator="trashImage" outside="volumeEditMaterialsForm" indicator-on="/public/images/trashopen.png" indicator-off="/public/images/trashclosed.png"><img ng-src="{{trashImage}}"></div>
-      </div>
     </div>
-    <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
   </fieldset>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose z-index="-1">
+  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose style="position: relative;">
     <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
