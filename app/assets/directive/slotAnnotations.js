@@ -16,7 +16,7 @@ module.directive('slotAnnotations', [
 					var right = ((ctrl.clock.duration - note.record.segment[1]) / ctrl.clock.duration);
 
 					return {
-						'z-index': 500 - note.level,
+						'z-index': -100 + note.level,
 						'top': 24 * note.level,
 						'left': left ? left * 100 : 0,
 						'right': right ? right * 100 : 0,
@@ -38,6 +38,7 @@ module.directive('slotAnnotations', [
 							$list.html('');
 							$head.height(24);
 							break;
+						
 						default:
 							if (!ctrl.records[mode]) {
 								ctrl.noteMode = null;
