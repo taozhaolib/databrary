@@ -22,11 +22,10 @@ select
   color black
   font-family body-family
   box-sizing border-box
-  border-padding-height f4 1px
+  border-padding-height f4 1px solid gray
   padding-width f3
   border-radius b8
   width 100%
-  border 1px solid gray
   margin-bottom f2
   transition border, outline, color, background, padding, margin, box-shadow .15s linear
   box-shadow inset-shadow
@@ -41,7 +40,7 @@ select
       input-shadow red
 
   &.mini
-    border-padding-bottom f12 1px
+    border-padding-bottom f12 1px solid gray
     font-line f90 f34
     padding-width f8
 
@@ -63,10 +62,10 @@ input
   &[type="file"]
     display block
     background-color white
-    border-padding-top f4 1px
+    border-padding-top f4 1px solid gray
 
   &[type="date"]
-    border-padding-height f4 1px
+    border-padding-height f4 1px solid gray
 
   &[type="radio"],
   &[type="checkbox"]
@@ -81,7 +80,7 @@ input
       outline 0
 
 select
-  border-padding-bottom f4 0
+  padding-bottom f4
 
 input,
 select,

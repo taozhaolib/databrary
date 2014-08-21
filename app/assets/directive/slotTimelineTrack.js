@@ -19,7 +19,7 @@ module.directive('slotTimelineTrack', [
           if (ctrl.hasDisplay(track.asset)) {
             cls.push('slot-track-display');
           }
-          
+
           if (ctrl.isCurrent(track.asset)) {
             cls.push('slot-track-select');
           }
@@ -34,8 +34,8 @@ module.directive('slotTimelineTrack', [
             left = track.asset.segment[0] / ctrl.clock.duration;
             right = ((ctrl.clock.duration - track.asset.segment[1]) / ctrl.clock.duration);
           } else if (ctrl.hasPosition(track.asset)) {
-            left = track.asset.segment[0] / ctrl.clock.duration;
-            right = left;
+            left = track.asset.segment / ctrl.clock.duration;
+            right = 1 - left;
           }
 
           left = left ? left * 100 : 0;

@@ -33,7 +33,9 @@ module.factory('slotClockService', [
 
         if (ctrl.hasDuration(asset)) {
           clock.duration = clock.duration >= asset.segment[1] ? clock.duration : asset.segment[1];
-        }
+        } else if (ctrl.hasPosition(asset)) {
+	  clock.duration = clock.duration >= asset.segment ? clock.duration : asset.segment;
+	}
       });
 
       // ticker

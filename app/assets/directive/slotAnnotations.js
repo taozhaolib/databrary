@@ -1,109 +1,114 @@
 'use strict';
 
 module.directive('slotAnnotations', [
-	'pageService', function (page) {
-		var controller = [
-			'$scope', '$element', '$attrs',
-			function ($scope, $element, $attrs) {
-				var ctrl = page.$parse($attrs.ctrl)($scope);
-				var notes = this;
-				notes.list = [];
+  'pageService', function (page) {
+    var controller = [
+      '$scope', '$element', '$attrs',
+      function ($scope, $element, $attrs) {
+	var ctrl = page.$parse($attrs.ctrl)($scope);
+	var notes = this;
+	notes.list = [];
 
-				var $list, $head;
+	var $list, $head;
 
-				notes.noteStyle = function (note) {
-					var left = note.record.segment[0] / ctrl.clock.duration;
-					var right = ((ctrl.clock.duration - note.record.segment[1]) / ctrl.clock.duration);
+	notes.noteStyle = function (note) {
+	  var left = note.record.segment && note.record.segment[0] ? note.record.segment[0] / ctrl.clock.duration : 0;
+	  var right = note.record.segment && note.record.segment[1] ? ((ctrl.clock.duration - note.record.segment[1]) / ctrl.clock.duration) : 0;
 
-					return {
-						'z-index': -100 + note.level,
-						'top': 24 * note.level,
-						'left': left ? left * 100 : 0,
-						'right': right ? right * 100 : 0,
-					};
-				};
+	  return {
+	    'z-index': note.level,
+	    'top': 24 * (note.level + 1),
+	    'left': left ? left * 100 : 0,
+	    'right': right ? right * 100 : 0,
+	  };
+	};
 
-				var drawNote = function (levels, level, record) {
-					levels[level].push(record);
-					notes.list.push({
-						record: record,
-						level: level,
-					});
-				};
+	var drawNote = function (levels, level, record) {
+	  levels[level].push(record);
+	  notes.list.push({
+	    record: record,
+	    level: level,
+	  });
+	};
 
-				var drawNotes = function (mode) {
-					switch (mode) {
-						case 'comments':
-							// todo: comments
-							$list.html('');
-							$head.height(24);
-							break;
-						
-						default:
-							if (!ctrl.records[mode]) {
-								ctrl.noteMode = null;
-								$list.html('');
-								$head.height(24);
-								return;
-							}
+	var drawNotes = function (mode) {
+	  notes.list = [];
+	  var levels = [];
 
-							ctrl.mode = page.constants.data.category[mode].name;
+	  switch (mode) {
+	    case 'comments':
+	      // todo: comments
+	      $head.height(24);
+	      break;
 
-							var levels = [];
+	    default:
+	      if (!ctrl.records[mode]) {
+		ctrl.noteMode = null;
+		$head.height(0);
+		return;
+	      }
 
-							angular.forEach(ctrl.records[mode], function (record) {
-								if (!record.segment) {
-									levels.push([record]);
-									return;
-								}
+	      ctrl.mode = page.constants.data.category[mode].name;
 
-								// look for the first level that has enough space
-								for (var i = 0, l = levels.length; i < l; i++) { // try existing levels
-									var m = levels[i].length;
+	      angular.forEach(ctrl.records[mode], function (record) {
+		var l = levels.length;
 
-									// skip the loop if this level has a full-width record
-									if (m === 1 && !levels[i][0].segment) {
-										continue;
-									}
+		if (!record.segment) {
+		  levels.push([]);
+		  drawNote(levels, l, record);
+		  return;
+		}
 
-									// if this record conflicts with any of this level, break
-									for (var j = 0; j < m; j++) {
-										// todo: review this logic
-										if ((record.segment[0] && levels[i][j].segment[1] && levels[i][j].segment[1] >= record.segment[0]) || (record.segment[1] && levels[i][j].segment[0] && levels[i][j].segment[0] <= record.segment[1])) {
-											break;
-										}
-									}
+		// look for the first level that has enough space
+		for (var i = 0; i < l; i++) { // try existing levels
+		  var m = levels[i].length;
 
-									// all good? then push
-									drawNote(levels, i, record);
-									return;
-								}
+		  // skip the loop if this level has a full-width record
+		  if (m === 1 && !levels[i][0].segment) {
+		    continue;
+		  }
 
-								// no current level works? add a new one.
-								levels.push([]);
-								drawNote(levels, i, record);
-							});
-					}
-				};
+		  // if this record conflicts with any of this level, break
+		  for (var j = 0; j < m; j++) {
+		    // todo: review this logic
+		    if ((record.segment[0] && levels[i][j].segment[1] && levels[i][j].segment[1] >= record.segment[0]) || (record.segment[1] && levels[i][j].segment[0] && levels[i][j].segment[0] <= record.segment[1])) {
+		      break;
+		    }
+		  }
 
-				page.$timeout(function () {
-					$list = $element.find('slot-note-list');
-					$head = $element.find('slot-note-head');
-					$scope.$watch('ctrl.noteMode', drawNotes);
-					drawNotes(ctrl.noteMode);
-				});
+		  // all good? then push
+		  drawNote(levels, i, record);
+		  return;
+		}
 
-				return notes;
-			}];
+		// no current level works? add a new one.
+		levels.push([]);
+		drawNote(levels, i, record);
+	      });
 
-		//
+	      $head.height(24 * (levels.length + 1));
+	  }
+	};
 
-		return {
-			restrict: 'E',
-			scope: false,
-			templateUrl: 'slotAnnotations.html',
-			controller: controller,
-			controllerAs: 'notes',
-		};
-	}
+	page.$timeout(function () {
+	  $list = $element.find('.slot-note-list');
+	  $head = $element.find('.slot-note-head');
+	  $scope.$watch('ctrl.noteMode', drawNotes);
+	  drawNotes(ctrl.noteMode);
+	});
+
+	return notes;
+      }
+    ];
+
+    //
+
+    return {
+      restrict: 'E',
+      scope: false,
+      templateUrl: 'slotAnnotations.html',
+      controller: controller,
+      controllerAs: 'notes',
+    };
+  }
 ]);

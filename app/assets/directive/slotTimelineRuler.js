@@ -8,7 +8,7 @@ module.directive('slotTimelineRuler', [
         var ctrl = page.$parse($attrs.ctrl)($scope);
 
         ruler.draw = function () {
-          var $ruler = $element.find('.slot-timeline-ruler');
+          var $ruler = $element.find('.slot-timeline-canvas-ruler');
           var ruler = $ruler[0];
 
           if (!ruler.getContext) {

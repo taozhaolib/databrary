@@ -8,6 +8,8 @@
   user-select none
 
 .slot-timeline-ruler
+  z-index 500
+  position relative
   width 100%
   padding-width b6
   box-shadow box-shadow-def
@@ -26,7 +28,13 @@
     float right
     margin-right b12
 
+.slot-timeline-tracks
+  z-index 100
+  position relative
+  background rgba(255, 255, 255, .75)
+
 .slot-timeline-now-zone
+  z-index 200
   position absolute
   top 0
   bottom 0
