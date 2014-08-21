@@ -17,7 +17,7 @@
     <div class="player-main-info" ng-class="{playable: ctrl.hasDisplay(ctrl.current[0])}">
       <nav class="player-main-info-actions">
         <a ng-href="{{page.router.assetEdit(ctrl.current[0])}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
-        <a ng-href="{{page.router.assetLink(ctrl.current[0], true)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
+        <a ng-href="{{page.router.assetLink(ctrl.current[0], false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
         <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
       </nav>
 

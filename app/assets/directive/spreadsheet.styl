@@ -1,24 +1,20 @@
-div.spreadsheet
-  overflow scroll
-  max-height 90vh
+.spreadsheet
+  overflow-x scroll
 
-table.spreadsheet
-  thead
-    tr
-      &:last-child
-        th
-          border-bottom 2px solid black
-
+.spreadsheet-table
   th
+    line-height 1
+    position relative
     text-align center
-    border-left 1px solid pale
-    border-right 1px solid pale
+    border-left 1px solid white
+    border-right 1px solid white
     border-top 0
     border-bottom 0
 
   td
     border 1px solid pale
-    padding 3px
+    padding-width 3px
+    line-height 1
     display table-cell
 
   td.null
@@ -34,3 +30,45 @@ table.spreadsheet
   a.link
     background-image url('/public/images/icon/play.png')
     display inline-block
+
+.spreadsheet-head-cats
+  th
+    &:before
+      content ''
+      border-radius b3 b3 0 0
+      border-top 1px solid pale
+      border-left 1px solid pale
+      border-right 1px solid pale
+      position absolute
+      top 0
+      bottom 0
+      left 0
+      right 0
+
+.spreadsheet-head-metrics
+  th
+    border-bottom 2px solid black
+    border-left-color pale
+    border-right-color pale
+
+    &.first
+      border-left-color white
+
+      &:before
+        content ''
+        border-left 1px solid pale
+        position absolute
+        left 0
+        top 0
+        bottom 0
+
+    &.last
+      border-right-color white
+
+      &:before
+        content ''
+        border-right 1px solid pale
+        position absolute
+        right 0
+        top 0
+        bottom 0

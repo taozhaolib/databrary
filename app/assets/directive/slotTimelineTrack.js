@@ -31,10 +31,10 @@ module.directive('slotTimelineTrack', [
 
         track.getPosition = function () {
           if (ctrl.hasDuration(track.asset)) {
-            left = track.asset.segment[0] / ctrl.clock.duration;
-            right = ((ctrl.clock.duration - track.asset.segment[1]) / ctrl.clock.duration);
+            left = (track.asset.segment[0] - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
+            right = (ctrl.clock.duration - track.asset.segment[1]) / (ctrl.clock.duration - ctrl.clock.start);
           } else if (ctrl.hasPosition(track.asset)) {
-            left = track.asset.segment / ctrl.clock.duration;
+            left = (track.asset.segment - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
             right = 1 - left;
           }
 

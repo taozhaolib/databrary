@@ -1,5 +1,5 @@
 <div class="spreadsheet">
-  <table class="spreadsheet">
+  <table class="spreadsheet-table">
     <colgroup>
       <col/>
       <col/>
@@ -10,19 +10,21 @@
     </colgroup>
     <col/>
     <thead>
-      <tr>
+      <tr class="spreadsheet-head-cats">
 	<th colspan="3">session</th>
 	<th ng-repeat="record in recordCols track by record.category" colspan="{{record.metrics.length}}" ng-bind="page.constants.data.category[record.category].name"></th>
 	<th/>
       </tr>
-      <tr>
-	<th/>
+      <tr class="spreadsheet-head-metrics">
+	<th class="first" />
 	<th><a href="" ng-click="sortBySlot('date')">date</a></th>
-	<th><a href="" ng-click="sortBySlot('consent')">consent</a></th>
-	<th ng-repeat="col in metricCols track by $index">
+	<th class="last"><a href="" ng-click="sortBySlot('consent')">consent</a></th>
+
+	<th ng-repeat="col in metricCols track by $index" ng-class="{{col.cls}}">
 	  <a href="" ng-click="sortByMetric(col.category.id, col.metric.id)" ng-bind="col.metric.name"></a>
 	</th>
-	<th/>
+
+	<th class="first last "/>
       </tr>
     </thead>
     <tbody id="ss" ng-click="click($event)">

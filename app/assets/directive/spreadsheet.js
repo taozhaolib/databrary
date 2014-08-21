@@ -162,6 +162,7 @@ module.directive('spreadsheet', [
 	/* Fill metricCols and recordCols from records */
 	function populateCols() {
 	  metricCols = [];
+          var last = null;
 	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var category = page.constants.data.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
@@ -172,12 +173,14 @@ module.directive('spreadsheet', [
 	      metrics.sort(byNumber);
 	    else // add id if there's nothing else
 	      metrics = ['id'];
-	    metricCols.push.apply(metricCols, metrics.map(function (m) {
+	    metricCols.push.apply(metricCols, metrics.map(function (m, i) {
 	      return {
 		category: category,
 		metric: getMetric(m),
+                cls: i === 0 ? ['first'] : []
 	      };
 	    }));
+            metricCols[metricCols.length-1].cls.push('last');
 	    return {
 	      category: c,
 	      metrics: metrics

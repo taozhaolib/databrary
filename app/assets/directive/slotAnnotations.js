@@ -12,6 +12,10 @@ module.directive('slotAnnotations', [
 	var $list, $head;
 
 	notes.noteStyle = function (note) {
+          if (angular.isArray(note.record.segment)) {
+
+          }
+
 	  var left = note.record.segment && note.record.segment[0] ? note.record.segment[0] / ctrl.clock.duration : 0;
 	  var right = note.record.segment && note.record.segment[1] ? ((ctrl.clock.duration - note.record.segment[1]) / ctrl.clock.duration) : 0;
 
