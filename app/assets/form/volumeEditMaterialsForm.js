@@ -404,12 +404,14 @@ module.directive('volumeEditMaterialsForm', [
       var r = 0;
       window.onscroll = function(){
 	    var x = $('#sticky-buttons');
-	    if(window.pageYOffset + 36 + 10 >= x.offset().top){
-		x.addClass('stick');
-		if(r === 0) r = window.pageYOffset;
-	    }
-	    if(window.pageYOffset < r){
-		x.removeClass('stick');
+	    if(x && x.offset()){   
+	      if(window.pageYOffset + 36 + 10 >= x.offset().top){
+		  x.addClass('stick');
+		  if(r === 0) r = window.pageYOffset;
+	      }
+	      if(window.pageYOffset < r){
+		  x.removeClass('stick');
+	      }
 	    }
       };
 
