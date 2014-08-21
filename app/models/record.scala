@@ -182,6 +182,13 @@ object Record extends TableId[Record]("record") {
       "FROM", src, "JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id"))
     .apply(slot.containerId, slot.segment).list
 
+  /** Retrieve the list of all records that apply to the given slot. */
+  private[models] def getSlotAll(slot : Slot) : Future[Seq[(Segment,Record)]] =
+    SlotRecord.columns
+    .join(rowVolume(slot.volume), "slot_record.record = record.id")
+    .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment")
+    .apply(slot.containerId, slot.segment).list
+
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories
     * @return records sorted by category, ident */

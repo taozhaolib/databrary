@@ -117,8 +117,11 @@ trait Slot extends TableRow with InVolume with SiteObject {
   final def slotJson(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(slotJson.obj, options
     , "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container")))
-    , "records" -> (opt => records.map(JsonRecord.map { r =>
-        r.json ++ JsonObject.flatten(r.age(this).map('age -> _))
+    , "records" -> (opt => Record.getSlotAll(this).map(
+      JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
+	rec.json - "volume" ++ JsonObject.flatten(
+	  if (seg.isFull) None else Some('segment -> seg),
+	  rec.age(this).map('age -> _))
       }))
     , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
