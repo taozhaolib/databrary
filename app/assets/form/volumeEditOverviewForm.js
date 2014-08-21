@@ -158,7 +158,7 @@ module.directive('volumeEditOverviewForm', [
           return;
         }
 
-        page.models.Cite(doi[1])
+        page.models.cite(doi[1])
           .then(function (res) {
             form.data.citation = res;
             form.data.name = res.title;
