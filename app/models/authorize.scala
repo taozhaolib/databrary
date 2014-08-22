@@ -126,8 +126,8 @@ object Authorization extends Table[Authorization]("authorize_view") {
   object Root extends Authorization(Party.Root, Party.Root, Permission.ADMIN, Permission.ADMIN)
 
   private final class Self (party : Party) extends Authorization(party, party,
-    if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN,
-    if (party.id === Party.NOBODY) Permission.NONE else Permission.ADMIN)
+    if (party === Party.Nobody) Permission.NONE else Permission.ADMIN,
+    if (party === Party.Nobody) Permission.NONE else Permission.ADMIN)
 
   private[models] def make(child : Party, parent : Party = Party.Root)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
     val (site, member) = unOpt(access)

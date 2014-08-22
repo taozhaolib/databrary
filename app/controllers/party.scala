@@ -312,13 +312,13 @@ object PartyHtml extends PartyController with HtmlController {
   private[controllers] def viewAdmin(
     authorizeForms : Seq[AuthorizeForm] = Nil)(
     implicit request : Request[_]) = {
-    val change = authorizeForms.collect { case o : AuthorizeOtherForm => o.targetParty.id.unId }.toSet
+    val change = authorizeForms.collect { case o : AuthorizeOtherForm => o.targetParty.id }.toSet
     val search = Set(false, true) -- authorizeForms.collect { case a : AuthorizeSearchForm => a._apply }
     for {
       parents <- request.obj.party.authorizeParents(true)
       children <- request.obj.party.authorizeChildren(true)
       forms = children
-        .filterNot(t => change.contains(t.childId.unId))
+        .filterNot(t => change.contains(t.childId))
         .map(t => new AuthorizeChildForm(t.child)._fill(t)) ++
 	search.map(new AuthorizeSearchForm(_)) ++
         authorizeForms

@@ -154,7 +154,7 @@ object VolumeController extends VolumeController {
       f => VolumeHtml.viewAdmin(accessChangeForm = Some(f))) {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
-    def isGroup = party.id.unId <= 0
+    def isGroup = party._id <= 0
     val individual = Field(Mappings.enum(Permission,
       maxId = if (isGroup) Some(Permission.SHARED.id) else None,
       minId = (if (own) Permission.ADMIN else Permission.NONE).id))
@@ -238,11 +238,11 @@ object VolumeHtml extends VolumeController with HtmlController {
     accessSearchForm : Option[AccessSearchForm] = None,
     accessResults : Seq[Party] = Nil)(
     implicit request : Request[_]) = {
-    val change = accessChangeForm.map(_.partyId.unId).toSet
+    val change = accessChangeForm.map(_.partyId).toSet
     for {
       access <- request.obj.partyAccess()
       forms = access
-        .filterNot(a => change.contains(a.partyId.unId))
+        .filterNot(a => change.contains(a.partyId))
         .map(accessForm(_)) ++
 	accessChangeForm
       results = accessResults.map(new AccessForm(_))

@@ -50,7 +50,7 @@ object IngestController extends SiteController with HtmlController {
       }
     else 
       ingest.Curated.populate(form.file.get.ref.file, volume).map { r =>
-	Ok(views.html.ingest.result(volume, r._1 ++ r._2))
+	Ok(views.html.ingest.result(volume, (r._1 : Iterable[SiteObject]) ++ r._2))
       }.recover {
 	case e : PopulateException =>
 	  Logger.error("curated ingest error", e)

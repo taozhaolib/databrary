@@ -47,11 +47,11 @@ object Adolph extends Ingest {
   private def dateMeasureParser(metric : Metric[Date]) =
     measureParser[Date](metric, date)
 
-  private def measureMap(m : Measure[_]*) : Map[Int,Measure[_]] =
-    Map(m.map(m => (m.metricId.unId, m)) : _*)
+  private def measureMap(m : Measure[_]*) : Map[Metric.Id,Measure[_]] =
+    Map(m.map(m => (m.metricId, m)) : _*)
 
   private abstract class Record(val category : RecordCategory) {
-    protected val measures : Map[Int,Measure[_]]
+    protected val measures : Map[Metric.Id,Measure[_]]
     protected def idents : Iterable[Measure[_]]
     type Key
     def key : Key
@@ -59,9 +59,9 @@ object Adolph extends Ingest {
     override def toString = category.name + ":" + idents.map(m => m.metric.name + ":" + m.datum).mkString(",")
 
     def getMeasure(m : Metric[_]) : Option[Measure[_]] =
-      measures.get(m.id.unId)
-    protected final def addMeasure(m : Measure[_]) : Map[Int,Measure[_]] = {
-      val i = m.metricId.unId
+      measures.get(m.id)
+    protected final def addMeasure(m : Measure[_]) : Map[Metric.Id,Measure[_]] = {
+      val i = m.metricId
       if (measures.contains(i))
 	fail("duplicate measure for " + m.metric.name + " on " + this)
       measures.updated(i, m)
@@ -90,23 +90,23 @@ object Adolph extends Ingest {
       } yield (r)
   }
 
-  private final case class SingletonRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+  private final case class SingletonRecord(override val category : RecordCategory, measures : Map[Metric.Id,Measure[_]] = Map.empty) extends Record(category) {
     def idents = Nil
     type Key = Unit
     def key = ()
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
 
-  private final case class IdentRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+  private final case class IdentRecord(override val category : RecordCategory, measures : Map[Metric.Id,Measure[_]] = Map.empty) extends Record(category) {
     def idents = getMeasure(Metric.Ident)
     type Key = String
     def key = getMeasure(Metric.Ident).fold(fail(category.name + " ident missing"))(_.datum)
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
 
-  private final case class TotalRecord(override val category : RecordCategory, measures : Map[Int,Measure[_]] = Map.empty) extends Record(category) {
+  private final case class TotalRecord(override val category : RecordCategory, measures : Map[Metric.Id,Measure[_]] = Map.empty) extends Record(category) {
     def idents = measures.values
-    type Key = Map[Int,String]
+    type Key = Map[Metric.Id,String]
     def key = measures.mapValues(_.datum)
     def withMeasure(m : Measure[_]) = copy(measures = addMeasure(m))
   }
@@ -122,7 +122,7 @@ object Adolph extends Ingest {
   private val metricCountry = Metric._getName[String]("country")
   private val metricState = Metric._getName[String]("state")
 
-  private final case class Participant(measures : Map[Int,Measure[_]] = Map.empty)
+  private final case class Participant(measures : Map[Metric.Id,Measure[_]] = Map.empty)
     extends Record(Participant.category) {
     def idents = getMeasure(Metric.Ident) ++ getMeasure(metricInfo)
     type Key = (String, String)
@@ -175,7 +175,7 @@ object Adolph extends Ingest {
       parseData(CSV.parseFile(f))
   }
 
-  private final case class Exclusion(measures : Map[Int,Measure[_]] = Map.empty) extends Record(Exclusion.category) {
+  private final case class Exclusion(measures : Map[Metric.Id,Measure[_]] = Map.empty) extends Record(Exclusion.category) {
     def idents = getMeasure(Exclusion.Reason.metric)
     type Key = String
     def key = getMeasure(Exclusion.Reason.metric).fold(fail("exclusion reason missing"))(_.datum)
@@ -221,10 +221,10 @@ object Adolph extends Ingest {
     }
   }
 
-  private def recordMap(r : Record*) : Map[Int,Record] =
-    Map(r.map(r => (r.category.id.unId, r)) : _*)
+  private def recordMap(r : Record*) : Map[RecordCategory,Record] =
+    Map(r.map(r => (r.category, r)) : _*)
 
-  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assetOffset : Offset = Offset.ZERO, assets : Seq[Asset] = Nil, records : Map[Int,Record] = Map.empty) {
+  private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assetOffset : Offset = Offset.ZERO, assets : Seq[Asset] = Nil, records : Map[RecordCategory,Record] = Map.empty) {
     def withName(n : String) =
       if (name.nonEmpty && !name.equals(n))
 	fail("duplicate session name: " + n)
@@ -238,24 +238,24 @@ object Adolph extends Ingest {
 	fail("duplicate session consent: " + c)
       else copy(consent = Some(c))
     def withParticipant(f : Participant => Participant) = {
-      val i = Participant.id.unId
+      val i = Participant.category
       val p = records.get(i).fold(Participant())(_.asInstanceOf[Participant])
       copy(records = records.updated(i, f(p)))
     }
     def fillParticipant(pm : ParticipantMap) = {
-      val i = Participant.id.unId
+      val i = Participant.category
       records.get(i).fold(fail("no participant")) { p =>
 	copy(records = records.updated(i,
 	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
       }
     }
     def withLocation(f : Record => Record) = {
-      val i = Context.id.unId
+      val i = Context.category
       val p = records.getOrElse(i, TotalRecord(Context.category))
       copy(records = records.updated(i, f(p)))
     }
     def withRecord(r : Record) = {
-      val i = r.category.id.unId
+      val i = r.category
       if (records.contains(i))
 	fail("duplicate session record: " + r)
       copy(records = records.updated(i, r))
@@ -269,7 +269,7 @@ object Adolph extends Ingest {
 
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
-	pr <- records(Participant.id.unId).populate(volume)
+	pr <- records(Participant.category).populate(volume)
 	ps <- pr.slots
 	ms = ps.filter(_.container.date.equals(date))
 	_ <- check(ms.length <= 1,
@@ -308,9 +308,9 @@ object Adolph extends Ingest {
 	    }
 	  } yield (())
 	}
-	cr <- c.records.map(_.groupBy(_.category.map(_.id.unId)))
-	_ <- (records - Participant.id.unId).values foreachAsync { r =>
-	  val crs = cr.getOrElse(Some(r.category.id.unId), Nil)
+	cr <- c.records.map(_.groupBy(_.category.map(_.id)))
+	_ <- (records - Participant.category).values foreachAsync { r =>
+	  val crs = cr.getOrElse(Some(r.category.id), Nil)
 	  for {
 	    _ <- check(crs.length <= 1,
 	      PopulateException("multiple existing records for category " + r.category, c))
