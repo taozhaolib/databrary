@@ -1,53 +1,60 @@
 <form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.models.asset.flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
-  <fieldset class="clean" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
-    <div class="fixable-parent">
-      <div id="sticky-buttons" class="row fixable" z-index="50">
-	<div class="col-desktop-7 col-laptop-5 col-tablet-2 col-mobile-1">
-	  <div flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
-	    <img src="/public/images/add.png" width="30" height="50">
-	    <span>{{'material.add-drop' | message}}</span>
-	    <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
-	  </div>
-	</div>
-	<button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-	<button class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1 yellow"ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-	<div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-	  <div trash indicator="trashImage" outside="volumeEditMaterialsForm" indicator-on="/public/images/trashopen.png" indicator-off="/public/images/trashclosed.png"><img ng-src="{{trashImage}}"></div>
-	</div>
+
+  <section class="vem-float" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
+    <div class="vem-float-floater">
+      <div class="vem-float-dropzone" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
+        <span class="icon line add"></span>
+        <span class="vem-float-dropzone-message" bo-text="'material.add-drop' | message"></span>
+        <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
       </div>
+
+      <div class="vem-float-dropzone" trash indicator="trashImage" outside="volumeEditMaterialsForm" indicator-on="/public/images/trashopen.png" indicator-off="/public/images/trashclosed.png">
+        <span class="icon line trash"></span>
+      </div>
+
+      <button class="mini green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+      <button class="mini yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     </div>
-  </fieldset>
+  </section>
 
   <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose style="position: relative;">
     <messages ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this; volumeEditMaterialsForm.store(this);"></messages>
 
     <validator form="form" name="file" label="'material.file' | message">
       <div ng-if="!asset.asset.creation">
-	<div ng-if="asset.file" ng-bind="asset.file.name"</span><span>{{'material.upload-progress' | message}}</span></div>
-        <div ng-if="!asset.file" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>{{'material.add-drop.replace' | message}}</div>
+        <div ng-if="asset.file" ng-bind="asset.file.name">
+          <span bo-text="'material.upload-progress' | message"></span>
+        </div>
+
+        <div ng-if="!asset.file" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn bo-text="'material.add-drop.replace' | message"></div>
       </div>
 
       <div ng-if="asset.asset.creation">
-	<div class="row">
-	  <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-	    <img ng-src="{{page.router.assetThumb(volumeEditMaterialsForm.makeThumbData(this))}}" trashable outside="volumeEditMaterialsForm" class="file-thumb">
-	  </div>
-	  <div class="col-desktop-10 col-laptop-7 col-tablet-4 col-mobile-2">
-	    <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
-	    <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
-	  </div>
-	</div>
+        <div class="row">
+          <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+            <img ng-src="{{page.router.assetThumb(volumeEditMaterialsForm.makeThumbData(this))}}" trashable outside="volumeEditMaterialsForm" class="file-thumb">
+          </div>
+
+          <div class="col-desktop-10 col-laptop-7 col-tablet-4 col-mobile-2">
+            <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled>
+            <button ng-click="volumeEditMaterialsForm.replace(this)" bo-html="'replace' | message" class="blue mini pull"></button>
+          </div>
+        </div>
       </div>
-    <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
+
+      <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
     </validator>
 
     <validator form="form" name="classification" label="'material.classification' | message">
       <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in page.constants.data.classification" ng-init="asset.classification = page.constants.data.classification[asset.asset && asset.asset.classification || 0]" ng-required></select>
     </validator>
-    <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">{{'material.excerpt.checkbox-label' | message}}</input>
+
+    <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">&nbsp;
+    <span bo-text="'material.excerpt.checkbox-label' | message"></span>
+
     <validator form="form" name="excerpt" ng-show="excerptOn" label="'material.excerpt' | message">
-      <select name="excerpt" ng-model="asset.excerpt"  ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
+      <select name="excerpt" ng-model="asset.excerpt" ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
     </validator>
 
     <validator form="form" name="name" label="'material.name' | message">

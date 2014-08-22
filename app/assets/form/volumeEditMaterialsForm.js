@@ -29,67 +29,68 @@ module.directive('volumeEditMaterialsForm', [
         form.volume = form.volume || volume;
       };
 
-      form.addedCall = function(file, event){
-	if(!$scope.$flow.isUploading()){
-	  console.log("not uploading!");
-	  while($scope.$flow.files[0]){
-	    $scope.$flow.removeFile($scope.$flow.files[0]);
-	  }
-	}
-        if (angular.element(event.srcElement).scope().form){
-	  //replace file
+      form.addedCall = function (file, event) {
+        if (!$scope.$flow.isUploading()) {
+          while ($scope.$flow.files[0]) {
+            $scope.$flow.removeFile($scope.$flow.files[0]);
+          }
+        }
+        if (angular.element(event.srcElement).scope().form) {
+          //replace file
           file.asset = angular.element(event.srcElement).scope().form.subform.asset;
-	  file.asset.file = file.file;
+          file.asset.file = file.file;
           file.asset.asset.creation = {date: Date.now(), name: file.file.name};
           form.save(angular.element(event.srcElement).scope().form.subform);
         }
-        else{
+        else {
           //new asset
-          file.asset = form.data.assets[form.add()-1];
+          file.asset = form.data.assets[form.add() - 1];
           file.asset.file = file.file; //improve with ng-model
           page.models.asset.fileAddedImmediateUpload(file);
         }
       };
 
-      form.assetCall = function(file){
+      form.assetCall = function (file) {
         var data = {};
         data.name = file.asset.name;
         data.classification = page.classification[file.asset.classification];
-        data.excerpt = page.classification[file.asset.excerpt]; 
+        data.excerpt = page.classification[file.asset.excerpt];
         data.container = form.slot.container.id;
         data.upload = file.uniqueIdentifier;
 
-        page.models.asset.assetCall(form.volume.id, data).then(function(res){
+        page.models.asset.assetCall(form.volume.id, data).then(function (res) {
           file.asset.asset = res.data.asset;
-          file.asset.asset.creation = {date: Date.now(), name: file.file.name};  
+          file.asset.asset.creation = {date: Date.now(), name: file.file.name};
         });
       };
 
-      form.perFileProgress = function(file){
+      form.perFileProgress = function (file) {
         file.asset.fileUploadProgress = file.progress();
       };
 
-      form.updateExcerptChoice = function(sub, first){
-	if (first && sub.asset.asset){
-	  sub.asset.excerpt = page.constants.data.classification[sub.asset.excerpt];
-	  return;
-	}
-	else if(sub.excerptOn){ 
+      form.updateExcerptChoice = function (sub, first) {
+        if (first && sub.asset.asset) {
+          sub.asset.excerpt = page.constants.data.classification[sub.asset.excerpt];
+          return;
+        }
+        else if (sub.excerptOn) {
           sub.asset.excerpt = page.constants.data.classification[0];
         }
-        else{
+        else {
           sub.asset.excerpt = "";
         }
       };
 
-      form.excerptOptions = function(cName){
-        var f = function(x) {return page.classification[x] > page.classification[cName];}; //string compare. if we get more than 10 must use parseInt
-        var l =  page.$filter('filter')(page.constants.data.classification, f);
+      form.excerptOptions = function (cName) {
+        var f = function (x) {
+          return page.classification[x] > page.classification[cName];
+        }; //string compare. if we get more than 10 must use parseInt
+        var l = page.$filter('filter')(page.constants.data.classification, f);
         l.unshift(page.constants.data.classification[0]);
         return l;
       };
 
-      $scope.totalProgress = function(){
+      $scope.totalProgress = function () {
         form.totalProgress = $scope.$flow.progress();
       };
 
@@ -115,13 +116,13 @@ module.directive('volumeEditMaterialsForm', [
         }
 
         var classification = page.classification[subform.asset.classification];
-	var excerpt;
-	if (subform.asset.excerpt === 0 || subform.asset.excerpt){
-	  excerpt = page.classification[subform.asset.excerpt];
-	}
-	else {
-	  excerpt = "";
-	}
+        var excerpt;
+        if (subform.asset.excerpt === 0 || subform.asset.excerpt) {
+          excerpt = page.classification[subform.asset.excerpt];
+        }
+        else {
+          excerpt = "";
+        }
         if (subform.asset.file) {
           var fd = new FormData();
           fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this
@@ -329,7 +330,7 @@ module.directive('volumeEditMaterialsForm', [
 
         return form.data.assets.push({
           classification: 'SHARED',
-          excerpt: '' 
+          excerpt: ''
         });
       };
 
@@ -394,26 +395,23 @@ module.directive('volumeEditMaterialsForm', [
         });
       };
 
-      form.makeThumbData = function(context){
-	    return{
-	      container: context.volumeEditMaterialsForm.slot.container,
-	      asset: context.asset.asset
-	    };
+      form.makeThumbData = function (context) {
+        return{
+          container: context.volumeEditMaterialsForm.slot.container,
+          asset: context.asset.asset
+        };
       };
 
-      var r = 0;
-      window.onscroll = function(){
-	    var x = $('#sticky-buttons');
-	    if(x && x.offset()){   
-	      if(window.pageYOffset + 36 + 10 >= x.offset().top){
-		  x.addClass('stick');
-		  if(r === 0) r = window.pageYOffset;
-	      }
-	      if(window.pageYOffset < r){
-		  x.removeClass('stick');
-	      }
-	    }
-      };
+      var $float = $('.vem-float');
+      var $floater = $('.vem-float-floater');
+
+      page.$w.scroll(function () {
+        if (window.pageYOffset + (24 * 1.5) >= $float.offset().top) {
+          $floater.addClass('float');
+        } else {
+          $floater.removeClass('float');
+        }
+      });
 
       page.events.talk('volumeEditMaterialsForm-init', form, $scope);
     };
