@@ -7,6 +7,11 @@ module.directive('authGrantForm', [
 
       form.party = page.$parse($attrs.party)($scope) || undefined;
       form.other = page.$parse($attrs.other)($scope) || undefined;
+      if(!form.other.expires){
+	var d = new Date();
+	d.setFullYear(d.getFullYear()+2);
+	form.other.expires = d.getTime();
+      }
       var backup = {};
 
       form.other.member = form.other.member || 0;
