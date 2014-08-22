@@ -2,7 +2,6 @@
 
 module.config([
   '$provide', function ($provide) {
-
     $provide.decorator('$resource', [
       '$delegate', '$cacheFactory', function ($resource, $cacheFactory) {
         return function (url, params, actions, options) {
