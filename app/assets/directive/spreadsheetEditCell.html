@@ -1,4 +1,4 @@
-<div ng-switch="type">
+<div ng-switch="type" class="spreadsheet-edit">
   <input ng-switch-when="text" name="edit" type="text" ng-model="input.value" ng-blur="unedit()"/>
   <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" ng-blur="unedit()"/>
   <input ng-switch-when="number" name="edit" type="number" ng-model="input.value" ng-blur="unedit()"/>
