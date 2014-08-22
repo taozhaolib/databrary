@@ -36,7 +36,7 @@ module.directive('spreadsheet', [
     var pseudoMetrics = {
       id: {
 	id: 'id',
-	name: 'name',
+	name: 'id',
 	type: 'number',
 	classification: page.classification.PUBLIC
       },
@@ -101,7 +101,7 @@ module.directive('spreadsheet', [
 
 	var rows = new Array(count); // [Row] :: DOM Element tr
 
-	var ss = document.getElementById('ss');
+	var table = document.getElementById('spreadsheet-table');
 
 	///////////////////////////////// Populate data structures 
 
@@ -269,8 +269,6 @@ module.directive('spreadsheet', [
 	  var cell;
 	  row.id = 'ss_' + i;
 	  row.data = i;
-	  if (slot.top)
-	    row.classList.add('ss-top');
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
@@ -317,13 +315,21 @@ module.directive('spreadsheet', [
 	}
 
 	///////////////////////////////// Place DOM elements
+	
+	var tbody_main = document.getElementById('ss');
+	var tbody_top = document.getElementById('ss-top');
+
+	function tbody(i) {
+	  return slots[i].top ? tbody_top : tbody_main;
+	}
 
 	/* Place all rows into spreadsheet. */
 	function fill() {
-	  for (var i = 0; i < count; i ++) {
-	    var row = rows[order[i]];
-	    collapse(order[i], row);
-	    ss.appendChild(row);
+	  for (var o = 0; o < count; o ++) {
+	    var i = order[o];
+	    var row = rows[i];
+	    collapse(i, row);
+	    tbody(i).appendChild(row);
 	  }
 	}
 
@@ -364,10 +370,11 @@ module.directive('spreadsheet', [
 	/* Collapse a row and return true if it was previously expanded. */
 	function collapse(i, row) {
 	  var el;
+	  var p = row.parentNode; // tbody(i)
 	  if (!((el = row.nextSibling) && el.data === i))
 	    return false;
 	  do {
-	    ss.removeChild(el);
+	    p.removeChild(el);
 	  } while ((el = row.nextSibling) && el.data === i);
 
 	  for (el = row.firstChild; el && !el.id.startsWith("ss-rec_"); el = el.nextSibling)
@@ -387,8 +394,9 @@ module.directive('spreadsheet', [
 	    return;
 	  var next = row.nextSibling;
 	  var el;
+	  var p = tbody(i);
 	  for (var n = 1; n < max; n ++) {
-	    el = ss.insertBefore(document.createElement('tr'), next);
+	    el = p.insertBefore(document.createElement('tr'), next);
 	    el.data = i;
 	    generateRecords(el, i, n);
 	  }
@@ -429,7 +437,7 @@ module.directive('spreadsheet', [
 	      angular.forEach(depends[ri], function (n, i) {
 		records[info.category][m][n][i] = value;
 	      });
-	      var l = ss.getElementsByClassName('ss-rec_' + ri + '_' + m);
+	      var l = table.getElementsByClassName('ss-rec_' + ri + '_' + m);
 	      for (var li = 0; li < l.length; li ++)
 		generateText(l[li], info.metric, value, metric.assumed);
 	      return;
@@ -532,8 +540,6 @@ module.directive('spreadsheet', [
 	$scope.click = function (event) {
 	  var el = event.target;
 	  if (el.tagName !== 'TD')
-	    return;
-	  if (el.parentElement.parentElement !== ss)
 	    return;
 	  var info = parseCellId(el.id);
 	  if (!info)
