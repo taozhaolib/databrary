@@ -15,6 +15,7 @@ error.offset=Position in seconds expected
 error.date=
 citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format is not supported.
+file.size.invalid=File size must be greater than 0.
 file.invalid=This does not appear to be a valid file ({0}).
 file.superseded=That file has already been replaced.
 measure.unknown=Invalid or unknown type of measure.
