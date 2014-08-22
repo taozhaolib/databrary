@@ -39,17 +39,17 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
     async.AWAIT {
       row.SELECT("ORDER BY id").apply().list
     }
-  private val byId = list.map(c => (c.id.unId, c)).toMap
+  private val byId = list.map(c => (c.id, c)).toMap
   private val byName = list.map(c => (c.name, c)).toMap
 
-  def get(id : Id) : Option[RecordCategory] = byId.get(id.unId)
+  def get(id : Id) : Option[RecordCategory] = byId.get(id)
   def getName(name : String) : Option[RecordCategory] = byName.get(name)
   def getAll : Seq[RecordCategory] = list
 
   def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
     SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL ORDER BY category")
       .apply(volume.id)
-      .list(SQLCols[RecordCategory.Id].map(i => byId(i.unId)))
+      .list(SQLCols[RecordCategory.Id].map(byId(_)))
 
   val Participant = byName("participant")
 }

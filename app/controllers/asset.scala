@@ -62,6 +62,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 	  /* or, like, just conflicting options, whatever: */
 	  form.file.withError("error.required")._throw
       }
+      _ <- when(file.file.length <= 0,
+	form.file.withError("file.size.invalid")._throw)
       asset <- ifmt
 	.orElse(ftype.flatMap(AssetFormat.getMimetype(_)))
 	.orElse(fname.flatMap(AssetFormat.getFilename(_)))
@@ -255,7 +257,9 @@ object AssetApi extends AssetController with ApiController {
 
   def uploadStart(filename : String, size : Long) =
     SiteAction.access(Permission.PUBLIC).async { implicit request =>
-      for {
+      if (size <= 0)
+	async(BadRequest(JsonObject('size -> Seq(Messages("file.size.invalid"))).js))
+      else for {
 	u <- UploadToken.create(filename)(request.asInstanceOf[AuthSite])
       } yield {
 	val f = new RandomAccessFile(u.file, "rw")

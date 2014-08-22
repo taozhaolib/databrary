@@ -84,7 +84,7 @@ object FileAsset extends StoreDir("store.master") {
 
 private[store] object Segment extends StoreDir("store.cache") {
   protected def file(id : models.Asset.Id, ext : String) : File = {
-    val i = id.unId
+    val i = id._id
     new File(new File(baseDir, (i & 0xff).formatted("%02x")), (i >> 8).formatted("%06x") + ext)
   }
 

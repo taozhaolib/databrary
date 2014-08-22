@@ -11,7 +11,8 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], url_ : Option[URL] = None) extends TableRowId[Party] with SitePage {
+final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], url_ : Option[URL] = None)
+  extends TableRowId[Party] with SitePage {
   private[this] var _name = name_
   def name = _name
   private[this] var _orcid = orcid_
@@ -74,7 +75,8 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     )
 }
 
-final class SiteParty(access : Access)(implicit val site : Site) extends SiteObject {
+final class SiteParty(access : Access)(implicit val site : Site)
+  extends SiteObject {
   assert(access.identity === site.identity)
   def party = access.target
   def id = party.id
@@ -121,12 +123,13 @@ final class SiteParty(access : Access)(implicit val site : Site) extends SiteObj
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[URL]) extends TableRowId[Party] {
+final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[URL])
+  extends TableRowId[Party] {
   def ===(a : Party) = party === a
 
   party._account = Some(this)
 
-  val id = party.id
+  val id : Account.Id = party.id
   private[this] var _email = email_
   def email = _email
   private[this] var _password = password_
@@ -184,6 +187,8 @@ object Party extends TableId[Party]("party") {
     case i if i === site.identity.id => Some(site.identity)
     case _ => None
   }
+  private[models] def _get(i : Id) : Future[Party] =
+    row.SELECT("WHERE id = ?").apply(i).single
   /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] =
     getStatic(i).fold {
@@ -236,14 +241,14 @@ object Party extends TableId[Party]("party") {
     .apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)) ++ authorize.fold(SQLArgs())(a => SQLArgs(a.id) * 3) ++ volume.fold(SQLArgs())(v => SQLArgs(v.id)))
     .list
 
-  final val NOBODY : Id = asId(-1)
-  final val ROOT   : Id = asId(0)
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Nobody = new Party(NOBODY, "Everybody", None, None)
+  final val Nobody = new Party(asId(-1), "Everybody", None, None)
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Root   = new Party(ROOT,   "Databrary", None, None)
+  final val Root   = new Party(asId(0),  "Databrary", None, None)
+  final val NOBODY : Id = Nobody.id
+  final val ROOT   : Id = Root.id
 }
 
 object SiteParty {

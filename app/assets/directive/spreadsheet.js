@@ -198,7 +198,7 @@ module.directive('spreadsheet', [
 	///////////////////////////////// Generate HTML
 	
 	/* Find the text content of cell c with element t */
-	function cellText(c, t) {
+	function setCell(c, t) {
 	  var el = c.lastChild;
 	  if (el && el.nodeType === 3)
 	    c.replaceChild(t, el);
@@ -228,7 +228,7 @@ module.directive('spreadsheet', [
 	    }
 	  } else if (typeof v === 'string' && v.length >= MAXLEN)
 	    v = v.substr(0, MAXLEN) + '...';
-	  cellText(c, document.createTextNode(v));
+	  setCell(c, document.createTextNode(v));
 	}
 
 	/* Add a td element to tr r with value c and id i */
@@ -491,7 +491,7 @@ module.directive('spreadsheet', [
 	      break;
 	  }
 	  var e = editCell(editScope, function (e) {
-	    cellText(cell, editing = e[0]);
+	    cell.insertBefore(editing = e[0], cell.firstChild);
 	    cell.classList.add('editing');
 	    page.tooltips.clear();
 	  });

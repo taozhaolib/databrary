@@ -73,14 +73,14 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     Seq(Video, Image) ++ async.AWAIT {
       row.SELECT("WHERE id > 0 ORDER BY id").apply().list
     }
-  private val byId : scala.collection.immutable.Map[Int, AssetFormat] =
-    list.map(f => f.id.unId -> f).toMap
+  private val byId : scala.collection.immutable.Map[Id, AssetFormat] =
+    list.map(f => f.id -> f).toMap
 
   /** Lookup a format by its id. */
   def get(id : Id) : Option[AssetFormat] =
-    byId.get(id.unId)
+    byId.get(id)
   private[models] def getTimeseries(id : Id) : Option[TimeseriesFormat] =
-    byId.get(id.unId).flatMap(cast[TimeseriesFormat](_))
+    byId.get(id).flatMap(cast[TimeseriesFormat](_))
   /** Lookup a format by its mimetime. */
   def getMimetype(mimetype : String) : Option[AssetFormat] =
     list.find(_.mimetype.equals(mimetype))

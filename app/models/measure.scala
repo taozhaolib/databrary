@@ -55,7 +55,8 @@ private[models] object MeasureType {
   * @param classification privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val classification : Classification.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T]) extends TableRowId[Metric[_]] {
+final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val classification : Classification.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T])
+  extends TableRowId[Metric[_]] {
   final def dataType = measureType.dataType
   final def sqlType : SQLType[T] = measureType.sqlType
   final def assumed : Option[T] = _assumed.map(measureType.fromString)
@@ -87,14 +88,14 @@ object Metric extends TableId[Metric[_]]("metric") {
     async.AWAIT {
       row.SELECT("ORDER BY id").apply().list
     }
-  private val byId : scala.collection.immutable.Map[Int, Metric[_]] =
-    list.map(c => (c.id.unId, c)).toMap
+  private val byId : scala.collection.immutable.Map[Metric.Id, Metric[_]] =
+    list.map(c => (c.id, c)).toMap
   private val byName : scala.collection.immutable.Map[String, Metric[_]] =
     list.map(c => (c.name, c)).toMap
 
   /** Retrieve a single metric by id.
     * Metrics are strongly cached, so this provides a synchronous interface which may block on occasion. */
-  def get(id : Id) : Option[Metric[_]] = byId.get(id.unId)
+  def get(id : Id) : Option[Metric[_]] = byId.get(id)
   /** Retrieve a single metric by name.
     * Like getAll, this only includes already-retrieved (by get) metrics. */
   def getName(name : String) : Option[Metric[_]] = byName.get(name)
@@ -106,7 +107,7 @@ object Metric extends TableId[Metric[_]]("metric") {
     SQL("SELECT metric, ident FROM record_template WHERE category = ?")
     .apply(category)
     .list(SQLCols[Metric.Id, Boolean].map { (m, i) =>
-      (byId(m.unId), i)
+      (byId(m), i)
     })
 
   final val Ident : Metric[String] = _getName[String]("ident")
@@ -197,7 +198,8 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
 
 case class Measures(list : IndexedSeq[Measure[_]]) {
   private def find(id : Metric.Id) : Option[Measure[_]] =
-    list.find(_.metricId.unId >= id.unId).filter(_.metricId === id)
+    // These are in order, so the find at least saves half a traversal
+    list.find(_.metricId._id >= id._id).filter(_.metricId === id)
 
   def datum(metric : Metric[_]) : Option[String] =
     find(metric.id).map(_.datum)

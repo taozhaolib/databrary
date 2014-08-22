@@ -7,35 +7,23 @@ import macros._
 import dbrary._
 import site._
 
-private[models] trait HasTable {
-  /** Name of the database table. */
-  private[models] def table : String
-  protected implicit def fromTable : FromTable = FromTable(table)
-}
-
 /** Any class that more-or-less corresponds to a row in a database table. */
 private[models] trait TableRow {
   private[models] def sqlKey : SQLTerms
 }
+
 /** Any class that corresponds to a row in a database table with a primary key. */
-private[models] trait TableRowId[+T] extends TableRow {
-  /** Primary key. */
+private[models] trait TableRowId[T] extends TableRow with HasId[T] {
   val id : IntId[T]
-  private[models] def sqlKey = SQLTerms('id -> id)
-  override def hashCode = id.unId
-  /** Equality based on primary key. */
-  final def ===[X >: T](a : TableRowId[X]) = id === a.id
-  /** Equality is based on primary key.
-    * This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred. */
-  override def equals(a : Any) = a match {
-    case a : TableRowId[T] => ===(a)
-    case _ => false
-  }
-  override def toString = super.toString + "(" + id + ")"
+  def _id : Int = id._id
+  private[models] def sqlKey = SQLTerms('id -> _id)
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
-private[models] trait TableView extends HasTable {
+private[models] trait TableView {
+  /** Name of the database table. */
+  private[models] def table : String
+  protected implicit def fromTable : FromTable = FromTable(table)
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
   private[models] lazy val tableOID : Long = async.AWAIT {
     SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
@@ -60,5 +48,5 @@ private[models] trait TableView extends HasTable {
 private[models] abstract class Table[R] protected (private[models] val table : String) extends TableView {
   type Row = R
 }
-private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with HasId[R]
+private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with ProvidesId[R]
 
