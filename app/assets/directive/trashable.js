@@ -2,8 +2,8 @@
 //to be paired with directive trash. 'outside' is a shared parent scope
 
 module.directive('trashable', [
-  'pageService', function (page) {
-    var link = function ($scope, $el, $attr) {
+  function () {
+    var link = function ($scope, $el) {
 
       $el.addClass("trashable");
 

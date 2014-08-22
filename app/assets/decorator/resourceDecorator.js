@@ -2,9 +2,6 @@
 
 module.config([
   '$provide', function ($provide) {
-    var isCallable = function (fn) {
-      angular.isFunction(fn);
-    };
 
     $provide.decorator('$resource', [
       '$delegate', '$cacheFactory', function ($resource, $cacheFactory) {
