@@ -162,7 +162,6 @@ module.directive('spreadsheet', [
 	/* Fill metricCols and recordCols from records */
 	function populateCols() {
 	  metricCols = [];
-          var last = null;
 	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var category = page.constants.data.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
