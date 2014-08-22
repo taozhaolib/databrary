@@ -75,6 +75,10 @@ trait AuthSite extends Site {
   final def access = token.access
 }
 
+object AnonSite extends AnonSite {
+  val clientIP = Inet("0.0.0.0")
+}
+
 final class LocalAuth(val access : Access, val superuser : Boolean = false) extends Site {
   val clientIP = Inet("0.0.0.0")
 }

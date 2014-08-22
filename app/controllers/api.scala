@@ -61,7 +61,7 @@ object SiteApi extends SiteController {
     , ('metric, JsonRecord.map[Metric[_]](_.json)(Metric.getAll))
     , ('category, JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll))
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
-    , ('party, JsonObject(('NOBODY, Party.NOBODY), ('ROOT,Party.ROOT)))
+    , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
     , ('locked, json.JsBoolean(Site.locked))
     , ('version, json.JsString(site.Site.version))

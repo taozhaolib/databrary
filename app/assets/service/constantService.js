@@ -51,6 +51,13 @@ module.factory('constantService', [
       constants.data.permissionName.CONTRIBUTE = constants.data.permissionName.EDIT;
       constants.data.permissionName.SUPER = constants.data.permission.length;
 
+      /* backwards compatibility: */
+      angular.forEach(constants.data.party, function (party, name) {
+	var uname = name.toUpperCase();
+	if (angular.isObject(party) && name !== uname)
+	  constants.data.party[uname] = party.id;
+      });
+
       makePresets();
 
       Object.freeze(constants.data);
