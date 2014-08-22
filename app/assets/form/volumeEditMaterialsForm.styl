@@ -43,17 +43,38 @@
   top -b6
   padding-right b6
 
-form fieldset
-  .drop-zone
-     border 2px solid black
-     &.over-form
-     	border 4px solid black
-     &.over-zone
-     	border 4px solid green
-  .file-thumb
-     height 50px
-     width 50px
-  .trash
-     border 2px solid black
-  .trashable
-     border 2px solid black
+.vem-repeat
+  position relative
+
+.vem-repeat-grip
+  position absolute
+  top b2
+  left 0
+  bottom b2
+  width b1
+  border-radius b1
+  border 1px solid yellow31
+  draggable()
+
+.vem-repeat-gripper
+  position absolute
+  left b8 + b12
+  width b2
+  margin-top -b1
+  top 50%
+  height 2
+  border-radius b1
+  border 1px solid gray
+
+.vem-repeat-content
+  margin-left 1.5
+
+.vem-file-dropzone
+  @extend input
+  transition background trans-time trans-ease
+
+  &.over-form
+    background-color yellow51
+
+  &.over-zone
+    background-color green51
