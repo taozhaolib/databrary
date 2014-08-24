@@ -22,17 +22,34 @@
     position relative
 
   td.null
-    border 0
     background-color pale
 
   td.assumed
     color gray
 
+  td.more
+    &:before
+      content ''
+      border-top b2 solid green
+      border-right b2 solid transparent
+      position absolute
+      left 0
+      top 0
+
+  td.add
+    // TODO
+    text-align center
+    font-style italic
+
   a.link
     background-image url('/public/images/icon/play.png')
     display inline-block
 
-#spreadsheet-head-cats
+  td.consent
+    top b3
+    left b2
+
+#spreadsheet-head-groups
   th
     &:before
       content ''

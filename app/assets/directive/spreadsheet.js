@@ -30,6 +30,9 @@ module.directive('spreadsheet', [
 	if (isNaN(info.metric = parseInt(s[4])))
 	  info.metric = s[4];
       }
+      if (info.type === 'add') {
+	info.category = parseInt(s[2]);
+      }
       return info;
     }
 
@@ -172,14 +175,15 @@ module.directive('spreadsheet', [
 	      metrics.sort(byNumber);
 	    else // add id if there's nothing else
 	      metrics = ['id'];
+	    var si = metricCols.length;
 	    metricCols.push.apply(metricCols, metrics.map(function (m, i) {
 	      return {
 		category: category,
-		metric: getMetric(m),
-                cls: i === 0 ? ['first'] : []
+		metric: getMetric(m)
 	      };
 	    }));
-            metricCols[metricCols.length-1].cls.push('last');
+	    var l = metrics.length;
+	    metricCols[si].first = metricCols[si+l-1].last = l;
 	    return {
 	      category: c,
 	      metrics: metrics
@@ -242,6 +246,14 @@ module.directive('spreadsheet', [
 	  return td;
 	}
 
+	function generateAdd(r, i, c, l) {
+	  var td = r.appendChild(document.createElement('td'));
+	  td.setAttribute("colspan", l);
+	  td.appendChild(document.createTextNode("add " + c.name));
+	  td.id = 'ss-add_' + i + '_' + c;
+	  td.className = 'add';
+	}
+
 	/* Add all the record/measure tds to row i for count n */
 	function generateRecords(row, i, n) {
 	  var count = counts[i];
@@ -249,8 +261,14 @@ module.directive('spreadsheet', [
 	    var col = metricCols[mi];
 	    var c = col.category.id;
 	    var m = col.metric.id;
+	    var t = count[c] || 0;
 	    var v;
-	    if (n >= (count[c] || 0))
+	    if (editable && n === t) {
+	      if (col.first)
+		generateAdd(row, i, col.category, col.first);
+	      continue;
+	    }
+	    if (n >= t)
 	      v = null;
 	    else
 	      v = records[c][m][n][i];
@@ -259,6 +277,8 @@ module.directive('spreadsheet', [
 	      var ri = 'ss-rec_' + records[c].id[n][i];
 	      cell.classList.add(ri, ri + '_' + m);
 	    }
+	    if (col.first && n === 0 && t > 1)
+	      cell.classList.add('more');
 	  }
 	}
 
@@ -278,11 +298,6 @@ module.directive('spreadsheet', [
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
 	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
 	  generateRecords(row, i, 0);
-	  if (maxCount[i] > 1) {
-	    cell = row.appendChild(document.createElement('td'));
-	    cell.appendChild(document.createTextNode('+'));
-	    cell.id = 'ss-exp_' + i;
-	  }
 	}
 
 	/* Update all age displays. */
@@ -325,11 +340,10 @@ module.directive('spreadsheet', [
 
 	/* Place all rows into spreadsheet. */
 	function fill() {
+	  collapse();
 	  for (var o = 0; o < count; o ++) {
 	    var i = order[o];
-	    var row = rows[i];
-	    collapse(i, row);
-	    tbody(i).appendChild(row);
+	    tbody(i).appendChild(rows[i]);
 	  }
 	}
 
@@ -367,8 +381,15 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// Interaction
 	
-	/* Collapse a row and return true if it was previously expanded. */
-	function collapse(i, row) {
+	var expanded;
+
+	/* Collapse any expanded row. */
+	function collapse() {
+	  if (expanded === undefined)
+	    return;
+	  var i = expanded;
+	  expanded = undefined;
+	  var row = rows[i];
 	  var el;
 	  var p = row.parentNode; // tbody(i)
 	  if (!((el = row.nextSibling) && el.data === i))
@@ -386,10 +407,14 @@ module.directive('spreadsheet', [
 	function expand(i) {
 	  var row = rows[i];
 
-	  if (collapse(i, row))
+	  if (expanded === i)
 	    return;
+	  collapse();
+	  expanded = i;
 
 	  var max = maxCount[i];
+	  if (editable)
+	    max ++;
 	  if (max <= 1)
 	    return;
 	  var next = row.nextSibling;
@@ -485,6 +510,7 @@ module.directive('spreadsheet', [
 	      editInput.value = slot.consent + '';
 	      break;
 	    case 'rec':
+	      /* we need a real metric here, not just getMetric: */
 	      var metric = page.constants.data.metric[info.metric];
 	      if (!metric)
 		return;
@@ -496,13 +522,15 @@ module.directive('spreadsheet', [
 	      } else
 		editScope.type = metric.type;
 	      break;
+	    default:
+	      return;
 	  }
 	  var e = editCell(editScope, function (e) {
 	    cell.insertBefore(editing = e[0], cell.firstChild);
 	    cell.classList.add('editing');
-	    page.tooltips.clear();
 	  });
 
+	  page.tooltips.clear();
 	  page.$timeout(function () {
 	    var input = e.children('[name=edit]');
 	    input.focus();
@@ -521,6 +549,8 @@ module.directive('spreadsheet', [
 
 	function select(cell, info) {
 	  unselect();
+
+	  expand(info.i);
 
 	  if (info.type === 'rec') {
 	    var cl = cell.classList;
@@ -545,12 +575,9 @@ module.directive('spreadsheet', [
 	  if (!info)
 	    return;
 
-	  if (info.type === 'exp')
-	    expand(info.i);
-	  else if (info.metric === 'age')
+	  select(el, info);
+	  if (info.metric === 'age')
 	    page.display.toggleAge();
-	  else
-	    select(el, info);
 	};
 
 	///////////////////////////////// main
