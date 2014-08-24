@@ -21,17 +21,15 @@ module.directive('spreadsheet', [
     function parseCellId(id) {
       var info = {};
       var s = id.split('_');
-      if ((info.type = stripPrefix(s[0], 'ss-')) === undefined ||
+      if ((info.t = stripPrefix(s[0], 'ss-')) === undefined ||
 	  isNaN(info.i = parseInt(s[1])))
 	return;
-      if (info.type === 'rec') {
+      if (info.t === 'rec') {
 	info.n = parseInt(s[2]);
-	info.category = parseInt(s[3]);
-	if (isNaN(info.metric = parseInt(s[4])))
-	  info.metric = s[4];
+	info.m = parseInt(s[3]);
       }
-      if (info.type === 'add') {
-	info.category = parseInt(s[2]);
+      if (info.t === 'add') {
+	info.c = parseInt(s[2]);
       }
       return info;
     }
@@ -50,6 +48,7 @@ module.directive('spreadsheet', [
 	classification: page.classification.SHARED
       },
     };
+    Object.freeze(pseudoMetrics);
 
     function getMetric(m) {
       return pseudoMetrics[m] || page.constants.data.metric[m];
@@ -272,7 +271,7 @@ module.directive('spreadsheet', [
 	      v = null;
 	    else
 	      v = records[c][m][n][i];
-	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + c + '_' + m, col.metric.assumed);
+	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
 	    if (v !== null) {
 	      var ri = 'ss-rec_' + records[c].id[n][i];
 	      cell.classList.add(ri, ri + '_' + m);
@@ -307,17 +306,22 @@ module.directive('spreadsheet', [
 	    if (m.metric.id !== 'age')
 	      continue;
 	    var c = m.category.id;
-	    var r = records[c][m.metric.id];
-	    var post = '_' + c + '_age';
+	    var r = records[c][m.metric.id][0];
+	    var post = '_0_' + mi;
 	    for (var i = 0; i < count; i ++) {
-	      var pre = 'ss-rec_' + i + '_';
-	      for (var n = 0; n < counts[i][c]; n ++) {
-		var el = document.getElementById(pre + n + post);
-		if (!el)
-		  break;
-		generateText(el, 'age', r[n][i]);
+	      if (counts[i][c]) {
+		var el = document.getElementById('ss-rec_' + i + post);
+		if (el)
+		  generateText(el, 'age', r[i]);
 	      }
 	    }
+	    if (expanded !== undefined)
+	      r = records[c][m.metric.id];
+	      for (var n = 0; n < counts[expanded][c]; n ++) {
+		generateText(
+		    document.getElementById('ss-rec_' + expanded + '_' + n + '_' + mi),
+		    'age', r[n][expanded]);
+	      }
 	  }
 	}
 
@@ -435,7 +439,7 @@ module.directive('spreadsheet', [
 	  var slot = slots[info.i];
 	  if (value === '')
 	    value = undefined;
-	  switch (info.type) {
+	  switch (info.t) {
 	    case 'name':
 	      slot.name = value;
 	      break;
@@ -446,9 +450,11 @@ module.directive('spreadsheet', [
 	      slot.consent = value = parseInt(value);
 	      break;
 	    case 'rec':
-	      var m = info.metric;
-	      var metric = page.constants.data.metric[m];
-	      var ri = records[info.category].id[info.n][info.i];
+	      var col = metricCols[info.m];
+	      var metric = col.metric;
+	      var m = metric.id;
+	      var rc = records[col.category.id];
+	      var ri = rc.id[info.n][info.i];
 	      switch (metric.type) {
 		case 'date':
 		  value = value && page.$filter('date')(value, 'yyyy-MM-dd');
@@ -459,15 +465,16 @@ module.directive('spreadsheet', [
 	      }
 	      volume.records[ri].measures[m] = value;
 
+	      var r = rc[m];
 	      angular.forEach(depends[ri], function (n, i) {
-		records[info.category][m][n][i] = value;
+		r[n][i] = value;
 	      });
 	      var l = table.getElementsByClassName('ss-rec_' + ri + '_' + m);
 	      for (var li = 0; li < l.length; li ++)
-		generateText(l[li], info.metric, value, metric.assumed);
+		generateText(l[li], m, value, metric.assumed);
 	      return;
 	  }
-	  generateText(cell, info.type, value);
+	  generateText(cell, info.t, value);
 	}
 
 	var editScope = $scope.$new(true);
@@ -496,7 +503,7 @@ module.directive('spreadsheet', [
 
 	function edit(cell, info) {
 	  var slot = slots[info.i];
-	  switch (info.type) {
+	  switch (info.t) {
 	    case 'name':
 	      editScope.type = 'text';
 	      editInput.value = slot.name;
@@ -510,12 +517,14 @@ module.directive('spreadsheet', [
 	      editInput.value = slot.consent + '';
 	      break;
 	    case 'rec':
-	      /* we need a real metric here, not just getMetric: */
-	      var metric = page.constants.data.metric[info.metric];
-	      if (!metric)
+	      var col = metricCols[info.m];
+	      var metric = col.metric;
+	      var m = metric.id;
+	      /* we need a real metric here: */
+	      if (typeof m !== 'number')
 		return;
-	      var ri = records[info.category].id[info.n][info.i];
-	      editInput.value = volume.records[ri].measures[metric.id];
+	      var ri = records[col.category.id].id[info.n][info.i];
+	      editInput.value = volume.records[ri].measures[m];
 	      if (metric.options) {
 		editScope.type = 'select';
 		editScope.options = metric.options;
@@ -552,7 +561,7 @@ module.directive('spreadsheet', [
 
 	  expand(info.i);
 
-	  if (info.type === 'rec') {
+	  if (info.t === 'rec') {
 	    var cl = cell.classList;
 	    for (var ci = 0; ci < cl.length; ci ++) {
 	      var c = cl[ci];
@@ -576,7 +585,7 @@ module.directive('spreadsheet', [
 	    return;
 
 	  select(el, info);
-	  if (info.metric === 'age')
+	  if (metricCols[info.m].metric.id === 'age')
 	    page.display.toggleAge();
 	};
 
