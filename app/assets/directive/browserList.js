@@ -75,13 +75,7 @@ module.directive('browserList', [
       };
 
       $scope.recordIdentifier = function (record) {
-        var ident = [];
-        angular.forEach(page.constants.data.category[record.category].ident || [page.metric.ident.id], function (i) {
-          if (i in record.measures)
-            ident.push(record.measures[i]);
-        });
-
-        return ident.join(', ');
+	return page.types.recordName(record);
       };
 
       $scope.getMeasures = function (data) {

@@ -3,15 +3,24 @@
 module.directive('spreadsheet', [
   'pageService', function (page) {
     var MAXLEN = 16; // maximum number of records per category per slot
+    function maybeInt(s) {
+      var i = parseInt(s);
+      return isNaN(i) ? s : i;
+    }
     function byNumber(a,b) { return a-b; }
-    function byString(a,b) { return a>b?1:a<b?-1:0; }
     function byType(a,b) {
       var ta = typeof a;
       var tb = typeof b;
       if (ta > tb) return 1;
       if (ta < tb) return -1;
-      if (ta == 'number') return a-b;
       return a>b?1:a<b?-1:0;
+    }
+    function byMagic(a,b) {
+      var na = parseFloat(a);
+      var nb = parseFloat(b);
+      if (na > nb) return 1;
+      if (na < nb) return -1;
+      return byType(a,b);
     }
 
     function stripPrefix(s, prefix) {
@@ -126,6 +135,15 @@ module.directive('spreadsheet', [
 	    var record = volume.records[slot.records[ri].id];
 	    var c = record.category;
 
+	    // populate depends:
+	    if (record.id in depends) {
+	      // skip duplicates:
+	      if (i in depends[record.id])
+		continue;
+	      depends[record.id][i] = n;
+	    } else
+	      depends[record.id] = {i:n};
+
 	    // populate records:
 	    if (c in records)
 	      r = records[c];
@@ -150,12 +168,6 @@ module.directive('spreadsheet', [
 	      populateMeasure('age', slot.records[ri].age);
 	    for (var m in record.measures)
 	      populateMeasure(m, record.measures[m]);
-
-	    // populate depends:
-	    if (record.id in depends)
-	      depends[record.id][i] = n;
-	    else
-	      depends[record.id] = {i:n};
 	  }
 
 	  maxCount[i] = max;
@@ -169,9 +181,9 @@ module.directive('spreadsheet', [
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
 	      return m !== 'id' && !getMetric(m).long;
-	    });
+	    }).map(maybeInt);
 	    if (metrics.length)
-	      metrics.sort(byNumber);
+	      metrics.sort(byType);
 	    else // add id if there's nothing else
 	      metrics = ['id'];
 	    var si = metricCols.length;
@@ -249,12 +261,12 @@ module.directive('spreadsheet', [
 	  var td = r.appendChild(document.createElement('td'));
 	  td.setAttribute("colspan", l);
 	  td.appendChild(document.createTextNode("add " + c.name));
-	  td.id = 'ss-add_' + i + '_' + c;
+	  td.id = 'ss-add_' + i + '_' + c.id;
 	  td.className = 'add';
 	}
 
 	/* Add all the record/measure tds to row i for count n */
-	function generateRecords(row, i, n) {
+	function generateRecords(row, i, n, edit) {
 	  var count = counts[i];
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var col = metricCols[mi];
@@ -262,7 +274,7 @@ module.directive('spreadsheet', [
 	    var m = col.metric.id;
 	    var t = count[c] || 0;
 	    var v;
-	    if (editable && n === t) {
+	    if (edit && n === t) {
 	      if (col.first)
 		generateAdd(row, i, col.category, col.first);
 	      continue;
@@ -296,7 +308,7 @@ module.directive('spreadsheet', [
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
 	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
-	  generateRecords(row, i, 0);
+	  generateRecords(row, i, 0, editable && slot.id !== volume.top.id);
 	}
 
 	/* Update all age displays. */
@@ -354,7 +366,7 @@ module.directive('spreadsheet', [
 	/* Populate order based on compare function applied to values. */
 	function sort(values, compare) {
 	  if (!compare)
-	    compare = byType;
+	    compare = byMagic;
 	  order.sort(function (i, j) {
 	    return compare(values[i], values[j]);
 	  });
@@ -417,7 +429,8 @@ module.directive('spreadsheet', [
 	  expanded = i;
 
 	  var max = maxCount[i];
-	  if (editable)
+	  var edit = editable && slots[i].id !== volume.top.id;
+	  if (edit)
 	    max ++;
 	  if (max <= 1)
 	    return;
@@ -427,42 +440,57 @@ module.directive('spreadsheet', [
 	  for (var n = 1; n < max; n ++) {
 	    el = p.insertBefore(document.createElement('tr'), next);
 	    el.data = i;
-	    generateRecords(el, i, n);
+	    generateRecords(el, i, n, edit);
 	  }
 
 	  for (el = row.firstChild; !el.id.startsWith("ss-rec_"); el = el.nextSibling)
 	    el.setAttribute("rowspan", max);
 	}
 
-	function save(cell, value) {
+	function save(cell, type, value) {
 	  var info = parseCellId(cell.id);
 	  var slot = slots[info.i];
+	  var ri;
 	  if (value === '')
 	    value = undefined;
+	  else switch (type) {
+	    case 'choose':
+	      if (value === 'new') {
+		/* TODO: create new record and add to slot */
+	      } else if (value === 'remove') {
+		/* TODO: remove this record from slot */
+	      } else {
+		ri = parseInt(value);
+		/* TODO: replace current record with ri on slot
+		 * If ri is current record, switch to edit mode? */
+	      }
+	      return;
+	    case 'date':
+	      value = page.$filter('date')(value, 'yyyy-MM-dd');
+	      break;
+	    case 'number':
+	      value = parseFloat(value);
+	      break;
+	    case 'consent':
+	      value = parseInt(value);
+	      break;
+	  }
 	  switch (info.t) {
 	    case 'name':
 	      slot.name = value;
 	      break;
 	    case 'date':
-	      slot.date = value = value && page.$filter('date')(value, 'yyyy-MM-dd');
+	      slot.date = value;
 	      break;
 	    case 'consent':
-	      slot.consent = value = parseInt(value);
+	      slot.consent = value;
 	      break;
 	    case 'rec':
 	      var col = metricCols[info.m];
 	      var metric = col.metric;
 	      var m = metric.id;
 	      var rc = records[col.category.id];
-	      var ri = rc.id[info.n][info.i];
-	      switch (metric.type) {
-		case 'date':
-		  value = value && page.$filter('date')(value, 'yyyy-MM-dd');
-		  break;
-		case 'number':
-		  value = value && parseFloat(value);
-		  break;
-	      }
+	      ri = rc.id[info.n][info.i];
 	      volume.records[ri].measures[m] = value;
 
 	      var r = rc[m];
@@ -483,7 +511,7 @@ module.directive('spreadsheet', [
 	var editCell = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
 	var editing;
 
-	function unedit() {
+	function unedit(event) {
 	  var edit;
 	  if (!(edit = editing))
 	    return;
@@ -491,12 +519,12 @@ module.directive('spreadsheet', [
 	  var cell = edit.parentNode;
 	  if (!cell)
 	    return;
-	  var value = editInput.value;
 	  cell.removeChild(edit);
 	  cell.classList.remove('editing');
 	  page.tooltips.clear();
 
-	  save(cell, value);
+	  if (event && event.type === 'change')
+	    save(cell, editScope.type, editInput.value);
 	}
 
 	editScope.unedit = unedit;
@@ -518,18 +546,40 @@ module.directive('spreadsheet', [
 	      break;
 	    case 'rec':
 	      var col = metricCols[info.m];
-	      var metric = col.metric;
-	      var m = metric.id;
-	      /* we need a real metric here: */
-	      if (typeof m !== 'number')
-		return;
 	      var ri = records[col.category.id].id[info.n][info.i];
-	      editInput.value = volume.records[ri].measures[m];
-	      if (metric.options) {
-		editScope.type = 'select';
-		editScope.options = metric.options;
-	      } else
-		editScope.type = metric.type;
+	      if (!col.first) {
+		var metric = col.metric;
+		var m = metric.id;
+		/* we need a real metric here: */
+		if (typeof m !== 'number')
+		  return;
+		editInput.value = volume.records[ri].measures[m];
+		if (metric.options) {
+		  editScope.type = 'select';
+		  editScope.options = metric.options;
+		} else
+		  editScope.type = metric.type;
+		break;
+	      }
+
+	      var c = col.category;
+	      editInput.value = ri + '';
+	      /* falls through */
+	    case 'add':
+	      if (c === undefined) {
+		c = page.constants.data.category[info.c];
+		editInput.value = 'remove';
+	      }
+	      editScope.type = 'choose';
+	      editScope.options = {
+		'new':'Create new ' + c.name,
+		'remove':'No ' + c.name
+	      };
+	      angular.forEach(volume.records, function (r, ri) {
+		if (r.category === c.id && (!(info.i in depends[ri]) || ri === editInput.value)) {
+		  editScope.options[ri] = page.types.recordName(r);
+		}
+	      });
 	      break;
 	    default:
 	      return;
@@ -585,7 +635,7 @@ module.directive('spreadsheet', [
 	    return;
 
 	  select(el, info);
-	  if (metricCols[info.m].metric.id === 'age')
+	  if ('m' in info && metricCols[info.m].metric.id === 'age')
 	    page.display.toggleAge();
 	};
 

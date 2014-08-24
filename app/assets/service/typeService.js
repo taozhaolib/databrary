@@ -242,6 +242,20 @@ module.factory('typeService', [
     };
 
     //
+    
+    typeService.recordName = function (record) {
+      if (!typeService.isRecord(record))
+        throw new Error('typeService.recordName() requires Record as first argument');
+
+      var cat = constants.data.category[record.category];
+      var ident = [];
+      angular.forEach(cat && cat.ident || [constants.data.metricName.ident.id], function (i) {
+	if (i in record.measures)
+	  ident.push(record.measures[i]);
+      });
+
+      return ident.length ? ident.join(', ') : record.id;
+    };
 
     return typeService;
   }
