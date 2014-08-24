@@ -1,7 +1,7 @@
 'use strict';
 
 module.factory('slot', [
-  '$resource', '$route', function ($resource, $route) {
+  '$resource', '$route', 'routerService', function ($resource, $route, router) {
     return $resource('/api/volume/:vid/slot/:id', {
       id: function () {
         return $route.current.params.id || undefined;
@@ -12,7 +12,9 @@ module.factory('slot', [
       segment: function () {
         return $route.current.params.segment || ',';
       }
-    }, null, {
+    }, {
+      update: router.action(router.controllers.SlotApi.update, ['id', 'segment']),
+    }, {
       cache: 'slot'
     });
   }

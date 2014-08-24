@@ -40,7 +40,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     Action(i, Permission.EDIT).async { implicit request =>
       val form = new RecordController.EditForm()._bind
       for {
-	_ <- request.obj.change(category = form.category.get)
+        _ <- request.obj.change(category = form.category.get)
       } yield (editResult)
     }
 

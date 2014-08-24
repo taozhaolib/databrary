@@ -43,6 +43,8 @@ module.directive('spreadsheet', [
       return info;
     }
 
+    var SAVE = false; // disable commit to server for testing
+
     var pseudoMetrics = {
       id: {
 	id: 'id',
@@ -69,7 +71,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = true || volume.permission >= page.permission.EDIT;
+	var editable = !SAVE || volume.permission >= page.permission.EDIT;
 
 	function getSlot(slot) {
 	  if ('records' in slot)
@@ -140,9 +142,8 @@ module.directive('spreadsheet', [
 	      // skip duplicates:
 	      if (i in depends[record.id])
 		continue;
-	      depends[record.id][i] = n;
 	    } else
-	      depends[record.id] = {i:n};
+	      depends[record.id] = {};
 
 	    // populate records:
 	    if (c in records)
@@ -168,6 +169,8 @@ module.directive('spreadsheet', [
 	      populateMeasure('age', slot.records[ri].age);
 	    for (var m in record.measures)
 	      populateMeasure(m, record.measures[m]);
+
+	    depends[record.id][i] = n;
 	  }
 
 	  maxCount[i] = max;
@@ -395,6 +398,46 @@ module.directive('spreadsheet', [
 	  sortBy(c + '_' + m, records[c][m][0]);
 	};
 
+	///////////////////////////////// Backend saving
+	
+	function saveError() {
+	  // TODO
+	}
+
+	function saveSlot(i, f, v) {
+	  function success() {
+	    var slot = slots[i];
+	    slot[f] = v;
+	    // volume.sessions[slot.id][f] = v; // may be redundant, but that's fine
+	    var el = document.getElementById('ss-' + f + '_' + i);
+	    if (el)
+	      generateText(el, f, v);
+	  }
+	  if (SAVE) {
+	    var data = {};
+	    data[f] = v;
+	    page.models.slot.update(slots[i], data, success, saveError);
+	  } else success();
+	}
+
+	function saveMeasure(r, m, v) {
+	  function success() {
+	    var rec = volume.records[r];
+	    rec.measures[m] = v;
+	    var rcm = records[rec.category][m];
+	    angular.forEach(depends[r], function (n, i) {
+	      rcm[n][i] = v;
+	    });
+	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
+	    var a = page.constants.data.metric[m].assumed;
+	    for (var li = 0; li < l.length; li ++)
+	      generateText(l[li], m, v, a);
+	  }
+	  if (SAVE) {
+	    page.models.record.measureUpdate({id:r,metric:m}, {datum:v}, success, saveError);
+	  } else success();
+	}
+
 	///////////////////////////////// Interaction
 	
 	var expanded;
@@ -449,18 +492,17 @@ module.directive('spreadsheet', [
 
 	function save(cell, type, value) {
 	  var info = parseCellId(cell.id);
-	  var slot = slots[info.i];
-	  var ri;
 	  if (value === '')
 	    value = undefined;
 	  else switch (type) {
 	    case 'choose':
+	      var c = 'c' in info ? page.constants.data.category[info.c] : metricCols[info.m].category;
 	      if (value === 'new') {
 		/* TODO: create new record and add to slot */
 	      } else if (value === 'remove') {
 		/* TODO: remove this record from slot */
 	      } else {
-		ri = parseInt(value);
+		var ri = parseInt(value);
 		/* TODO: replace current record with ri on slot
 		 * If ri is current record, switch to edit mode? */
 	      }
@@ -475,34 +517,16 @@ module.directive('spreadsheet', [
 	      value = parseInt(value);
 	      break;
 	  }
+
 	  switch (info.t) {
 	    case 'name':
-	      slot.name = value;
-	      break;
 	    case 'date':
-	      slot.date = value;
-	      break;
 	    case 'consent':
-	      slot.consent = value;
-	      break;
+	      return saveSlot(info.i, info.t, value);
 	    case 'rec':
 	      var col = metricCols[info.m];
-	      var metric = col.metric;
-	      var m = metric.id;
-	      var rc = records[col.category.id];
-	      ri = rc.id[info.n][info.i];
-	      volume.records[ri].measures[m] = value;
-
-	      var r = rc[m];
-	      angular.forEach(depends[ri], function (n, i) {
-		r[n][i] = value;
-	      });
-	      var l = table.getElementsByClassName('ss-rec_' + ri + '_' + m);
-	      for (var li = 0; li < l.length; li ++)
-		generateText(l[li], m, value, metric.assumed);
-	      return;
+	      return saveMeasure(records[col.category.id].id[info.n][info.i], col.metric.id, value);
 	  }
-	  generateText(cell, info.t, value);
 	}
 
 	var editScope = $scope.$new(true);

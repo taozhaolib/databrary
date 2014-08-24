@@ -200,6 +200,7 @@ POST    /api/record                                                             
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
 # DELETE
 #                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
+POST    /api/record/$recordId<[0-9]+>/measure/$metricId<-?[0-9]+>                                 controllers.RecordApi.measureUpdate(recordId : models.Record.Id, metricId : models.Metric.Id)
 # ADD           ?segment=
 POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.add(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 # REMOVE        ?segment=
