@@ -32,10 +32,17 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _))
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
 
+  private def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =
+    request.obj.isSuperseded.map(when(_,
+      throw form.withGlobalError("file.superseded")._exception(Results.Conflict)))
+
   def update(o : models.Asset.Id) =
     Action(o, Permission.EDIT).async { implicit request =>
       val form = new AssetController.ChangeForm()._bind
-      set(request.obj, form)
+      for {
+	_ <- checkSuperseded(form)
+	r <- set(request.obj, form)
+      } yield (r)
     }
 
   private def create(form : AssetController.AssetUploadForm) : Future[Asset] = {
@@ -94,8 +101,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     Action(o, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.ReplaceForm()._bind
       for {
-	done <- request.obj.isSuperseded
-	_ = if (done) form.withGlobalError("file.superseded")._throw
+	_ <- checkSuperseded(form)
 	asset <- create(form)
 	_ <- asset.supersede(request.obj)
 	r <- set(asset, form)

@@ -202,8 +202,8 @@ abstract class StructForm(val _action : Call) {
 
 abstract class FormView(action : Call) extends StructForm(action) {
   self =>
-  def _exception : SiteException
-  final def _throw = throw _exception
+  def _exception(status : Results.Status = Results.BadRequest) : SiteException
+  final def _throw = throw _exception()
   final def orThrow() : self.type = {
     if (hasErrors)
       _throw
@@ -217,10 +217,11 @@ abstract class FormView(action : Call) extends StructForm(action) {
 abstract class HtmlFormView(action : Call) extends FormView(action) {
   def _view : Future[HtmlFormat.Appendable]
   final def Ok : Future[Result] = _view.map(Results.Ok(_))
-  final def Bad(implicit request : SiteRequest[_]) : Future[Result] = _exception.result
-  final def _exception = new FormException(new form()) {
-    def resultHtml(implicit request : SiteRequest[_]) = _view.map(Results.BadRequest(_))
-  }
+  final def Bad(implicit request : SiteRequest[_]) : Future[Result] = _exception().result
+  final def _exception(status : Results.Status) =
+    new FormException(new form(), status) {
+      def resultHtml(implicit request : SiteRequest[_]) = _view.map(status(_))
+    }
 }
 
 class HtmlForm[+F <: HtmlForm[F]](action : Call, view : F => HtmlFormat.Appendable) extends HtmlFormView(action) {
@@ -233,5 +234,6 @@ class AHtmlForm[+F <: AHtmlForm[F]](action : Call, view : F => Future[HtmlFormat
 }
 
 class ApiForm(action : Call) extends FormView(action) {
-  final def _exception = new ApiFormException(new form())
+  final def _exception(status : Results.Status) =
+    new ApiFormException(new form(), status)
 }
