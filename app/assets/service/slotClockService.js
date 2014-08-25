@@ -14,7 +14,7 @@ module.factory('slotClockService', [
       this.timeFns = [];
       this.jumpFns = [];
 
-      this.begun = Date.now();
+      this.begun = 0;
       this.changed = this.begun;
       this.duration = 0;
       this.start = undefined;
@@ -40,6 +40,8 @@ module.factory('slotClockService', [
 	  clock.start = clock.start <= asset.segment && angular.isNumber(clock.start) ? clock.start : asset.segment;
 	}
       });
+
+      clock.begun = Date.now() - clock.start;
 
       // ticker
       this.interval = 100;

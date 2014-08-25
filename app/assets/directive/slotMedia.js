@@ -7,13 +7,11 @@ module.directive('slotMedia', [
         asset: page.$parse($attrs.asset)($scope),
         $scope: $scope,
       };
+      media.id = 'slot-media-' + media.asset.asset.id;
 
       $scope.media = media;
 
       page.$timeout(function () {
-        media.$element = $element.find('video, img, aside');
-        media.element = media.$element[0];
-
         $scope.ctrl.registerMedia(media);
 
         if (slotTimelineTrack) {

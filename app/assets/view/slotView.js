@@ -8,11 +8,11 @@ module.controller('slotView', [
     // helpers
 
     var getAsset = function (media) {
-      return media && media.element ? media.asset : media;
+      return media && media.id ? media.asset : media;
     };
 
     var getMedia = function (media) {
-      return media && media.element ? media : ctrl.filter(function (m) {
+      return media && media.id ? media : ctrl.filter(function (m) {
         return m.asset === media;
       }).pop();
     };
@@ -94,13 +94,11 @@ module.controller('slotView', [
       },
 
       isReady: function (media) {
-        media = getMedia(media);
-        return media.element.readyState >= 4;
+        return $('#' + media.id)[0].readyState >= 4;
       },
 
       isPaused: function (media) {
-        media = getMedia(media);
-        return media.element.paused;
+        return $('#' + media.id)[0].paused;
       },
     };
 
@@ -158,36 +156,26 @@ module.controller('slotView', [
 //      });
 //    };
 
-    var setPlay = function (media) {
-      if (ctrl.isNowPlayable(media)) {
-        if (!ctrl.clock.playing) {
-          media.element.play();
-        }
-      } else if (ctrl.clock.playing) {
-        media.element.pause();
-      }
-    };
-
     var callbackTime = function () {
       var isTimed = ctrl.hasDuration(ctrl.current[0]);
       var switched = false;
 
       ctrl.media.forEach(function (media) {
-        if (!ctrl.hasDisplay(media)) {
+        if (!ctrl.hasDisplay(media) || !ctrl.hasTime(media)) {
           return;
         }
 
-        var isCurrent = ctrl.isCurrent(media);
+        var el = $('#' + media.id).find('video')[0];
 
-        if (isTimed) { // one of many timed assets
-          if (isCurrent) {
-            setPlay(media);
+        if (ctrl.clock.playing) {
+          if (ctrl.isNowPlayable(media) && el.paused) {
+            el.play();
+          } else if (!el.paused) {
+            el.pause();
           }
         } else {
-          if (isCurrent) { // the one untimed asset
-
-          } else {
-
+          if (!el.paused) {
+            el.pause();
           }
         }
       });
@@ -197,6 +185,12 @@ module.controller('slotView', [
 //    ctrl.clock.jumpFn(callbackJump);
 //    ctrl.clock.pauseFn(callbackPause);
     ctrl.clock.timeFn(callbackTime);
+
+    // failsafe
+
+    $scope.$on('$destroy', function () {
+      ctrl.clock.pause();
+    });
 
     // return
 

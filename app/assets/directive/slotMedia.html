@@ -1,4 +1,4 @@
-<div class="slot-media" bo-switch="page.types.assetMimeArray(media.asset)[0]" bindonce>
+<div class="slot-media" bo-id="media.id" bo-switch="page.types.assetMimeArray(media.asset)[0]" bindonce>
   <div bo-switch-when="image">
     <img bo-src="page.router.assetLink(media.asset, true)">
   </div>

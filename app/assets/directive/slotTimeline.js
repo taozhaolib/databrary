@@ -61,7 +61,7 @@ module.directive('slotTimeline', [
         var nowMoveFn = function (clock) {
           if ($now && $now.length > 0)
             $now.css({
-              left: ((clock.position / clock.duration) * 100) + '%',
+              left: (((clock.position - clock.start) / (clock.duration - clock.start)) * 100) + '%',
             });
         };
 
@@ -74,7 +74,7 @@ module.directive('slotTimeline', [
         timeline.jump = function ($event) {
           var $el = $element.find('.slot-timeline');
           var position = ($event.clientX - $el.offset().left) / $el.outerWidth();
-          ctrl.clock.jump(position * ctrl.clock.duration);
+          ctrl.clock.jump((position * (ctrl.clock.duration - ctrl.clock.start)) + ctrl.clock.start);
         };
 
         // init
