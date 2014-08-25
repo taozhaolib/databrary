@@ -7,12 +7,12 @@
         </h1>
 
         <div class="volume-list-investigators" bo-if="page.$location.path() !== '/profile'">
-          <strong>{{'volume.contributors.title' | message}}:</strong>
-
           <ul class="inline-block comma">
             <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
-              <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
+              <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a>
+	    </li>
           </ul>
+	  <span class="year" bo-if="volume.citation && volume.citation.year" bo-text="' (' + volume.citation.year + ')'"></span>
         </div>
 
         <div class="volume-list-body" bo-text="volume.body.replace('\n', ' ') | truncate:200" bo-if="page.$location.path() !== '/profile'"></div>
