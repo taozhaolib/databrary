@@ -176,12 +176,14 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
   def rootAccess(permission : Permission.Value = Permission.ADMIN) = auth andThen RootAccess[SiteRequest.Auth](permission)
 }
 
-private[controllers] abstract class FormException(form : Form[_]) extends SiteException {
+private[controllers] abstract class FormException(form : Form[_], status : Results.Status = Results.BadRequest)
+  extends SiteException {
   def resultApi : Future[Result] =
-    async(BadRequest(form.errorsAsJson))
+    async(status(form.errorsAsJson))
 }
 
-private[controllers] final class ApiFormException(form : Form[_]) extends FormException(form) with ApiException
+private[controllers] final class ApiFormException(form : Form[_], status : Results.Status = Results.BadRequest)
+  extends FormException(form, status) with ApiException
 
 class SiteController extends Controller {
   protected def AOk[C : Writeable](c : C) : Future[Result] = async(Ok[C](c))

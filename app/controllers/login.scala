@@ -174,7 +174,7 @@ object LoginController extends LoginController {
     extends FormView(routes.LoginHtml.superuserOn)
     with AuthForm {
     def account = request.account
-    def _exception = ForbiddenException
+    def _exception(status : Results.Status) = ForbiddenException
   }
 }
 
