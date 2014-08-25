@@ -88,8 +88,8 @@ POST    /slot/$sID<[0-9]+>/comment/create                                       
 POST    /slot/$sID<[0-9]+>/tag                                                                    controllers.TagHtml.update(name : String ?= "", sID : models.Container.Id, segment : dbrary.Segment)
 
 # records
-POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(rID : models.Record.Id, sID : models.Container.Id, segment : dbrary.Segment)
-POST    /slot/$sID<[0-9]+>/record/create                                                          controllers.RecordHtml.slotAdd(sID : models.Container.Id, segment : dbrary.Segment)
+POST    /slot/$sID<[0-9]+>/record/$rID<[0-9]+>/remove                                             controllers.RecordHtml.remove(sID : models.Container.Id, segment : dbrary.Segment, rID : models.Record.Id)
+POST    /slot/$sID<[0-9]+>/record/create                                                          controllers.RecordHtml.add(sID : models.Container.Id, segment : dbrary.Segment)
 
 GET     /record/$rID<[0-9]+>                                                                      controllers.RecordHtml.view(rID : models.Record.Id)
 GET     /record/$rID<[0-9]+>/edit                                                                 controllers.RecordHtml.edit(rID : models.Record.Id)
@@ -201,10 +201,8 @@ POST    /api/record/$recordId<[0-9]+>                                           
 # DELETE
 #                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
 POST    /api/record/$recordId<[0-9]+>/measure/$metricId<-?[0-9]+>                                 controllers.RecordApi.measureUpdate(recordId : models.Record.Id, metricId : models.Metric.Id)
-# ADD           ?segment=
-POST    /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.add(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
-# REMOVE        ?segment=
-DELETE  /api/record/$recordId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.RecordApi.remove(recordId : models.Record.Id, containerId : models.Container.Id, segment : dbrary.Segment)
+POST    /api/slot/$containerId<[0-9]+>/record                                                     controllers.RecordApi.add(containerId : models.Container.Id, segment : dbrary.Segment)
+DELETE  /api/slot/$containerId<[0-9]+>/record/$recordId<[0-9]+>                                   controllers.RecordApi.remove(containerId : models.Container.Id, segment : dbrary.Segment, recordId : models.Record.Id)
 
 # ----- ASSET ----- #
 # GET       ?slot;revisions

@@ -98,6 +98,7 @@ object SiteApi extends SiteController {
     , VolumeHtml.add
     , VolumeHtml.edit
     , VolumeController.thumb
+    , VolumeApi.create
     , VolumeApi.accessSearch
     , VolumeApi.funderSearch
     , VolumeApi.fundingChange
@@ -117,6 +118,8 @@ object SiteApi extends SiteController {
     , SlotAssetController.download
     , RecordHtml.view
     , RecordHtml.edit
+    , RecordApi.add
+    , RecordApi.remove
     , RecordApi.measureUpdate
     , TagApi.search
     , routes.javascript.SiteApi.cite

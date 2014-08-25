@@ -1,12 +1,14 @@
 'use strict';
 
 module.factory('volume', [
-  '$resource', '$route', function ($resource, $route) {
+  '$resource', '$route', 'routerService', function ($resource, $route, router) {
     return $resource('/api/volume/:id', {
       id: function () {
         return $route.current.params.id || undefined;
       }
-    }, null, {
+    }, {
+      create: router.action(router.controllers.VolumeApi.create, ['owner']),
+    }, {
       cache: 'volume'
     });
   }

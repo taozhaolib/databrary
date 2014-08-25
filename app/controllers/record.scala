@@ -32,16 +32,16 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       .verifying(Messages("measure.unknown"), _.isDefined)
       .transform(_.get, Some(_))
 
-  private[this] def editResult(implicit request : Request[_]) : Result =
-    if (request.isApi) result(request.obj)
-    else Redirect(routes.RecordHtml.edit(request.obj.id))
+  private[this] def editResult(record : Record)(implicit request : SiteRequest[_]) : Result =
+    if (request.isApi) result(record)
+    else Redirect(routes.RecordHtml.edit(record.id))
 
   def update(i : models.Record.Id) =
     Action(i, Permission.EDIT).async { implicit request =>
       val form = new RecordController.EditForm()._bind
       for {
         _ <- request.obj.change(category = form.category.get)
-      } yield (editResult)
+      } yield (editResult(request.obj))
     }
 
   def measureUpdate(recordId : Record.Id, metricId : Metric.Id) =
@@ -54,18 +54,27 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
 	  case false => form.datum.withError("measure.bad")._throw
 	  case true => true
 	})
-      .map(_ => editResult)
+      .map(_ => editResult(request.obj))
     }
 
-  def add(recordId : Record.Id, containerId : Container.Id, segment : Segment) = Action(recordId, Permission.EDIT).async { implicit request =>
-    for {
-      so <- Slot.get(containerId, segment)
-      s = so.getOrElse(throw NotFoundException)
-      _ <- request.obj.addSlot(s)
-    } yield (SlotController.result(s))
-  }
+  def add(containerId : Container.Id, segment : Segment) =
+    SlotHtml.Action(containerId, segment, Permission.EDIT).async { implicit request =>
+      val form = new RecordController.SelectForm()._bind
+      form.record.get.fold {
+        for {
+          r <- models.Record.create(request.obj.volume, form.category.get)
+          _ <- r.addSlot(request.obj)
+        } yield (editResult(r))
+      } (models.Record.get(_).flatMap(_
+        .filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
+        .fold {
+	  form.record.withError("record.bad").Bad
+	} (_.addSlot(request.obj).map { _ =>
+	  SlotController.result(request.obj)
+	})))
+    }
 
-  def remove(recordId : Record.Id, containerId : Container.Id, segment : Segment) = Action(recordId, Permission.EDIT).async { implicit request =>
+  def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) = Action(recordId, Permission.EDIT).async { implicit request =>
     for {
       so <- Slot.get(containerId, segment)
       s = so.getOrElse(throw NotFoundException)
@@ -80,6 +89,14 @@ object RecordController extends RecordController {
       routes.RecordHtml.update(request.obj.id),
       f => RecordHtml.viewEdit(editForm = Some(f))) {
     val category = Field(OptionMapping(Forms.optional(categoryMapping))).fill(Some(request.obj.category))
+  }
+
+  final class SelectForm(implicit request : SlotHtml.Request[_])
+    extends AHtmlForm[SelectForm](
+      routes.RecordHtml.add(request.obj.containerId, request.obj.segment),
+      f => SlotHtml.viewEdit(recordForm = Some(f))) {
+    val record = Field(Forms.optional(Forms.of[models.Record.Id]))
+    val category = Field(Forms.optional(categoryMapping))
   }
 
   final class MeasureForm(val metric : Metric[_])(implicit request : Request[_])
@@ -136,41 +153,8 @@ object RecordHtml extends RecordController with HtmlController {
       Ok(viewEdit(measureForm = Some(form.measureForm)))
     }
 
-  final class SelectForm(implicit request : SlotHtml.Request[_])
-    extends AHtmlForm[SelectForm](
-      routes.RecordHtml.slotAdd(request.obj.containerId, request.obj.segment),
-      f => SlotHtml.viewEdit(recordForm = Some(f))) {
-    val record = Field(Forms.optional(Forms.of[models.Record.Id]))
-    val category = Field(Forms.optional(categoryMapping))
-  }
-
-  def slotAdd(containerId : Container.Id, segment : Segment) =
-    SlotHtml.Action(containerId, segment, Permission.EDIT).async { implicit request =>
-      val form = new SelectForm()._bind
-      form.record.get.fold {
-        for {
-          r <- models.Record.create(request.obj.volume, form.category.get)
-          _ <- r.addSlot(request.obj)
-        } yield (Redirect(routes.RecordHtml.edit(r.id)))
-      } (models.Record.get(_).flatMap(_
-        .filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
-        .fold {
-	  form.record.withError("record.bad").Bad
-	} (_.addSlot(request.obj).map { _ =>
-	  SlotHtml.result(request.obj)
-	})))
-    }
-
-  def add(v : models.Volume.Id, catID : models.RecordCategory.Id) =
-    VolumeController.Action(v, Permission.EDIT).async { implicit request =>
-      val cat = RecordCategory.get(catID)
-      models.Record.create(request.obj, cat).map { r =>
-	Redirect(routes.RecordHtml.edit(r.id))
-      }
-    }
-
   final class RemoveForm(record : Record, slot : Slot)
-    extends StructForm(routes.RecordHtml.remove(record.id, slot.containerId, slot.segment))
+    extends StructForm(routes.RecordHtml.remove(slot.containerId, slot.segment, record.id))
 }
 
 object RecordApi extends RecordController with ApiController {

@@ -95,11 +95,9 @@ module.directive('volumeEditOverviewForm', [
               }
             });
         } else {
-          var volume = new page.models.volume(form.data);
-
-          volume.$save({
+          page.models.volume.create({
 	    owner: page.$routeParams.owner || page.auth.user.id
-          }, function (res) {
+	  }, form.data, function (res) {
             form.validator.server({});
 
             form.messages.add({

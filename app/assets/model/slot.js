@@ -14,6 +14,7 @@ module.factory('slot', [
       }
     }, {
       update: router.action(router.controllers.SlotApi.update, ['id', 'segment']),
+      addRecord: router.action(router.controllers.RecordApi.add, ['id', 'segment']),
     }, {
       cache: 'slot'
     });

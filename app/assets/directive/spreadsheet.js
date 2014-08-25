@@ -43,8 +43,6 @@ module.directive('spreadsheet', [
       return info;
     }
 
-    var SAVE = false; // disable commit to server for testing
-
     var pseudoMetrics = {
       id: {
 	id: 'id',
@@ -71,7 +69,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = !SAVE || volume.permission >= page.permission.EDIT;
+	var editable = volume.permission >= page.permission.EDIT;
 
 	function getSlot(slot) {
 	  if ('records' in slot)
@@ -400,28 +398,26 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// Backend saving
 	
-	function saveError() {
+	function saveError(cell, error) {
 	  // TODO
 	}
 
-	function saveSlot(i, f, v) {
-	  function success() {
+	function saveSlot(cell, i, f, v) {
+	  var data = {};
+	  data[f] = v === undefined ? '' : v;
+	  cell.classList.add('saving');
+	  page.models.slot.update(slots[i], data, function () {
 	    var slot = slots[i];
 	    slot[f] = v;
-	    // volume.sessions[slot.id][f] = v; // may be redundant, but that's fine
-	    var el = document.getElementById('ss-' + f + '_' + i);
-	    if (el)
-	      generateText(el, f, v);
-	  }
-	  if (SAVE) {
-	    var data = {};
-	    data[f] = v;
-	    page.models.slot.update(slots[i], data, success, saveError);
-	  } else success();
+	    volume.sessions[slot.id][f] = v; // may be redundant, but that's fine
+	    generateText(cell, f, v);
+	    cell.classList.remove('saving');
+	  }, saveError.bind(null, cell));
 	}
 
-	function saveMeasure(r, m, v) {
-	  function success() {
+	function saveMeasure(cell, r, m, v) {
+	  cell.classList.add('saving');
+	  page.models.record.measureUpdate({id:r,metric:m}, {datum:v}, function () {
 	    var rec = volume.records[r];
 	    rec.measures[m] = v;
 	    var rcm = records[rec.category][m];
@@ -432,10 +428,16 @@ module.directive('spreadsheet', [
 	    var a = page.constants.data.metric[m].assumed;
 	    for (var li = 0; li < l.length; li ++)
 	      generateText(l[li], m, v, a);
-	  }
-	  if (SAVE) {
-	    page.models.record.measureUpdate({id:r,metric:m}, {datum:v}, success, saveError);
-	  } else success();
+	    cell.classList.remove('saving');
+	  }, saveError.bind(null, cell));
+	}
+
+	function addRecord(cell, i, cat) {
+	  cell.classList.add('saving');
+	  page.models.slot.addRecord(slots[i], {category:cat.id}, function (rec) {
+	    /* TODO add new rec to i */
+	    cell.classList.remove('saving');
+	  }, saveError.bind(null, cell));
 	}
 
 	///////////////////////////////// Interaction
@@ -497,9 +499,9 @@ module.directive('spreadsheet', [
 	  else switch (type) {
 	    case 'choose':
 	      var c = 'c' in info ? page.constants.data.category[info.c] : metricCols[info.m].category;
-	      if (value === 'new') {
-		/* TODO: create new record and add to slot */
-	      } else if (value === 'remove') {
+	      if (value === 'new')
+		addRecord(cell, info.i, c);
+	      else if (value === 'remove') {
 		/* TODO: remove this record from slot */
 	      } else {
 		var ri = parseInt(value);
@@ -522,10 +524,10 @@ module.directive('spreadsheet', [
 	    case 'name':
 	    case 'date':
 	    case 'consent':
-	      return saveSlot(info.i, info.t, value);
+	      return saveSlot(cell, info.i, info.t, value);
 	    case 'rec':
 	      var col = metricCols[info.m];
-	      return saveMeasure(records[col.category.id].id[info.n][info.i], col.metric.id, value);
+	      return saveMeasure(cell, records[col.category.id].id[info.n][info.i], col.metric.id, value);
 	  }
 	}
 
