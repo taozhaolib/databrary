@@ -32,7 +32,7 @@
             <span bo-text="'material.upload-progress' | message"></span>
           </div>
 
-          <div ng-if="!asset.file" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn bo-text="'material.add-drop.replace' | message"></div>
+	  <div ng-if="!asset.file" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>{{'material.add-drop.replace' | message}}</div> <!--DO NOT USE ng-bind or bo-text: problem with flow-btn/assignBrowse's child input-->
         </div>
 
         <div ng-if="asset.asset.creation">

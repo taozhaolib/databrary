@@ -31,7 +31,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.addedCall = function (file, event) {
         if (!$scope.$flow.isUploading()) {
-          while ($scope.$flow.files[0]) {
+          while ($scope.$flow.files[0] && $scope.$flow.files[0] != file) {
             $scope.$flow.removeFile($scope.$flow.files[0]);
           }
         }
@@ -45,7 +45,7 @@ module.directive('volumeEditMaterialsForm', [
         else {
           //new asset
           file.asset = form.data.assets[form.add() - 1];
-          file.asset.file = file.file; //improve with ng-model
+          file.asset.file = file.file; 
           page.models.asset.fileAddedImmediateUpload(file);
         }
       };
