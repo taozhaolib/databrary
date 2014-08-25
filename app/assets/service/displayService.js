@@ -39,10 +39,11 @@ module.factory('displayService', [
 
     display.error = undefined;
 
-    $rootScope.$on('$routeChangeError', function () {
+    $rootScope.$on('$routeChangeError', function (event, next, previous, error) {
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
+      events.talk('displayService-error', error);
     });
 
     //
