@@ -4,21 +4,12 @@ module.factory('asset', [
   '$resource', 'routerService', function ($resource, router) {
     var asset = $resource('/api/asset/:id');
 
-    asset.upload = function (volume, fd) {
-      return router.http(router.controllers.AssetApi.upload, volume.id, fd, {
-        transformRequest: angular.identity,
-        headers: {
-          'Content-Type': undefined
-        },
-      });
-    };
-
     asset.fileAddedImmediateUpload = function (file) {
       file.pause();
-      router.http(router.controllers.AssetApi.uploadStart,
-	  file.name,
-          file.size
-      ).then(function (res) {
+      router.http(router.controllers.AssetApi.uploadStart, {
+	filename: file.name,
+	size: file.size
+      }).then(function (res) {
         file.uniqueIdentifier = res.data;
       }).then(function () {
         file.resume();
@@ -39,8 +30,8 @@ module.factory('asset', [
       simultaneousUploads: 3,
       testChunks: false,
       chunkRetryInterval: 5000,
-      permanentErrors: [400, 403, 404, 415, 500, 501],
-      progressCallbacksInterval: 300,
+      permanentErrors: [400, 403, 404, 409, 415, 500, 501],
+      progressCallbacksInterval: 500,
       prioritizeFirstAndLastChunk: true
     };
 

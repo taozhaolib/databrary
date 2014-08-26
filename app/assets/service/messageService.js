@@ -161,12 +161,17 @@ module.factory('messageService', [
           });
         }
 
+	var refreshMsg = false;
         if (message.status) {
           messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;
+	  refreshMsg = message.status == 409;
         }
 
         if (messageBody) {
           newMessage.body = newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
+	  if(refreshMsg){
+	      newMessage.body += "<br>" + constants.message('reload-browser');
+	  }
         }
       }
 
