@@ -13,8 +13,12 @@ module.controller('slotView', [
 
     var getMedia = function (media) {
       return media && media.id ? media : ctrl.filter(function (m) {
-        return m.asset === media;
+	return m.asset === media;
       }).pop();
+    };
+
+    var getElement = function (media) {
+      return $('#' + media.id).find('video')[0];
     };
 
     // controller
@@ -29,76 +33,87 @@ module.controller('slotView', [
       current: [slot.assets[0]],
 
       state: {
-        selection: null,
+	selection: null,
+      },
+
+      syncPlayback: function () {
+	if (ctrl.clock.playing) {
+	  ctrl.clock.play();
+	} else {
+	  ctrl.clock.pause();
+	}
       },
 
       registerMedia: function (media) {
-        ctrl.media.push(media);
+	ctrl.media.push(media);
+	ctrl.syncPlayback();
 
-        media.$scope.$on('$destroy', function () {
-          ctrl.deregisterMedia(media);
-        });
+	media.$scope.$on('$destroy', function () {
+	  ctrl.deregisterMedia(media);
+	});
       },
 
       deregisterMedia: function (media) {
-        var i = ctrl.media.indexOf(media);
+	var i = ctrl.media.indexOf(media);
 
-        if (i > -1) {
-          ctrl.media.splice(i, 1);
-        }
+	if (i > -1) {
+	  ctrl.media.splice(i, 1);
+	}
       },
 
       setCurrent: function (asset) {
-        ctrl.current[0] = asset;
+	ctrl.current[0] = asset;
       },
 
       isCurrent: function (media) {
-        if (media.asset && media.asset.id)
-          return ctrl.current[0] === media;
-        else
-          return ctrl.current[0] === media.asset;
+	if (media.asset && media.asset.id) {
+	  return ctrl.current[0] === media;
+	}
+	else {
+	  return ctrl.current[0] === media.asset;
+	}
       },
 
       select: function (media) {
-        ctrl.current[0] = media.asset;
+	ctrl.current[0] = media.asset;
       },
 
       jump: function (asset) {
-        var $track = $('#slot-timeline-track-' + asset.asset.id);
-        page.display.scrollTo($track);
+	var $track = $('#slot-timeline-track-' + asset.asset.id);
+	page.display.scrollTo($track);
       },
 
       hasPosition: function (media) {
-        var asset = getAsset(media);
-        return !angular.isNothing(asset.segment);
+	var asset = getAsset(media);
+	return !angular.isNothing(asset.segment);
       },
 
       hasDuration: function (media) {
-        var asset = getAsset(media);
-        return Array.isArray(asset.segment);
+	var asset = getAsset(media);
+	return Array.isArray(asset.segment);
       },
 
       hasDisplay: function (media) {
-        var asset = getAsset(media);
-        return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	var asset = getAsset(media);
+	return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
       },
 
       hasTime: function (media) {
-        var asset = getAsset(media);
-        return ['video'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	var asset = getAsset(media);
+	return ['video'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
       },
 
       isNowPlayable: function (media) {
-        var asset = getAsset(media);
-        return ctrl.clock.position > asset.segment[0] && ctrl.clock.position < asset.segment[1];
+	var asset = getAsset(media);
+	return ctrl.clock.position > asset.segment[0] && ctrl.clock.position < asset.segment[1];
       },
 
       isReady: function (media) {
-        return $('#' + media.id)[0].readyState >= 4;
+	return getElement(media).readyState >= 4;
       },
 
       isPaused: function (media) {
-        return $('#' + media.id)[0].paused;
+	return getElement(media).paused;
       },
     };
 
@@ -111,16 +126,16 @@ module.controller('slotView', [
     var sortRecords = function () {
       ctrl.records = {};
       ctrl.noteOptions = {
-        'comments': 'comments',
+	'comments': 'comments',
       };
 
       angular.forEach(slot.records, function (record) {
-        if (!(record.category in ctrl.records)) {
-          ctrl.records[record.category] = [];
-          ctrl.noteOptions[record.category] = page.constants.data.category[record.category].name;
-        }
+	if (!(record.category in ctrl.records)) {
+	  ctrl.records[record.category] = [];
+	  ctrl.noteOptions[record.category] = page.constants.data.category[record.category].name;
+	}
 
-        ctrl.records[record.category].push(record);
+	ctrl.records[record.category].push(record);
       });
     };
 
@@ -128,62 +143,61 @@ module.controller('slotView', [
 
     // callbacks
 
-//    var callbackPlay = function () {
-//      ctrl.media.forEach(function (m) {
-//        if (ctrl.hasTime(m) && ctrl.hasDuration(m)) {
-//          if (ctrl.isNowPlayable(m)) {
-//            m.element.play();
-//          } else if (!ctrl.isPaused(m)) {
-//            m.element.pause();
-//          }
-//        }
-//      });
-//    };
-//
-//    var callbackJump = function () {
-//      ctrl.media.forEach(function (m) {
-//        if (ctrl.hasTime(m) && ctrl.hasDuration(m) && ctrl.isNowPlayable(m)) {
-//          m.element.currentTime = (ctrl.clock.position - m.asset.segment[0]) / 1000;
-//        }
-//      });
-//    };
-//
-//    var callbackPause = function () {
-//      ctrl.media.forEach(function (media) {
-//        if (ctrl.hasTime(media) && ctrl.hasDuration(media)) {
-//          media.element.pause();
-//        }
-//      });
-//    };
-
-    var callbackTime = function () {
-      var isTimed = ctrl.hasDuration(ctrl.current[0]);
-      var switched = false;
-
+    var asapMediaFn = function (fn) {
       ctrl.media.forEach(function (media) {
-        if (!ctrl.hasDisplay(media) || !ctrl.hasTime(media)) {
-          return;
-        }
+	if (ctrl.hasTime(media) && ctrl.hasDisplay(media)) {
+	  var el = getElement(media);
+	  var $el = $(el);
 
-        var el = $('#' + media.id).find('video')[0];
+	  var cb = function () {
+	    if (el.readyState === 4) {
+	      fn(media, el);
+	    } else {
+	      $el.one('loadeddata', function () {
+		cb();
+	      });
+	    }
+	  };
 
-        if (ctrl.clock.playing) {
-          if (ctrl.isNowPlayable(media) && el.paused) {
-            el.play();
-          } else if (!el.paused) {
-            el.pause();
-          }
-        } else {
-          if (!el.paused) {
-            el.pause();
-          }
-        }
+	  cb();
+	}
       });
     };
 
-//    ctrl.clock.playFn(callbackPlay);
-//    ctrl.clock.jumpFn(callbackJump);
-//    ctrl.clock.pauseFn(callbackPause);
+    var callbackPlay = function () {
+      asapMediaFn(function (media, el) {
+	if (ctrl.isNowPlayable(media) && ctrl.isPaused(media)) {
+	  el.currentTime = (ctrl.clock.position - media.asset.segment[0]) / 1000;
+	  el.play();
+	} else if (!ctrl.isPaused(media)) {
+	  el.pause();
+	}
+      });
+    };
+
+    var callbackJump = function () {
+      asapMediaFn(function () {
+	ctrl.syncPlayback();
+      });
+    };
+
+    var callbackPause = function () {
+      asapMediaFn(function (media, el) {
+	el.pause();
+      });
+    };
+
+    var callbackTime = function () {
+      asapMediaFn(function (media, el) {
+	if (ctrl.isNowPlayable(media) && el.paused && !el.seeking) {
+	  ctrl.syncPlayback();
+	}
+      });
+    };
+
+    ctrl.clock.playFn(callbackPlay);
+    ctrl.clock.jumpFn(callbackJump);
+    ctrl.clock.pauseFn(callbackPause);
     ctrl.clock.timeFn(callbackTime);
 
     // failsafe

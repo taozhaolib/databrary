@@ -51,6 +51,7 @@ module.factory('slotClockService', [
     // Clock behaviors
 
     Clock.prototype.play = function (pos) {
+      this.begun = Date.now() - this.changed;
       if (angular.isNumber(pos)) {
         this.jump(pos);
       }
