@@ -678,3 +678,5 @@ wizard.volume-edit-access.instructions=Specify with whom you want to share the d
 
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
+
+reload-browser=Please <a href="" onclick="window.location.reload()">reload</a> your browser.
