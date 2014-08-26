@@ -13,15 +13,6 @@ module.factory('asset', [
       });
     };
 
-    asset.replace = function (asset, fd) {
-      return router.http(router.controllers.AssetApi.replace, asset.asset.id, fd, {
-        transformRequest: angular.identity,
-        headers: {
-          'Content-Type': undefined
-        },
-      });
-    };
-
     asset.fileAddedImmediateUpload = function (file) {
       file.pause();
       router.http(router.controllers.AssetApi.uploadStart,
@@ -34,7 +25,11 @@ module.factory('asset', [
       });
     };
 
-    asset.assetCall = function (volumeId, data) {
+    asset.replace = function (assetId, data) {
+      return router.http(router.controllers.AssetApi.replace, assetId, data);
+    };
+
+    asset.newAssetCall = function (volumeId, data) {
       return router.http(router.controllers.AssetApi.upload, volumeId, data);
     };
 
