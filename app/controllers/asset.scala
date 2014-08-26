@@ -261,16 +261,22 @@ object AssetApi extends AssetController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  def uploadStart(filename : String, size : Long) =
+  private class StartForm extends ApiForm(routes.AssetApi.uploadStart) {
+    val filename = Field(Forms.text)
+    val size = Field(Forms.longNumber(1))
+  }
+
+  def uploadStart =
     SiteAction.access(Permission.PUBLIC).async { implicit request =>
-      if (size <= 0)
-	async(BadRequest(JsonObject('size -> Seq(Messages("file.size.invalid"))).js))
-      else for {
-	u <- UploadToken.create(filename)(request.asInstanceOf[AuthSite])
+      val form = new StartForm()._bind
+      if (AssetFormat.getFilename(form.filename.get).isEmpty)
+	form.filename.withError("file.format.unknown")._throw
+      for {
+	u <- UploadToken.create(form.filename.get)(request.asInstanceOf[AuthSite])
       } yield {
 	val f = new RandomAccessFile(u.file, "rw")
 	try {
-	  f.setLength(size)
+	  f.setLength(form.size.get)
 	} finally {
 	  f.close
 	}
@@ -278,7 +284,7 @@ object AssetApi extends AssetController with ApiController {
       }
     }
 
-  class ChunkForm extends ApiForm(routes.AssetApi.uploadChunk) {
+  private class ChunkForm extends ApiForm(routes.AssetApi.uploadChunk) {
     val flowChunkNumber = Field(Forms.number(1))
     val flowChunkSize = Field(Forms.number(1024))
     val flowTotalSize = Field(Forms.longNumber(1))
