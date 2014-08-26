@@ -598,6 +598,10 @@ wizard.register-pending.instructions=Your request for authorization is now pendi
 #Splash page text
 splash.investigators.header=Databrary Investigators
 
+# --- Slot edit
+slot.edit=Edit session
+slot.view=View session
+
 # --- Volume edit
 
 volume.edit.create=Create study

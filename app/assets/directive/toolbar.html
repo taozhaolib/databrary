@@ -9,8 +9,11 @@
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
             <li ng-repeat="link in toolbar.links()" bindonce>
-              <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target"><span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
-                <span class="text" bo-html="link.html.toLowerCase()"></span></a></li>
+              <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target" ng-click="link.click">
+		<span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
+                <span class="text" bo-html="link.html.toLowerCase()"></span>
+	      </a>
+	    </li>
           </ul>
         </nav>
       </div>

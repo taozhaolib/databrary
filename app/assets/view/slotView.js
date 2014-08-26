@@ -3,7 +3,6 @@
 module.controller('slotView', [
   '$scope', 'slot', 'pageService', function ($scope, slot, page) {
     page.display.title = page.types.slotName(slot);
-    page.display.toolbarLinks = [];
 
     // helpers
 
@@ -85,12 +84,12 @@ module.controller('slotView', [
 
       hasPosition: function (media) {
 	var asset = getAsset(media);
-	return !angular.isNothing(asset.segment);
+	return asset && !angular.isNothing(asset.segment);
       },
 
       hasDuration: function (media) {
 	var asset = getAsset(media);
-	return Array.isArray(asset.segment);
+	return asset && Array.isArray(asset.segment);
       },
 
       hasDisplay: function (media) {
@@ -207,6 +206,36 @@ module.controller('slotView', [
     });
 
     // return
+
+    $scope.$watch('page.$location.search().mode', function (val) {
+      if (val === 'edit') {
+	ctrl.mode = 'edit';
+	page.display.toolbarLinks = [
+	  {
+	    type: 'yellow',
+	    html: page.constants.message('slot.view'),
+	    click: function () {
+	      page.$location.search('mode', 'view');
+	    },
+	    access: page.permission.CONTRIBUTE,
+	    object: slot,
+	  },
+	];
+      } else {
+	ctrl.mode = 'view';
+	page.display.toolbarLinks = [
+	  {
+	    type: 'yellow',
+	    html: page.constants.message('slot.edit'),
+	    click: function () {
+	      page.$location.search('mode', 'edit');
+	    },
+	    access: page.permission.CONTRIBUTE,
+	    object: slot,
+	  },
+	];
+      }
+    });
 
     $scope.ctrl = ctrl;
     return ctrl;

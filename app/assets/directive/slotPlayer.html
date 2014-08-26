@@ -1,5 +1,5 @@
 <section class="slot-player" bindonce>
-  <div class="player-main">
+  <div class="player-main" ng-if="ctrl.current[0]">
     <div class="player-main-viewport">
       <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
     </div>
