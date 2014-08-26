@@ -31,23 +31,23 @@ module.directive('volumeEditMaterialsForm', [
 
       form.addedCall = function (file, event) {
         if (!$scope.$flow.isUploading()) {
+	  //clear completed uploads so progress bar isn't pre-weighted towards completion
           while ($scope.$flow.files[0] && $scope.$flow.files[0] != file) {
             $scope.$flow.removeFile($scope.$flow.files[0]);
           }
         }
+
         if (angular.element(event.srcElement).scope().form) {
           //replace file
           file.asset = angular.element(event.srcElement).scope().form.subform.asset;
-          file.asset.file = file.file;
-          file.asset.asset.creation = {date: Date.now(), name: file.file.name};
-          form.save(angular.element(event.srcElement).scope().form.subform);
+	  file.replace = file.asset.asset.id; 
         }
         else {
           //new asset
           file.asset = form.data.assets[form.add() - 1];
-          file.asset.file = file.file; 
-          page.models.asset.fileAddedImmediateUpload(file);
         }
+        file.asset.file = file.file; 
+        page.models.asset.fileAddedImmediateUpload(file);
       };
 
       form.assetCall = function (file) {
@@ -58,10 +58,17 @@ module.directive('volumeEditMaterialsForm', [
         data.container = form.slot.container.id;
         data.upload = file.uniqueIdentifier;
 
-        page.models.asset.assetCall(form.volume.id, data).then(function (res) {
-          file.asset.asset = res.data.asset;
-          file.asset.asset.creation = {date: Date.now(), name: file.file.name};
-        });
+	var afterwards = function (res) {
+            file.asset.asset = res.data.asset;
+            file.asset.asset.creation = {date: Date.now(), name: file.file.name};
+        };
+
+	if(file.replace){
+	  page.models.asset.replace(file.replace, data).then(afterwards);
+	}
+	else{
+          page.models.asset.newAssetCall(form.volume.id, data).then(afterwards);
+	}
       };
 
       form.perFileProgress = function (file) {
@@ -264,7 +271,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.saveAll = function () {
         angular.forEach(form, function (subform, id) {
-          if (id.startsWith('asset-') && form[id] && form[id].$dirty) {
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty) { //do not allow for those currently uploading
             form.save(subform.subform);
           }
         });
