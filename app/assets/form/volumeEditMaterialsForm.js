@@ -40,11 +40,14 @@ module.directive('volumeEditMaterialsForm', [
         if (angular.element(event.srcElement).scope().form) {
           //replace file
           file.asset = angular.element(event.srcElement).scope().form.subform.asset;
-	  file.replace = file.asset.asset.id; 
+	  file.replace = file.asset.asset.id;
+	  file.containingForm = angular.element(event.srcElement).scope().form;
         }
         else {
           //new asset
-          file.asset = form.data.assets[form.add() - 1];
+	  var index = form.add() - 1;
+          file.asset = form.data.assets[index];
+	  file.containingForm = form['asset' + index];
         }
         file.asset.file = file.file; 
         page.models.asset.fileAddedImmediateUpload(file);
@@ -61,6 +64,12 @@ module.directive('volumeEditMaterialsForm', [
 	var afterwards = function (res) {
             file.asset.asset = res.data.asset;
             file.asset.asset.creation = {date: Date.now(), name: file.file.name};
+	    //console.log(file.containingForm);
+	    if(file.containingForm && file.containingForm.subform){
+	      //console.log(file.containingForm);
+	      form.store(file.containingForm.subform);
+	      form.clean(file.containingForm.subform);
+	    }
         };
 
 	if(file.replace){
@@ -101,20 +110,6 @@ module.directive('volumeEditMaterialsForm', [
         form.totalProgress = $scope.$flow.progress();
       };
 
-      form.disableButton = function (subform) {
-        if (subform.form.$dirty) {
-          if (subform.asset.asset && subform.asset.asset.creation) {
-            return false;
-          } else if (!subform.asset.file || subform.asset.file.length === 0) {
-            form.clean(subform);
-          } else {
-            return false;
-          }
-        }
-
-        return true;
-      };
-
       //
 
       form.save = function (subform) {
@@ -122,122 +117,22 @@ module.directive('volumeEditMaterialsForm', [
           form.saveFn(form, subform);
         }
 
-        var classification = page.classification[subform.asset.classification];
-        var excerpt;
+	var data = {};
+        data.classification = page.classification[subform.asset.classification];
         if (subform.asset.excerpt === 0 || subform.asset.excerpt) {
-          excerpt = page.classification[subform.asset.excerpt];
+          data.excerpt = page.classification[subform.asset.excerpt];
         }
         else {
-          excerpt = "";
+          data.excerpt = "";
         }
-        if (subform.asset.file) {
-          var fd = new FormData();
-          fd.append('file', subform.asset.file[0] || subform.asset.file); //hack. don't leave this
-          fd.append('name', subform.asset.name || '');
-          fd.append('classification', classification);
-          fd.append('excerpt', excerpt);
-          fd.append('container', form.slot.container.id);
+        data.name = subform.asset.name || '';
+        data.container = form.slot.container.id;
 
-          var msg = subform.messages.add({
-            type: 'yellow',
-            body: page.constants.message('volume.edit.materials.create', subform.asset.name || page.constants.message('file')),
-          });
-
-          if (subform.asset.asset) {
-            page.models.asset.replace(subform.asset, fd)
-              .then(function (res) {
-                subform.messages.add({
-                  type: 'green',
-                  closeable: true,
-                  body: page.constants.message('volume.edit.materials.replace.success', subform.asset.name || page.constants.message('file')),
-                });
-
-                if (angular.isFunction(form.successFn)) {
-                  form.successFn(form, res);
-                }
-
-                delete subform.asset.file;
-                subform.asset.asset = res.data.asset;
-                page.models.asset.get({
-                  creation: '',
-                  id: res.data.asset.id
-                }, function (res) {
-                  subform.asset.asset.creation = res.creation;
-                  form.store(subform);
-                  form.clean(subform);
-                });
-
-                page.models.volume.$cache.removeAll();
-                page.models.slot.$cache.removeAll();
-              }, function (res) {
-                subform.messages.addError({
-                  type: 'red',
-                  body: page.constants.message('volume.edit.materials.replace.error', subform.asset.name || page.constants.message('file')),
-                  report: res,
-                });
-
-                if (angular.isFunction(form.errorFn)) {
-                  form.errorFn(form, res);
-                }
-
-                page.display.scrollTo(subform.$element);
-              }).finally(function () {
-                subform.messages.remove(msg);
-                form.clean(subform);
-              });
-          } else {
-            page.models.asset.upload(form.volume, fd)
-              .then(function (res) {
-                subform.messages.add({
-                  type: 'green',
-                  closeable: true,
-                  body: page.constants.message('volume.edit.materials.create.success', subform.asset.name || page.constants.message('file')),
-                });
-
-                if (angular.isFunction(form.successFn)) {
-                  form.successFn(form, res);
-                }
-
-                delete subform.asset.file;
-                subform.asset.asset = res.data.asset;
-                page.models.asset.get({
-                  creation: '',
-                  id: res.data.asset.id
-                }, function (res) {
-                  subform.asset.asset.creation = res.creation;
-                  form.store(subform);
-                  form.clean(subform);
-                });
-
-                page.models.volume.$cache.removeAll();
-                page.models.slot.$cache.removeAll();
-              }, function (res) {
-                subform.messages.addError({
-                  type: 'red',
-                  body: page.constants.message('volume.edit.materials.create.error', subform.asset.name || page.constants.message('file')),
-                  report: res,
-                });
-
-                if (angular.isFunction(form.errorFn)) {
-                  form.errorFn(form, res);
-                }
-
-                page.display.scrollTo(subform.$element);
-              }).finally(function () {
-                subform.messages.remove(msg);
-                form.clean(subform);
-              });
-          }
-        } else {
-          var newAsset = new page.models.asset({
-            name: subform.asset.name || '',
-            classification: classification,
-            excerpt: excerpt,
-          });
-
-          newAsset.$save({
-            id: subform.asset.asset.id
-          }).then(function (res) {
+	if(subform.asset.asset && subform.asset.asset.creation) // NOT for file operations. just metadata
+	{
+          var curAsset = new page.models.asset(data);
+	  
+	  curAsset.$save({id: subform.asset.asset.id}).then(function (res) {
             subform.messages.add({
               type: 'green',
               countdown: 3000,
@@ -269,9 +164,22 @@ module.directive('volumeEditMaterialsForm', [
         }
       };
 
+      form.disableButton = function () {
+	if (!form.$dirty) return true; //for efficiency, prevent iteration if unnecessary
+	var ans = true;
+	angular.forEach(form, function (subform, id) {
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty && 
+	      form[id].subform.asset.asset.creation) {
+		ans = false; 
+          }
+        });
+        return ans;
+      };
+
       form.saveAll = function () {
         angular.forEach(form, function (subform, id) {
-          if (id.startsWith('asset-') && form[id] && form[id].$dirty) { //do not allow for those currently uploading
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty && 
+	      form[id].subform.asset.asset.creation) { 
             form.save(subform.subform);
           }
         });
@@ -281,7 +189,6 @@ module.directive('volumeEditMaterialsForm', [
         delete subform.asset.asset.creation;
         subform.asset.file = undefined;
         subform.asset.fileUploadProgress = undefined;
-        //form.$setDirty();
       };
 
       form.remove = function (subform) {
@@ -361,8 +268,10 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.store = function (subform) {
+	//console.log("formstore");
+	//console.log(subform);
         backup[subform.$id] = $.extend(true, {}, subform.asset);
-
+	//console.log(backup);
         var subwatch = subform.$watch('form.name.validator', function (val) {
           if (!val) {
             return;

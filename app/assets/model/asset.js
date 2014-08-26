@@ -4,15 +4,6 @@ module.factory('asset', [
   '$resource', 'routerService', function ($resource, router) {
     var asset = $resource('/api/asset/:id');
 
-    asset.upload = function (volume, fd) {
-      return router.http(router.controllers.AssetApi.upload, volume.id, fd, {
-        transformRequest: angular.identity,
-        headers: {
-          'Content-Type': undefined
-        },
-      });
-    };
-
     asset.fileAddedImmediateUpload = function (file) {
       file.pause();
       router.http(router.controllers.AssetApi.uploadStart,
