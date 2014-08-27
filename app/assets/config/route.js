@@ -2,7 +2,7 @@
 
 module.run([
   'pageService', function (page) {
-    if (page.constants.locked) {
+    if (page.constants.data.locked) {
       page.$rootScope.$on('$routeChangeStart', function (event, next) {
         if (page.auth.isLoggedIn()) {
           if (!page.auth.isAuthorized()) {
