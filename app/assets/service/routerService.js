@@ -462,13 +462,35 @@ module.provider('routerService', [
       controller: 'slotView',
       templateUrl: 'slotView.html',
       resolve: {
+        volume: [
+          'pageService', function (page) {
+            var deferred = page.$q.defer();
+
+            page.models.volume.get({
+              id: page.$route.current.params.vid,
+              access: '',
+              tags: '',
+              excerpts: '',
+              comments: '',
+              records: '',
+              summary: '',
+              sessions: '',
+              categories: ''
+            }, function (res) {
+              deferred.resolve(res);
+            }, function (res) {
+              deferred.reject(res);
+            });
+
+            return deferred.promise;
+          }
+        ],
         slot: [
           'pageService', function (page) {
             var deferred = page.$q.defer();
 
             page.models.slot.get({
               assets: '',
-              records: '',
               tags: '',
               comments: '',
             }, function (res) {

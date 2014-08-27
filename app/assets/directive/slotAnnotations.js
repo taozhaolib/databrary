@@ -77,7 +77,6 @@ module.directive('slotAnnotations', [
 
 		  // if this record conflicts with any of this level, break
 		  for (var j = 0; j < m; j++) {
-		    // todo: review this logic
 		    if ((record.segment[0] && levels[i][j].segment[1] && levels[i][j].segment[1] >= record.segment[0]) || (record.segment[1] && levels[i][j].segment[0] && levels[i][j].segment[0] <= record.segment[1])) {
 		      break;
 		    }

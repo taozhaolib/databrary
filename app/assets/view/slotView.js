@@ -1,19 +1,13 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
+  '$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
     page.display.title = page.types.slotName(slot);
 
     // helpers
 
     var getAsset = function (media) {
       return media && media.id ? media.asset : media;
-    };
-
-    var getMedia = function (media) {
-      return media && media.id ? media : ctrl.filter(function (m) {
-	return m.asset === media;
-      }).pop();
     };
 
     var getElement = function (media) {
@@ -24,6 +18,7 @@ module.controller('slotView', [
 
     var ctrl = {
       slot: slot,
+      volume: volume,
       segment: page.types.segmentParse(page.$routeParams.segment),
 
       media: [],
@@ -94,7 +89,7 @@ module.controller('slotView', [
 
       hasDisplay: function (media) {
 	var asset = getAsset(media);
-	return ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	return asset && ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
       },
 
       hasTime: function (media) {
@@ -128,13 +123,13 @@ module.controller('slotView', [
 	'comments': 'comments',
       };
 
-      angular.forEach(slot.records, function (record) {
-	if (!(record.category in ctrl.records)) {
-	  ctrl.records[record.category] = [];
-	  ctrl.noteOptions[record.category] = page.constants.data.category[record.category].name;
+      angular.forEach(volume.sessions[slot.container.id].records, function (record) {
+	if (!(volume.records[record.id].category in ctrl.records)) {
+	  ctrl.records[volume.records[record.id].category] = [];
+	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.data.category[volume.records[record.id].category].name;
 	}
 
-	ctrl.records[record.category].push(record);
+	ctrl.records[volume.records[record.id].category].push(record);
       });
     };
 
@@ -217,8 +212,8 @@ module.controller('slotView', [
 	    click: function () {
 	      page.$location.search('mode', 'view');
 	    },
-	    access: page.permission.CONTRIBUTE,
-	    object: slot,
+	    access: page.permission.VIEW,
+	    object: volume,
 	  },
 	];
       } else {
@@ -231,7 +226,7 @@ module.controller('slotView', [
 	      page.$location.search('mode', 'edit');
 	    },
 	    access: page.permission.CONTRIBUTE,
-	    object: slot,
+	    object: volume,
 	  },
 	];
       }

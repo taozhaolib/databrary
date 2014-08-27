@@ -8,9 +8,13 @@ module.directive('slotTimelineTrack', [
         var ctrl = page.$parse($attrs.ctrl)($scope);
 
         track.asset = page.$parse($attrs.asset)($scope);
+        track.spare = angular.isDefined($attrs.spare);
 
         track.classes = function () {
           var cls = [];
+
+          if (!track.asset)
+            return cls;
 
           if (ctrl.hasPosition(track.asset)) {
             cls.push('slot-track-positioned');
