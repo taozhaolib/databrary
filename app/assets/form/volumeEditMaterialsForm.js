@@ -9,7 +9,6 @@ module.directive('volumeEditMaterialsForm', [
       form.volume = undefined;
       form.slot = undefined;
       form.filtered = [];
-      var backup = {};
 
       form.saveFn = undefined;
       form.addFn = undefined;
@@ -67,7 +66,6 @@ module.directive('volumeEditMaterialsForm', [
 	    //console.log(file.containingForm);
 	    if(file.containingForm && file.containingForm.subform){
 	      //console.log(file.containingForm);
-	      form.store(file.containingForm.subform);
 	      form.clean(file.containingForm.subform);
 	    }
         };
@@ -143,7 +141,6 @@ module.directive('volumeEditMaterialsForm', [
               form.successFn(form, res);
             }
 
-            form.store(subform);
             page.models.volume.$cache.removeAll();
             page.models.slot.$cache.removeAll();
           }, function (res) {
@@ -267,48 +264,14 @@ module.directive('volumeEditMaterialsForm', [
         }
       };
 
-      form.store = function (subform) {
-	//console.log("formstore");
-	//console.log(subform);
-        backup[subform.$id] = $.extend(true, {}, subform.asset);
-	//console.log(backup);
-        var subwatch = subform.$watch('form.name.validator', function (val) {
-          if (!val) {
-            return;
-          }
 
-          subform.form.name.validator.client({
-            tips: page.constants.message('material.name.help'),
-          }, true);
-
-          subwatch();
-        });
-      };
-
-      form.reset = function (subform) {
-        subform.asset = backup[subform.$id];
-
-        if (subform.asset.asset) {
-          page.models.asset.get({
-            creation: '',
-            id: subform.asset.asset.id
-          }, function (res) {
-            subform.asset.asset.creation = res.creation;
-          });
-        } else {
-          form.remove(subform);
-        }
-
-        form.store(subform);
-        form.clean(subform);
-      };
-
+      var scrollPosX = window.pageXOffset;
+      var scrollPosY = window.pageYOffset;
       form.resetAll = function () {
-        angular.forEach(form, function (subform, id) {
-          if (id.startsWith('asset-') && form[id].$dirty) {
-            form.reset(subform.subform);
-          }
-        });
+	  scrollPosX = window.pageXOffset;
+	  scrollPosY = window.pageYOffset;
+	  page.$route.reload();
+	  window.setTimeout(function() {window.scrollTo(scrollPosX,scrollPosY);});
       };
 
       form.makeThumbData = function (context) {
