@@ -48,7 +48,7 @@ module.factory('authService', [
         return auth.parseUser(user);
       }
 
-      Login.user().then(auth.parseUser,
+      Login.get().then(auth.parseUser,
 	function () {
 	  auth.parseUser(undefined);
 	});

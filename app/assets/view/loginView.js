@@ -41,7 +41,7 @@ module.controller('loginView', [
     //
 
     $scope.submitForm = function () {
-      page.models.Party.login(angular.extend({
+      page.models.Login.login(angular.extend({
         email: '',
         password: '',
         openid: '',

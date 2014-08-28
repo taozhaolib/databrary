@@ -27,7 +27,7 @@ module.factory('Login', [
     }
 
     angular.forEach({
-      user: 'get',
+      get: 'get',
       login: 'post',
       logout: 'logout',
       superuserOn: 'superuserOn',
