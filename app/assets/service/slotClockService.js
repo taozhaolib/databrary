@@ -6,27 +6,25 @@ module.factory('slotClockService', [
 
     var Clock = function (slot, ctrl) {
       var clock = this;
-      this.slot = slot;
-      this.ctrl = ctrl;
+      clock.ctrl = ctrl;
 
-      this.playFns = [];
-      this.pauseFns = [];
-      this.timeFns = [];
-      this.jumpFns = [];
-
-      this.begun = 0;
-      this.changed = this.begun;
-      this.duration = 0;
-      this.start = undefined;
+      clock.playFns = [];
+      clock.pauseFns = [];
+      clock.timeFns = [];
+      clock.jumpFns = [];
 
       Object.defineProperties(this, {
         position: {
           get: function () {
-            clock.changed = Date.now() - clock.begun;
-            return clock.changed < clock.duration ? clock.changed : clock.duration;
+            var actual = clock.playing ? Date.now() - clock.begun : clock.changed - clock.begun;
+            console.log();
+            return actual < clock.duration ? actual : clock.duration;
           }
         }
       });
+
+      clock.duration = 0;
+      clock.start = undefined;
 
       slot.assets.forEach(function (asset) {
         // TODO: hack until type classes
@@ -42,16 +40,19 @@ module.factory('slotClockService', [
       });
 
       clock.begun = Date.now() - clock.start;
+      clock.changed = this.begun;
 
       // ticker
-      this.interval = 100;
-      this.playing = false;
+      clock.interval = 100;
+      clock.playing = false;
     };
 
     // Clock behaviors
 
     Clock.prototype.play = function (pos) {
-      this.begun = Date.now() - this.changed;
+      this.begun = Date.now() - (this.changed - this.begun);
+      this.changed = Date.now();
+
       if (angular.isNumber(pos)) {
         this.jump(pos);
       }
@@ -67,7 +68,7 @@ module.factory('slotClockService', [
     //
 
     Clock.prototype.pause = function () {
-      this.changed = this.position;
+      this.changed = Date.now();
       tickerOff(this);
       callFn(this, this.pauseFns);
     };
