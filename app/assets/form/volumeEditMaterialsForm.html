@@ -9,8 +9,8 @@
         <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
       </div>
 
-      <button class="mini green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save' | message" ng-disabled="volumeEditMaterialsForm.disableButton()"></button>
-      <button class="mini yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert' | message" ng-disabled="volumeEditMaterialsForm.disableButton()"></button>
+      <button class="mini green" ng-click="volumeEditMaterialsForm.saveAll()" ng-bind="'save' | message" ng-disabled="volumeEditMaterialsForm.disableSaveButton()"></button>
+      <button class="mini yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-html="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
     </div>
   </section>
 
