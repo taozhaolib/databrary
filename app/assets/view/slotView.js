@@ -19,7 +19,7 @@ module.controller('slotView', [
     var ctrl = {
       slot: slot,
       volume: volume,
-      segment: page.types.segmentParse(page.$routeParams.segment),
+      segment: slot.segment,
 
       media: [],
 

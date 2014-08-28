@@ -4,6 +4,7 @@ module.directive('volumeEditMaterialsForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.volumeEditMaterialsForm;
+      $scope.form = form;
 
       form.data = {};
       form.volume = undefined;
@@ -161,12 +162,11 @@ module.directive('volumeEditMaterialsForm', [
         }
       };
 
-      form.disableButton = function () {
+      form.disableSaveButton = function () {
 	if (!form.$dirty) return true; //for efficiency, prevent iteration if unnecessary
 	var ans = true;
 	angular.forEach(form, function (subform, id) {
-          if (id.startsWith('asset-') && form[id] && form[id].$dirty && 
-	      form[id].subform.asset.asset.creation) {
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty && form[id].subform.asset.asset.creation) {
 		ans = false; 
           }
         });
@@ -175,8 +175,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.saveAll = function () {
         angular.forEach(form, function (subform, id) {
-          if (id.startsWith('asset-') && form[id] && form[id].$dirty && 
-	      form[id].subform.asset.asset.creation) { 
+          if (id.startsWith('asset-') && form[id] && form[id].$dirty && form[id].subform.asset.asset.creation) { 
             form.save(subform.subform);
           }
         });
@@ -267,11 +266,15 @@ module.directive('volumeEditMaterialsForm', [
 
       var scrollPosX = window.pageXOffset;
       var scrollPosY = window.pageYOffset;
-      form.resetAll = function () {
-	  scrollPosX = window.pageXOffset;
-	  scrollPosY = window.pageYOffset;
-	  page.$route.reload();
-	  window.setTimeout(function() {window.scrollTo(scrollPosX,scrollPosY);});
+      form.resetAll = function (force) {
+	  if(force || confirm(page.constants.message('navigation.confirmation'))){
+	    scrollPosX = window.pageXOffset;
+	    scrollPosY = window.pageYOffset;
+	    page.$route.reload();
+	    page.$timeout(function() {window.scrollTo(scrollPosX,scrollPosY);});
+	    return true;
+	  }
+	  return false;
       };
 
       form.makeThumbData = function (context) {

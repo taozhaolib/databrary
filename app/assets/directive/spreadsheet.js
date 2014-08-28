@@ -69,7 +69,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = volume.permission >= page.permission.EDIT;
+	var editable = $scope.editable = page.auth.hasAccess(page.permission.EDIT, volume);
 
 	function getSlot(slot) {
 	  if ('records' in slot)
@@ -177,7 +177,7 @@ module.directive('spreadsheet', [
 	/* Fill metricCols and recordCols from records */
 	function populateCols() {
 	  metricCols = [];
-	  recordCols = Object.keys(records).sort(byNumber).map(function (c) {
+	  $scope.recordCols = recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var category = page.constants.data.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
@@ -197,10 +197,11 @@ module.directive('spreadsheet', [
 	    var l = metrics.length;
 	    metricCols[si].first = metricCols[si+l-1].last = l;
 	    return {
-	      category: c,
+	      category: category,
 	      metrics: metrics
 	    };
 	  });
+	  $scope.metricCols = metricCols;
 	}
 
 	/* Call all populate* functions */
@@ -387,14 +388,14 @@ module.directive('spreadsheet', [
 	}
 
 	/* Sort by one of the container columns. */
-	$scope.sortBySlot = function (f) {
+	function sortBySlot(f) {
 	  sortBy(f, slots.map(function (s) { return s[f]; }));
-	};
+	}
 
 	/* Sort by Category_id c's Metric_id m */
-	$scope.sortByMetric = function (c, m) {
+	function sortByMetric(c, m) {
 	  sortBy(c + '_' + m, records[c][m][0]);
-	};
+	}
 
 	///////////////////////////////// Backend saving
 	
@@ -497,7 +498,7 @@ module.directive('spreadsheet', [
 	  if (value === '')
 	    value = undefined;
 	  else switch (type) {
-	    case 'choose':
+	    case 'record':
 	      var c = 'c' in info ? page.constants.data.category[info.c] : metricCols[info.m].category;
 	      if (value === 'new')
 		addRecord(cell, info.i, c);
@@ -596,7 +597,7 @@ module.directive('spreadsheet', [
 		c = page.constants.data.category[info.c];
 		editInput.value = 'remove';
 	      }
-	      editScope.type = 'choose';
+	      editScope.type = 'record';
 	      editScope.options = {
 		'new':'Create new ' + c.name,
 		'remove':'No ' + c.name
@@ -606,6 +607,11 @@ module.directive('spreadsheet', [
 		  editScope.options[ri] = page.types.recordName(r);
 		}
 	      });
+	      break;
+	    case 'metric':
+	      editScope.type = 'metric';
+	      editInput.value = undefined;
+	      editScope.options = page.constants.data.metrics;
 	      break;
 	    default:
 	      return;
@@ -665,13 +671,21 @@ module.directive('spreadsheet', [
 	    page.display.toggleAge();
 	};
 
+	$scope.clickSlot = sortBySlot;
+	$scope.clickCategory = function (rec, $event) {
+	  unselect();
+	  if (editable)
+	    edit($event.target, {t:'metric',r:rec});
+	};
+	$scope.clickMetric = function (col) {
+	  sortByMetric(col.category.id, col.metric.id);
+	};
+
 	///////////////////////////////// main
 
 	populate();
 	generate();
 	fill();
-	$scope.recordCols = recordCols;
-	$scope.metricCols = metricCols;
       }
     ];
 

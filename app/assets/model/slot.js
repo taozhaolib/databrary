@@ -4,13 +4,13 @@ module.factory('slot', [
   '$resource', '$route', 'routerService', function ($resource, $route, router) {
     return $resource('/api/volume/:vid/slot/:id', {
       id: function () {
-        return $route.current.params.id || undefined;
+        return $route.current.params.id;
       },
       vid: function () {
-        return $route.current.params.vid || undefined;
+        return $route.current.params.vid;
       },
       segment: function () {
-        return $route.current.params.segment || ',';
+        return $route.current.params.segment;
       }
     }, {
       update: router.action(router.controllers.SlotApi.update, ['id', 'segment']),
