@@ -1,10 +1,10 @@
 <section class="slot-player" bindonce>
-  <div class="player-main" ng-if="ctrl.current[0]">
+  <div class="player-main">
     <div class="player-main-viewport">
       <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
     </div>
 
-    <div class="player-main-float">
+    <div class="player-main-float" ng-if="ctrl.current[0]">
       <h1 class="player-main-info-name">
         <span class="filetype">
           <img ng-src="{{page.types.assetIcon(ctrl.current[0])}}" hint="format-{{page.types.assetFormat(ctrl.current[0]).extension}}">
@@ -14,30 +14,32 @@
       </h1>
     </div>
 
-    <div class="player-main-info" ng-class="{playable: ctrl.hasDisplay(ctrl.current[0])}">
-      <nav class="player-main-info-actions">
-        <a ng-href="{{page.router.assetEdit(ctrl.current[0])}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
-        <a ng-href="{{page.router.assetLink(ctrl.current[0], false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
-        <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
-      </nav>
+    <div class="player-main-info" ng-class="{playable: ctrl.current[0] && ctrl.hasDisplay(ctrl.current[0])}">
+      <div ng-if="ctrl.current[0]">
+        <nav class="player-main-info-actions">
+          <a ng-href="{{page.router.assetEdit(ctrl.current[0])}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
+          <a ng-href="{{page.router.assetLink(ctrl.current[0], false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
+          <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
+        </nav>
 
-      <div class="player-main-info-support" ng-if="!page.display.videoSupported()" ng-bind="'video.unsupported' | message"></div>
+        <div class="player-main-info-support" ng-if="!page.display.videoSupported()" ng-bind="'video.unsupported' | message"></div>
 
-      <dl class="player-main-info-list cf">
-        <dt>Classification</dt>
-        <dd>
-          <span class="classification icon" ng-class="page.constants.data.classification[ctrl.current[0].asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[ctrl.current[0].asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.data.classification[ctrl.current[0].asset.classification]"></span>
-        </dd>
+        <dl class="player-main-info-list cf">
+          <dt>Classification</dt>
+          <dd>
+            <span class="classification icon" ng-class="page.constants.data.classification[ctrl.current[0].asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[ctrl.current[0].asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.data.classification[ctrl.current[0].asset.classification]"></span>
+          </dd>
 
-        <dt>File Type</dt>
-        <dd ng-bind="page.types.assetFormat(ctrl.current[0]).name"></dd>
+          <dt>File Type</dt>
+          <dd ng-bind="page.types.assetFormat(ctrl.current[0]).name"></dd>
 
-        <dt>Mime Type</dt>
-        <dd ng-bind="page.types.assetFormat(ctrl.current[0]).mimetype"></dd>
+          <dt>Mime Type</dt>
+          <dd ng-bind="page.types.assetFormat(ctrl.current[0]).mimetype"></dd>
 
-        <dt ng-if="ctrl.current[0].asset.duration">Duration</dt>
-        <dd ng-if="ctrl.current[0].asset.duration" ng-bind="ctrl.current[0].asset.duration | timecode"></dd>
-      </dl>
+          <dt ng-if="ctrl.current[0].asset.duration">Duration</dt>
+          <dd ng-if="ctrl.current[0].asset.duration" ng-bind="ctrl.current[0].asset.duration | timecode"></dd>
+        </dl>
+      </div>
     </div>
   </div>
 </section>
