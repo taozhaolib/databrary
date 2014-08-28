@@ -69,7 +69,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = volume.permission >= page.permission.EDIT;
+	var editable = page.auth.hasAccess(page.permission.EDIT, volume);
 
 	function getSlot(slot) {
 	  if ('records' in slot)
