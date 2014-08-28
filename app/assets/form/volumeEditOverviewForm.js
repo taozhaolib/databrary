@@ -4,6 +4,7 @@ module.directive('volumeEditOverviewForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.volumeEditOverviewForm;
+      $scope.form = form;
 
       form.data = {};
       form.authors = [
@@ -146,6 +147,15 @@ module.directive('volumeEditOverviewForm', [
 
         form.$setPristine();
       };
+
+      form.resetAll = function(){
+	if(confirm(page.constants.message('navigation.confirmation'))){
+	  form.reset();
+	  return true;
+	}
+	return false;
+      };
+
 
       //
 

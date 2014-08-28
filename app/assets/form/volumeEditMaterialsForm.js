@@ -4,6 +4,7 @@ module.directive('volumeEditMaterialsForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.volumeEditMaterialsForm;
+      $scope.form = form;
 
       form.data = {};
       form.volume = undefined;
@@ -271,7 +272,9 @@ module.directive('volumeEditMaterialsForm', [
 	    scrollPosY = window.pageYOffset;
 	    page.$route.reload();
 	    page.$timeout(function() {window.scrollTo(scrollPosX,scrollPosY);});
+	    return true;
 	  }
+	  return false;
       };
 
       form.makeThumbData = function (context) {
