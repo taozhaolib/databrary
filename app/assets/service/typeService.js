@@ -139,24 +139,6 @@ module.factory('typeService', [
         (angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
     };
 
-    typeService.segmentParse = function (string) {
-      if (string === '' || string == 'empty')
-	return null;
-      /* we don't understand open/closed on the client side, so ignore: */
-      if (string.startsWith('[') || string.startsWith('('))
-	string = string.slice(1);
-      if (string.endsWith(']') || string.endsWith(')'))
-	string = string.slice(0, -1);
-      var i = string.indexOf(',');
-      if (i === -1) {
-	i = string.indexOf('-', 1);
-	if (i === -1)
-	  return parseFloat(string);
-      }
-      return [i === 0 ? -Infinity : parseInt(string.slice(0, i)),
-	  i === string.length-1 ? Infinity : parseInt(string.slice(i+1))];
-    };
-
     typeService.segmentEmpty = function (seg) {
       return seg === null || Array.isArray(seg) && seg[0] !== null && seg[1] !== null && seg[0] >= seg[1];
     };
