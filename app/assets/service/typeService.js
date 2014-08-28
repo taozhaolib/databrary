@@ -140,19 +140,21 @@ module.factory('typeService', [
     };
 
     typeService.segmentParse = function (string) {
-      if (string.contains(',')) {
-        string.split(',').forEach(function (point, i) {
-          if (point === '') {
-            string[i] = undefined;
-          }
-        });
+      if (string === '' || string == 'empty')
+	return null;
+      /* we don't understand open/closed on the client side, so ignore: */
+      if (string.startsWith('[') || string.startsWith('('))
+	string = string.slice(1);
+      if (string.endsWith(']') || string.endsWith(')'))
+	string = string.slice(0, -1);
+      var i = string.indexOf(',');
+      if (i === -1) {
+	i = string.indexOf('-', 1);
+	if (i === -1)
+	  return parseFloat(string);
       }
-
-      if (string.length === 0) {
-        return;
-      }
-
-      return string;
+      return [i === 0 ? -Infinity : parseInt(string.slice(0, i)),
+	  i === string.length-1 ? Infinity : parseInt(string.slice(i+1))];
     };
 
     typeService.segmentEmpty = function (seg) {
