@@ -1,5 +1,6 @@
 <div ng-switch="type" class="spreadsheet-edit">
-  <select ng-switch-when="choose" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
+  <select ng-switch-when="record" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
+  <select ng-switch-when="metric" name="edit" ng-model="input.value" ng-options="id as metric.name for (id, metric) in options"/>
   <input ng-switch-when="text" name="edit" type="text" ng-model="input.value" ng-blur="unedit($event)"/>
   <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" ng-blur="unedit($event)"/>
   <input ng-switch-when="number" name="edit" type="number" ng-model="input.value" ng-blur="unedit($event)"/>
