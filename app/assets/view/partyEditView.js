@@ -1,14 +1,16 @@
 'use strict';
 
 module.controller('partyEditView', [
-  '$scope', 'party', 'partyAuth', 'pageService', function ($scope, party, partyAuth, page) {
+  '$scope', 'partyAuth', 'pageService', function ($scope, partyAuth, page) {
+    var party = partyAuth.party;
+
     page.display.title = page.constants.message('page.title.party.edit');
 
     page.display.toolbarLinks = [
       {
         type: 'yellow',
         html: page.constants.message('party.view'),
-        url: page.router.party(party),
+        url: party.route,
       }
     ];
 

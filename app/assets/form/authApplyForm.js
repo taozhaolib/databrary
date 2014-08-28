@@ -35,7 +35,6 @@ module.directive('authApplyForm', [
           partyId: form.other.party.id
         }, function () {
           form.validator.server({});
-          page.models.party.$cache.removeAll();
           form.$setPristine();
           delete form.other.new;
 
@@ -63,7 +62,6 @@ module.directive('authApplyForm', [
           info: form.notFound.info
         }, function () {
           form.validator.server({});
-          page.models.party.$cache.removeAll();
           form.$setPristine();
           delete form.other.new;
 

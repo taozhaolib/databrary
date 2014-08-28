@@ -41,11 +41,11 @@ module.controller('loginView', [
     //
 
     $scope.submitForm = function () {
-      page.models.party.login(angular.extend({
+      page.models.Party.login(angular.extend({
         email: '',
         password: '',
         openid: '',
-      }, $scope.loginData), function (data) {
+      }, $scope.loginData)).then(function (data) {
         form.validator.server({});
 
         page.auth.parseUser(data);

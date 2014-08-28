@@ -6,14 +6,14 @@
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" fill bo-class="{inst: parent.party.institution}">
-            <figmedia><img ng-src="{{page.router.partyAvatar(parent.party, 54)}}"></figmedia>
+            <figmedia><img ng-src="{{parent.party.avatarRoute(54)}}"></figmedia>
           </figure>
         </div>
 
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <a bo-href="page.router.party(parent.party)" class="permission-auth-username">{{parent.party.name}}</a>
+              <a bo-href="parent.party.route" class="permission-auth-username">{{parent.party.name}}</a>
               <span class="permission-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
             </div>
 
@@ -45,7 +45,7 @@
     </article>
 
     <fieldset class="clean">
-      <button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'apply'))" bo-text="'network.apply.local' | message"></button>
+      <button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.auth.user.editRoute('apply'))" bo-text="'network.apply.local' | message"></button>
       <button class="green" ng-if="canGrant()" ng-click="grant()" bo-text="'network.apply.foreign' | message:party.name"></button>
     </fieldset>
   </div>
@@ -57,14 +57,14 @@
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" bo-class="{inst: child.party.institution}">
-            <figmedia><img ng-src="{{page.router.partyAvatar(child.party, 54)}}"></figmedia>
+            <figmedia><img ng-src="{{child.party.avatarRoute(54)}}"></figmedia>
           </figure>
         </div>
 
         <div class="col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="permission-heading col-desktop-14 col-laptop-11 col-tablet-8 col-mobile-5">
-              <a bo-href="page.router.party(child.party)" class="permission-auth-username" bo-text="child.party.name"></a>
+              <a bo-href="child.party.route" class="permission-auth-username" bo-text="child.party.name"></a>
               <span class="permission-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
             </div>
 
@@ -92,7 +92,7 @@
     </article>
 
     <fieldset class="clean">
-      <button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.router.partyEdit(page.auth.user, 'grant'))" bo-text="'network.grant.local' | message"></button>
+      <button class="green" ng-if="!isForeign()" ng-click="page.$location.url(page.auth.user.editRoute('grant'))" bo-text="'network.grant.local' | message"></button>
       <button class="green" ng-if="canApply()" ng-click="apply()" bo-text="'network.grant.foreign' | message:party.name"></button>
     </fieldset>
   </div>

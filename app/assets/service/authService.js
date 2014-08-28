@@ -9,9 +9,10 @@ module.factory('authService', [
   'messageService',
   'constantService',
   'routerService',
-  'party',
+  'Party',
+  'Login',
   'playService',
-  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, party, play) {
+  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, Login, play) {
     var auth = {};
 
     //
@@ -47,11 +48,10 @@ module.factory('authService', [
         return auth.parseUser(user);
       }
 
-      party.user(function (data) {
-        auth.parseUser(data);
-      }, function () {
-        auth.parseUser(undefined);
-      });
+      Login.user().then(auth.parseUser,
+	function () {
+	  auth.parseUser(undefined);
+	});
     };
 
     auth.updateUser(play.user);
@@ -88,7 +88,7 @@ module.factory('authService', [
     //
 
     auth.logout = function () {
-      party.logout(function () {
+      Login.logout().then(function () {
         auth.parseUser();
         $location.url('/');
 
@@ -136,10 +136,9 @@ module.factory('authService', [
     //
 
     var enableSU = function (form) {
-      party.superuserOn({
-          auth: form.auth
-        },
-        function (data) {
+      Login.superuserOn({
+	  auth: form.auth
+        }).then(function (data) {
           auth.parseUser(data);
 
           messages.add({
@@ -156,7 +155,7 @@ module.factory('authService', [
     };
 
     var disableSU = function () {
-      party.superuserOff(function (data) {
+      Login.superuserOff().then(function (data) {
         auth.parseUser(data);
 
         messages.add({

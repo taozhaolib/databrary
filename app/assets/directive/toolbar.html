@@ -31,7 +31,7 @@
           <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.auth.hasAuth(page.permission.ADMIN), on: page.auth.hasAuth(page.permission.SUPER)}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
             <span class="username hide-mobile" ng-bind="page.auth.user.name.split(' ').shift()"></span>
             <span class="username show-mobile" bo-text="'me' | message"></span>
-            <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-avatar"> </a>
+            <img bo-src="page.auth.user.avatarRoute()" class="toolbar-avatar"> </a>
         </span>
 
         <span class="sep">|</span>
@@ -67,7 +67,7 @@
           </div>
 
           <div class="user-icon col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-            <img bo-src="page.router.partyAvatar(page.auth.user)" class="toolbar-hover-avatar">
+            <img bo-src="page.auth.user.avatarRoute()" class="toolbar-hover-avatar">
           </div>
         </div>
       </section>

@@ -59,7 +59,7 @@ private[controllers] sealed class LoginController extends SiteController {
         } yield {}
       case _ =>
     }
-    (if (request.isApi) Ok("")
+    (if (request.isApi) Ok((new SiteRequest.Anon(request)).json)
     else Redirect(routes.Site.start))
       .withNewSession
   }

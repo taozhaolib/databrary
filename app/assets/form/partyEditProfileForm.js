@@ -36,6 +36,7 @@ module.directive('partyEditProfileForm', [
 	  form.saveFn(form);
 	}
 
+	var act, upload;
 	if (angular.isObject(form.data.avatar)) {
 	  var fd = new FormData();
 
@@ -48,82 +49,54 @@ module.directive('partyEditProfileForm', [
 	    }
 	  }
 
-	  var msg = form.messages.add({
+	  upload = form.messages.add({
 	    type: 'yellow',
 	    body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
 	  });
 
-	  page.models.party.upload(form.party, fd)
-	    .then(function (res) {
-	      form.validator.server({});
+	  act = form.party.upload(fd);
+	} else
+	  act = form.party.save(form.data);
 
-	      form.messages.add({
-		type: 'green',
-		countdown: 3000,
-		body: page.constants.message('party.edit.profile.success'),
-	      });
+	act.then(function (res) {
+	    form.validator.server({});
 
+	    form.messages.add({
+	      type: 'green',
+	      countdown: 3000,
+	      body: page.constants.message('party.edit.profile.success'),
+	    });
+
+	    if (upload) {
 	      form.data.avatar = res.data.avatar;
+	      form.messages.remove(upload);
+	    }
 
-	      backup = $.extend(true, {}, form.data);
+	    backup = $.extend(true, {}, form.data);
 
-	      if (page.auth.user.id == form.party.id) {
-		page.auth.user.name = res.name;
-	      }
+	    if (page.auth.user.id == form.party.id) {
+	      page.auth.user.name = res.name;
+	    }
 
-	      form.messages.remove(msg);
+	    if (angular.isFunction(form.successFn)) {
+	      form.successFn(form, res);
+	    }
 
-	      if (angular.isFunction(form.successFn)) {
-		form.successFn(form, res);
-	      }
+	    form.$setPristine();
 
-	      form.$setPristine();
-	      page.models.party.$cache.removeAll();
+	    if (upload)
 	      form.avatarUrl = form.getAvatar();
-	    }, function (res) {
-	      form.validator.server(res);
-	      page.display.scrollTo(form.$element);
+	  }, function (res) {
+	    form.validator.server(res);
+	    page.display.scrollTo(form.$element);
 
-	      form.messages.remove(msg);
+	    if (upload)
+	      form.messages.remove(upload);
 
-	      if (angular.isFunction(form.errorFn)) {
-		form.errorFn(form, res);
-	      }
-	    });
-	} else {
-	  page.models.party.save({
-	      id: form.party.id,
-	    }, form.data,
-	    function (res) {
-	      form.validator.server({});
-
-	      form.messages.add({
-		type: 'green',
-		countdown: 3000,
-		body: page.constants.message('party.edit.profile.success'),
-	      });
-
-	      backup = $.extend(true, {}, form.data);
-
-	      if (page.auth.user.id == form.party.id) {
-		page.auth.user.name = res.name;
-	      }
-
-	      if (angular.isFunction(form.successFn)) {
-		form.successFn(form, res);
-	      }
-
-	      form.$setPristine();
-	      page.models.party.$cache.removeAll();
-	    }, function (res) {
-	      form.validator.server(res);
-	      page.display.scrollTo(form.$element);
-
-	      if (angular.isFunction(form.errorFn)) {
-		form.errorFn(form, res);
-	      }
-	    });
-	}
+	    if (angular.isFunction(form.errorFn)) {
+	      form.errorFn(form, res);
+	    }
+	  });
       };
 
       form.reset = function () {
@@ -157,7 +130,7 @@ module.directive('partyEditProfileForm', [
       //
 
       form.getAvatar = function () {
-	return form.party && page.router.partyAvatar(form.party, undefined, Date.now());
+	return form.party && form.party.avatarRoute(undefined, Date.now());
       };
 
       page.$timeout(function () {

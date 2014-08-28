@@ -7,11 +7,13 @@ module.factory('modelService', [
     //
 
     angular.forEach([
+      'Party',
+      'Login',
+
       'analytic',
       'asset',
       'comment',
       'cite',
-      'party',
       'partyAuthorize',
       'record',
       'slot',
@@ -24,7 +26,7 @@ module.factory('modelService', [
     });
 
     //
-
+    
     return models;
   }
 ]);

@@ -26,7 +26,7 @@
             <div class="home-feature-investigators">
               <ul class="inline-block comma">
                 <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
-                  <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a></li>
+                  <a bo-href="access.party.route" bo-text="access.party.name"></a></li>
               </ul>
             </div>
           </div>

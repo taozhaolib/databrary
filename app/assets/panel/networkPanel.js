@@ -39,7 +39,7 @@ module.controller('NetworkPanel', [
                   message: page.messages.add({
                     type: 'yellow',
                     closeable: true,
-                    body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + page.router.partyEdit($scope.party, 'grant') + '">Manage</a>.</span>')($scope)
+                    body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '">Manage</a>.</span>')($scope)
                   })
                 };
               }
@@ -55,12 +55,10 @@ module.controller('NetworkPanel', [
           });
         });
       } else {
-        page.models.party.$cache.removeAll();
-        page.models.party.get({
-          id: page.$routeParams.id || page.auth.user.id,
+        page.models.Party.get(page.$routeParams.id || page.auth.user.id, {
           parents: '',
           children: ''
-        }, function (data) {
+        }).then(function (data) {
           $scope.partyAuth = {
             parents: data.parents.map(function (party) {
               return { party: party };
@@ -126,7 +124,7 @@ module.controller('NetworkPanel', [
     };
 
     $scope.grant = function () {
-      page.$location.url(page.router.partyEdit(page.auth.user, 'grant'));
+      page.$location.url(page.auth.user.editRoute('grant'));
       var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form, $thatScope) {
         remove();
 
@@ -143,7 +141,7 @@ module.controller('NetworkPanel', [
     };
 
     $scope.apply = function () {
-      page.$location.url(page.router.partyEdit(page.auth.user, 'apply'));
+      page.$location.url(page.auth.user.editRoute('apply'));
       var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form, $thatScope) {
         remove();
 

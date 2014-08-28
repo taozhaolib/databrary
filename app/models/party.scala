@@ -70,7 +70,7 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
     , orcid.map(('orcid, _))
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
-    , Some('institution -> account.isEmpty)
+    , if (account.isEmpty) Some('institution -> true) else None
     , url.map(('url, _))
     )
 }

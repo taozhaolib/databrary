@@ -89,10 +89,12 @@ object SiteApi extends SiteController {
     , PartyHtml.edit
     , PartyHtml.avatar
     , PartyApi.profile
+    , PartyApi.get
+    , PartyApi.query
+    , PartyApi.update
     , PartyApi.authorizeGet
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
-    , PartyApi.update
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add

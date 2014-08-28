@@ -10,7 +10,7 @@ module.controller('partyView', [
       {
         type: 'yellow',
         html: page.constants.message('party.edit'),
-        url: page.router.partyEdit(party),
+        url: party.editRoute(),
         access: page.permission.CONTRIBUTE,
         object: party,
       },
