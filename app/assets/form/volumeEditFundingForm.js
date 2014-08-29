@@ -7,12 +7,10 @@ module.directive('volumeEditFundingForm', [
 
       form.data = {};
       form.volume = undefined;
-      var backup = {};
 
       form.saveFn = undefined;
       form.successFn = undefined;
       form.errorFn = undefined;
-      form.resetFn = undefined;
       form.cancelFn = undefined;
 
       //
@@ -20,7 +18,6 @@ module.directive('volumeEditFundingForm', [
       form.init = function (data, volume) {
         form.data = data;
         form.volume = form.volume || volume;
-        backup = $.extend(true, {}, data);
       };
 
       //
@@ -50,12 +47,12 @@ module.directive('volumeEditFundingForm', [
         });
       };
 
-      form.resetAll = function () {
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
-            subform.reset();
-          }
-        });
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
+	  return true;
+	}
+	return false;
       };
 
       //

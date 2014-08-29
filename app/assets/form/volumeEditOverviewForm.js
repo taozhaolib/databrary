@@ -4,7 +4,6 @@ module.directive('volumeEditOverviewForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.volumeEditOverviewForm;
-      $scope.form = form;
 
       form.data = {};
       form.authors = [
@@ -48,7 +47,6 @@ module.directive('volumeEditOverviewForm', [
           }
         }
 
-        backup = $.extend(true, {}, data);
       };
 
       //
@@ -79,7 +77,6 @@ module.directive('volumeEditOverviewForm', [
                 body: page.constants.message('volume.edit.overview.success'),
               });
 
-              backup = $.extend(true, {}, form.data);
 
               if (angular.isFunction(form.successFn)) {
                 form.successFn(form, res);
@@ -107,7 +104,6 @@ module.directive('volumeEditOverviewForm', [
               body: page.constants.message('volume.edit.overview.success'),
             });
 
-            backup = $.extend(true, {}, form.data);
 
             if (angular.isFunction(form.successFn)) {
               form.successFn(form, res);
@@ -126,36 +122,13 @@ module.directive('volumeEditOverviewForm', [
         }
       };
 
-      form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
-        form.data = $.extend(true, {}, backup);
-
-        form.validator.clearServer();
-
-        if (backup.citation && backup.citation.authors) {
-          form.authors = backup.citation.authors.map(function (author) {
-            return {
-              name: author,
-            };
-          });
-        } else {
-          form.authors = [];
-        }
-
-        form.$setPristine();
-      };
-
-      form.resetAll = function(){
-	if(confirm(page.constants.message('navigation.confirmation'))){
-	  form.reset();
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
 	  return true;
 	}
 	return false;
       };
-
 
       //
 
