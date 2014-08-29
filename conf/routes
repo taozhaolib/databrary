@@ -140,8 +140,6 @@ POST    /api/party                                                              
 POST    /api/party/$pID<[0-9]+>/password                                                          controllers.TokenApi.password(pID : models.Account.Id)
 
 # ----- PARTY AUTHORIZE ----- #
-# QUERY
-GET     /api/party/$partyId<[0-9]+>/authorize                                                     controllers.PartyApi.authorizeGet(partyId : models.Party.Id)
 # SEARCH
 GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean = false)
 # CHANGE

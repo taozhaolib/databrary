@@ -55,10 +55,7 @@ module.directive('authGrantForm', [
           form.saveFn(form);
         }
 
-        page.models.partyAuthorize.save({
-          id: form.party.id,
-          partyId: form.other.party.id
-        }, form.other, function () {
+	form.party.authorizeSave(form.other.party.id, form.other).then(function () {
           form.validator.server({});
           backup = $.extend(true, {}, form.other);
           form.$setPristine();
@@ -111,10 +108,7 @@ module.directive('authGrantForm', [
             form.denySuccessFn(form, arguments);
           }
         } else {
-          page.models.partyAuthorize.delete({
-            id: form.party.id,
-            partyId: form.other.party.id
-          }, {}, function () {
+	  form.party.authorizeDelete(form.other.party.id).then(function () {
             form.validator.server({});
 
             if (angular.isFunction(form.denySuccessFn)) {

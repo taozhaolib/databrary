@@ -92,9 +92,10 @@ object SiteApi extends SiteController {
     , PartyApi.get
     , PartyApi.query
     , PartyApi.update
-    , PartyApi.authorizeGet
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
+    , PartyApi.authorizeChange
+    , PartyApi.authorizeDelete
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add

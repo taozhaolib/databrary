@@ -1,9 +1,7 @@
 'use strict';
 
 module.controller('partyEditView', [
-  '$scope', 'partyAuth', 'pageService', function ($scope, partyAuth, page) {
-    var party = partyAuth.party;
-
+  '$scope', 'party', 'pageService', function ($scope, party, page) {
     page.display.title = page.constants.message('page.title.party.edit');
 
     page.display.toolbarLinks = [
@@ -15,11 +13,6 @@ module.controller('partyEditView', [
     ];
 
     $scope.party = party;
-
-    partyAuth = partyAuth || {
-      parents: [],
-      children: [],
-    };
 
     //
 
@@ -147,7 +140,7 @@ module.controller('partyEditView', [
           step: step,
           form: step.partyEditApplyForm,
         };
-        forms.apply.form.init(party, partyAuth.parents);
+        forms.apply.form.init(party, party.parents);
       },
 
       'party-edit-grant': function (step) {
@@ -157,7 +150,7 @@ module.controller('partyEditView', [
           step: step,
           form: step.partyEditGrantForm,
         };
-        forms.grant.form.init(party, partyAuth.children);
+        forms.grant.form.init(party, party.children);
       },
     };
 
@@ -173,11 +166,11 @@ module.controller('partyEditView', [
       },
 
       'party-edit-apply': function () {
-        forms.apply.form.init(party, partyAuth.parents);
+        forms.apply.form.init(party, party.parents);
       },
 
       'party-edit-grant': function () {
-        forms.grant.form.init(party, partyAuth.children);
+        forms.grant.form.init(party, party.children);
       },
     };
   }

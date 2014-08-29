@@ -393,14 +393,4 @@ object PartyApi extends PartyController with ApiController {
     Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
       Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
   }
-
-  def authorizeGet(partyId : models.Party.Id) = AdminAction(partyId).async { implicit request =>
-    for {
-      parents <- request.obj.party.authorizeParents(true)
-      children <- request.obj.party.authorizeChildren(true)
-    } yield (Ok(JsonObject(
-      'parents -> parents.map(a => a.json + ('party -> a.parent.json)),
-      'children -> children.map(a => a.json + ('party -> a.child.json)))
-      .js))
-  }
 }

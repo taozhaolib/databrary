@@ -2,7 +2,7 @@
   <div class="network-parents-region">
     <h2>{{'auth.parents.title' | message}}</h2>
 
-    <article bo-id="'network-parent-'+parent.id" class="permission-auth cf" ng-repeat="parent in partyAuth.parents">
+    <article bo-id="'network-parent-'+parent.id" class="permission-auth cf" ng-repeat="parent in party.parents">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" fill bo-class="{inst: parent.party.institution}">
@@ -53,7 +53,7 @@
   <div class="network-children-region">
     <h2>{{'auth.children.title' | message}}</h2>
 
-    <article bo-id="'network-child-'+child.id" class="permission-auth cf" ng-repeat="child in partyAuth.children">
+    <article bo-id="'network-child-'+child.id" class="permission-auth cf" ng-repeat="child in party.children">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" bo-class="{inst: child.party.institution}">

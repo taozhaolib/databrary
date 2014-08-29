@@ -222,31 +222,9 @@ module.provider('routerService', [
       controller: 'partyEditView',
       templateUrl: 'partyEditView.html',
       resolve: {
-        partyAuth: [
+        party: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.Party.get(page.$route.current.params.id, ['parents', 'children']).then(
-	      function (party) {
-		if (page.auth.hasAccess(page.permission.ADMIN, party)) {
-		  page.models.partyAuthorize.query(function (res) {
-		    res.party = party;
-		    deferred.resolve(res);
-		  }, function (res) {
-		    deferred.reject(res);
-		  });
-		} else {
-		  deferred.resolve({
-		    party: party,
-		    parents: [],
-		    children: [],
-		  });
-		}
-	      }, function (res) {
-		deferred.reject(res);
-	      });
-
-            return deferred.promise;
+            return page.models.Party.get(page.$route.current.params.id, {'parents':'all', 'children':'all'});
           }
         ],
       },

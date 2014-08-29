@@ -12,11 +12,6 @@ module.controller('NetworkPanel', [
 
     //
 
-    $scope.partyAuth = {
-      parents: [],
-      children: [],
-    };
-
     var actionMessages = {};
 
     $scope.$on('$destroy', function () {
@@ -26,12 +21,11 @@ module.controller('NetworkPanel', [
     });
 
     var getPartyAuth = function () {
-      if (page.auth.hasAccess(page.permission.ADMIN, $scope.party)) {
-        page.models.partyAuthorize.$cache.removeAll();
-        page.models.partyAuthorize.query(function (data) {
-          $scope.partyAuth = data;
+      $scope.party.get({parents:'all', children:'all'}).then(function (party) {
+	$scope.party = party;
 
-          angular.forEach($scope.partyAuth.children, function (party) {
+	if (page.auth.hasAccess(page.permission.ADMIN, party))
+          angular.forEach($scope.party.children, function (party) {
             if (!party.member && !party.site) {
               if (!actionMessages[party.id]) {
                 actionMessages[party.id] = {
@@ -48,33 +42,12 @@ module.controller('NetworkPanel', [
               }
             }
           });
-        }, function (res) {
-          page.messages.addError({
-            body: page.constants.message('network.authquery.error'),
-            report: res,
-          });
-        });
-      } else {
-        page.models.Party.get(page.$routeParams.id || page.auth.user.id, {
-          parents: '',
-          children: ''
-        }).then(function (data) {
-          $scope.partyAuth = {
-            parents: data.parents.map(function (party) {
-              return { party: party };
-            }),
-            children: data.children.map(function (party) {
-              return { party: party };
-            })
-          };
-
-        }, function (res) {
-          page.messages.addError({
-            body: page.constants.message('network.authquery.error'),
-            report: res,
-          });
-        });
-      }
+      }, function (res) {
+	page.messages.addError({
+	  body: page.constants.message('network.authquery.error'),
+	  report: res,
+	});
+      });
     };
 
     //
@@ -116,11 +89,11 @@ module.controller('NetworkPanel', [
     };
 
     $scope.canGrant = function () {
-      return !($scope.party.institution || userExists($scope.partyAuth.parents));
+      return !($scope.party.institution || userExists($scope.party.parents));
     };
 
     $scope.canApply = function () {
-      return !userExists($scope.partyAuth.children);
+      return !userExists($scope.party.children);
     };
 
     $scope.grant = function () {

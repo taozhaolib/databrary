@@ -23,6 +23,12 @@ module.factory('modelService', [
       return this;
     };
 
+    Model.prototype.clear = function (/*f...*/) {
+      for (var i = 0; i < arguments.length; i ++)
+	if (this.hasOwnProperty(arguments[i]))
+	  delete this[arguments[i]];
+    };
+
     /* determine whether the given object satisfies all the given dependency options already.
      * returns the missing options, or null if nothing is missing. */
     function checkOptions(obj, options) {
@@ -83,33 +89,52 @@ module.factory('modelService', [
 
     modelCache(Party, 'Party', 256);
 
-    Party.prototype.staticFields = ['id', 'name', 'orcid', 'affiliation', 'email', 'institution', 'url'];
+    Party.prototype.staticFields = ['name', 'orcid', 'affiliation', 'email', 'institution', 'url'];
 
     Party.make = function (p) {
-      if (p.volumes)
-	for (var i = 0; i < p.volumes.length; i ++)
-	  p.volumes[i].volume = Volume.make(p.volumes[i].volume);
+      volumeMakeSubArray(p.volumes);
+      partyMakeSubArray(p.parents);
+      partyMakeSubArray(p.children);
       var c = Party.peek(p.id);
       return c ? c.update(p) : Party.poke(new Party(p));
     };
+
+    function partyMakeArray(l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i] = Party.make(l[i]);
+      return l;
+    }
+
+    function partyMakeSubArray(l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i].party = Party.make(l[i].party);
+      return l;
+    }
 
     function partyRes(res) {
       return Party.make(res.data);
     }
 
-    Party.get = function (id, options) {
-      var p = Party.peek(id);
+    function partyGet(id, p, options) {
       if ((options = checkOptions(p, options)))
-	return router.http(id === Party.user ? // may both be undefined
+	return router.http(id === Login.user.id ? // may both be undefined
 	    router.controllers.PartyApi.profile :
 	    router.controllers.PartyApi.get,
 	  id, options).then(partyRes);
       else
 	return $q.successful(p);
+    }
+
+    Party.get = function (id, options) {
+      return partyGet(id, Party.peek(id), options);
+    };
+
+    Party.prototype.get = function (options) {
+      return partyGet(this.id, this, options);
     };
 
     Party.profile = function (options) {
-      return Party.get(Party.user, options);
+      return Party.get(Login.user.id, options);
     };
 
     Party.prototype.save = function (data) {
@@ -147,9 +172,7 @@ module.factory('modelService', [
     };
 
     Party.prototype.avatarRoute = function (size, nonce) {
-      if (!angular.isNumber(size)) {
-	size = 56;
-      }
+      size = size || 56;
 
       var params = {};
       if (nonce) {
@@ -159,9 +182,37 @@ module.factory('modelService', [
       return router.partyAvatar([this.id, size], params);
     };
 
-    /*
-    dataModel.lift(Party, 'editRoute', 'avatarRoute');
-    */
+    Party.prototype.authorizeSearch = function (apply, param) {
+      return router.http(router.controllers.PartyApi.authorizeSearch, this.id, apply, param)
+	.then(function (res) {
+	  if (typeof res.data === 'object')
+	    return partyMakeArray(res.data);
+	});
+    };
+
+    Party.prototype.authorizeApply = function (target, data) {
+      var p = this;
+      return router.http(router.controllers.PartyApi.authorizeApply, this.id, target, data)
+	.finally(function () {
+	  p.clear('parents');
+	});
+    };
+
+    Party.prototype.authorizeSave = function (target, data) {
+      var p = this;
+      return router.http(router.controllers.PartyApi.authorizeChange, this.id, target, data)
+	.finally(function () {
+	  p.clear('children');
+	});
+    };
+
+    Party.prototype.authorizeDelete = function (target, data) {
+      var p = this;
+      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target, data)
+	.finally(function () {
+	  p.clear('children');
+	});
+    };
 
     ///////////////////////////////// Login
 
@@ -169,23 +220,26 @@ module.factory('modelService', [
       Party.call(this, init);
     }
 
-    Login.user = undefined;
-
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
 
     Login.prototype.staticFields = Party.prototype.staticFields.concat(['access', 'superuser']);
 
+    function loginPoke(l) {
+      Login.user = Party.poke(new Login(l));
+    }
+
+    loginPoke(window.$play.user);
+
     function loginRes(res) {
       var l = res.data;
-      var c = Party.peek(l.id);
+      var c = Login.user.id === l.id ? Login.user : Party.peek(l.id);
       if (c)
 	l = c.update(l);
       if (c instanceof Login)
 	Login.user = c;
       else
-	Login.user = Party.poke(new Login(l));
-      Party.user = Login.user.id;
+	loginPoke(l);
       return Login.user;
     }
 
@@ -209,27 +263,38 @@ module.factory('modelService', [
 
     modelCache(Volume, 'Volume', 8);
 
-    Volume.prototype.staticFields = ['id', 'name', 'alias', 'body', 'creation', 'permission'];
+    Volume.prototype.staticFields = ['name', 'alias', 'body', 'creation'];
 
     Volume.make = function (v) {
-      if (v.access)
-	for (var i = 0; i < v.access.length; i ++)
-	  v.access[i].party = Party.make(v.access[i].party);
+      partyMakeSubArray(v.access);
       var c = Volume.peek(v.id);
       return c ? c.update(v) : Volume.poke(new Volume(v));
     };
+
+    function volumeMakeSubArray(l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i].volume = Volume.make(l[i].volume);
+      return l;
+    }
 
     function volumeRes(res) {
       return Volume.make(res.data);
     }
 
-    Volume.get = function (id, options) {
-      var v = Volume.peek(id);
+    function volumeGet(id, v, options) {
       if ((options = checkOptions(v, options)))
 	return router.http(router.controllers.VolumeApi.get,
 	  id, options).then(volumeRes);
       else
 	return $q.successful(v);
+    }
+
+    Volume.get = function (id, options) {
+      return volumeGet(id, Volume.peek(id), options);
+    };
+
+    Volume.prototype.get = function (options) {
+      return volumeGet(this.id, this, options);
     };
 
     Volume.prototype.save = function (data) {
