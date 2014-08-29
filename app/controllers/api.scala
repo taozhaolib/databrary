@@ -100,6 +100,9 @@ object SiteApi extends SiteController {
     , VolumeHtml.add
     , VolumeHtml.edit
     , VolumeController.thumb
+    , VolumeApi.get
+    , VolumeApi.query
+    , VolumeApi.update
     , VolumeApi.create
     , VolumeApi.accessSearch
     , VolumeApi.funderSearch

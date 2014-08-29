@@ -141,9 +141,6 @@ module.directive('volumeEditMaterialsForm', [
             if (angular.isFunction(form.successFn)) {
               form.successFn(form, res);
             }
-
-            page.models.volume.$cache.removeAll();
-            page.models.slot.$cache.removeAll();
           }, function (res) {
             subform.messages.addError({
               type: 'red',
@@ -213,8 +210,6 @@ module.directive('volumeEditMaterialsForm', [
 
             form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
-            page.models.volume.$cache.removeAll();
-            page.models.slot.$cache.removeAll();
           }, function (res) {
             form.messages.addError({
               type: 'red',

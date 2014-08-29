@@ -8,11 +8,9 @@ module.factory('authService', [
   'typeService',
   'messageService',
   'constantService',
-  'routerService',
-  'Party',
-  'Login',
+  'modelService',
   'playService',
-  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, Party, Login, play) {
+  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, models, play) {
     var auth = {};
 
     //
@@ -48,7 +46,7 @@ module.factory('authService', [
         return auth.parseUser(user);
       }
 
-      Login.get().then(auth.parseUser,
+      models.Login.get().then(auth.parseUser,
 	function () {
 	  auth.parseUser(undefined);
 	});
@@ -88,7 +86,7 @@ module.factory('authService', [
     //
 
     auth.logout = function () {
-      Login.logout().then(function () {
+      models.Login.logout().then(function () {
         auth.parseUser();
         $location.url('/');
 
@@ -136,7 +134,7 @@ module.factory('authService', [
     //
 
     var enableSU = function (form) {
-      Login.superuserOn({
+      models.Login.superuserOn({
 	  auth: form.auth
         }).then(function (data) {
           auth.parseUser(data);
@@ -155,7 +153,7 @@ module.factory('authService', [
     };
 
     var disableSU = function () {
-      Login.superuserOff().then(function (data) {
+      models.Login.superuserOff().then(function (data) {
         auth.parseUser(data);
 
         messages.add({

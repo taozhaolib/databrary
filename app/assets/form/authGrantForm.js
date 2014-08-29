@@ -61,7 +61,6 @@ module.directive('authGrantForm', [
         }, form.other, function () {
           form.validator.server({});
           backup = $.extend(true, {}, form.other);
-          page.models.Party.clear(form.other.party.id);
           form.$setPristine();
 
           if (angular.isFunction(form.successFn)) {
@@ -117,7 +116,6 @@ module.directive('authGrantForm', [
             partyId: form.other.party.id
           }, {}, function () {
             form.validator.server({});
-            page.models.Party.clear(form.other.party.id);
 
             if (angular.isFunction(form.denySuccessFn)) {
               form.denySuccessFn(form, arguments);

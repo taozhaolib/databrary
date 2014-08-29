@@ -71,7 +71,6 @@ module.directive('fundingGrantForm', [
 
           delete form.data.new;
           backup = $.extend(true, {}, form.data);
-          page.models.volume.$cache.removeAll();
           form.$setPristine();
         }, function (res) {
           form.messages.addError({
@@ -141,7 +140,6 @@ module.directive('fundingGrantForm', [
           });
 
           delete form.data.new;
-          page.models.volume.$cache.removeAll();
           form.$setPristine();
         }, function (res) {
           form.messages.addError({

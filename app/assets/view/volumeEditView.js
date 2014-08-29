@@ -1,7 +1,8 @@
 'use strict';
 
 module.controller('volumeEditView', [
-  '$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
+  '$scope', 'volume', 'pageService', function ($scope, volume, page) {
+    var slot = volume.top;
     page.display.title = page.constants.message('page.title.stub');
 
     if (volume) {

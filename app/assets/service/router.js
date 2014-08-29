@@ -97,22 +97,10 @@ module.provider('routerService', [
         ],
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            if (page.auth.isAuthorized()) {
-              page.models.volume.get({
-                id: 8,
-                access: ''
-              }, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            } else {
-              deferred.resolve({});
-            }
-
-            return deferred.promise;
+            if (page.auth.hasAuth(page.permission.SHARED))
+              return page.models.Volume.get(8, ['access']);
+            else
+	      return {};
           }
         ]
       },
@@ -197,15 +185,7 @@ module.provider('routerService', [
       resolve: {
         volumes: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.query({}, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
+            return page.models.Volume.query(page.$route.current.params);
           }
         ]
       },
@@ -221,42 +201,13 @@ module.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['comments', 'access', 'openid', 'parents', 'children'];
+            var req = ['comments', 'access', 'openid', 'parents', 'children', 'volumes'];
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else
               return page.models.Party.profile(req);
           }
         ],
-        volumes: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            var req = {
-              id: null
-            };
-
-            if (page.$route.current.params.id) {
-              req.party = page.$route.current.params.id;
-            } else if (page.auth.isLoggedIn()) {
-              req.party = page.auth.user.id;
-            } else if (page.types.isParty(page.$window.$play.object)) {
-              req.party = page.$window.$play.object.id;
-            }
-
-            if (page.constants.data.locked && !page.auth.isAuthorized()) {
-              return [];
-            }
-
-            page.models.volume.query(req, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
-          }
-        ]
       },
       reloadOnSearch: false,
       authenticate: true
@@ -305,55 +256,26 @@ module.provider('routerService', [
 
     //
 
-    var volumeEditVolume;
     var volumeEdit = {
       controller: 'volumeEditView',
       templateUrl: 'volumeEditView.html',
       resolve: {
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
+            if (!('id' in page.$route.current.params))
+	      return undefined;
 
-            if (!page.$route.current.params.id) {
-              deferred.resolve();
-            } else {
-              page.models.volume.get({
-                access: '',
-                citation: '',
-                top: '',
-                funding: '',
-              }, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            }
-
-            volumeEditVolume = deferred.promise;
-            return volumeEditVolume;
-          }
-        ],
-        slot: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            if (!page.$route.current.params.id) {
-              deferred.resolve();
-            } else {
-              volumeEditVolume.then(function (volume) {
-                page.models.slot.get({
-                  id: volume.top.id,
-                  vid: volume.id,
-                  assets: '',
-                }, function (res) {
-                  deferred.resolve(res);
-                }, function (res) {
-                  deferred.reject(res);
-                });
-              });
-            }
-
-            return deferred.promise;
+            return page.models.Volume.get(page.$route.current.params.id,
+	      ['access', 'citation', 'top', 'funding']).then(function (volume) {
+	      page.models.slot.get({
+		id: volume.top.id,
+		vid: volume.id,
+		assets: '',
+	      }).then(function (top) {
+		volume.top = top;
+		return volume;
+	      });
+	    });
           }
         ],
       },
@@ -372,29 +294,8 @@ module.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.get({
-              access: '',
-              citation: '',
-              funding: '',
-              providers: '',
-              consumers: '',
-              top: '',
-              tags: '',
-              excerpts: '',
-              comments: '',
-              records: '',
-              summary: '',
-              sessions: '',
-              categories: ''
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
+            return page.models.Volume.get(page.$route.current.params.id,
+	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'sessions', 'categories']);
           }
         ]
       },
@@ -410,42 +311,17 @@ module.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.get({
-              id: page.$route.current.params.vid,
-              access: '',
-              tags: '',
-              excerpts: '',
-              comments: '',
-              records: '',
-              summary: '',
-              sessions: '',
-              categories: ''
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
+            return page.models.Volume.get(page.$route.current.params.vid,
+	      ['records', 'sessions']);
           }
         ],
         slot: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.slot.get({
+            return page.models.slot.get({
               assets: '',
               tags: '',
               comments: '',
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
             });
-
-            return deferred.promise;
           }
         ]
       },
@@ -520,18 +396,6 @@ module.provider('routerService', [
 	router.volumeCreate = function (owner) {
 	  router.prevUrl = $location.path();
 	  return routes.volumeCreate([owner]);
-	};
-
-	router.volumeEdit = function (data, page) {
-	  if (!type.isVolume(data)) {
-	    throw new Error('routerService.volumeEdit() requires Volume as first argument');
-	  }
-
-	  var params = {};
-	  if (page)
-	    params.page = page;
-
-	  return routes.volumeEdit([data.id], params);
 	};
 
 	router.record = function (data) {

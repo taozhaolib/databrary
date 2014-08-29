@@ -141,7 +141,7 @@ module.directive('browserList', [
       $scope.editLink = function (data) {
         switch (page.types.getType(data.object)) {
           case 'volume':
-            return page.router.volumeEdit(data.object);
+            return data.object.editRoute();
 
           case 'record':
             return page.router.recordEdit(data.object);

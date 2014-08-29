@@ -51,7 +51,7 @@ module.factory('browserService', [
     browserService.initialize = function (newVolume) {
       browserService.query = '';
 
-      newVolume.$promise.then(initialize);
+      initialize(newVolume);
     };
 
     var initialize = function (newVolume) {

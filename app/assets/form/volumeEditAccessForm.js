@@ -118,7 +118,6 @@ module.directive('volumeEditAccessForm', [
           angular.copy(form.global, backup);
           form.accessGlobalDirty = false;
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.global.save.error'),

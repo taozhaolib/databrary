@@ -59,7 +59,6 @@ module.directive('accessGrantForm', [
 
           backup = $.extend(true, {}, form.data);
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.grant.save.error'),
@@ -118,7 +117,6 @@ module.directive('accessGrantForm', [
           });
 
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.grant.remove.error'),
