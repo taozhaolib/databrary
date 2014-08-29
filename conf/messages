@@ -212,8 +212,8 @@ network.grant.foreign=Apply for authorization from {0}
 auth.parents.title=Authorized by
 auth.children.title=Granted authorization to
 auth.expiration=Expiration
-auth.expiration.none=N/A
-auth.pending=Request pending.
+auth.expiration.none=Never
+auth.pending=Request pending
 
 auth.apply.error=Could not submit your request.
 auth.apply.save.success=Request processed successfully.
