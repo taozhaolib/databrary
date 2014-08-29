@@ -29,15 +29,36 @@ module.directive('wizard', [
           }
         };
 
+	$scope.getActiveStep = function() {
+	  for(var i in $scope.steps){
+	    if($scope.steps[i].active){
+	      return $scope.steps[i];
+	    }
+	  }
+	};
+
         $scope.activateStep = function (step) {
           if ($scope.isStepBlocked(step)) {
             return;
           }
 
+	  var curStep = $scope.getActiveStep();
+
+	  //only if confirmNav is set and if we already have a current step (ie - this is not the initial load of this wizard)
+	  //NOTE: this requires underlying steps to 
+	  //1) assign their underlying form to the field 'form' (perhaps this can be aboided by transforming id from html-case to camelCase
+	  //2) have a resetAll w/ conf.
+	  if($attrs.confirmNav && curStep){
+	    if(curStep.form.$dirty && !curStep.form.resetAll()){
+	      return;
+	    }
+	  }
+
           if (angular.isFunction($scope.activateFn)) {
             $scope.activateFn(step, $scope);
           }
 
+	  //TODO - lose iteration, just use curStep as obtained above
           angular.forEach($scope.steps, function (thisStep) {
             if (thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id])) {
               $scope.offFn[step.id](thisStep, step);

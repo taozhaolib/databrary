@@ -29,6 +29,7 @@
   overflow hidden 
   white-space nowrap
   text-overflow ellipsis
+  width 20
 
   &.over-form
     background-color yellow51
@@ -46,45 +47,27 @@
   padding-right b6
 
 .vem-trash
-  width 1.5
+  vertical-align middle 
 
 @media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
   grid(mobile, grid-mobile-spread, grid-column, grid-gutter)
   .vem-float-dropzone
     &.drop-zone
-      width 5
+      width 7
 
 @media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
   grid(tablet, grid-tablet-spread, grid-column, grid-gutter)
   .vem-float-dropzone
     &.drop-zone
-      width 11
+      width 13
 
 .vem-repeat
   position relative
-
-.vem-repeat-grip
-  position absolute
-  top b2
-  left 0
-  bottom b2
-  width b1
-  border-radius b1
-  border 1px solid yellow31
-  draggable()
-
-.vem-repeat-gripper
-  position absolute
-  left b8 + b12
-  width b2
-  margin-top -b1
-  top 50%
-  height 2
-  border-radius b1
-  border 1px solid gray
+  border-bottom-width 0
+  padding-bottom 0
 
 .vem-repeat-content
-  margin-left 1.5
+  margin-left f2
 
 .vem-file-dropzone
   @extend input
