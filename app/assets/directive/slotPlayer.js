@@ -9,20 +9,43 @@ module.directive('slotPlayer', [
 
         var $viewport;
         var viewportW;
+        var vr = 9 / 16;
 
-        var resizeFn = function () {
+        player.resize = function () {
           var newW = $viewport.width();
 
           if (newW !== viewportW) {
             viewportW = newW;
-            $viewport.height(viewportW * 9 / 16);
+            $viewport.height(viewportW * vr);
+          }
+
+          var $m = $viewport.find('video, img, aside').first();
+
+          if (!$m) {
+            return;
+          }
+
+          var w = $viewport.width(), h = $viewport.height();
+          var mw = $m.width(), mh = $m.height(), mr = mh / mw;
+
+          if (mr < vr) {
+            $m.width(h / mr);
+            $m.height(h);
+          } else {
+            $m.height(w * mr);
+            $m.width(w);
           }
         };
 
-        page.$w.resize(resizeFn);
+        page.$w.resize(player.resize);
+        $scope.$watch(function () {
+          if ($viewport) {
+            player.resize();
+          }
+        });
         page.$timeout(function () {
           $viewport = $element.find('.player-main-viewport');
-          resizeFn();
+          player.resize();
         });
       }
     ];
