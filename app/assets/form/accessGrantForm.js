@@ -43,10 +43,7 @@ module.directive('accessGrantForm', [
           form.saveFn(form);
         }
 
-        page.models.volumeAccess.save({
-          id: form.volume.id,
-          partyId: form.access.party.id,
-        }, form.data, function () {
+	form.volume.accessSave(form.access.party.id, form.data).then(function () {
           if (angular.isFunction(form.successFn)) {
             form.successFn(form, arguments);
           }
@@ -102,10 +99,7 @@ module.directive('accessGrantForm', [
           form.removeFn(form);
         }
 
-        page.models.volumeAccess.delete({
-          id: form.volume.id,
-          partyId: form.access.party.id,
-        }, {}, function () {
+	form.volume.accessDelete(form.access.party.id).then(function () {
           if (angular.isFunction(form.removeSuccessFn)) {
             form.removeSuccessFn(form, arguments, form.access);
           }

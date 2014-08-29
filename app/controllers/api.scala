@@ -106,6 +106,8 @@ object SiteApi extends SiteController {
     , VolumeApi.update
     , VolumeApi.create
     , VolumeApi.accessSearch
+    , VolumeApi.accessChange
+    , VolumeApi.accessDelete
     , VolumeApi.funderSearch
     , VolumeApi.fundingChange
     , VolumeApi.fundingDelete

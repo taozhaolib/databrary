@@ -37,11 +37,10 @@ module.directive('accessSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-          sentSearch = page.models.volumeAccess.search({
-            id: form.id,
+	  $scope.volume.accessSearch({
             name: form.nameVal,
             institution: form.institution,
-          }, function (data) {
+          }).then(function (data) {
             form.found = data;
 
             fin();

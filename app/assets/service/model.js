@@ -62,11 +62,12 @@ module.factory('modelService', [
 	opts.number = size;
       obj.cache = $cacheFactory(name, opts);
 
-      obj.clear = function (id) {
-	if (id === undefined)
-	  obj.cache.removeAll();
+      obj.clear = function (/*id...*/) {
+	if (arguments.length)
+	  for (var i = 0; i < arguments.length; i ++)
+	    obj.cache.remove(arguments[i]);
 	else
-	  obj.cache.remove(id);
+	  obj.cache.removeAll();
       };
 
       obj.peek = obj.cache.get;
@@ -99,12 +100,6 @@ module.factory('modelService', [
       return c ? c.update(p) : Party.poke(new Party(p));
     };
 
-    function partyMakeArray(l) {
-      if (l) for (var i = 0; i < l.length; i ++)
-	l[i] = Party.make(l[i]);
-      return l;
-    }
-
     function partyMakeSubArray(l) {
       if (l) for (var i = 0; i < l.length; i ++)
 	l[i].party = Party.make(l[i].party);
@@ -113,6 +108,13 @@ module.factory('modelService', [
 
     function partyRes(res) {
       return Party.make(res.data);
+    }
+
+    function partyResArray(res) {
+      var l = res.data;
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i] = Party.make(l[i]);
+      return l;
     }
 
     function partyGet(id, p, options) {
@@ -138,7 +140,8 @@ module.factory('modelService', [
     };
 
     Party.prototype.save = function (data) {
-      return router.http(router.controllers.PartyApi.update, this.id, data).then(partyRes);
+      return router.http(router.controllers.PartyApi.update, this.id, data)
+	.then(partyRes);
     };
 
     Party.prototype.upload = function (fd) {
@@ -186,7 +189,7 @@ module.factory('modelService', [
       return router.http(router.controllers.PartyApi.authorizeSearch, this.id, apply, param)
 	.then(function (res) {
 	  if (typeof res.data === 'object')
-	    return partyMakeArray(res.data);
+	    return partyResArray(res);
 	});
     };
 
@@ -206,9 +209,9 @@ module.factory('modelService', [
 	});
     };
 
-    Party.prototype.authorizeDelete = function (target, data) {
+    Party.prototype.authorizeDelete = function (target) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target, data)
+      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
 	.finally(function () {
 	  p.clear('children');
 	});
@@ -298,11 +301,13 @@ module.factory('modelService', [
     };
 
     Volume.prototype.save = function (data) {
-      return router.http(router.controllers.VolumeApi.update, this.id, data).then(volumeRes);
+      return router.http(router.controllers.VolumeApi.update, this.id, data)
+	.then(volumeRes);
     };
 
     Volume.create = function (data, owner) {
-      return router.http(router.controllers.VolumeApi.create, owner, data).then(volumeRes);
+      return router.http(router.controllers.VolumeApi.create, owner, data)
+	.then(volumeRes);
     };
     
     Volume.query = function (data) {
@@ -324,6 +329,47 @@ module.factory('modelService', [
 	params.page = page;
 
       return router.volumeEdit([this.id], params);
+    };
+
+    Volume.prototype.accessSearch = function (param) {
+      return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
+	.then(partyResArray);
+    };
+
+    Volume.prototype.accessSave = function (target, data) {
+      var v = this;
+      return router.http(router.controllers.VolumeApi.accessChange, this.id, target, data)
+	.finally(function () {
+	  v.clear('access');
+	});
+    };
+
+    Volume.prototype.accessDelete = function (target) {
+      var v = this;
+      return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
+	.finally(function () {
+	  v.clear('access');
+	});
+    };
+
+    Volume.funderSearch = function (query, all) {
+      return router.http(router.controllers.VolumeApi.funderSearch, query, all);
+    };
+
+    Volume.prototype.fundingSave = function (funder, data) {
+      var v = this;
+      return router.http(router.controllers.VolumeApi.fundingChange, this.id, funder, data)
+	.finally(function () {
+	  v.clear('funding');
+	});
+    };
+
+    Volume.prototype.fundingDelete = function (funder) {
+      var v = this;
+      return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
+	.finally(function () {
+	  v.clear('funding');
+	});
     };
 
     /////////////////////////////////

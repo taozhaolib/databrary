@@ -97,10 +97,7 @@ module.directive('volumeEditAccessForm', [
 
         page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
           var p = page.constants.data.permissionName[form.global[i]];
-          page.models.volumeAccess.save({
-            id: form.volume.id,
-            partyId: party
-          }, {
+	  form.volume.accessSave(party, {
             individual: p,
             children: p,
           });
