@@ -7,10 +7,8 @@ module.directive('partyEditAccountForm', [
 
       form.data = {};
       form.authors = [];
-      var backup = {};
 
       form.saveFn = undefined;
-      form.resetFn = undefined;
       form.successFn = undefined;
       form.errorFn = undefined;
 
@@ -21,8 +19,6 @@ module.directive('partyEditAccountForm', [
         form.data = {
           email: party.email,
         };
-
-        backup = $.extend(true, {}, form.data);
       };
 
       $scope.$watch('partyEditAccountForm.data.password.again', function () {
@@ -48,8 +44,6 @@ module.directive('partyEditAccountForm', [
               body: page.constants.message('party.edit.profile.success'),
             });
 
-            backup = $.extend(true, {}, form.data);
-
             if (angular.isFunction(form.successFn)) {
               form.successFn(form, res);
             }
@@ -67,15 +61,12 @@ module.directive('partyEditAccountForm', [
           });
       };
 
-      form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
-        form.validator.clearServer();
-
-        form.data = $.extend(true, {}, backup);
-        form.$setPristine();
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
+	  return true;
+	}
+	return false;
       };
 
       form.ready = function () {
