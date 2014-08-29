@@ -17,7 +17,6 @@ module.factory('slotClockService', [
         position: {
           get: function () {
             var actual = clock.playing ? Date.now() - clock.begun : clock.changed - clock.begun;
-            console.log();
             return actual < clock.duration ? actual : clock.duration;
           }
         }
@@ -41,22 +40,19 @@ module.factory('slotClockService', [
 
       clock.begun = Date.now() - clock.start;
       clock.changed = this.begun;
-
       // ticker
       clock.interval = 100;
       clock.playing = false;
     };
 
+    Clock.prototype.markChanged = function () {
+      this.changed = Date.now() - this.start;
+    };
+
     // Clock behaviors
 
-    Clock.prototype.play = function (pos) {
+    Clock.prototype.play = function () {
       this.begun = Date.now() - (this.changed - this.begun);
-      this.changed = Date.now();
-
-      if (angular.isNumber(pos)) {
-        this.jump(pos);
-      }
-
       tickerOn(this);
       callFn(this, this.playFns);
     };
@@ -68,7 +64,7 @@ module.factory('slotClockService', [
     //
 
     Clock.prototype.pause = function () {
-      this.changed = Date.now();
+      this.markChanged();
       tickerOff(this);
       callFn(this, this.pauseFns);
     };
@@ -79,11 +75,7 @@ module.factory('slotClockService', [
 
     //
 
-    Clock.prototype.time = function (pos) {
-      if (angular.isNumber(pos)) {
-        this.jump(pos);
-      }
-
+    Clock.prototype.time = function () {
       callFn(this, this.timeFns);
     };
 
@@ -95,7 +87,7 @@ module.factory('slotClockService', [
 
     Clock.prototype.jump = function (pos) {
       if (angular.isNumber(pos)) {
-        this.changed = Date.now();
+        this.markChanged();
 
         if (pos < 0) {
           this.begun = this.changed;
