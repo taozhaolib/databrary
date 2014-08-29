@@ -19,12 +19,12 @@
           </div>
 
           <div ng-if="!other.new">
-            <div>
+            <div bo-if="other.site">
               <div class="permission-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
               <div class="permission-auth-site" ng-bind-html="partyEditApplyForm.presetName('site', page.constants.data.permission[other.site], 'their')"></div>
             </div>
 
-            <div bo-if="other.institution || other.member !== 0">
+            <div bo-if="other.member">
               <div class="permission-auth-heading" bo-html="'auth.member' | message:'their'"></div>
               <div class="permission-auth-member" ng-bind-html="partyEditApplyForm.presetName('member', page.constants.data.permission[other.member], 'their')"></div>
             </div>
