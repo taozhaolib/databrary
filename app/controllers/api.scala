@@ -113,6 +113,7 @@ object SiteApi extends SiteController {
     , VolumeApi.fundingDelete
     , SlotHtml.view
     , SlotHtml.edit
+    , SlotApi.get
     , SlotApi.update
     , AssetHtml.formats
     , AssetHtml.view

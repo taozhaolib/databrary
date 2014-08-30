@@ -113,7 +113,7 @@
         }
     }
 
-        @widget.panel.tags(top, Some(volume), tags, new TagController.TagForm(top))
+        @widget.panel.tags(Some(volume), tags, new TagController.TagForm(top))
         @widget.panel.comments(Some(top), Some(new CommentController.CommentForm(top)), comments)
 }
 }

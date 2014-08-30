@@ -1,25 +1,32 @@
 'use strict';
 
 module.factory('modelService', [
-  '$q', '$cacheFactory', 'routerService',
-  function ($q, $cacheFactory, router) {
+  '$q', '$cacheFactory', 'routerService', 'Segment',
+  function ($q, $cacheFactory, router, Segment) {
 
     ///////////////////////////////// Model: common base class and utils
 
+    // just a bit more efficient than angular's
+    function extend(dst, src) {
+      for (key in src)
+	if (src.hasOwnProperty(key))
+	  dst[key] = src[key];
+    }
+
     function Model(init) {
-      this.update(init);
+      extend(this, init);
     }
 
     Model.prototype.staticFields = [];
 
     Model.prototype.update = function (init) {
-      this.staticFields.forEach(function (k) {
+      var s = this.staticFields;
+      for (var i = 0; i < s.length; i ++) {
+	var k = s[i];
 	if (!init.hasOwnProperty(k) && this.hasOwnProperty(k))
 	  delete this[k];
-      }, this);
-      angular.forEach(init, function (v, k) {
-	this[k] = v;
-      }, this);
+      }
+      extend(this, init);
       return this;
     };
 
@@ -85,23 +92,26 @@ module.factory('modelService', [
     ///////////////////////////////// Party
 
     function Party(init) {
-      this.update(init);
+      Model.call(this, init);
     }
 
     modelCache(Party, 'Party', 256);
 
     Party.prototype.staticFields = ['name', 'orcid', 'affiliation', 'email', 'institution', 'url'];
 
-    Party.make = function (p) {
-      volumeMakeSubArray(p.volumes);
-      partyMakeSubArray(p.parents);
-      partyMakeSubArray(p.children);
-      var c = Party.peek(p.id);
-      return c ? c.update(p) : Party.poke(new Party(p));
+    Party.make = function (init) {
+      var p = Party.peek(init.id);
+      p = p ? p.update(init) : Party.poke(new Party(init));
+      if (init.volumes)
+	volumeMakeSubArray(p.volumes);
+      if (init.parents)
+	partyMakeSubArray(p.parents);
+      if (init.children)
+	partyMakeSubArray(p.children);
     };
 
     function partyMakeSubArray(l) {
-      if (l) for (var i = 0; i < l.length; i ++)
+      for (var i = 0; i < l.length; i ++)
 	l[i].party = Party.make(l[i].party);
       return l;
     }
@@ -261,21 +271,26 @@ module.factory('modelService', [
     ///////////////////////////////// Volume
 
     function Volume(init) {
-      this.update(init);
+      Model.call(this, init);
     }
 
     modelCache(Volume, 'Volume', 8);
 
     Volume.prototype.staticFields = ['name', 'alias', 'body', 'creation'];
 
-    Volume.make = function (v) {
-      partyMakeSubArray(v.access);
-      var c = Volume.peek(v.id);
-      return c ? c.update(v) : Volume.poke(new Volume(v));
+    Volume.make = function (init) {
+      var v = Volume.peek(init.id);
+      v = v ? v.update(init) : Volume.poke(new Volume(init));
+      if (init.access)
+	partyMakeSubArray(v.access);
+      if (init.containers)
+	containerMakeArray(v, v.containers);
+      if (init.top)
+	v.top = Container.make(v, v.top);
     };
 
     function volumeMakeSubArray(l) {
-      if (l) for (var i = 0; i < l.length; i ++)
+      for (var i = 0; i < l.length; i ++)
 	l[i].volume = Volume.make(l[i].volume);
       return l;
     }
@@ -372,9 +387,76 @@ module.factory('modelService', [
 	});
     };
 
+    ///////////////////////////////// Container/Slot
+
+    function Slot(container, init) {
+      Model.call(this, init);
+      this.container = container;
+    }
+
+    Slot.prototype = Object.create(Model.prototype);
+    Slot.prototype.constructor = Slot;
+
+    Slot.prototype.staticFields = ['consent', 'segment'];
+
+    Slot.prototype.update = function (init) {
+      var c = this.container;
+      Model.prototype.update.call(this, init);
+      if (init.container)
+	this.container = c.update(init.container);
+      return this;
+    };
+
+    Slot.make = function (container, init) {
+      return new Slot(container, init);
+    };
+
+
+    function Container(volume, init) {
+      Slot.call(this, this, init);
+      this.volume = volume;
+    }
+
+    Container.prototype = Object.create(Slot.prototype);
+    Container.prototype.constructor = Container;
+
+    Container.prototype.staticFields = ['name', 'date', 'top'].concat(Slot.prototype.staticFields);
+
+    Container.prototype.update = Model.prototype.update;
+
+    Container.make = function (volume, init) {
+      return new Container(volume, init);
+    };
+
+    function containerMakeArray(volume, l) {
+      for (var i = 0; i < l.length; i ++)
+	l[i] = Container.make(volume, l[i]);
+      return l;
+    }
+
+    Container.prototype.getSlot = function (segment, options) {
+      var c = this;
+      return router.http(router.controllers.SlotApi.get,
+	this.volume.id, this.id, Segment.format(segment), options).then(function (res) {
+	  return Slot.make(c, res.data);
+	});
+    }
+
+    Slot.prototype.save = function (data) {
+      var s = this;
+      return router.http(router.controllers.SlotApi.update, this.container.id, Segment.format(this.segment), data)
+	.then(function (res) {
+	  return s.update(res.data);
+	  var c = s.container;
+	  s.update(res.data);
+	  s.container = c.update(res.data.container);
+	});
+    };
+
     /////////////////////////////////
 
     return {
+      Segment: Segment,
       Party: Party,
       Login: Login,
       Volume: Volume,

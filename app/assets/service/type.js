@@ -124,75 +124,7 @@ module.factory('typeService', [
         throw new Error('typeService.segmentString() requires Asset or Session as first argument');
       }
 
-      return typeService.segmentJoin(segment);
-    };
-
-    typeService.segmentJoin = function (segment) {
-      if (typeService.segmentEmpty(segment))
-        return '';
-      if (angular.isUndefined(segment))
-        return ',';
-      if (angular.isNumber(segment))
-        return segment;
-      return  (angular.isNumber(segment[0]) && segment[0] > -Infinity ? Math.floor(segment[0]) : '') +
-        ',' +
-        (angular.isNumber(segment[1]) && segment[1] < Infinity ? Math.floor(segment[1]) : '');
-    };
-
-    typeService.segmentEmpty = function (seg) {
-      return seg === null || Array.isArray(seg) && seg[0] !== null && seg[1] !== null && seg[0] >= seg[1];
-    };
-
-    /* always returns a new array */
-    var segmentNormalize = function (seg) {
-      if (seg === null)
-        return [0, -1];
-      if (angular.isUndefined(seg))
-        return [-Infinity, Infinity];
-      if (angular.isNumber(seg))
-        return [seg, seg + 0.1];
-      return [angular.isNumber(seg[0]) ? seg[0] : -Infinity,
-        angular.isNumber(seg[1]) ? seg[1] : Infinity];
-    };
-
-    /* may modify and/or return a */
-    typeService.segmentIntersect = function (a, b) {
-      if (a === null)
-        return a;
-      b = segmentNormalize(b);
-      if (angular.isUndefined(a))
-        return b;
-      if (angular.isNumber(a) && a >= b[0] && a < b[1])
-        return a;
-      a[0] = angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0];
-      a[1] = angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1];
-      return a;
-    };
-
-    typeService.segmentOverlaps = function (a, b) {
-      if (typeService.segmentEmpty(a) || typeService.segmentEmpty(b))
-        return false;
-      if (angular.isUndefined(a) || angular.isUndefined(b))
-        return true;
-      b = segmentNormalize(b);
-      return (angular.isNumber(a) && a >= b[0] && a < b[1]) ||
-        (angular.isNumber(a[0]) ? Math.max(a[0], b[0]) : b[0]) <
-        (angular.isNumber(a[1]) ? Math.min(a[1], b[1]) : b[1]);
-    };
-
-    /* If segments are disjoint, assume the excluded middle.
-     * may modify and/or return a */
-    typeService.segmentUnion = function (a, b) {
-      if (angular.isUndefined(a))
-        return a;
-      b = segmentNormalize(b);
-      if (a === null)
-        return b;
-      if (angular.isNumber(a))
-        a = [a, a];
-      if (angular.isNumber(a[0])) a[0] = Math.min(a[0], b[0]);
-      if (angular.isNumber(a[1])) a[1] = Math.max(a[1], b[1]);
-      return a;
+      return segment.toString();
     };
 
     typeService.assetFormat = function (object, dig) {

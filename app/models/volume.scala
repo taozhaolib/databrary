@@ -172,17 +172,17 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
       ("records", opt => records().map(JsonRecord.map(_.json - "volume"))),
-      ("sessions", opt => sessions.map(JsonRecord.map { case (s, rs) =>
-	s.json - "volume" +
+      ("containers", opt => sessions.map(JsonRecord.map { case (c, rs) =>
+	c.json - "volume" +
 	('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
 	  JsonRecord.flatten(rec.id
 	  , if (seg.isFull) None else Some('segment -> seg)
-	  , rec.age(s).map('age -> _)
+	  , rec.age(c).map('age -> _)
 	  )
 	}(rs))
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
-      ("top", opt => top.map(t => (t.json - "volume" - "top").obj)),
+      ("top", opt => top.map(t => (t.json - "volume").obj)),
       ("consumers", opt => consumers.map(JsonRecord.map(_.json))),
       ("providers", opt => providers.map(JsonRecord.map(_.json)))
     )
