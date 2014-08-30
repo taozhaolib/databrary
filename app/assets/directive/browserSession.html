@@ -17,7 +17,7 @@
         <browser-icon data="data"></browser-icon>
 
         <h1 class="browser-item-title">
-          <a bo-href="page.router.slot(data.volume.id, data.object.id, data.segment)" bo-text="page.types.slotName(data.object)"></a>&nbsp;
+          <a bo-href="data.object.route" bo-text="page.types.slotName(data.object)"></a>&nbsp;
           <session-mark ng-repeat="cat in getSessionRecords(data)"></session-mark>
         </h1>
       </header>

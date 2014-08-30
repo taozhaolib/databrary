@@ -2,7 +2,7 @@
 
 module.controller('volumeEditView', [
   '$scope', 'volume', 'pageService', function ($scope, volume, page) {
-    var slot = volume.top;
+    var slot = volume && volume.top;
     page.display.title = page.constants.message('page.title.stub');
 
     if (volume) {

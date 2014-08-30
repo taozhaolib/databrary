@@ -3,14 +3,13 @@
 module.factory('browserService', [
   '$rootScope',
   'ArrayHelper',
-  'slot',
   'typeService',
   'messageService',
   'constantService',
   'tooltipService',
   '$timeout',
   'displayService',
-  function ($rootScope, ArrayHelper, slot, typeService, messages, constants, tooltips, $timeout, display) {
+  function ($rootScope, ArrayHelper, typeService, messages, constants, tooltips, $timeout, display) {
     var browserService = {};
 
     //

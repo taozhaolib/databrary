@@ -10,7 +10,7 @@ module.directive('browserIcon', [
 
       $scope.iconLink = function (data) {
         if (data.group === 'session')
-          return page.router.slot(data.volume.id, data.object.id, data.segment);
+          return data.object.route;
       };
 
       $scope.expanderClasses = function (data) {

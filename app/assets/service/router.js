@@ -292,8 +292,7 @@ module.provider('routerService', [
 		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
 		  ['assets', 'tags', 'comments', 'records']);
 	      });
-            });
-          }
+	  }
         ]
       },
       reloadOnSearch: false,
@@ -353,6 +352,15 @@ module.provider('routerService', [
 	    if (++i < arguments.length)
 	      angular.extend(r, arguments[i]);
 	  }
+	  if (r.data instanceof FormData) {
+	    if (!('transformRequest' in r))
+	      r.transformRequest = angular.identity;
+	    if (!('headers' in r))
+	      r.headers = {};
+	    // Not sure why we do this but it seems to be necessary:
+	    if (!('Content-Type' in r.headers))
+	      r.headers['Content-Type'] = undefined;
+	  }
 	  return $http(r);
 	};
 
@@ -395,26 +403,6 @@ module.provider('routerService', [
 	  }
 
 	  return routes.assetLink([data.container.id, type.segmentString(data), data.asset.id, inline]);
-	};
-
-	router.slot = function (volume, data, segment) {
-	  if (type.isVolume(volume))
-	    volume = volume.id;
-
-	  if (type.isSlot(data)) {
-	    segment = data.segment;
-	    data = data.id;
-	  }
-
-	  return routes.slot([volume, data, type.segmentJoin(segment)]);
-	};
-
-	router.slotEdit = function (data) {
-	  if (!type.isSlot(data)) {
-	    throw new Error('routerService.slotEdit() requires Slot as first argument');
-	  }
-
-	  return routes.slotEdit([data.id, type.segmentString(data)]);
 	};
 
 	router.assetEdit = function (data) {

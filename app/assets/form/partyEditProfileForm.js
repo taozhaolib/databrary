@@ -36,9 +36,9 @@ module.directive('partyEditProfileForm', [
 	  form.saveFn(form);
 	}
 
-	var act, upload;
+	var fd, upload;
 	if (angular.isObject(form.data.avatar)) {
-	  var fd = new FormData();
+	  fd = new FormData();
 
 	  fd.append('avatar', form.data.avatar[0]);
 	  form.data.avatar = undefined;
@@ -53,12 +53,11 @@ module.directive('partyEditProfileForm', [
 	    type: 'yellow',
 	    body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
 	  });
-
-	  act = form.party.upload(fd);
 	} else
-	  act = form.party.save(form.data);
-
-	act.then(function (res) {
+	  fd = form.data;
+	
+	form.party.save(fd)
+	  .then(function (res) {
 	    form.validator.server({});
 
 	    form.messages.add({

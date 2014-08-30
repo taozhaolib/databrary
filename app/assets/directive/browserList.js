@@ -147,7 +147,7 @@ module.directive('browserList', [
             return page.router.recordEdit(data.object);
 
           case 'slot':
-            return page.router.slotEdit(data.object);
+            return data.object.editRoute();
 
           case 'asset':
             return page.router.assetEdit(data.object);

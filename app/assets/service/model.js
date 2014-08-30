@@ -8,7 +8,7 @@ module.factory('modelService', [
 
     // just a bit more efficient than angular's
     function extend(dst, src) {
-      for (key in src)
+      for (var key in src)
 	dst[key] = src[key];
     }
 
@@ -117,7 +117,7 @@ module.factory('modelService', [
     function partyMake(init) {
       var p = Party.peek(init.id);
       return p ? p.update(init) : Party.poke(new Party(init));
-    };
+    }
 
     function partyMakeSubArray(l) {
       for (var i = 0; i < l.length; i ++)
@@ -143,7 +143,7 @@ module.factory('modelService', [
 	    router.controllers.PartyApi.get,
 	  id, options)
 	  .then(function (res) {
-	    return p.update(res.data);
+	    return p ? p.update(res.data) : Party.poke(new Party(res.data));
 	  });
       else
 	return $q.successful(p);
@@ -161,18 +161,12 @@ module.factory('modelService', [
       return Party.get(Login.user.id, options);
     };
 
-    Party.prototype.save = function (data) {
+    Party.prototype.save = function (data, options) {
+      var p = this;
       return router.http(router.controllers.PartyApi.update, this.id, data)
-	.then(partyRes);
-    };
-
-    Party.prototype.upload = function (fd) {
-      return router.http(router.controllers.PartyApi.update, this.id, fd, {
-	transformRequest: angular.identity,
-	headers: {
-	  'Content-Type': undefined
-	},
-      }).then(partyRes);
+	.then(function (res) {
+	  return p.update(res.data);
+	});
     };
 
     Party.query = function (data) {
@@ -251,7 +245,7 @@ module.factory('modelService', [
     Login.prototype.staticFields = Party.prototype.staticFields.concat(['access', 'superuser']);
 
     function loginPoke(l) {
-      return Login.user = Party.poke(new Login(l));
+      return (Login.user = Party.poke(new Login(l)));
     }
 
     loginPoke(window.$play.user);
@@ -262,7 +256,7 @@ module.factory('modelService', [
       if (c)
 	l = c.update(l);
       if (c instanceof Login)
-	return Login.user = c;
+	return (Login.user = c);
       return loginPoke(l);
     }
 
@@ -291,17 +285,26 @@ module.factory('modelService', [
     Volume.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
       if (init.access)
-	partyMakeSubArray(v.access);
-      if (init.containers)
-	containerMakeArray(v, v.containers);
-      if (init.top)
-	v.top = Container.make(v, v.top);
-    }
+	partyMakeSubArray(this.access);
+      if (init.containers) {
+	var cl = this.containers;
+	var cm = {};
+	for (var i = 0; i < cl.length; i ++)
+	  cm[cl[i].id] = new Container(this, cl[i]);
+	this.containers = cm;
+      }
+      if (init.top) {
+	if (this.containers && this.top.id in this.containers)
+	  this.top = this.containers[this.top.id].update(this.top);
+	else
+	  this.top = new Container(this, this.top);
+      }
+    };
 
     function volumeMake(init) {
       var v = Volume.peek(init.id);
       return v ? v.update(init) : Volume.poke(new Volume(init));
-    };
+    }
 
     function volumeMakeSubArray(l) {
       for (var i = 0; i < l.length; i ++)
@@ -309,15 +312,11 @@ module.factory('modelService', [
       return l;
     }
 
-    function volumeRes(res) {
-      return volumeMake(res.data);
-    }
-
     function volumeGet(id, v, options) {
       if ((options = checkOptions(v, options)))
 	return router.http(router.controllers.VolumeApi.get,
 	  id, options).then(function (res) {
-	    return v.update(res.data);
+	    return v ? v.update(res.data) : Volume.poke(new Volume(res.data));
 	  });
       else
 	return $q.successful(v);
@@ -332,13 +331,18 @@ module.factory('modelService', [
     };
 
     Volume.prototype.save = function (data) {
+      var v = this;
       return router.http(router.controllers.VolumeApi.update, this.id, data)
-	.then(volumeRes);
+	.then(function (res) {
+	  return v.update(res.data);
+	});
     };
 
     Volume.create = function (data, owner) {
       return router.http(router.controllers.VolumeApi.create, owner, data)
-	.then(volumeRes);
+	.then(function (res) {
+	  return volumeMake(res.data);
+	});
     };
     
     Volume.query = function (data) {
@@ -448,12 +452,6 @@ module.factory('modelService', [
 	this.volume = v.update(init.volume);
     };
 
-    function containerMakeArray(volume, l) {
-      for (var i = 0; i < l.length; i ++)
-	l[i] = new Container(volume, l[i]);
-      return l;
-    }
-
     function peekContainer(volume, container) {
       if (container instanceof Container)
 	return container;
@@ -473,12 +471,12 @@ module.factory('modelService', [
 	.then(function (res) {
 	  return new Slot(new Container(v), res.data);
 	});
-    }
+    };
 
     Container.prototype.getSlot = function (segment, options) {
       var c = this;
       if (this.segment === segment) { // only really works for undefined
-	if ((options = checkOptions(p, options)))
+	if ((options = checkOptions(this, options)))
 	  return router.http(router.controllers.SlotApi.get,
 	    this.volume.id, this.id, Segment.format(segment), options)
 	    .then(function (res) {
@@ -492,7 +490,7 @@ module.factory('modelService', [
 	.then(function (res) {
 	  return new Slot(c, res.data);
 	});
-    }
+    };
 
     Slot.prototype.save = function (data) {
       var s = this;
@@ -509,6 +507,17 @@ module.factory('modelService', [
 	  s.clear('records');
 	});
     };
+
+    Object.defineProperty(Slot.prototype, 'route', {
+      get: function () {
+	return router.slot([this.volume.id, this.container.id, Segment.format(this.segment)]);
+      }
+    });
+
+    Slot.prototype.editRoute = function () {
+      return router.slotEdit([this.container.id, Segment.format(this.segment)]);
+    };
+
 
     /////////////////////////////////
 

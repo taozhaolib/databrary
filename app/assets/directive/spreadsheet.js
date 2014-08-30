@@ -305,7 +305,7 @@ module.directive('spreadsheet', [
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
-	  cell.setAttribute('href', page.router.slot(volume.id, slot));
+	  cell.setAttribute('href', slot.route);
 	  cell.classList.add('link', 'icon');
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
