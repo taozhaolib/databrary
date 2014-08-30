@@ -1,7 +1,8 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
+  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
+    var volume = slot.volume;
     page.display.title = page.types.slotName(slot);
 
     // helpers

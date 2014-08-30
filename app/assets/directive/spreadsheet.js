@@ -74,7 +74,7 @@ module.directive('spreadsheet', [
 	function getSlot(slot) {
 	  if ('records' in slot)
 	    return slot;
-	  angular.extend(slot, volume.sessions[slot.id]);
+	  angular.extend(slot, volume.containers[slot.id]);
 	  if (slot.segment !== undefined) {
 	    slot.records = slot.records.filter(function (rec) {
 	      return page.types.segmentOverlaps(slot.segment, rec.segment);
@@ -96,7 +96,7 @@ module.directive('spreadsheet', [
 	 */
 
 	var slots = []; // [Row] = Slot
-	angular.forEach(volume.sessions, function (s) {
+	angular.forEach(volume.containers, function (s) {
 	  slots.push(/*getSlot*/(s));
 	});
 
@@ -407,10 +407,7 @@ module.directive('spreadsheet', [
 	  var data = {};
 	  data[f] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
-	  page.models.slot.update(slots[i], data, function () {
-	    var slot = slots[i];
-	    slot[f] = v;
-	    volume.sessions[slot.id][f] = v; // may be redundant, but that's fine
+	  slots[i].save(data).then(function () {
 	    generateText(cell, f, v);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
@@ -435,7 +432,7 @@ module.directive('spreadsheet', [
 
 	function addRecord(cell, i, cat) {
 	  cell.classList.add('saving');
-	  page.models.slot.addRecord(slots[i], {category:cat.id}, function (rec) {
+	  slots[i].addRecord({category:cat.id}).then(function (rec) {
 	    /* TODO add new rec to i */
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));

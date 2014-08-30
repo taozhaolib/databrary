@@ -244,16 +244,13 @@ module.provider('routerService', [
 	      return undefined;
 
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['access', 'citation', 'top', 'funding']).then(function (volume) {
-	      page.models.slot.get({
-		id: volume.top.id,
-		vid: volume.id,
-		assets: '',
-	      }).then(function (top) {
-		volume.top = top;
-		return volume;
+	      ['access', 'citation', 'top', 'funding'])
+	      .then(function (volume) {
+		return volume.top.getSlot(volume.top.segment, ['assets'])
+		  .then(function (top) {
+		    return volume;
+		  });
 	      });
-	    });
           }
         ],
       },
@@ -273,7 +270,7 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'sessions', 'categories']);
+	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers', 'categories']);
           }
         ]
       },
@@ -287,18 +284,14 @@ module.provider('routerService', [
       controller: 'slotView',
       templateUrl: 'slotView.html',
       resolve: {
-        volume: [
-          'pageService', function (page) {
-            return page.models.Volume.get(page.$route.current.params.vid,
-	      ['records', 'sessions']);
-          }
-        ],
         slot: [
           'pageService', function (page) {
-            return page.models.slot.get({
-              assets: '',
-              tags: '',
-              comments: '',
+            return page.models.Volume.get(page.$route.current.params.vid,
+	      ['records', 'containers'])
+	      .then(function (volume) {
+		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
+		  ['assets', 'tags', 'comments', 'records']);
+	      });
             });
           }
         ]
