@@ -41,12 +41,12 @@ module.directive('partyEditGrantForm', [
         });
       };
 
-      form.resetAll = function () {
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
-            subform.reset();
-          }
-        });
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
+	  return true;
+	}
+	return false;
       };
 
       form.scrollToFuture = function (party) {

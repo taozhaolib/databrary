@@ -1,22 +1,9 @@
 <section class="slot-player" bindonce>
   <div class="player-main">
-    <div class="player-main-viewport">
-      <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
-    </div>
-
-    <div class="player-main-float" ng-if="ctrl.current[0]">
-      <h1 class="player-main-info-name">
-        <span class="filetype">
-          <img ng-src="{{ctrl.current[0].icon}}" hint="format-{{ctrl.current[0].format.extension}}">
-        </span>
-
-        <span class="filename" ng-bind="ctrl.current[0].displayName"></span>
-      </h1>
-    </div>
-
     <div class="player-main-info" ng-class="{playable: ctrl.current[0] && ctrl.hasDisplay(ctrl.current[0])}">
       <div ng-if="ctrl.current[0]">
         <nav class="player-main-info-actions">
+          <img ng-src="{{ctrl.current[0].icon}}" hint="format-{{ctrl.current[0].format.extension}}" class="player-main-info-file-icon">
           <a ng-href="{{ctrl.current[0].editRoute()}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
           <a ng-href="{{ctrl.current[0].downloadRoute(false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
           <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
@@ -37,6 +24,16 @@
           <dd ng-if="ctrl.current[0].asset.duration" ng-bind="ctrl.current[0].asset.duration | timecode"></dd>
         </dl>
       </div>
+    </div>
+
+    <div class="player-main-viewport">
+      <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
+    </div>
+
+    <div class="player-main-float" ng-if="ctrl.current[0]">
+      <h1 class="player-main-info-name">
+        <span class="filename" ng-bind="ctrl.current[0].displayName"></span>
+      </h1>
     </div>
   </div>
 </section>

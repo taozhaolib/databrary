@@ -41,14 +41,6 @@ module.directive('partyEditApplyForm', [
         });
       };
 
-      form.resetAll = function () {
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
-            subform.cancel();
-          }
-        });
-      };
-
       form.scrollToFuture = function (party) {
         var remove = $scope.$watch(function () {
           return subforms[subforms.length - 1];
@@ -71,6 +63,14 @@ module.directive('partyEditApplyForm', [
       };
 
       //
+      
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
+	  return true;
+	}
+	return false;
+      };
 
       page.events.listen($scope, 'authApplyForm-init', function (event, grantForm) {
         subforms.push(grantForm);

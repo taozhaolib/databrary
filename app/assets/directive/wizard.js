@@ -3,6 +3,10 @@
 module.directive('wizard', [
   function () {
     var compile = function ($element, $attrs, transclude) {
+      //pre-conditions
+      //  $element: has wizard steps as children
+      //  $attrs: confirm-nav indicates that user can't leave a dirty subpage. will be prompted to discard
+
       return function ($scope, $element) {
         if (angular.isFunction($scope.retrieve())) {
           $scope.retrieve()($scope);
@@ -37,37 +41,38 @@ module.directive('wizard', [
 	  }
 	};
 
-        $scope.activateStep = function (step) {
-          if ($scope.isStepBlocked(step)) {
+        $scope.activateStep = function (newStep) {
+          if ($scope.isStepBlocked(newStep)) {
             return;
           }
 
 	  var curStep = $scope.getActiveStep();
 
 	  //only if confirmNav is set and if we already have a current step (ie - this is not the initial load of this wizard)
-	  //NOTE: this requires underlying steps to 
-	  //1) assign their underlying form to the field 'form' (perhaps this can be aboided by transforming id from html-case to camelCase
-	  //2) have a resetAll w/ conf.
-	  if($attrs.confirmNav && curStep){
-	    if(curStep.form.$dirty && !curStep.form.resetAll()){
+	  //NOTE: this requires underlying steps to have
+	  // 1) main form named as: camelCase(step.id)+'Form' (eg: volume-edit-materials --> volumeEditMaterialsForm). fallback: curStep.form
+	  // 2) have a resetAll w/ conf
+	  if($attrs.confirmNav && curStep && curStep != newStep){
+	    var curStepForm = curStep[$.camelCase(curStep.id)+'Form'] || curStep.form;
+	    if(curStepForm.$dirty && !curStepForm.resetAll()){
 	      return;
 	    }
 	  }
 
           if (angular.isFunction($scope.activateFn)) {
-            $scope.activateFn(step, $scope);
+            $scope.activateFn(newStep, $scope);
           }
 
 	  //TODO - lose iteration, just use curStep as obtained above
           angular.forEach($scope.steps, function (thisStep) {
-            if (thisStep.active && $scope.offFn[step.id] && angular.isFunction($scope.offFn[step.id])) {
-              $scope.offFn[step.id](thisStep, step);
+            if (thisStep.active && $scope.offFn[newStep.id] && angular.isFunction($scope.offFn[newStep.id])) {
+              $scope.offFn[newStep.id](thisStep, newStep);
             }
 
-            thisStep.active = thisStep == step;
+            thisStep.active = thisStep == newStep;
 
-            if (thisStep.active && $scope.onFn[step.id] && angular.isFunction($scope.onFn[step.id])) {
-              $scope.onFn[step.id](thisStep, step);
+            if (thisStep.active && $scope.onFn[newStep.id] && angular.isFunction($scope.onFn[newStep.id])) {
+              $scope.onFn[newStep.id](thisStep, newStep);
             }
           });
         };

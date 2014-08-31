@@ -7,7 +7,6 @@ module.directive('partyEditProfileForm', [
 
       form.data = {};
       form.authors = [];
-      var backup = {};
 
       form.saveFn = undefined;
       form.resetFn = undefined;
@@ -25,8 +24,6 @@ module.directive('partyEditProfileForm', [
 	  avatar: party.avatar,
 	  url: party.url
 	};
-
-	backup = $.extend(true, {}, form.data);
       };
 
       //
@@ -71,9 +68,7 @@ module.directive('partyEditProfileForm', [
 	      form.messages.remove(upload);
 	    }
 
-	    backup = $.extend(true, {}, form.data);
-
-	    if (page.auth.user.id == form.party.id) {
+	    if (page.auth.user.id === form.party.id) {
 	      page.auth.user.name = res.name;
 	    }
 
@@ -98,16 +93,14 @@ module.directive('partyEditProfileForm', [
 	  });
       };
 
-      form.reset = function () {
-	if (angular.isFunction(form.resetFn)) {
-	  form.resetFn(form);
+      form.resetAll = function(force){
+	if(force || confirm(page.constants.message('navigation.confirmation'))){
+	  page.$route.reload();
+	  return true;
 	}
-
-	form.validator.clearServer();
-
-	form.data = $.extend(true, {}, backup);
-	form.$setPristine();
+	return false;
       };
+
 
       //
 

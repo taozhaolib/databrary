@@ -1,6 +1,6 @@
-<div class="slot-timeline-track" bo-class="{last: track.spare}" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
+<div class="slot-timeline-track" bo-class="{last: track.spare}" ng-click="track.select()" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
   <div class="slot-track" ng-class="track.classes()">
-    <div class="slot-track-asset" ng-click="track.select()" ng-style="track.styles()" ng-if="!track.spare">
+    <div class="slot-track-asset" ng-style="track.styles()" ng-if="!track.spare">
       <div class="slot-track-asset-info">
         <img class="slot-track-asset-thumb" bo-if="ctrl.hasDisplay(track.asset)" bo-src="asset.thumbRoute()">
         <img class="slot-track-asset-icon" bo-if="!ctrl.hasDisplay(track.asset)" bo-src="track.asset.icon">

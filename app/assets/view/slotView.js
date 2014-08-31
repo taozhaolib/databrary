@@ -31,17 +31,19 @@ module.controller('slotView', [
 	selection: null,
       },
 
-      syncPlayback: function () {
-	if (ctrl.clock.playing) {
+      syncPlayback: function (media) {
+        var el = getElement(media);
+
+	if (ctrl.clock.playing && el && el.paused) {
 	  ctrl.clock.play();
-	} else {
+	} else if (el && !el.paused) {
 	  ctrl.clock.pause();
 	}
       },
 
       registerMedia: function (media) {
 	ctrl.media.push(media);
-	ctrl.syncPlayback();
+	ctrl.syncPlayback(media);
 
 	media.$scope.$on('$destroy', function () {
 	  ctrl.deregisterMedia(media);
@@ -174,8 +176,8 @@ module.controller('slotView', [
     };
 
     var callbackJump = function () {
-      asapMediaFn(function () {
-	ctrl.syncPlayback();
+      asapMediaFn(function (media) {
+	ctrl.syncPlayback(media);
       });
     };
 
@@ -188,7 +190,7 @@ module.controller('slotView', [
     var callbackTime = function () {
       asapMediaFn(function (media, el) {
 	if (ctrl.isNowPlayable(media) && el.paused && !el.seeking) {
-	  ctrl.syncPlayback();
+	  ctrl.syncPlayback(media);
 	}
       });
     };
