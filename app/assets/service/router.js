@@ -377,14 +377,6 @@ module.provider('routerService', [
 	  return routes.volumeCreate([owner]);
 	};
 
-	router.record = function (data) {
-	  if (!type.isRecord(data)) {
-	    throw new Error('routerService.record() requires Record as first argument');
-	  }
-
-	  return routes.record([data.id]);
-	};
-
 	router.assetThumb = function (data) {
 	  if (!type.isAsset(data)) {
 	    throw new Error('routerService.assetThumb() requires Asset as first argument');
@@ -411,14 +403,6 @@ module.provider('routerService', [
 	  }
 
 	  return routes.assetEdit([data.asset.id]);
-	};
-
-	router.recordEdit = function (data) {
-	  if (!type.isRecord(data)) {
-	    throw new Error('routerService.recordEdit() requires Record as first argument');
-	  }
-
-	  return routes.recordEdit([data.id]);
 	};
 
 	return router;

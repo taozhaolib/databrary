@@ -115,6 +115,7 @@ object SiteApi extends SiteController {
     , SlotHtml.edit
     , SlotApi.get
     , SlotApi.update
+    , SlotApi.create
     , AssetHtml.formats
     , AssetHtml.view
     , AssetHtml.edit
@@ -127,6 +128,7 @@ object SiteApi extends SiteController {
     , SlotAssetController.download
     , RecordHtml.view
     , RecordHtml.edit
+    , RecordApi.get
     , RecordApi.add
     , RecordApi.remove
     , RecordApi.measureUpdate

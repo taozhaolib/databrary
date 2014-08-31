@@ -75,7 +75,7 @@ module.controller('ExcerptsPanel', [
 
     var expandTo = function (asset) {
       var dirty;
-      var records = $scope.volume.sessions[asset.container.id].records;
+      var records = $scope.volume.containers[asset.container.id].records;
       var volumeRecords = $scope.volume.records;
 
       angular.forEach(page.browser.groups, function (objects, group) {

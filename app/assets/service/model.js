@@ -25,6 +25,8 @@ module.factory('modelService', [
     Model.prototype.update = function (init) {
       if (!angular.isObject(init))
 	return this;
+      if (init.id !== this.id)
+	throw new Error("update id mismatch");
       var s = this.staticFields;
       for (var i = 0; i < s.length; i ++) {
 	var k = s[i];
@@ -129,8 +131,7 @@ module.factory('modelService', [
       return partyMake(res.data);
     }
 
-    function partyResArray(res) {
-      var l = res.data;
+    function partyMakeArray(l) {
       if (l) for (var i = 0; i < l.length; i ++)
 	l[i] = partyMake(l[i]);
       return l;
@@ -204,8 +205,9 @@ module.factory('modelService', [
     Party.prototype.authorizeSearch = function (apply, param) {
       return router.http(router.controllers.PartyApi.authorizeSearch, this.id, apply, param)
 	.then(function (res) {
-	  if (typeof res.data === 'object')
-	    return partyResArray(res);
+	  if (Array.isArray(res.data))
+	    return partyMakeArray(res.data);
+	  return res;
 	});
     };
 
@@ -214,6 +216,8 @@ module.factory('modelService', [
       return router.http(router.controllers.PartyApi.authorizeApply, this.id, target, data)
 	.finally(function () {
 	  p.clear('parents');
+	}).then(function (res) {
+	  return p.update(res.data);
 	});
     };
 
@@ -222,6 +226,8 @@ module.factory('modelService', [
       return router.http(router.controllers.PartyApi.authorizeChange, this.id, target, data)
 	.finally(function () {
 	  p.clear('children');
+	}).then(function (res) {
+	  return p.update(res.data);
 	});
     };
 
@@ -230,6 +236,8 @@ module.factory('modelService', [
       return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
 	.finally(function () {
 	  p.clear('children');
+	}).then(function (res) {
+	  return p.update(res.data);
 	});
     };
 
@@ -289,8 +297,8 @@ module.factory('modelService', [
       if (init.containers) {
 	var cl = this.containers;
 	var cm = {};
-	for (var i = 0; i < cl.length; i ++)
-	  cm[cl[i].id] = new Container(this, cl[i]);
+	for (var ci = 0; ci < cl.length; ci ++)
+	  cm[cl[ci].id] = new Container(this, cl[ci]);
 	this.containers = cm;
       }
       if (init.top) {
@@ -298,6 +306,13 @@ module.factory('modelService', [
 	  this.top = this.containers[this.top.id].update(this.top);
 	else
 	  this.top = new Container(this, this.top);
+      }
+      if (init.records) {
+	var rl = this.records;
+	var rm = {};
+	for (var ri = 0; ri < rl.length; ri ++)
+	  rm[rl[ri].id] = new Record(this, rl[ri]);
+	this.records = rm;
       }
     };
 
@@ -368,7 +383,9 @@ module.factory('modelService', [
 
     Volume.prototype.accessSearch = function (param) {
       return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
-	.then(partyResArray);
+	.then(function (res) {
+	  return partyMakeArray(res.data);
+	});
     };
 
     Volume.prototype.accessSave = function (target, data) {
@@ -376,6 +393,8 @@ module.factory('modelService', [
       return router.http(router.controllers.VolumeApi.accessChange, this.id, target, data)
 	.finally(function () {
 	  v.clear('access');
+	}).then(function (res) {
+	  return v.update(res.data);
 	});
     };
 
@@ -384,6 +403,8 @@ module.factory('modelService', [
       return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
 	.finally(function () {
 	  v.clear('access');
+	}).then(function (res) {
+	  return v.update(res.data);
 	});
     };
 
@@ -396,6 +417,8 @@ module.factory('modelService', [
       return router.http(router.controllers.VolumeApi.fundingChange, this.id, funder, data)
 	.finally(function () {
 	  v.clear('funding');
+	}).then(function (res) {
+	  return v.update(res.data);
 	});
     };
 
@@ -404,10 +427,13 @@ module.factory('modelService', [
       return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
 	.finally(function () {
 	  v.clear('funding');
+	}).then(function (res) {
+	  return v.update(res.data);
 	});
     };
 
     ///////////////////////////////// Container/Slot
+    // This does not handle cross-volume inclusions
 
     function Slot(container, init) {
       this.container = container;
@@ -430,7 +456,7 @@ module.factory('modelService', [
 
     Object.defineProperty(Slot.prototype, 'permission', {
       get: function () {
-	return this.container.volume.permission;
+	return this.volume.permission;
       }
     });
 
@@ -461,6 +487,15 @@ module.factory('modelService', [
 	return volume.top;
     }
 
+    function slotMake(volume, init) {
+      var c = peekContainer(volume, init.contianer.id);
+      if (!c)
+	c = new Container(volume);
+      else if (c.segment === init.segment) // only for undefined
+	return c.update(init);
+      return new Slot(c, init);
+    }
+
     Volume.prototype.getSlot = function (container, segment, options) {
       var c = peekContainer(this, container);
       if (c)
@@ -475,7 +510,7 @@ module.factory('modelService', [
 
     Container.prototype.getSlot = function (segment, options) {
       var c = this;
-      if (this.segment === segment) { // only really works for undefined
+      if (this.segment === segment) { // only for undefined
 	if ((options = checkOptions(this, options)))
 	  return router.http(router.controllers.SlotApi.get,
 	    this.volume.id, this.id, Segment.format(segment), options)
@@ -518,6 +553,78 @@ module.factory('modelService', [
       return router.slotEdit([this.container.id, Segment.format(this.segment)]);
     };
 
+    ///////////////////////////////// Record
+
+    function Record(volume, init) {
+      this.volume = volume;
+      Model.call(this, init);
+    }
+
+    Record.prototype = Object.create(Model.prototype);
+    Record.prototype.constructor = Record;
+
+    Record.prototype.staticFields = ['category', 'measures'];
+
+    Record.prototype.init = function (init) {
+      var v = this.volume;
+      Model.prototype.init.call(this, init);
+      if ('volume' in init)
+	this.volume = v.update(init.volume);
+    };
+
+    Object.defineProperty(Record.prototype, 'permission', {
+      get: function () {
+	return this.volume.permission;
+      }
+    });
+
+    function peekRecord(volume, record) {
+      if (record instanceof Record)
+	return record;
+      if (volume.records && record in volume.records)
+	return volume.records[record];
+    }
+
+    Volume.prototype.getRecord = function (record) {
+      var r = peekRecord(this, record);
+      if (r)
+	return $q.successful(r);
+      var v = this;
+      return router.http(router.controllers.RecordApi.get, record)
+	.then(function (res) {
+	  return new Record(v, res.data);
+	});
+    };
+
+    Record.prototype.save = function (data) {
+      var r = this;
+      return router.http(router.controllers.RecordApi.update, this.id, data)
+	.then(function (res) {
+	  return r.update(res.data);
+	});
+    };
+
+    Record.prototype.measure = function (metric) {
+      return this.measures[metric];
+    };
+
+    Record.prototype.measureSet = function (metric, value) {
+      var r = this;
+      return router.http(router.controllers.RecordApi.measureUpdate, this.id, metric, {datum:value})
+	.then(function (res) {
+	  return r.update(res.data);
+	});
+    };
+
+    Object.defineProperty(Record.prototype, 'route', {
+      get: function () {
+	return router.record([this.id]);
+      }
+    });
+
+    Record.prototype.editRoute = function () {
+      return router.recordEdit([this.id]);
+    };
 
     /////////////////////////////////
 
@@ -528,6 +635,7 @@ module.factory('modelService', [
       Volume: Volume,
       Container: Container,
       Slot: Slot,
+      Record: Record,
       analytic: function () {
 	return router.http(router.controllers.SiteApi.void, {}, {cache:false});
       },

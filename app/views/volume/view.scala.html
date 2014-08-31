@@ -14,7 +14,7 @@
 	    @if(volume.checkPermission(Permission.EDIT)) {
 	        <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
 	        <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
-	        <li><a href="@controllers.routes.SlotHtml.createContainer(volume.id)">add session/folder</a></li>
+	        <li><a href="@controllers.routes.SlotHtml.add(volume.id)">add session/folder</a></li>
 	    }
 	    @if(volume.checkPermission(Permission.ADMIN)) {
 	        <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>

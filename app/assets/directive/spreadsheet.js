@@ -407,7 +407,7 @@ module.directive('spreadsheet', [
 	  var data = {};
 	  data[f] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
-	  slots[i].save(data).then(function () {
+	  slots[i].save(data).then(function (slot) {
 	    generateText(cell, f, v);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
@@ -415,9 +415,7 @@ module.directive('spreadsheet', [
 
 	function saveMeasure(cell, r, m, v) {
 	  cell.classList.add('saving');
-	  page.models.record.measureUpdate({id:r,metric:m}, {datum:v}, function () {
-	    var rec = volume.records[r];
-	    rec.measures[m] = v;
+	  volume.records[r].measureSet(m, v).then(function (rec) {
 	    var rcm = records[rec.category][m];
 	    angular.forEach(depends[r], function (n, i) {
 	      rcm[n][i] = v;
