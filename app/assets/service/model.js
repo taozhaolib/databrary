@@ -122,11 +122,11 @@ module.factory('modelService', [
 
     Party.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
-      if (init.volumes)
+      if ('volumes' in init)
 	volumeMakeSubArray(this.volumes);
-      if (init.parents)
+      if ('parents' in init)
 	partyMakeSubArray(this.parents);
-      if (init.children)
+      if ('children' in init)
 	partyMakeSubArray(this.children);
     };
 
@@ -302,28 +302,30 @@ module.factory('modelService', [
 
     Volume.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
-      if (init.access)
+      if ('access' in init)
 	partyMakeSubArray(this.access);
-      if (init.containers) {
+      if ('containers' in init) {
 	var cl = this.containers;
 	var cm = {};
 	for (var ci = 0; ci < cl.length; ci ++)
 	  cm[cl[ci].id] = new Container(this, cl[ci]);
 	this.containers = cm;
       }
-      if (init.top) {
+      if ('top' in init) {
 	if (this.containers && this.top.id in this.containers)
 	  this.top = this.containers[this.top.id].update(this.top);
 	else
 	  this.top = new Container(this, this.top);
       }
-      if (init.records) {
+      if ('records' in init) {
 	var rl = this.records;
 	var rm = {};
 	for (var ri = 0; ri < rl.length; ri ++)
 	  rm[rl[ri].id] = new Record(this, rl[ri]);
 	this.records = rm;
       }
+      if ('excerpts' in init)
+	assetMakeArray(this, this.excerpts);
     };
 
     function volumeMake(init) {
@@ -492,7 +494,7 @@ module.factory('modelService', [
     Container.prototype = Object.create(Slot.prototype);
     Container.prototype.constructor = Container;
 
-    Container.prototype.staticFields = ['name', 'date', 'top'].concat(Slot.prototype.staticFields);
+    Container.prototype.staticFields = ['_PLACEHOLDER', 'name', 'date', 'top'].concat(Slot.prototype.staticFields);
 
     Container.prototype.init = function (init) {
       var v = this.volume;
@@ -502,40 +504,29 @@ module.factory('modelService', [
 	this.volume = v.update(init.volume);
     };
 
-    function peekContainer(volume, container) {
-      if (container instanceof Container)
-	return container;
-      if (volume.containers && container in volume.containers)
-	return volume.containers[container];
-      if (volume.top && volume.top.id === container)
+    function containerPrepare(volume, id) {
+      if (volume.containers && id in volume.containers)
+	return volume.containers[id];
+      if (volume.top && volume.top.id === id)
 	return volume.top;
+      return new Container(volume, {id:id, _PLACEHOLDER:true});
     }
 
     function slotMake(volume, init) {
-      var c = peekContainer(volume, init.contianer.id);
-      if (!c)
-	c = new Container(volume);
-      else if (c.segment === init.segment) // only for undefined
+      var c = containerPrepare(volume, init.contianer.id);
+      if (c.segment === init.segment) // only for undefined
 	return c.update(init);
       return new Slot(c, init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
-      var c = peekContainer(this, container);
-      if (c)
-	return c.getSlot(segment, options);
-      var v = this;
-      return router.http(router.controllers.SlotApi.get,
-	this.id, container, Segment.format(segment), options)
-	.then(function (res) {
-	  return new Slot(new Container(v), res.data);
-	});
+      return containerPrepare(this, container).getSlot(segment, options);
     };
 
     Container.prototype.getSlot = function (segment, options) {
       var c = this;
       if (this.segment === segment) { // only for undefined
-	if ((options = checkOptions(this, options)))
+	if ((options = checkOptions(this, options)) || this._PLACEHOLDER)
 	  return router.http(router.controllers.SlotApi.get,
 	    this.volume.id, this.id, Segment.format(segment), options)
 	    .then(function (res) {
@@ -671,18 +662,19 @@ module.factory('modelService', [
     Asset.prototype.init = function (init) {
       var v = this.volume;
       Model.prototype.init.call(this, init);
-      if ('revisions' in init)
-	assetMakeArray(this.revisions);
       if ('volume' in init)
-	this.volume = v.update(init.volume);
+	this.volume = v.update(this.volume);
       if ('format' in init)
 	this.format = constants.data.format[this.format];
+      if ('revisions' in init)
+	assetMakeArray(v, this.revisions);
     };
 
     function assetMake(volume, init) {
-      return init.asset ? 
-	new SlotAsset(new Container(volume), init) :
-	new Asset(volume, init);
+      if (init.container)
+	return new SlotAsset(containerPrepare(volume, init.container.id), init);
+      else
+	return new Asset(volume, init);
     }
 
     function assetMakeArray(volume, l) {
