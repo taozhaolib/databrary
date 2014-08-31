@@ -799,6 +799,10 @@ module.factory('modelService', [
       Record: Record,
       Asset: Asset,
       SlotAsset: SlotAsset,
+
+      cite: function (url) {
+	return router.http(router.controllers.SiteApi.cite, url);
+      },
       analytic: function () {
 	return router.http(router.controllers.SiteApi.void, {}, {cache:false});
       },
