@@ -15,7 +15,7 @@
         <button type="submit" class="green" ng-click="commentReplyForm.save()" ng-disabled="!commentReplyForm.ready()">
           {{'comments.post' | message}}
         </button>
-        <button class="yellow" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.data.parent">
+        <button class="yellow" ng-click="commentReplyForm.cancel()" ng-if="commentReplyForm.target">
           {{'comments.cancel' | message}}
         </button>
       </div>

@@ -11,7 +11,7 @@ import site._
 final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parentId : Option[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
   def whoId = who.id
 
-  override lazy val json = JsonRecord.flatten(id,
+  override def json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
     Some('time -> time),
     Some('text -> text),
@@ -62,6 +62,9 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
 
   /** Post a new comment on a target by the current user.
     * This will throw an exception if there is no current user, but does not check permissions otherwise. */
-  private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent)).execute
+  private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Comment] =
+    INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent), "id, time")
+    .single(SQLCols[Id, Timestamp].map { (id, time) =>
+      new Comment(id, site.account, slot.segment, slot.context, time, text, parent)
+    })
 }

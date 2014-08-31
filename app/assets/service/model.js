@@ -326,6 +326,8 @@ module.factory('modelService', [
       }
       if ('excerpts' in init)
 	assetMakeArray(this, this.excerpts);
+      if ('comments' in init)
+	commentMakeArray(this, this.comments);
     };
 
     function volumeMake(init) {
@@ -454,8 +456,10 @@ module.factory('modelService', [
     ///////////////////////////////// Container/Slot
     // This does not handle cross-volume inclusions
 
-    function Slot(container, init) {
-      this.container = container;
+    function Slot(context, init) {
+      this.container = context instanceof Volume ?
+	containerPrepare(context, init.container.id) :
+	context;
       if (init)
 	Model.call(this, init);
     }
@@ -482,7 +486,7 @@ module.factory('modelService', [
 
     Object.defineProperty(Slot.prototype, 'displayName', {
       get: function () {
-	return constants.message(this.top ? 'materials' : 'session') + (this.name ? ': ' + this.name : '');
+	return constants.message(this.container.top ? 'materials' : 'session') + (this.name ? ': ' + this.name : '');
       }
     });
 
@@ -672,7 +676,7 @@ module.factory('modelService', [
 
     function assetMake(volume, init) {
       if (init.container)
-	return new SlotAsset(containerPrepare(volume, init.container.id), init);
+	return new SlotAsset(volume, init);
       else
 	return new Asset(volume, init);
     }
@@ -712,12 +716,11 @@ module.factory('modelService', [
 
     ///////////////////////////////// SlotAsset
 
-    function SlotAsset(container, init) {
-      Slot.call(this, container, init);
+    function SlotAsset(context, init) {
+      Slot.call(this, context, init);
     }
 
-    // We don't actually inherit from Slot, but we do use much of the functionality:
-    SlotAsset.prototype = Object.create(Model.prototype);
+    SlotAsset.prototype = Object.create(Slot.prototype);
     SlotAsset.prototype.constructor = SlotAsset;
 
     SlotAsset.prototype.staticFields = ['format', 'excerpt'].concat(Slot.prototype.staticFields);
@@ -779,6 +782,44 @@ module.factory('modelService', [
       return router.assetEdit([this.asset.id]);
     };
 
+    ///////////////////////////////// Comment
+
+    function Comment(context, init) {
+      Slot.call(this, context, init);
+    }
+
+    Comment.prototype = Object.create(Slot.prototype);
+    Comment.prototype.constructor = Comment;
+
+    Comment.prototype.staticFields = ['parent'].concat(Slot.prototype.staticFields);
+
+    Comment.prototype.init = function (init) {
+      Slot.prototype.init.call(this, init);
+      if ('who' in init)
+	this.who = partyMake(init.who);
+    };
+
+    function commentMakeArray(volume, l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i] = new Comment(volume, l[i]);
+      return l;
+    }
+
+    Slot.prototype.postComment = function (data, reply) {
+      var s = this;
+      if (arguments.length < 2 && this instanceof Comment)
+	reply = this.id;
+      return router.http(router.controllers.CommentApi.post, this.container.id, Segment.format(this.segment), reply, data)
+	.then(function (res) {
+	  return new Comment(s.container, res.data);
+	}).finally(function () {
+	  s.clear('comments');
+	});
+    };
+
+    ///////////////////////////////// Tag
+
+
     /////////////////////////////////
 
     return {
@@ -791,6 +832,7 @@ module.factory('modelService', [
       Record: Record,
       Asset: Asset,
       SlotAsset: SlotAsset,
+      Comment: Comment,
 
       cite: function (url) {
 	return router.http(router.controllers.SiteApi.cite, url);

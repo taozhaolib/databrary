@@ -134,6 +134,7 @@ object SiteApi extends SiteController {
     , RecordApi.add
     , RecordApi.remove
     , RecordApi.measureUpdate
+    , CommentApi.post
     , TagApi.search
     , routes.javascript.SiteApi.cite
     , routes.javascript.SiteApi.void

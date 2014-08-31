@@ -6,13 +6,13 @@ import site._
 import dbrary._
 import models._
 
-private[controllers] sealed class CommentController extends SiteController {
+private[controllers] sealed class CommentController extends ObjectController[Comment] {
   def post(i : Container.Id, segment : Segment, parent : Option[Comment.Id] = None) =
     SiteAction.access(Permission.PUBLIC).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new CommentController.SlotForm()._bind
       for {
-	_ <- request.obj.postComment(form.text.get, parent orElse form.parent.get)(request.asInstanceOf[AuthSite])
-      } yield (SlotController.result(request.obj))
+	c <- request.obj.postComment(form.text.get, parent orElse form.parent.get)(request.asInstanceOf[AuthSite])
+      } yield (result(c))
     }
 }
 

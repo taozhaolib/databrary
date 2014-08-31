@@ -126,7 +126,7 @@ module.controller('CommentsPanel', [
       commentReplyForm = form;
       form.successFn = successFn;
       form.cancelFn = cancelFn;
-      form.target(replyTo);
+      form.target = replyTo;
       event.stopPropagation();
     });
 

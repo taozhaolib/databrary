@@ -6,11 +6,9 @@ module.directive('commentReplyForm', [
       var form = $scope.commentReplyForm;
 
       form.data = {
-        text: '',
-        container: $scope.volume && $scope.volume.top.id,
-        segment: ',',
-        parent: undefined
+        text: ''
       };
+      form.target = undefined;
 
       //
 
@@ -23,10 +21,8 @@ module.directive('commentReplyForm', [
           form.saveFn(form);
         }
 
-        form.comment = new page.models.comment();
-
-        form.comment.$save(form.data,
-          function () {
+	(form.target || $scope.volume.top).postComment(form.data)
+          .then(function () {
             form.validator.server({});
 
             form.messages.add({
@@ -59,23 +55,10 @@ module.directive('commentReplyForm', [
         }
 
         form.data.text = '';
-        form.target(undefined, undefined);
+        form.target = undefined;
       };
 
       //
-
-      form.target = function (comment) {
-        if (comment) {
-          form.data.container = comment.container.id;
-          form.data.segment = page.models.Segment.format(comment.segment);
-          form.data.parent = comment.id;
-          return;
-        }
-
-        form.data.container = $scope.volume && $scope.volume.top.id;
-        form.data.segment = ',';
-        form.data.parent = undefined;
-      };
 
       form.ready = function () {
         return form.$dirty && form.$valid && form.data.text;
