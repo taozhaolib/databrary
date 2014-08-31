@@ -119,10 +119,12 @@ object SiteApi extends SiteController {
     , AssetHtml.formats
     , AssetHtml.view
     , AssetHtml.edit
+    , AssetApi.get
     , AssetApi.uploadStart
     , AssetApi.uploadChunk
     , AssetApi.upload
     , AssetApi.replace
+    , AssetApi.remove
     , SlotAssetHtml.view
     , SlotAssetController.thumb
     , SlotAssetController.download

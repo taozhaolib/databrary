@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('volumeEditMaterialsForm', [
-  'pageService', function (page) {
+  'pageService', 'assetService', function (page, assets) {
     var link = function ($scope) {
       var form = $scope.volumeEditMaterialsForm;
       $scope.form = form;
@@ -50,7 +50,7 @@ module.directive('volumeEditMaterialsForm', [
 	  file.containingForm = form['asset' + index];
         }
         file.asset.file = file.file; 
-        page.models.asset.fileAddedImmediateUpload(file);
+        assets.fileAddedImmediateUpload(file);
       };
 
       form.assetCall = function (file) {
@@ -61,22 +61,18 @@ module.directive('volumeEditMaterialsForm', [
         data.container = form.slot.container.id;
         data.upload = file.uniqueIdentifier;
 
-	var afterwards = function (res) {
-            file.asset.asset = res.data.asset;
+	(file.replace ?
+	 file.asset.replace(data) :
+	 form.volume.createAsset(data))
+	  .then(function (asset) {
+            file.asset = asset;
             file.asset.asset.creation = {date: Date.now(), name: file.file.name};
 	    //console.log(file.containingForm);
 	    if(file.containingForm && file.containingForm.subform){
 	      //console.log(file.containingForm);
 	      form.clean(file.containingForm.subform);
 	    }
-        };
-
-	if(file.replace){
-	  page.models.asset.replace(file.replace, data).then(afterwards);
-	}
-	else{
-          page.models.asset.newAssetCall(form.volume.id, data).then(afterwards);
-	}
+        });
       };
 
       form.perFileProgress = function (file) {
@@ -129,9 +125,7 @@ module.directive('volumeEditMaterialsForm', [
 
 	if(subform.asset.asset && subform.asset.asset.creation) // NOT for file operations. just metadata
 	{
-          var curAsset = new page.models.asset(data);
-	  
-	  curAsset.$save({id: subform.asset.asset.id}).then(function (res) {
+	  subform.asset.asset.save(data).then(function (res) {
             subform.messages.add({
               type: 'green',
               countdown: 3000,
@@ -193,11 +187,7 @@ module.directive('volumeEditMaterialsForm', [
           form.clean(subform);
           form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
         } else {
-          var newAsset = new page.models.asset();
-
-          newAsset.$delete({
-            id: subform.asset.asset.id
-          }).then(function (res) {
+	  subform.asset.remove().then(function (res) {
             form.messages.add({
               type: 'green',
               countdown: 3000,

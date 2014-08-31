@@ -16,6 +16,7 @@ module.factory('modelService', [
       this.init(init);
     }
 
+    /* optional fields that are always returned (so missingness is significant) */
     Model.prototype.staticFields = [];
 
     Model.prototype.init = function (init) {
@@ -55,9 +56,7 @@ module.factory('modelService', [
 	    need = opts;
 	  }
       }
-      else if (!(options && obj))
-	return options;
-      else
+      else if (options && obj)
 	angular.forEach(options, function (v, o) {
 	  if (v || !(o in obj)) {
 	    opts[o] = v;
@@ -91,9 +90,24 @@ module.factory('modelService', [
     }
 
     /* lift functions from object methods to direct calls. */
-    function lift(obj /*, fields...*/) {
+    function lift(obj /*, field...*/) {
       for (var i = 1; i < arguments.length; i ++)
 	obj[arguments[i]] = obj.prototype[arguments[i]].call;
+    }
+
+    /* delegate the given fields on instances of obj to the sub-object sub */
+    function delegate(obj, sub /*, field... */) {
+      function getter(f) {
+	return function() {
+	  return this[sub][f];
+	};
+      }
+      for (var i = 2; i < arguments.length; i ++) {
+	var f = arguments[i];
+	Object.defineProperty(obj.prototype, f, {
+	  get: getter(f)
+	});
+      }
     }
 
     ///////////////////////////////// Party
@@ -104,7 +118,7 @@ module.factory('modelService', [
 
     modelCache(Party, 'Party', 256);
 
-    Party.prototype.staticFields = ['name', 'orcid', 'affiliation', 'email', 'institution', 'url'];
+    Party.prototype.staticFields = ['orcid', 'affiliation', 'email', 'institution', 'url'];
 
     Party.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
@@ -125,10 +139,6 @@ module.factory('modelService', [
       for (var i = 0; i < l.length; i ++)
 	l[i].party = partyMake(l[i].party);
       return l;
-    }
-
-    function partyRes(res) {
-      return partyMake(res.data);
     }
 
     function partyMakeArray(l) {
@@ -162,7 +172,7 @@ module.factory('modelService', [
       return Party.get(Login.user.id, options);
     };
 
-    Party.prototype.save = function (data, options) {
+    Party.prototype.save = function (data) {
       var p = this;
       return router.http(router.controllers.PartyApi.update, this.id, data)
 	.then(function (res) {
@@ -250,7 +260,7 @@ module.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
 
-    Login.prototype.staticFields = Party.prototype.staticFields.concat(['access', 'superuser']);
+    Login.prototype.staticFields = Party.prototype.staticFields.concat(['superuser']);
 
     function loginPoke(l) {
       return (Login.user = Party.poke(new Login(l)));
@@ -288,7 +298,7 @@ module.factory('modelService', [
 
     modelCache(Volume, 'Volume', 8);
 
-    Volume.prototype.staticFields = ['name', 'alias', 'body', 'creation'];
+    Volume.prototype.staticFields = ['alias'];
 
     Volume.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
@@ -367,6 +377,13 @@ module.factory('modelService', [
 	});
     };
 
+    Object.defineProperty(Volume.prototype, 'type', {
+      get: function () {
+	if ('citation' in this)
+	  return this.citation ? 'study' : 'dataset';
+      }
+    });
+
     Object.defineProperty(Volume.prototype, 'route', {
       get: function () {
 	return router.volume([this.id]);
@@ -437,7 +454,6 @@ module.factory('modelService', [
 
     function Slot(container, init) {
       this.container = container;
-      this.volume = container.volume;
       if (init)
 	Model.call(this, init);
     }
@@ -452,13 +468,15 @@ module.factory('modelService', [
       Model.prototype.init.call(this, init);
       if ('container' in init)
 	this.container = c.update(init.container);
+      if ('assets' in init)
+	slotAssetMakeArray(this.container, this.assets);
     };
 
-    Object.defineProperty(Slot.prototype, 'permission', {
-      get: function () {
-	return this.volume.permission;
-      }
-    });
+    delegate(Slot, 'container',
+	'id', 'volume', 'top', 'date', 'name');
+
+    delegate(Slot, 'volume',
+	'permission');
 
     function Container(volume, init) {
       this.volume = volume;
@@ -563,7 +581,7 @@ module.factory('modelService', [
     Record.prototype = Object.create(Model.prototype);
     Record.prototype.constructor = Record;
 
-    Record.prototype.staticFields = ['category', 'measures'];
+    Record.prototype.staticFields = ['category'];
 
     Record.prototype.init = function (init) {
       var v = this.volume;
@@ -572,11 +590,8 @@ module.factory('modelService', [
 	this.volume = v.update(init.volume);
     };
 
-    Object.defineProperty(Record.prototype, 'permission', {
-      get: function () {
-	return this.volume.permission;
-      }
-    });
+    delegate(Record, 'volume',
+	'permission');
 
     function peekRecord(volume, record) {
       if (record instanceof Record)
@@ -626,6 +641,108 @@ module.factory('modelService', [
       return router.recordEdit([this.id]);
     };
 
+    ///////////////////////////////// Asset
+
+    function Asset(volume, init) {
+      this.volume = volume;
+      Model.call(this, init);
+    }
+
+    Asset.prototype = Object.create(Model.prototype);
+    Asset.prototype.constructor = Asset;
+
+    Asset.prototype.staticFields = ['name', 'duration', 'segment'];
+
+    Asset.prototype.init = function (init) {
+      var v = this.volume;
+      Model.prototype.init.call(this, init);
+      if ('revisions' in init)
+	assetMakeArray(this.revisions);
+      if ('volume' in init)
+	this.volume = v.update(init.volume);
+    };
+
+    function assetMake(volume, init) {
+      return init.asset ? 
+	new SlotAsset(new Container(volume), init) :
+	new Asset(volume, init);
+    }
+
+    function assetMakeArray(volume, l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i] = assetMake(volume, l[i]);
+      return l;
+    }
+
+    Asset.prototype.get = function (options) {
+      var a = this;
+      if ((options = checkOptions(a, options)))
+	return router.http(router.controllers.AssetApi.get, a.id, options)
+	  .then(function (res) {
+	    return a.update(res.data);
+	  });
+      else
+	return $q.successful(a);
+    };
+
+    Asset.prototype.save = function (data) {
+      var a = this;
+      return router.http(router.controllers.AssetApi.update, this.id, data)
+	.then(function (res) {
+	  return a.update(res.data);
+	});
+    };
+
+    Volume.prototype.createAsset = function (data) {
+      var v = this;
+      return router.http(router.controllers.AssetApi.upload, this.id, data)
+	.then(function (res) {
+	  return assetMake(v, res.data);
+	});
+    };
+
+    ///////////////////////////////// SlotAsset
+
+    function SlotAsset(container, init) {
+      Slot.call(this, container, init);
+    }
+
+    SlotAsset.prototype = Object.create(Slot.prototype);
+    SlotAsset.prototype.constructor = SlotAsset;
+
+    SlotAsset.prototype.staticFields = ['format', 'excerpt'].concat(Slot.prototype.staticFields);
+
+    SlotAsset.prototype.init = function (init) {
+      var a = this.asset;
+      Slot.prototype.init.call(this, init);
+      this.asset = a ? a.update(init.asset) : new Asset(init.asset);
+    };
+
+    function slotAssetMakeArray(container, l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+	l[i] = new SlotAsset(container, l[i]);
+      return l;
+    }
+
+    delegate(SlotAsset, 'asset',
+	'id', 'format', 'classification', 'name', 'duration');
+
+    SlotAsset.prototype.replace = function (data) {
+      var a = this.asset;
+      return router.http(router.controllers.AssetApi.replace, a.id, data)
+	.then(function (res) {
+	  return assetMake(a.volume, res.data);
+	});
+    };
+
+    SlotAsset.prototype.remove = function () {
+      var a = this.asset;
+      return router.http(router.controllers.AssetApi.remove, a.id)
+	.then(function (res) {
+	  return a.update(res.data);
+	});
+    };
+
     /////////////////////////////////
 
     return {
@@ -636,6 +753,8 @@ module.factory('modelService', [
       Container: Container,
       Slot: Slot,
       Record: Record,
+      Asset: Asset,
+      SlotAsset: SlotAsset,
       analytic: function () {
 	return router.http(router.controllers.SiteApi.void, {}, {cache:false});
       },
