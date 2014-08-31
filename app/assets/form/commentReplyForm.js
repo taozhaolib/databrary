@@ -67,7 +67,7 @@ module.directive('commentReplyForm', [
       form.target = function (comment) {
         if (comment) {
           form.data.container = comment.container.id;
-          form.data.segment = page.types.segmentString(comment);
+          form.data.segment = page.models.Segment.format(comment.segment);
           form.data.parent = comment.id;
           return;
         }

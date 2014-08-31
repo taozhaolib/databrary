@@ -7,18 +7,18 @@
     <div class="player-main-float" ng-if="ctrl.current[0]">
       <h1 class="player-main-info-name">
         <span class="filetype">
-          <img ng-src="{{page.types.assetIcon(ctrl.current[0])}}" hint="format-{{page.types.assetFormat(ctrl.current[0]).extension}}">
+          <img ng-src="{{ctrl.current[0].icon}}" hint="format-{{ctrl.current[0].format.extension}}">
         </span>
 
-        <span class="filename" ng-bind="page.types.assetDisplayName(ctrl.current[0])"></span>
+        <span class="filename" ng-bind="ctrl.current[0].displayName"></span>
       </h1>
     </div>
 
     <div class="player-main-info" ng-class="{playable: ctrl.current[0] && ctrl.hasDisplay(ctrl.current[0])}">
       <div ng-if="ctrl.current[0]">
         <nav class="player-main-info-actions">
-          <a ng-href="{{page.router.assetEdit(ctrl.current[0])}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
-          <a ng-href="{{page.router.assetLink(ctrl.current[0], false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
+          <a ng-href="{{ctrl.current[0].editRoute()}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
+          <a ng-href="{{ctrl.current[0].downloadRoute(false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
           <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
         </nav>
 
@@ -31,10 +31,7 @@
           </dd>
 
           <dt>File Type</dt>
-          <dd ng-bind="page.types.assetFormat(ctrl.current[0]).name"></dd>
-
-          <dt>Mime Type</dt>
-          <dd ng-bind="page.types.assetFormat(ctrl.current[0]).mimetype"></dd>
+          <dd ng-bind="ctrl.current[0].format.name"></dd>
 
           <dt ng-if="ctrl.current[0].asset.duration">Duration</dt>
           <dd ng-if="ctrl.current[0].asset.duration" ng-bind="ctrl.current[0].asset.duration | timecode"></dd>

@@ -11,11 +11,7 @@ module.controller('volumeView', [
     };
 
     $scope.viewClass = function () {
-      var cls = [];
-
-      cls.push(page.types.getVolumeType(volume));
-
-      return cls;
+      return [volume.type];
     };
 
     page.display.title = volume.name;

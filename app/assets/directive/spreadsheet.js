@@ -599,7 +599,7 @@ module.directive('spreadsheet', [
 	      };
 	      angular.forEach(volume.records, function (r, ri) {
 		if (r.category === c.id && (!(info.i in depends[ri]) || ri === editInput.value)) {
-		  editScope.options[ri] = page.types.recordName(r);
+		  editScope.options[ri] = r.displayName;
 		}
 	      });
 	      break;

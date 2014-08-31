@@ -305,7 +305,7 @@ module.provider('routerService', [
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
-    routes.assetLink = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
+    routes.assetDownload = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
     routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['id', 'segment']);
     routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
@@ -364,45 +364,9 @@ module.provider('routerService', [
 	  return $http(r);
 	};
 
-	/* Construct a (resource) action from and route. */
-	router.action = function (route, argNames, config) {
-	  var r = getRoute(route, argNames);
-	  if (config)
-	    angular.extend(r, config);
-	  return r;
-	};
-
 	router.volumeCreate = function (owner) {
 	  router.prevUrl = $location.path();
 	  return routes.volumeCreate([owner]);
-	};
-
-	router.assetThumb = function (data) {
-	  if (!type.isAsset(data)) {
-	    throw new Error('routerService.assetThumb() requires Asset as first argument');
-	  }
-
-	  return routes.assetThumb([data.container.id, type.segmentString(data), data.asset.id, data.size]);
-	};
-
-	router.assetLink = function (data, inline) {
-	  inline = data.inline || inline;
-	  if (!type.isAsset(data)) {
-	    if (!data || !data.sid || !data.id)
-	      throw new Error('routerService.assetLink() requires Asset or object.id/.sid/.segment as first argument');
-
-	    return routes.assetLink([data.sid, type.segmentJoin(data.segment), data.id, inline]);
-	  }
-
-	  return routes.assetLink([data.container.id, type.segmentString(data), data.asset.id, inline]);
-	};
-
-	router.assetEdit = function (data) {
-	  if (!type.isAsset(data)) {
-	    throw new Error('routerService.assetEdit() requires Asset as first argument');
-	  }
-
-	  return routes.assetEdit([data.asset.id]);
 	};
 
 	return router;

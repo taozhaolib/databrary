@@ -1,6 +1,6 @@
 <div class="slot-annotations" bindonce>
   <div class="slot-note-display">
-    <div class="slot-note" ng-repeat="note in notes.list" bo-html="page.types.recordName(ctrl.volume.records[note.record.id])" bo-style="notes.noteStyle(note)"></div>
+    <div class="slot-note" ng-repeat="note in notes.list" bo-html="ctrl.volume.records[note.record.id].displayName" bo-style="notes.noteStyle(note)"></div>
   </div>
 
   <div class="slot-note-head">

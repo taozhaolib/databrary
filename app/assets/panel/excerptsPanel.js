@@ -21,7 +21,7 @@ module.controller('ExcerptsPanel', [
     };
 
     $scope.getMimeGroup = function (asset) {
-      var mimetype = page.types.assetFormat(asset).mimetype,
+      var mimetype = asset.format.mimetype,
         type = mimetype.split('/')[0];
 
       return type == 'text' ? mimetype[1] : type;

@@ -58,6 +58,11 @@ module.factory('constantService', [
 	  constants.data.party[uname] = party.id;
       });
 
+      angular.forEach(constants.data.format, function (fmt) {
+	var m = fmt.mimetype;
+	fmt.type = m.slice(0, m.indexOf('/'));
+      });
+
       makePresets();
 
       Object.freeze(constants.data);

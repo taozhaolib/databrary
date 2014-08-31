@@ -7,7 +7,7 @@ module.filter('possessive', [
 
       if (angular.isString(party)) {
         replace = party + "'s";
-      } else if (!page.types.isParty(party)) {
+      } else if (!party) {
         replace = "one's";
       } else if (page.auth.user.id === party.id) {
         replace = 'my';

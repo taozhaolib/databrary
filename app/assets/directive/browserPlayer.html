@@ -3,26 +3,26 @@
     <div ng-repeat="played in [page.browser.player.played]" bindonce>
       <header>
         <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
-        <a ng-href="{{page.router.assetLink(played.object, false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
+        <a ng-href="{{played.object.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
 
         <div class="classification icon line tool" bo-class="page.constants.data.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[played.object.asset.classification]}}"></div>
 
         <h1 class="browser-player-heading">
-          <img class="icon" bo-src="page.types.assetIcon(played.object)" hint="format-{{page.types.assetFormat(played.object).extension}}">
-          <span bo-html="page.types.assetDisplayName(played.object) | format:true"></span>
+          <img class="icon" bo-src="played.object.icon" hint="format-{{played.object.format.extension}}">
+          <span bo-html="played.object.displayName | format:true"></span>
         </h1>
       </header>
 
       <div ng-switch="getMimeGroup(played.object)">
         <div ng-switch-when="image">
-          <img ng-src="{{page.router.assetLink(played.object, true)}}" style="max-width: 100%;">
+          <img ng-src="{{played.object.downloadRoute(true)}}" style="max-width: 100%;">
         </div>
 
         <div ng-switch-when="video">
           <div bo-if="!played.object.asset.duration" bo-html="'asset.untranscoded | message"></div>
 
           <video bo-if="page.display.videoSupported()" controls excerpt="played">
-            <source ng-src="{{page.router.assetLink(played.object, true)}}" type="{{page.types.assetFormat(played.object).mimetype}}">
+            <source ng-src="{{played.object.downloadRoute(true)}}" type="{{played.object.format.mimetype}}">
           </video>
 
           <div bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>

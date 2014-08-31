@@ -3,7 +3,7 @@
 module.controller('slotView', [
   '$scope', 'slot', 'pageService', function ($scope, slot, page) {
     var volume = slot.volume;
-    page.display.title = page.types.slotName(slot);
+    page.display.title = slot.displayName;
 
     // helpers
 
@@ -90,12 +90,15 @@ module.controller('slotView', [
 
       hasDisplay: function (media) {
 	var asset = getAsset(media);
-	return asset && ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	if (!asset)
+	  return asset;
+	var type = asset.asset.format.type;
+	return type === 'video' || type === 'image';
       },
 
       hasTime: function (media) {
 	var asset = getAsset(media);
-	return ['video'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	return asset && asset.asset.format.type === 'video';
       },
 
       isNowPlayable: function (media) {

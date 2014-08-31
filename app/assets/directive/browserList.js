@@ -74,10 +74,6 @@ module.directive('browserList', [
         return input.charAt(0).toUpperCase() + input.slice(1);
       };
 
-      $scope.recordIdentifier = function (record) {
-	return page.types.recordName(record);
-      };
-
       $scope.getMeasures = function (data) {
         var ident = page.constants.data.category[data.object.category].ident.concat(page.metric.description.id);
 
@@ -127,31 +123,13 @@ module.directive('browserList', [
           name = $scope.capitalize(name);
         }
 
-        var identifier = $scope.recordIdentifier(data.object);
+        var identifier = data.object.displayName;
 
         if (identifier) {
           name += ': ' + identifier;
         }
 
         return name;
-      };
-
-      //
-
-      $scope.editLink = function (data) {
-        switch (page.types.getType(data.object)) {
-          case 'volume':
-            return data.object.editRoute();
-
-          case 'record':
-            return page.router.recordEdit(data.object);
-
-          case 'slot':
-            return data.object.editRoute();
-
-          case 'asset':
-            return page.router.assetEdit(data.object);
-        }
       };
     };
 

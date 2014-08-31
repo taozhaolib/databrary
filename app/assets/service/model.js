@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('modelService', [
-  '$q', '$cacheFactory', 'routerService', 'Segment',
-  function ($q, $cacheFactory, router, Segment) {
+  '$q', '$cacheFactory', 'routerService', 'constantService', 'Segment',
+  function ($q, $cacheFactory, router, constants, Segment) {
 
     ///////////////////////////////// Model: common base class and utils
 
@@ -478,6 +478,12 @@ module.factory('modelService', [
     delegate(Slot, 'volume',
 	'permission');
 
+    Object.defineProperty(Slot.prototype, 'displayName', {
+      get: function () {
+	return constants.message(this.top ? 'materials' : 'session') + (this.name ? ': ' + this.name : '');
+      }
+    });
+
     function Container(volume, init) {
       this.volume = volume;
       Slot.call(this, this, init);
@@ -619,10 +625,6 @@ module.factory('modelService', [
 	});
     };
 
-    Record.prototype.measure = function (metric) {
-      return this.measures[metric];
-    };
-
     Record.prototype.measureSet = function (metric, value) {
       var r = this;
       return router.http(router.controllers.RecordApi.measureUpdate, this.id, metric, {datum:value})
@@ -630,6 +632,19 @@ module.factory('modelService', [
 	  return r.update(res.data);
 	});
     };
+
+    Object.defineProperty(Record.prototype, 'displayName', {
+      get: function () {
+	var cat = constants.data.category[this.category];
+	var idents = cat && cat.ident || [constants.data.metricName.ident.id];
+	var ident = [];
+	for (var i = 0; i < idents.length; i ++)
+	  if (idents[i] in this.measures)
+	    ident.push(this.measures[i]);
+
+	return ident.length ? ident.join(', ') : this.id;
+      }
+    });
 
     Object.defineProperty(Record.prototype, 'route', {
       get: function () {
@@ -660,6 +675,8 @@ module.factory('modelService', [
 	assetMakeArray(this.revisions);
       if ('volume' in init)
 	this.volume = v.update(init.volume);
+      if ('format' in init)
+	this.format = constants.data.format[this.format];
     };
 
     function assetMake(volume, init) {
@@ -707,7 +724,8 @@ module.factory('modelService', [
       Slot.call(this, container, init);
     }
 
-    SlotAsset.prototype = Object.create(Slot.prototype);
+    // We don't actually inherit from Slot, but we do use much of the functionality:
+    SlotAsset.prototype = Object.create(Model.prototype);
     SlotAsset.prototype.constructor = SlotAsset;
 
     SlotAsset.prototype.staticFields = ['format', 'excerpt'].concat(Slot.prototype.staticFields);
@@ -716,6 +734,8 @@ module.factory('modelService', [
       var a = this.asset;
       Slot.prototype.init.call(this, init);
       this.asset = a ? a.update(init.asset) : new Asset(init.asset);
+      if ('format' in init)
+	this.format = constants.data.format[this.format];
     };
 
     function slotAssetMakeArray(container, l) {
@@ -726,6 +746,18 @@ module.factory('modelService', [
 
     delegate(SlotAsset, 'asset',
 	'id', 'format', 'classification', 'name', 'duration');
+
+    Object.defineProperty(SlotAsset.prototype, 'displayName', {
+      get: function () {
+	return this.name || this.format.name;
+      }
+    });
+
+    Object.defineProperty(SlotAsset.prototype, 'icon', {
+      get: function () {
+	return '/public/images/filetype/16px/' + this.format.extension + '.png';
+      }
+    });
 
     SlotAsset.prototype.replace = function (data) {
       var a = this.asset;
@@ -741,6 +773,18 @@ module.factory('modelService', [
 	.then(function (res) {
 	  return a.update(res.data);
 	});
+    };
+
+    SlotAsset.prototype.thumbRoute = function(size) {
+      return router.assetThumb([this.container.id, Segment.format(this.segment), this.asset.id, size]);
+    };
+
+    SlotAsset.prototype.downloadRoute = function(inline) {
+      return router.assetDownload([this.container.id, Segment.format(this.segment), this.asset.id, inline]);
+    };
+
+    SlotAsset.prototype.editRoute = function() {
+      return router.assetEdit([this.asset.id]);
     };
 
     /////////////////////////////////
