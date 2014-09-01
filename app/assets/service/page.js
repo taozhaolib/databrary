@@ -46,7 +46,6 @@ module.factory('pageService', [
       '$rootScope',
       '$route',
       '$routeParams',
-      '$sanitize',
       '$sce',
       '$templateCache',
       '$timeout',
