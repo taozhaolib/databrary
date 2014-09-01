@@ -1,7 +1,8 @@
 'use strict';
 
 module.filter('escape', [
-  function () {
+  '$sce',
+  function ($sce) {
     var ent = Object.freeze({
       "&": "&amp;",
       "<": "&lt;",
@@ -11,9 +12,9 @@ module.filter('escape', [
     });
 
     return function (input) {
-      return input.replace(/[&<>"']/g, function (c) {
+      return $sce.trustAsHtml(input.replace(/[&<>"']/g, function (c) {
         return ent[c];
-      });
+      }));
     };
   }
 ]);

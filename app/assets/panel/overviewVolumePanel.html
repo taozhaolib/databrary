@@ -68,7 +68,7 @@
       <div frame id="frame-access" frame-title="{{'volume.access.title' | message}}" fold>
         <div class="row">
           <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-            <portrait tooltip tooltip-message="{{shareMessage(volumeAccess)}}"></portrait>
+            <portrait tooltip="shareMessage(volumeAccess)"></portrait>
           </div>
         </div>
       </div>

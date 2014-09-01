@@ -8,16 +8,15 @@ module.directive('tooltip', [
       tooltip.id = $attrs.tooltipId;
       tooltip.cls = $attrs.tooltipClass;
       tooltip.type = $attrs.tooltip || $attrs.tooltipType;
-      tooltip.message = $attrs.tooltipMessage;
+      tooltip.message = $scope.$eval($attrs.tooltip);
       tooltip.$target = $element;
 
-      if (tooltip.message) {
+      if (tooltip.message)
         page.tooltips.add(tooltip);
-      }
     };
 
     return {
-      restrict: 'EA',
+      restrict: 'A',
       link: link
     };
   }

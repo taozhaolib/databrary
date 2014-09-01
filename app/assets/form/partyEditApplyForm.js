@@ -55,11 +55,10 @@ module.directive('partyEditApplyForm', [
       //
 
       form.presetName = function (type, name, party) {
-        if (angular.isString(party)) {
-          return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
-        } else {
-          return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
-        }
+	return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + 
+	  (angular.isString(party) ?
+	   page.constants.message('auth.' + type + '.' + name, party) :
+	   page.$filter('possessive')('auth.' + type + '.' + name, party));
       };
 
       //

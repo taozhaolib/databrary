@@ -2,8 +2,8 @@
   <section ng-if="page.browser.player.played" class="browser-player-frame">
     <div ng-repeat="played in [page.browser.player.played]" bindonce>
       <header>
-        <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip tooltip-message="{{'player.close' | message}}"></a>
-        <a ng-href="{{played.object.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'player.download' | message}}"></a>
+        <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip="'player.close' | message"></a>
+        <a ng-href="{{played.object.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip="'player.download' | message"></a>
 
         <div class="classification icon line tool" bo-class="page.constants.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[played.object.asset.classification]}}"></div>
 
