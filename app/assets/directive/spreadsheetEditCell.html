@@ -5,5 +5,5 @@
   <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" ng-blur="unedit($event)"/>
   <input ng-switch-when="number" name="edit" type="number" ng-model="input.value" ng-blur="unedit($event)"/>
   <select ng-switch-when="select" name="edit" ng-model="input.value" ng-options="o for o in options"/>
-  <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="id as name for (id, name) in page.constants.data.consent"/>
+  <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="id as name for (id, name) in page.constants.consent"/>
 </div>

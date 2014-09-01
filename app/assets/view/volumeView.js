@@ -6,7 +6,7 @@ module.controller('volumeView', [
 
     $scope.volumeType = volume.citation ? "study" : "volume";
     $scope.volumeMessage = function (msg /*, args...*/) {
-      arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.data.messages) ? $scope.volumeType : "volume") + "." + msg;
+      arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.messages) ? $scope.volumeType : "volume") + "." + msg;
       return page.constants.message.apply(this, arguments);
     };
 

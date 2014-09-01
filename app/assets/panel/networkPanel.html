@@ -20,12 +20,12 @@
             <div ng-if="showExtended()">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                 <div class="permission-auth-heading" bo-html="'auth.site' | message:'Their'"></div>
-                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[parent.site], 'their')"></div>
+                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.permission[parent.site], 'their')"></div>
               </div>
 
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.institution || parent.member !== 0">
                 <div class="permission-auth-heading" bo-html="'auth.member' | message:'their'"></div>
-                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[parent.member], 'their')"></div>
+                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.permission[parent.member], 'their')"></div>
               </div>
 
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.institution && parent.member === 0">
@@ -71,12 +71,12 @@
             <div ng-if="showExtended()">
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                 <div class="permission-auth-heading" bo-html="'auth.site' | possessive:party"></div>
-                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.data.permission[child.site], party)"></div>
+                <div class="permission-auth-site" ng-bind-html="presetName('site', page.constants.permission[child.site], party)"></div>
               </div>
 
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5">
                 <div class="permission-auth-heading" bo-html="'auth.member' | possessive:party"></div>
-                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.data.permission[child.member], party)"></div>
+                <div class="permission-auth-member" ng-bind-html="presetName('member', page.constants.permission[child.member], party)"></div>
               </div>
 
               <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5">

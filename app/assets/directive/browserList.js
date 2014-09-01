@@ -53,7 +53,7 @@ module.directive('browserList', [
       //
 
       $scope.formatSessionCategory = function (data, categoryID, records) {
-        var category = page.constants.data.category[categoryID];
+        var category = page.constants.category[categoryID];
 
         if (!category) {
           return 'Uncategorized';
@@ -75,13 +75,13 @@ module.directive('browserList', [
       };
 
       $scope.getMeasures = function (data) {
-        var ident = page.constants.data.category[data.object.category].ident.concat(page.metric.description.id);
+        var ident = page.constants.category[data.object.category].ident.concat(page.metric.description.id);
 
         var measures = [];
         angular.forEach(data.object.measures, function (datum, metric) {
           if (ident.indexOf(parseInt(metric)) === -1)
             measures.push({
-              metric: page.constants.data.metric[metric],
+              metric: page.constants.metric[metric],
               datum: datum
             });
         });
@@ -114,11 +114,11 @@ module.directive('browserList', [
       };
 
       $scope.nameRecord = function (data) {
-        var category = page.constants.data.category[data.object.category],
+        var category = page.constants.category[data.object.category],
           name = category.name;
 
         if (data.object.id === 0) {
-          name = page.constants.data.messages['not.' + name] || 'No ' + name;
+          name = page.constants.messages['not.' + name] || 'No ' + name;
         } else {
           name = $scope.capitalize(name);
         }

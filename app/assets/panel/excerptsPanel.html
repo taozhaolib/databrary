@@ -7,7 +7,7 @@
             <a href="" ng-click="jump(current)" class="icon line jump tool" target="_self" tooltip tooltip-message="{{'excerpts.jump' | message}}"></a>
             <a ng-href="{{current.downloadLink(false)}}" class="icon line download tool" target="_self" tooltip tooltip-message="{{'excerpts.download' | message}}"></a>
 
-            <div class="classification icon line tool" bo-class="page.constants.data.classification[current.excerpt || current.asset.classification].toLowerCase()" hint="classification-{{page.constants.data.classification[current.excerpt || current.asset.classification]}}"></div>
+            <div class="classification icon line tool" bo-class="page.constants.classification[current.excerpt || current.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
 
             <h1 class="panel-excerpts-player-heading">
               <img class="icon" bo-src="current.icon" hint="format-{{current.format.extension}}">

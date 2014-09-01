@@ -5,7 +5,7 @@ module.controller('helpFormatsView', [
     page.display.title = page.constants.message('page.title.help.formats');
 
     $scope.groups = {};
-    angular.forEach(page.constants.data.format, function (format) {
+    angular.forEach(page.constants.format, function (format) {
       var general = format.mimetype.split('/').shift();
 
       if (!$scope.groups.hasOwnProperty(general)) {

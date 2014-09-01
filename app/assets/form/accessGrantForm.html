@@ -2,7 +2,7 @@
   <messages form="accessGrantForm"></messages>
 
   <fieldset class="clean radio-set" ng-disabled="!accessGrantForm.canChange()">
-    <div ng-repeat="(val, name) in page.constants.data.permission" ng-if="canGrantAccess(val)">
+    <div ng-repeat="(val, name) in page.constants.permission" ng-if="canGrantAccess(val)">
       <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
       <label bo-html="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
     </div>

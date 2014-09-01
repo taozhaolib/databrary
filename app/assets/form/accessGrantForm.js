@@ -13,9 +13,9 @@ module.directive('accessGrantForm', [
       };
 
       $scope.canGrantAccess = function (p) {
-        return  p == page.constants.data.permissionName.READ ||
-          p == page.constants.data.permissionName.EDIT ||
-          p == page.constants.data.permissionName.ADMIN;
+        return  p == page.constants.permissionName.READ ||
+          p == page.constants.permissionName.EDIT ||
+          p == page.constants.permissionName.ADMIN;
       };
 
       form.data.extend = form.data.children !== 0;

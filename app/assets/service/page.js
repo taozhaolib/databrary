@@ -20,11 +20,11 @@ module.factory('pageService', [
 
     //
 
-    page.permission = page.constants.data.permissionName;
-    page.classification = page.constants.data.classificationName;
-    page.consent = page.constants.data.consentName;
-    page.category = page.constants.data.categoryName;
-    page.metric = page.constants.data.metricName;
+    page.permission = page.constants.permissionName;
+    page.classification = page.constants.classificationName;
+    page.consent = page.constants.consentName;
+    page.category = page.constants.categoryName;
+    page.metric = page.constants.metricName;
 
     //
 

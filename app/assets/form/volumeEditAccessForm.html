@@ -6,7 +6,7 @@
 
     <div class="col message message-yellow message-content" bo-if="!page.auth.hasAuth(page.permission.EDIT)" bo-html="'access.global.restricted' | message"></div>
 
-    <div ng-repeat="(val, perms) in page.constants.data.accessGlobal">
+    <div ng-repeat="(val, perms) in page.constants.accessGlobal">
       <input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
       <label bo-html="'access.global.'+perms.join('.') | message" class="option"></label>
     </div>

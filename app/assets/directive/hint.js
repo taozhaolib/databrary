@@ -4,7 +4,7 @@ module.directive('hint', [
   'pageService', function (page) {
     var hints = {};
 
-    angular.forEach(page.constants.data.permission, function (a, i) {
+    angular.forEach(page.constants.permission, function (a, i) {
       hints['permission-' + a.toLowerCase()] = {
         class: 'hint-permission-' + a.toLowerCase(),
         message: page.constants.message('access.' + a, 'You'),
@@ -18,21 +18,21 @@ module.directive('hint', [
       }
     });
 
-    angular.forEach(page.constants.data.consent, function (a) {
+    angular.forEach(page.constants.consent, function (a) {
       hints['consent-' + a.toLowerCase()] = {
         class: 'hint-consent-' + a.toLowerCase(),
         message: page.constants.message('consent.' + a),
       };
     });
 
-    angular.forEach(page.constants.data.classification, function (a) {
+    angular.forEach(page.constants.classification, function (a) {
       hints['classification-' + a.toLowerCase()] = {
         class: 'hint-classification-' + a.toLowerCase(),
         message: page.constants.message('classification.' + a),
       };
     });
 
-    angular.forEach(page.constants.data.format, function (a) {
+    angular.forEach(page.constants.format, function (a) {
       hints['format-' + a.extension.toLowerCase()] = {
         class: 'format-' + a.extension.toLowerCase(),
         message: a.name,

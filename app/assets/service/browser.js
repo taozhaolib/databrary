@@ -62,7 +62,7 @@ module.factory('browserService', [
         volume.categories.map(function (category) {
           return angular.extend({
             id: category,
-            name: constants.data.category[category].name,
+            name: constants.category[category].name,
           }, DEFAULT_CATEGORY);
         }));
 

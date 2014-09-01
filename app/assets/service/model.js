@@ -630,8 +630,8 @@ module.factory('modelService', [
 
     Object.defineProperty(Record.prototype, 'displayName', {
       get: function () {
-	var cat = constants.data.category[this.category];
-	var idents = cat && cat.ident || [constants.data.metricName.ident.id];
+	var cat = constants.category[this.category];
+	var idents = cat && cat.ident || [constants.metricName.ident.id];
 	var ident = [];
 	for (var i = 0; i < idents.length; i ++)
 	  if (idents[i] in this.measures)
@@ -669,7 +669,7 @@ module.factory('modelService', [
       if ('volume' in init)
 	this.volume = v.update(this.volume);
       if ('format' in init)
-	this.format = constants.data.format[this.format];
+	this.format = constants.format[this.format];
       if ('revisions' in init)
 	assetMakeArray(v, this.revisions);
     };
@@ -730,7 +730,7 @@ module.factory('modelService', [
       Slot.prototype.init.call(this, init);
       this.asset = a ? a.update(init.asset) : new Asset(init.asset);
       if ('format' in init)
-	this.format = constants.data.format[this.format];
+	this.format = constants.format[this.format];
     };
 
     function slotAssetMakeArray(container, l) {

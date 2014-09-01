@@ -25,17 +25,17 @@ module.directive('authGrantForm', [
       };
 
       $scope.canGrantSite = function (p) {
-        return  p <= page.constants.data.permissionName.PUBLIC ||
-          p == page.constants.data.permissionName.READ ||
-          p > page.constants.data.permissionName.READ &&
+        return  p <= page.constants.permissionName.PUBLIC ||
+          p == page.constants.permissionName.READ ||
+          p > page.constants.permissionName.READ &&
           page.auth.hasAccess(p + 1);
       };
 
       $scope.canGrantMember = function (p) {
-        return  p == page.constants.data.permissionName.NONE ||
-          p == page.constants.data.permissionName.READ ||
-          p == page.constants.data.permissionName.EDIT ||
-          p == page.constants.data.permissionName.ADMIN;
+        return  p == page.constants.permissionName.NONE ||
+          p == page.constants.permissionName.READ ||
+          p == page.constants.permissionName.EDIT ||
+          p == page.constants.permissionName.ADMIN;
       };
 
       //

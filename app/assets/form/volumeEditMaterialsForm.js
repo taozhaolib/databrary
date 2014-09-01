@@ -80,11 +80,11 @@ module.directive('volumeEditMaterialsForm', [
 
       form.updateExcerptChoice = function (sub, first) {
         if (first && sub.asset.asset) {
-          sub.asset.excerpt = page.constants.data.classification[sub.asset.excerpt];
+          sub.asset.excerpt = page.constants.classification[sub.asset.excerpt];
           return;
         }
         else if (sub.excerptOn) {
-          sub.asset.excerpt = page.constants.data.classification[0];
+          sub.asset.excerpt = page.constants.classification[0];
         }
         else {
           sub.asset.excerpt = "";
@@ -95,8 +95,8 @@ module.directive('volumeEditMaterialsForm', [
         var f = function (x) {
           return page.classification[x] > page.classification[cName];
         }; //string compare. if we get more than 10 must use parseInt
-        var l = page.$filter('filter')(page.constants.data.classification, f);
-        l.unshift(page.constants.data.classification[0]);
+        var l = page.$filter('filter')(page.constants.classification, f);
+        l.unshift(page.constants.classification[0]);
         return l;
       };
 

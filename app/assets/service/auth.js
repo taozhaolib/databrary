@@ -58,7 +58,7 @@ module.factory('authService', [
 
     var parseUserAuth = function (object) {
       if (auth.user && auth.user.superuser) {
-        return constants.data.permissionName.SUPER;
+        return constants.permissionName.SUPER;
       }
 
       if (angular.isObject(object) && 'permission' in object) {
@@ -108,7 +108,7 @@ module.factory('authService', [
     //
 
     auth.isLoggedIn = function () {
-      return !!(auth.user && auth.user.id != constants.data.party.NOBODY);
+      return !!(auth.user && auth.user.id != constants.party.NOBODY);
     };
 
     auth.hasToken = function () {
@@ -128,7 +128,7 @@ module.factory('authService', [
     };
 
     auth.isAuthorized = function () {
-      return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
+      return auth.isLoggedIn() && auth.hasAuth(constants.permissionName.PUBLIC);
     };
 
     //

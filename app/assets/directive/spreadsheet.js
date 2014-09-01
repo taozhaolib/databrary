@@ -60,7 +60,7 @@ module.directive('spreadsheet', [
     Object.freeze(pseudoMetrics);
 
     function getMetric(m) {
-      return pseudoMetrics[m] || page.constants.data.metric[m];
+      return pseudoMetrics[m] || page.constants.metric[m];
     }
 
     var controller = [
@@ -178,7 +178,7 @@ module.directive('spreadsheet', [
 	function populateCols() {
 	  metricCols = [];
 	  $scope.recordCols = recordCols = Object.keys(records).sort(byNumber).map(function (c) {
-	    var category = page.constants.data.category[c];
+	    var category = page.constants.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
 	      return m !== 'id' && !getMetric(m).long;
@@ -237,8 +237,8 @@ module.directive('spreadsheet', [
 	  else if (m === 'age')
 	    v = page.display.formatAge(v);
 	  else if (m === 'consent') {
-	    if (v in page.constants.data.consent) {
-	      var cn = page.constants.data.consent[v].toLowerCase();
+	    if (v in page.constants.consent) {
+	      var cn = page.constants.consent[v].toLowerCase();
 	      c.className = cn + ' consent icon hint-consent-' + cn;
 	      v = '';
 	    }
@@ -421,7 +421,7 @@ module.directive('spreadsheet', [
 	      rcm[n][i] = v;
 	    });
 	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
-	    var a = page.constants.data.metric[m].assumed;
+	    var a = page.constants.metric[m].assumed;
 	    for (var li = 0; li < l.length; li ++)
 	      generateText(l[li], m, v, a);
 	    cell.classList.remove('saving');
@@ -494,7 +494,7 @@ module.directive('spreadsheet', [
 	    value = undefined;
 	  else switch (type) {
 	    case 'record':
-	      var c = 'c' in info ? page.constants.data.category[info.c] : metricCols[info.m].category;
+	      var c = 'c' in info ? page.constants.category[info.c] : metricCols[info.m].category;
 	      if (value === 'new')
 		addRecord(cell, info.i, c);
 	      else if (value === 'remove') {
@@ -589,7 +589,7 @@ module.directive('spreadsheet', [
 	      /* falls through */
 	    case 'add':
 	      if (c === undefined) {
-		c = page.constants.data.category[info.c];
+		c = page.constants.category[info.c];
 		editInput.value = 'remove';
 	      }
 	      editScope.type = 'record';
@@ -606,7 +606,7 @@ module.directive('spreadsheet', [
 	    case 'metric':
 	      editScope.type = 'metric';
 	      editInput.value = undefined;
-	      editScope.options = page.constants.data.metrics;
+	      editScope.options = page.constants.metrics;
 	      break;
 	    default:
 	      return;

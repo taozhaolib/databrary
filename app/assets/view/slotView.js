@@ -132,7 +132,7 @@ module.controller('slotView', [
       angular.forEach(volume.containers[slot.container.id].records, function (record) {
 	if (!(volume.records[record.id].category in ctrl.records)) {
 	  ctrl.records[volume.records[record.id].category] = [];
-	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.data.category[volume.records[record.id].category].name;
+	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.category[volume.records[record.id].category].name;
 	}
 
 	ctrl.records[volume.records[record.id].category].push(record);

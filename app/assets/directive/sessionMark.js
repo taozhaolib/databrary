@@ -7,7 +7,7 @@ module.directive('sessionMark', [
       pilot: 'red',
     };
     var link = function ($scope, $el) {
-      var cat = page.constants.data.category[$scope.cat.id];
+      var cat = page.constants.category[$scope.cat.id];
       var type = types[cat.name];
 
       if (!type)
