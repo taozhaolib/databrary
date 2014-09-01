@@ -58,7 +58,7 @@ module.factory('Segment', [
 
     Segment.format = function (seg) {
       if (seg === undefined)
-	return undefined; // '-'
+	return '-';
       if (Array.isArray(seg))
 	return seg[0] + ',' + seg[1];
       if (seg === null)

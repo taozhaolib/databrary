@@ -64,6 +64,7 @@ object SiteApi extends SiteController {
     , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
     , ('locked, json.JsBoolean(Site.locked))
+    , ('url, json.JsString(site.Site.url))
     , ('version, json.JsString(site.Site.version))
     ).js
 

@@ -11,7 +11,6 @@ module.directive('volumeEditOverviewForm', [
           name: '',
         }
       ];
-      var backup = {};
 
       //
 

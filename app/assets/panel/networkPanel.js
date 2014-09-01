@@ -52,30 +52,7 @@ module.controller('NetworkPanel', [
 
     //
 
-    var isAdmin = function () {
-      return page.auth.hasAccess(page.permission.ADMIN, $scope.party);
-    };
-
-    $scope.isForeign = function () {
-      if (!page.auth.user) return true;
-      return $scope.party.id != page.auth.user.id;
-    };
-
-    $scope.showExtended = function () {
-      return isAdmin();
-    };
-
-    //
-
-    $scope.presetName = function (type, name, party) {
-      if (angular.isString(party)) {
-        return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.constants.message('auth.' + type + '.' + name, party);
-      } else {
-        return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + page.$filter('possessive')('auth.' + type + '.' + name, party);
-      }
-    };
-
-    //
+    $scope.isAdmin = page.auth.hasAccess(page.permission.ADMIN, $scope.party);
 
     var userExists = function (list) {
       if (!page.auth.user) return false;
@@ -88,16 +65,11 @@ module.controller('NetworkPanel', [
         });
     };
 
-    $scope.canGrant = function () {
-      return !($scope.party.institution || userExists($scope.party.parents));
-    };
-
-    $scope.canApply = function () {
-      return !userExists($scope.party.children);
-    };
+    $scope.canGrant = !($scope.party.institution || userExists($scope.party.parents));
+    $scope.canApply = !userExists($scope.party.children);
 
     $scope.grant = function () {
-      page.$location.url(page.auth.user.editRoute('grant'));
+      page.$location.url(page.models.Login.user.editRoute('grant'));
       var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form, $thatScope) {
         remove();
 
@@ -114,7 +86,7 @@ module.controller('NetworkPanel', [
     };
 
     $scope.apply = function () {
-      page.$location.url(page.auth.user.editRoute('apply'));
+      page.$location.url(page.models.Login.user.editRoute('apply'));
       var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form, $thatScope) {
         remove();
 

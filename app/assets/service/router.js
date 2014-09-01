@@ -318,10 +318,8 @@ module.provider('routerService', [
     });
 
     this.$get = [
-      '$location',
-      '$http',
-      'typeService',
-      function ($location, $http, type) {
+      '$location', '$http', 'constantService',
+      function ($location, $http, constants) {
 	var router = {
 	  controllers: controllers,
 	  prevUrl: '/',
@@ -362,6 +360,10 @@ module.provider('routerService', [
 	      r.headers['Content-Type'] = undefined;
 	  }
 	  return $http(r);
+	};
+
+	router.permalink = function (url) {
+	  return constants.url + url;
 	};
 
 	router.volumeCreate = function (owner) {

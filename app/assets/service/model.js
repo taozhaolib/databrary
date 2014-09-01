@@ -48,7 +48,7 @@ module.factory('modelService', [
      * returns the missing options, or null if nothing is missing. */
     function checkOptions(obj, options) {
       var opts = {};
-      var need = null;
+      var need = obj ? null : opts;
       if (Array.isArray(options)) {
 	for (var i = 0; i < options.length; i ++)
 	  if (!obj || !(options[i] in obj)) {
@@ -56,7 +56,9 @@ module.factory('modelService', [
 	    need = opts;
 	  }
       }
-      else if (options && obj)
+      else if (!obj)
+	return options || opts;
+      else if (options)
 	angular.forEach(options, function (v, o) {
 	  if (v || !(o in obj)) {
 	    opts[o] = v;
@@ -95,18 +97,27 @@ module.factory('modelService', [
 	obj[arguments[i]] = obj.prototype[arguments[i]].call;
     }
 
-    /* delegate the given fields on instances of obj to the sub-object sub */
+    /* delegate the given (missing) fields on instances of obj to the sub-object sub,
+     * but allow assignments to work directly as usual. */
     function delegate(obj, sub /*, field... */) {
-      function getter(f) {
-	return function() {
-	  return this[sub][f];
+      function descr(f) {
+	return {
+	  get: function () {
+	    return this[sub].hasOwnProperty(f) ? this[sub][f] : undefined;
+	  },
+	  set: function (v) {
+	    Object.defineProperty(this, f, {
+	      configurable: true,
+	      enumerable: true,
+	      writable: true,
+	      value: v
+	    });
+	  }
 	};
       }
       for (var i = 2; i < arguments.length; i ++) {
 	var f = arguments[i];
-	Object.defineProperty(obj.prototype, f, {
-	  get: getter(f)
-	});
+	Object.defineProperty(obj.prototype, f, descr(f));
       }
     }
 
@@ -131,7 +142,7 @@ module.factory('modelService', [
     };
 
     function partyMake(init) {
-      var p = Party.peek(init.id);
+      var p = init.id === Login.user.id && Login.user || Party.peek(init.id);
       return p ? p.update(init) : Party.poke(new Party(init));
     }
 
@@ -149,7 +160,7 @@ module.factory('modelService', [
 
     function partyGet(id, p, options) {
       if ((options = checkOptions(p, options)))
-	return router.http(id === Login.user.id ? // may both be undefined
+	return router.http(id == Login.user.id ? // may both be undefined (id may be string)
 	    router.controllers.PartyApi.profile :
 	    router.controllers.PartyApi.get,
 	  id, options)
@@ -190,6 +201,12 @@ module.factory('modelService', [
     Object.defineProperty(Party.prototype, 'route', {
       get: function () {
 	return router.party([this.id]);
+      }
+    });
+
+    Object.defineProperty(Party.prototype, 'lastName', {
+      get: function () {
+	return this.name.substr(this.name.lastIndexOf(' ')+1);
       }
     });
 
@@ -728,7 +745,7 @@ module.factory('modelService', [
     SlotAsset.prototype.init = function (init) {
       var a = this.asset;
       Slot.prototype.init.call(this, init);
-      this.asset = a ? a.update(init.asset) : new Asset(init.asset);
+      this.asset = a ? a.update(init.asset) : new Asset(this.volume, init.asset);
       if ('format' in init)
 	this.format = constants.format[this.format];
     };
