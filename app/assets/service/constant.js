@@ -67,9 +67,9 @@ module.factory('constantService', [
       }
 
       for (var i = 1, length = arguments.length; i < length; i++)
-        msg = msg.replace('{' + (i - 1) + '}', $sce.getTrustedHtml(arguments[i]), 'g');
+        msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
 
-      return $sce.trustAsHtml(msg);
+      return msg;
     };
 
     // TODO: deepFreeze
