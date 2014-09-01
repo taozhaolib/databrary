@@ -818,7 +818,29 @@ module.factory('modelService', [
     };
 
     ///////////////////////////////// Tag
+    
+    function Tag(init) {
+      Model.call(this, init);
+    }
 
+    Tag.prototype = Object.create(Model.prototype);
+    Tag.prototype.constructor = Tag;
+
+    Tag.prototype.staticFields = ['vote'];
+
+    Tag.search = function (query) {
+      return router.http(router.controller.TagApi.search, query);
+    };
+
+    Slot.prototype.setTag = function (tag, vote) {
+      var s = this;
+      return router.http(router.controller.TagApi.update, tag, this.container.id, Segment.format(this.segment), {vote:vote ? vote>0 : undefined})
+	.finally(function () {
+	  s.clear("tags");
+	}).then(function (res) {
+	  return new Tag(res.data);
+	});
+    };
 
     /////////////////////////////////
 
@@ -833,6 +855,7 @@ module.factory('modelService', [
       Asset: Asset,
       SlotAsset: SlotAsset,
       Comment: Comment,
+      Tag: Tag,
 
       cite: function (url) {
 	return router.http(router.controllers.SiteApi.cite, url);

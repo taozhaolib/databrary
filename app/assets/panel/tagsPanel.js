@@ -23,25 +23,18 @@ module.controller('TagsPanel', [
     //
 
     $scope.tags = [];
-    $scope.target = {
-      container: null,
-      segment: null
-    };
+    $scope.target = undefined;
 
     $scope.refreshPanel = function () {
       switch (page.$route.current.$$route.controller) {
         case 'volumeView':
           $scope.prepareTags($scope.volume.tags);
-          $scope.target.container = $scope.volume.top.id;
-          $scope.target.segment = ',';
-          $scope.enabled = true;
-
+          $scope.target = $scope.volume.top;
           $scope.enabled = $scope.tags.length > 0 || page.auth.isLoggedIn();
           break;
 
         case 'partyView':
           $scope.prepareTags($scope.party.tags);
-
           $scope.enabled = $scope.tags.length > 0;
           break;
       }
@@ -90,14 +83,7 @@ module.controller('TagsPanel', [
     //
 
     $scope.vote = function (tag, vote) {
-      var tagModel = new page.models.tag({id: tag.id});
-
-      tagModel.$save({
-        id: tag.id,
-        vote: vote === -1 ? 'false' : vote === 1 ? 'true' : '',
-        container: $scope.target.container,
-        segment: $scope.target.segment
-      }, function (newTag) {
+      $scope.target.setTag(tag.id, vote).then(function (newTag) {
         if (newTag.weight === 0 && !newTag.vote) {
           $scope.tags.splice($scope.tags.indexOf(tag), 1);
         }
@@ -133,24 +119,17 @@ module.controller('TagsPanel', [
 
       emptyAuto();
 
-      var tagModel = new page.models.tag({id: form.newNameVal});
-      var data = {
-        id: form.newNameVal,
-        vote: 'true',
-        container: $scope.target.container,
-        segment: $scope.target.segment
-      };
-
+      var tag = form.newNameVal;
       form.newNameVal = '';
 
-      tagModel.$save(data, function () {
-        createMessage(page.constants.message('tags.new.success', data.id));
+      $scope.target.setTag(tag, true).then(function () {
+        createMessage(page.constants.message('tags.new.success', tag));
         emptyAuto();
 
         $scope.retrieveTags();
       }, function (res) {
         $scope.messages.addError({
-          body: page.constants.message('tags.new.error', data.id),
+          body: page.constants.message('tags.new.error', tag),
           report: res,
         });
 
@@ -228,16 +207,19 @@ module.controller('TagsPanel', [
     $scope.autoList = [];
     $scope.autoSelect = undefined;
 
+    var updating = false;
     var updateAuto = function (form) {
-      page.router.http(page.router.controllers.TagApi.search,
-	  form.newNameVal)
-	.success(function (data) {
+      if (updating)
+	return;
+      updating = true;
+      page.models.Tag.search(form.newNameVal)
+	.then(function (data) {
           emptyAuto();
 
           if (form.newNameVal) {
             $scope.autoList = data;
           }
-        }).error(function (errors, status) {
+        }, function (errors, status) {
           $scope.messages.addError({
             body: page.constants.message('tags.auto.error'),
             errors: errors,
@@ -245,7 +227,9 @@ module.controller('TagsPanel', [
           });
 
           emptyAuto();
-        });
+        }).finally(function () {
+	  updating = false;
+	});
     };
 
     var emptyAuto = function () {
