@@ -5,7 +5,7 @@
         <div class="panel-overview-volume-header-fill"></div>
         <div ng-if="page.auth.hasAccess(page.permission.ADMIN, volume) && volume.alias" class="panel-alias" bo-text="volume.alias"></div>
         <div class="panel-overview-volume-type">
-          <span class="icon" bo-class="volume.type" hint="object-{{volume.type}}"></span>&nbsp;<span bo-html="volume.type | message"></span>
+          <span class="icon" bo-class="volume.type" hint="object-{{volume.type}}"></span>&nbsp;<span bo-text="volume.type | message"></span>
         </div>
         <h1 class="panel-title smaller" ng-bind-html="volume.name | format:true"></h1>
       </hgroup>
@@ -84,7 +84,7 @@
         <div class="row">
           <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
             <div bo-if="hasProps(volume, 'consumers')">
-              <div bo-html="'volume.reuse.provides' | message"></div>
+              <div bo-text="'volume.reuse.provides' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.consumers">
@@ -95,7 +95,7 @@
             </div>
 
             <div bo-if="hasProps(volume, 'providers')">
-              <div bo-html="'volume.reuse.consumes' | message"></div>
+              <div bo-text="'volume.reuse.consumes' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.providers">

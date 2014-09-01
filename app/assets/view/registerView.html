@@ -42,7 +42,7 @@
           </wizard-step>
 
           <wizard-step id="register-email">
-            <p ng-bind-html="'register.sent.instructions' | message:'<strong>'+registerForm.data.email+'</strong>'"></p>
+            <p ng-bind="'register.sent.instructions' | message:'<strong>'+registerForm.data.email+'</strong>'"></p>
           </wizard-step>
 
           <wizard-step id="register-password">
@@ -71,7 +71,7 @@
             </div>
 
             <div ng-show="ifInfo()">
-              <div ng-bind-html="'auth.info.prompt' | message"></div>
+              <div ng-bind="'auth.info.prompt' | message"></div>
 
               <form name="infoForm" novalidate>
                 <messages form="infoForm"></messages>

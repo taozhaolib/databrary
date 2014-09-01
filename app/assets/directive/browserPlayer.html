@@ -19,13 +19,13 @@
         </div>
 
         <div ng-switch-when="video">
-          <div bo-if="!played.object.asset.duration" bo-html="'asset.untranscoded | message"></div>
+          <div bo-if="!played.object.asset.duration" bo-text="'asset.untranscoded | message"></div>
 
           <video bo-if="page.display.videoSupported()" controls excerpt="played">
             <source ng-src="{{played.object.downloadRoute(true)}}" type="{{played.object.format.mimetype}}">
           </video>
 
-          <div bo-if="!page.display.videoSupported()" bo-html="'video.unsupported' | message"></div>
+          <div bo-if="!page.display.videoSupported()" bo-text="'video.unsupported' | message"></div>
         </div>
 
         <div ng-switch-default></div>

@@ -2,13 +2,13 @@
   <div class="wrap">
     <div class="row">
       <hgroup class="col" bo-if="!volume">
-        <h1 class="view-context smaller" bo-html="'create' | message"></h1>
+        <h1 class="view-context smaller" bo-text="'create' | message"></h1>
 
-        <h2 class="view-title smaller" bo-html="'volume.edit.title.sub' | message"></h2>
+        <h2 class="view-title smaller" bo-text="'volume.edit.title.sub' | message"></h2>
       </hgroup>
 
       <hgroup class="col" bo-if="volume">
-        <h1 class="view-context smaller" bo-html="'edit' | message"></h1>
+        <h1 class="view-context smaller" bo-text="'edit' | message"></h1>
 
         <h2 class="view-title smaller" ng-bind="volume.name"></h2>
       </hgroup>

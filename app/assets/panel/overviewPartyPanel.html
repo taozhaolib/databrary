@@ -9,16 +9,16 @@
         <div frame id="frame-contact" frame-title="{{'party.contact.title' | message}}" fold>
           <div>
             <dl class="flat">
-              <dt bo-if="party.affiliation" bo-html="'affiliation' | message"/>
+              <dt bo-if="party.affiliation" bo-text="'affiliation' | message"/>
               <dd bo-if="party.affiliation" bo-text="party.affiliation"></dd>
 
-              <dt bo-if="party.email" bo-html="'email' | message"/>
+              <dt bo-if="party.email" bo-text="'email' | message"/>
               <dd bo-if="party.email"><a bo-href="'mailto:'+party.email" bo-text="party.email"></a></dd>
 
-              <dt bo-if="party.orcid" bo-html="'orcid' | message"/>
+              <dt bo-if="party.orcid" bo-text="'orcid' | message"/>
               <dd bo-if="party.orcid"><a bo-href="'http://orcid.org/' + party.orcid" bo-text="party.orcid"></a></dd>
 
-              <dt bo-if="party.url" bo-html="'party.view.url' | message"/>
+              <dt bo-if="party.url" bo-text="'party.view.url' | message"/>
               <dd bo-if="party.url"><a bo-href="party.url" bo-text="party.url"></a></dd>
             </dl>
           </div>

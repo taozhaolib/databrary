@@ -2,20 +2,20 @@
   <messages form="fundingGrantForm"></messages>
 
   <fieldset class="clean">
-    <label bo-html="'funding.awards' | message"></label>
+    <label bo-text="'funding.awards' | message"></label>
 
     <div ng-repeat="award in fundingGrantForm.awards">
       <validator form="fundingGrantForm" name="funding.awards[{{$index}}]">
         <input type="text" name="funding.awards[{{$index}}]" ng-model="award.val" placeholder="{{'funding.awards.placeholder' | message}}">
-        <button ng-click="fundingGrantForm.removeAward(award)" bo-html="'remove' | message" class="red mini pull"></button>
+        <button ng-click="fundingGrantForm.removeAward(award)" bo-text="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
-    <button ng-click="fundingGrantForm.addAward()" bo-html="'funding.awards.add' | message" class="orange mini add_f2"></button>
+    <button ng-click="fundingGrantForm.addAward()" bo-text="'funding.awards.add' | message" class="orange mini add_f2"></button>
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="fundingGrantForm.save()" class="green" bo-html="'save' | message" ng-disabled="!fundingGrantForm.$dirty"></button>
-    <button ng-click="fundingGrantForm.reset()" class="yellow" bo-html="'revert' | message" ng-disabled="!fundingGrantForm.$dirty"></button>
-    <button ng-click="fundingGrantForm.remove()" class="red" bo-html="'access.remove' | message"></button>
+    <button ng-click="fundingGrantForm.save()" class="green" bo-text="'save' | message" ng-disabled="!fundingGrantForm.$dirty"></button>
+    <button ng-click="fundingGrantForm.reset()" class="yellow" bo-text="'revert' | message" ng-disabled="!fundingGrantForm.$dirty"></button>
+    <button ng-click="fundingGrantForm.remove()" class="red" bo-text="'access.remove' | message"></button>
   </fieldset>
 </form>
