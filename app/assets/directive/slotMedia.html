@@ -4,10 +4,10 @@
   </div>
 
   <div bo-switch-when="video">
-    <video ng-if="page.display.videoSupported() && ctrl.hasPosition(media)">
+    <video ng-if="page.display.videoSupported && ctrl.hasPosition(media)">
       <source bo-src="media.asset.downloadRoute(true)" bo-attr bo-attr-type="media.asset.format.mimetype">
     </video>
-    <video ng-if="page.display.videoSupported() && !ctrl.hasPosition(media)" controls>
+    <video ng-if="page.display.videoSupported && !ctrl.hasPosition(media)" controls>
       <source bo-src="media.asset.downloadRoute(true)" bo-attr bo-attr-type="media.asset.format.mimetype">
     </video>
   </div>

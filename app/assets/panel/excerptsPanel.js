@@ -20,25 +20,18 @@ module.controller('ExcerptsPanel', [
       $scope.current = asset;
     };
 
-    $scope.getMimeGroup = function (asset) {
-      var mimetype = asset.format.mimetype,
-        type = mimetype.split('/')[0];
-
-      return type == 'text' ? mimetype[1] : type;
-    };
-
     $scope.hasThumbnail = function (asset) {
-      return $scope.getMimeGroup(asset) == 'image' || $scope.getMimeGroup(asset) == 'video';
+      return asset.format.type === 'image' || asset.format.type === 'video';
     };
 
     $scope.showThumbnail = function (asset) {
-      return $scope.getMimeGroup(asset) == 'image' || asset.asset.duration;
+      return asset.format.type === 'image' || asset.asset.duration;
     };
 
     $scope.listClass = function (excerpt) {
       var cls = [];
 
-      if ($scope.getMimeGroup(excerpt) == 'video') {
+      if (excerpt.format.type === 'video') {
         cls.push('video');
       }
 

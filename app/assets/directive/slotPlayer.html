@@ -9,7 +9,7 @@
           <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
         </nav>
 
-        <div class="player-main-info-support" ng-if="!page.display.videoSupported()" ng-bind="'video.unsupported' | message"></div>
+        <div class="player-main-info-support" ng-if="!page.display.videoSupported" ng-bind="'video.unsupported' | message"></div>
 
         <dl class="player-main-info-list cf">
           <dt>Classification</dt>
