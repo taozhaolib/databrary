@@ -3,11 +3,12 @@
 module.directive('excerpt', [
   'pageService', function (page) {
     var link = function ($scope, $el, $attr) {
-      var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
+      var obj = $scope[$attr.excerpt].object || $scope[$attr.excerpt];
 
-      $scope.srcRoute = obj.downloadRoute();
+      var context = obj.inContext();
+      $scope.srcRoute = context.downloadRoute();
 
-      var excerpt = new page.models.Segment(obj.segment);
+      var excerpt = new page.models.Segment(obj.segment).relativeTo(context.segment);
 
       if (isFinite(excerpt.l)) {
         $el.on('loadedmetadata', function () {
@@ -17,7 +18,7 @@ module.directive('excerpt', [
         });
       }
 
-      if (isFinite(excerpt.u)) {
+      if (isFinite(excerpt.u) && excerpt.u > excerpt.l) {
         $el.on('timeupdate', function () {
           if (this.currentTime < excerpt.u / 1000) {
             return;

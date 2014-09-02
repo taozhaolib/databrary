@@ -110,7 +110,8 @@ trait Slot extends TableRow with InVolume with SiteObject {
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _)
+    Maybe(consent).opt.map('consent -> _),
+    if (context.segment.isFull) None else Some('context -> context.segment)
   )
   def json : JsonValue = slotJson
 

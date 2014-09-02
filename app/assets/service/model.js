@@ -507,6 +507,16 @@ module.factory('modelService', [
       }
     });
 
+    Slot.prototype.inContext = function () {
+      if (angular.equals(this.context, this.segment))
+	return this;
+      /* not type-safe for descendents:
+      if (this.context === undefined)
+	return this.container; */
+      var s = Object.create(Object.getPrototypeOf(this));
+      return angular.extend(s, this, {segment:this.context});
+    };
+
     function Container(volume, init) {
       this.volume = volume;
       Slot.call(this, this, init);

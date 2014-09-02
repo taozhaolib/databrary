@@ -56,6 +56,15 @@ module.factory('Segment', [
       return !this.intersect(that).empty;
     };
 
+    Segment.prototype.relativeTo = function (base) {
+      if (base instanceof Segment)
+	base = base.l;
+      else if (Array.isArray(base))
+	base = base[0];
+      base = isFinite(base) ? base : 0;
+      return new Segment(this.l - base, this.u - base);
+    };
+
     Segment.format = function (seg) {
       if (seg === undefined)
 	return '-';

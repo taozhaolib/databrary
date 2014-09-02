@@ -104,8 +104,9 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     if (format === asset.format) None else Some('format -> format.id),
     excerpt.map('excerpt -> _.classification),
     Some('asset -> (asset.json ++
-      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment))))
-  ) ++ slotJson
+      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))),
+    Some(inContext.segment).filterNot(_.isFull).map('context -> _)
+  ) ++ (slotJson - "context")
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(json.obj, options
