@@ -7,15 +7,25 @@ module.controller('slotView', [
 
     // helpers
 
-    var getAsset = function (media) {
-      return media && media.id ? media.asset : media;
-    };
+    function getAsset(media) {
+      return media && '$scope' in media ? media.asset : media;
+    }
 
-    var getElement = function (media) {
+    function getElement(media) {
       return $('#' + media.id).find('video')[0];
-    };
+    }
 
     // controller
+
+    function syncPlayback(media) {
+      var el = getElement(media);
+
+      if (ctrl.clock.playing && el && el.paused) {
+	ctrl.clock.play();
+      } else if (el && !el.paused) {
+	ctrl.clock.pause();
+      }
+    }
 
     var ctrl = {
       slot: slot,
@@ -24,26 +34,11 @@ module.controller('slotView', [
 
       media: [],
 
-      // TODO: current can be used for multiple assets with minor mods
-      current: [slot.assets[0]],
-
-      state: {
-	selection: null,
-      },
-
-      syncPlayback: function (media) {
-        var el = getElement(media);
-
-	if (ctrl.clock.playing && el && el.paused) {
-	  ctrl.clock.play();
-	} else if (el && !el.paused) {
-	  ctrl.clock.pause();
-	}
-      },
+      current: slot.assets[0],
 
       registerMedia: function (media) {
 	ctrl.media.push(media);
-	ctrl.syncPlayback(media);
+	syncPlayback(media);
 
 	media.$scope.$on('$destroy', function () {
 	  ctrl.deregisterMedia(media);
@@ -59,20 +54,11 @@ module.controller('slotView', [
       },
 
       setCurrent: function (asset) {
-	ctrl.current[0] = asset;
+	ctrl.current = getAsset(asset);
       },
 
       isCurrent: function (media) {
-	if (media.asset && media.asset.id) {
-	  return ctrl.current[0] === media;
-	}
-	else {
-	  return ctrl.current[0] === media.asset;
-	}
-      },
-
-      select: function (media) {
-	ctrl.current[0] = media.asset;
+	return ctrl.current === getAsset(media);
       },
 
       jump: function (asset) {
@@ -93,7 +79,7 @@ module.controller('slotView', [
       hasDisplay: function (media) {
 	var asset = getAsset(media);
 	if (!asset)
-	  return asset;
+	  return false;
 	var type = asset.asset.format.type;
 	return type === 'video' || type === 'image';
       },
@@ -176,9 +162,7 @@ module.controller('slotView', [
     };
 
     var callbackJump = function () {
-      asapMediaFn(function (media) {
-	ctrl.syncPlayback(media);
-      });
+      asapMediaFn(syncPlayback);
     };
 
     var callbackPause = function () {
@@ -190,7 +174,7 @@ module.controller('slotView', [
     var callbackTime = function () {
       asapMediaFn(function (media, el) {
 	if (ctrl.isNowPlayable(media) && el.paused && !el.seeking) {
-	  ctrl.syncPlayback(media);
+	  syncPlayback(media);
 	}
       });
     };

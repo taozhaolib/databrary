@@ -8,7 +8,7 @@ module.directive('excerpt', [
       var context = obj.inContext();
       $scope.srcRoute = context.downloadRoute();
 
-      var excerpt = new page.models.Segment(obj.segment).relativeTo(context.segment);
+      var excerpt = obj.segment.relativeTo(context.segment);
 
       if (isFinite(excerpt.l)) {
         $el.on('loadedmetadata', function () {

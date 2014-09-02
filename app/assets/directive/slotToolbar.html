@@ -1,4 +1,4 @@
-<section class="slot-toolbar cf" ng-if="ctrl.current[0] && ctrl.hasPosition(ctrl.current[0])" bindonce>
+<section class="slot-toolbar cf" ng-if="ctrl.current && ctrl.hasPosition(ctrl.current)" bindonce>
   <div class="slot-toolbar-left">
     <div class="slot-toolbar-group slot-toolbar-group-player">
       <slot-toolbar-button name="play" click="toolbar.action.play"></slot-toolbar-button>

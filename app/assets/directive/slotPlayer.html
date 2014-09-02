@@ -1,38 +1,38 @@
 <section class="slot-player" bindonce>
   <div class="player-main">
-    <div class="player-main-info" ng-class="{playable: ctrl.current[0] && ctrl.hasDisplay(ctrl.current[0])}">
-      <div ng-if="ctrl.current[0]">
+    <div class="player-main-info" ng-class="{playable: ctrl.current && ctrl.hasDisplay(ctrl.current)}">
+      <div ng-if="ctrl.current">
         <nav class="player-main-info-actions">
-          <img ng-src="{{ctrl.current[0].icon}}" hint="format-{{ctrl.current[0].format.extension}}" class="player-main-info-file-icon">
-          <a ng-href="{{ctrl.current[0].editRoute()}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current[0])" class="player-main-info-link icon edit line"></a>
-          <a ng-href="{{ctrl.current[0].downloadRoute(false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current[0])" class="player-main-info-link icon download line"></a>
-          <a ng-click="ctrl.jump(ctrl.current[0])" class="player-main-info-link icon jump line"></a>
+          <img ng-src="{{ctrl.current.icon}}" hint="format-{{ctrl.current.format.extension}}" class="player-main-info-file-icon">
+          <a ng-href="{{ctrl.current.editRoute()}}" target="_self" ng-if="page.auth.hasAccess(page.permission.CONTRIBUTE, ctrl.current)" class="player-main-info-link icon edit line"></a>
+          <a ng-href="{{ctrl.current.downloadRoute(false)}}" target="_self" ng-if="page.auth.hasAccess(page.permission.READ, ctrl.current)" class="player-main-info-link icon download line"></a>
+          <a ng-click="ctrl.jump(ctrl.current)" class="player-main-info-link icon jump line"></a>
         </nav>
 
         <div class="player-main-info-support" ng-if="!page.display.videoSupported" ng-bind="'video.unsupported' | message"></div>
 
         <dl class="player-main-info-list cf">
-          <dt>Classification</dt>
+          <dt bo-text="'material.classification' | message"></dt>
           <dd>
-            <span class="classification icon" ng-class="page.constants.classification[ctrl.current[0].asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[ctrl.current[0].asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[ctrl.current[0].asset.classification]"></span>
+            <span class="classification icon" ng-class="page.constants.classification[ctrl.current.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[ctrl.current.asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[ctrl.current.asset.classification]"></span>
           </dd>
 
           <dt>File Type</dt>
-          <dd ng-bind="ctrl.current[0].format.name"></dd>
+          <dd ng-bind="ctrl.current.format.name"></dd>
 
-          <dt ng-if="ctrl.current[0].asset.duration">Duration</dt>
-          <dd ng-if="ctrl.current[0].asset.duration" ng-bind="ctrl.current[0].asset.duration | timecode"></dd>
+          <dt ng-if="ctrl.current.asset.duration">Duration</dt>
+          <dd ng-if="ctrl.current.asset.duration" ng-bind="ctrl.current.asset.duration | timecode"></dd>
         </dl>
       </div>
     </div>
 
     <div class="player-main-viewport">
-      <slot-media ng-repeat="asset in ctrl.current track by asset.asset.id" asset="asset" ng-if="ctrl.hasDisplay(asset)"></slot-media>
+      <slot-media asset="ctrl.current" ng-if="ctrl.hasDisplay(ctrl.current)"></slot-media>
     </div>
 
-    <div class="player-main-float" ng-if="ctrl.current[0]">
+    <div class="player-main-float" ng-if="ctrl.current">
       <h1 class="player-main-info-name">
-        <span class="filename" ng-bind="ctrl.current[0].displayName"></span>
+        <span class="filename" ng-bind="ctrl.current.displayName"></span>
       </h1>
     </div>
   </div>

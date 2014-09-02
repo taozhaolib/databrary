@@ -5,7 +5,7 @@ module.directive('slotPlayer', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var player = this;
-        var ctrl = page.$parse($attrs.ctrl)($scope);
+        var ctrl = $scope.$eval($attrs.ctrl);
 
         var $viewport;
         var viewportW;

@@ -484,15 +484,23 @@ module.factory('modelService', [
     Slot.prototype = Object.create(Model.prototype);
     Slot.prototype.constructor = Slot;
 
-    Slot.prototype.staticFields = ['consent', 'segment'];
+    Slot.prototype.staticFields = ['consent', 'context'];
+
+    function slotInit(slot, init) {
+      if ('assets' in init)
+	slotAssetMakeArray(slot.container, slot.assets);
+      if ('comments' in init)
+	commentMakeArray(slot.volume, slot.comments);
+      /* records : [Record], but we shouldn't be using it */
+    }
 
     Slot.prototype.init = function (init) {
       var c = this.container;
       Model.prototype.init.call(this, init);
+      this.segment = new Segment(init.segment);
       if ('container' in init)
 	this.container = c.update(init.container);
-      if ('assets' in init)
-	slotAssetMakeArray(this.container, this.assets);
+      slotInit(this, init);
     };
 
     delegate(Slot, 'container',
@@ -508,13 +516,13 @@ module.factory('modelService', [
     });
 
     Slot.prototype.inContext = function () {
-      if (angular.equals(this.context, this.segment))
+      if (this.segment.equals(this.context))
 	return this;
       /* not type-safe for descendents:
       if (this.context === undefined)
 	return this.container; */
       var s = Object.create(Object.getPrototypeOf(this));
-      return angular.extend(s, this, {segment:this.context});
+      return angular.extend(s, this, {segment:Segment.make(this.context)});
     };
 
     function Container(volume, init) {
@@ -530,10 +538,16 @@ module.factory('modelService', [
     Container.prototype.init = function (init) {
       var v = this.volume;
       Model.prototype.init.call(this, init);
-      this.container = this;
       if ('volume' in init)
 	this.volume = v.update(init.volume);
+      slotInit(this, init);
     };
+
+    Object.defineProperty(Container.prototype, 'segment', {
+      get: function () {
+	return Segment.full;
+      }
+    });
 
     function containerPrepare(volume, id) {
       if (volume.containers && id in volume.containers)
@@ -545,7 +559,7 @@ module.factory('modelService', [
 
     function slotMake(volume, init) {
       var c = containerPrepare(volume, init.contianer.id);
-      if (c.segment === init.segment) // only for undefined
+      if (init.segment === undefined)
 	return c.update(init);
       return new Slot(c, init);
     }
@@ -556,7 +570,7 @@ module.factory('modelService', [
 
     Container.prototype.getSlot = function (segment, options) {
       var c = this;
-      if (this.segment === segment) // only for undefined
+      if (Segment.isFull(segment))
 	if ((options = checkOptions(this, options)) || this._PLACEHOLDER)
 	  return router.http(router.controllers.SlotApi.get,
 	    this.volume.id, this.id, Segment.format(segment), options)
@@ -573,7 +587,7 @@ module.factory('modelService', [
 
     Slot.prototype.save = function (data) {
       var s = this;
-      return router.http(router.controllers.SlotApi.update, this.container.id, Segment.format(this.segment), data)
+      return router.http(router.controllers.SlotApi.update, this.container.id, this.segment, data)
 	.then(function (res) {
 	  return s.update(res.data);
 	});
@@ -581,7 +595,7 @@ module.factory('modelService', [
 
     Slot.prototype.addRecord = function (data) {
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, Segment.format(this.segment), data)
+      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment, data)
 	.finally(function () {
 	  s.clear('records');
 	});
@@ -589,12 +603,12 @@ module.factory('modelService', [
 
     Object.defineProperty(Slot.prototype, 'route', {
       get: function () {
-	return router.slot([this.volume.id, this.container.id, Segment.format(this.segment)]);
+	return router.slot([this.volume.id, this.container.id, this.segment]);
       }
     });
 
     Slot.prototype.editRoute = function () {
-      return router.slotEdit([this.container.id, Segment.format(this.segment)]);
+      return router.slotEdit([this.container.id, this.segment]);
     };
 
     ///////////////////////////////// Record
@@ -686,29 +700,32 @@ module.factory('modelService', [
     Asset.prototype = Object.create(Model.prototype);
     Asset.prototype.constructor = Asset;
 
-    Asset.prototype.staticFields = ['name', 'duration', 'segment'];
+    Asset.prototype.staticFields = ['name', 'duration'];
 
     Asset.prototype.init = function (init) {
       var v = this.volume;
       Model.prototype.init.call(this, init);
+      if ('segment' in init)
+	this.segment = new Segment(init.segment);
       if ('volume' in init)
 	this.volume = v.update(this.volume);
       if ('format' in init)
 	this.format = constants.format[this.format];
       if ('revisions' in init)
 	assetMakeArray(v, this.revisions);
+      /* slot : Slot, but really implies SlotAsset */
     };
 
-    function assetMake(volume, init) {
-      if (init.container)
-	return new SlotAsset(volume, init);
+    function assetMake(context, init) {
+      if ('id' in init)
+	return new Asset('volume' in context ? context.volume : context, init);
       else
-	return new Asset(volume, init);
+	return new SlotAsset(context, init);
     }
 
-    function assetMakeArray(volume, l) {
+    function assetMakeArray(context, l) {
       if (l) for (var i = 0; i < l.length; i ++)
-	l[i] = assetMake(volume, l[i]);
+	l[i] = assetMake(context, l[i]);
       return l;
     }
 
@@ -796,11 +813,11 @@ module.factory('modelService', [
     };
 
     SlotAsset.prototype.thumbRoute = function(size) {
-      return router.assetThumb([this.container.id, Segment.format(this.segment), this.asset.id, size]);
+      return router.assetThumb([this.container.id, this.segment, this.asset.id, size]);
     };
 
     SlotAsset.prototype.downloadRoute = function(inline) {
-      return router.assetDownload([this.container.id, Segment.format(this.segment), this.asset.id, inline]);
+      return router.assetDownload([this.container.id, this.segment, this.asset.id, inline]);
     };
 
     SlotAsset.prototype.editRoute = function() {
@@ -834,7 +851,7 @@ module.factory('modelService', [
       var s = this;
       if (arguments.length < 2 && this instanceof Comment)
 	reply = this.id;
-      return router.http(router.controllers.CommentApi.post, this.container.id, Segment.format(this.segment), reply, data)
+      return router.http(router.controllers.CommentApi.post, this.container.id, this.segment, reply, data)
 	.then(function (res) {
 	  return new Comment(s.container, res.data);
 	}).finally(function () {
@@ -844,14 +861,8 @@ module.factory('modelService', [
 
     ///////////////////////////////// Tag
     
-    function Tag(init) {
-      Model.call(this, init);
-    }
-
-    Tag.prototype = Object.create(Model.prototype);
-    Tag.prototype.constructor = Tag;
-
-    Tag.prototype.staticFields = ['vote'];
+    // no point in a model, really
+    var Tag = {};
 
     Tag.search = function (query) {
       return router.http(router.controller.TagApi.search, query);
@@ -859,11 +870,11 @@ module.factory('modelService', [
 
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
-      return router.http(router.controller.TagApi.update, tag, this.container.id, Segment.format(this.segment), {vote:vote ? vote>0 : undefined})
+      return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment, {vote:vote ? vote>0 : undefined})
 	.finally(function () {
 	  s.clear("tags");
 	}).then(function (res) {
-	  return new Tag(res.data);
+	  return res.data;
 	});
     };
 
