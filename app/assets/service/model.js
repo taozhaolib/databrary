@@ -26,7 +26,7 @@ module.factory('modelService', [
     Model.prototype.update = function (init) {
       if (!angular.isObject(init))
 	return this;
-      if (init.id !== this.id)
+      if ('id' in init && init.id !== this.id)
 	throw new Error("update id mismatch");
       var s = this.staticFields;
       for (var i = 0; i < s.length; i ++) {
