@@ -546,18 +546,16 @@ module.factory('modelService', [
 
     Container.prototype.getSlot = function (segment, options) {
       var c = this;
-      if (this.segment === segment) { // only for undefined
+      if (this.segment === segment) // only for undefined
 	if ((options = checkOptions(this, options)) || this._PLACEHOLDER)
 	  return router.http(router.controllers.SlotApi.get,
 	    this.volume.id, this.id, Segment.format(segment), options)
 	    .then(function (res) {
 	      return c.update(res.data);
 	    });
-	else
-	  return $q.successful(this);
-      }
-      return router.http(router.controllers.SlotApi.get,
-	this.volume.id, this.id, Segment.format(segment), options)
+	else return $q.successful(this);
+      else return router.http(router.controllers.SlotApi.get,
+	this.volume.id, this.id, Segment.format(segment), checkOptions(null, options))
 	.then(function (res) {
 	  return new Slot(c, res.data);
 	});
