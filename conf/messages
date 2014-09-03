@@ -331,9 +331,8 @@ auth.request.info.help=Enter contact information (name, email, phone number) for
 access.global.legend=Share this study
 access.global.save.success=Sharing settings updated.
 access.global.save.error=Unable to update sharing settings.
-access.global.NONE.NONE=Share only with those collaborators I specify below.
-access.global.NONE.SHARED=Share with all authorized Databrary investigators.
-access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
+access.global.NONE.NONE=Private: Share with collaborators selected below.
+access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
