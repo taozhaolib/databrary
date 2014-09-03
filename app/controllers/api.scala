@@ -121,6 +121,7 @@ object SiteApi extends SiteController {
     , AssetHtml.view
     , AssetHtml.edit
     , AssetApi.get
+    , AssetApi.update
     , AssetApi.uploadStart
     , AssetApi.uploadChunk
     , AssetApi.upload

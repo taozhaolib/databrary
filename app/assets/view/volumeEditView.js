@@ -52,9 +52,7 @@ module.controller('volumeEditView', [
 
     if (slot) {
       angular.forEach(slot.assets, function (asset) {
-	asset.get(['creation']).then(function (res) {
-          asset.asset.creation = res.creation;
-        });
+	asset.asset.get(['creation']);
       });
     }
 
