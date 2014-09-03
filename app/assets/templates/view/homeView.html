@@ -6,14 +6,14 @@
       </div>
     </div>
 
-    <div class="row" bo-if="!page.auth.isAuthorized()">
+    <div class="row" bo-if="page.constants.data.locked && !page.auth.isAuthorized()">
       <div class="col-full">
         <h1 class="home_parties_header"><span></span><span bo-html="'welcome.title.sub' | message"></span></h1>
         <div bo-html="'welcome.body' | message | format:false:true"></div>
       </div>
     </div>
 
-    <div class="row" bo-if="page.auth.isAuthorized()">
+    <div class="row" bo-if="!page.constants.data.locked || page.auth.isAuthorized()">
       <article class="home_feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="inner">
           <img bo-src="page.router.volumeThumb(volume)" class="thumb" ng-click="page.$location.url(page.router.volume({id: volume.id}))">
