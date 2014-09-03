@@ -104,6 +104,7 @@ me=Me
 toolbar.login=login
 toolbar.logout=logout
 toolbar.register=register
+toolbar.reregister=get authorized
 toolbar.profile=view profile
 
 toolbar.contact=Send us your comments, questions, and suggestions.
