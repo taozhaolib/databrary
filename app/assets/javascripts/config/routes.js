@@ -47,7 +47,7 @@ module.config([
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
-						if (page.auth.isAuthorized()) {
+						if (!page.constants.data.locked || page.auth.isAuthorized()) {
 							page.models.Volume.get({
 								id: 9,
 								access: ''
