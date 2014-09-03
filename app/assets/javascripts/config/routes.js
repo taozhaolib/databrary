@@ -54,7 +54,7 @@ module.config([
 							}, function (res) {
 								deferred.resolve(res);
 							}, function (res) {
-								deferred.reject(res);
+								deferred.resolve({});
 							});
 						} else {
 							deferred.resolve({});
