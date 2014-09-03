@@ -68,12 +68,7 @@ module.controller('slotView', [
 
       hasPosition: function (media) {
 	var asset = getAsset(media);
-	return asset && !angular.isNothing(asset.segment);
-      },
-
-      hasDuration: function (media) {
-	var asset = getAsset(media);
-	return asset && Array.isArray(asset.segment);
+	return asset && isFinite(asset.segment.l);
       },
 
       hasDisplay: function (media) {
@@ -86,12 +81,12 @@ module.controller('slotView', [
 
       hasTime: function (media) {
 	var asset = getAsset(media);
-	return asset && asset.asset.format.type === 'video';
+	return asset && asset.asset.duration;
       },
 
       isNowPlayable: function (media) {
 	var asset = getAsset(media);
-	return ctrl.clock.position > asset.segment[0] && ctrl.clock.position < asset.segment[1];
+	return ctrl.clock.position > asset.segment.l && ctrl.clock.position < asset.segment.u;
       },
 
       isReady: function (media) {
@@ -112,7 +107,7 @@ module.controller('slotView', [
     var sortRecords = function () {
       ctrl.records = {};
       ctrl.noteOptions = {
-	'comments': 'comments',
+	comments: 'comments',
       };
 
       angular.forEach(volume.containers[slot.container.id].records, function (record) {
@@ -153,7 +148,7 @@ module.controller('slotView', [
     var callbackPlay = function () {
       asapMediaFn(function (media, el) {
 	if (ctrl.isNowPlayable(media) && ctrl.isPaused(media)) {
-	  el.currentTime = (ctrl.clock.position - media.asset.segment[0]) / 1000;
+	  el.currentTime = (ctrl.clock.position - media.asset.segment.l) / 1000;
 	  el.play();
 	} else if (!ctrl.isPaused(media)) {
 	  el.pause();

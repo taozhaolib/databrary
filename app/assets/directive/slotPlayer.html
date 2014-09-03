@@ -20,8 +20,11 @@
           <dt>File Type</dt>
           <dd ng-bind="ctrl.current.format.name"></dd>
 
-          <dt ng-if="ctrl.current.asset.duration">Duration</dt>
-          <dd ng-if="ctrl.current.asset.duration" ng-bind="ctrl.current.asset.duration | timecode"></dd>
+          <dt ng-if="ctrl.current.asset.duration || ctrl.hasPosition(ctrl.current)">Position</dt>
+	  <dd>
+	    <span ng-if="ctrl.hasPosition(ctrl.current)">{{ctrl.current.segment.l | timecode}} &ndash; {{ctrl.current.segment.u | timecode}}</span>
+	    <span ng-if="ctrl.current.asset.duration"> ({{ctrl.current.asset.duration | timecode}})</span>
+	  </dd>
         </dl>
       </div>
     </div>
