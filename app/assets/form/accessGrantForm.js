@@ -4,8 +4,8 @@ module.directive('accessGrantForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
       var form = $scope.accessGrantForm;
-      form.volume = page.$parse($attrs.volume)($scope) || undefined;
-      form.access = page.$parse($attrs.access)($scope) || undefined;
+      form.volume = $scope.$eval($attrs.volume);
+      form.access = $scope.$eval($attrs.access);
 
       form.data = {
         individual: form.access.individual || 0,
