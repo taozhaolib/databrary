@@ -11,12 +11,28 @@ module.config([
 			controller: 'HomeView',
 			templateUrl: 'homeView.html',
 			resolve: {
-				parties: [
+				investigators: [
 					'pageService', function (page) {
 						var deferred = page.$q.defer();
 
 						page.models.Party.query({
 							access: page.permission.CONTRIBUTE,
+							institution: false
+						}, function (res) {
+							deferred.resolve(res);
+						}, function (res) {
+							deferred.reject(res);
+						});
+
+						return deferred.promise;
+					}
+				],
+				users: [
+					'pageService', function (page) {
+						var deferred = page.$q.defer();
+
+						page.models.Party.query({
+							access: page.permission.PUBLIC,
 							institution: false
 						}, function (res) {
 							deferred.resolve(res);
@@ -33,7 +49,7 @@ module.config([
 
 						if (page.auth.isAuthorized()) {
 							page.models.Volume.get({
-								id: 8,
+								id: 9,
 								access: ''
 							}, function (res) {
 								deferred.resolve(res);

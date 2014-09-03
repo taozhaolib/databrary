@@ -588,6 +588,7 @@ wizard.register_pending.instructions=Your request for authorization is now pendi
 
 #Splash page text
 splash.investigators.header=Databrary Investigators
+splash.users.header=Registered Users
 
 # --- Volume edit
 

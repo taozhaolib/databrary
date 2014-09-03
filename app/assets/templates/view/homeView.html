@@ -41,7 +41,19 @@
       </div>
 
       <div class="party_row row">
-        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties" bindonce>
+        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in investigators" bindonce>
+          <portrait class="portrait_vertical portrait_small"></portrait>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-full">
+          <h1 class="home_parties_header"><span></span><span bo-html="'splash.users.header' | message"></span></h1>
+        </div>
+      </div>
+
+      <div class="party_row row">
+        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in users" bindonce>
           <portrait class="portrait_vertical portrait_small"></portrait>
         </div>
       </div>
