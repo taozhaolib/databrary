@@ -31,14 +31,15 @@ module.directive('volumeEditMaterialsForm', [
       form.addedCall = function (file, event) {
         if (!$scope.$flow.isUploading()) {
 	  //clear completed uploads so progress bar isn't pre-weighted towards completion
-          while ($scope.$flow.files[0] && $scope.$flow.files[0] != file) {
+          while ($scope.$flow.files[0] && $scope.$flow.files[0] !== file) {
             $scope.$flow.removeFile($scope.$flow.files[0]);
           }
         }
 
-        if (angular.element(event.srcElement).scope().form) {
+	var f = angular.element(event.srcElement).scope().form;
+        if (f) {
           //replace file
-          file.asset = angular.element(event.srcElement).scope().form.subform.asset;
+          file.asset = f.subform.asset;
 	  file.replace = file.asset.asset.id;
 	  file.containingForm = angular.element(event.srcElement).scope().form;
         }
@@ -66,9 +67,7 @@ module.directive('volumeEditMaterialsForm', [
 	  .then(function (asset) {
             file.asset = asset;
             file.asset.asset.creation = {date: Date.now(), name: file.file.name};
-	    //console.log(file.containingForm);
 	    if(file.containingForm && file.containingForm.subform){
-	      //console.log(file.containingForm);
 	      form.clean(file.containingForm.subform);
 	    }
         });
@@ -92,11 +91,8 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.excerptOptions = function (cName) {
-        var f = function (x) {
-          return page.classification[x] > page.classification[cName];
-        }; //string compare. if we get more than 10 must use parseInt
-        var l = page.$filter('filter')(page.constants.classification, f);
-        l.unshift(page.constants.classification[0]);
+	var l = page.constants.classification.slice(page.classification[cName]+1);
+	l.unshift(page.constants.classification[0]);
         return l;
       };
 

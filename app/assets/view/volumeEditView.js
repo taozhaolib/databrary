@@ -245,30 +245,12 @@ module.controller('volumeEditView', [
         }
       },
 
-      'volume-edit-excerpts': function () {
-        if (!volume) {
-          return;
-        }
-
-        if (slot) {
-          angular.forEach(slot.assets, function (asset) {
-            asset.name = asset.asset.name;
-          });
-
-          forms.excerpts.form.init(slot);
-        }
-      },
-
       'volume-edit-materials': function () {
         if (!volume) {
           return;
         }
 
         if (slot) {
-          angular.forEach(slot.assets, function (asset) {
-            asset.name = asset.asset.name;
-          });
-
           forms.materials.form.init(slot);
         }
       },

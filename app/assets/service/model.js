@@ -540,6 +540,8 @@ module.factory('modelService', [
       Model.prototype.init.call(this, init);
       if ('volume' in init)
 	this.volume = v.update(init.volume);
+      if ('container' in init)
+	this.container = this.update(init.container);
       slotInit(this, init);
     };
 
