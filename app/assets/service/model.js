@@ -12,6 +12,10 @@ module.factory('modelService', [
 	dst[key] = src[key];
     }
 
+    function resData(res) {
+      return res.data;
+    }
+
     function Model(init) {
       this.init(init);
     }
@@ -446,10 +450,6 @@ module.factory('modelService', [
 	});
     };
 
-    Volume.funderSearch = function (query, all) {
-      return router.http(router.controllers.VolumeApi.funderSearch, query, all);
-    };
-
     Volume.prototype.fundingSave = function (funder, data) {
       var v = this;
       return router.http(router.controllers.VolumeApi.fundingChange, this.id, funder, data)
@@ -873,9 +873,7 @@ module.factory('modelService', [
       return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment, {vote:vote ? vote>0 : undefined})
 	.finally(function () {
 	  s.clear("tags");
-	}).then(function (res) {
-	  return res.data;
-	});
+	}).then(resData);
     };
 
     /////////////////////////////////
@@ -893,12 +891,18 @@ module.factory('modelService', [
       Comment: Comment,
       Tag: Tag,
 
+      funder: function (query, all) {
+	return router.http(router.controllers.VolumeApi.funderSearch, query, all)
+	  .then(resData);
+      },
       cite: function (url) {
-	return router.http(router.controllers.SiteApi.cite, url);
+	return router.http(router.controllers.SiteApi.cite, {url:url})
+	  .then(resData);
       },
       analytic: function () {
 	return router.http(router.controllers.SiteApi.void, {}, {cache:false});
       },
+
     };
   }
 ]);

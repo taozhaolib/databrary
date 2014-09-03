@@ -26,13 +26,6 @@ module.directive('fundingSearchForm', [
       };
 
       form.search = function (all) {
-        var data = {
-          query: form.nameVal,
-        };
-
-        if (all) {
-          data.all = 'true';
-        }
 	$scope.all = all;
 
         if (!all && (!form.nameVal || form.nameVal.length < 3)) {
@@ -40,14 +33,11 @@ module.directive('fundingSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-          sentSearch = page.models.Volume.funderSearch(data)
+          sentSearch = page.models.funder(form.nameVal, all)
 	    .then(function (data) {
               form.found = data;
-
               fin();
-            }, function (res) {
-              fin(res);
-            });
+            }, fin);
         }
       };
 
