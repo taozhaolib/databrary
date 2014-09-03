@@ -54,15 +54,6 @@ module.directive('partyEditApplyForm', [
 
       //
 
-      form.presetName = function (type, name, party) {
-	return '<strong>' + page.constants.message('auth.' + type + '.' + name + '.title') + '</strong>: ' + 
-	  (angular.isString(party) ?
-	   page.constants.message('auth.' + type + '.' + name, party) :
-	   page.$filter('possessive')('auth.' + type + '.' + name, party));
-      };
-
-      //
-      
       form.resetAll = function(force){
 	if(force || confirm(page.constants.message('navigation.confirmation'))){
 	  page.$route.reload();

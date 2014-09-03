@@ -20,21 +20,29 @@
 
           <div ng-if="!other.new">
             <div bo-if="other.site">
-              <div class="permission-auth-heading" bo-text="'auth.site' | message:'Their'"></div>
-              <div class="permission-auth-site" ng-bind-html="partyEditApplyForm.presetName('site', page.constants.permission[other.site], 'their')"></div>
+              <div class="permission-auth-heading" bo-text="'auth.site' | message:'their'"></div>
+              <div class="permission-auth-site">
+		<strong ng-bind="'auth.site.'+page.constants.permission[other.site]+'.title' | message"></strong>:
+		{{'auth.site.'+page.constants.permission[other.site] | possessive:party}}
+	      </div>
             </div>
 
             <div bo-if="other.member">
               <div class="permission-auth-heading" bo-text="'auth.member' | message:'their'"></div>
-              <div class="permission-auth-member" ng-bind-html="partyEditApplyForm.presetName('member', page.constants.permission[other.member], 'their')"></div>
+              <div class="permission-auth-member">
+		<strong ng-bind="'auth.member.'+page.constants.permission[other.member]+'.title' | message"></strong>:
+		{{'auth.member.'+page.constants.permission[other.member] | possessive:party}}
+	      </div>
             </div>
 
-            <div>
+            <div bo-if="other.member || other.site">
               <div class="permission-auth-heading" bo-text="'auth.expiration' | message"></div>
               <div bo-text="other.expires | date:'longDate'"></div>
-              <div bo-if="(other.member || other.site) && !other.expires" bo-text="'auth.expiration.none' | message"></div>
-              <div bo-if="!other.member && !other.site" bo-text="'auth.pending' | message"></div>
+              <div bo-if="!other.expires" bo-text="'auth.expiration.none' | message"></div>
             </div>
+            <div bo-if="!(other.member || other.site)">
+              <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
+	    </div>
           </div>
 
           <div ng-if="other.new">
