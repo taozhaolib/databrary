@@ -166,6 +166,7 @@ module.controller('RegisterView', [
 
 				$scope.userPasswordForm.saveSuccessFn = function (form) {
 					$scope.userPasswordForm.sent = true;
+					page.$location.url(page.router.register());
 					$scope.updateWizard();
 				};
 			},
