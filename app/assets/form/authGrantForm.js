@@ -75,25 +75,6 @@ module.directive('authGrantForm', [
 
       //
 
-      form.resetFn = undefined;
-
-      form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
-        form.validator.clearServer();
-        form.other = $.extend(true, {}, backup);
-
-        if (form.other.new) {
-          form.deny();
-        } else {
-          form.$setPristine();
-        }
-      };
-
-      //
-
       form.denyFn = undefined;
       form.denySuccessFn = undefined;
       form.denyErrorFn = undefined;

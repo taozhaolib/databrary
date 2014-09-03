@@ -29,11 +29,7 @@
     <validator form="authGrantForm" name="expires" label="'auth.expiration' | message">
       <input type="date" ng-model="authGrantForm.other.expires" name="expires" class="half" ng-blur="authGrantForm.transformExpiration()" date-model date-min="now" date-max="2 years">
     </validator>
-  </fieldset>
-
-  <fieldset class="clean">
-    <button ng-click="authGrantForm.save()" class="green" bo-text="'save' | message" ng-disabled="authGrantForm.$pristine || authGrantForm.$invalid"></button>
-    <button ng-click="authGrantForm.reset()" class="yellow" bo-text="'revert' | message" ng-disabled="authGrantForm.$pristine"></button>
     <button ng-click="authGrantForm.deny()" class="red" bo-text="'remove' | message"></button>
   </fieldset>
+
 </form>
