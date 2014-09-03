@@ -32,7 +32,6 @@ module.factory('constantService', [
 		var makePresets = function () {
 			constants.data.accessGlobal = [
 				['NONE', 'NONE'],
-				['NONE', 'SHARED'],
 				['PUBLIC', 'SHARED']
 			];
 			constants.data.accessGlobal.parties = [
