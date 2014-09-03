@@ -10,7 +10,7 @@ module.controller('registerView', [
 
     // TODO: Remove analytics
     $scope.$watch(function () {
-      if (!$scope.wizard) {
+      if (!($scope.wizard && $scope.wizard.steps)) {
         return;
       }
 

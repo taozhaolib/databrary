@@ -5,7 +5,7 @@
     <legend ng-bind="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
 
     <div ng-if="authApplyForm.other.party.institution">
-      <div bo-html="'auth.info.prompt' | message | format"></div>
+      <div bo-text="'auth.info.prompt' | message"></div>
 
       <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
         <textarea id="field-guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
@@ -16,7 +16,7 @@
   <fieldset class="clean" ng-if="authApplyForm.notFound.query">
     <legend bo-text="'auth.request.notfound.title' | message"></legend>
 
-    <div bo-html="'auth.request.notfound.instructions' | message | format"></div>
+    <div bo-html="'auth.request.notfound.instructions' | message"></div>
 
     <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
       <textarea id="field-info" name="info" ng-model="authApplyForm.notFound.info"></textarea>

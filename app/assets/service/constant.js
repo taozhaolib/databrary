@@ -61,13 +61,23 @@ module.factory('constantService', [
     constants.message = function (key /*, args...*/) {
       var msg = constants.messages[key];
 
-      if (!angular.isDefined(msg)) {
+      if (msg === undefined) {
         $log.info('Message key [' + key + '] is undefined.');
         return '[' + key + ']';
       }
 
-      for (var i = 1, length = arguments.length; i < length; i++)
-        msg = msg.replace('{' + (i - 1) + '}', arguments[i], 'g');
+      var i = 1, l = arguments.length;
+      var o;
+      if (i < l && typeof arguments[i] === 'object')
+	o = arguments[i++];
+      else
+	o = {};
+
+      var g = o.sce ? $sce.getTrusted.bind($sce, o.sce) : angular.identity;
+      for (var n = 0; i < l; i++, n++)
+        msg = msg.replace('{' + n + '}', g(arguments[i]), 'g');
+      if (o.sce)
+	msg = $sce.trustAs(o.sce, msg);
 
       return msg;
     };

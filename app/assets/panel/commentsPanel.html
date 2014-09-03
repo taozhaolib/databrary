@@ -8,7 +8,7 @@
           <portrait extra="commentMeta(comment)"></portrait>
         </footer>
 
-        <div class="panel-comments-body" bo-html="comment.text | format"></div>
+        <div class="panel-comments-body" ng-bind-html="comment.text | format"></div>
 
         <div class="panel-comments-body" ng-if="!comment.stop && !getReply(comment)">
           <button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
