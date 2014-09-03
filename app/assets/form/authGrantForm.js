@@ -12,11 +12,9 @@ module.directive('authGrantForm', [
 	d.setFullYear(d.getFullYear()+2);
 	form.other.expires = d.getTime();
       }
-      var backup = {};
 
       form.other.member = form.other.member || 0;
       form.other.site = form.other.site || 0;
-      backup = $.extend(true, {}, form.other);
 
       //
 
@@ -57,7 +55,6 @@ module.directive('authGrantForm', [
 
 	form.party.authorizeSave(form.other.party.id, form.other).then(function () {
           form.validator.server({});
-          backup = $.extend(true, {}, form.other);
           form.$setPristine();
 
           if (angular.isFunction(form.successFn)) {
