@@ -63,7 +63,7 @@ module.directive('volumeEditAccessForm', [
           }
         });
 
-        if (clean) {
+        if (clean && !form.accessGlobalDirty) {
           form.$setPristine();
         }
       });
