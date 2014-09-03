@@ -4,46 +4,39 @@ module.factory('slotClockService', [
   '$timeout', function ($timeout) {
     // Clock
 
-    var Clock = function (slot, ctrl) {
-      var clock = this;
-      clock.ctrl = ctrl;
+    function Clock(slot, ctrl) {
+      this.ctrl = ctrl;
 
-      clock.playFns = [];
-      clock.pauseFns = [];
-      clock.timeFns = [];
-      clock.jumpFns = [];
+      this.playFns = [];
+      this.pauseFns = [];
+      this.timeFns = [];
+      this.jumpFns = [];
 
-      Object.defineProperties(this, {
-        position: {
-          get: function () {
-            var actual = clock.playing ? Date.now() - clock.begun : clock.changed - clock.begun;
-            return actual < clock.duration ? actual : clock.duration;
-          }
-        }
-      });
-
-      clock.duration = 0;
-      clock.start = undefined;
+      this.duration = -Infinity;
+      this.start = Infinity;
 
       slot.assets.forEach(function (asset) {
-        // TODO: hack until type classes
-        asset.container = slot.container;
+	if (isFinite(asset.segment.u) && asset.segment.u > this.duration)
+	  this.duration = asset.segment.u;
+	if (isFinite(asset.segment.l) && asset.segment.l < this.start)
+	  this.start = asset.segment.l;
+      }, this);
 
-        if (ctrl.hasDuration(asset)) {
-          clock.duration = clock.duration >= asset.segment[1] ? clock.duration : asset.segment[1];
-          clock.start = clock.start <= asset.segment[0] && angular.isNumber(clock.start) ? clock.start : asset.segment[0];
-        } else if (ctrl.hasPosition(asset)) {
-	  clock.duration = clock.duration >= asset.segment ? clock.duration : asset.segment;
-	  clock.start = clock.start <= asset.segment && angular.isNumber(clock.start) ? clock.start : asset.segment;
-	}
-      });
-
-      clock.begun = Date.now() - clock.start;
-      clock.changed = this.begun;
+      this.begun = Date.now() - this.start;
+      this.changed = this.begun;
       // ticker
-      clock.interval = 100;
-      clock.playing = false;
-    };
+      this.interval = 100;
+      this.playing = false;
+    }
+
+    Object.defineProperties(Clock, {
+      position: {
+	get: function () {
+	  var actual = this.playing ? Date.now() - this.begun : this.changed - this.begun;
+	  return actual < this.duration ? actual : this.duration;
+	}
+      }
+    });
 
     Clock.prototype.markChanged = function () {
       this.changed = Date.now() - this.start;

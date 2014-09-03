@@ -5,9 +5,9 @@
         <div class="panel-overview-volume-header-fill"></div>
         <div ng-if="page.auth.hasAccess(page.permission.ADMIN, volume) && volume.alias" class="panel-alias" bo-text="volume.alias"></div>
         <div class="panel-overview-volume-type">
-          <span class="icon" bo-class="page.types.getVolumeType(volume)" hint="object-{{page.types.getVolumeType(volume)}}"></span>&nbsp;<span bo-html="page.types.getVolumeType(volume) | message"></span>
+          <span class="icon" bo-class="volume.type" hint="object-{{volume.type}}"></span>&nbsp;<span bo-text="volume.type | message"></span>
         </div>
-        <h1 class="panel-title smaller" ng-bind-html="volume.name | format:true"></h1>
+        <h1 class="panel-title smaller" ng-text="volume.name"></h1>
       </hgroup>
     </div>
 
@@ -43,7 +43,7 @@
         </div>
 
         <div frame id="frame-link" frame-title="{{'volume.link.title' | message}}" fold>
-          <p ng-bind-html="volume | cite" class="panel-overview-volume-citation"></p>
+          <cite-volume class="panel-overview-volume-citation"></cite-volume>
         </div>
       </div>
     </div>
@@ -68,7 +68,7 @@
       <div frame id="frame-access" frame-title="{{'volume.access.title' | message}}" fold>
         <div class="row">
           <div ng-repeat="volumeAccess in volume.access | filter:isShared" class="col-desktop-3 col-laptop-4 col-tablet-3 col-mobile-3" ng-init="party = volumeAccess.party">
-            <portrait tooltip tooltip-message="{{shareMessage(volumeAccess)}}"></portrait>
+            <portrait tooltip="shareMessage(volumeAccess)"></portrait>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@
         <div class="row">
           <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
             <div bo-if="hasProps(volume, 'consumers')">
-              <div bo-html="'volume.reuse.provides' | message"></div>
+              <div bo-text="'volume.reuse.provides' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.consumers">
@@ -95,7 +95,7 @@
             </div>
 
             <div bo-if="hasProps(volume, 'providers')">
-              <div bo-html="'volume.reuse.consumes' | message"></div>
+              <div bo-text="'volume.reuse.consumes' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.providers">

@@ -1,11 +1,8 @@
 'use strict';
 
 module.factory('messageService', [
-  '$rootScope',
-  'ArrayHelper',
-  '$timeout',
-  'constantService',
-  function ($rootScope, ArrayHelper, $timeout, constants) {
+  '$rootScope', 'ArrayHelper', '$timeout', '$sanitize', '$sce', 'constantService',
+  function ($rootScope, ArrayHelper, $timeout, $sanitize, $sce, constants) {
     var types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
 
     //
@@ -137,7 +134,7 @@ module.factory('messageService', [
         return false;
       }
 
-      newMessage.body = constants.message('error.prefix') + ' ' + newMessage.body;
+      var body = constants.message('error.prefix') + ' ' + $sce.getTrustedHtml(newMessage.body);
 
       if (message.report) {
         message.errors = message.report.data;
@@ -146,17 +143,17 @@ module.factory('messageService', [
       }
 
       if (!message.errors) {
-        newMessage.body = newMessage.body + ' ' + constants.message('error.suffix');
+        body += ' ' + constants.message('error.suffix');
       } else if (angular.isString(message.errors)) {
         newMessage.fn = errorHTML(message.errors);
-        newMessage.body = newMessage.body + ' ' + constants.message('error.view');
+        body += ' ' + constants.message('error.view');
       } else if (angular.isObject(message.errors)) {
         var moreBody = '';
         var messageBody = '';
 
         if (angular.isObject(message.errors)) {
           angular.forEach(message.errors, function (errorArray, field) {
-            moreBody += '<dl class="comma"><dt>' + (field || '') + '</dt><dd>' + errorArray.join('</dd><dd>') + '</dd></dl>';
+            moreBody += '<dl class="comma"><dt>' + (field || '') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
             messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
           });
         }
@@ -168,9 +165,9 @@ module.factory('messageService', [
         }
 
         if (messageBody) {
-          newMessage.body = newMessage.body + ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
+          body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
 	  if(refreshMsg){
-	      newMessage.body += "<br>" + constants.message('reload-browser');
+	      body += "<br>" + constants.message('reload-browser');
 	  }
         }
       }
@@ -179,6 +176,7 @@ module.factory('messageService', [
       delete message.errors;
       delete message.status;
       delete message.url;
+      newMessage.body = $sce.trustAsHtml(body);
 
       register.call(this, newMessage);
       return newMessage;

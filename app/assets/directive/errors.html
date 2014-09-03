@@ -3,13 +3,13 @@
     <div class="wrap">
       <div class="row">
         <hgroup class="col">
-          <h1 class="panel-context" bo-html="'error.title' | message"></h1>
+          <h1 class="panel-context" bo-text="'error.title' | message"></h1>
 
-          <h2 class="panel-title with-context" bo-html="'error.'+ errors.error.status | message"></h2>
+          <h2 class="panel-title with-context" bo-text="'error.'+ errors.error.status | message"></h2>
         </hgroup>
 
         <div class="col">
-          <div bo-html="'error.resolve' | message | format:false:true"></div>
+	  <div bo-html="'error.resolve' | message"></div>
         </div>
       </div>
     </div>

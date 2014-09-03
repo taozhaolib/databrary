@@ -67,7 +67,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** The list of comments that apply to this slot. */
   final def comments = Comment.getSlot(this)
   /** Post a new comment this object. */
-  final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Boolean] =
+  final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Comment] =
     Comment.post(this, text, parent)
 
   /** The list of tags on the current slot along with the current user's applications. */
@@ -110,7 +110,8 @@ trait Slot extends TableRow with InVolume with SiteObject {
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _)
+    Maybe(consent).opt.map('consent -> _),
+    if (context.segment.isFull) None else Some('context -> context.segment)
   )
   def json : JsonValue = slotJson
 

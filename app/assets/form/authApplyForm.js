@@ -24,18 +24,8 @@ module.directive('authApplyForm', [
       form.errorFn = undefined;
 
       var saveAuth = function () {
-        form.partyAuthorize = new page.models.partyAuthorize();
-
-        if (form.notFound.info) {
-          form.partyAuthorize.info = form.notFound.info;
-        }
-
-        form.partyAuthorize.$apply({
-          id: form.party.id,
-          partyId: form.other.party.id
-        }, function () {
+	form.party.authorizeApply(form.other.party.id, {info:form.notFound.info}).then(function () {
           form.validator.server({});
-          page.models.party.$cache.removeAll();
           form.$setPristine();
           delete form.other.new;
 
@@ -53,17 +43,12 @@ module.directive('authApplyForm', [
       };
 
       var saveQuery = function () {
-        form.partyAuthorize = new page.models.partyAuthorize();
-
-        form.partyAuthorize.$search({
-          id: form.party.id,
-          apply: true,
+	form.party.authorizeSearch(true, {
           notfound: true,
           name: form.notFound.query,
           info: form.notFound.info
-        }, function () {
+        }).then(function () {
           form.validator.server({});
-          page.models.party.$cache.removeAll();
           form.$setPristine();
           delete form.other.new;
 

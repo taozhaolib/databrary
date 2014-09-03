@@ -25,17 +25,17 @@ module.directive('authGrantForm', [
       };
 
       $scope.canGrantSite = function (p) {
-        return  p <= page.constants.data.permissionName.PUBLIC ||
-          p == page.constants.data.permissionName.READ ||
-          p > page.constants.data.permissionName.READ &&
+        return  p <= page.constants.permissionName.PUBLIC ||
+          p == page.constants.permissionName.READ ||
+          p > page.constants.permissionName.READ &&
           page.auth.hasAccess(p + 1);
       };
 
       $scope.canGrantMember = function (p) {
-        return  p == page.constants.data.permissionName.NONE ||
-          p == page.constants.data.permissionName.READ ||
-          p == page.constants.data.permissionName.EDIT ||
-          p == page.constants.data.permissionName.ADMIN;
+        return  p == page.constants.permissionName.NONE ||
+          p == page.constants.permissionName.READ ||
+          p == page.constants.permissionName.EDIT ||
+          p == page.constants.permissionName.ADMIN;
       };
 
       //
@@ -55,13 +55,9 @@ module.directive('authGrantForm', [
           form.saveFn(form);
         }
 
-        page.models.partyAuthorize.save({
-          id: form.party.id,
-          partyId: form.other.party.id
-        }, form.other, function () {
+	form.party.authorizeSave(form.other.party.id, form.other).then(function () {
           form.validator.server({});
           backup = $.extend(true, {}, form.other);
-          page.models.party.$cache.removeAll();
           form.$setPristine();
 
           if (angular.isFunction(form.successFn)) {
@@ -112,12 +108,8 @@ module.directive('authGrantForm', [
             form.denySuccessFn(form, arguments);
           }
         } else {
-          page.models.partyAuthorize.delete({
-            id: form.party.id,
-            partyId: form.other.party.id
-          }, {}, function () {
+	  form.party.authorizeDelete(form.other.party.id).then(function () {
             form.validator.server({});
-            page.models.party.$cache.removeAll();
 
             if (angular.isFunction(form.denySuccessFn)) {
               form.denySuccessFn(form, arguments);

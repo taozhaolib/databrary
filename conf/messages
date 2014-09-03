@@ -52,6 +52,7 @@ error.internal.body=Sorry, something is broken.  More information is below, or <
 
 error.title=Error
 error.resolve=<strong>Error</strong>: An error occurred retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.=Unknown Error
 error.0=Network Error
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
@@ -196,7 +197,8 @@ superuser.off.error=Could not deactivate superuser mode!
 
 welcome.title=Welcome
 welcome.title.sub=Databrary Beta
-welcome.body=Databrary is currently in beta.\n\nYou can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.\n\nIf you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.
+welcome.body=<p>Databrary is currently in beta.</p><p>You can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.</p><p>If you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.</p>
+welcome.investigators=Databrary Investigators
 
 party.overview.title=Overview
 party.contact.title=Contact
@@ -317,7 +319,7 @@ auth.search.grant.legend=Authorize a new affiliate
 auth.request.title=Request authorization from {0}
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
-auth.request.notfound.instructions=If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.\n\nOtherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.
+auth.request.notfound.instructions=<p>If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.</p><p>Otherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.</p>
 auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 
 auth.info.prompt=Expedite the authorization process by providing contact information for your Institution''s Authorizing Official or your sponsoring PI (i.e., the co-signer of your Agreement).
@@ -595,9 +597,6 @@ wizard.register-pending.name=Stay Tuned
 wizard.register-pending.description=Tips for exploring Databrary.
 wizard.register-pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
-#Splash page text
-splash.investigators.header=Databrary Investigators
-
 # --- Slot edit
 slot.edit=Edit session
 slot.view=View session
@@ -646,7 +645,7 @@ volume.edit.overview.error=Unable to save volume.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=Provide any files related to this study.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).\n\nAny representative video clips or still images may additionally be selected as exceprts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.\n\nSee our <a href="/asset/formats">list of accepted file types</a>.
+wizard.volume-edit-materials.instructions=<p>Provide any files related to this study.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as exceprts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
 
 material.file=File
 material.file.help=Select the file you wish to upload.

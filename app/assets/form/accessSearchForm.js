@@ -5,9 +5,9 @@ module.directive('accessSearchForm', [
     var link = function ($scope, $element, $attrs) {
       var form = $scope.accessSearchForm;
 
+      form.volume = $scope.$eval($attrs.volume);
       form.nameVal = '';
       form.found = [];
-      form.id = $attrs.volume || undefined;
       form.institution = $element.attr('institution') === 'true';
 
       $attrs.$observe('institution', function () {
@@ -37,11 +37,10 @@ module.directive('accessSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-          sentSearch = page.models.volumeAccess.search({
-            id: form.id,
+	  form.volume.accessSearch({
             name: form.nameVal,
             institution: form.institution,
-          }, function (data) {
+          }).then(function (data) {
             form.found = data;
 
             fin();

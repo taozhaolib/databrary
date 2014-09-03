@@ -8,12 +8,12 @@
   </fieldset>
 
   <fieldset scope>
-    <legend bo-html="'funding.search.legend' | message"></legend>
+    <legend bo-text="'funding.search.legend' | message"></legend>
     <funding-search-form></funding-search-form>
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="volumeEditFundingForm.saveAll()" class="green" bo-html="'save.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
-    <button ng-click="volumeEditFundingForm.resetAll()" class="yellow" bo-html="'revert.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.saveAll()" class="green" bo-text="'save.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
+    <button ng-click="volumeEditFundingForm.resetAll()" class="yellow" bo-text="'revert.all' | message" ng-disabled="!volumeEditFundingForm.$dirty"></button>
   </fieldset>
 </form>

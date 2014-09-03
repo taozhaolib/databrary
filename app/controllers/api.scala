@@ -64,6 +64,7 @@ object SiteApi extends SiteController {
     , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
     , ('locked, json.JsBoolean(Site.locked))
+    , ('url, json.JsString(site.Site.url))
     , ('version, json.JsString(site.Site.version))
     ).js
 
@@ -89,40 +90,57 @@ object SiteApi extends SiteController {
     , PartyHtml.edit
     , PartyHtml.avatar
     , PartyApi.profile
-    , PartyApi.authorizeGet
+    , PartyApi.get
+    , PartyApi.query
+    , PartyApi.update
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
-    , PartyApi.update
+    , PartyApi.authorizeChange
+    , PartyApi.authorizeDelete
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add
     , VolumeHtml.edit
     , VolumeController.thumb
+    , VolumeApi.get
+    , VolumeApi.query
+    , VolumeApi.update
     , VolumeApi.create
     , VolumeApi.accessSearch
+    , VolumeApi.accessChange
+    , VolumeApi.accessDelete
     , VolumeApi.funderSearch
     , VolumeApi.fundingChange
     , VolumeApi.fundingDelete
     , SlotHtml.view
     , SlotHtml.edit
+    , SlotApi.get
     , SlotApi.update
+    , SlotApi.create
     , AssetHtml.formats
     , AssetHtml.view
     , AssetHtml.edit
+    , AssetApi.get
+    , AssetApi.update
     , AssetApi.uploadStart
     , AssetApi.uploadChunk
     , AssetApi.upload
     , AssetApi.replace
+    , AssetApi.remove
     , SlotAssetHtml.view
     , SlotAssetController.thumb
     , SlotAssetController.download
     , RecordHtml.view
     , RecordHtml.edit
+    , RecordApi.get
     , RecordApi.add
     , RecordApi.remove
     , RecordApi.measureUpdate
+    , CommentApi.post
     , TagApi.search
+    , TagApi.update
     , routes.javascript.SiteApi.cite
+    , routes.javascript.SiteApi.void
     )
   }
 
@@ -134,8 +152,6 @@ object SiteApi extends SiteController {
     "lib/jquery/jquery.min.js",
     "lib/angularjs/angular.min.js",
     "lib/angularjs/angular-route.min.js",
-    "lib/angularjs/angular-resource.min.js",
-    "lib/angularjs/angular-sanitize.min.js",
     "lib/bindonce/bindonce.min.js",
     "lib/ngStorage/ngStorage.min.js",
     "lib/ng-flow/ng-flow-standalone.min.js",

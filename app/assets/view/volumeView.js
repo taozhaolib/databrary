@@ -6,16 +6,12 @@ module.controller('volumeView', [
 
     $scope.volumeType = volume.citation ? "study" : "volume";
     $scope.volumeMessage = function (msg /*, args...*/) {
-      arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.data.messages) ? $scope.volumeType : "volume") + "." + msg;
+      arguments[0] = ((($scope.volumeType + "." + msg) in page.constants.messages) ? $scope.volumeType : "volume") + "." + msg;
       return page.constants.message.apply(this, arguments);
     };
 
     $scope.viewClass = function () {
-      var cls = [];
-
-      cls.push(page.types.getVolumeType(volume));
-
-      return cls;
+      return [volume.type];
     };
 
     page.display.title = volume.name;
@@ -23,7 +19,7 @@ module.controller('volumeView', [
       {
         type: 'yellow',
         html: page.constants.message('volume.edit'),
-        url: page.router.volumeEdit(volume),
+        url: volume.editRoute(),
         access: page.permission.CONTRIBUTE,
         object: volume,
       },

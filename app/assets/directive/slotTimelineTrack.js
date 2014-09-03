@@ -5,10 +5,10 @@ module.directive('slotTimelineTrack', [
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var track = this;
-        var ctrl = page.$parse($attrs.ctrl)($scope);
+        var ctrl = $scope.$eval($attrs.ctrl);
 
-        track.asset = page.$parse($attrs.asset)($scope);
-        track.spare = angular.isDefined($attrs.spare);
+        track.asset = $scope.$eval($attrs.asset);
+        track.spare = $attrs.spare !== undefined;
 
         track.classes = function () {
           var cls = [];
@@ -34,29 +34,21 @@ module.directive('slotTimelineTrack', [
         var left, right;
 
         track.getPosition = function () {
-          if (ctrl.hasDuration(track.asset)) {
-            left = (track.asset.segment[0] - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
-            right = (ctrl.clock.duration - track.asset.segment[1]) / (ctrl.clock.duration - ctrl.clock.start);
-          } else if (ctrl.hasPosition(track.asset)) {
-            left = (track.asset.segment - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
-            right = 1 - left;
-          }
-
-          left = left ? left * 100 : 0;
-          right = right ? right * 100 : 0;
+	  left = (track.asset.segment.l - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
+	  console.log(left);
+	  right = (ctrl.clock.duration - track.asset.segment.u) / (ctrl.clock.duration - ctrl.clock.start);
         };
 
-        track.getPosition();
+	if (track.asset)
+	  track.getPosition();
 
         track.styles = function () {
           var styles = {};
 
-          if (angular.isDefined(left)) {
-            styles.left = left + '%';
-          }
-          if (angular.isDefined(right)) {
-            styles.right = right + '%';
-          }
+          if (left >= 0)
+            styles.left = 100 * left + '%';
+          if (right <= 1)
+            styles.right = 100 * right + '%';
 
           return styles;
         };

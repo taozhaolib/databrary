@@ -3,29 +3,24 @@
 module.directive('excerpt', [
   'pageService', function (page) {
     var link = function ($scope, $el, $attr) {
-      var obj = $scope[$attr.excerpt].object ? $scope[$attr.excerpt].object : $scope[$attr.excerpt];
+      var obj = $scope[$attr.excerpt].object || $scope[$attr.excerpt];
 
-      $scope.srcRoute = page.router.assetLink({
-        id: obj.asset.id,
-        sid: obj.container.id
-      });
+      var context = obj.inContext();
+      $scope.srcRoute = context.downloadRoute();
 
-      var excerpt = page.types.assetProperty(obj, 'segment', false) || [null, null];
-      excerpt = excerpt.map(function (old) {
-        return isNaN(old / 1000) ? null : old / 1000;
-      });
+      var excerpt = obj.segment.relativeTo(context.segment);
 
-      if (angular.isNumber(excerpt[0])) {
+      if (isFinite(excerpt.l)) {
         $el.on('loadedmetadata', function () {
-          this.currentTime = excerpt[0];
+          this.currentTime = excerpt.l / 1000;
 
           $el.off('loadedmetadata');
         });
       }
 
-      if (angular.isNumber(excerpt[1])) {
+      if (isFinite(excerpt.u) && excerpt.u > excerpt.l) {
         $el.on('timeupdate', function () {
-          if (this.currentTime < excerpt[1]) {
+          if (this.currentTime < excerpt.u / 1000) {
             return;
           }
 

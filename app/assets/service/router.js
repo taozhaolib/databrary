@@ -89,38 +89,18 @@ module.provider('routerService', [
       resolve: {
         parties: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.party.query({
+            return page.models.Party.query({
               access: page.permission.CONTRIBUTE,
               institution: false
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
             });
-
-            return deferred.promise;
           }
         ],
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            if (page.auth.isAuthorized()) {
-              page.models.volume.get({
-                id: 8,
-                access: ''
-              }, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            } else {
-              deferred.resolve({});
-            }
-
-            return deferred.promise;
+            if (page.auth.hasAuth(page.permission.SHARED))
+              return page.models.Volume.get(8, ['access']);
+            else
+	      return {};
           }
         ]
       },
@@ -205,15 +185,7 @@ module.provider('routerService', [
       resolve: {
         volumes: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.query({}, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
+            return page.models.Volume.query(page.$route.current.params);
           }
         ]
       },
@@ -229,70 +201,13 @@ module.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            var req = {
-              comments: '',
-              access: '',
-              openid: '',
-              parents: '',
-              children: '',
-            };
-
-            if (page.$route.current.params.id) {
-              req.id = page.$route.current.params.id;
-            } else if (page.auth.isLoggedIn()) {
-              req.id = page.auth.user.id;
-            } else if (page.types.isParty(page.$window.$play.object)) {
-              req.id = page.$window.$play.object.id;
-            }
-
-            if (page.$route.current.params.id) {
-              page.models.party.get(req, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            } else {
-              page.models.party.profile(req, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            }
-
-            return deferred.promise;
+            var req = ['comments', 'access', 'openid', 'parents', 'children', 'volumes'];
+            if ('id' in page.$route.current.params)
+              return page.models.Party.get(page.$route.current.params.id, req);
+            else
+              return page.models.Party.profile(req);
           }
         ],
-        volumes: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            var req = {
-              id: null
-            };
-
-            if (page.$route.current.params.id) {
-              req.party = page.$route.current.params.id;
-            } else if (page.auth.isLoggedIn()) {
-              req.party = page.auth.user.id;
-            } else if (page.types.isParty(page.$window.$play.object)) {
-              req.party = page.$window.$play.object.id;
-            }
-
-            if (page.constants.data.locked && !page.auth.isAuthorized()) {
-              return [];
-            }
-
-            page.models.volume.query(req, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
-          }
-        ]
       },
       reloadOnSearch: false,
       authenticate: true
@@ -303,53 +218,13 @@ module.provider('routerService', [
 
     //
 
-    var partyEditParty;
     routes.partyEdit = makeRoute(controllers.PartyHtml.edit, ['id'], {
       controller: 'partyEditView',
       templateUrl: 'partyEditView.html',
       resolve: {
         party: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.party.get({
-              id: page.$route.current.params.id,
-              parents: '',
-              children: '',
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            partyEditParty = deferred.promise;
-            return deferred.promise;
-          }
-        ],
-        partyAuth: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            var empty = {
-              parents: [],
-              children: [],
-            };
-
-            partyEditParty.then(function (party) {
-              if (page.auth.hasAccess(page.permission.ADMIN, party)) {
-                page.models.partyAuthorize.query(function (res) {
-                  deferred.resolve(res);
-                }, function (res) {
-                  deferred.reject(res);
-                });
-              } else {
-                deferred.resolve(empty);
-              }
-            }, function () {
-              deferred.resolve(empty);
-            });
-
-            return deferred.promise;
+            return page.models.Party.get(page.$route.current.params.id, {'parents':'all', 'children':'all'});
           }
         ],
       },
@@ -359,55 +234,23 @@ module.provider('routerService', [
 
     //
 
-    var volumeEditVolume;
     var volumeEdit = {
       controller: 'volumeEditView',
       templateUrl: 'volumeEditView.html',
       resolve: {
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
+            if (!('id' in page.$route.current.params))
+	      return undefined;
 
-            if (!page.$route.current.params.id) {
-              deferred.resolve();
-            } else {
-              page.models.volume.get({
-                access: '',
-                citation: '',
-                top: '',
-                funding: '',
-              }, function (res) {
-                deferred.resolve(res);
-              }, function (res) {
-                deferred.reject(res);
-              });
-            }
-
-            volumeEditVolume = deferred.promise;
-            return volumeEditVolume;
-          }
-        ],
-        slot: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            if (!page.$route.current.params.id) {
-              deferred.resolve();
-            } else {
-              volumeEditVolume.then(function (volume) {
-                page.models.slot.get({
-                  id: volume.top.id,
-                  vid: volume.id,
-                  assets: '',
-                }, function (res) {
-                  deferred.resolve(res);
-                }, function (res) {
-                  deferred.reject(res);
-                });
-              });
-            }
-
-            return deferred.promise;
+            return page.models.Volume.get(page.$route.current.params.id,
+	      ['access', 'citation', 'top', 'funding'])
+	      .then(function (volume) {
+		return volume.top.getSlot(volume.top.segment, ['assets'])
+		  .then(function (top) {
+		    return volume;
+		  });
+	      });
           }
         ],
       },
@@ -426,29 +269,8 @@ module.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.get({
-              access: '',
-              citation: '',
-              funding: '',
-              providers: '',
-              consumers: '',
-              top: '',
-              tags: '',
-              excerpts: '',
-              comments: '',
-              records: '',
-              summary: '',
-              sessions: '',
-              categories: ''
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
+            return page.models.Volume.get(page.$route.current.params.id,
+	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers', 'categories']);
           }
         ]
       },
@@ -462,45 +284,15 @@ module.provider('routerService', [
       controller: 'slotView',
       templateUrl: 'slotView.html',
       resolve: {
-        volume: [
-          'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.volume.get({
-              id: page.$route.current.params.vid,
-              access: '',
-              tags: '',
-              excerpts: '',
-              comments: '',
-              records: '',
-              summary: '',
-              sessions: '',
-              categories: ''
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
-          }
-        ],
         slot: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            page.models.slot.get({
-              assets: '',
-              tags: '',
-              comments: '',
-            }, function (res) {
-              deferred.resolve(res);
-            }, function (res) {
-              deferred.reject(res);
-            });
-
-            return deferred.promise;
-          }
+            return page.models.Volume.get(page.$route.current.params.vid,
+	      ['records', 'containers'])
+	      .then(function (volume) {
+		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
+		  ['assets', 'tags', 'comments', 'records']);
+	      });
+	  }
         ]
       },
       reloadOnSearch: false,
@@ -513,7 +305,7 @@ module.provider('routerService', [
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
-    routes.assetLink = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
+    routes.assetDownload = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
     routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['id', 'segment']);
     routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
@@ -526,10 +318,8 @@ module.provider('routerService', [
     });
 
     this.$get = [
-      '$location',
-      '$http',
-      'typeService',
-      function ($location, $http, type) {
+      '$location', '$http', 'constantService',
+      function ($location, $http, constants) {
 	var router = {
 	  controllers: controllers,
 	  prevUrl: '/',
@@ -560,133 +350,25 @@ module.provider('routerService', [
 	    if (++i < arguments.length)
 	      angular.extend(r, arguments[i]);
 	  }
+	  if (r.data instanceof FormData) {
+	    if (!('transformRequest' in r))
+	      r.transformRequest = angular.identity;
+	    if (!('headers' in r))
+	      r.headers = {};
+	    // Not sure why we do this but it seems to be necessary:
+	    if (!('Content-Type' in r.headers))
+	      r.headers['Content-Type'] = undefined;
+	  }
 	  return $http(r);
 	};
 
-	/* Construct a (resource) action from and route. */
-	router.action = function (route, argNames, config) {
-	  var r = getRoute(route, argNames);
-	  if (config)
-	    angular.extend(r, config);
-	  return r;
-	};
-
-	router.party = function (data) {
-	  if (!type.isParty(data)) {
-	    throw new Error('routerService.party() requires Party as first argument');
-	  }
-
-	  return routes.party([data.id]);
-	};
-
-	router.partyEdit = function (data, page) {
-	  if (!type.isParty(data)) {
-	    throw new Error('routerService.partyEdit() requires Party as first argument');
-	  }
-
-	  var params = {};
-	  if (page)
-	    params.page = page;
-
-	  return routes.partyEdit([data.id], params);
+	router.permalink = function (url) {
+	  return constants.url + url;
 	};
 
 	router.volumeCreate = function (owner) {
 	  router.prevUrl = $location.path();
 	  return routes.volumeCreate([owner]);
-	};
-
-	router.volumeEdit = function (data, page) {
-	  if (!type.isVolume(data)) {
-	    throw new Error('routerService.volumeEdit() requires Volume as first argument');
-	  }
-
-	  var params = {};
-	  if (page)
-	    params.page = page;
-
-	  return routes.volumeEdit([data.id], params);
-	};
-
-	router.record = function (data) {
-	  if (!type.isRecord(data)) {
-	    throw new Error('routerService.record() requires Record as first argument');
-	  }
-
-	  return routes.record([data.id]);
-	};
-
-	router.assetThumb = function (data) {
-	  if (!type.isAsset(data)) {
-	    throw new Error('routerService.assetThumb() requires Asset as first argument');
-	  }
-
-	  return routes.assetThumb([data.container.id, type.segmentString(data), data.asset.id, data.size]);
-	};
-
-	router.assetLink = function (data, inline) {
-	  inline = data.inline || inline;
-	  if (!type.isAsset(data)) {
-	    if (!data || !data.sid || !data.id)
-	      throw new Error('routerService.assetLink() requires Asset or object.id/.sid/.segment as first argument');
-
-	    return routes.assetLink([data.sid, type.segmentJoin(data.segment), data.id, inline]);
-	  }
-
-	  return routes.assetLink([data.container.id, type.segmentString(data), data.asset.id, inline]);
-	};
-
-	router.partyAvatar = function (data, size, nonce) {
-	  if (!type.isParty(data)) {
-	    throw new Error('routerService.partyAvatar() requires Party as first argument');
-	  }
-
-	  if (!angular.isNumber(size)) {
-	    size = 56;
-	  }
-
-	  var params = {};
-	  if (nonce) {
-	    params.nonce = nonce;
-	  }
-
-	  return routes.partyAvatar([data.id, size], params);
-	};
-
-	router.slot = function (volume, data, segment) {
-	  if (type.isVolume(volume))
-	    volume = volume.id;
-
-	  if (type.isSlot(data)) {
-	    segment = data.segment;
-	    data = data.id;
-	  }
-
-	  return routes.slot([volume, data, type.segmentJoin(segment)]);
-	};
-
-	router.slotEdit = function (data) {
-	  if (!type.isSlot(data)) {
-	    throw new Error('routerService.slotEdit() requires Slot as first argument');
-	  }
-
-	  return routes.slotEdit([data.id, type.segmentString(data)]);
-	};
-
-	router.assetEdit = function (data) {
-	  if (!type.isAsset(data)) {
-	    throw new Error('routerService.assetEdit() requires Asset as first argument');
-	  }
-
-	  return routes.assetEdit([data.asset.id]);
-	};
-
-	router.recordEdit = function (data) {
-	  if (!type.isRecord(data)) {
-	    throw new Error('routerService.recordEdit() requires Record as first argument');
-	  }
-
-	  return routes.recordEdit([data.id]);
 	};
 
 	return router;

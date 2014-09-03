@@ -8,10 +8,9 @@ module.factory('authService', [
   'typeService',
   'messageService',
   'constantService',
-  'routerService',
-  'party',
+  'modelService',
   'playService',
-  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, router, party, play) {
+  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, models, play) {
     var auth = {};
 
     //
@@ -47,11 +46,10 @@ module.factory('authService', [
         return auth.parseUser(user);
       }
 
-      party.user(function (data) {
-        auth.parseUser(data);
-      }, function () {
-        auth.parseUser(undefined);
-      });
+      models.Login.get().then(auth.parseUser,
+	function () {
+	  auth.parseUser(undefined);
+	});
     };
 
     auth.updateUser(play.user);
@@ -60,7 +58,7 @@ module.factory('authService', [
 
     var parseUserAuth = function (object) {
       if (auth.user && auth.user.superuser) {
-        return constants.data.permissionName.SUPER;
+        return constants.permissionName.SUPER;
       }
 
       if (angular.isObject(object) && 'permission' in object) {
@@ -88,7 +86,7 @@ module.factory('authService', [
     //
 
     auth.logout = function () {
-      party.logout(function () {
+      models.Login.logout().then(function () {
         auth.parseUser();
         $location.url('/');
 
@@ -110,7 +108,7 @@ module.factory('authService', [
     //
 
     auth.isLoggedIn = function () {
-      return !!(auth.user && auth.user.id != constants.data.party.NOBODY);
+      return !!(auth.user && auth.user.id != constants.party.NOBODY);
     };
 
     auth.hasToken = function () {
@@ -130,16 +128,15 @@ module.factory('authService', [
     };
 
     auth.isAuthorized = function () {
-      return auth.isLoggedIn() && auth.hasAuth(constants.data.permissionName.PUBLIC);
+      return auth.isLoggedIn() && auth.hasAuth(constants.permissionName.PUBLIC);
     };
 
     //
 
     var enableSU = function (form) {
-      party.superuserOn({
-          auth: form.auth
-        },
-        function (data) {
+      models.Login.superuserOn({
+	  auth: form.auth
+        }).then(function (data) {
           auth.parseUser(data);
 
           messages.add({
@@ -156,7 +153,7 @@ module.factory('authService', [
     };
 
     var disableSU = function () {
-      party.superuserOff(function (data) {
+      models.Login.superuserOff().then(function (data) {
         auth.parseUser(data);
 
         messages.add({

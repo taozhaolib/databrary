@@ -1,5 +1,5 @@
 <section class="slot-timeline" bindonce>
-  <div class="slot-timeline-temporal" ng-if="ctrl.current[0] && ctrl.hasPosition(ctrl.current[0])">
+  <div class="slot-timeline-temporal" ng-if="ctrl.current && ctrl.hasPosition(ctrl.current)">
     <slot-timeline-ruler ctrl="ctrl"></slot-timeline-ruler>
 
     <div class="slot-timeline-ruler" ng-click="timeline.jump($event)">
@@ -12,10 +12,10 @@
 
   <div class="slot-timeline-tracks">
     <slot-timeline-track ng-repeat="asset in timeline.tracks" ctrl="ctrl" asset="asset"></slot-timeline-track>
-    <slot-timeline-track ctrl="ctrl" asset="asset" spare></slot-timeline-track>
+    <slot-timeline-track ctrl="ctrl" spare></slot-timeline-track>
   </div>
 
   <div class="slot-timeline-now-zone">
-    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow" ng-if="ctrl.current[0] && ctrl.hasPosition(ctrl.current[0])"></div>
+    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow" ng-if="ctrl.current && ctrl.hasPosition(ctrl.current)"></div>
   </div>
 </section>

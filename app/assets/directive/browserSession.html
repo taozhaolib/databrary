@@ -3,21 +3,21 @@
     <div class="cf">
       <footer>
         <span bo-if="data.object.consent">
-            <div class="browser-item-meta consent icon bb" bo-class="page.constants.data.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.data.consent[data.object.consent]}}"></div>
+            <div class="browser-item-meta consent icon bb" bo-class="page.constants.consent[data.object.consent].toLowerCase()" hint="consent-{{page.constants.consent[data.object.consent]}}"></div>
 
             <div class="browser-item-meta sep" bo-if="page.auth.hasAccess(page.permission.CONTRIBUTE, data)">
               |
             </div>
         </span>
 
-        <a bo-href="editLink(data)" bo-if="page.auth.hasAccess(page.permission.CONTRIBUTE, data)">edit</a>
+        <a bo-href="data.object.editRoute()" bo-if="page.auth.hasAccess(page.permission.CONTRIBUTE, data)">edit</a>
       </footer>
 
       <header>
         <browser-icon data="data"></browser-icon>
 
         <h1 class="browser-item-title">
-          <a bo-href="page.router.slot(data.volume.id, data.object.id, data.segment)" bo-text="page.types.slotName(data.object)"></a>&nbsp;
+          <a bo-href="data.object.route" bo-text="data.object.displayName"></a>&nbsp;
           <session-mark ng-repeat="cat in getSessionRecords(data)"></session-mark>
         </h1>
       </header>
@@ -28,7 +28,7 @@
         <dt bo-text="formatSessionCategory(data, cat.id, cat.records)" ng-class="{solo: record.id == 0}"></dt>
 
         <dd ng-repeat="record in cat.records" ng-if="record.id != 0">
-          <span bo-text="recordIdentifier(record)"></span><span bo-if="record.age">&nbsp;(<display-age value="record.age"></display-age>)</span>
+          <span bo-text="record.displayName"></span><span bo-if="record.age">&nbsp;(<display-age value="record.age"></display-age>)</span>
         </dd>
       </dl>
 

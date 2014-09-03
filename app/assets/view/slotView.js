@@ -1,20 +1,31 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'volume', 'slot', 'pageService', function ($scope, volume, slot, page) {
-    page.display.title = page.types.slotName(slot);
+  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
+    var volume = slot.volume;
+    page.display.title = slot.displayName;
 
     // helpers
 
-    var getAsset = function (media) {
-      return media && media.id ? media.asset : media;
-    };
+    function getAsset(media) {
+      return media && '$scope' in media ? media.asset : media;
+    }
 
-    var getElement = function (media) {
+    function getElement(media) {
       return $('#' + media.id).find('video')[0];
-    };
+    }
 
     // controller
+
+    function syncPlayback(media) {
+      var el = getElement(media);
+
+      if (ctrl.clock.playing && el && el.paused) {
+	ctrl.clock.play();
+      } else if (el && !el.paused) {
+	ctrl.clock.pause();
+      }
+    }
 
     var ctrl = {
       slot: slot,
@@ -23,26 +34,11 @@ module.controller('slotView', [
 
       media: [],
 
-      // TODO: current can be used for multiple assets with minor mods
-      current: [slot.assets[0]],
-
-      state: {
-	selection: null,
-      },
-
-      syncPlayback: function (media) {
-        var el = getElement(media);
-
-	if (ctrl.clock.playing && el && el.paused) {
-	  ctrl.clock.play();
-	} else if (el && !el.paused) {
-	  ctrl.clock.pause();
-	}
-      },
+      current: slot.assets[0],
 
       registerMedia: function (media) {
 	ctrl.media.push(media);
-	ctrl.syncPlayback(media);
+	syncPlayback(media);
 
 	media.$scope.$on('$destroy', function () {
 	  ctrl.deregisterMedia(media);
@@ -58,20 +54,11 @@ module.controller('slotView', [
       },
 
       setCurrent: function (asset) {
-	ctrl.current[0] = asset;
+	ctrl.current = getAsset(asset);
       },
 
       isCurrent: function (media) {
-	if (media.asset && media.asset.id) {
-	  return ctrl.current[0] === media;
-	}
-	else {
-	  return ctrl.current[0] === media.asset;
-	}
-      },
-
-      select: function (media) {
-	ctrl.current[0] = media.asset;
+	return ctrl.current === getAsset(media);
       },
 
       jump: function (asset) {
@@ -81,27 +68,25 @@ module.controller('slotView', [
 
       hasPosition: function (media) {
 	var asset = getAsset(media);
-	return asset && !angular.isNothing(asset.segment);
-      },
-
-      hasDuration: function (media) {
-	var asset = getAsset(media);
-	return asset && Array.isArray(asset.segment);
+	return asset && isFinite(asset.segment.l);
       },
 
       hasDisplay: function (media) {
 	var asset = getAsset(media);
-	return asset && ['video', 'image'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	if (!asset)
+	  return false;
+	var type = asset.asset.format.type;
+	return type === 'video' || type === 'image';
       },
 
       hasTime: function (media) {
 	var asset = getAsset(media);
-	return ['video'].indexOf(page.types.assetMimeArray(asset, true)[0]) > -1;
+	return asset && asset.asset.duration;
       },
 
       isNowPlayable: function (media) {
 	var asset = getAsset(media);
-	return ctrl.clock.position > asset.segment[0] && ctrl.clock.position < asset.segment[1];
+	return ctrl.clock.position > asset.segment.l && ctrl.clock.position < asset.segment.u;
       },
 
       isReady: function (media) {
@@ -122,13 +107,13 @@ module.controller('slotView', [
     var sortRecords = function () {
       ctrl.records = {};
       ctrl.noteOptions = {
-	'comments': 'comments',
+	comments: 'comments',
       };
 
-      angular.forEach(volume.sessions[slot.container.id].records, function (record) {
+      angular.forEach(volume.containers[slot.container.id].records, function (record) {
 	if (!(volume.records[record.id].category in ctrl.records)) {
 	  ctrl.records[volume.records[record.id].category] = [];
-	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.data.category[volume.records[record.id].category].name;
+	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.category[volume.records[record.id].category].name;
 	}
 
 	ctrl.records[volume.records[record.id].category].push(record);
@@ -163,7 +148,7 @@ module.controller('slotView', [
     var callbackPlay = function () {
       asapMediaFn(function (media, el) {
 	if (ctrl.isNowPlayable(media) && ctrl.isPaused(media)) {
-	  el.currentTime = (ctrl.clock.position - media.asset.segment[0]) / 1000;
+	  el.currentTime = (ctrl.clock.position - media.asset.segment.l) / 1000;
 	  el.play();
 	} else if (!ctrl.isPaused(media)) {
 	  el.pause();
@@ -172,9 +157,7 @@ module.controller('slotView', [
     };
 
     var callbackJump = function () {
-      asapMediaFn(function (media) {
-	ctrl.syncPlayback(media);
-      });
+      asapMediaFn(syncPlayback);
     };
 
     var callbackPause = function () {
@@ -186,7 +169,7 @@ module.controller('slotView', [
     var callbackTime = function () {
       asapMediaFn(function (media, el) {
 	if (ctrl.isNowPlayable(media) && el.paused && !el.seeking) {
-	  ctrl.syncPlayback(media);
+	  syncPlayback(media);
 	}
       });
     };

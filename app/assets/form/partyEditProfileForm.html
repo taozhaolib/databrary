@@ -2,7 +2,7 @@
   <messages form="partyEditProfileForm"></messages>
 
   <fieldset>
-    <legend bo-html="'party.edit.personal' | message"></legend>
+    <legend bo-text="'party.edit.personal' | message"></legend>
 
     <validator form="partyEditProfileForm" name="name" label="'party.edit.name.title' | message">
       <input type="text" name="name" ng-model="partyEditProfileForm.data.name">
@@ -37,8 +37,8 @@
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="partyEditProfileForm.save()" bo-html="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
-    <button ng-click="partyEditProfileForm.resetAll()" bo-html="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
+    <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
+    <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
   </fieldset>
 </form>
 

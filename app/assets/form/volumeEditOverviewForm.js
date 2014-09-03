@@ -11,7 +11,6 @@ module.directive('volumeEditOverviewForm', [
           name: '',
         }
       ];
-      var backup = {};
 
       //
 
@@ -67,7 +66,7 @@ module.directive('volumeEditOverviewForm', [
         }
 
         if (form.volume) {
-          page.models.volume.save(form.data,
+          form.volume.save(form.data).then(
             function (res) {
               form.validator.server({});
 
@@ -83,7 +82,6 @@ module.directive('volumeEditOverviewForm', [
               }
 
               form.$setPristine();
-              page.models.volume.$cache.removeAll();
             }, function (res) {
               form.validator.server(res);
               page.display.scrollTo(form.$element);
@@ -93,9 +91,7 @@ module.directive('volumeEditOverviewForm', [
               }
             });
         } else {
-          page.models.volume.create({
-	    owner: page.$routeParams.owner || page.auth.user.id
-	  }, form.data, function (res) {
+          page.models.Volume.create(form.data, page.$routeParams.owner || page.auth.user.id).then(function (res) {
             form.validator.server({});
 
             form.messages.add({
@@ -110,8 +106,7 @@ module.directive('volumeEditOverviewForm', [
             }
 
             form.$setPristine();
-            page.models.volume.$cache.removeAll();
-            page.$location.url(page.router.volumeEdit(res));
+            page.$location.url(res.editRoute());
           }, function (res) {
             form.validator.server(res);
 

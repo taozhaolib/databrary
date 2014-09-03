@@ -49,16 +49,11 @@ module.directive('fundingGrantForm', [
           return grant !== '';
         });
 
-        form.volumeAccess = new page.models.volumeAccess(form.data);
-
         if (angular.isFunction(form.saveFn)) {
           form.saveFn(form);
         }
 
-        form.volumeAccess.$saveFunding({
-          id: form.volume.id,
-          funderId: form.data.funder.id
-        }, function () {
+	form.volume.fundingSave(form.data.funder.id, form.data).then(function () {
           if (angular.isFunction(form.successFn)) {
             form.successFn(form, arguments);
           }
@@ -71,7 +66,6 @@ module.directive('fundingGrantForm', [
 
           delete form.data.new;
           backup = $.extend(true, {}, form.data);
-          page.models.volume.$cache.removeAll();
           form.$setPristine();
         }, function (res) {
           form.messages.addError({
@@ -120,16 +114,11 @@ module.directive('fundingGrantForm', [
       form.removeErrorFn = undefined;
 
       form.remove = function () {
-        form.volumeAccess = new page.models.volumeAccess();
-
         if (angular.isFunction(form.removeFn)) {
           form.removeFn(form);
         }
 
-        form.volumeAccess.$deleteFunding({
-          id: form.volume.id,
-          funderId: form.data.funder.id,
-        }, function () {
+	form.volume.fundingDelete(form.data.funder.id, form.data).then(function () {
           if (angular.isFunction(form.removeSuccessFn)) {
             form.removeSuccessFn(form, arguments, form.access);
           }
@@ -141,7 +130,6 @@ module.directive('fundingGrantForm', [
           });
 
           delete form.data.new;
-          page.models.volume.$cache.removeAll();
           form.$setPristine();
         }, function (res) {
           form.messages.addError({

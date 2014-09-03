@@ -43,12 +43,12 @@ module.directive('authSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-          sentSearch = page.models.partyAuthorize.search({
+          sentSearch = ($scope.party || page.models.Login.user).authorizeSearch({
             id: form.id || page.auth.user.id,
             name: form.nameVal,
             institution: form.principal === 'principal' ? true :
                 form.principal === 'affiliate' ? false : undefined,
-          }, function (data) {
+          }).then(function (data) {
             form.found = data;
 
             fin();

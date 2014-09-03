@@ -60,7 +60,7 @@ module.directive('spreadsheet', [
     Object.freeze(pseudoMetrics);
 
     function getMetric(m) {
-      return pseudoMetrics[m] || page.constants.data.metric[m];
+      return pseudoMetrics[m] || page.constants.metric[m];
     }
 
     var controller = [
@@ -74,7 +74,7 @@ module.directive('spreadsheet', [
 	function getSlot(slot) {
 	  if ('records' in slot)
 	    return slot;
-	  angular.extend(slot, volume.sessions[slot.id]);
+	  angular.extend(slot, volume.containers[slot.id]);
 	  if (slot.segment !== undefined) {
 	    slot.records = slot.records.filter(function (rec) {
 	      return page.types.segmentOverlaps(slot.segment, rec.segment);
@@ -96,7 +96,7 @@ module.directive('spreadsheet', [
 	 */
 
 	var slots = []; // [Row] = Slot
-	angular.forEach(volume.sessions, function (s) {
+	angular.forEach(volume.containers, function (s) {
 	  slots.push(/*getSlot*/(s));
 	});
 
@@ -178,7 +178,7 @@ module.directive('spreadsheet', [
 	function populateCols() {
 	  metricCols = [];
 	  $scope.recordCols = recordCols = Object.keys(records).sort(byNumber).map(function (c) {
-	    var category = page.constants.data.category[c];
+	    var category = page.constants.category[c];
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
 	      return m !== 'id' && !getMetric(m).long;
@@ -237,8 +237,8 @@ module.directive('spreadsheet', [
 	  else if (m === 'age')
 	    v = page.display.formatAge(v);
 	  else if (m === 'consent') {
-	    if (v in page.constants.data.consent) {
-	      var cn = page.constants.data.consent[v].toLowerCase();
+	    if (v in page.constants.consent) {
+	      var cn = page.constants.consent[v].toLowerCase();
 	      c.className = cn + ' consent icon hint-consent-' + cn;
 	      v = '';
 	    }
@@ -305,7 +305,7 @@ module.directive('spreadsheet', [
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
-	  cell.setAttribute('href', page.router.slot(volume.id, slot));
+	  cell.setAttribute('href', slot.route);
 	  cell.classList.add('link', 'icon');
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
@@ -407,10 +407,7 @@ module.directive('spreadsheet', [
 	  var data = {};
 	  data[f] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
-	  page.models.slot.update(slots[i], data, function () {
-	    var slot = slots[i];
-	    slot[f] = v;
-	    volume.sessions[slot.id][f] = v; // may be redundant, but that's fine
+	  slots[i].save(data).then(function (slot) {
 	    generateText(cell, f, v);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
@@ -418,15 +415,13 @@ module.directive('spreadsheet', [
 
 	function saveMeasure(cell, r, m, v) {
 	  cell.classList.add('saving');
-	  page.models.record.measureUpdate({id:r,metric:m}, {datum:v}, function () {
-	    var rec = volume.records[r];
-	    rec.measures[m] = v;
+	  volume.records[r].measureSet(m, v).then(function (rec) {
 	    var rcm = records[rec.category][m];
 	    angular.forEach(depends[r], function (n, i) {
 	      rcm[n][i] = v;
 	    });
 	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
-	    var a = page.constants.data.metric[m].assumed;
+	    var a = page.constants.metric[m].assumed;
 	    for (var li = 0; li < l.length; li ++)
 	      generateText(l[li], m, v, a);
 	    cell.classList.remove('saving');
@@ -435,7 +430,7 @@ module.directive('spreadsheet', [
 
 	function addRecord(cell, i, cat) {
 	  cell.classList.add('saving');
-	  page.models.slot.addRecord(slots[i], {category:cat.id}, function (rec) {
+	  slots[i].addRecord({category:cat.id}).then(function (rec) {
 	    /* TODO add new rec to i */
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
@@ -499,7 +494,7 @@ module.directive('spreadsheet', [
 	    value = undefined;
 	  else switch (type) {
 	    case 'record':
-	      var c = 'c' in info ? page.constants.data.category[info.c] : metricCols[info.m].category;
+	      var c = 'c' in info ? page.constants.category[info.c] : metricCols[info.m].category;
 	      if (value === 'new')
 		addRecord(cell, info.i, c);
 	      else if (value === 'remove') {
@@ -594,7 +589,7 @@ module.directive('spreadsheet', [
 	      /* falls through */
 	    case 'add':
 	      if (c === undefined) {
-		c = page.constants.data.category[info.c];
+		c = page.constants.category[info.c];
 		editInput.value = 'remove';
 	      }
 	      editScope.type = 'record';
@@ -604,14 +599,14 @@ module.directive('spreadsheet', [
 	      };
 	      angular.forEach(volume.records, function (r, ri) {
 		if (r.category === c.id && (!(info.i in depends[ri]) || ri === editInput.value)) {
-		  editScope.options[ri] = page.types.recordName(r);
+		  editScope.options[ri] = r.displayName;
 		}
 	      });
 	      break;
 	    case 'metric':
 	      editScope.type = 'metric';
 	      editInput.value = undefined;
-	      editScope.options = page.constants.data.metrics;
+	      editScope.options = page.constants.metrics;
 	      break;
 	    default:
 	      return;

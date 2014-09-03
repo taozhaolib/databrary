@@ -109,13 +109,11 @@ module.factory('displayService', [
 
     //
 
-    display.isMobile = function () {
-      return typeof $window.orientation !== 'undefined';
-    };
+    display.isMobile =
+      typeof $window.orientation !== 'undefined';
 
-    display.videoSupported = function () {
-      return !($window.navigator.userAgent.toLowerCase().contains('firefox') && $window.navigator.platform.toLowerCase().contains('mac'));
-    };
+    display.videoSupported =
+      !($window.navigator.userAgent.toLowerCase().contains('firefox') && $window.navigator.platform.toLowerCase().contains('mac'));
 
     //
 

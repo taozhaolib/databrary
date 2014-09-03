@@ -10,7 +10,7 @@ module.controller('registerView', [
 
     // TODO: Remove analytics
     $scope.$watch(function () {
-      if (!$scope.wizard) {
+      if (!($scope.wizard && $scope.wizard.steps)) {
         return;
       }
 
@@ -30,7 +30,7 @@ module.controller('registerView', [
         name: step.name
       });
 
-      page.models.analytic.get();
+      page.models.analytic();
     });
 
     //

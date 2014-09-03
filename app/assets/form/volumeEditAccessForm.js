@@ -6,7 +6,7 @@ module.directive('volumeEditAccessForm', [
       var form = $scope.volumeEditAccessForm;
 
       form.data = [];
-      form.global = angular.copy(page.constants.data.accessGlobal[0]);
+      form.global = angular.copy(page.constants.accessGlobal[0]);
 
       form.volume = undefined;
       var backup = [];
@@ -16,9 +16,9 @@ module.directive('volumeEditAccessForm', [
       form.init = function (data, volume) {
         if (form.data.length === 0) {
           angular.forEach(data, function (access) {
-            var i = page.constants.data.accessGlobal.parties.indexOf(access.party.id);
+            var i = page.constants.accessGlobal.parties.indexOf(access.party.id);
             if (i >= 0) {
-              form.global[i] = page.constants.data.permission[access.children || 0];
+              form.global[i] = page.constants.permission[access.children || 0];
             } else {
               form.data.push(access);
             }
@@ -33,7 +33,7 @@ module.directive('volumeEditAccessForm', [
       form.calcGlobalVal = function () {
         form.globalVal = undefined;
 
-        angular.forEach(page.constants.data.accessGlobal, function (preset, i) {
+        angular.forEach(page.constants.accessGlobal, function (preset, i) {
           if (preset.every(function (x, i) {
             return form.global[i] === x;
           })) {
@@ -44,7 +44,7 @@ module.directive('volumeEditAccessForm', [
       };
 
       form.changeAccessGlobal = function () {
-        angular.copy(page.constants.data.accessGlobal[form.globalVal], form.global);
+        angular.copy(page.constants.accessGlobal[form.globalVal], form.global);
         form.accessGlobalDirty = true;
         form.$setDirty();
       };
@@ -95,12 +95,9 @@ module.directive('volumeEditAccessForm', [
           form.saveGlobalFn(form);
         }
 
-        page.$q.all(page.constants.data.accessGlobal.parties.map(function (party, i) {
-          var p = page.constants.data.permissionName[form.global[i]];
-          page.models.volumeAccess.save({
-            id: form.volume.id,
-            partyId: party
-          }, {
+        page.$q.all(page.constants.accessGlobal.parties.map(function (party, i) {
+          var p = page.constants.permissionName[form.global[i]];
+	  form.volume.accessSave(party, {
             individual: p,
             children: p,
           });
@@ -118,7 +115,6 @@ module.directive('volumeEditAccessForm', [
           angular.copy(form.global, backup);
           form.accessGlobalDirty = false;
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.global.save.error'),

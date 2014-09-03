@@ -1,4 +1,4 @@
-@(slot : Slot, volume : Option[Volume] = None, tags : Seq[TagWeight], form : TagController.Form)(implicit request : SiteRequest[_])
+@(tags : Seq[TagWeight], form : TagController.Form)(implicit request : SiteRequest[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)

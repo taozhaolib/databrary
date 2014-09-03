@@ -5,7 +5,7 @@ module.controller('BrowserPanel', [
     $scope.refreshPanel = function () {
       switch (page.$route.current.controller) {
         case 'volumeView':
-          $scope.enabled = $scope.volume.sessions;
+          $scope.enabled = $scope.volume.containers;
           break;
         case 'partyView':
           $scope.enabled = $scope.volumes[0];

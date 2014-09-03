@@ -188,7 +188,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
       "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
-      "revisions" -> (opt => Asset.getRevisions(this).map(JsonRecord.map(_.json))),
+      "revisions" -> (opt => Asset.getRevisions(this).map(JsonArray.map(_.json))),
       "creation" -> (opt => if (checkPermission(Permission.EDIT))
 	creation.map { case (date, name) => JsonObject.flatten(
 	  date.map('date -> _),

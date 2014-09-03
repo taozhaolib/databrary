@@ -2,10 +2,10 @@
   <messages form="authApplyForm"></messages>
 
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
-    <legend ng-bind-html="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
+    <legend ng-bind="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
 
     <div ng-if="authApplyForm.other.party.institution">
-      <div ng-bind-html="'auth.info.prompt' | message | format"></div>
+      <div bo-text="'auth.info.prompt' | message"></div>
 
       <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
         <textarea id="field-guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
@@ -14,9 +14,9 @@
   </fieldset>
 
   <fieldset class="clean" ng-if="authApplyForm.notFound.query">
-    <legend bo-html="'auth.request.notfound.title' | message"></legend>
+    <legend bo-text="'auth.request.notfound.title' | message"></legend>
 
-    <div ng-bind-html="'auth.request.notfound.instructions' | message | format"></div>
+    <div bo-html="'auth.request.notfound.instructions' | message"></div>
 
     <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
       <textarea id="field-info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
@@ -26,8 +26,8 @@
   <fieldset class="clean">
     <input type="hidden" name="id" ng-value="authApplyForm.other.id">
 
-    <button ng-click="authApplyForm.save()" class="green" bo-html="'auth.request' | message"></button>
-    <button ng-click="authApplyForm.cancel()" class="yellow" bo-html="'cancel' | message"></button>
+    <button ng-click="authApplyForm.save()" class="green" bo-text="'auth.request' | message"></button>
+    <button ng-click="authApplyForm.cancel()" class="yellow" bo-text="'cancel' | message"></button>
   </fieldset>
 </form>
 

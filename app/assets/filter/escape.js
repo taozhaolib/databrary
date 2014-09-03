@@ -1,19 +1,10 @@
 'use strict';
 
 module.filter('escape', [
-  function () {
-    var ent = Object.freeze({
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&apos;"
-    });
-
+  '$sce', '$sanitize',
+  function ($sce, $sanitize) {
     return function (input) {
-      return input.replace(/[&<>"']/g, function (c) {
-        return ent[c];
-      });
+      return $sce.trustAsHtml($sanitize(input));
     };
   }
 ]);

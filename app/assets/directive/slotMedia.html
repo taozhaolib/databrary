@@ -1,20 +1,20 @@
-<div class="slot-media" bo-id="media.id" bo-switch="page.types.assetMimeArray(media.asset)[0]" bindonce>
+<div class="slot-media" bo-id="media.id" bo-switch="media.asset.format.type" bindonce>
   <div bo-switch-when="image">
-    <img bo-src="page.router.assetLink(media.asset, true)">
+    <img bo-src="media.asset.downloadRoute(true)">
   </div>
 
   <div bo-switch-when="video">
-    <video ng-if="page.display.videoSupported() && ctrl.hasPosition(media)">
-      <source bo-src="page.router.assetLink(media.asset, true)" bo-attr bo-attr-type="page.types.assetFormat(media.asset).mimetype">
+    <video ng-if="page.display.videoSupported && ctrl.hasPosition(media)">
+      <source bo-src="media.asset.downloadRoute(true)" bo-attr bo-attr-type="media.asset.format.mimetype">
     </video>
-    <video ng-if="page.display.videoSupported() && !ctrl.hasPosition(media)" controls>
-      <source bo-src="page.router.assetLink(media.asset, true)" bo-attr bo-attr-type="page.types.assetFormat(media.asset).mimetype">
+    <video ng-if="page.display.videoSupported && !ctrl.hasPosition(media)" controls>
+      <source bo-src="media.asset.downloadRoute(true)" bo-attr bo-attr-type="media.asset.format.mimetype">
     </video>
   </div>
 
   <div bo-switch-default>
     <aside>
-      <div class="slot-media-name" bo-text="page.types.assetDisplayName(media.asset)">&nbsp;</div>
+      <div class="slot-media-name" bo-text="media.asset.displayName">&nbsp;</div>
     </aside>
   </div>
 </div>

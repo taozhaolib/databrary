@@ -4,8 +4,8 @@ module.directive('accessGrantForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
       var form = $scope.accessGrantForm;
-      form.volume = page.$parse($attrs.volume)($scope) || undefined;
-      form.access = page.$parse($attrs.access)($scope) || undefined;
+      form.volume = $scope.$eval($attrs.volume);
+      form.access = $scope.$eval($attrs.access);
 
       form.data = {
         individual: form.access.individual || 0,
@@ -13,9 +13,9 @@ module.directive('accessGrantForm', [
       };
 
       $scope.canGrantAccess = function (p) {
-        return  p == page.constants.data.permissionName.READ ||
-          p == page.constants.data.permissionName.EDIT ||
-          p == page.constants.data.permissionName.ADMIN;
+        return  p == page.constants.permissionName.READ ||
+          p == page.constants.permissionName.EDIT ||
+          p == page.constants.permissionName.ADMIN;
       };
 
       form.data.extend = form.data.children !== 0;
@@ -43,10 +43,7 @@ module.directive('accessGrantForm', [
           form.saveFn(form);
         }
 
-        page.models.volumeAccess.save({
-          id: form.volume.id,
-          partyId: form.access.party.id,
-        }, form.data, function () {
+	form.volume.accessSave(form.access.party.id, form.data).then(function () {
           if (angular.isFunction(form.successFn)) {
             form.successFn(form, arguments);
           }
@@ -59,7 +56,6 @@ module.directive('accessGrantForm', [
 
           backup = $.extend(true, {}, form.data);
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.grant.save.error'),
@@ -103,10 +99,7 @@ module.directive('accessGrantForm', [
           form.removeFn(form);
         }
 
-        page.models.volumeAccess.delete({
-          id: form.volume.id,
-          partyId: form.access.party.id,
-        }, {}, function () {
+	form.volume.accessDelete(form.access.party.id).then(function () {
           if (angular.isFunction(form.removeSuccessFn)) {
             form.removeSuccessFn(form, arguments, form.access);
           }
@@ -118,7 +111,6 @@ module.directive('accessGrantForm', [
           });
 
           form.$setPristine();
-          page.models.volume.$cache.removeAll();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.grant.remove.error'),

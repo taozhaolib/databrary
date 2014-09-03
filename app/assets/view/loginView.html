@@ -2,9 +2,9 @@
   <div class="wrap">
     <div class="row">
       <hgroup class="col">
-        <h1 class="view-context" bo-html="'login.title' | message"></h1>
+        <h1 class="view-context" bo-text="'login.title' | message"></h1>
 
-        <h2 class="view-title" bo-html="'login.title.sub' | message"></h2>
+        <h2 class="view-title" bo-text="'login.title.sub' | message"></h2>
       </hgroup>
 
       <div class="col">
@@ -27,12 +27,12 @@
             </div>
           </div>
 
-          <button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-html="'login.login' | message"></button>
+          <button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-text="'login.login' | message"></button>
 
-          <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-html="'login.method.openid' | message"></a>
-          <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-html="'login.method.password' | message"></a>
+          <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-text="'login.method.openid' | message"></a>
+          <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-text="'login.method.password' | message"></a>
 
-          <a bo-href="page.router.password()" bo-html="'login.forgot' | message"></a>
+          <a bo-href="page.router.password()" bo-text="'login.forgot' | message"></a>
         </form>
       </div>
     </div>

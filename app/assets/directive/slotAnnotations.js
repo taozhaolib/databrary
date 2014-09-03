@@ -55,7 +55,7 @@ module.directive('slotAnnotations', [
 		return;
 	      }
 
-	      ctrl.mode = page.constants.data.category[mode].name;
+	      ctrl.mode = page.constants.category[mode].name;
 
 	      angular.forEach(ctrl.records[mode], function (record) {
 		var l = levels.length;

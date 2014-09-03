@@ -32,9 +32,7 @@ module.directive('partyEditAccountForm', [
           form.saveFn(form);
         }
 
-        page.models.party.save({
-            id: form.party.id,
-          }, form.data,
+	form.party.save(form.data).then(
           function (res) {
             form.validator.server({});
 
@@ -49,7 +47,6 @@ module.directive('partyEditAccountForm', [
             }
 
             form.$setPristine();
-            page.models.party.$cache.removeAll();
             form.clearPasswordFields();
           }, function (res) {
             form.validator.server(res);

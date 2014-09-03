@@ -16,26 +16,17 @@ module.factory('tooltipService', [
 
     tooltips.newCatalog('id');
 
+    var sequence = 0;
     tooltips.newTransform(function (tooltip) {
-      tooltip.id = tooltip.id || 'tooltip-' + Math.random().toString(36).substring(2);
+      tooltip.id = tooltip.id || 'tooltip-' + sequence++;
       tooltip.cls = tooltip.cls || '';
       tooltip.style = angular.isObject(tooltip.style) ? tooltip.style : {};
-      tooltip.type = tooltips.types.indexOf(tooltip.type) != -1 ? tooltip.type : 'blue';
+      tooltip.type = tooltips.types.indexOf(tooltip.type) !== -1 ? tooltip.type : 'blue';
       tooltip.enabled = angular.isUndefined(tooltip.enabled) || !!tooltip.enabled;
-      tooltip.visible = !!tooltip.visible || false;
-      tooltip.$target = tooltip.$target ? tooltip.$target : undefined;
+      tooltip.visible = !!tooltip.visible;
       tooltip.live = tooltip.live || false;
 
-      tooltip.message = tooltip.message || undefined;
-
       return tooltip;
-    });
-
-    tooltips.newValidate(function (tooltip) {
-      return angular.isObject(tooltip) &&
-        tooltip.id && tooltip.type && tooltip.$target &&
-        angular.isString(tooltip.message) &&
-        tooltip.message.length > 0 ? tooltip : false;
     });
 
     //

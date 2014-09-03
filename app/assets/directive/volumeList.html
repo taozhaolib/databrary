@@ -3,13 +3,13 @@
     <li ng-repeat="volume in volumes">
       <article class="volume-list-result cf" bo-class="volumeClasses(volume)">
         <h1>
-          <span class="icon" bo-class="iconClass(volume)" hint="object-{{page.types.getVolumeType(volume)}}"></span><a bo-href="page.router.volume(volume.id)" bo-text="name(volume)"></a>
+          <span class="icon" bo-class="iconClass(volume)" hint="object-{{volume.type}}"></span><a bo-href="page.router.volume(volume.id)" bo-text="name(volume)"></a>
         </h1>
 
-        <div class="volume-list-investigators" bo-if="page.$location.path() !== '/profile'">
+        <div class="volume-list-investigators" bo-if="volume.access && page.$location.path() !== '/profile'">
           <ul class="inline-block comma">
             <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
-              <a bo-href="page.router.party(access.party)" bo-text="access.party.name"></a>
+              <a bo-href="access.party.route" bo-text="access.party.name"></a>
 	    </li>
           </ul>
 	  <span class="year" bo-if="volume.citation && volume.citation.year" bo-text="' (' + volume.citation.year + ')'"></span>

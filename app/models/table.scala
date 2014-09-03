@@ -35,12 +35,12 @@ private[models] trait TableView {
   // private[models] val row : Selector[Row]
   private[models] def fixed(r : Row with TableRow) = r.sqlKey.values.map(_ => r)
 
-  protected def INSERT(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("INSERT INTO", table, args.insert)(dbc, exc).apply(args)
+  protected def INSERT(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQL("INSERT INTO", table, args.insert, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     INSERT(SQLTerms(args : _*))(dbc, exc)
-  protected def DELETE(args : SQLTerms)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("DELETE FROM ONLY", table, "WHERE", args.where)(dbc, exc).apply(args)
+  protected def DELETE(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
+    SQL("DELETE FROM ONLY", table, "WHERE", args.where, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }
