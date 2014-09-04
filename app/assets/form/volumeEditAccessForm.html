@@ -12,11 +12,6 @@
     </div>
   </fieldset>
 
-  <fieldset class="clean" ng-if="page.auth.hasAuth(page.permission.EDIT)">
-    <button ng-click="volumeEditAccessForm.saveGlobal()" class="green" bo-text="'save' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
-    <button ng-click="volumeEditAccessForm.resetGlobal()" class="yellow" bo-text="'revert' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
-  </fieldset>
-
   <fieldset ng-if="volumeEditAccessForm.data.length > 0">
     <legend bo-text="'access.grant.special.legend' | message"></legend>
     <article ng-repeat="access in volumeEditAccessForm.data" class="permission-auth cf">
