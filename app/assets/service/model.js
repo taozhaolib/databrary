@@ -288,6 +288,8 @@ module.factory('modelService', [
       return (Login.user = Party.poke(new Login(l)));
     }
 
+    Login.user = new Login({id:constants.party.NOBODY});
+
     loginPoke(window.$play.user);
 
     function loginRes(res) {
@@ -300,6 +302,19 @@ module.factory('modelService', [
       return loginPoke(l);
     }
 
+    Login.isLoggedIn = function () {
+      return Login.user.id !== constants.party.NOBODY;
+    };
+
+    Login.checkAccess = function (level, object) {
+      return (object ? object.permission : Login.user.access) >= level ||
+	Login.user.superuser;
+    };
+
+    Login.isAuthorized = function () {
+      return Login.isLoggedIn() && Login.checkAccess(constants.permissionName.PUBLIC);
+    };
+
     angular.forEach({
       get: 'get',
       login: 'post',
@@ -311,6 +326,11 @@ module.factory('modelService', [
 	return router.http(router.controllers.LoginApi[api], data).then(loginRes);
       };
     });
+
+    Login.passwordToken = function (party, data) {
+      return router.http(router.controllers.TokenApi.password, party, data)
+	.then(loginRes);
+    };
 
     ///////////////////////////////// Volume
 
@@ -863,6 +883,7 @@ module.factory('modelService', [
 	.then(function (res) {
 	  return new Comment(s.container, res.data);
 	}).finally(function () {
+	  s.volume.clear('comments');
 	  s.clear('comments');
 	});
     };
@@ -880,6 +901,7 @@ module.factory('modelService', [
       var s = this;
       return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment, {vote:vote ? vote>0 : undefined})
 	.finally(function () {
+	  s.volume.clear("tags");
 	  s.clear("tags");
 	}).then(resData);
     };

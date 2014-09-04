@@ -68,10 +68,6 @@ module.directive('partyEditProfileForm', [
 	      form.messages.remove(upload);
 	    }
 
-	    if (page.auth.user.id === form.party.id) {
-	      page.auth.user.name = res.name;
-	    }
-
 	    if (angular.isFunction(form.successFn)) {
 	      form.successFn(form, res);
 	    }

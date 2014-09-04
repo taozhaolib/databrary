@@ -13,9 +13,9 @@ module.directive('accessGrantForm', [
       };
 
       $scope.canGrantAccess = function (p) {
-        return  p == page.constants.permissionName.READ ||
-          p == page.constants.permissionName.EDIT ||
-          p == page.constants.permissionName.ADMIN;
+        return  p == page.permission.READ ||
+          p == page.permission.EDIT ||
+          p == page.permission.ADMIN;
       };
 
       form.data.extend = form.data.children !== 0;
@@ -25,8 +25,8 @@ module.directive('accessGrantForm', [
       //
 
       form.canChange = function () {
-        return form.access.individual != 5 || (form.access.party.id != page.auth.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
-          return access.individual == 5;
+        return form.access.individual !== page.permission.ADMIN || (form.access.party.id != page.models.Login.user.id && form.volume && form.volume.access && form.volume.access.filter(function (access) {
+          return access.individual === page.permission.ADMIN;
         }).length >= 2);
       };
 

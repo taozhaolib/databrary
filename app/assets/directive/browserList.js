@@ -38,7 +38,7 @@ module.directive('browserList', [
       //
 
       $scope.setItemPlayer = function (data) {
-        if (!data || page.auth.hasAccess(page.permission.READ, data)) {
+        if (!data || page.models.Login.checkAccess(page.permission.READ, data)) {
           page.browser.setItemPlayer(data);
         }
         else if (data) {

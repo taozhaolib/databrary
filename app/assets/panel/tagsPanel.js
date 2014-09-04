@@ -30,7 +30,7 @@ module.controller('TagsPanel', [
         case 'volumeView':
           $scope.prepareTags($scope.volume.tags);
           $scope.target = $scope.volume.top;
-          $scope.enabled = $scope.tags.length > 0 || page.auth.isLoggedIn();
+          $scope.enabled = $scope.tags.length > 0 || page.models.Login.isLoggedIn();
           break;
 
         case 'partyView':
@@ -61,20 +61,14 @@ module.controller('TagsPanel', [
     $scope.retrieveTags = function () {
       switch (page.$route.current.$$route.controller) {
         case 'volumeView':
-          page.models.volume.$cache.removeAll();
-
-          page.models.volume.get({
-            id: $scope.volume.id,
-            tags: ''
-          }, function (data) {
-            $scope.volume.tags = data.tags;
-            $scope.refreshPanel();
-          }, function (res) {
-            $scope.messages.addError({
-              body: page.constants.message('tags.update.error'),
-              report: res,
-            });
-          });
+	  $scope.volume.get(['tags']).then(
+	    $scope.refreshPanel,
+	    function (res) {
+	      $scope.messages.addError({
+		body: page.constants.message('tags.update.error'),
+		report: res,
+	      });
+	    });
 
           break;
       }

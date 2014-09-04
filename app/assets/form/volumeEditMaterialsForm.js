@@ -4,6 +4,7 @@ module.directive('volumeEditMaterialsForm', [
   'pageService', 'assetService', function (page, assets) {
     var link = function ($scope) {
       var form = $scope.volumeEditMaterialsForm;
+      $scope.flowOptions = assets.flowOptions;
 
       form.data = {};
       form.volume = undefined;

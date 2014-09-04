@@ -1,4 +1,4 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.models.asset.flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
+<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
   <messages form="volumeEditMaterialsForm"></messages>
 
   <section class="vem-float" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">

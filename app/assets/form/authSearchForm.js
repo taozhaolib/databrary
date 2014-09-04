@@ -44,7 +44,7 @@ module.directive('authSearchForm', [
           recentSearch = form.nameVal;
         } else {
           sentSearch = ($scope.party || page.models.Login.user).authorizeSearch({
-            id: form.id || page.auth.user.id,
+            id: form.id || page.models.Login.user.id,
             name: form.nameVal,
             institution: form.principal === 'principal' ? true :
                 form.principal === 'affiliate' ? false : undefined,
