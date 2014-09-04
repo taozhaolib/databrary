@@ -14,7 +14,7 @@ module.controller('CommentsPanel', [
         case 'volumeView':
           $scope.comments = $scope.volume.comments;
 
-          $scope.enabled = page.auth.isLoggedIn() || !$.isEmptyObject($scope.comments);
+          $scope.enabled = page.models.Login.isLoggedIn() || !$.isEmptyObject($scope.comments);
           break;
 
         case 'partyView':
@@ -30,29 +30,18 @@ module.controller('CommentsPanel', [
     $scope.pullComments = function () {
       switch (page.$route.current.controller) {
         case 'volumeView':
-          page.models.volume.$cache.removeAll();
-
-          page.models.volume.get({
-            id: $scope.volume.id,
-            comments: ''
-          }, function (data) {
-            $scope.volume.comments = data.comments;
-            $scope.refreshPanel();
-          }, function (res) {
-            form.messages.addError({
-              body: page.constants.message('comments.update.error'),
-              report: res,
-            });
-          });
+	  $scope.volume.get(['comments']).then(
+	    $scope.refreshPanel,
+	    function (res) {
+	      form.messages.addError({
+		body: page.constants.message('comments.update.error'),
+		report: res,
+	      });
+	    });
 
           break;
       }
     };
-
-    //
-
-    $scope.authService = page.auth;
-    $scope.routeController = page.$route.current.controller;
 
     //
 
@@ -103,7 +92,7 @@ module.controller('CommentsPanel', [
     var replyTo;
 
     $scope.getReply = function (comment) {
-      return page.auth.isLoggedIn() &&
+      return page.models.Login.isLoggedIn() &&
         page.$route.current.controller != 'partyView' &&
         replyTo == comment;
     };

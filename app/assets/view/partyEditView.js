@@ -124,7 +124,7 @@ module.controller('partyEditView', [
       },
 
       'party-edit-account': function (step) {
-        step.enable = page.auth.user.id == party.id || (page.auth.hasAuth(page.permission.SUPER) && !party.institution);
+        step.enable = page.models.Login.user.id === party.id || (page.models.Login.user.superuser && !party.institution);
 
         forms.account = {
           step: step,
@@ -134,7 +134,7 @@ module.controller('partyEditView', [
       },
 
       'party-edit-apply': function (step) {
-        step.enable = page.auth.hasAccess(page.permission.ADMIN, party);
+        step.enable = page.models.Login.checkAccess(page.permission.ADMIN, party);
 
         forms.apply = {
           step: step,
@@ -144,7 +144,7 @@ module.controller('partyEditView', [
       },
 
       'party-edit-grant': function (step) {
-        step.enable = page.auth.hasAccess(page.permission.ADMIN, party);
+        step.enable = page.models.Login.checkAccess(page.permission.ADMIN, party);
 
         forms.grant = {
           step: step,

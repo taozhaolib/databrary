@@ -4,10 +4,6 @@ module.controller('registerView', [
   '$scope', 'pageService', function ($scope, page) {
     page.display.title = page.constants.message('page.title.register');
 
-    //
-
-    $scope.auth = $scope.auth || page.auth;
-
     // TODO: Remove analytics
     $scope.$watch(function () {
       if (!($scope.wizard && $scope.wizard.steps)) {
@@ -55,9 +51,9 @@ module.controller('registerView', [
         $scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
       }
 
-      user.anon = !page.auth.isLoggedIn();
+      user.anon = !page.models.Login.isLoggedIn();
       user.password = page.auth.isPasswordPending();
-      user.auth = page.auth.isAuthorized();
+      user.auth = page.models.Login.isAuthorized();
 
       angular.forEach($scope.wizard.steps, function (step) {
         $scope.updateStep[step.id](step, activate);
@@ -75,9 +71,7 @@ module.controller('registerView', [
     //
 
     var updateUserAuth = function () {
-      page.models.partyAuthorize.query({
-        id: page.auth.user.id
-      }, function (data) {
+      page.models.Login.user.get({parents:'all',children:'all'}).then(function (data) {
         if (data.parents.length)
           user.pending = true;
 
@@ -89,14 +83,6 @@ module.controller('registerView', [
         });
       });
     };
-
-    $scope.$watch('auth.user', function () {
-      $scope.updateWizard();
-
-      if (page.auth.isLoggedIn()) {
-        updateUserAuth();
-      }
-    });
 
     //
 
@@ -230,16 +216,13 @@ module.controller('registerView', [
         };
 
         $scope.infoForm.proceed = function () {
-          page.router.http(page.router.controllers.PartyApi.authorizeSearch,
-	      page.auth.user.id, true, {
-                notfound: true,
-                name: $scope.infoForm.data.query,
-                info: $scope.infoForm.data.info
-	      })
-            .success(function () {
+	  page.models.Login.user.authorizeSearch(true, {
+	      notfound: true,
+	      name: $scope.infoForm.data.query,
+	      info: $scope.infoForm.data.info
+	    }).then(function () {
               $scope.authApplyForm.successFn();
-            })
-            .error(function (errors, status) {
+            }, function (errors, status) {
               $scope.infoForm.messages.addError({
                 body: page.constants.message('error.generic'),
                 errors: errors,
@@ -325,7 +308,7 @@ module.controller('registerView', [
 
         //
 
-        $scope.authApplyForm.party = page.auth.user;
+        $scope.authApplyForm.party = page.models.Login.user;
 
         step.authSearchForm = $scope.authSearchForm;
 

@@ -48,8 +48,6 @@ module.controller('loginView', [
       }, $scope.loginData)).then(function (data) {
         form.validator.server({});
 
-        page.auth.parseUser(data);
-
         if (page.auth.next) {
           page.$location.path(page.auth.next);
           page.auth.next = undefined;

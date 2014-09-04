@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="row" bo-if="!page.auth.isAuthorized()">
+    <div class="row" bo-if="!page.models.Login.isAuthorized()">
       <div class="col">
         <h1 class="home-parties-header"><span></span><span bo-text="'welcome.title.sub' | message"></span></h1>
 
@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="row" bo-if="page.auth.isAuthorized()">
+    <div class="row" bo-if="page.models.Login.isAuthorized()">
       <article class="home-feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="home-feature-inner">
           <img bo-src="page.router.volumeThumb(volume.id)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume(volume.id))">

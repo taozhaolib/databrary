@@ -97,7 +97,7 @@ module.provider('routerService', [
         ],
         volume: [
           'pageService', function (page) {
-            if (page.auth.hasAuth(page.permission.SHARED))
+            if (page.models.Login.checkAccess(page.permission.SHARED))
               return page.models.Volume.get(8, ['access']);
             else
 	      return {};

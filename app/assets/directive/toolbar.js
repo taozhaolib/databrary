@@ -13,8 +13,8 @@ module.directive('toolbar', [
 
       this.links = function () {
         return page.$filter('filter')(page.display.toolbarLinks, function (link) {
-          return link.access && link.object ? page.auth.hasAccess(link.access, link.object) :
-            link.auth ? page.auth.hasAuth(link.auth) : true;
+          return link.access && link.object ? page.models.Login.checkAccess(link.access, link.object) :
+            link.auth ? page.models.Login.checkAccess(link.auth) : true;
         });
       };
     }];

@@ -91,7 +91,7 @@ module.directive('volumeEditOverviewForm', [
               }
             });
         } else {
-          page.models.Volume.create(form.data, page.$routeParams.owner || page.auth.user.id).then(function (res) {
+          page.models.Volume.create(form.data, page.$routeParams.owner).then(function (res) {
             form.validator.server({});
 
             form.messages.add({

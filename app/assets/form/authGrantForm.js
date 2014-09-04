@@ -26,7 +26,7 @@ module.directive('authGrantForm', [
         return  p <= page.constants.permissionName.PUBLIC ||
           p == page.constants.permissionName.READ ||
           p > page.constants.permissionName.READ &&
-          page.auth.hasAccess(p + 1);
+          page.models.Login.checkAccess(p + 1);
       };
 
       $scope.canGrantMember = function (p) {

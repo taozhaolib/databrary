@@ -4,8 +4,8 @@ module.run([
   'pageService', function (page) {
     if (page.constants.locked) {
       page.$rootScope.$on('$routeChangeStart', function (event, next) {
-        if (page.auth.isLoggedIn()) {
-          if (!page.auth.isAuthorized()) {
+        if (page.models.Login.isLoggedIn()) {
+          if (!page.models.Login.isAuthorized()) {
             if (!next.$$route) {
               page.$location.url(page.router.register());
             }

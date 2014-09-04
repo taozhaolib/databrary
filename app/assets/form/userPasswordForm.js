@@ -71,9 +71,8 @@ module.directive('userPasswordForm', [
           form.saveFn(form);
         }
 
-        page.router.http(page.router.controllers.TokenApi.password,
-	    token.party, $scope.userPasswordForm.data)
-          .success(function (data) {
+	page.models.Login.passwordToken(token.party, $scope.userPasswordForm.data)
+          .then(function (data) {
             form.validator.server({});
 
             form.messages.add({
@@ -87,9 +86,7 @@ module.directive('userPasswordForm', [
             }
 
             page.$window.$play.object = null;
-            page.auth.updateUser(data);
-          })
-          .error(function (data, status) {
+          }, function (data, status) {
             form.validator.server({
               data: data,
               status: status,

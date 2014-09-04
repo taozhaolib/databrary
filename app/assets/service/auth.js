@@ -1,93 +1,21 @@
 'use strict';
 
 module.factory('authService', [
-  '$rootScope',
   '$location',
   '$route',
-  '$cacheFactory',
   'messageService',
   'constantService',
   'modelService',
   'playService',
-  function ($rootScope, $location, $route, $cacheFactory, messages, constants, models, play) {
+  function ($location, $route, messages, constants, models, play) {
     var auth = {};
-
-    //
-
-    auth.user = undefined;
-
-    auth.parseUser = function (user) {
-      var reload = true;
-
-      if (!angular.isObject(user))
-	user = undefined;
-
-      if (user) {
-        user.superuser = !!user.superuser;
-
-        if (auth.user && auth.user.id === user.id && auth.user.superuser == user.superuser) {
-          reload = false;
-        }
-      } else if (!user && !auth.user) {
-        reload = false;
-      }
-
-      auth.user = user;
-
-      if (reload) {
-        $cacheFactory.removeAll();
-        $route.reload();
-      }
-    };
-
-    auth.updateUser = function (user) {
-      if (user) {
-        return auth.parseUser(user);
-      }
-
-      models.Login.get().then(auth.parseUser,
-	function () {
-	  auth.parseUser(undefined);
-	});
-    };
-
-    auth.updateUser(play.user);
-
-    //
-
-    var parseUserAuth = function (object) {
-      if (auth.user && auth.user.superuser) {
-        return constants.permissionName.SUPER;
-      }
-
-      if (angular.isObject(object) && 'permission' in object) {
-        return object.permission;
-      }
-
-      if (!(auth.user && 'access' in auth.user))
-	return -1;
-
-      return auth.user.access;
-    };
-
-    //
-
-    auth.hasAuth = function (level) {
-      return parseUserAuth() >= level;
-    };
-
-    //
-
-    auth.hasAccess = function (level, object) {
-      return parseUserAuth(object) >= level;
-    };
 
     //
 
     auth.logout = function () {
       models.Login.logout().then(function () {
-        auth.parseUser();
         $location.url('/');
+	$route.reload();
 
         messages.add({
           body: constants.message('logout.success'),
@@ -106,10 +34,6 @@ module.factory('authService', [
 
     //
 
-    auth.isLoggedIn = function () {
-      return !!(auth.user && auth.user.id != constants.party.NOBODY);
-    };
-
     auth.hasToken = function () {
       return play.object && play.object.auth;
     };
@@ -126,18 +50,12 @@ module.factory('authService', [
       return auth.hasToken() && !play.object.reset;
     };
 
-    auth.isAuthorized = function () {
-      return auth.isLoggedIn() && auth.hasAuth(constants.permissionName.PUBLIC);
-    };
-
     //
 
     var enableSU = function (form) {
       models.Login.superuserOn({
 	  auth: form.auth
         }).then(function (data) {
-          auth.parseUser(data);
-
           messages.add({
             body: constants.message('superuser.on.success'),
             type: 'green',
@@ -153,8 +71,6 @@ module.factory('authService', [
 
     var disableSU = function () {
       models.Login.superuserOff().then(function (data) {
-        auth.parseUser(data);
-
         messages.add({
           body: constants.message('superuser.off.success'),
           type: 'green',
@@ -169,11 +85,10 @@ module.factory('authService', [
     };
 
     auth.toggleSU = function (form) {
-      if (angular.isDefined(form)) {
+      if (form)
         enableSU(form);
-      } else {
+      else
         disableSU();
-      }
     };
 
     //
