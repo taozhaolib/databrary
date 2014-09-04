@@ -150,7 +150,7 @@ module.directive('volumeEditAccessForm', [
 
       var $float = $('.vea-float');
       var $floater = $('.vea-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
       page.$w.scroll($scope.scrollFn);
       
       $scope.$on('accessSearchForm-init', function (event, searchForm) {
