@@ -1,39 +1,19 @@
 'use strict';
 
 module.factory('panelService', [
-  '$rootScope',
-  '$location',
-  'eventService',
-  '$timeout',
-  'ArrayHelper',
-  'displayService',
-  function ($rootScope, $location, events, $timeout, ArrayHelper, display) {
-    var panels = new ArrayHelper([]);
+  '$rootScope', '$timeout', 'displayService',
+  function ($rootScope, $timeout, display) {
+    var panels = [];
 
     //
 
     panels.add = function (panel) {
-      var newPanel = ArrayHelper.prototype.add.call(this, panel);
+      this.push(panel);
 
-      if (angular.isFunction(newPanel.bootPanel)) {
-        newPanel.bootPanel();
-      }
+      if (panel.refreshPanel)
+        panel.refreshPanel();
 
-      if (angular.isFunction(newPanel.refreshPanel)) {
-        newPanel.refreshPanel();
-      }
-
-      return newPanel;
-    };
-
-    //
-
-    panels.enable = function (panel) {
-      return panels.toggle(panel, 'enabled', true);
-    };
-
-    panels.disable = function (panel) {
-      return panels.toggle(panel, 'enabled', false);
+      return panel;
     };
 
     //
@@ -77,22 +57,8 @@ module.factory('panelService', [
 
     //
 
-    panels.refresh = function () {
-      angular.forEach(panels, function (panel) {
-        if (angular.isFunction(panel.refresh)) {
-          panel.refreshPanel();
-        }
-      });
-    };
-
-    //
-
-    events.listen($rootScope, 'panelService-refresh', function () {
-      panels.refresh();
-    });
-
     $rootScope.$on('$routeChangeSuccess', function () {
-      panels.reset();
+      panels.splice(0, panels.length);
     });
 
     //

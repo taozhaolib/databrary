@@ -1,17 +1,12 @@
 'use strict';
 
 module.controller('ExcerptsPanel', [
-  '$scope',
-  'pageService',
+  '$scope', 'pageService',
   function ($scope, page) {
-    $scope.bootPanel = function () {
-      if (Array.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0) {
-        $scope.current = $scope.volume.excerpts[0] || undefined;
-      }
-    };
-
     $scope.refreshPanel = function () {
-      $scope.enabled = Array.isArray($scope.volume.excerpts) && $scope.volume.excerpts.length > 0;
+      $scope.enabled = $scope.volume.excerpts && $scope.volume.excerpts.length > 0;
+      if ($scope.enabled && !$scope.current)
+	$scope.current = $scope.volume.excerpts[0];
     };
 
     //
@@ -26,20 +21,6 @@ module.controller('ExcerptsPanel', [
 
     $scope.showThumbnail = function (asset) {
       return asset.format.type === 'image' || asset.asset.duration;
-    };
-
-    $scope.listClass = function (excerpt) {
-      var cls = [];
-
-      if (excerpt.format.type === 'video') {
-        cls.push('video');
-      }
-
-      if (excerpt === $scope.current) {
-        cls.push('panel-excerpts-list-current');
-      }
-
-      return cls;
     };
 
     $scope.jumpLink = function (excerpt) {
