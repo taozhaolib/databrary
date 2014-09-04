@@ -76,10 +76,11 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
   def setMeasure[T](measure : Measure[T]) : Future[Boolean] =
-    measure.set(this)
+    measure.set(this) // TODO: update measures_
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
-  def removeMeasure(metric : Metric[_]) = Measure.remove(this, metric)
+  def removeMeasure(metric : Metric[_]) =
+    Measure.remove(this, metric) // TODO: update measures_
 
   def ident : String =
     Maybe(category.fold[Seq[Metric[_]]](Seq(Metric.Ident))(_.ident)
