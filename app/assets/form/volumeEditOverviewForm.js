@@ -213,6 +213,17 @@ module.directive('volumeEditOverviewForm', [
         },
       }, true);
 
+      var $float = $('.veo-float');
+      var $floater = $('.veo-float-floater');
+      form.scrollFunc = function () {
+	if (window.pageYOffset + 24*1.5 >= $float.offset().top) {
+	  $floater.addClass('float');
+	} else {
+	  $floater.removeClass('float');
+	} 
+      };
+      page.$w.scroll(form.scrollFunc);
+
       //
 
       page.events.talk('volumeEditOverviewForm-init', form, $scope);
