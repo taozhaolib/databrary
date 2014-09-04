@@ -2,7 +2,7 @@
   <messages form="accessSearchForm"></messages>
 
   <validator class="auth-search" form="accessSearchForm" name="name">
-    <input type="search" name="name" placeholder="{{'access.search' | message}}" ng-model="accessSearchForm.nameVal" ng-change="accessSearchForm.search()">
+  <input type="search" name="name" placeholder="{{accessSearchForm.placeholderText}}" ng-model="accessSearchForm.nameVal" ng-change="accessSearchForm.search()">
   </validator>
 
   <ul ng-if="accessSearchForm.found" class="flat auth-found-list">

@@ -148,6 +148,16 @@ module.directive('volumeEditAccessForm', [
         event.stopPropagation();
       });
 
+      var $float = $('.vea-float');
+      var $floater = $('.vea-float-floater');
+      page.$w.scroll(function () {
+	if (window.pageYOffset + 24*1.5 >= $float.offset().top) {
+	  $floater.addClass('float');
+	} else {
+	  $floater.removeClass('float');
+	} 
+      });
+
       $scope.$on('accessSearchForm-init', function (event, searchForm) {
         searchForm.selectFn = function (found) {
           var present = false;

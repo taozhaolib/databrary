@@ -9,6 +9,7 @@ module.directive('accessSearchForm', [
       form.nameVal = '';
       form.found = [];
       form.institution = $element.attr('institution') === 'true';
+      form.placeholderText = $attrs.placeholderText || page.constants.messages['access.search'];
 
       $attrs.$observe('institution', function () {
         form.nameVal = '';

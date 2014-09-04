@@ -12,8 +12,17 @@
     </div>
   </fieldset>
 
+  <fieldset class="clean vea-float">
+    <div class="vea-float-floater row">
+      <access-search-form class="col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-2" volume="volumeEditAccessForm.volume" placeholder-text="{{'access.search.legend' | message}}"></access-search-form>
+      <button ng-click="volumeEditAccessForm.saveAll()" class="green col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'save' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
+      <button ng-click="volumeEditAccessForm.resetAll()" class="yellow col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'revert' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
+    </div>
+  </fieldset>
+
   <fieldset ng-if="volumeEditAccessForm.data.length > 0">
     <legend bo-text="'access.grant.special.legend' | message"></legend>
+
     <article ng-repeat="access in volumeEditAccessForm.data" class="permission-auth cf">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
@@ -38,14 +47,6 @@
     </article>
   </fieldset>
 
-  <fieldset scope>
-    <legend bo-text="'access.search.legend' | message"></legend>
-    <access-search-form volume="volumeEditAccessForm.volume"></access-search-form>
-  </fieldset>
 
-  <fieldset class="clean">
-    <button ng-click="volumeEditAccessForm.saveAll()" class="green" bo-text="'save.all' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
-    <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" bo-text="'revert.all' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
-  </fieldset>
 </form>
 

@@ -4,7 +4,7 @@
       <span class="icon line vem-trash trash"></span>
     </button>
 
-  <fieldset class="clean radio-set" ng-disabled="!accessGrantForm.canChange()">
+  <fieldset class="clean radio-set access-grant-radioset" ng-disabled="!accessGrantForm.canChange()">
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="canGrantAccess(val)">
       <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
       <label bo-text="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>

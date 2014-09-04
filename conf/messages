@@ -349,7 +349,7 @@ access.grant.special.legend=Collaborators
 
 access.search.legend=Add another collaborator
 access.search=Search for a user, group, or institution...
-access.search.name.help=Enter to whom you want to grant access.
+access.search.name.help=Enter the user, group, or institution to which you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
 access.search.repeat={0} has already been added.
