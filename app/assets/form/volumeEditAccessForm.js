@@ -151,7 +151,7 @@ module.directive('volumeEditAccessForm', [
       var $float = $('.vea-float');
       var $floater = $('.vea-float-floater');
       page.$w.scroll(function () {
-	if (window.pageYOffset + 24*1.5 >= $float.offset().top) {
+	if (window.pageYOffset + 24*2.5 >= $float.offset().top) {
 	  $floater.addClass('float');
 	} else {
 	  $floater.removeClass('float');
