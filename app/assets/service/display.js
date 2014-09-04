@@ -117,6 +117,16 @@ module.factory('displayService', [
 
     //
 
+    display.makeFloatScrollFn = function($float, $floater, x){
+      return function () {
+	if (window.pageYOffset + x >= $float.offset().top) {
+	  $floater.addClass('float');
+	} else {
+	  $floater.removeClass('float');
+	}
+      };
+    };
+
     return display;
   }
 ]);

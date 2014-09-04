@@ -267,14 +267,8 @@ module.directive('volumeEditMaterialsForm', [
 
       var $float = $('.vem-float');
       var $floater = $('.vem-float-floater');
-
-      page.$w.scroll(function () {
-        if (window.pageYOffset + (24 * 1.5) >= $float.offset().top) {
-          $floater.addClass('float');
-        } else {
-          $floater.removeClass('float');
-        }
-      });
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      page.$w.scroll($scope.scrollFn);
 
       page.events.talk('volumeEditMaterialsForm-init', form, $scope);
     };
