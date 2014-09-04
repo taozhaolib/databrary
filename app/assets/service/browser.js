@@ -3,13 +3,12 @@
 module.factory('browserService', [
   '$rootScope',
   'ArrayHelper',
-  'typeService',
   'messageService',
   'constantService',
   'tooltipService',
   '$timeout',
   'displayService',
-  function ($rootScope, ArrayHelper, typeService, messages, constants, tooltips, $timeout, display) {
+  function ($rootScope, ArrayHelper, messages, constants, tooltips, $timeout, display) {
     var browserService = {};
 
     //
@@ -296,23 +295,22 @@ module.factory('browserService', [
       };
 
       if (group == 'session') {
-        var newSegment;
+        var newSegment = object.segment;
         var records = volume.sessions[newData.object.id].records;
         var cur, obj;
         var union = function (seg, c) {
           if (c.id === obj.id) {
             /* if record coverage is disjoint we pretend it's continuous: */
-            seg = typeService.segmentUnion(seg, c.segment);
+            seg = seg.union(c.segment);
           }
           return seg;
         };
         for (cur = newData.parent; (obj = cur.object); cur = cur.parent) {
           if (obj.id !== 0)
-            newSegment = typeService.segmentIntersect(newSegment,
-              records.reduce(union, null));
+            newSegment = newSegment.intersect(records.reduce(union, null));
         }
         newData.segment = newSegment;
-        if (typeService.segmentEmpty(newSegment)) {
+        if (newSegment.empty) {
           return newData; //in order to not push empty segmented things (contradictory constraints) onto list
         }
       }

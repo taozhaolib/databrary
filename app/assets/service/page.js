@@ -15,7 +15,6 @@ module.factory('pageService', [
       router: $injector.get('routerService'),
       slotClock: $injector.get('slotClockService'),
       tooltips: $injector.get('tooltipService'),
-      types: $injector.get('typeService'),
     };
 
     //

@@ -5,12 +5,11 @@ module.factory('authService', [
   '$location',
   '$route',
   '$cacheFactory',
-  'typeService',
   'messageService',
   'constantService',
   'modelService',
   'playService',
-  function ($rootScope, $location, $route, $cacheFactory, types, messages, constants, models, play) {
+  function ($rootScope, $location, $route, $cacheFactory, messages, constants, models, play) {
     var auth = {};
 
     //
@@ -112,7 +111,7 @@ module.factory('authService', [
     };
 
     auth.hasToken = function () {
-      return play.object && types.isToken(play.object);
+      return play.object && play.object.auth;
     };
 
     auth.getToken = function () {

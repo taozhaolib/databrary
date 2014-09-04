@@ -75,6 +75,7 @@ module.factory('modelService', [
     function modelCache(obj, name, size) {
       obj.prototype = Object.create(Model.prototype);
       obj.prototype.constructor = obj;
+      obj.prototype.class = name;
 
       var opts = {};
       if (size)
@@ -131,7 +132,7 @@ module.factory('modelService', [
       Model.call(this, init);
     }
 
-    modelCache(Party, 'Party', 256);
+    modelCache(Party, 'party', 256);
 
     Party.prototype.staticFields = ['orcid', 'affiliation', 'email', 'institution', 'url'];
 
@@ -317,7 +318,7 @@ module.factory('modelService', [
       Model.call(this, init);
     }
 
-    modelCache(Volume, 'Volume', 8);
+    modelCache(Volume, 'volume', 8);
 
     Volume.prototype.staticFields = ['alias'];
 
@@ -483,6 +484,7 @@ module.factory('modelService', [
 
     Slot.prototype = Object.create(Model.prototype);
     Slot.prototype.constructor = Slot;
+    Slot.prototype.class = 'slot';
 
     Slot.prototype.staticFields = ['consent', 'context'];
 
@@ -622,6 +624,7 @@ module.factory('modelService', [
 
     Record.prototype = Object.create(Model.prototype);
     Record.prototype.constructor = Record;
+    Record.prototype.class = 'record';
 
     Record.prototype.staticFields = ['category'];
 
@@ -701,6 +704,7 @@ module.factory('modelService', [
 
     Asset.prototype = Object.create(Model.prototype);
     Asset.prototype.constructor = Asset;
+    Asset.prototype.class = 'asset';
 
     Asset.prototype.staticFields = ['name', 'duration'];
 
@@ -766,6 +770,7 @@ module.factory('modelService', [
 
     SlotAsset.prototype = Object.create(Slot.prototype);
     SlotAsset.prototype.constructor = SlotAsset;
+    SlotAsset.prototype.class = 'asset';
 
     SlotAsset.prototype.staticFields = ['format', 'excerpt'].concat(Slot.prototype.staticFields);
 
@@ -834,6 +839,7 @@ module.factory('modelService', [
 
     Comment.prototype = Object.create(Slot.prototype);
     Comment.prototype.constructor = Comment;
+    Comment.prototype.class = 'comment';
 
     Comment.prototype.staticFields = ['parent'].concat(Slot.prototype.staticFields);
 
