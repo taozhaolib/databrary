@@ -587,7 +587,7 @@ wizard.register_pending.description=Tips for exploring Databrary.
 wizard.register_pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
 #Splash page text
-splash.investigators.header=Databrary Investigators
+splash.investigators.header=Authorized Investigators
 splash.users.header=Registered Users
 
 # --- Volume edit
