@@ -123,7 +123,7 @@ object RecordHtml extends RecordController with HtmlController {
 
   def viewEdit(editForm : Option[EditForm] = None, measureForm : Option[MeasureForm] = None, addForm : Option[MetricForm] = None)(implicit request : Request[_]) = {
     val r = request.obj
-    val m = r.measures.list
+    val m = r.measures.list.toSeq
     val t = r.category.fold[Seq[Metric[_]]](Nil)(_.template) diff m.map(_.metric)
     val mf : Seq[MeasureForm] = m.map(m => new MeasureForm(m.metric)._fill(m.datum)) ++
       t.map(new MeasureForm(_))
