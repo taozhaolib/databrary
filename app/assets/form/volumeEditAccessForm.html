@@ -1,7 +1,7 @@
 <form name="volumeEditAccessForm" bindonce novalidate>
   <messages form="volumeEditAccessForm"></messages>
 
-  <fieldset class="clean radio-set" ng-disabled="!page.models.Login.checkAccess(page.permission.EDIT)" ng-form="accessGlobalForm">
+  <fieldset class="clean radio-set volume-edit-access-radioset" ng-disabled="!page.models.Login.checkAccess(page.permission.EDIT)" ng-form="accessGlobalForm">
     <legend bo-text="'access.global.legend' | message"></legend>
 
     <div class="col message message-yellow message-content" bo-if="!page.models.Login.checkAccess(page.permission.EDIT)" bo-text="'access.global.restricted' | message"></div>
@@ -10,11 +10,6 @@
       <input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
       <label bo-text="'access.global.'+perms.join('.') | message" class="option"></label>
     </div>
-  </fieldset>
-
-  <fieldset class="clean" ng-if="page.models.Login.checkAccess(page.permission.EDIT)">
-    <button ng-click="volumeEditAccessForm.saveGlobal()" class="green" bo-text="'save' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
-    <button ng-click="volumeEditAccessForm.resetGlobal()" class="yellow" bo-text="'revert' | message" ng-disabled="!volumeEditAccessForm.accessGlobalDirty"></button>
   </fieldset>
 
   <fieldset ng-if="volumeEditAccessForm.data.length > 0">

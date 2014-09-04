@@ -283,7 +283,7 @@ module.directive('spreadsheet', [
 	    }
 	    if (n >= t)
 	      v = null;
-	    else
+	    else if (n in records[c][m])
 	      v = records[c][m][n][i];
 	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
 	    if (v !== null) {
@@ -323,16 +323,15 @@ module.directive('spreadsheet', [
 	    var r = records[c][m.metric.id][0];
 	    var post = '_0_' + mi;
 	    for (var i = 0; i < count; i ++) {
-	      if (counts[i][c]) {
-		var el = document.getElementById('ss-rec_' + i + post);
-		if (el)
-		  generateText(el, 'age', r[i]);
-	      }
+	      if (counts[i][c] && r)
+		generateText(
+		 document.getElementById('ss-rec_' + i + post),
+		 'age', r[i]);
 	    }
 	    if (expanded !== undefined)
 	      r = records[c][m.metric.id];
 	      for (var n = 0; n < counts[expanded][c]; n ++) {
-		generateText(
+		if (n in r) generateText(
 		    document.getElementById('ss-rec_' + expanded + '_' + n + '_' + mi),
 		    'age', r[n][expanded]);
 	      }
@@ -418,7 +417,8 @@ module.directive('spreadsheet', [
 	  volume.records[r].measureSet(m, v).then(function (rec) {
 	    var rcm = records[rec.category][m];
 	    angular.forEach(depends[r], function (n, i) {
-	      rcm[n][i] = v;
+	      if (!(n in rcm))
+		rcm[n] = [];
 	    });
 	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
 	    var a = page.constants.metric[m].assumed;

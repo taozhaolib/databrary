@@ -1,5 +1,8 @@
 <form name="accessGrantForm" bindonce novalidate>
   <messages form="accessGrantForm"></messages>
+    <button class="red mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+      <span class="icon line vem-trash trash"></span>
+    </button>
 
   <fieldset class="clean radio-set" ng-disabled="!accessGrantForm.canChange()">
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="canGrantAccess(val)">
@@ -15,9 +18,4 @@
     </div>
   </fieldset>
 
-  <fieldset class="clean">
-    <button ng-click="accessGrantForm.save()" class="green" bo-text="'save' | message" ng-disabled="!accessGrantForm.$dirty"></button>
-    <button ng-click="accessGrantForm.reset()" class="yellow" bo-text="'revert' | message" ng-disabled="!accessGrantForm.$dirty"></button>
-    <button ng-click="accessGrantForm.remove()" class="red" bo-text="'remove' | message" ng-if="accessGrantForm.canChange()"></button>
-  </fieldset>
 </form>

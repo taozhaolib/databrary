@@ -282,8 +282,6 @@ module.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
 
-    Login.prototype.staticFields = Party.prototype.staticFields.concat(['superuser']);
-
     function loginPoke(l) {
       return (Login.user = Party.poke(new Login(l)));
     }
