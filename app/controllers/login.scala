@@ -28,7 +28,7 @@ private[controllers] sealed class LoginController extends SiteController {
     }
   }
 
-  def post = SiteAction.Unlocked.async { implicit request =>
+  def post = SiteAction.async { implicit request =>
     val form = new LoginController.LoginForm()._bind
     form.email.get.flatMapAsync(Account.getEmail _).flatMap { acct =>
       def bad =
@@ -50,7 +50,7 @@ private[controllers] sealed class LoginController extends SiteController {
     }
   }
 
-  def logout = SiteAction.Unlocked { implicit request =>
+  def logout = SiteAction { implicit request =>
     request match {
       case auth : SiteRequest.Auth[_] =>
         for {
@@ -82,7 +82,7 @@ private[controllers] sealed class LoginController extends SiteController {
   }
 
   def register =
-    SiteAction.Unlocked.async { implicit request =>
+    SiteAction.async { implicit request =>
       val form = new LoginController.RegistrationForm()._bind
       for {
 	e <- Account.getEmail(form.email.get)
@@ -189,11 +189,11 @@ object LoginHtml extends LoginController with HtmlController {
       form.withGlobalError(err, args)
     }
 
-  def view = SiteAction.Unlocked { implicit request =>
+  def view = SiteAction { implicit request =>
     request.user.fold(Ok(viewLogin()))(u => Found(routes.PartyHtml.profile.url))
   }
 
-  def openID(email : String) = SiteAction.Unlocked.async { implicit request =>
+  def openID(email : String) = SiteAction.async { implicit request =>
     val em = Maybe(email).opt
     (for {
       info <- OpenID.verifiedId
@@ -206,7 +206,7 @@ object LoginHtml extends LoginController with HtmlController {
   }
 
   def registration =
-    SiteAction.Unlocked.async { implicit request =>
+    SiteAction.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
 	async(Found((
 	  if (request.access.site == Permission.NONE)
@@ -219,7 +219,7 @@ object LoginHtml extends LoginController with HtmlController {
 }
 
 object LoginApi extends LoginController with ApiController {
-  def get = SiteAction.Unlocked { implicit request =>
+  def get = SiteAction { implicit request =>
     Ok(request.json)
   }
 }

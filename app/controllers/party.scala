@@ -39,7 +39,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     SiteAction andThen action(i, p)
 
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    SiteAction.Unlocked andThen action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
+    SiteAction andThen action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
@@ -304,7 +304,7 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
 
   def profile =
-    SiteAction.Unlocked.andThen(action(None, Some(Permission.NONE))).async(viewParty(_))
+    SiteAction.andThen(action(None, Some(Permission.NONE))).async(viewParty(_))
 
   def view(i : models.Party.Id) =
     Action(Some(i), Some(Permission.NONE)).async(viewParty(_))
@@ -363,7 +363,7 @@ object PartyHtml extends PartyController with HtmlController {
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
-    SiteAction.Unlocked.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
+    SiteAction.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
 	async(Found("/public/images/avatar.png")))(
 	AssetController.assetResult(_, Some(size))))
@@ -377,7 +377,7 @@ object PartyApi extends PartyController with ApiController {
   }
 
   def profile =
-    SiteAction.Unlocked.andThen(action(None, Some(Permission.NONE))).async { implicit request =>
+    SiteAction.andThen(action(None, Some(Permission.NONE))).async { implicit request =>
       request.obj.json(request.apiOptions).map(Ok(_))
     }
 
@@ -388,7 +388,7 @@ object PartyApi extends PartyController with ApiController {
     val institution = Field(OptionMapping(Forms.boolean)).fill(None)
   }
 
-  def query = SiteAction.Unlocked.async { implicit request =>
+  def query = SiteAction.async { implicit request =>
     val form = new SearchForm()._bind
     Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
       Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))

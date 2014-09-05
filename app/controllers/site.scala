@@ -120,37 +120,24 @@ object RequestObject {
 }
 
 object SiteAction extends ActionBuilder[SiteRequest.Base] {
-  object Unlocked extends ActionBuilder[SiteRequest.Base] {
-    def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[Result]) = {
-      val now = System.currentTimeMillis
-      request.session.get("session").flatMapAsync(models.SessionToken.get _).flatMap { session =>
-	val site = SiteRequest[A](request, session)
-	SiteApi.analytics(site).flatMap(_ =>
-	SiteException.invokeBlock(site, 
-	  if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
-	    session.foreachAsync(_.remove).map { _ =>
-	      LoginController.needed("login.expired")(request)
-	    }
-	  } else block)
-	.map { res =>
-	  _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
-	  res.withHeaders(
-	    HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
-	    HeaderNames.SERVER -> _root_.site.Site.appVersion)
-	})
-      }
-    }
-  }
-
   def invokeBlock[A](request : Request[A], block : SiteRequest.Base[A] => Future[Result]) = {
-    val action : SiteRequest.Base[A] => Future[Result] =
-      if (Site.locked) { request =>
-	if (request.access.site == Permission.NONE)
-	  macros.async(if (request.isApi) Results.Forbidden
-	    else Results.TemporaryRedirect(routes.Site.start.url))
-	else block(request)
-      } else block
-    Unlocked.invokeBlock(request, action)
+    val now = System.currentTimeMillis
+    request.session.get("session").flatMapAsync(models.SessionToken.get _).flatMap { session =>
+      val site = SiteRequest[A](request, session)
+      SiteApi.analytics(site).flatMap(_ =>
+      SiteException.invokeBlock(site, 
+	if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
+	  session.foreachAsync(_.remove).map { _ =>
+	    LoginController.needed("login.expired")(request)
+	  }
+	} else block)
+      .map { res =>
+	_root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
+	res.withHeaders(
+	  HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
+	  HeaderNames.SERVER -> _root_.site.Site.appVersion)
+      })
+    }
   }
 
   object Auth extends ActionRefiner[SiteRequest,SiteRequest.Auth] {
@@ -205,13 +192,8 @@ object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
 
-  val locked = current.configuration.getBoolean("site.locked").getOrElse(false)
-
-  def start = SiteAction.Unlocked.async { implicit request =>
-    if (locked && request.access.site == Permission.NONE)
-      AOk(views.html.welcome(request))
-    else
-      VolumeHtml.viewSearch(request)
+  def start = SiteAction.async { implicit request =>
+    VolumeHtml.viewSearch(request)
   }
 
   def tinyUrl(prefix : String, path : String) = Action {

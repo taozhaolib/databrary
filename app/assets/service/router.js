@@ -104,13 +104,10 @@ module.provider('routerService', [
         ],
         volume: [
           'pageService', function (page) {
-            if (!page.constants.locked || page.models.Login.checkAccess(page.permission.SHARED))
-              return page.models.Volume.get(9, ['access'])
-		.then(null, function() {
-		  return {};
-		});
-            else
-	      return {};
+	    return page.models.Volume.get(9, ['access'])
+	      .then(null, function() {
+		return {};
+	      });
           }
         ]
       },

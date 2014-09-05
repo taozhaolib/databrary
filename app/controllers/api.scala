@@ -63,7 +63,6 @@ object SiteApi extends SiteController {
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
     , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
-    , ('locked, json.JsBoolean(Site.locked))
     , ('url, json.JsString(site.Site.url))
     , ('version, json.JsString(site.Site.version))
     ).js
@@ -212,7 +211,7 @@ object SiteApi extends SiteController {
   }
 
   def void =
-    SiteAction.Unlocked { implicit request =>
+    SiteAction { implicit request =>
       Ok("")
     }
 }

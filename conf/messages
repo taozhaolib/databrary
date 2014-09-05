@@ -197,8 +197,6 @@ superuser.off.success=Superuser mode deactivated!
 superuser.off.error=Could not deactivate superuser mode!
 
 welcome.title=Welcome
-welcome.title.sub=Databrary Beta
-welcome.body=<p>Databrary is currently in beta.</p><p>You can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.</p><p>If you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.</p>
 welcome.featured=Featured Dataset
 welcome.investigators=Authorized Investigators
 welcome.users=Registered Users
