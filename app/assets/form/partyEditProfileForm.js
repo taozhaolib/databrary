@@ -127,6 +127,12 @@ module.directive('partyEditProfileForm', [
 
       //
 
+      var $float = $('.pep-float');
+      var $floater = $('.pep-float-floater');
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      page.$w.scroll($scope.scrollFn);
+
+
       page.events.talk('partyEditProfileForm-init', form, $scope);
     };
 

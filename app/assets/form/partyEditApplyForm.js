@@ -135,6 +135,12 @@ module.directive('partyEditApplyForm', [
 
       //
 
+      var $float = $('.peap-float');
+      var $floater = $('.peap-float-floater');
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      page.$w.scroll($scope.scrollFn);
+
+
       page.events.talk('partyEditApplyForm-init', form, $scope);
     };
 

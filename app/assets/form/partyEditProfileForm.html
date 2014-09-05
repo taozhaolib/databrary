@@ -1,7 +1,12 @@
 <form name="partyEditProfileForm" bindonce novalidate>
+  <fieldset class="clean pep-float">
+    <div class="pep-float-floater">
+      <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
+      <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
+    </div>
+  </fieldset>
   <fieldset>
     <legend bo-text="'party.edit.personal' | message"></legend>
-
     <validator form="partyEditProfileForm" name="name" label="'party.edit.name.title' | message">
       <input type="text" name="name" ng-model="partyEditProfileForm.data.name">
     </validator>
@@ -32,11 +37,6 @@
       </div>
     </div>
 
-  </fieldset>
-
-  <fieldset class="clean">
-    <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="!partyEditProfileForm.$dirty || !partyEditProfileForm.$valid"></button>
-    <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
   </fieldset>
 </form>
 

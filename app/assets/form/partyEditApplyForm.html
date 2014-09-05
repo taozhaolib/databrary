@@ -1,7 +1,12 @@
 <form name="partyEditApplyForm" bindonce novalidate>
-  <fieldset ng-if="partyEditApplyForm.data.length > 0">
+   <fieldset class="clean peap-float">
+    <div class="peap-float-floater">
+      <button ng-click="partyEditApplyForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
+      <button ng-click="partyEditApplyForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
+    </div>
+  </fieldset>
+ <fieldset ng-if="partyEditApplyForm.data.length > 0">
     <legend bo-text="'auth.apply.legend' | message"></legend>
-
     <article ng-repeat="other in partyEditApplyForm.data" class="permission-auth cf foot">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
@@ -54,11 +59,6 @@
   <fieldset scope>
     <legend bo-text="'auth.search.apply.legend' | message"></legend>
     <auth-search-form party="{{party.id}}"></auth-search-form>
-  </fieldset>
-
-  <fieldset class="clean">
-    <button ng-click="partyEditApplyForm.saveAll()" class="green" bo-text="'save.all' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
-    <button ng-click="partyEditApplyForm.resetAll()" class="yellow" bo-text="'revert.all' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
   </fieldset>
 </form>
 

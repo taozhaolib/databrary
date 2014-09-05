@@ -1,4 +1,10 @@
 <form name="partyEditGrantForm" bindonce novalidate>
+  <fieldset class="clean peg-float">
+    <div class="peg-float-floater">
+      <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
+      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
+    </div>
+  </fieldset>
   <fieldset ng-if="partyEditGrantForm.data.length > 0">
     <legend bo-text="'auth.grant.legend' | message"></legend>
     <article ng-repeat="other in partyEditGrantForm.data" class="permission-auth cf">
@@ -28,11 +34,6 @@
   <fieldset scope>
     <legend bo-text="'auth.search.grant.legend' | message"></legend>
     <auth-search-form child principal="child" party="{{party.id}}"></auth-search-form>
-  </fieldset>
-
-  <fieldset class="clean">
-    <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save.all' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
-    <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert.all' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
   </fieldset>
 </form>
 
