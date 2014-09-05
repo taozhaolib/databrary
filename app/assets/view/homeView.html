@@ -6,7 +6,7 @@
       </div>
     </div>
 
-    <div class="row" bo-if="!page.models.Login.isAuthorized()">
+    <div class="row" bo-if="page.constants.locked && !page.models.Login.isAuthorized()">
       <div class="col">
         <h1 class="home-parties-header"><span></span><span bo-text="'welcome.title.sub' | message"></span></h1>
 
@@ -14,13 +14,13 @@
       </div>
     </div>
 
-    <div class="row" bo-if="page.models.Login.isAuthorized()">
+    <div class="row" bo-if="!page.constants.locked || page.models.Login.isAuthorized()">
       <article class="home-feature col-desktop-11 col-laptop-9 col-tablet-6 col-mobile-6">
         <div class="home-feature-inner">
           <img bo-src="page.router.volumeThumb(volume.id)" class="home-feature-thumb" ng-click="page.$location.url(page.router.volume(volume.id))">
 
           <div class="home-feature-info">
-            <div class="home-feature-message" bo-text="'featured' | message"></div>
+            <div class="home-feature-message" bo-text="'welcome.featured' | message"></div>
             <h1><a bo-href="page.router.volume(volume.id)" bo-text="volume.name"></a></h1>
 
             <div class="home-feature-investigators">
@@ -37,15 +37,27 @@
     <div class="home_parties">
       <div class="row">
         <div class="col">
-          <h1 class="home-parties-header"><span></span><span bo-text="'welcome.investigators' | message"></span>
-          </h1>
+	  <h1 class="home-parties-header"><span></span><span bo-text="'welcome.investigators' | message"></span></h1>
         </div>
       </div>
 
       <div class="row">
-        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in parties" bindonce>
+        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in investigators" bindonce>
+          <portrait></portrait>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+	  <h1 class="home-parties-header"><span></span><span bo-text="'welcome.users' | message"></span></h1>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-desktop-5 col-laptop-4 col-tablet-4 col-mobile-6" ng-repeat="party in users" bindonce>
           <portrait></portrait>
         </div>
       </div>
     </div>
+  </div>
 </article>

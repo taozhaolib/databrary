@@ -81,11 +81,11 @@ module.directive('userPasswordForm', [
               body: page.constants.message('reset.save.success', form.data.email)
             });
 
+            page.$window.$play.object = null;
+
             if (angular.isFunction(form.saveSuccessFn)) {
               form.saveSuccessFn(form, arguments);
             }
-
-            page.$window.$play.object = null;
           }, function (data, status) {
             form.validator.server({
               data: data,

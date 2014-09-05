@@ -86,7 +86,7 @@ module.provider('routerService', [
       controller: 'homeView',
       templateUrl: 'homeView.html',
       resolve: {
-        parties: [
+        investigators: [
           'pageService', function (page) {
             return page.models.Party.query({
               access: page.permission.CONTRIBUTE,
@@ -94,10 +94,21 @@ module.provider('routerService', [
             });
           }
         ],
+        users: [
+          'pageService', function (page) {
+            return page.models.Party.query({
+              access: page.permission.PUBLIC,
+              institution: false
+            });
+          }
+        ],
         volume: [
           'pageService', function (page) {
-            if (page.models.Login.checkAccess(page.permission.SHARED))
-              return page.models.Volume.get(8, ['access']);
+            if (!page.constants.locked || page.models.Login.checkAccess(page.permission.SHARED))
+              return page.models.Volume.get(9, ['access'])
+		.then(null, function() {
+		  return {};
+		});
             else
 	      return {};
           }

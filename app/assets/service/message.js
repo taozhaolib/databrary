@@ -101,7 +101,7 @@ module.factory('messageService', [
         if (messageBody) {
           body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
 	  if(refreshMsg){
-	      body += "<br>" + constants.message('reload-browser');
+	      body += "<br>" + constants.message('app.reload');
 	  }
         }
       }

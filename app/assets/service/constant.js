@@ -50,7 +50,6 @@ module.factory('constantService', [
 
     constants.accessGlobal = [
       ['NONE', 'NONE'],
-      ['NONE', 'SHARED'],
       ['PUBLIC', 'SHARED']
     ];
     constants.accessGlobal.parties = [
