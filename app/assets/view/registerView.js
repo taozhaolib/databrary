@@ -153,6 +153,7 @@ module.controller('registerView', [
 
         $scope.userPasswordForm.saveSuccessFn = function () {
           $scope.userPasswordForm.sent = true;
+	  page.$location.url(page.router.register());
           $scope.updateWizard();
         };
       },

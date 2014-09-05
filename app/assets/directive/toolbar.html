@@ -44,6 +44,9 @@
           <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
             <ul class="flat">
               <li><strong bo-text="page.models.Login.user.name"></strong></li>
+              <li ng-if="!page.auth.isAuthorized()">
+                <a href="" ng-click="page.$location.url(page.router.register()); toolbar.hideHover()" class="toolbar-user-link" bo-text="'toolbar.reregister' | message"></a>
+              </li>
               <li>
                 <a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
               </li>

@@ -30,6 +30,7 @@ object Mail {
       val hmac = javax.crypto.Mac.getInstance(fillinKey.getAlgorithm)
       hmac.init(fillinKey)
       Seq(
+	"id" -> party.id.toString,
 	"name" -> party.name,
 	"date" -> (new dbrary.Date).toString,
 	"mail" -> authorizeAddr)

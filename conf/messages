@@ -1,5 +1,6 @@
 # --- App
 app.update=The Databrary website has been updated. Please save your work and reload your browser tab.
+app.reload=Please <a href="" onclick="window.location.reload()">reload</a> your browser.
 
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
@@ -80,7 +81,6 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 
 # Generic UI
 databrary=Databrary
-featured=Featured Dataset
 
 navigation.confirmation=Do you want to abandon all unsaved changes?
 
@@ -108,6 +108,7 @@ study=Study
 toolbar.login=login
 toolbar.logout=logout
 toolbar.register=register
+toolbar.reregister=get authorized
 toolbar.profile=view profile
 
 toolbar.contact=Send us your comments, questions, and suggestions.
@@ -198,7 +199,9 @@ superuser.off.error=Could not deactivate superuser mode!
 welcome.title=Welcome
 welcome.title.sub=Databrary Beta
 welcome.body=<p>Databrary is currently in beta.</p><p>You can join our <a href="http://databrary.org/contact/newsletter.html">mailing list</a> to stay up-to-date on our latest developments. In the mean time, you can learn how to <a href="http://databrary.org/user-guide/releasing-data.html">collect sharable data</a>.</p><p>If you already have an account, you can <a href="/login">login</a>.  For more information, please visit <a href="http://databrary.org">databrary.org</a>.</p>
-welcome.investigators=Databrary Investigators
+welcome.featured=Featured Dataset
+welcome.investigators=Authorized Investigators
+welcome.users=Registered Users
 
 party.overview.title=Overview
 party.contact.title=Contact
@@ -330,9 +333,8 @@ auth.request.info.help=Enter contact information (name, email, phone number) for
 access.global.legend=Share this study
 access.global.save.success=Sharing settings updated.
 access.global.save.error=Unable to update sharing settings.
-access.global.NONE.NONE=Share only with those collaborators I specify below.
-access.global.NONE.SHARED=Share with all authorized Databrary investigators.
-access.global.PUBLIC.SHARED=Make the study and all public data visible to everyone.
+access.global.NONE.NONE=Private: Share with collaborators selected below.
+access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
 access.remove=Remove
@@ -597,10 +599,6 @@ wizard.register-pending.name=Stay Tuned
 wizard.register-pending.description=Tips for exploring Databrary.
 wizard.register-pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
 
-# --- Slot edit
-slot.edit=Edit session
-slot.view=View session
-
 # --- Volume edit
 
 volume.edit.create=Create study
@@ -682,4 +680,6 @@ wizard.volume-edit-access.instructions=Specify with whom you want to share the d
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
-reload-browser=Please <a href="" onclick="window.location.reload()">reload</a> your browser.
+# --- Slot edit
+slot.edit=Edit session
+slot.view=View session
