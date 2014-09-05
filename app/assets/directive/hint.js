@@ -54,7 +54,7 @@ module.directive('hint', [
     });
 
     angular.forEach(hints, function (hint, name) {
-      hints[name].tooltip = page.tooltips.add({
+      hints[name].tooltip = new page.tooltips({
         live: true,
         $target: '.' + hint.class,
         message: hint.message

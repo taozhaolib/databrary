@@ -5,14 +5,17 @@ module.directive('tooltip', [
     var link = function ($scope, $element, $attrs) {
       var tooltip = {};
 
-      tooltip.id = $attrs.tooltipId;
-      tooltip.cls = $attrs.tooltipClass;
-      tooltip.type = $attrs.tooltip || $attrs.tooltipType;
+      if ('tooltipId' in $attrs)
+	tooltip.id = $attrs.tooltipId;
+      if ('tooltipClass' in $attrs)
+	tooltip.cls = $attrs.tooltipClass;
+      if ('tooltipType' in $attrs)
+	tooltip.type = $attrs.tooltipType;
       tooltip.message = $scope.$eval($attrs.tooltip);
       tooltip.$target = $element;
 
       if (tooltip.message)
-        page.tooltips.add(tooltip);
+        new page.tooltips(tooltip);
     };
 
     return {
