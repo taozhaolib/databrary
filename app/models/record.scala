@@ -70,17 +70,21 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
       }
 
   /** The set of measures on the current volume readable by the current user. */
-  lazy val measures : Measures =
-    Classification.read(volume.permission, consent).fold[Measures](Measures.empty)(measures_.filter _)
+  lazy val measures : MeasuresView =
+    Classification.read(volume.permission, consent).fold[MeasuresView](Measures.empty)(measures_.filter _)
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
   def setMeasure[T](measure : Measure[T]) : Future[Boolean] =
-    measure.set(this) // TODO: update measures_
+    measure.set(this).andThen { case scala.util.Success(true) =>
+      measures_.update(measure)
+    }
   /** Remove a measure from this record.
     * This may invalidate measures on this object. */
   def removeMeasure(metric : Metric[_]) =
-    Measure.remove(this, metric) // TODO: update measures_
+    Measure.remove(this, metric).andThen { case scala.util.Success(true) =>
+      measures_.remove(metric)
+    }
 
   def ident : String =
     Maybe(category.fold[Seq[Metric[_]]](Seq(Metric.Ident))(_.ident)

@@ -23,7 +23,7 @@ module.directive('sessionMark', [
       if (extras.length)
         message += ": <em>" + extras.join(", ") + "</em>";
 
-      var tooltip = page.tooltips.add({
+      var tooltip = new page.tooltips({
         message: message,
         type: type,
         $target: $el

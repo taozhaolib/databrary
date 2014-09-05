@@ -63,18 +63,8 @@ module.directive('wizard', [
             $scope.activateFn(newStep, $scope);
           }
 
-	  //TODO - lose iteration, just use curStep as obtained above
-          angular.forEach($scope.steps, function (thisStep) {
-            if (thisStep.active && $scope.offFn[newStep.id] && angular.isFunction($scope.offFn[newStep.id])) {
-              $scope.offFn[newStep.id](thisStep, newStep);
-            }
-
-            thisStep.active = thisStep == newStep;
-
-            if (thisStep.active && $scope.onFn[newStep.id] && angular.isFunction($scope.onFn[newStep.id])) {
-              $scope.onFn[newStep.id](thisStep, newStep);
-            }
-          });
+	  if (curStep) curStep.active = false;
+	  if (newStep) newStep.active = true;
         };
 
         $scope.isStepBlocked = function (step) {

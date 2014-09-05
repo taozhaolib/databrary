@@ -283,8 +283,8 @@ module.directive('spreadsheet', [
 	    }
 	    if (n >= t)
 	      v = null;
-	    else if (n in records[c][m])
-	      v = records[c][m][n][i];
+	    else
+	      v = records[c][m][n] && records[c][m][n][i];
 	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
 	    if (v !== null) {
 	      var ri = 'ss-rec_' + records[c].id[n][i];
@@ -399,6 +399,8 @@ module.directive('spreadsheet', [
 	///////////////////////////////// Backend saving
 	
 	function saveError(cell, error) {
+	  cell.classList.remove('saving');
+	  cell.classList.add('error');
 	  // TODO
 	}
 
@@ -419,6 +421,7 @@ module.directive('spreadsheet', [
 	    angular.forEach(depends[r], function (n, i) {
 	      if (!(n in rcm))
 		rcm[n] = [];
+	      rcm[n][i] = v;
 	    });
 	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
 	    var a = page.constants.metric[m].assumed;

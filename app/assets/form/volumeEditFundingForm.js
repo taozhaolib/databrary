@@ -61,6 +61,11 @@ module.directive('volumeEditFundingForm', [
 
       //
 
+      var $float = $('.vef-float');
+      var $floater = $('.vef-float-floater');
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      page.$w.scroll($scope.scrollFn);
+
       $scope.$on('fundingGrantForm-init', function (event, grantForm) {
         grantForm.volume = form.volume;
         if (grantForm.data.new) {

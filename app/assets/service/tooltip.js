@@ -1,162 +1,126 @@
 'use strict';
 
 module.factory('tooltipService', [
-  '$rootScope', 'ArrayHelper', '$timeout', function ($rootScope, ArrayHelper, $timeout) {
-    var tooltips = new ArrayHelper([]);
+  '$rootScope', '$timeout', function ($rootScope, $timeout) {
+
     var $doc = $(document);
 
     var HOVER_DELAY = 500;
 
-    tooltips.types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
-
     var padW = 20;
     var padH = 15;
 
-    //
-
-    tooltips.newCatalog('id');
+    var defaults = {
+      cls: '',
+      style: {},
+      type: 'blue',
+      enabled: true,
+      visible: false,
+      live: false,
+      delay: HOVER_DELAY,
+    };
 
     var sequence = 0;
-    tooltips.newTransform(function (tooltip) {
-      tooltip.id = tooltip.id || 'tooltip-' + sequence++;
-      tooltip.cls = tooltip.cls || '';
-      tooltip.style = angular.isObject(tooltip.style) ? tooltip.style : {};
-      tooltip.type = tooltips.types.indexOf(tooltip.type) !== -1 ? tooltip.type : 'blue';
-      tooltip.enabled = angular.isUndefined(tooltip.enabled) || !!tooltip.enabled;
-      tooltip.visible = !!tooltip.visible;
-      tooltip.live = tooltip.live || false;
 
-      return tooltip;
-    });
+    function Tooltip(init) {
+      this.id = init.id || 'tooltip-' + sequence++;
+      angular.extend(this, defaults, init);
+      Tooltip.list[this.id] = this;
+      target(this);
+    }
 
-    //
+    Tooltip.list = {};
 
-    tooltips.add = function (tooltip) {
-      var newTooltip = ArrayHelper.prototype.add.call(this, tooltip);
-
-      if (newTooltip) {
-        tooltips.target(newTooltip);
-      }
-
-      return newTooltip;
+    Tooltip.prototype.remove = function () {
+      removeEvents(this);
+      delete Tooltip.list[this.id];
     };
 
-    //
-
-    tooltips.remove = function (tooltip) {
-      removeEvents(tooltip);
-
-      return ArrayHelper.prototype.remove.call(this, tooltip);
+    Tooltip.prototype.enable = function () {
+      this.enabled = true;
+      //this.target();
     };
 
-    //
-
-    tooltips.update = function (tooltip, obj) {
-      var newtooltip = ArrayHelper.prototype.update.call(this, tooltip, obj);
-
-      if (newtooltip) {
-        tooltips.target(newtooltip);
-      }
-
-      return newtooltip;
+    Tooltip.prototype.disable = function () {
+      this.enabled = false;
+      //this.target();
     };
 
-    //
-
-    tooltips.enable = function (tooltip) {
-      return tooltips.toggle(tooltip, 'enabled', true);
-    };
-
-    tooltips.disable = function (tooltip) {
-      tooltips.hide(tooltip);
-
-      return tooltips.toggle(tooltip, 'enabled', false);
-    };
-
-    //
-
-    tooltips.show = function (tooltip, event) {
-      if (!tooltip.enabled) {
+    Tooltip.prototype.show = function (event) {
+      if (!this.enabled)
         return undefined;
-      }
 
-      tooltips.position(tooltip, [event.clientX, event.clientY]);
-
-      return tooltips.toggle(tooltip, 'visible', true);
+      position(this, event.clientX, event.clientY);
+      this.visible = true;
+      //this.target();
     };
 
-    tooltips.hide = function (tooltip) {
-      tooltips.position(tooltip, false);
-
-      return tooltips.toggle(tooltip, 'visible', false);
+    Tooltip.prototype.hide = function () {
+      position(this);
+      this.visible = false;
+      //this.target();
     };
 
-    tooltips.position = function (tooltip, loc) {
-      if (loc === false) {
-        return;
-      }
-
-      var $t = tooltip.$target,
-        $e = $('#' + tooltip.id),
-        $w = $(window);
-
-      if (!loc) {
-        loc = [
-          $t.offset().left,
-          $t.offset().top
-        ];
-      }
-
-      var center = {
-        left: loc[0],
-        top: loc[1],
-        right: $w.width() - loc[0],
-        bottom: $w.height() - loc[1]
-      };
-
+    function position(tooltip, locx, locy) {
       tooltip.position = [];
 
+      if (arguments.length === 1)
+        return;
+
+      if (!locx)
+        locx = tooltip.$target.offset().left;
+      if (!locy)
+        locy = tooltip.$target.offset().top;
+
+      var $w = $(window);
+      var center = {
+        left: locx,
+        top: locy,
+        right: $w.width() - locx,
+        bottom: $w.height() - locy
+      };
+
+      var $e = $('#' + tooltip.id);
+
       if (center.left > center.right) {
-        tooltip.style.left = (loc[0] + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
+        tooltip.style.left = (locx + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
         tooltip.position.push('left');
       } else {
-        tooltip.style.left = (loc[0] + $(window).scrollLeft() - padW) + 'px';
+        tooltip.style.left = (locx + $(window).scrollLeft() - padW) + 'px';
         tooltip.position.push('right');
       }
 
       if (center.top > center.bottom) {
-        tooltip.style.top = (loc[1] + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
+        tooltip.style.top = (locy + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
         tooltip.position.push('top');
       } else {
-        tooltip.style.top = (loc[1] + $(window).scrollTop() + padH) + 'px';
+        tooltip.style.top = (locy + $(window).scrollTop() + padH) + 'px';
         tooltip.position.push('bottom');
       }
-    };
+    }
 
-    //
-
-    var getTargetEvents = function (tooltip) {
+    function getTargetEvents(tooltip) {
       if (!tooltip.$target) {
         return [];
       }
 
       var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
-        namespace = '.tooltipTarget';
+        namespace = '.tooltipTarget-' + tooltip.id;
 
       if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0) {
         return [
-            'focusin' + namespace + '-' + tooltip.id,
-            'focusout' + namespace + '-' + tooltip.id
+            'focusin' + namespace,
+            'focusout' + namespace
         ];
       }
 
       return [
-          'mouseenter' + namespace + '-' + tooltip.id,
-          'mouseleave' + namespace + '-' + tooltip.id
+          'mouseenter' + namespace,
+          'mouseleave' + namespace
       ];
-    };
+    }
 
-    var removeEvents = function (tooltip) {
+    function removeEvents(tooltip) {
       if (tooltip.$target) {
         if (tooltip.live) {
           $doc.off(getTargetEvents(tooltip).join(' '), tooltip.$target);
@@ -165,21 +129,18 @@ module.factory('tooltipService', [
           tooltip.$target.unbind(getTargetEvents(tooltip).join(' '));
         }
       }
-    };
+    }
 
-    tooltips.target = function (tooltip, $newTarget) {
-      if (tooltips.index(tooltip) == -1) {
-        return undefined;
-      }
+    function target(tooltip) {
+      if (!(tooltip.id in Tooltip.list))
+	return;
 
       removeEvents(tooltip);
-
-      tooltip.$target = angular.isDefined($newTarget) ? $newTarget : tooltip.$target;
 
       var $target = tooltip.$target;
 
       if (!tooltip.live && $target.length === 0) {
-        tooltips.disable(tooltip);
+        tooltip.disable();
         return (tooltip.$target = false);
       }
 
@@ -192,59 +153,59 @@ module.factory('tooltipService', [
 	  var target = $(event.target);
           timeout = $timeout(function () {
 	    if (target.is(tooltip.$target)) // may have changed
-	      tooltips.show(tooltip, event);
-          }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
+	      tooltip.show(event);
+          }, tooltip.delay);
         });
 
         $doc.on(events[1], tooltip.$target, function (event) {
           $rootScope.$apply(function () {
             $timeout.cancel(timeout);
-            tooltips.hide(tooltip, event);
+            tooltip.hide();
           });
         });
       } else {
         $target.bind(events[0], function (event) {
           timeout = $timeout(function () {
-            tooltips.show(tooltip, event);
-          }, angular.isNumber(tooltip.delay) ? tooltip.delay : HOVER_DELAY);
+            tooltip.show(event);
+          }, tooltip.delay);
         });
 
         $target.bind(events[1], function (event) {
           $rootScope.$apply(function () {
             $timeout.cancel(timeout);
-            tooltips.hide(tooltip, event);
+            tooltip.hide();
           });
         });
       }
 
-      tooltips.hide(tooltip);
+      tooltip.hide();
 
       return tooltip;
-    };
+    }
 
     //
 
     $rootScope.$watch(function () {
-      angular.forEach(tooltips, function (tooltip) {
+      angular.forEach(Tooltip.list, function (tooltip) {
         if (!angular.isString(tooltip.$target) &&
 	    ((document.contains && !document.contains(tooltip.$target[0])) ||
 	    tooltip.$target.closest(document.documentElement).length === 0)) {
 	     removeEvents(tooltip);
-	     tooltips.remove(tooltip);
+	     tooltip.remove();
         }
       });
     });
 
-    tooltips.clear = function () {
-      angular.forEach(tooltips, function (tooltip) {
-        tooltips.hide(tooltip);
+    Tooltip.clear = function () {
+      angular.forEach(Tooltip.list, function (tooltip) {
+        tooltip.hide();
       });
     };
 
-    $rootScope.$on('$routeChangeStart', tooltips.clear);
+    $rootScope.$on('$routeChangeStart', Tooltip.clear);
 
     //
 
-    return tooltips;
+    return Tooltip;
   }
 ]);

@@ -150,14 +150,9 @@ module.directive('volumeEditAccessForm', [
 
       var $float = $('.vea-float');
       var $floater = $('.vea-float-floater');
-      page.$w.scroll(function () {
-	if (window.pageYOffset + 24*2.5 >= $float.offset().top) {
-	  $floater.addClass('float');
-	} else {
-	  $floater.removeClass('float');
-	} 
-      });
-
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      page.$w.scroll($scope.scrollFn);
+      
       $scope.$on('accessSearchForm-init', function (event, searchForm) {
         searchForm.selectFn = function (found) {
           var present = false;

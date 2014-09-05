@@ -1,7 +1,7 @@
 package models
 
 import scala.concurrent.Future
-import scala.collection.concurrent
+import scala.collection
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
 import com.github.mauricio.async.db
@@ -88,9 +88,9 @@ object Metric extends TableId[Metric[_]]("metric") {
     async.AWAIT {
       row.SELECT("ORDER BY id").apply().list
     }
-  private val byId : scala.collection.immutable.Map[Metric.Id, Metric[_]] =
+  private val byId : collection.immutable.Map[Metric.Id, Metric[_]] =
     list.map(c => (c.id, c)).toMap
-  private val byName : scala.collection.immutable.Map[String, Metric[_]] =
+  private val byName : collection.immutable.Map[String, Metric[_]] =
     list.map(c => (c.name, c)).toMap
 
   /** Retrieve a single metric by id.
@@ -196,38 +196,61 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
 }
 
-case class Measures(list : IndexedSeq[Measure[_]]) {
-  private def find(id : Metric.Id) : Option[Measure[_]] =
-    // These are in order, so the find at least saves half a traversal
-    list.find(_.metricId._id >= id._id).filter(_.metricId === id)
+class MeasuresView protected (private val map : collection.Map[Metric[_],Measure[_]]) {
+  def list : Iterable[Measure[_]] =
+    map.values
+
+  private def find(m : Metric[_]) : Option[Measure[_]] =
+    map.get(m)
 
   def datum(metric : Metric[_]) : Option[String] =
-    find(metric.id).map(_.datum)
+    find(metric).map(_.datum)
 
   def apply[T](metric : Metric[T]) : Option[Measure[T]] =
-    find(metric.id).asInstanceOf[Option[Measure[T]]]
+    find(metric).asInstanceOf[Option[Measure[T]]]
 
   def value[T](metric : Metric[T]) : Option[T] =
     apply[T](metric).map(_.value)
 
   def filter(c : Classification.Value) =
-    Measures(list.filter(_.metric.classification >= c))
+    new MeasuresView(map.filterKeys(_.classification >= c))
+}
+
+final class Measures private (private val map : collection.mutable.Map[Metric[_],Measure[_]]) extends MeasuresView(map) {
+  private[models] def update(m : Measure[_]) {
+    map.update(m.metric, m)
+  }
+
+  private[models] def remove(m : Metric[_]) {
+    map -= m
+  }
+}
+
+object MeasuresView {
+  implicit val jsonWrites : json.OWrites[MeasuresView] =
+    json.OWrites[MeasuresView](m => json.JsObject(m.map.toSeq.map {
+      case (m, v) => (m.id.toString, json.JsString(v.datum))
+    }))
 }
 
 object Measures extends Table[Measures]("measures") {
-  val empty = Measures(IndexedSeq.empty[Measure[_]])
-  def apply(m : Option[Measures]) : Measures =
+  def empty = new Measures(collection.mutable.Map.empty[Metric[_],Measure[_]])
+  private def apply(m : Option[Measures]) : Measures =
     m.getOrElse(empty)
+  private def apply(l : Seq[Measure[_]]) : Measures =
+    new Measures(collection.mutable.Map(l.map(m => m.metric -> m) : _*))
 
-  private implicit val sqlMeasure : SQLType[Measure[_]] = SQLType("measure", classOf[Measure[_]])(s =>
-    Maybe(s.indexOf(':')).opt.flatMap { i =>
-      Metric.get(Metric.asId(s.substring(0,i).toInt)).map(new Measure(_, s.substring(i+1)))
-    },
-    m => m.metricId.toString + ":" + m.datum)
+  private implicit val sqlMeasure : SQLType[Measure[_]] =
+    SQLType("measure", classOf[Measure[_]])(s =>
+      for {
+	i <- Maybe(s.indexOf(':')).opt
+	id <- Metric.get(Metric.asId(s.substring(0,i).toInt))
+      } yield (new Measure(id, s.substring(i+1))),
+      m => m.metricId.toString + ":" + m.datum)
 
   implicit val sqlType : SQLType[Measures] =
     SQLType.transform[IndexedSeq[Measure[_]], Measures]("measures", classOf[Measures])(
-      l => Some(new Measures(l)), _.list)
+      l => Some(apply(l)), _.map.values.toIndexedSeq)
 
   private[models] val row : Selector[Measures] = Columns(
       SelectColumn[Measures]("measures")
@@ -235,7 +258,4 @@ object Measures extends Table[Measures]("measures") {
 
   private[models] def getRecord(record : Record.Id) : Future[Measures] =
     row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)
-
-  implicit val jsonWrites : json.OWrites[Measures] =
-    json.OWrites[Measures](m => json.JsObject(m.list.map(m => (m.metricId.toString, json.JsString(m.datum)))))
 }

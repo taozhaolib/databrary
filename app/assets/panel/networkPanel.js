@@ -2,13 +2,7 @@
 
 module.controller('NetworkPanel', [
   '$scope', 'pageService', function ($scope, page) {
-    $scope.bootPanel = function () {
-      getPartyAuth();
-    };
-
-    $scope.refreshPanel = function () {
-      getPartyAuth();
-    };
+    $scope.refreshPanel = getPartyAuth;
 
     //
 

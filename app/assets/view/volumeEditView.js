@@ -69,6 +69,10 @@ module.controller('volumeEditView', [
       if (updateQuery) {
         page.$location.search('page', step.id.split('-').pop());
       }
+      //to avoid bug where "float" elements fixed to top of page at lower scrolls are already at top
+      if (step.scrollFn){
+	page.$timeout(step.scrollFn);
+      }
     };
 
     $scope.updateWizard = function () {

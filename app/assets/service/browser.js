@@ -1,14 +1,9 @@
 'use strict';
 
 module.factory('browserService', [
-  '$rootScope',
-  'ArrayHelper',
-  'messageService',
   'constantService',
-  'tooltipService',
-  '$timeout',
   'displayService',
-  function ($rootScope, ArrayHelper, messages, constants, tooltips, $timeout, display) {
+  function (constants, display) {
     var browserService = {};
 
     //
@@ -16,7 +11,7 @@ module.factory('browserService', [
     var DEFAULT_OPTIONS = {
       record: {
         allow: true,
-        categories: new ArrayHelper([])
+        categories: [],
       },
 
       session: {
@@ -57,13 +52,13 @@ module.factory('browserService', [
 
       angular.extend(browserService.options, DEFAULT_OPTIONS);
 
-      browserService.options.record.categories = new ArrayHelper(
+      browserService.options.record.categories =
         volume.categories.map(function (category) {
           return angular.extend({
             id: category,
             name: constants.category[category].name,
           }, DEFAULT_CATEGORY);
-        }));
+        });
 
       rebuildData();
     };
@@ -378,7 +373,7 @@ module.factory('browserService', [
     browserService.addRecordGroup = function (group) {
       browserService.setRecordGroupToggle(undefined);
 
-      var i = browserService.options.record.categories.index(group);
+      var i = browserService.options.record.categories.indexOf(group);
 
       group.active = true;
 
@@ -394,7 +389,7 @@ module.factory('browserService', [
     browserService.removeRecordGroup = function (group) {
       group.active = false;
 
-      var group_i = browserService.options.record.categories.index(group);
+      var group_i = browserService.options.record.categories.indexOf(group);
 
       browserService.options.record.categories.splice(group_i, 1);
       browserService.options.record.categories.push(group);
@@ -405,8 +400,8 @@ module.factory('browserService', [
     browserService.switchRecordGroup = function (group, maybe) {
       browserService.setRecordGroupToggle(undefined);
 
-      var group_i = browserService.options.record.categories.index(group),
-        maybe_i = browserService.options.record.categories.index(maybe);
+      var group_i = browserService.options.record.categories.indexOf(group),
+        maybe_i = browserService.options.record.categories.indexOf(maybe);
 
       if (group.active != maybe.active) {
         group.active = !group.active;
@@ -452,7 +447,9 @@ module.factory('browserService', [
       if (group == 'session')
         return browserService.options.session;
       else
-        return browserService.options.record.categories.find({id: group});
+        return browserService.options.record.categories.filter(function (c) {
+	  return c.id === group;
+	}).shift();
     };
 
     var getLevelByGroup = function (group) {

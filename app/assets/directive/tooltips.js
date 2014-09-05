@@ -3,48 +3,41 @@
 module.directive('tooltips', [
   'pageService', function (page) {
     var controller = ['$scope', function ($scope) {
-      var Region = function () {
-        this.enabled = true;
-
-        //
-
-        this.getControllerClasses = function () {
-          var classes = [];
-
-          if ($scope.enabled) {
-            classes.push('tooltips-enabled');
-          }
-
-          return classes;
-        };
-
-        //
-
-        this.getTooltipClasses = function (tooltip) {
-          var classes = tooltip.cls.split(' ');
-
-          classes.push('tooltip');
-          classes.push('tooltip-' + tooltip.type);
-
-          if (tooltip.position) {
-            classes.push('tooltip-' + tooltip.position[0]);
-            classes.push('tooltip-' + tooltip.position[1]);
-          }
-
-          if (tooltip.visible) {
-            classes.push('tooltip-visible');
-          }
-
-          return classes;
-        };
+      var tooltips = {
+	enabled: true
       };
 
-      Region.prototype = page.tooltips;
+      tooltips.getControllerClasses = function () {
+	var classes = [];
 
-      return new Region();
+	if ($scope.enabled) {
+	  classes.push('tooltips-enabled');
+	}
+
+	return classes;
+      };
+
+      tooltips.getTooltipClasses = function (tooltip) {
+	var classes = tooltip.cls.split(' ');
+
+	classes.push('tooltip');
+	classes.push('tooltip-' + tooltip.type);
+
+	classes.push.apply(classes,
+	  tooltip.position.map(function (p) {
+	    return 'tooltip-' + p;
+	  }));
+
+	if (tooltip.visible)
+	  classes.push('tooltip-visible');
+
+	return classes;
+      };
+
+      tooltips.list = page.tooltips.list;
+
+      return tooltips;
     }];
-
-    //
 
     return {
       restrict: 'E',
