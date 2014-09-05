@@ -19,37 +19,20 @@ message-color(color)
 // styles
 
 .messages
-  display none
+  display block
   margin-bottom f1
 
-  &.messages-default
-    position fixed
-    z-index 850
-    top b1 * 1.5
-    width 100%
+  position fixed
+  z-index 850
+  top b1 * 1.5
+  width 100%
+  margin-bottom 0
+
+  .message
+    box-shadow box-shadow-def
+    border-width 0
+    border-radius 0
     margin-bottom 0
-
-    .message
-      box-shadow box-shadow-def
-      border-width 0
-      border-radius 0
-      margin-bottom 0
-
-  &.messages-local
-    .wrap
-    .row
-    .col
-      width auto
-      display block
-      margin 0
-      padding 0
-
-    .col
-      width 100%
-      padding-width f4
-
-.messages-enabled
-  display block
 
 .message
   min-height 1.5

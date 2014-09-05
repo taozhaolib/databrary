@@ -1,9 +1,8 @@
 'use strict';
 
 module.provider('routerService', [
-  '$routeProvider',
-  'routeData',
-  function RouterProvider($routeProvider, controllers) {
+  '$routeProvider', 'routeData',
+  function ($routeProvider, controllers) {
     function encodeUri(val) {
       return encodeURIComponent(val).
         replace(/%40/g, '@').

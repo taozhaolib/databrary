@@ -12,7 +12,7 @@ module.directive('validator', [
       var validator = $scope.validator;
 
       validator.form = $scope[$attrs.form];
-      validator.name = $scope[$attrs.form][$attrs.name];
+      validator.name = validator.form[$attrs.name];
       validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
       validator.changed = false;
       validator.focus = false;

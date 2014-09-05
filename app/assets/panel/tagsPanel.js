@@ -248,9 +248,7 @@ module.controller('TagsPanel', [
     var enableNewNameError = function () {
       emptyAuto();
 
-      if ($scope.tagNewFormMessage) {
-        $scope.messages.enable($scope.tagNewFormMessage);
-      } else {
+      if (!$scope.tagNewFormMessage) {
         var message = {
           enabled: true,
           type: 'red',
@@ -267,7 +265,8 @@ module.controller('TagsPanel', [
 
     var disableNewNameError = function () {
       if ($scope.tagNewFormMessage) {
-        $scope.messages.disable($scope.tagNewFormMessage);
+        $scope.tagNewFormMessage.remove();
+	$scope.tagNewFormMessage = undefined;
       }
     };
   }

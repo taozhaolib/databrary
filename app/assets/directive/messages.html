@@ -1,10 +1,10 @@
-<div class="messages" ng-class="messages.getRegionClasses()">
-  <div ng-repeat="message in messages.toArray() | filter:{enabled: true}" id="{{message.id}}" ng-class="messages.getMessageClasses(message)" ng-style="messages.getMessageStyles(message, $index)">
+<div class="messages">
+  <div ng-repeat="message in messages.list" id="{{message.id}}" ng-class="'message message-'+message.type" ng-style="{'z-index':500-$index}">
     <div class="wrap">
       <div class="row">
         <div class="col">
-          <div class="message-close" ng-if="message.closeable" ng-click="messages.disable(message)"></div>
-          <div class="message-content" populate="message.body"></div>
+          <div class="message-close" ng-if="message.closeable" ng-click="message.remove()"></div>
+          <div class="message-content" ng-bind-html="message.body"></div>
         </div>
       </div>
     </div>

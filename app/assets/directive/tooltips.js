@@ -3,19 +3,7 @@
 module.directive('tooltips', [
   'pageService', function (page) {
     var controller = ['$scope', function ($scope) {
-      var tooltips = {
-	enabled: true
-      };
-
-      tooltips.getControllerClasses = function () {
-	var classes = [];
-
-	if ($scope.enabled) {
-	  classes.push('tooltips-enabled');
-	}
-
-	return classes;
-      };
+      var tooltips = {};
 
       tooltips.getTooltipClasses = function (tooltip) {
 	var classes = tooltip.cls.split(' ');

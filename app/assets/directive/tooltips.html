@@ -1,5 +1,5 @@
-<div id="tooltips" class="tooltips" ng-class="tooltips.getControllerClasses()">
-  <div ng-repeat="tooltip in tooltips.list" ng-if="tooltip.enabled" id="{{tooltip.id}}" ng-class="tooltips.getTooltipClasses(tooltip)" ng-style="tooltip.style">
+<div id="tooltips" class="tooltips">
+  <div ng-repeat="tooltip in tooltips.list" id="{{tooltip.id}}" ng-class="tooltips.getTooltipClasses(tooltip)" ng-style="tooltip.style">
     <div class="tooltip-content" ng-bind="tooltip.message"></div>
   </div>
 </div>

@@ -6,8 +6,6 @@
       </footer>
 
       <div class="panel-comments-body">
-        <messages form="commentReplyForm"></messages>
-
         <validator form="commentReplyForm" name="text" label="'comments.text.title' | message">
           <textarea name="text" ng-model="commentReplyForm.data.text" ng-minlength="3"></textarea>
         </validator>

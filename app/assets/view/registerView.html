@@ -11,8 +11,6 @@
         <wizard retrieve="retrieveWizard" update="updateWizard">
           <wizard-step id="register-create">
             <form name="registerForm" novalidate>
-              <messages form="registerForm"></messages>
-
               <validator form="registerForm" name="fieldName" label="'register.name.prompt' | message">
                 <input id="field-name" name="fieldName" type="text" ng-model="registerForm.data.name" ng-minlength="3" placeholder="{{'register.name.placeholder' | message}}">
               </validator>
@@ -74,8 +72,6 @@
               <div ng-bind="'auth.info.prompt' | message"></div>
 
               <form name="infoForm" novalidate>
-                <messages form="infoForm"></messages>
-
                 <validator form="infoForm" name="info" label="'auth.request.info.title' | message">
                   <textarea id="field-info" name="info" ng-model="infoForm.data.info"></textarea>
                 </validator>

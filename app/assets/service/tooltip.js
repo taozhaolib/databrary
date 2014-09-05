@@ -5,8 +5,6 @@ module.factory('tooltipService', [
 
     var $doc = $(document);
 
-    var HOVER_DELAY = 500;
-
     var padW = 20;
     var padH = 15;
 
@@ -14,10 +12,9 @@ module.factory('tooltipService', [
       cls: '',
       style: {},
       type: 'blue',
-      enabled: true,
       visible: false,
       live: false,
-      delay: HOVER_DELAY,
+      delay: 500,
     };
 
     var sequence = 0;
@@ -36,29 +33,14 @@ module.factory('tooltipService', [
       delete Tooltip.list[this.id];
     };
 
-    Tooltip.prototype.enable = function () {
-      this.enabled = true;
-      //this.target();
-    };
-
-    Tooltip.prototype.disable = function () {
-      this.enabled = false;
-      //this.target();
-    };
-
     Tooltip.prototype.show = function (event) {
-      if (!this.enabled)
-        return undefined;
-
       position(this, event.clientX, event.clientY);
       this.visible = true;
-      //this.target();
     };
 
     Tooltip.prototype.hide = function () {
       position(this);
       this.visible = false;
-      //this.target();
     };
 
     function position(tooltip, locx, locy) {
@@ -99,13 +81,13 @@ module.factory('tooltipService', [
       }
     }
 
+    var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'];
     function getTargetEvents(tooltip) {
       if (!tooltip.$target) {
         return [];
       }
 
-      var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
-        namespace = '.tooltipTarget-' + tooltip.id;
+      var namespace = '.tooltipTarget-' + tooltip.id;
 
       if (!angular.isString(tooltip.$target) && focusElements.indexOf(tooltip.$target.prop('tagName')) >= 0) {
         return [
@@ -139,10 +121,8 @@ module.factory('tooltipService', [
 
       var $target = tooltip.$target;
 
-      if (!tooltip.live && $target.length === 0) {
-        tooltip.disable();
-        return (tooltip.$target = false);
-      }
+      if (!tooltip.live && $target.length === 0)
+	return tooltip.remove();
 
       var events = getTargetEvents(tooltip);
 
@@ -188,10 +168,9 @@ module.factory('tooltipService', [
     $rootScope.$watch(function () {
       angular.forEach(Tooltip.list, function (tooltip) {
         if (!angular.isString(tooltip.$target) &&
-	    ((document.contains && !document.contains(tooltip.$target[0])) ||
-	    tooltip.$target.closest(document.documentElement).length === 0)) {
-	     removeEvents(tooltip);
-	     tooltip.remove();
+	  (document.contains ? !document.contains(tooltip.$target[0]) :
+	   tooltip.$target.closest(document.documentElement).length === 0)) {
+	  tooltip.remove();
         }
       });
     });

@@ -2,12 +2,14 @@
 
 module.directive('form', [
   'pageService', function (page) {
-    var pre = function ($scope, $element, $attrs) {
+    var link = function ($scope, $element, $attrs) {
       if (!$attrs.name) {
         return;
       }
 
       var form = $scope[$attrs.name];
+      form.messages = page.messages;
+
       var unclaimed = {};
 
       form.$element = $element;
@@ -82,46 +84,9 @@ module.directive('form', [
       }
     };
 
-    var post = function ($scope, $element, $attrs) {
-      if (!$attrs.name) {
-        return;
-      }
-
-      var form = $scope[$attrs.name];
-
-      switch ($attrs.messages) {
-        case 'nearest':
-          if ($scope.messages) {
-            form.messages = $scope.messages;
-          }
-          break;
-
-        case 'none':
-          form.messages = page.messages.region();
-          break;
-
-        case 'default':
-          form.messages = page.messages;
-          break;
-
-        default:
-          if (angular.isString($attrs.messages)) {
-            form.messages = page.$parse($attrs.messages)($scope);
-          }
-
-          if (!form.messages instanceof page.messages.constructor) {
-            form.messages = page.messages.region();
-          }
-          break;
-      }
-    };
-
     return {
       restrict: 'E',
-      link: {
-        pre: pre,
-        post: post,
-      },
+      link: link,
     };
   }
 ]);

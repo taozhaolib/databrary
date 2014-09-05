@@ -5,72 +5,48 @@ module.directive('hint', [
     var hints = {};
 
     angular.forEach(page.constants.permission, function (a, i) {
-      hints['permission-' + a.toLowerCase()] = {
-        class: 'hint-permission-' + a.toLowerCase(),
-        message: page.constants.message('access.' + a, 'You'),
-      };
-
-      if (i >= 3) {
-        hints['access-edit-' + a.toLowerCase()] = {
-          class: 'hint-access-edit-' + a.toLowerCase(),
-          message: page.constants.message('access.edit.' + a + '.who', 'You'),
-        };
-      }
+      hints['permission-' + a] =
+        page.constants.message('access.' + a, 'You');
+      if ('access.edit.' + a + '.who' in page.constants.messages)
+	hints['access-edit-' + a] =
+	  page.constants.message('access.edit.' + a + '.who', 'You');
     });
 
     angular.forEach(page.constants.consent, function (a) {
-      hints['consent-' + a.toLowerCase()] = {
-        class: 'hint-consent-' + a.toLowerCase(),
-        message: page.constants.message('consent.' + a),
-      };
+      hints['consent-' + a] =
+        page.constants.message('consent.' + a);
     });
 
     angular.forEach(page.constants.classification, function (a) {
-      hints['classification-' + a.toLowerCase()] = {
-        class: 'hint-classification-' + a.toLowerCase(),
-        message: page.constants.message('classification.' + a),
-      };
+      hints['classification-' + a] =
+        page.constants.message('classification.' + a);
     });
 
     angular.forEach(page.constants.format, function (a) {
-      hints['format-' + a.extension.toLowerCase()] = {
-        class: 'format-' + a.extension.toLowerCase(),
-        message: a.name,
-      };
+      hints['format-' + a.extension] =
+        a.name;
     });
 
     angular.forEach(['dataset', 'study', 'record', 'slot', 'asset'], function (a) {
-      hints['object-' + a] = {
-        class: 'hint-object-' + a,
-        message: page.constants.message('object.tip.' + a),
-      };
+      hints['object-' + a] =
+        page.constants.message('object.tip.' + a);
     });
 
     angular.forEach(['up', 'null', 'down'], function (a) {
-      hints['tags-vote-' + a] = {
-        class: 'tags-vote-' + a,
-        message: page.constants.message('tags.vote.' + a),
-      };
+      hints['tags-vote-' + a] =
+        page.constants.message('tags.vote.' + a);
     });
 
     angular.forEach(hints, function (hint, name) {
-      hints[name].tooltip = new page.tooltips({
+      new page.tooltips({
         live: true,
-        $target: '.' + hint.class,
-        message: hint.message
+        $target: '.hint-' + name,
+        message: hint
       });
     });
 
     var link = function ($scope, $element, $attrs) {
-      if (angular.isString($attrs.hint) && hints[$attrs.hint.toLowerCase()]) {
-        $element.addClass(hints[$attrs.hint.toLowerCase()].class);
-      }
-
-      if (angular.isDefined($attrs.hintObserve)) {
-        $attrs.$observe('hint', function (val, old) {
-          $element.removeClass(hints[old.toLowerCase()].class).addClass(hints[val.toLowerCase()].class);
-        });
-      }
+      $element.addClass('hint-' + $attrs.hint);
     };
 
     return {

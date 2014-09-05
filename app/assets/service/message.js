@@ -1,140 +1,70 @@
 'use strict';
 
 module.factory('messageService', [
-  '$rootScope', 'ArrayHelper', '$timeout', '$sanitize', '$sce', 'constantService',
-  function ($rootScope, ArrayHelper, $timeout, $sanitize, $sce, constants) {
-    var types = ['blue', 'green', 'red', 'orange', 'yellow', 'purple'];
+  '$timeout', '$sanitize', '$sce', 'constantService',
+  function ($timeout, $sanitize, $sce, constants) {
 
-    //
-
-    var transformFn = function (message) {
-      message.id = message.id || 'message-' + Math.random().toString(36).substring(2);
-      message.type = types.indexOf(message.type) !== -1 ? message.type : 'blue';
-      message.target = angular.isString(message.target) ? message.target : undefined;
-      message.closeable = angular.isDefined(message.closeable) && !!message.closeable;
-      message.countdown = parseInt(message.countdown) || false;
-      message.enabled = angular.isUndefined(message.enabled) || !!message.enabled;
-
-      message.body = message.body || undefined;
-
-      return message;
+    var defaults = {
+      type: 'blue',
+      closeable: false,
+      countdown: false,
     };
 
-    var validateFn = function (message) {
-      if (angular.isObject(message) &&
-        message.id && message.type &&
-        angular.isDefined(message.body) &&
-        message.body.length > 0) {
-        var exists;
+    var sequence = 0;
+    var byBody = {};
 
-        angular.forEach(this, function (thisMessage) {
-          if (message.body === thisMessage.body && thisMessage.enabled) {
-            exists = true;
-            return false;
-          }
-        });
+    function Message(init) {
+      this.id = init.id || 'message-' + sequence++;
+      angular.extend(this, defaults, init);
 
-        if (!exists) {
-          return message;
-        }
-      }
+      /* suppress duplicate messages */
+      if (this.body in byBody)
+	return;
 
-      return false;
+      Message.list[this.id] = this;
+      byBody[this.body] = this;
+
+      if (this.countdown)
+	countdown(this);
+    }
+
+    Message.list = {};
+
+    Message.prototype.remove = function (message) {
+      countdownClear(this);
+      delete Message.list[this.id];
+      delete byBody[this.body];
     };
 
-    var orderFn = function (a, b) {
-      return types.indexOf(a.type) - types.indexOf(b.type);
-    };
-
-    //
-
-    var register = function (message) {
-      if (message) {
-        if (message.target) {
-          this.target(message);
-        }
-
-        if (message.countdown) {
-          this.countdown(message);
-        }
-      }
-
-      return message;
-    };
-
-    var errorHTML = function (html) {
-      return function () {
-        var doc = document.open('text/html', 'replace');
-        doc.write(html);
-        doc.close();
-      };
-    };
-
-    var getTargetEvents = function (message) {
-      if (!message.targetElement) {
-        return [];
-      }
-
-      var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'],
-        namespace = '.messageTarget';
-
-      if (focusElements.indexOf(message.targetElement.prop('tagName')) >= 0) {
-        return [
-            'focusin' + namespace + '-' + message.id,
-            'focusout' + namespace + '-' + message.id
-        ];
-      }
-
-      return [
-          'mouseenter' + namespace + '-' + message.id,
-          'mouseleave' + namespace + '-' + message.id
-      ];
-    };
-
-    var countdownUnset = function (message) {
+    function countdownClear(message) {
       if (message.countdownTimer) {
         $timeout.cancel(message.countdownTimer);
+	message.countdownTimer = undefined;
       }
+    }
+
+    function countdown(message) {
+      countdownClear(message);
+
+      if (!message.countdown)
+        return;
+
+      message.countdownTimer = $timeout(function () {
+        message.remove();
+      }, message.countdown);
+    }
+
+    Message.add = function (message) {
+      return new Message(message);
     };
 
-    //
-
-    var MessageService = function () {
-      this.newCatalog('id');
-      this.newTransform(transformFn);
-      this.newValidate(validateFn);
-      this.newOrder(orderFn);
-    };
-    MessageService.prototype = new ArrayHelper();
-
-    //
-
-    MessageService.prototype.region = function () {
-      return new MessageService();
-    };
-
-    //
-
-    MessageService.prototype.add = function (message) {
-      var newMessage = ArrayHelper.prototype.add.call(this, message);
-
-      register.call(this, newMessage);
-
-      return newMessage;
-    };
-
-    MessageService.prototype.addError = function (message) {
-      message.countdown = undefined;
+    /* NB: modifies message */
+    Message.addError = function (message) {
+      message.countdown = false;
       message.closeable = true;
       message.type = 'red';
 
-      var newMessage = ArrayHelper.prototype.add.call(this, message);
-
-      if (!newMessage) {
-        return false;
-      }
-
-      var body = constants.message('error.prefix') + ' ' + $sce.getTrustedHtml(newMessage.body);
+      var body = constants.message('error.prefix') + ' ' + $sce.getTrustedHtml(message.body);
 
       if (message.report) {
         message.errors = message.report.data;
@@ -145,7 +75,11 @@ module.factory('messageService', [
       if (!message.errors) {
         body += ' ' + constants.message('error.suffix');
       } else if (angular.isString(message.errors)) {
-        newMessage.fn = errorHTML(message.errors);
+        message.fn = function () {
+	  var doc = document.open('text/html', 'replace');
+	  doc.write(message.errors);
+	  doc.close();
+	};
         body += ' ' + constants.message('error.view');
       } else if (angular.isObject(message.errors)) {
         var moreBody = '';
@@ -176,113 +110,11 @@ module.factory('messageService', [
       delete message.errors;
       delete message.status;
       delete message.url;
-      newMessage.body = $sce.trustAsHtml(body);
+      message.body = $sce.trustAsHtml(body);
 
-      register.call(this, newMessage);
-      return newMessage;
+      return new Message(message);
     };
 
-    //
-
-    MessageService.prototype.remove = function (message) {
-      countdownUnset(message);
-      return ArrayHelper.prototype.remove.call(this, message);
-    };
-
-    //
-
-    MessageService.prototype.update = function (message, obj) {
-      var newMessage = ArrayHelper.prototype.update.call(this, message, obj);
-
-      if (newMessage) {
-        this.target(newMessage);
-      }
-
-      return newMessage;
-    };
-
-    //
-
-    MessageService.prototype.enable = function (message) {
-      countdownUnset(message);
-      return this.toggle(message, 'enabled', true);
-    };
-
-    MessageService.prototype.disable = function (message) {
-      countdownUnset(message);
-      return this.toggle(message, 'enabled', false);
-    };
-
-    //
-
-    MessageService.prototype.target = function (message, target) {
-      var that = this;
-
-      if (this.index(message) == -1) {
-        return undefined;
-      }
-
-      if (message.targetElement) {
-        message.targetElement.unbind(getTargetEvents(message).join(' '));
-        delete message.targetElement;
-      }
-
-      message.target = angular.isDefined(target) ? target : message.target;
-
-      var $target = $(message.target);
-
-      if ($target.length === 0) {
-        this.disable(message);
-        return (message.target = false);
-      }
-
-      message.targetElement = $target;
-
-      var events = getTargetEvents(message);
-
-      $target.bind(events[0], function () {
-        $rootScope.$apply(function () {
-          that.enable(message);
-        });
-      });
-
-      $target.bind(events[1], function () {
-        $rootScope.$apply(function () {
-          that.disable(message);
-        });
-      });
-
-      this.disable(message);
-
-      return message;
-    };
-
-    //
-
-    MessageService.prototype.countdown = function (message, countdown) {
-      var that = this;
-
-      if (this.index(message) == -1) {
-        return undefined;
-      }
-
-      countdownUnset(message);
-
-      message.countdown = angular.isDefined(countdown) ? countdown : message.countdown;
-
-      if (!angular.isNumber(message.countdown)) {
-        return (message.countdown = false);
-      }
-
-      message.countdownTimer = $timeout(function () {
-        that.disable(message);
-      }, message.countdown);
-
-      return message;
-    };
-
-    //
-
-    return new MessageService();
+    return Message;
   }
 ]);

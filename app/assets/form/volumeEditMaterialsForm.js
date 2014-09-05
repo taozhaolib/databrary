@@ -122,7 +122,7 @@ module.directive('volumeEditMaterialsForm', [
 	if(subform.asset.asset && subform.asset.asset.creation) // NOT for file operations. just metadata
 	{
 	  subform.asset.asset.save(data).then(function (res) {
-            subform.messages.add({
+            form.messages.add({
               type: 'green',
               countdown: 3000,
               body: page.constants.message('volume.edit.materials.update.success', subform.asset.name || page.constants.message('file')),
@@ -132,7 +132,7 @@ module.directive('volumeEditMaterialsForm', [
               form.successFn(form, res);
             }
           }, function (res) {
-            subform.messages.addError({
+            form.messages.addError({
               type: 'red',
               body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || page.constants.message('file')),
               report: res,
