@@ -30,7 +30,7 @@ module.factory('messageService', [
 
     Message.list = {};
 
-    Message.prototype.remove = function (message) {
+    Message.prototype.remove = function () {
       countdownClear(this);
       delete Message.list[this.id];
       delete byBody[this.body];

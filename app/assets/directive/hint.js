@@ -4,7 +4,7 @@ module.directive('hint', [
   'pageService', function (page) {
     var hints = {};
 
-    angular.forEach(page.constants.permission, function (a, i) {
+    angular.forEach(page.constants.permission, function (a) {
       hints['permission-' + a] =
         page.constants.message('access.' + a, 'You');
       if ('access.edit.' + a + '.who' in page.constants.messages)

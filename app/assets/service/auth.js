@@ -1,12 +1,7 @@
 'use strict';
 
 module.factory('authService', [
-  '$location',
-  '$route',
-  'messageService',
-  'constantService',
-  'modelService',
-  'playService',
+  '$location', '$route', 'messageService', 'constantService', 'modelService', 'playService',
   function ($location, $route, messages, constants, models, play) {
     var auth = {};
 
@@ -55,7 +50,7 @@ module.factory('authService', [
     var enableSU = function (form) {
       models.Login.superuserOn({
 	  auth: form.auth
-        }).then(function (data) {
+        }).then(function () {
           messages.add({
             body: constants.message('superuser.on.success'),
             type: 'green',
@@ -70,7 +65,7 @@ module.factory('authService', [
     };
 
     var disableSU = function () {
-      models.Login.superuserOff().then(function (data) {
+      models.Login.superuserOff().then(function () {
         messages.add({
           body: constants.message('superuser.off.success'),
           type: 'green',

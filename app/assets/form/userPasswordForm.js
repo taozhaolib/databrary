@@ -72,7 +72,7 @@ module.directive('userPasswordForm', [
         }
 
 	page.models.Login.passwordToken(token.party, $scope.userPasswordForm.data)
-          .then(function (data) {
+          .then(function () {
             form.validator.server({});
 
             form.messages.add({

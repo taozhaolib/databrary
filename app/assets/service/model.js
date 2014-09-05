@@ -96,12 +96,6 @@ module.factory('modelService', [
       };
     }
 
-    /* lift functions from object methods to direct calls. */
-    function lift(obj /*, field...*/) {
-      for (var i = 1; i < arguments.length; i ++)
-	obj[arguments[i]] = obj.prototype[arguments[i]].call;
-    }
-
     /* delegate the given (missing) fields on instances of obj to the sub-object sub,
      * but allow assignments to work directly as usual. */
     function delegate(obj, sub /*, field... */) {
@@ -577,13 +571,6 @@ module.factory('modelService', [
       if (volume.top && volume.top.id === id)
 	return volume.top;
       return new Container(volume, {id:id, _PLACEHOLDER:true});
-    }
-
-    function slotMake(volume, init) {
-      var c = containerPrepare(volume, init.contianer.id);
-      if (init.segment === undefined)
-	return c.update(init);
-      return new Slot(c, init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {

@@ -1,8 +1,8 @@
 'use strict';
 
 module.controller('ExcerptsPanel', [
-  '$scope', 'pageService',
-  function ($scope, page) {
+  '$scope',
+  function ($scope) {
     $scope.refreshPanel = function () {
       $scope.enabled = $scope.volume.excerpts && $scope.volume.excerpts.length > 0;
       if ($scope.enabled && !$scope.current)

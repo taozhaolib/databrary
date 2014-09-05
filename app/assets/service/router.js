@@ -254,7 +254,7 @@ module.provider('routerService', [
 	      ['access', 'citation', 'top', 'funding'])
 	      .then(function (volume) {
 		return volume.top.getSlot(volume.top.segment, ['assets'])
-		  .then(function (top) {
+		  .then(function () {
 		    return volume;
 		  });
 	      });

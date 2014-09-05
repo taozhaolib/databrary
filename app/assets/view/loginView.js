@@ -45,7 +45,7 @@ module.controller('loginView', [
         email: '',
         password: '',
         openid: '',
-      }, $scope.loginData)).then(function (data) {
+      }, $scope.loginData)).then(function () {
         form.validator.server({});
 
         if (page.auth.next) {

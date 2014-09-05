@@ -188,7 +188,7 @@ module.directive('spreadsheet', [
 	    else // add id if there's nothing else
 	      metrics = ['id'];
 	    var si = metricCols.length;
-	    metricCols.push.apply(metricCols, metrics.map(function (m, i) {
+	    metricCols.push.apply(metricCols, metrics.map(function (m) {
 	      return {
 		category: category,
 		metric: getMetric(m)
@@ -408,7 +408,7 @@ module.directive('spreadsheet', [
 	  var data = {};
 	  data[f] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
-	  slots[i].save(data).then(function (slot) {
+	  slots[i].save(data).then(function () {
 	    generateText(cell, f, v);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));

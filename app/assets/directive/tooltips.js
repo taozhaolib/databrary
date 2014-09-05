@@ -2,7 +2,7 @@
 
 module.directive('tooltips', [
   'pageService', function (page) {
-    var controller = ['$scope', function ($scope) {
+    var controller = [function () {
       var tooltips = {};
 
       tooltips.getTooltipClasses = function (tooltip) {

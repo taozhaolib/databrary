@@ -137,7 +137,7 @@ module.factory('tooltipService', [
           }, tooltip.delay);
         });
 
-        $doc.on(events[1], tooltip.$target, function (event) {
+        $doc.on(events[1], tooltip.$target, function () {
           $rootScope.$apply(function () {
             $timeout.cancel(timeout);
             tooltip.hide();
@@ -150,7 +150,7 @@ module.factory('tooltipService', [
           }, tooltip.delay);
         });
 
-        $target.bind(events[1], function (event) {
+        $target.bind(events[1], function () {
           $rootScope.$apply(function () {
             $timeout.cancel(timeout);
             tooltip.hide();

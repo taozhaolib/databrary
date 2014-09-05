@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('excerpt', [
-  'pageService', function (page) {
+  function () {
     var link = function ($scope, $el, $attr) {
       var obj = $scope[$attr.excerpt].object || $scope[$attr.excerpt];
 

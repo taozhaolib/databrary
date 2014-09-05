@@ -3,9 +3,9 @@
 module.directive('slotTimelineRuler', [
   'pageService', function (page) {
     var controller = [
-      '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
+      '$scope', '$element',
+      function ($scope, $element) {
         var ruler = this;
-        var ctrl = page.$parse($attrs.ctrl)($scope);
 
         ruler.draw = function () {
           var $ruler = $element.find('.slot-timeline-canvas-ruler');

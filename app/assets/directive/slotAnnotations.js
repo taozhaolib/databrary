@@ -3,9 +3,9 @@
 module.directive('slotAnnotations', [
   'pageService', function (page) {
     var controller = [
-      '$scope', '$element', '$attrs',
-      function ($scope, $element, $attrs) {
-	var ctrl = page.$parse($attrs.ctrl)($scope);
+      '$scope', '$element',
+      function ($scope, $element) {
+	var ctrl = $scope.ctrl;
 	var notes = this;
 	notes.list = [];
 

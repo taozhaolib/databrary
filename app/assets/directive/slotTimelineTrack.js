@@ -1,11 +1,11 @@
 'use strict';
 
 module.directive('slotTimelineTrack', [
-  'pageService', function (page) {
+  function () {
     var controller = [
       '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
         var track = this;
-        var ctrl = $scope.$eval($attrs.ctrl);
+        var ctrl = $scope.ctrl;
 
         track.asset = $scope.$eval($attrs.asset);
         track.spare = $attrs.spare !== undefined;

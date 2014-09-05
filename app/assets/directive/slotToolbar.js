@@ -3,9 +3,10 @@
 module.directive('slotToolbar', [
   'pageService', function (page) {
     var controller = [
-      '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
+      '$scope',
+      function ($scope) {
         var toolbar = this;
-        var ctrl = page.$parse($attrs.ctrl)($scope);
+        var ctrl = $scope.ctrl;
 
         toolbar.buttons = {};
         toolbar.time = page.$filter('timecode')(ctrl.clock.position);

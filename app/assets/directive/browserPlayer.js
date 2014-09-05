@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('browserPlayer', [
-  'pageService', function (page) {
+  function () {
     var link = function ($scope) {
       $scope.getAssetClasses = function (asset) {
         return {

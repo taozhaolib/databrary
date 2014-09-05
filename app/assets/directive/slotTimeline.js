@@ -3,9 +3,10 @@
 module.directive('slotTimeline', [
   'pageService', function (page) {
     var controller = [
-      '$scope', '$element', '$attrs', function ($scope, $element, $attrs) {
+      '$scope', '$element',
+      function ($scope, $element) {
         var timeline = this;
-        var ctrl = page.$parse($attrs.ctrl)($scope);
+        var ctrl = $scope.ctrl;
         var $now;
 
         var nowListener = $scope.$on('shout-slotTimelineNow', function (e, $scope, $element) {
