@@ -1,21 +1,38 @@
 <form name="accessGrantForm" bindonce novalidate>
-  <messages form="accessGrantForm"></messages>
-    <button class="red mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-      <span class="icon line vem-trash trash"></span>
-    </button>
+  <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+    <figure class="figure-avatar" ng-click="openAuthParent(parent)" bo-class="{inst: access.party.institution}">
+      <figmedia><img ng-src="{{access.party.avatarRoute(54)}}"></figmedia>
+    </figure>
+  </div>
 
-  <fieldset class="clean radio-set access-grant-radioset" ng-disabled="!accessGrantForm.canChange()">
-    <div ng-repeat="(val, name) in page.constants.permission" ng-if="canGrantAccess(val)">
-      <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
-      <label bo-text="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
+  <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+    <div class="row">
+      <div class="permission-heading col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+        <a bo-href="access.party.route" class="permission-auth-username">{{access.party.name}}</a>
+        <span class="permission-auth-email" bo-if="access.party.email">{{access.party.email}}</span>
+        <button class="red mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <span class="icon line vem-trash trash"></span>
+        </button>
+      </div>
+
+      <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+        <messages form="accessGrantForm"></messages>
+
+        <fieldset class="clean radio-set access-grant-radioset" ng-disabled="!accessGrantForm.canChange()">
+          <div ng-repeat="(val, name) in page.constants.permission" ng-if="canGrantAccess(val)">
+            <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
+            <label bo-text="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
+          </div>
+        </fieldset>
+
+        <fieldset class="clean radio-set">
+          <div ng-if="!access.party.institution && accessGrantForm.data.individual">
+            <input type="checkbox" ng-model="accessGrantForm.data.extend">
+            <label class="option" bo-text="'access.grant.inherit' | message:access.party.name"></label>
+          </div>
+        </fieldset>
+      </div>
     </div>
-  </fieldset>
-
-  <fieldset class="clean radio-set">
-    <div ng-if="!access.party.institution && accessGrantForm.data.individual">
-      <input type="checkbox" ng-model="accessGrantForm.data.extend">
-      <label class="option" bo-text="'access.grant.inherit' | message:access.party.name"></label>
-    </div>
-  </fieldset>
-
+  </div>
 </form>
+
