@@ -7,11 +7,7 @@ module.controller('resetView', [
     //
 
     page.events.listen($scope, 'userPasswordForm-init', function (event, form) {
-      form.resetSuccessFn = function () {
-        page.$location.url(page.router.index());
-      };
-
-      form.saveSuccessFn = function () {
+      form.saveSuccessFn = form.resetSuccessFn = function () {
         page.$location.url(page.router.index());
       };
 

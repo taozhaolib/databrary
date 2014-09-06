@@ -32,22 +32,10 @@ module.directive('accessGrantForm', [
 
       //
 
-      form.saveFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-
       form.save = function () {
         form.data.children = form.data.extend ? form.data.individual : 0;
 
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	form.volume.accessSave(form.access.party.id, form.data).then(function () {
-          if (angular.isFunction(form.successFn)) {
-            form.successFn(form, arguments);
-          }
-
           form.messages.add({
             body: page.constants.message('access.grant.save.success'),
             type: 'green',
@@ -62,21 +50,11 @@ module.directive('accessGrantForm', [
             report: res,
           });
 
-          if (angular.isFunction(form.errorFn)) {
-            form.errorFn(form, arguments);
-          }
-
           page.display.scrollTo(form.$element);
         });
       };
 
-      form.resetFn = undefined;
-
       form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
         form.validator.clearServer();
 
         form.data = $.extend(true, {}, backup);
@@ -90,18 +68,12 @@ module.directive('accessGrantForm', [
 
       //
 
-      form.removeFn = undefined;
       form.removeSuccessFn = undefined;
-      form.removeErrorFn = undefined;
 
       form.remove = function () {
-        if (angular.isFunction(form.removeFn)) {
-          form.removeFn(form);
-        }
-
 	form.volume.accessDelete(form.access.party.id).then(function () {
           if (angular.isFunction(form.removeSuccessFn)) {
-            form.removeSuccessFn(form, arguments, form.access);
+            form.removeSuccessFn(form.access);
           }
 
           form.messages.add({
@@ -116,10 +88,6 @@ module.directive('accessGrantForm', [
             body: page.constants.message('access.grant.remove.error'),
             report: res,
           });
-
-          if (angular.isFunction(form.removeErrorFn)) {
-            form.removeErrorFn(form, arguments, form.access);
-          }
 
           page.display.scrollTo(form.$element);
         });

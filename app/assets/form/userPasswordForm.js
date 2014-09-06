@@ -24,15 +24,9 @@ module.directive('userPasswordForm', [
 
       //
 
-      form.resetFn = undefined;
       form.resetSuccessFn = undefined;
-      form.resetErrorFn = undefined;
 
       form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
 	page.models.Login.issuePassword($scope.userPasswordForm.data)
 	  .then(function () {
             form.validator.server({});
@@ -44,31 +38,21 @@ module.directive('userPasswordForm', [
             });
 
             if (angular.isFunction(form.resetSuccessFn)) {
-              form.resetSuccessFn(form, arguments);
+              form.resetSuccessFn();
             }
           }, function (data, status) {
             form.validator.server({
               data: data,
               status: status,
             });
-
-            if (angular.isFunction(form.resetErrorFn)) {
-              form.resetErrorFn(form, arguments);
-            }
           });
       };
 
       //
 
-      form.saveFn = undefined;
       form.saveSuccessFn = undefined;
-      form.saveErrorFn = undefined;
 
       form.save = function () {
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	page.models.Login.passwordToken(token.party, $scope.userPasswordForm.data)
           .then(function () {
             form.validator.server({});
@@ -82,17 +66,13 @@ module.directive('userPasswordForm', [
             page.$window.$play.object = null;
 
             if (angular.isFunction(form.saveSuccessFn)) {
-              form.saveSuccessFn(form, arguments);
+              form.saveSuccessFn();
             }
           }, function (data, status) {
             form.validator.server({
               data: data,
               status: status,
             });
-
-            if (angular.isFunction(form.saveErrorFn)) {
-              form.saveErrorFn(form, arguments);
-            }
 
             page.$window.$play.object = null;
           });

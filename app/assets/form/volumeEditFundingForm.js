@@ -8,11 +8,6 @@ module.directive('volumeEditFundingForm', [
       form.data = {};
       form.volume = undefined;
 
-      form.saveFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-      form.cancelFn = undefined;
-
       //
 
       form.init = function (data, volume) {
@@ -73,8 +68,8 @@ module.directive('volumeEditFundingForm', [
         }
         subforms.push(grantForm);
 
-        grantForm.removeSuccessFn = function (grantForm) {
-          form.data.splice(form.data.indexOf(grantForm.data), 1);
+        grantForm.removeSuccessFn = function () {
+          form.data.splice(form.data.indexOf(this.data), 1);
         };
 
         event.stopPropagation();

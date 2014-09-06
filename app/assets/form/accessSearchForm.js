@@ -60,15 +60,13 @@ module.directive('accessSearchForm', [
         form.search();
 
         if (angular.isFunction(form.selectFn)) {
-          form.selectFn(found, form);
+          form.selectFn(found);
         }
 
         form.$setPristine();
       };
 
       //
-
-      form.notFoundFn = undefined;
 
       form.notFound = function () {
         form.messages.add({
@@ -81,10 +79,6 @@ module.directive('accessSearchForm', [
 
         form.nameVal = '';
         form.search();
-
-        if (angular.isFunction(form.notFoundFn)) {
-          form.notFoundFn(query, form);
-        }
 
         form.$setPristine();
       };

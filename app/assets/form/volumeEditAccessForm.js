@@ -77,15 +77,7 @@ module.directive('volumeEditAccessForm', [
 
       //
 
-      form.saveGlobalFn = undefined;
-      form.errorGlobalFn = undefined;
-      form.successGlobalFn = undefined;
-
       form.saveGlobal = function () {
-        if (angular.isFunction(form.saveGlobalFn)) {
-          form.saveGlobalFn(form);
-        }
-
         page.$q.all(page.constants.accessGlobal.parties.map(function (party, i) {
           var p = page.constants.permissionName[form.global[i]];
 	  form.volume.accessSave(party, {
@@ -93,10 +85,6 @@ module.directive('volumeEditAccessForm', [
             children: p,
           });
         })).then(function () {
-          if (angular.isFunction(form.successGlobalFn)) {
-            form.successGlobalFn(form, arguments);
-          }
-
           form.messages.add({
             body: page.constants.message('access.global.save.success'),
             type: 'green',
@@ -111,10 +99,6 @@ module.directive('volumeEditAccessForm', [
             report: res,
           });
           page.display.scrollTo(form.$element);
-
-          if (angular.isFunction(form.errorGlobalFn)) {
-            form.errorGlobalFn(form, arguments);
-          }
         });
       };
 
@@ -127,21 +111,7 @@ module.directive('volumeEditAccessForm', [
       $scope.$on('accessGrantForm-init', function (event, grantForm) {
         subforms.push(grantForm);
 
-        grantForm.successFn = function () {
-          form.messages.add({
-            body: page.constants.message('access.grant.access.save.success'),
-            type: 'green',
-            countdown: 3000,
-          });
-        };
-
-        grantForm.removeSuccessFn = function (grantForm, args, access) {
-          form.messages.add({
-            body: page.constants.message('access.grant.access.remove.success'),
-            type: 'green',
-            countdown: 3000,
-          });
-
+        grantForm.removeSuccessFn = function (access) {
           form.data.splice(form.data.indexOf(access), 1);
         };
 
@@ -155,30 +125,12 @@ module.directive('volumeEditAccessForm', [
       
       $scope.$on('accessSearchForm-init', function (event, searchForm) {
         searchForm.selectFn = function (found) {
-          var present = false;
-
-          angular.forEach(form.data, function (access, i) {
-            if (access.party.id === found.id) {
-              var el = form.data.splice(i, 1)[0];
-              form.data.push(el);
-              present = true;
-            }
-          });
-
-          if (!present) {
-            form.data.push({
-              new: true,
-              party: found,
-              individual: 0,
-              children: 0,
-            });
-          } else {
-            searchForm.messages.add({
-              type: 'yellow',
-              countdown: 3000,
-              body: page.constants.message('access.search.repeat', found.name),
-            });
-          }
+	  form.data.push({
+	    new: true,
+	    party: found,
+	    individual: 0,
+	    children: 0,
+	  });
         };
 
         event.stopPropagation();

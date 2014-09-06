@@ -38,10 +38,6 @@ module.directive('fundingGrantForm', [
 
       //
 
-      form.saveFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-
       form.save = function () {
         form.data.awards = form.awards.map(function (award) {
           return award.val.trim();
@@ -49,15 +45,7 @@ module.directive('fundingGrantForm', [
           return grant !== '';
         });
 
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	form.volume.fundingSave(form.data.funder.id, form.data).then(function () {
-          if (angular.isFunction(form.successFn)) {
-            form.successFn(form, arguments);
-          }
-
           form.messages.add({
             body: page.constants.message('funding.save.success'),
             type: 'green',
@@ -73,21 +61,11 @@ module.directive('fundingGrantForm', [
             report: res,
           });
 
-          if (angular.isFunction(form.errorFn)) {
-            form.errorFn(form, arguments);
-          }
-
           page.display.scrollTo(form.$element);
         });
       };
 
-      form.resetFn = undefined;
-
       form.reset = function () {
-        if (angular.isFunction(form.resetFn)) {
-          form.resetFn(form);
-        }
-
         form.validator.clearServer();
 
         if (form.data.awards) {
@@ -109,18 +87,12 @@ module.directive('fundingGrantForm', [
 
       //
 
-      form.removeFn = undefined;
       form.removeSuccessFn = undefined;
-      form.removeErrorFn = undefined;
 
       form.remove = function () {
-        if (angular.isFunction(form.removeFn)) {
-          form.removeFn(form);
-        }
-
 	form.volume.fundingDelete(form.data.funder.id, form.data).then(function () {
           if (angular.isFunction(form.removeSuccessFn)) {
-            form.removeSuccessFn(form, arguments, form.access);
+            form.removeSuccessFn();
           }
 
           form.messages.add({
@@ -136,10 +108,6 @@ module.directive('fundingGrantForm', [
             body: page.constants.message('funding.remove.error'),
             report: res,
           });
-
-          if (angular.isFunction(form.removeErrorFn)) {
-            form.removeErrorFn(form, arguments, form.access);
-          }
 
           page.display.scrollTo(form.$element);
         });

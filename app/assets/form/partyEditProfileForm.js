@@ -8,11 +8,6 @@ module.directive('partyEditProfileForm', [
       form.data = {};
       form.authors = [];
 
-      form.saveFn = undefined;
-      form.resetFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-
       //
 
       form.init = function (party) {
@@ -29,10 +24,6 @@ module.directive('partyEditProfileForm', [
       //
 
       form.save = function () {
-	if (angular.isFunction(form.saveFn)) {
-	  form.saveFn(form);
-	}
-
 	var fd, upload;
 	if (angular.isObject(form.data.avatar)) {
 	  fd = new FormData();
@@ -68,10 +59,6 @@ module.directive('partyEditProfileForm', [
 	      form.messages.remove(upload);
 	    }
 
-	    if (angular.isFunction(form.successFn)) {
-	      form.successFn(form, res);
-	    }
-
 	    form.$setPristine();
 
 	    if (upload)
@@ -82,10 +69,6 @@ module.directive('partyEditProfileForm', [
 
 	    if (upload)
 	      form.messages.remove(upload);
-
-	    if (angular.isFunction(form.errorFn)) {
-	      form.errorFn(form, res);
-	    }
 	  });
       };
 

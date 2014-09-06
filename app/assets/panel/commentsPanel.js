@@ -102,18 +102,10 @@ module.controller('CommentsPanel', [
 
     //
 
-    var successFn = function () {
-      $scope.pullComments();
-    };
-
-    var cancelFn = function () {
-      $scope.setReply(undefined);
-    };
-
     page.events.listen($scope, 'commentReplyForm-init', function (event, form) {
       commentReplyForm = form;
-      form.successFn = successFn;
-      form.cancelFn = cancelFn;
+      form.successFn = $scope.pullComments;
+      form.cancelFn = $scope.setReply;
       form.target = replyTo;
       event.stopPropagation();
     });

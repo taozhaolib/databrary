@@ -8,10 +8,6 @@ module.directive('partyEditAccountForm', [
       form.data = {};
       form.authors = [];
 
-      form.saveFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-
       //
 
       form.init = function (party) {
@@ -28,10 +24,6 @@ module.directive('partyEditAccountForm', [
       //
 
       form.save = function () {
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	form.party.save(form.data).then(
           function (res) {
             form.validator.server({});
@@ -42,19 +34,11 @@ module.directive('partyEditAccountForm', [
               body: page.constants.message('party.edit.profile.success'),
             });
 
-            if (angular.isFunction(form.successFn)) {
-              form.successFn(form, res);
-            }
-
             form.$setPristine();
             form.clearPasswordFields();
           }, function (res) {
             form.validator.server(res);
             page.display.scrollTo(form.$element);
-
-            if (angular.isFunction(form.errorFn)) {
-              form.errorFn(form, res);
-            }
           });
       };
 

@@ -12,15 +12,9 @@ module.directive('commentReplyForm', [
 
       //
 
-      form.saveFn = undefined;
       form.successFn = undefined;
-      form.errorFn = undefined;
 
       form.save = function () {
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	(form.target || $scope.volume.top).postComment(form.data)
           .then(function () {
             form.validator.server({});
@@ -32,16 +26,12 @@ module.directive('commentReplyForm', [
             });
 
             if (angular.isFunction(form.successFn)) {
-              form.successFn(form, arguments);
+              form.successFn();
             }
 
             form.cancel();
           }, function (res) {
             form.validator.server(res);
-
-            if (angular.isFunction(form.errorFn)) {
-              form.errorFn(form, arguments);
-            }
           });
       };
 
@@ -51,7 +41,7 @@ module.directive('commentReplyForm', [
 
       form.cancel = function () {
         if (angular.isFunction(form.cancelFn)) {
-          form.cancelFn(form);
+          form.cancelFn();
         }
 
         form.data.text = '';

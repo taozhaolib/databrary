@@ -67,7 +67,7 @@ module.directive('authSearchForm', [
         form.search();
 
         if (angular.isFunction(form.selectFn)) {
-          form.selectFn(found, form);
+          form.selectFn(found);
         }
       };
 

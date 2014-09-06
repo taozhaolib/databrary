@@ -102,9 +102,6 @@ module.factory('slotClockService', [
     // Callback helpers
 
     var registerFn = function (clock, fns, fn) {
-      if (!angular.isFunction(fn))
-        throw new Error('Clock callbacks must be callable.');
-
       if (fns.indexOf(fn) === -1) {
         return fns.push(fn);
       }

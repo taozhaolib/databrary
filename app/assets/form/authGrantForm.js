@@ -38,9 +38,7 @@ module.directive('authGrantForm', [
 
       //
 
-      form.saveFn = undefined;
       form.successFn = undefined;
-      form.errorFn = undefined;
 
       form.save = function () {
         if (!form.other.expires) {
@@ -49,56 +47,38 @@ module.directive('authGrantForm', [
           form.other.expires = page.$filter('date')(form.other.expires, 'yyyy-MM-dd');
         }
 
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
 	form.party.authorizeSave(form.other.party.id, form.other).then(function () {
           form.validator.server({});
           form.$setPristine();
 
           if (angular.isFunction(form.successFn)) {
-            form.successFn(form, arguments);
+            form.successFn();
           }
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
-
-          if (angular.isFunction(form.errorFn)) {
-            form.errorFn(form, arguments);
-          }
         });
       };
 
       //
 
-      form.denyFn = undefined;
       form.denySuccessFn = undefined;
-      form.denyErrorFn = undefined;
 
       form.deny = function () {
-        if (angular.isFunction(form.denyFn)) {
-          form.denyFn(form);
-        }
-
         if (form.other.new) {
           if (angular.isFunction(form.denySuccessFn)) {
-            form.denySuccessFn(form, arguments);
+            form.denySuccessFn();
           }
         } else {
 	  form.party.authorizeDelete(form.other.party.id).then(function () {
             form.validator.server({});
 
             if (angular.isFunction(form.denySuccessFn)) {
-              form.denySuccessFn(form, arguments);
+              form.denySuccessFn();
             }
           }, function (res) {
             form.validator.server(res);
             page.display.scrollTo(form.$element);
-
-            if (angular.isFunction(form.denyErrorFn)) {
-              form.denyErrorFn(form, arguments);
-            }
           });
         }
       };

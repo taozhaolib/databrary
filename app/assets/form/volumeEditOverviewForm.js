@@ -61,60 +61,26 @@ module.directive('volumeEditOverviewForm', [
           return author !== '';
         });
 
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
+	(form.volume ?
+          form.volume.save(form.data) :
+          page.models.Volume.create(form.data, page.$routeParams.owner))
+	  .then(function (res) {
+	    form.validator.server({});
 
-        if (form.volume) {
-          form.volume.save(form.data).then(
-            function (res) {
-              form.validator.server({});
+	    form.messages.add({
+	      type: 'green',
+	      countdown: 3000,
+	      body: page.constants.message('volume.edit.overview.success'),
+	    });
 
-              form.messages.add({
-                type: 'green',
-                countdown: 3000,
-                body: page.constants.message('volume.edit.overview.success'),
-              });
-
-
-              if (angular.isFunction(form.successFn)) {
-                form.successFn(form, res);
-              }
-
-              form.$setPristine();
-            }, function (res) {
-              form.validator.server(res);
-              page.display.scrollTo(form.$element);
-
-              if (angular.isFunction(form.errorFn)) {
-                form.errorFn(form, res);
-              }
-            });
-        } else {
-          page.models.Volume.create(form.data, page.$routeParams.owner).then(function (res) {
-            form.validator.server({});
-
-            form.messages.add({
-              type: 'green',
-              countdown: 3000,
-              body: page.constants.message('volume.edit.overview.success'),
-            });
-
-
-            if (angular.isFunction(form.successFn)) {
-              form.successFn(form, res);
-            }
-
-            form.$setPristine();
-            page.$location.url(res.editRoute());
-          }, function (res) {
-            form.validator.server(res);
-
-            if (angular.isFunction(form.errorFn)) {
-              form.errorFn(form, res);
-            }
-          });
-        }
+	    form.$setPristine();
+	    if (!form.volume)
+	      page.$location.url(res.editRoute());
+	  }, function (res) {
+	    form.validator.server(res);
+	    if (form.volume)
+	      page.display.scrollTo(form.$element);
+	  });
       };
 
       form.resetAll = function(force){

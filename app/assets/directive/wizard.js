@@ -18,9 +18,6 @@ module.directive('wizard', [
         $scope.stepsList = {};
         $scope.newStep = undefined;
 
-        $scope.onFn = $scope.onFn || {};
-        $scope.offFn = $scope.offFn || {};
-        $scope.addFn = $scope.addFn || undefined;
         $scope.activateFn = $scope.activateFn || undefined;
 
         $scope.addStep = function (step) {

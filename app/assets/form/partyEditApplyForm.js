@@ -62,10 +62,10 @@ module.directive('partyEditApplyForm', [
 	return false;
       };
 
-      page.events.listen($scope, 'authApplyForm-init', function (event, grantForm) {
-        subforms.push(grantForm);
+      page.events.listen($scope, 'authApplyForm-init', function (event, applyForm) {
+        subforms.push(applyForm);
 
-        grantForm.successFn = function () {
+        applyForm.successFn = function () {
           form.messages.add({
             body: page.constants.message('auth.apply.save.success'),
             type: 'green',
@@ -73,7 +73,7 @@ module.directive('partyEditApplyForm', [
           });
         };
 
-        grantForm.cancelFn = function (applyForm) {
+        applyForm.cancelFn = function () {
           form.messages.add({
             body: page.constants.message('auth.apply.remove.success'),
             type: 'green',
@@ -92,42 +92,18 @@ module.directive('partyEditApplyForm', [
           return;
         }
 
-        searchForm.selectFn = function (found, query) {
-          var present = false;
-
-          angular.forEach(form.data, function (access, i) {
-            if (access.party.id === found.id) {
-              var el = form.data.splice(i, 1)[0];
-              form.data.push(el);
-              present = true;
-
-              searchForm.messages.add({
-                type: 'yellow',
-                countdown: 3000,
-                body: page.constants.message('access.search.repeat', found.name),
-              });
-
-              return false;
-            }
-          });
-
-          if (!present) {
-            form.data.push({
-              new: true,
-              party: found,
-              site: 0,
-              member: 0,
-              query: angular.isString(query) ? query : undefined,
-            });
-          }
+        searchForm.selectFn = function (found) {
+	  form.data.push({
+	    new: true,
+	    party: found,
+	  });
         };
 
         searchForm.notFoundFn = function (query) {
-          searchForm.selectFn({
-            id: -1,
-            name: page.constants.message('auth.request.notfound.user'),
-            avatar: '/party/-1/avatar'
-          }, query);
+	  form.data.push({
+	    new: true,
+	    query: query
+	  });
         };
 
         event.stopPropagation();

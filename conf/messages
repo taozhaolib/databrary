@@ -230,7 +230,7 @@ auth.pending.notice=You have a pending authorization request from {0}.
 auth.grant.title=Grant {0} the following capabilities:
 auth.grant.save.error=Could not save this authorization.
 auth.grant.deny.error=Could not deny this authorization.
-auth.grant.notfound.message=Users must create an account before they can be granted authorization. Please suggest they register.
+auth.grant.notfound=Users must create an account before they can be granted authorization. Please suggest they register.
 
 auth.grant.save.success=Authorization saved successfully.
 auth.grant.remove.success=Authorization removed successfully.
@@ -337,8 +337,6 @@ access.global.restricted=You must be an authorized Databrary Investigator in ord
 
 access.remove=Remove
 access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.access.save.success=Access changed.
-access.grant.access.remove.success=Access removed.
 access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
 access.grant.remove.success=Access removed successfully.
@@ -352,7 +350,6 @@ access.search=Search for a user, group, or institution...
 access.search.name.help=Enter the user, group, or institution to which you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
 access.search.error=Could not retrieve any users or institutions.
-access.search.repeat={0} has already been added.
 access.notfound=None of these
 
 # Funding

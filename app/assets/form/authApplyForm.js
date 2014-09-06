@@ -7,8 +7,8 @@ module.directive('authApplyForm', [
 
       $scope.page = page;
 
-      form.party = page.$parse($attrs.party)($scope) || $scope.party;
-      form.other = page.$parse($attrs.other)($scope) || undefined;
+      form.party = $scope.$eval($attrs.party) || $scope.party;
+      form.other = $scope.$eval($attrs.other) || undefined;
 
       form.notFound = {
         query: form.other && form.other.query || undefined,
@@ -19,9 +19,7 @@ module.directive('authApplyForm', [
 
       //
 
-      form.saveFn = undefined;
       form.successFn = undefined;
-      form.errorFn = undefined;
 
       var saveAuth = function () {
 	form.party.authorizeApply(form.other.party.id, {info:form.notFound.info}).then(function () {
@@ -30,15 +28,11 @@ module.directive('authApplyForm', [
           delete form.other.new;
 
           if (angular.isFunction(form.successFn)) {
-            form.successFn(form, arguments);
+            form.successFn();
           }
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
-
-          if (angular.isFunction(form.errorFn)) {
-            form.errorFn(form, arguments);
-          }
         });
       };
 
@@ -59,23 +53,15 @@ module.directive('authApplyForm', [
           });
 
           if (angular.isFunction(form.successFn)) {
-            form.successFn(form, arguments);
+            form.successFn();
           }
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
-
-          if (angular.isFunction(form.errorFn)) {
-            form.errorFn(form, arguments);
-          }
         });
       };
 
       form.save = function () {
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form);
-        }
-
         if (form.notFound.query) {
           saveQuery();
         } else {
@@ -89,7 +75,7 @@ module.directive('authApplyForm', [
 
       form.cancel = function () {
         if (angular.isFunction(form.cancelFn)) {
-          form.cancelFn(form);
+          form.cancelFn();
         }
       };
 

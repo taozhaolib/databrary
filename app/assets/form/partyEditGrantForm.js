@@ -73,7 +73,7 @@ module.directive('partyEditGrantForm', [
           });
         };
 
-        grantForm.denySuccessFn = function (grantForm) {
+        grantForm.denySuccessFn = function () {
           form.messages.add({
             body: page.constants.message('auth.grant.remove.success'),
             type: 'green',
@@ -93,39 +93,19 @@ module.directive('partyEditGrantForm', [
         }
 
         searchForm.selectFn = function (found) {
-          var present = false;
-
-          angular.forEach(form.data, function (access, i) {
-            if (access.party.id === found.id) {
-              var el = form.data.splice(i, 1)[0];
-              form.data.push(el);
-              present = true;
-
-              searchForm.messages.add({
-                type: 'yellow',
-                countdown: 3000,
-                body: page.constants.message('access.search.repeat', found.name),
-              });
-
-              return false;
-            }
-          });
-
-          if (!present) {
-            form.data.push({
-              new: true,
-              party: found,
-              site: 0,
-              member: 0,
-            });
-          }
+	  form.data.push({
+	    new: true,
+	    party: found,
+	    site: 0,
+	    member: 0,
+	  });
         };
 
         searchForm.notFoundFn = function () {
           page.messages.add({
             type: 'yellow',
             countdown: 3000,
-            body: page.constants.message('auth.grant.notfound.message')
+            body: page.constants.message('auth.grant.notfound')
           });
         };
 

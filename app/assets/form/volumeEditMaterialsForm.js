@@ -11,12 +11,6 @@ module.directive('volumeEditMaterialsForm', [
       form.slot = undefined;
       form.filtered = [];
 
-      form.saveFn = undefined;
-      form.addFn = undefined;
-      form.removeFn = undefined;
-      form.successFn = undefined;
-      form.errorFn = undefined;
-
       //
 
       form.init = function (data, volume) {
@@ -104,10 +98,6 @@ module.directive('volumeEditMaterialsForm', [
       //
 
       form.save = function (subform) {
-        if (angular.isFunction(form.saveFn)) {
-          form.saveFn(form, subform);
-        }
-
 	var data = {};
         data.classification = page.classification[subform.asset.classification];
         if (subform.asset.excerpt === 0 || subform.asset.excerpt) {
@@ -127,20 +117,12 @@ module.directive('volumeEditMaterialsForm', [
               countdown: 3000,
               body: page.constants.message('volume.edit.materials.update.success', subform.asset.name || page.constants.message('file')),
             });
-
-            if (angular.isFunction(form.successFn)) {
-              form.successFn(form, res);
-            }
           }, function (res) {
             form.messages.addError({
               type: 'red',
               body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || page.constants.message('file')),
               report: res,
             });
-
-            if (angular.isFunction(form.errorFn)) {
-              form.errorFn(form, res);
-            }
 
             page.display.scrollTo(subform.$element);
           }).finally(function () {
@@ -175,10 +157,6 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.remove = function (subform) {
-        if (angular.isFunction(form.removeFn)) {
-          form.removeFn(form, subform);
-        }
-
         if (!subform.asset.asset) {
           form.clean(subform);
           form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
@@ -190,10 +168,6 @@ module.directive('volumeEditMaterialsForm', [
               body: page.constants.message('volume.edit.materials.remove.success', subform.asset.name || page.constants.message('file')),
             });
 
-            if (angular.isFunction(form.successFn)) {
-              form.successFn(form, res);
-            }
-
             form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
 
           }, function (res) {
@@ -203,10 +177,6 @@ module.directive('volumeEditMaterialsForm', [
               report: res,
             });
 
-            if (angular.isFunction(form.errorFn)) {
-              form.errorFn(form, res);
-            }
-
             page.display.scrollTo(subform.$element);
           }).finally(function () {
             form.clean(subform);
@@ -215,10 +185,6 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.add = function () {
-        if (angular.isFunction(form.addFn)) {
-          form.saveFn(form);
-        }
-
         return form.data.assets.push({
           classification: 'SHARED',
           excerpt: ''
