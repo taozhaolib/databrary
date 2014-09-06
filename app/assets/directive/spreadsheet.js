@@ -422,6 +422,7 @@ module.directive('spreadsheet', [
 	      if (!(n in rcm))
 		rcm[n] = [];
 	      rcm[n][i] = v;
+	      /* TODO age may have changed... not clear how to update. */
 	    });
 	    var l = table.getElementsByClassName('ss-rec_' + r + '_' + m);
 	    var a = page.constants.metric[m].assumed;
@@ -431,11 +432,21 @@ module.directive('spreadsheet', [
 	  }, saveError.bind(null, cell));
 	}
 
-	function addRecord(cell, i, cat) {
+	function addRecord(cell, info) {
 	  cell.classList.add('saving');
-	  slots[i].addRecord({category:cat.id}).then(function (rec) {
-	    /* TODO add new rec to i */
+	  slots[info.i].addRecord({category:info.c}).then(function (record) {
+	    /* assume here record is new and blank */
+	    if (!('n' in info))
+	      info.n = counts[info.i][info.c]++;
+	    if (!(info.n in records[info.c].id))
+	      records[info.c].id[info.n] = [];
+	    records[info.c].id[info.n][info.i] = record.id;
+	    depends[record.id] = {};
+	    depends[record.id][info.i] = info.n;
 	    cell.classList.remove('saving');
+
+	    collapse();
+	    expand(info.i);
 	  }, saveError.bind(null, cell));
 	}
 
@@ -497,9 +508,11 @@ module.directive('spreadsheet', [
 	    value = undefined;
 	  else switch (type) {
 	    case 'record':
-	      var c = 'c' in info ? page.constants.category[info.c] : metricCols[info.m].category;
+	      var cat;
+	      if (!('c' in info))
+		info.c = (cat = metricCols[info.m].category).id;
 	      if (value === 'new')
-		addRecord(cell, info.i, c);
+		addRecord(cell, info);
 	      else if (value === 'remove') {
 		/* TODO: remove this record from slot */
 	      } else {
@@ -581,7 +594,7 @@ module.directive('spreadsheet', [
 		editInput.value = volume.records[ri].measures[m];
 		if (metric.options) {
 		  editScope.type = 'select';
-		  editScope.options = metric.options;
+		  editScope.options = [''].concat(metric.options);
 		} else
 		  editScope.type = metric.type;
 		break;
