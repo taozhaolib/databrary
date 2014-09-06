@@ -49,7 +49,7 @@
     </div>
 
     <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-      <img class="panel-overview-volume-thumb" ng-src="{{page.router.volumeThumb(volume)}}">
+      <img class="panel-overview-volume-thumb" ng-src="{{volume.thumbRoute()}}">
 
       <div ng-if="volume.citation.authors" frame id="frame-authors" frame-title="{{'volume.authors.title' | message}}" fold>
         <ul class="comma">
@@ -80,26 +80,26 @@
         </dl>
       </div>
 
-      <div frame id="frame-reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="hasProps(volume, 'consumers') || hasProps(volume, 'providers')">
+      <div frame id="frame-reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="volume.consumers || volume.providers">
         <div class="row">
           <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-            <div bo-if="hasProps(volume, 'consumers')">
+            <div bo-if="volume.consumers">
               <div bo-text="'volume.reuse.provides' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.consumers">
-                  <a bo-href="page.router.volume(ext.id)"> <img src="/public/images/browser/icon-study.png">&nbsp;
+                  <a bo-href="ext.route"> <img src="/public/images/browser/icon-study.png">&nbsp;
                     <span bo-text="ext.name"></span></a>
                 </li>
               </ul>
             </div>
 
-            <div bo-if="hasProps(volume, 'providers')">
+            <div bo-if="volume.providers">
               <div bo-text="'volume.reuse.consumes' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in volume.providers">
-                  <a bo-href="page.router.volume(ext.id)"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
+                  <a bo-href="ext.route"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
                     <span bo-text="ext.name"></span></a>
                 </li>
               </ul>

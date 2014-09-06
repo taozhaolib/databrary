@@ -33,9 +33,8 @@ module.directive('userPasswordForm', [
           form.resetFn(form);
         }
 
-        page.router.http(page.router.controllers.TokenHtml.issuePassword,
-	    $scope.userPasswordForm.data)
-          .success(function () {
+	page.models.Login.issuePassword($scope.userPasswordForm.data)
+	  .then(function () {
             form.validator.server({});
 
             form.messages.add({
@@ -47,8 +46,7 @@ module.directive('userPasswordForm', [
             if (angular.isFunction(form.resetSuccessFn)) {
               form.resetSuccessFn(form, arguments);
             }
-          })
-          .error(function (data, status) {
+          }, function (data, status) {
             form.validator.server({
               data: data,
               status: status,

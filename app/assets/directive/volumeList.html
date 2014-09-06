@@ -3,7 +3,8 @@
     <li ng-repeat="volume in volumes">
       <article class="volume-list-result cf" bo-class="volumeClasses(volume)">
         <h1>
-          <span class="icon" bo-class="iconClass(volume)" hint="object-{{volume.type}}"></span><a bo-href="page.router.volume(volume.id)" bo-text="name(volume)"></a>
+          <span class="icon" bo-class="iconClass(volume)" hint="object-{{volume.type}}"></span>
+	  <a bo-href="volume.route" bo-text="name(volume)"></a>
         </h1>
 
         <div class="volume-list-investigators" bo-if="volume.access && page.$location.path() !== '/profile'">

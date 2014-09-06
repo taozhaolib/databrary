@@ -160,24 +160,16 @@ module.provider('routerService', [
       resolve: {
         token: [
           'pageService', function (page) {
-            var deferred = page.$q.defer();
-
-            if (page.$window.$play.object && page.$window.$play.object.auth) {
-              deferred.resolve(page.$window.$play.object);
-            } else {
-	      page.router.http(page.router.controllers.TokenApi.token,
-		page.$route.current.params.id, page.$route.current.params.auth)
-		.success(function (res) {
+            if (page.$window.$play.object && page.$window.$play.object.auth)
+              page.$q.successful(page.$window.$play.object);
+            else
+	      return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
+		.then(function (res) {
                   page.$window.$play.object = res;
-                  deferred.resolve(res);
-                })
-                .error(function (res) {
-                  deferred.reject(res);
+                  return res;
+                }, function (res) {
                   page.$location.url('/');
                 });
-            }
-
-            return deferred.promise;
           }
         ]
       },

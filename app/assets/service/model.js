@@ -319,6 +319,19 @@ module.factory('modelService', [
       };
     });
 
+    Login.register = function (data) {
+      return router.http(router.controllers.LoginApi.register, data);
+    };
+
+    Login.issuePassword = function (data) {
+      return router.http(router.controllers.TokenHtml.issuePassword, data);
+    };
+
+    Login.getToken = function (token, auth) {
+      return router.http(router.controllers.TokenApi.token, token, auth)
+	.then(resData);
+    };
+
     Login.passwordToken = function (party, data) {
       return router.http(router.controllers.TokenApi.password, party, data)
 	.then(loginRes);
@@ -434,6 +447,10 @@ module.factory('modelService', [
 	params.page = page;
 
       return router.volumeEdit([this.id], params);
+    };
+
+    Volume.prototype.thumbRoute = function(size) {
+      return router.volumeThumb([this.id, size]);
     };
 
     Volume.prototype.accessSearch = function (param) {

@@ -37,7 +37,7 @@ module.directive('volumeList', [
       };
 
       $scope.name = function (volume) {
-        return volume.alias && page.$location.path() === '/profile' ? volume.alias : volume.name;
+        return page.$location.path() === '/profile' && volume.alias || volume.name;
       };
     };
 

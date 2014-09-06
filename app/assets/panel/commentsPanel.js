@@ -1,7 +1,8 @@
 'use strict';
 
 module.controller('CommentsPanel', [
-  '$scope', 'pageService', function ($scope, page) {
+  '$scope', 'pageService', '$sanitize',
+  function ($scope, page, $sanitize) {
     var form;
     page.events.listen($scope, 'commentReplyForm-init', function (event, commentForm) {
       form = commentForm;
@@ -56,7 +57,7 @@ module.controller('CommentsPanel', [
     };
 
     $scope.commentMeta = function (comment) {
-      var isParty = page.$route.current.controller == 'partyView' && !$scope.volume;
+      var isParty = page.$route.current.controller === 'partyView' && !$scope.volume;
       var isTop = comment.container.top;
 
       var meta = '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
@@ -67,12 +68,10 @@ module.controller('CommentsPanel', [
 
       meta += ' <span class="sep">|</span>';
 
-      var volumeID = isParty ?
-        (comment.volume ? comment.volume.id : 0) :
-        ($scope.volume ? $scope.volume.id : 0);
+      var volume = comment.volume;
 
       if (isParty) {
-        meta += ' <a href="' + page.router.volume(volumeID) + '">' + page.$filter('truncate')(comment.volume.name || $scope.volume.name, 20) + '</a>';
+        meta += ' <a href="' + volume.route + '">' + $sanitize(page.$filter('truncate')(volume.name, 20)) + '</a>';
       }
 
       if (isParty && !isTop) {
@@ -80,7 +79,7 @@ module.controller('CommentsPanel', [
       }
 
       if (!isTop) {
-        meta += ' <a href="' + page.router.volume(volumeID) + '"><img class="line" src="' + page.router.volumeThumb(volumeID) + '"> ' + (comment.container.name || '') + '</a>';
+        meta += ' <a href="' + volume.route + '"><img class="line" src="' + volume.thumbRoute() + '"> ' + $sanitize(comment.container.name || '') + '</a>';
       }
 
       return meta;

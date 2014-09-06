@@ -109,17 +109,11 @@ GET     /constants.js                                                           
 GET     /api/null                                                                                 controllers.SiteApi.void
 
 # ----- LOGIN ----- #
-# GET
 GET     /api/user                                                                                 controllers.LoginApi.get
-# LOGIN
 POST    /api/user/login                                                                           controllers.LoginApi.post
-# LOGOUT
 POST    /api/user/logout                                                                          controllers.LoginApi.logout
-# REGISTER
 POST    /api/user/register                                                                        controllers.LoginApi.register
-# SUPERUSER ON
 POST    /api/user/superuser/on                                                                    controllers.LoginApi.superuserOn
-# SUPERUSER OFF
 POST    /api/user/superuser/off                                                                   controllers.LoginApi.superuserOff
 
 # ----- TOKEN ----- #
@@ -132,21 +126,14 @@ GET     /api/party                                                              
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # equivalent to /api/party/<currentUser>:
 GET     /api/profile                                                                              controllers.PartyApi.profile
-# UPDATE
 POST    /api/party/$partyId<[0-9]+>                                                               controllers.PartyApi.update(partyId : models.Party.Id)
-# CREATE
 POST    /api/party                                                                                controllers.PartyApi.create()
-# PASSWORD
 POST    /api/party/$pID<[0-9]+>/password                                                          controllers.TokenApi.password(pID : models.Account.Id)
 
 # ----- PARTY AUTHORIZE ----- #
-# SEARCH
 GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean = false)
-# CHANGE
 POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
-# APPLY
 POST    /api/party/$partyId<[0-9]+>/authorize/$parentId<[0-9]+>/apply                             controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
-# DELETE
 DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                                    controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
 
 # ----- VOLUME ----- #
@@ -154,19 +141,13 @@ DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                  
 GET     /api/volume                                                                               controllers.VolumeApi.query
 # GET       ?summary;access;citations;tags;comments;funding;categories;records;sessions;assets;top
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
-# CREATE    ?owner=ID
 POST    /api/volume                                                                               controllers.VolumeApi.create(owner : Option[models.Party.Id] ?= None)
-# UPDATE
 POST    /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.update(volumeId : models.Volume.Id)
 
 # ----- VOLUME ACCESS ----- #
-# QUERY
 GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
-# SEARCH
 GET     /api/volume/$volumeId<[0-9]+>/access/search                                               controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id)
-# CHANGE
 POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
-# DELETE
 DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
 
 # volume funding
@@ -174,7 +155,6 @@ DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                 
 GET     /api/funder                                                                               controllers.VolumeApi.funderSearch(query : String, all : Boolean ?= false)
 # ADD/UPDATE awards=[]
 POST    /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingChange(volumeId : models.Volume.Id, funderId : models.Funder.Id)
-# DELETE
 DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingDelete(volumeId : models.Volume.Id, funderId : models.Funder.Id)
 
 # ----- SLOT ----- #
@@ -182,11 +162,8 @@ DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                 
 #                                                                                                 TODO: GET     /api/slot
 # GET       ?segment=;assets;records;tags;comments
 GET     /api/volume/$volumeId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.SlotApi.get(volumeId : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
-# UPDATE    ?segment=
 POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
-# CREATE
 POST    /api/volume/$volumeId<[0-9]+>/slot                                                        controllers.SlotApi.create(volumeId : models.Volume.Id)
-# DELETE
 #                                                                                                 TODO: DELETE /api/slot/containerId<[0-9]+>
 
 # ----- RECORD ----- #
@@ -194,11 +171,8 @@ POST    /api/volume/$volumeId<[0-9]+>/slot                                      
 GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
 # GET       ?slots;                                                                               TODO: assets
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
-# CREATE    ?volume=ID;category=ID
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)
-# UPDATE
 POST    /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.update(recordId : models.Record.Id)
-# DELETE
 #                                                                                                 TODO: DELETE /api/record/recordId<[0-9]+>
 POST    /api/record/$recordId<[0-9]+>/measure/$metricId<-?[0-9]+>                                 controllers.RecordApi.measureUpdate(recordId : models.Record.Id, metricId : models.Metric.Id)
 POST    /api/slot/$containerId<[0-9]+>/record                                                     controllers.RecordApi.add(containerId : models.Container.Id, segment : dbrary.Segment)
@@ -207,15 +181,12 @@ DELETE  /api/slot/$containerId<[0-9]+>/record/$recordId<[0-9]+>                 
 # ----- ASSET ----- #
 # GET       ?slot;revisions
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
-# CREATE
 POST    /api/asset/start                                                                          controllers.AssetApi.uploadStart
 POST    /api/asset/chunk                                                                          controllers.AssetApi.uploadChunk
 GET     /api/asset/chunk                                                                          controllers.AssetApi.uploadChunkTest
 POST    /api/asset                                                                                controllers.AssetApi.upload(volume : models.Volume.Id)
-# UPDATE
 POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 POST    /api/asset/$assetId<[0-9]+>/replace                                                       controllers.AssetApi.replace(assetId : models.Asset.Id)
-# DELETE
 DELETE  /api/asset/$aID<[0-9]+>                                                                   controllers.AssetApi.remove(aID : models.Asset.Id)
 
 # ----- SLOT ASSET ----- #
@@ -231,9 +202,7 @@ POST    /api/comment                                                            
 # ----- TAG ----- #
 # GET       ?containers
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
-# QUERY     ?query=TERM
 GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
-# UPDATE    ?container=ID;segment=
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
 # GET ?url=URL

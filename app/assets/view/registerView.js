@@ -127,13 +127,11 @@ module.controller('registerView', [
         step.proceed = function () {
           $scope.registerForm.data.agreement = true;
 
-          page.router.http(page.router.controllers.LoginHtml.register,
-	      $scope.registerForm.data)
-            .success(function () {
+	  page.models.Login.register($scope.registerForm.data)
+            .then(function () {
               $scope.registerForm.sent = true;
               $scope.updateWizard();
-            })
-            .error(function (errors, status) {
+            }, function (errors, status) {
               page.messages.addError({
                 body: page.constants.message('error.generic'),
                 errors: errors,

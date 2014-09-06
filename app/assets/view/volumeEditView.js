@@ -10,7 +10,7 @@ module.controller('volumeEditView', [
         {
           type: 'yellow',
           html: page.constants.message('volume.edit.exit'),
-          url: page.router.volume(volume.id),
+          url: volume.route
         },
       ];
     } else {
@@ -138,7 +138,7 @@ module.controller('volumeEditView', [
     //
 
     var cancelFn = function () {
-      page.$location.url(page.router.volume(volume.id));
+      page.$location.url(volume.route);
     };
 
     $scope.prepareStep = {
