@@ -2,7 +2,7 @@
 
 module.directive('fundingSearchForm', [
   'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
+    var link = function ($scope) {
       var form = $scope.fundingSearchForm;
 
       form.nameVal = '';
@@ -57,7 +57,7 @@ module.directive('fundingSearchForm', [
 
       //
 
-      form.notFound = function (found) {
+      form.notFound = function () {
         form.search(true);
 
         form.$setPristine();

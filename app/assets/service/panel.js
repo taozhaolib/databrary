@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('panelService', [
-  '$rootScope', '$timeout', 'displayService',
-  function ($rootScope, $timeout, display) {
+  '$rootScope',
+  function ($rootScope) {
     var panels = [];
 
     //

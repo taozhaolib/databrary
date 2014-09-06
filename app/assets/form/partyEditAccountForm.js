@@ -25,7 +25,7 @@ module.directive('partyEditAccountForm', [
 
       form.save = function () {
 	form.party.save(form.data).then(
-          function (res) {
+          function () {
             form.validator.server({});
 
             form.messages.add({

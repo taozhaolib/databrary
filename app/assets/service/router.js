@@ -167,7 +167,7 @@ module.provider('routerService', [
 		.then(function (res) {
                   page.$window.$play.object = res;
                   return res;
-                }, function (res) {
+                }, function () {
                   page.$location.url('/');
                 });
           }

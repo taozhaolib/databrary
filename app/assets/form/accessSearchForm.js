@@ -75,8 +75,6 @@ module.directive('accessSearchForm', [
           body: page.constants.message('access.grant.notfound.message'),
         });
 
-        var query = form.nameVal;
-
         form.nameVal = '';
         form.search();
 

@@ -111,7 +111,7 @@ module.directive('volumeEditMaterialsForm', [
 
 	if(subform.asset.asset && subform.asset.asset.creation) // NOT for file operations. just metadata
 	{
-	  subform.asset.asset.save(data).then(function (res) {
+	  subform.asset.asset.save(data).then(function () {
             form.messages.add({
               type: 'green',
               countdown: 3000,
@@ -161,7 +161,7 @@ module.directive('volumeEditMaterialsForm', [
           form.clean(subform);
           form.data.assets.splice(form.data.assets.indexOf(subform.asset), 1);
         } else {
-	  subform.asset.remove().then(function (res) {
+	  subform.asset.remove().then(function () {
             form.messages.add({
               type: 'green',
               countdown: 3000,
