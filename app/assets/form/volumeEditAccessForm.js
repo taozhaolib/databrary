@@ -104,10 +104,6 @@ module.directive('volumeEditAccessForm', [
 
       //
 
-      page.events.talk('volumeEditAccessForm-init', form, $scope);
-
-      //
-
       $scope.$on('accessGrantForm-init', function (event, grantForm) {
         subforms.push(grantForm);
 

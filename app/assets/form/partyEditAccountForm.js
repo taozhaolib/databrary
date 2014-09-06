@@ -86,9 +86,6 @@ module.directive('partyEditAccountForm', [
       $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
       page.$w.scroll($scope.scrollFn);
 
-      //
-
-      page.events.talk('partyEditAccountForm-init', form, $scope);
     };
 
     //

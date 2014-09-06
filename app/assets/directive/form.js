@@ -2,7 +2,7 @@
 
 module.directive('form', [
   'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
+    var pre = function ($scope, $element, $attrs) {
       if (!$attrs.name) {
         return;
       }
@@ -86,7 +86,9 @@ module.directive('form', [
 
     return {
       restrict: 'E',
-      link: link,
+      link: {
+	pre: pre
+      }
     };
   }
 ]);

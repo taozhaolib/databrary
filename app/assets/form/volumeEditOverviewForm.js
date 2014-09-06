@@ -183,9 +183,6 @@ module.directive('volumeEditOverviewForm', [
       var $floater = $('.veo-float-floater');
       $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
       page.$w.scroll($scope.scrollFn);
-
-      //
-    page.events.talk('volumeEditOverviewForm-init', form, $scope);
     };
 
     //

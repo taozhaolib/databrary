@@ -52,10 +52,6 @@ module.directive('volumeEditFundingForm', [
 
       //
 
-      page.events.talk('volumeEditFundingForm-init', form, $scope);
-
-      //
-
       var $float = $('.vef-float');
       var $floater = $('.vef-float-floater');
       $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
