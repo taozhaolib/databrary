@@ -1,17 +1,8 @@
 'use strict';
 
 module.factory('displayService', [
-  '$rootScope',
-  '$sessionStorage',
-  'eventService',
-  '$filter',
-  'messageService',
-  'constantService',
-  'routerService',
-  '$location',
-  '$timeout',
-  '$window',
-  function ($rootScope, $sessionStorage, events, $filter, messages, constants, router, $location, $timeout, $window) {
+  '$rootScope', '$sessionStorage', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window', '$sce',
+  function ($rootScope, $sessionStorage, events, $filter, messages, constants, $timeout, $window, $sce) {
     var display = {};
 
     //
@@ -51,7 +42,7 @@ module.factory('displayService', [
     events.listen($rootScope, 'displayService-updateApp', function () {
       messages.add({
         type: 'yellow',
-        body: constants.message('app.update') + ' <a href="" onclick="window.location.reload()">Reload</a>.'
+        body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
       });
     });
 

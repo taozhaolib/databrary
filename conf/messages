@@ -1,6 +1,6 @@
 # --- App
-app.update=The Databrary website has been updated. Please save your work and reload your browser tab.
-app.reload=Please <a href="" onclick="window.location.reload()">reload</a> your browser.
+app.update=The Databrary website has been updated.
+app.reload=Please save your work and <a href="" onclick="window.location.reload()">reload</a> your browser tab.
 
 # --- Formats
 format.date=Select a valid date (in ''{0}'' format).
