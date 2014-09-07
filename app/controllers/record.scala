@@ -65,13 +65,14 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
           r <- models.Record.create(request.obj.volume, form.category.get)
           _ <- r.addSlot(request.obj)
         } yield (editResult(r))
-      } (models.Record.get(_).flatMap(_
-        .filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
-        .fold {
-	  form.record.withError("record.bad").Bad
-	} (_.addSlot(request.obj).map { _ =>
-	  SlotController.result(request.obj)
-	})))
+      } { r =>
+	for {
+	  mr <- models.Record.get(r)
+	  r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
+	    .getOrElse(form.record.withError("record.bad")._throw)
+	  _ <- r.addSlot(request.obj)
+	} yield (if (request.isApi) result(r) else SlotController.result(request.obj))
+      }
     }
 
   def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) = Action(recordId, Permission.EDIT).async { implicit request =>
