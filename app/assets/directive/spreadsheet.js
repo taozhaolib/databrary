@@ -58,6 +58,17 @@ module.directive('spreadsheet', [
       return info;
     }
 
+    var noCategory = {
+      id: 0,
+      name: 'record',
+      not: 'No record'
+    };
+    Object.freeze(noCategory);
+
+    function getCategory(c) {
+      return c ? page.constants.category[c] : noCategory;
+    }
+
     var pseudoMetrics = {
       id: {
 	id: 'id',
@@ -134,7 +145,7 @@ module.directive('spreadsheet', [
 	    info.c = (info.category = (info.col = metricCols[info.m]).category).id;
 	    info.metric = info.col.metric;
 	  } else if ('c' in info)
-	    info.category = page.constants.category[info.c];
+	    info.category = getCategory(info.c);
 	  if ('i' in info) {
 	    info.slot = slots[info.i];
 	    if ('n' in info)
@@ -157,7 +168,7 @@ module.directive('spreadsheet', [
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
-	    var c = record.category;
+	    var c = record.category || noCategory.id;
 
 	    // populate depends:
 	    if (record.id in depends) {
@@ -199,7 +210,7 @@ module.directive('spreadsheet', [
 	function populateCols() {
 	  metricCols = [];
 	  $scope.recordCols = recordCols = Object.keys(records).sort(byNumber).map(function (c) {
-	    var category = page.constants.category[c];
+	    var category = getCategory(c);
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
 	      return m !== 'id' && !getMetric(m).long;
@@ -571,7 +582,6 @@ module.directive('spreadsheet', [
 	    value = undefined;
 	  else switch (type) {
 	    case 'record':
-	      var cat;
 	      if (value === 'new')
 		setRecord(cell, info);
 	      else if (value === 'remove')
@@ -665,11 +675,11 @@ module.directive('spreadsheet', [
 		editInput.value = 'remove';
 	      editScope.type = 'record';
 	      editScope.options = {
-		'new':'Create new ' + c.name,
-		'remove':'No ' + c.name
+		'new': 'Create new ' + c.name,
+		'remove': c.not
 	      };
 	      angular.forEach(volume.records, function (r, ri) {
-		if (r.category === c.id && (!(info.i in depends[ri]) || ri === editInput.value))
+		if ((r.category || 0) === c.id && (!(info.i in depends[ri]) || ri === editInput.value))
 		  editScope.options[ri] = r.displayName;
 	      });
 	      break;

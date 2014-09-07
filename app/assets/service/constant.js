@@ -43,6 +43,10 @@ module.factory('constantService', [
 	constants.party[uname] = party.id;
     });
 
+    angular.forEach(constants.category, function (cat) {
+      cat.not = constants.messages['not.' + cat.name] || 'No ' + cat.name;
+    });
+
     angular.forEach(constants.format, function (fmt) {
       var m = fmt.mimetype;
       fmt.type = m.slice(0, m.indexOf('/'));

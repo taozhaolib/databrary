@@ -114,13 +114,13 @@ module.directive('browserList', [
       };
 
       $scope.nameRecord = function (data) {
-        var category = page.constants.category[data.object.category],
-          name = category.name;
+        var category = page.constants.category[data.object.category];
+	var name;
 
         if (data.object.id === 0) {
-          name = page.constants.messages['not.' + name] || 'No ' + name;
+          name = category.not;
         } else {
-          name = $scope.capitalize(name);
+          name = $scope.capitalize(category.name);
         }
 
         var identifier = data.object.displayName;
