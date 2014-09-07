@@ -613,15 +613,41 @@ module.factory('modelService', [
 
     Slot.prototype.save = function (data) {
       var s = this;
-      return router.http(router.controllers.SlotApi.update, this.container.id, this.segment, data)
+      return router.http(router.controllers.SlotApi.update, this.container.id, this.segment.format(), data)
 	.then(function (res) {
 	  return s.update(res.data);
 	});
     };
 
-    Slot.prototype.addRecord = function (data) {
+    Slot.prototype.addRecord = function (r) {
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment, data)
+      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
+	.then(function (res) {
+	  return r.update(res.data);
+	}).finally(function () {
+	  s.clear('records');
+	});
+    };
+
+    Slot.prototype.newRecord = function (c) {
+      var s = this;
+      if (c && typeof c === 'object')
+	c = c.id;
+      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
+	.then(function (res) {
+	  var v = s.volume;
+	  var r = new Record(v, res);
+	  if ('records' in v)
+	    v.records[r.id] = r;
+	  return r;
+	}).finally(function () {
+	  s.clear('records');
+	});
+    };
+
+    Slot.prototype.removeRecord = function (r) {
+      var s = this;
+      return router.http(router.controllers.RecordApi.remove, this.container.id, this.segment.format(), r.id)
 	.finally(function () {
 	  s.clear('records');
 	});
@@ -629,12 +655,12 @@ module.factory('modelService', [
 
     Object.defineProperty(Slot.prototype, 'route', {
       get: function () {
-	return router.slot([this.volume.id, this.container.id, this.segment]);
+	return router.slot([this.volume.id, this.container.id, this.segment.format()]);
       }
     });
 
     Slot.prototype.editRoute = function () {
-      return router.slotEdit([this.container.id, this.segment]);
+      return router.slotEdit([this.container.id, this.segment.format()]);
     };
 
     ///////////////////////////////// Record
@@ -701,7 +727,7 @@ module.factory('modelService', [
 	var ident = [];
 	for (var i = 0; i < idents.length; i ++)
 	  if (idents[i] in this.measures)
-	    ident.push(this.measures[i]);
+	    ident.push(this.measures[idents[i]]);
 
 	return ident.length ? ident.join(', ') : this.id;
       }
@@ -842,11 +868,11 @@ module.factory('modelService', [
     };
 
     SlotAsset.prototype.thumbRoute = function(size) {
-      return router.assetThumb([this.container.id, this.segment, this.asset.id, size]);
+      return router.assetThumb([this.container.id, this.segment.format(), this.asset.id, size]);
     };
 
     SlotAsset.prototype.downloadRoute = function(inline) {
-      return router.assetDownload([this.container.id, this.segment, this.asset.id, inline]);
+      return router.assetDownload([this.container.id, this.segment.format(), this.asset.id, inline]);
     };
 
     SlotAsset.prototype.editRoute = function() {
@@ -881,7 +907,7 @@ module.factory('modelService', [
       var s = this;
       if (arguments.length < 2 && this instanceof Comment)
 	reply = this.id;
-      return router.http(router.controllers.CommentApi.post, this.container.id, this.segment, reply, data)
+      return router.http(router.controllers.CommentApi.post, this.container.id, this.segment.format(), reply, data)
 	.then(function (res) {
 	  return new Comment(s.container, res.data);
 	}).finally(function () {
@@ -901,7 +927,7 @@ module.factory('modelService', [
 
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
-      return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment, {vote:vote ? vote>0 : undefined})
+      return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
 	.finally(function () {
 	  s.volume.clear("tags");
 	  s.clear("tags");

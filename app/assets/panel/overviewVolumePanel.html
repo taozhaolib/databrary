@@ -80,10 +80,10 @@
         </dl>
       </div>
 
-      <div frame id="frame-reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="volume.consumers || volume.providers">
+      <div frame id="frame-reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="volume.consumers.length || volume.providers.length">
         <div class="row">
           <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
-            <div bo-if="volume.consumers">
+            <div bo-if="volume.consumers.length">
               <div bo-text="'volume.reuse.provides' | message"></div>
 
               <ul class="panel-overview-volume-reuses">
@@ -94,7 +94,7 @@
               </ul>
             </div>
 
-            <div bo-if="volume.providers">
+            <div bo-if="volume.providers.length">
               <div bo-text="'volume.reuse.consumes' | message"></div>
 
               <ul class="panel-overview-volume-reuses">

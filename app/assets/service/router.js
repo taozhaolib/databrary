@@ -105,7 +105,7 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
 	    return page.models.Volume.get(9, ['access'])
-	      .then(null, function() {
+	      .catch(function() {
 		return {};
 	      });
           }

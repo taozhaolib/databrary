@@ -69,7 +69,7 @@ module.factory('Segment', [
       return x instanceof Segment ? x : new Segment(x);
     };
 
-    Segment.prototype.toString = function () {
+    Segment.prototype.format = function () {
       if (this.full)
 	return '-';
       if (this.empty)
@@ -81,6 +81,8 @@ module.factory('Segment', [
       return (isFinite(l) ? l : '') +
 	',' + (isFinite(u) ? u : '');
     };
+    
+    Segment.prototype.toString = Segment.prototype.format;
 
     Segment.prototype.equals = function (that) {
       if (Segment.isFull(that))
