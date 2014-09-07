@@ -623,9 +623,10 @@ module.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
 	.then(function (res) {
+	  if ('records' in s)
+	    /* not quite right with segments */
+	    s.records.push(r);
 	  return r.update(res.data);
-	}).finally(function () {
-	  s.clear('records');
 	});
     };
 
@@ -639,17 +640,22 @@ module.factory('modelService', [
 	  var r = new Record(v, res);
 	  if ('records' in v)
 	    v.records[r.id] = r;
+	  if ('records' in s)
+	    s.records.push(r);
 	  return r;
-	}).finally(function () {
-	  s.clear('records');
 	});
     };
 
     Slot.prototype.removeRecord = function (r) {
       var s = this;
       return router.http(router.controllers.RecordApi.remove, this.container.id, this.segment.format(), r.id)
-	.finally(function () {
-	  s.clear('records');
+	.then(function (res) {
+	  s.update(res.data);
+	  if ('records' in s)
+	    /* not quite right with segments */
+	    s.records = s.records.filter(function (sr) {
+	      return sr.id !== r.id;
+	    });
 	});
     };
 

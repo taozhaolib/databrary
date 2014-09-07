@@ -83,7 +83,7 @@ module.directive('spreadsheet', [
 	classification: page.classification.SHARED
       },
     };
-    Object.freeze(pseudoMetrics);
+    page.constants.deepFreeze(pseudoMetrics);
 
     function getMetric(m) {
       return pseudoMetrics[m] || page.constants.metric[m];
@@ -95,7 +95,8 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	var editable = $scope.editable = page.models.Login.checkAccess(page.permission.EDIT, volume);
+	$scope.editable = page.models.Login.checkAccess(page.permission.EDIT, volume);
+	var editing = $scope.editing = false;
 
 	function getSlot(slot) {
 	  if ('records' in slot)
@@ -183,8 +184,6 @@ module.directive('spreadsheet', [
 	      r = records[c];
 	    else {
 	      r = records[c] = {id: []};
-	      if (c === page.category.participant.id)
-		r.age = [];
 	    }
 
 	    // determine Count:
@@ -197,7 +196,7 @@ module.directive('spreadsheet', [
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
-	    if ('age' in r)
+	    if (!editing && 'age' in slot.records[ri])
 	      populateMeasure('age', slot.records[ri].age);
 	    for (var m in record.measures)
 	      populateMeasure(m, record.measures[m]);
@@ -238,6 +237,8 @@ module.directive('spreadsheet', [
 
 	/* Call all populate* functions */
 	function populate() {
+	  records = {};
+	  depends = {};
 	  for (var i = 0; i < count; i ++)
 	    populateSlot(i);
 	  populateCols();
@@ -345,7 +346,7 @@ module.directive('spreadsheet', [
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
 	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
-	  generateRecords(row, i, 0, editable && slot.id !== volume.top.id);
+	  generateRecords(row, i, 0, editing && slot.id !== volume.top.id);
 	}
 
 	/* Update all age displays. */
@@ -375,7 +376,7 @@ module.directive('spreadsheet', [
 
 	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
 
-	/* Generate all rows. Should only be called once. */
+	/* Generate all rows. */
 	function generate() {
 	  for (var i = 0; i < count; i ++)
 	    generateRow(i);
@@ -500,11 +501,10 @@ module.directive('spreadsheet', [
 	      var t = --counts[info.i][info.c];
 	      for (m in records[info.c]) {
 		rcm = records[info.c][m];
-		console.log(info);
-		console.log(rcm);
 		for (var n = info.n+1; n < rcm.length; n ++)
 		  arr(rcm, n-1)[info.i] = arr(rcm, n)[info.i];
-		delete rcm[t];
+		if (t in rcm)
+		  delete rcm[t][info.i];
 	      }
 	    }
 
@@ -558,7 +558,7 @@ module.directive('spreadsheet', [
 	  for (var c in counts[i])
 	    if (counts[i][c] > max)
 	      max = counts[i][c];
-	  var edit = editable && slots[i].id !== volume.top.id;
+	  var edit = editing && slots[i].id !== volume.top.id;
 	  if (edit)
 	    max ++;
 	  if (max <= 1)
@@ -618,14 +618,14 @@ module.directive('spreadsheet', [
 	var editScope = $scope.$new(true);
 	editScope.page = page;
 	var editInput = editScope.input = {};
-	var editCell = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
-	var editing;
+	var editCellTemplate = page.$compile(page.$templateCache.get('spreadsheetEditCell.html'));
+	var editCell;
 
 	function unedit(event) {
 	  var edit;
-	  if (!(edit = editing))
+	  if (!(edit = editCell))
 	    return;
-	  editing = undefined;
+	  editCell = undefined;
 	  var cell = edit.parentNode;
 	  if (!cell)
 	    return;
@@ -662,7 +662,9 @@ module.directive('spreadsheet', [
 	      if (info.metric.options) {
 		editScope.type = 'select';
 		editScope.options = [''].concat(info.metric.options);
-	      } else
+	      } else if (info.metric.long)
+		editScope.type = 'long';
+	      else
 		editScope.type = info.metric.type;
 	      break;
 	    }
@@ -679,7 +681,7 @@ module.directive('spreadsheet', [
 		'remove': c.not
 	      };
 	      angular.forEach(volume.records, function (r, ri) {
-		if ((r.category || 0) === c.id && (!(info.i in depends[ri]) || ri === editInput.value))
+		if ((r.category || 0) === c.id && (!(ri in depends && info.i in depends[ri]) || ri === editInput.value))
 		  editScope.options[ri] = r.displayName;
 	      });
 	      break;
@@ -691,8 +693,8 @@ module.directive('spreadsheet', [
 	    default:
 	      return;
 	  }
-	  var e = editCell(editScope, function (e) {
-	    cell.insertBefore(editing = e[0], cell.firstChild);
+	  var e = editCellTemplate(editScope, function (e) {
+	    cell.insertBefore(editCell = e[0], cell.firstChild);
 	    cell.classList.add('editing');
 	  });
 
@@ -729,7 +731,7 @@ module.directive('spreadsheet', [
 	    }
 	  }
 
-	  if (editable)
+	  if (editing)
 	    edit(cell, info);
 	}
 
@@ -749,7 +751,7 @@ module.directive('spreadsheet', [
 	$scope.clickSlot = sortBySlot;
 	$scope.clickCategory = function (rec, $event) {
 	  unselect();
-	  if (editable)
+	  if (editing)
 	    edit($event.target, {t:'metric',r:rec});
 	};
 	$scope.clickMetric = function (col) {
@@ -758,9 +760,22 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// main
 
-	populate();
-	generate();
-	fill();
+	function init() {
+	  populate();
+	  generate();
+	  fill();
+	}
+
+	$scope.refresh = function(e) {
+	  unedit();
+	  collapse();
+	  if (e === undefined)
+	    e = editing;
+	  $scope.editing = editing = e;
+	  init();
+	};
+
+	init();
       }
     ];
 
