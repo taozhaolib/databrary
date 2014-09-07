@@ -27,6 +27,21 @@ module.directive('spreadsheet', [
       return s.startsWith(prefix) ? s.substr(prefix.length) : undefined;
     }
 
+    /* autovivification */
+    function arr(a, f) {
+      if (f in a)
+	return a[f];
+      else
+	return (a[f] = []);
+    }
+
+    function obj(a, f) {
+      if (f in a)
+	return a[f];
+      else
+	return (a[f] = {});
+    }
+
     function parseInfo(id) {
       var info = {};
       var s = id.split('_');
@@ -105,7 +120,6 @@ module.directive('spreadsheet', [
 
 	var records = {}; // [Category_id][Metric_id][Count] :: Data
 	var counts = new Array(count); // [Row][Category_id] :: Count
-	var maxCount = new Uint8Array(count); // [Row] = counts.map(_.maxiumum)
 	var recordCols = [], // [] Array over records :: {category: Category_id, metrics[]: Array of Metric_id}
 	    metricCols = []; // [] Array over metrics :: {category: Category, metric: Metric} (flattened version of recordCols)
 	var depends = {}; // [Record_id][Row] :: Count
@@ -119,7 +133,8 @@ module.directive('spreadsheet', [
 	  if ('m' in info) {
 	    info.c = (info.category = (info.col = metricCols[info.m]).category).id;
 	    info.metric = info.col.metric;
-	  }
+	  } else if ('c' in info)
+	    info.category = page.constants.category[info.c];
 	  if ('i' in info) {
 	    info.slot = slots[info.i];
 	    if ('n' in info)
@@ -136,14 +151,9 @@ module.directive('spreadsheet', [
 	  
 	  var r, n;
 	  function populateMeasure(m, v) {
-	    if (!(m in r))
-	      r[m] = [];
-	    if (!(n in r[m]))
-	      r[m][n] = [];
-	    r[m][n][i] = v;
+	    arr(arr(r, m), n)[i] = v;
 	  }
 	  var count = counts[i] = {};
-	  var max = 0;
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
@@ -173,7 +183,6 @@ module.directive('spreadsheet', [
 	      count[c] = 1;
 	      n = 0;
 	    }
-	    max = Math.max(max, n+1);
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
@@ -184,8 +193,6 @@ module.directive('spreadsheet', [
 
 	    depends[record.id][i] = n;
 	  }
-
-	  maxCount[i] = max;
 	}
 
 	/* Fill metricCols and recordCols from records */
@@ -437,9 +444,7 @@ module.directive('spreadsheet', [
 	  return info.record.measureSet(info.metric.id, v).then(function (rec) {
 	    var rcm = records[rec.category][info.metric.id];
 	    angular.forEach(depends[info.r], function (n, i) {
-	      if (!(n in rcm))
-		rcm[n] = [];
-	      rcm[n][i] = v;
+	      arr(rcm, n)[i] = v;
 	      /* TODO age may have changed... not clear how to update. */
 	    });
 
@@ -450,71 +455,52 @@ module.directive('spreadsheet', [
 	  }, saveError.bind(null, cell));
 	}
 
-	function addRecord(cell, info) {
+	function setRecord(cell, info, record) {
 	  cell.classList.add('saving');
-	  return info.slot.newRecord(info.c).then(function (record) {
-	    /* assume here record is new and blank */
-	    if (!('n' in info))
-	      info.n = counts[info.i][info.c]++;
-	    if (!(info.n in records[info.c].id))
-	      records[info.c].id[info.n] = [];
-	    records[info.c].id[info.n][info.i] = record.id;
+	  var act;
+	  if (info.record)
+	    act = info.slot.removeRecord(info.record)
+	      .then(function () {
+		return record && info.slot.addRecord(record);
+	      });
+	  else if (record)
+	    act = info.slot.addRecord(record);
+	  else
+	    act = info.slot.newRecord(info.c);
 
-	    depends[record.id] = {};
-	    depends[record.id][info.i] = info.n;
+	  return act.then(function (record) {
+	    var r, m, rcm;
+	    if (record) {
+	      r = record.id;
+	      if (!('n' in info))
+		info.n = counts[info.i][info.c]++;
 
-	    cell.classList.remove('saving');
-	    collapse();
-	    if (info.n === 0)
-	      generateRow(info.i);
-	    expand(info.i);
-	  }, saveError.bind(null, cell));
-	}
-
-	function removeRecord(cell, info) {
-	  cell.classList.add('saving');
-	  return info.slot.removeRecord(info.record).then(function () {
-	    var t = --counts[info.i][info.c];
-	    for (var m in records[info.c]) {
-	      var rcm = records[info.c][m];
-	      for (var n = info.n+1; n < rcm.length; n ++)
-		rcm[n-1][info.i] = rcm[n][info.i];
-	      delete rcm[t];
-	    }
-
-	    delete depends[info.r][info.i];
-
-	    cell.classList.remove('saving');
-	    collapse();
-	    if (info.n === 0)
-	      generateRow(info.i);
-	    expand(info.i);
-	  }, saveError.bind(null, cell));
-	}
-
-	function replaceRecord(cell, info, r) {
-	  cell.classList.add('saving');
-	  return info.slot.removeRecord(info.record).then(function () {
-	    return info.slot.addRecord(volume.records[r]);
-	  }).then(function (record) {
-	    for (var m in records[info.c]) {
-	      var rcm = records[info.c][m];
-	      var v = m in record ? record[m] : record.measures[m];
-	      if (v === undefined) {
-		if (info.n in rcm)
-		  delete rcm[info.n][info.i];
-	      } else {
-		if (!(info.n in rcm))
-		  rcm[info.n] = [];
-		rcm[info.n][info.i] = v;
+	      for (m in records[info.c]) {
+		rcm = records[info.c][m];
+		var v = m in record ? record[m] : record.measures[m];
+		if (v === undefined) {
+		  if (info.n in rcm)
+		    delete rcm[info.n][info.i];
+		} else
+		  arr(rcm, info.n)[info.i] = v;
+		/* TODO age? maybe server should send it? */
 	      }
-	      /* TODO age? maybe server should send it? */
+	    } else {
+	      var t = --counts[info.i][info.c];
+	      for (m in records[info.c]) {
+		rcm = records[info.c][m];
+		console.log(info);
+		console.log(rcm);
+		for (var n = info.n+1; n < rcm.length; n ++)
+		  arr(rcm, n-1)[info.i] = arr(rcm, n)[info.i];
+		delete rcm[t];
+	      }
 	    }
 
-	    delete depends[info.r][info.i];
-	    if (!(r in depends))
-	      depends[r] = {};
-	    depends[r][info.i] = info.n;
+	    if (info.record)
+	      delete depends[info.r][info.i];
+	    if (record)
+	      obj(depends, r)[info.i] = info.n;
 
 	    cell.classList.remove('saving');
 	    collapse();
@@ -557,7 +543,10 @@ module.directive('spreadsheet', [
 	  collapse();
 	  expanded = i;
 
-	  var max = maxCount[i];
+	  var max = 0;
+	  for (var c in counts[i])
+	    if (counts[i][c] > max)
+	      max = counts[i][c];
 	  var edit = editable && slots[i].id !== volume.top.id;
 	  if (edit)
 	    max ++;
@@ -584,13 +573,13 @@ module.directive('spreadsheet', [
 	    case 'record':
 	      var cat;
 	      if (value === 'new')
-		addRecord(cell, info);
+		setRecord(cell, info);
 	      else if (value === 'remove')
-		removeRecord(cell, info);
+		setRecord(cell, info);
 	      else {
 		var ri = parseInt(value);
 		if (ri !== info.r)
-		  replaceRecord(cell, info, ri);
+		  setRecord(cell, info, volume.records[ri]);
 		else
 		  edit(cell, info, true);
 	      }

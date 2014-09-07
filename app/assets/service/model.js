@@ -727,7 +727,7 @@ module.factory('modelService', [
 	var ident = [];
 	for (var i = 0; i < idents.length; i ++)
 	  if (idents[i] in this.measures)
-	    ident.push(this.measures[i]);
+	    ident.push(this.measures[idents[i]]);
 
 	return ident.length ? ident.join(', ') : this.id;
       }
