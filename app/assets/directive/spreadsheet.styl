@@ -60,9 +60,12 @@
     background-image url('/public/images/icon/play.png')
     display inline-block
 
-  td.consent
+  td.consent:not(.editing)
     top b3
     left b2
+
+  td.consent.excerpts.editing
+    background-image none
 
 #spreadsheet-head-groups
   th
@@ -109,7 +112,8 @@
 #ss-top
   border-bottom 2px solid black
 
-.spreadsheet-edit
+// this not working with icon. 
+#spreadsheet-edit
   position absolute
   z-index 50
   top 0
