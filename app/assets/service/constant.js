@@ -85,7 +85,18 @@ module.factory('constantService', [
       return msg;
     };
 
-    // TODO: deepFreeze
-    return Object.freeze(constants);
+    function deepFreeze(o) {
+      Object.freeze(o);
+      for (var f in o)
+	if (o.hasOwnProperty(f)) {
+	  var v = o[f];
+	  if (v instanceof Object && !Object.isFrozen(v))
+	    deepFreeze(v);
+	}
+      return o;
+    }
+    constants.deepFreeze = deepFreeze;
+
+    return deepFreeze(constants);
   }
 ]);
