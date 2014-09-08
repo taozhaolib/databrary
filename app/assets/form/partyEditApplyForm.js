@@ -118,7 +118,7 @@ module.directive('partyEditApplyForm', [
 
       var $float = $('.peap-float');
       var $floater = $('.peap-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
       page.$w.scroll($scope.scrollFn);
 
 

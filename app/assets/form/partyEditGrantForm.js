@@ -121,7 +121,7 @@ module.directive('partyEditGrantForm', [
 
       var $float = $('.peg-float');
       var $floater = $('.peg-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
       page.$w.scroll($scope.scrollFn);
 
       page.events.talk('partyEditGrantForm-init', form, $scope);

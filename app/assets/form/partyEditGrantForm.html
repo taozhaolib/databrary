@@ -1,8 +1,9 @@
 <form name="partyEditGrantForm" bindonce novalidate>
   <fieldset class="clean peg-float">
-    <div class="peg-float-floater">
-      <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
-      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="!partyEditGrantForm.$dirty"></button>
+    <div class="peg-float-floater row">
+      <auth-search-form child principal="child" party="{{party.id}}" placeholder-text="{{'auth.search.grant.legend' | message}}" class="col-desktop-8 col-laptop-6 col-tablet-3 col-mobile-2"></auth-search-form>
+      <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="!partyEditGrantForm.$dirty" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1"></button>
+      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="!partyEditGrantForm.$dirty"class=" col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1"></button>
     </div>
   </fieldset>
   <fieldset ng-if="partyEditGrantForm.data.length > 0">
@@ -31,9 +32,5 @@
     </article>
   </fieldset>
 
-  <fieldset scope>
-    <legend bo-text="'auth.search.grant.legend' | message"></legend>
-    <auth-search-form child principal="child" party="{{party.id}}"></auth-search-form>
-  </fieldset>
 </form>
 

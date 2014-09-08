@@ -1,8 +1,7 @@
 <form name="partyEditApplyForm" bindonce novalidate>
    <fieldset class="clean peap-float">
-    <div class="peap-float-floater">
-      <button ng-click="partyEditApplyForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
-      <button ng-click="partyEditApplyForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="!partyEditApplyForm.$dirty"></button>
+    <div class="peap-float-floater row">
+      <auth-search-form party="{{party.id}}" placeholder-text="{{'auth.search.apply.legend' | message}}" class="col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-2"></auth-search-form>
     </div>
   </fieldset>
  <fieldset ng-if="partyEditApplyForm.data.length > 0">
@@ -56,9 +55,5 @@
     </article>
   </fieldset>
 
-  <fieldset scope>
-    <legend bo-text="'auth.search.apply.legend' | message"></legend>
-    <auth-search-form party="{{party.id}}"></auth-search-form>
-  </fieldset>
 </form>
 

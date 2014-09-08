@@ -8,8 +8,8 @@ module.directive('authSearchForm', [
       form.nameVal = '';
       form.found = [];
       form.id = $attrs.party || undefined;
-
       form.principal = $attrs.principal;
+      form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
 
       $scope.$watch(function () {
         return form.principal;

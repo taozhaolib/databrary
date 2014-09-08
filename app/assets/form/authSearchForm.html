@@ -1,6 +1,6 @@
 <form name="authSearchForm" novalidate class="auth-search-form" bindonce>
   <validator form="authSearchForm" name="name">
-    <input type="search" name="name" placeholder="{{'auth.search.' + (authSearchForm.principal ? authSearchForm.principal : 'placeholder') | message}}" ng-model="authSearchForm.nameVal" ng-change="authSearchForm.search()">
+    <input type="search" name="name" placeholder="{{authSearchForm.placeholderText}}" ng-model="authSearchForm.nameVal" ng-change="authSearchForm.search()">
   </validator>
 
   <ul ng-if="authSearchForm.nameVal" class="flat auth-search-founds">
