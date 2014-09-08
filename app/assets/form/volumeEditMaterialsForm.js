@@ -42,7 +42,10 @@ module.directive('volumeEditMaterialsForm', [
           //new asset
 	  var index = form.add() - 1;
           file.asset = form.data.assets[index];
-	  file.containingForm = form['asset' + index];
+	  page.$timeout(function(){
+	    file.containingForm = form['asset-' + index].subform;
+	    page.display.scrollTo(file.containingForm.$element);
+	  }, 500);
         }
         file.asset.file = file.file; 
         assets.fileAddedImmediateUpload(file);
@@ -123,8 +126,6 @@ module.directive('volumeEditMaterialsForm', [
               body: page.constants.message('volume.edit.materials.update.error', subform.asset.name || page.constants.message('file')),
               report: res,
             });
-
-            page.display.scrollTo(subform.$element);
           }).finally(function () {
             form.clean(subform);
           });
