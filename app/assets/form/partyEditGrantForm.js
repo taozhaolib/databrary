@@ -99,6 +99,11 @@ module.directive('partyEditGrantForm', [
 	    site: 0,
 	    member: 0,
 	  });
+	  //warning: next line is template dependent! if classnames change this will no longer work
+	  page.$timeout(function() {
+	    var newEl = $('fieldset article.permission-auth.peg').last();
+	    page.display.scrollTo(newEl);
+	  });
         };
 
         searchForm.notFoundFn = function () {

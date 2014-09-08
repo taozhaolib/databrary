@@ -97,6 +97,11 @@ module.directive('partyEditApplyForm', [
 	    new: true,
 	    party: found,
 	  });
+	  //warning: next line is template dependent! if classnames change this will no longer work
+	  page.$timeout(function() {
+	    var newEl = $('fieldset article.permission-auth.pef').last();
+	    page.display.scrollTo(newEl);
+	  });
         };
 
         searchForm.notFoundFn = function (query) {
