@@ -9,20 +9,20 @@
       <col/>
       <col/>
     </colgroup>
-    <colgroup ng-repeat="record in recordCols track by record.category.id">
-      <col ng-repeat="metric in record.metrics"/>
+    <colgroup ng-repeat="col in recordCols track by col.category.id">
+      <col ng-repeat="metric in col.metrics"/>
     </colgroup>
     <thead>
       <tr id="spreadsheet-head-groups">
-	<th colspan="3">session</th>
-	<th ng-repeat="record in recordCols track by record.category.id" colspan="{{record.metrics.length}}" ng-bind="record.category.name" ng-click="clickCategory(record, $event)"></th>
+	<th colspan="3" id="ss-head" ng-click="clickSession($event)">session</th>
+	<th ng-repeat="col in recordCols track by col.category.id" id="ss-category_{{col.category.id}}" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory(col, $event)"></th>
       </tr>
       <tr id="spreadsheet-head-metrics">
-	<th class="first" ng-click="clickSlot('name')"/>
-	<th><a href="" ng-click="clickSlot('date')">date</a></th>
-	<th class="last"><a href="" ng-click="clickSlot('consent')">consent</a></th>
+	<th id="ss-name" class="first" ng-click="clickSlot('name')"/>
+	<th id="ss-date"><a href="" ng-click="clickSlot('date')">date</a></th>
+	<th id="ss-consent" class="last"><a href="" ng-click="clickSlot('consent')">consent</a></th>
 
-	<th ng-repeat="col in metricCols track by $index" ng-class="{'first': col.first, 'last': col.last}">
+	<th ng-repeat="col in metricCols track by $index" id="ss-metric_{{$index}}" ng-class="{'first': col.first, 'last': col.last}">
 	  <a href="" ng-click="clickMetric(col)" ng-bind="col.metric.name"></a>
 	</th>
       </tr>

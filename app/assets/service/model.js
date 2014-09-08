@@ -637,7 +637,7 @@ module.factory('modelService', [
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
 	.then(function (res) {
 	  var v = s.volume;
-	  var r = new Record(v, res);
+	  var r = new Record(v, res.data);
 	  if ('records' in v)
 	    v.records[r.id] = r;
 	  if ('records' in s)

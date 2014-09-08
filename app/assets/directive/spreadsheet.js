@@ -42,18 +42,37 @@ module.directive('spreadsheet', [
 	return (a[f] = {});
     }
 
+    function inc(a, f) {
+      if (f in a)
+	return a[f] ++;
+      else {
+	a[f] = 1;
+	return 0;
+      }
+    }
+
     function parseInfo(id) {
       var info = {};
       var s = id.split('_');
       if ((info.t = stripPrefix(s[0], 'ss-')) === undefined ||
-	  isNaN(info.i = parseInt(s[1])))
+	  s.length > 1 && isNaN(info.i = parseInt(s[1])))
 	return;
-      if (info.t === 'rec') {
-	info.n = parseInt(s[2]);
-	info.m = parseInt(s[3]);
-      }
-      if (info.t === 'add') {
-	info.c = parseInt(s[2]);
+      switch (info.t) {
+	case 'rec':
+	  info.n = parseInt(s[2]);
+	  info.m = parseInt(s[3]);
+	  break;
+	case 'add':
+	  info.c = parseInt(s[2]);
+	  break;
+	case 'metric':
+	  info.m = info.i;
+	  delete info.i;
+	  break;
+	case 'category':
+	  info.c = info.i;
+	  delete info.i;
+	  break;
       }
       return info;
     }
@@ -61,7 +80,8 @@ module.directive('spreadsheet', [
     var noCategory = {
       id: 0,
       name: 'record',
-      not: 'No record'
+      not: 'No record',
+      template: [page.metric.ident.id]
     };
     Object.freeze(noCategory);
 
@@ -182,17 +202,11 @@ module.directive('spreadsheet', [
 	    // populate records:
 	    if (c in records)
 	      r = records[c];
-	    else {
+	    else
 	      r = records[c] = {id: []};
-	    }
 
 	    // determine Count:
-	    if (c in count)
-	      n = count[c] ++;
-	    else {
-	      count[c] = 1;
-	      n = 0;
-	    }
+	    n = inc(count, c);
 
 	    // populate measures:
 	    populateMeasure('id', record.id);
@@ -210,9 +224,13 @@ module.directive('spreadsheet', [
 	  metricCols = [];
 	  $scope.recordCols = recordCols = Object.keys(records).sort(byNumber).map(function (c) {
 	    var category = getCategory(c);
+	    if (editing)
+	      category.template.forEach(function (m) {
+		arr(records[c], m);
+	      });
 	    var metrics = Object.keys(records[c]).filter(function (m) {
 	      // filter out 'id' and long metrics (e.g., Description)
-	      return m !== 'id' && !getMetric(m).long;
+	      return m !== 'id';
 	    }).map(maybeInt);
 	    if (metrics.length)
 	      metrics.sort(byType);
@@ -235,13 +253,14 @@ module.directive('spreadsheet', [
 	  $scope.metricCols = metricCols;
 	}
 
-	/* Call all populate* functions */
+	/* Call all populate functions */
 	function populate() {
 	  records = {};
 	  depends = {};
 	  for (var i = 0; i < count; i ++)
 	    populateSlot(i);
 	  populateCols();
+	  generate();
 	}
 
 	///////////////////////////////// Generate HTML
@@ -380,6 +399,7 @@ module.directive('spreadsheet', [
 	function generate() {
 	  for (var i = 0; i < count; i ++)
 	    generateRow(i);
+	  fill();
 	}
 
 	///////////////////////////////// Place DOM elements
@@ -402,6 +422,8 @@ module.directive('spreadsheet', [
 
 	/* Populate order based on compare function applied to values. */
 	function sort(values, compare) {
+	  if (!values)
+	    return;
 	  if (!compare)
 	    compare = byMagic;
 	  order.sort(function (i, j) {
@@ -485,7 +507,7 @@ module.directive('spreadsheet', [
 	    if (record) {
 	      r = record.id;
 	      if (!('n' in info))
-		info.n = counts[info.i][info.c]++;
+		info.n = inc(counts[info.i], info.c);
 
 	      for (m in records[info.c]) {
 		rcm = records[info.c][m];
@@ -581,19 +603,6 @@ module.directive('spreadsheet', [
 	  if (value === '')
 	    value = undefined;
 	  else switch (type) {
-	    case 'record':
-	      if (value === 'new')
-		setRecord(cell, info);
-	      else if (value === 'remove')
-		setRecord(cell, info);
-	      else {
-		var ri = parseInt(value);
-		if (ri !== info.r)
-		  setRecord(cell, info, volume.records[ri]);
-		else
-		  edit(cell, info, true);
-	      }
-	      return;
 	    case 'date':
 	      value = page.$filter('date')(value, 'yyyy-MM-dd');
 	      break;
@@ -603,6 +612,33 @@ module.directive('spreadsheet', [
 	    case 'consent':
 	      value = parseInt(value);
 	      break;
+	    case 'record':
+	      if (value === 'new')
+		setRecord(cell, info);
+	      else if (value === 'remove')
+		setRecord(cell, info);
+	      else if (value !== undefined) {
+		var ri = parseInt(value);
+		if (ri !== info.r)
+		  setRecord(cell, info, volume.records[ri]);
+		else
+		  edit(cell, info, true);
+	      }
+	      return;
+	    case 'metric':
+	      if (value !== undefined) {
+		arr(records[info.c], value);
+		populateCols();
+		generate();
+	      }
+	      return;
+	    case 'category':
+	      if (value !== undefined) {
+		obj(records, value).id = [];
+		populateCols();
+		generate();
+	      }
+	      return;
 	  }
 
 	  switch (info.t) {
@@ -626,6 +662,7 @@ module.directive('spreadsheet', [
 	  if (!(edit = editCell))
 	    return;
 	  editCell = undefined;
+	  $(edit).children('[name=edit]').off();
 	  var cell = edit.parentNode;
 	  if (!cell)
 	    return;
@@ -685,10 +722,24 @@ module.directive('spreadsheet', [
 		  editScope.options[ri] = r.displayName;
 	      });
 	      break;
-	    case 'metric':
+	    case 'category':
 	      editScope.type = 'metric';
 	      editInput.value = undefined;
-	      editScope.options = page.constants.metrics;
+	      editScope.options = {};
+	      angular.forEach(page.constants.metric, function (m, mi) {
+		if (!(mi in records[info.c]))
+		  editScope.options[mi] = m.name;
+	      });
+	      break;
+	    case 'head':
+	      editScope.type = 'category';
+	      editInput.value = undefined;
+	      editScope.options = {};
+	      angular.forEach(page.constants.category, function (c, ci) {
+		if (!(ci in records))
+		  editScope.options[ci] = c.name;
+	      });
+	      editScope.options[noCategory.id] = 'other';
 	      break;
 	    default:
 	      return;
@@ -702,7 +753,11 @@ module.directive('spreadsheet', [
 	  page.$timeout(function () {
 	    var input = e.children('[name=edit]');
 	    input.focus();
-	    input.change(unedit);
+	    input.change(function (event) {
+	      return page.$rootScope.$apply(function () {
+		return unedit(event);
+	      });
+	    });
 	  }, 0);
 	}
 
@@ -748,11 +803,16 @@ module.directive('spreadsheet', [
 	    page.display.toggleAge();
 	};
 
-	$scope.clickSlot = sortBySlot;
-	$scope.clickCategory = function (rec, $event) {
+	$scope.clickSession = function ($event) {
 	  unselect();
 	  if (editing)
-	    edit($event.target, {t:'metric',r:rec});
+	    edit($event.target, {t:'head'});
+	};
+	$scope.clickSlot = sortBySlot;
+	$scope.clickCategory = function (col, $event) {
+	  unselect();
+	  if (editing)
+	    edit($event.target, {t:'category',c:col.category.id});
 	};
 	$scope.clickMetric = function (col) {
 	  sortByMetric(col.category.id, col.metric.id);
@@ -760,22 +820,16 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// main
 
-	function init() {
-	  populate();
-	  generate();
-	  fill();
-	}
-
 	$scope.refresh = function(e) {
 	  unedit();
 	  collapse();
 	  if (e === undefined)
 	    e = editing;
 	  $scope.editing = editing = e;
-	  init();
+	  populate();
 	};
 
-	init();
+	populate();
       }
     ];
 
