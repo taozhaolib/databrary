@@ -4,7 +4,7 @@
 
     <div class="col message message-yellow message-content" bo-if="!page.models.Login.checkAccess(page.permission.EDIT)" bo-text="'access.global.restricted' | message"></div>
 
-    <div ng-repeat="(val, perms) in page.constants.accessGlobal">
+    <div ng-repeat="(val, perms) in page.constants.accessGlobal track by val">
       <input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
       <label bo-text="'access.global.'+perms.join('.') | message" class="option"></label>
     </div>
