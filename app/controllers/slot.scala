@@ -34,7 +34,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     VolumeController.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new SlotController.ContainerCreateForm()._bind
       for {
-	cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten)
+	cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten, top = form.top.get)
 	_ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c))
       } yield (result(cont))
     }
@@ -75,6 +75,7 @@ object SlotController extends SlotController {
       routes.SlotHtml.create(request.obj.id),
       views.html.slot.edit(_, Nil, None)) 
     with ContainerForm {
+    val top = Field(Forms.boolean).fill(false)
     def actionName = "Create"
   }
 

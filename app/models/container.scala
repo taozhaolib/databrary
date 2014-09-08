@@ -94,7 +94,7 @@ object Container extends TableId[Container]("container") {
     .apply(name).list
 
   /** Create a new container in the specified volume. */
-  def create(volume : Volume, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
-    Audit.add(table, SQLTerms('volume -> volume.id, 'name -> name, 'date -> date), "id")
-    .single(SQLCols[Id].map(new Container(_, volume, false, name, date)))
+  def create(volume : Volume, top : Boolean = false, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
+    Audit.add(table, SQLTerms('volume -> volume.id, 'top -> top, 'name -> name, 'date -> date), "id")
+    .single(SQLCols[Id].map(new Container(_, volume, top, name, date)))
 }

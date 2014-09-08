@@ -99,7 +99,7 @@ object Curated extends Ingest {
       Container.findName(volume, name).flatMap {
         case Nil =>
           for {
-            con <- Container.create(volume, Some(name), Some(date))
+            con <- Container.create(volume, name = Some(name), date = Some(date))
             _ <- con.setConsent(consent)
           } yield (ModelSession(con))
         case Seq(con) =>

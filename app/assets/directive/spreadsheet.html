@@ -15,7 +15,7 @@
     <thead>
       <tr id="spreadsheet-head-groups">
 	<th colspan="3" id="ss-head" ng-click="clickSession($event)">session</th>
-	<th ng-repeat="col in recordCols track by col.category.id" id="ss-category_{{col.category.id}}" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory(col, $event)"></th>
+	<th ng-repeat="col in recordCols track by col.category.id" id="ss-category_{{col.category.id}}" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory($event, col)"></th>
       </tr>
       <tr id="spreadsheet-head-metrics">
 	<th id="ss-name" class="first" ng-click="clickSlot('name')"/>
@@ -26,10 +26,18 @@
 	  <a href="" ng-click="clickMetric(col)" ng-bind="col.metric.name"></a>
 	</th>
       </tr>
+      <tr ng-if="editing">
+	<td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>
+      </tr>
     </thead>
     <tbody id="ss-top" ng-click="click($event)">
     </tbody>
     <tbody id="ss" ng-click="click($event)">
     </tbody>
+    <tfoot>
+      <tr ng-if="editing">
+	<td id='ss-new' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, false)">add session</td>
+      </tr>
+    </tfoot>
   </table>
 </div>

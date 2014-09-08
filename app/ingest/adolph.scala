@@ -276,7 +276,7 @@ object Adolph extends Ingest {
 	  PopulateException("multiple existing sessions for participant", pr))
 	c <- ms.headOption.fold {
 	  for {
-	    c <- Container.create(volume, Maybe(name).opt, date)
+	    c <- Container.create(volume, name = Maybe(name).opt, date = date)
 	    _ <- consent.foreachAsync(c.setConsent(_))
 	    _ <- pr.addSlot(c)
 	  } yield (c)

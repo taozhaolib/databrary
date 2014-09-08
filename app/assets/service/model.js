@@ -619,6 +619,17 @@ module.factory('modelService', [
 	});
     };
 
+    Volume.prototype.createContainer = function (data) {
+      var v = this;
+      return router.http(router.controllers.SlotApi.create, this.id, data)
+	.then(function (res) {
+	  var c = new Container(v, res.data);
+	  if ('containers' in v)
+	    v.containers[c.id] = c;
+	  return c;
+	});
+    };
+
     Slot.prototype.addRecord = function (r) {
       var s = this;
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})

@@ -350,6 +350,7 @@ module.directive('spreadsheet', [
 	/* Fill out rows[i]. */
 	function generateRow(i) {
 	  var slot = slots[i];
+	  var top = editing && slot.id === volume.top.id;
 	  var row = document.createElement('tr');
 	  if (rows[i] && rows[i].parentNode)
 	    rows[i].parentNode.replaceChild(row, rows[i]);
@@ -357,6 +358,8 @@ module.directive('spreadsheet', [
 	  var cell;
 	  row.id = 'ss_' + i;
 	  row.data = i;
+	  if (top)
+	    row.className = 'top';
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
 	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
@@ -365,7 +368,7 @@ module.directive('spreadsheet', [
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
 	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
-	  generateRecords(row, i, 0, editing && slot.id !== volume.top.id);
+	  generateRecords(row, i, 0, editing && !top);
 	}
 
 	/* Update all age displays. */
@@ -456,10 +459,27 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// Backend saving
 	
-	function saveError(cell, error) {
+	function saveError(cell, res) {
 	  cell.classList.remove('saving');
 	  cell.classList.add('error');
-	  // TODO
+	  page.messages.addError({
+	    body: 'error',
+	    report: res
+	  });
+	}
+
+	function createSlot(cell, top) {
+	  cell.classList.add('saving');
+	  volume.createContainer({top:top}).then(function (slot) {
+	    if (!('records' in slot))
+	      slot.records = [];
+	    var i = (count = slots.push(slot))-1;
+	    order.push(i);
+	    populateSlot(i);
+	    generateRow(i);
+	    tbody(i).appendChild(rows[i]);
+	    cell.classList.remove('saving');
+	  }, saveError.bind(null, cell));
 	}
 
 	function saveSlot(cell, info, v) {
@@ -467,7 +487,6 @@ module.directive('spreadsheet', [
 	  data[info.t] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
 	  return info.slot.save(data).then(function () {
-
 	    generateText(cell, info.t, v);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
@@ -634,7 +653,7 @@ module.directive('spreadsheet', [
 	      return;
 	    case 'category':
 	      if (value !== undefined) {
-		obj(records, value).id = [];
+		arr(obj(records, value), 'id');
 		populateCols();
 		generate();
 	      }
@@ -677,6 +696,8 @@ module.directive('spreadsheet', [
 
 	function edit(cell, info, alt) {
 	  fillInfo(info);
+	  if (info.slot && info.slot.id === volume.top.id)
+	    return;
 	  switch (info.t) {
 	    case 'name':
 	      editScope.type = 'text';
@@ -809,13 +830,16 @@ module.directive('spreadsheet', [
 	    edit($event.target, {t:'head'});
 	};
 	$scope.clickSlot = sortBySlot;
-	$scope.clickCategory = function (col, $event) {
+	$scope.clickCategory = function ($event, col) {
 	  unselect();
 	  if (editing)
 	    edit($event.target, {t:'category',c:col.category.id});
 	};
 	$scope.clickMetric = function (col) {
 	  sortByMetric(col.category.id, col.metric.id);
+	};
+	$scope.clickNew = function ($event, top) {
+	  createSlot($event.target, top);
 	};
 
 	///////////////////////////////// main
