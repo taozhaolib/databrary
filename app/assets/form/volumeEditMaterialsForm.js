@@ -45,7 +45,7 @@ module.directive('volumeEditMaterialsForm', [
 	  page.$timeout(function(){
 	    file.containingForm = form['asset-' + index].subform;
 	    page.display.scrollTo(file.containingForm.$element);
-	  }, 500);
+	  });
         }
         file.asset.file = file.file; 
         assets.fileAddedImmediateUpload(file);

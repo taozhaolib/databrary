@@ -92,6 +92,13 @@ module.directive('volumeEditFundingForm', [
               awards: [],
               new: true,
             });
+
+	    //warning: next line is template dependent! if classnames or structure change this may no longer work
+	    page.$timeout(function() {
+	      var newEl = $('form fieldset.permission-auth').last();
+	      page.display.scrollTo(newEl);
+	    });
+
           } else {
             searchForm.messages.add({
               type: 'yellow',

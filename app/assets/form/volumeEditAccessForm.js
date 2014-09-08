@@ -127,6 +127,11 @@ module.directive('volumeEditAccessForm', [
 	    individual: 0,
 	    children: 0,
 	  });
+	  //warning: next line is template dependent! if classnames change this will no longer work
+	  page.$timeout(function() {
+	    var newEl = $('fieldset .permission-auth').last();
+	    page.display.scrollTo(newEl);
+	  });
         };
 
         event.stopPropagation();
