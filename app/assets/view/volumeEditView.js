@@ -204,7 +204,7 @@ module.controller('volumeEditView', [
             name: volume.name,
             alias: volume.alias,
             body: volume.body,
-            citation: volume.citation,
+            citation: angular.copy(volume.citation),
           }, volume);
         } else {
           forms.overview.form.init({}, volume);

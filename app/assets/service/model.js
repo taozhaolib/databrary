@@ -408,6 +408,7 @@ module.factory('modelService', [
       var v = this;
       return router.http(router.controllers.VolumeApi.update, this.id, data)
 	.then(function (res) {
+	  v.clear('citation');
 	  return v.update(res.data);
 	});
     };
