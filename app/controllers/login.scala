@@ -70,13 +70,13 @@ private[controllers] sealed class LoginController extends SiteController {
       throw ForbiddenException
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
-    (if (request.isApi) Ok(request.json + ('superuser -> superuserTime))
+    (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> true))
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(request.session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
-    (if (request.isApi) Ok(request.json - "superuser")
+    (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> false))
     else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
       .withSession(request.session - "superuser")
   }

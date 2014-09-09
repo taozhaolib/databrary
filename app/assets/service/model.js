@@ -279,21 +279,16 @@ module.factory('modelService', [
     Login.user = new Login({id:constants.party.NOBODY});
 
     function loginPoke(l) {
-      l = new Login(l);
-      if (Login.user.id !== l.id || Login.user.superuser !== l.superuser)
-	$cacheFactory.removeAll();
-      return (Login.user = Party.poke(l));
+      return (Login.user = Party.poke(new Login(l)));
     }
 
     loginPoke(window.$play.user);
 
     function loginRes(res) {
       var l = res.data;
-      var c = Login.user.id === l.id ? Login.user : Party.peek(l.id);
-      if (c)
-	l = c.update(l);
-      if (c instanceof Login)
-	return (Login.user = c);
+      if (Login.user.id === l.id && Login.user.superuser === l.superuser)
+	return Login.user.update(l);
+      $cacheFactory.removeAll();
       return loginPoke(l);
     }
 
