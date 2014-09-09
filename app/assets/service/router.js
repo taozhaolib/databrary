@@ -317,8 +317,8 @@ module.provider('routerService', [
     });
 
     this.$get = [
-      '$location', '$http', 'constantService',
-      function ($location, $http, constants) {
+      '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',
+      function ($location, $http, $cacheFactory, constants, analytics) {
 	var router = {
 	  controllers: controllers,
 	  prevUrl: '/',
@@ -357,6 +357,22 @@ module.provider('routerService', [
 	    // Not sure why we do this but it seems to be necessary:
 	    if (!('Content-Type' in r.headers))
 	      r.headers['Content-Type'] = undefined;
+	  }
+	  var cache;
+	  /* try to guess (conservatively) if this request is cached: */
+	  if (r.method === 'GET' || r.method === 'JSONP') {
+	    cache = r.cache || $http.defaults.cache && $cacheFactory('$http');
+	    if (cache && !r.params)
+	      cache = cache.get(r.url);
+	  }
+	  if (!cache) {
+	    var a = analytics.dump();
+	    if (a) {
+	      if (!('headers' in r))
+		r.headers = {Analytics: a};
+	      else
+		r.headers.Analytics = a;
+	    }
 	  }
 	  return $http(r);
 	};

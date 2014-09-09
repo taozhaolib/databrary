@@ -1,30 +1,19 @@
 'use strict';
 
 module.factory('updateInterceptor', [
-  '$rootScope', function ($rootScope) {
-    var version;
+  '$rootScope', 'constantService', 'messageService', '$sce',
+  function ($rootScope, constants, messages, $sce) {
+    var version = '/' + constants.version;
     var warning = false;
 
     return {
       response: function (res) {
-        if (!res.headers) {
-          return res;
-        }
-
-        var newVersion = res.headers().server;
-
-        if (!newVersion) {
-          return res;
-        }
-
-        newVersion = newVersion.split('/').pop();
-
-        if (!warning && typeof version !== 'undefined' && newVersion !== version) {
-          $rootScope.$emit('displayService-updateApp');
-          warning = true;
-        }
-
-        version = newVersion;
+	var server;
+        if (!warning && res.headers && (server = res.headers('server')) && !server.endsWith(version))
+	  warning = messages.add({
+	    type: 'yellow',
+	    body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
+	  });
 
         return res;
       }

@@ -276,11 +276,14 @@ module.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
 
-    function loginPoke(l) {
-      return (Login.user = Party.poke(new Login(l)));
-    }
-
     Login.user = new Login({id:constants.party.NOBODY});
+
+    function loginPoke(l) {
+      l = new Login(l);
+      if (Login.user.id !== l.id || Login.user.superuser !== l.superuser)
+	$cacheFactory.removeAll();
+      return (Login.user = Party.poke(l));
+    }
 
     loginPoke(window.$play.user);
 

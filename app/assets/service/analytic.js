@@ -1,40 +1,15 @@
 'use strict';
 
 module.factory('analyticService', [
-  '$rootScope',
-  '$location',
-  '$cacheFactory',
-  function ($rootScope, $location, $cacheFactory) {
+  '$rootScope', '$location',
+  function ($rootScope, $location) {
     var analytics = {};
     var queue = [];
 
-    //
-
-    analytics.dump = function (config) {
-      if (!queue.length) {
-        return false;
-      }
-
-      if (config.url.contains('/api/null')) {
-        return JSON.stringify(queue.splice(0, queue.length));
-      }
-
-      var info = $cacheFactory.info();
-      var cache, key;
-
-      for (key in info) {
-        if (config.url.contains(key)) {
-          cache = $cacheFactory.get(key);
-
-          if (!cache.get(config.url)) {
-            return JSON.stringify(queue.splice(0, queue.length));
-          }
-
-          break;
-        }
-      }
-
-      return false;
+    analytics.dump = function () {
+      if (!queue.length)
+        return;
+      return JSON.stringify(queue.splice(0, queue.length));
     };
 
     analytics.add = function (action, route, data) {

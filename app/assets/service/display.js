@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('displayService', [
-  '$rootScope', 'storageService', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window', '$sce',
-  function ($rootScope, storage, events, $filter, messages, constants, $timeout, $window, $sce) {
+  '$rootScope', 'storageService', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
+  function ($rootScope, storage, events, $filter, messages, constants, $timeout, $window) {
     var display = {};
 
     //
@@ -35,15 +35,6 @@ module.factory('displayService', [
       display.loading = false;
       display.scrollTo(0);
       events.talk('displayService-error', error);
-    });
-
-    //
-
-    events.listen($rootScope, 'displayService-updateApp', function () {
-      messages.add({
-        type: 'yellow',
-        body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
-      });
     });
 
     //
