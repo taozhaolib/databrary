@@ -56,6 +56,7 @@ module.factory('authService', [
             type: 'green',
             countdown: 2000
           });
+	  location.reload();
         }, function (res) {
           messages.addError({
             body: constants.message('superuser.on.error'),
@@ -71,6 +72,7 @@ module.factory('authService', [
           type: 'green',
           countdown: 2000
         });
+	location.reload();
       }, function (res) {
         messages.addError({
           body: constants.message('superuser.off.error'),
