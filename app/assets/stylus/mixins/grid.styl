@@ -53,21 +53,9 @@ grid-col(spread, column, gutter)
 // grid width
 
 grid-width(spread, column, gutter)
-  width (column + gutter) * spread
-
-grid-max-width(spread, column, gutter)
-  max-width (column + gutter) * spread
-
-grid-min-width(spread, column, gutter)
-  min-width (column + gutter) * spread
+  width (column + gutter) * spread - gutter
 
 // grid height
 
 grid-height(spread, column, gutter)
-  height (column + gutter) * spread
-
-grid-max-height(spread, column, gutter)
-  max-height (column + gutter) * spread
-
-grid-min-height(spread, column, gutter)
-  min-height (column + gutter) * spread
+  height (column + gutter) * spread - gutter
