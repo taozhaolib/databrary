@@ -39,10 +39,10 @@ module.directive('fundingGrantForm', [
       //
 
       form.save = function () {
-        form.data.awards = form.awards.map(function (award) {
+        form.data.awards = form.awards.filter(function(award){
+	  return award.val;
+	}).map(function (award) {
           return award.val.trim();
-        }).filter(function (grant) {
-          return grant !== '';
         });
 
 	form.volume.fundingSave(form.data.funder.id, form.data).then(function () {
@@ -121,7 +121,6 @@ module.directive('fundingGrantForm', [
         }
 
         form.awards.push({});
-        form.$setDirty();
       };
 
       form.removeAward = function (award) {
@@ -130,6 +129,10 @@ module.directive('fundingGrantForm', [
         if (i > -1) {
           form.awards.splice(i, 1);
         }
+	if (form.awards.length === 0)
+	{
+	  form.remove();
+	}
 
         form.$setDirty();
       };

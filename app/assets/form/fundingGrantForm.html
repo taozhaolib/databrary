@@ -1,11 +1,8 @@
 <form name="fundingGrantForm" bindonce novalidate>
   <fieldset class="clean">
     <fieldset class="clean">
-      <div class="permission-auth-username" >
+      <div class="agency-heading-no-hover">
 	<span bo-text="funder.funder.name"></span>
-        <button ng-click="fundingGrantForm.remove()" class="red mini access-grant-remove">
-	  <span class="icon line vem-trash trash"></span> 
-	</button>
       </div>
     </fieldset>
     <label bo-text="'funding.awards' | message"></label>
@@ -16,7 +13,7 @@
         <button ng-click="fundingGrantForm.removeAward(award)" bo-text="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
-    <button ng-click="fundingGrantForm.addAward()" bo-text="'funding.awards.add' | message" class="neutral mini add_f2"></button>
+    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.awards[fundingGrantForm.awards.length-1].val"  bo-text="'funding.awards.add' | message" class="neutral mini add_f2"></button>
   </fieldset>
 
 </form>
