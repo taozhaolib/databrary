@@ -4,6 +4,7 @@ module.directive('searchForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.searchForm;
+      form.searchFocus = page.storage.get('searchFocus');
 
       form.data = {
         query: page.$location.search().query
@@ -12,13 +13,13 @@ module.directive('searchForm', [
       form.focus = function () {
         if (page.$location.path() !== '/search') {
           page.$location.path('/search');
-          page.$sessionStorage.searchFocus = true;
+          page.storage.set('searchFocus', '1');
         }
       };
 
       form.blur = function () {
         if (page.$location.path() === '/search') {
-          page.$sessionStorage.searchFocus = false;
+          page.storage.set('searchFocus', '');
         }
       };
 

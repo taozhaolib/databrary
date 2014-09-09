@@ -3,9 +3,9 @@
 module.directive('focus', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
-      if ($attrs.focus === '' || page.$parse($attrs.focus)($scope)) {
+      if ($attrs.focus === '' || $scope.$eval($attrs.focus)) {
         page.$timeout(function () {
-          $element[0].focus();
+          $element.focus();
         }, 0);
       }
     };

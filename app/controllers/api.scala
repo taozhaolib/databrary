@@ -152,7 +152,6 @@ object SiteApi extends SiteController {
     "lib/angularjs/angular.min.js",
     "lib/angularjs/angular-route.min.js",
     "lib/bindonce/bindonce.min.js",
-    "lib/ngStorage/ngStorage.min.js",
     "lib/ng-flow/ng-flow-standalone.min.js",
     "app.min.js",
     "templates.js")

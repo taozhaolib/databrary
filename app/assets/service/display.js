@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('displayService', [
-  '$rootScope', '$sessionStorage', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window', '$sce',
-  function ($rootScope, $sessionStorage, events, $filter, messages, constants, $timeout, $window, $sce) {
+  '$rootScope', 'storageService', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window', '$sce',
+  function ($rootScope, storage, events, $filter, messages, constants, $timeout, $window, $sce) {
     var display = {};
 
     //
@@ -86,12 +86,12 @@ module.factory('displayService', [
     //
 
     var ageKeys = ['science', 'days', 'months', 'years'],
-      ageKey = $sessionStorage.displayAge || 'science';
+      ageKey = storage.get('displayAge') || 'science';
 
     display.toggleAge = function () {
       ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
       events.talk('displayService-toggleAge', ageKey);
-      $sessionStorage.displayAge = ageKey;
+      storage.set('displayAge', ageKey);
     };
 
     display.formatAge = function (value) {

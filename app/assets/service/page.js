@@ -14,6 +14,7 @@ module.factory('pageService', [
       panels: $injector.get('panelService'),
       router: $injector.get('routerService'),
       slotClock: $injector.get('slotClockService'),
+      storage: $injector.get('storageService'),
       tooltips: $injector.get('tooltipService'),
     };
 
@@ -48,10 +49,7 @@ module.factory('pageService', [
       '$sce',
       '$templateCache',
       '$timeout',
-      '$window',
-
-      '$localStorage',
-      '$sessionStorage',
+      '$window'
     ], function (dependency) {
       page[dependency] = $injector.get(dependency);
     });
