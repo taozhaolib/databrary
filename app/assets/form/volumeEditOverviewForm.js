@@ -55,10 +55,10 @@ module.directive('volumeEditOverviewForm', [
           form.data.citation = {};
         }
 
-        form.data.citation.authors = form.authors.map(function (author) {
+        form.data.citation.authors = form.authors.filter(function (author) {
+          return author && author.name;
+        }).map(function (author) {
           return author.name.trim();
-        }).filter(function (author) {
-          return author !== '';
         });
 
 	(form.volume ?
@@ -145,6 +145,14 @@ module.directive('volumeEditOverviewForm', [
         }
 
         form.authors.push({});
+      };
+
+      form.addAuthorEnabled = function() {
+	  if(!form.authors || form.authors.length === 0){
+	    return true;
+	  }
+	  var lastAuth = form.authors[form.authors.length - 1];
+	  return lastAuth.name && lastAuth.name.trim();
       };
 
       form.removeAuthor = function (author) {

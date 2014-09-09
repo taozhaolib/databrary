@@ -34,7 +34,7 @@
         <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-text="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
-    <button ng-click="volumeEditOverviewForm.addAuthor()" bo-text="'volume.edit.citation.author.add' | message" class="neutral mini add_f2"></button>
+    <button ng-click="volumeEditOverviewForm.addAuthor()" bo-text="'volume.edit.citation.author.add' | message" class="neutral mini add_f2" ng-disabled="!volumeEditOverviewForm.addAuthorEnabled()"></button>
 
     <validator form="volumeEditOverviewForm" name="citation.year" label="'citation.year' | message">
       <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" bo-attr bo-attr-placeholder="'volume.edit.citation.year.placeholder' | message">
