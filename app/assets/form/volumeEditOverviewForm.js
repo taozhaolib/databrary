@@ -6,11 +6,7 @@ module.directive('volumeEditOverviewForm', [
       var form = $scope.volumeEditOverviewForm;
 
       form.data = {};
-      form.authors = [
-        {
-          name: '',
-        }
-      ];
+      form.authors = [];
 
       //
 
@@ -34,18 +30,13 @@ module.directive('volumeEditOverviewForm', [
 
         if (form.data.citation && form.data.citation.authors) {
           form.authors = form.data.citation.authors.map(function (author) {
-            return {
-              name: author,
-            };
+            return author;
           });
-
-          if (form.authors.length === 0) {
-            form.authors.push({
-              name: '',
-            });
-          }
         }
 
+	if (form.authors.length === 0) {
+	  form.authors.push('');
+	}
       };
 
       //
@@ -56,9 +47,9 @@ module.directive('volumeEditOverviewForm', [
         }
 
         form.data.citation.authors = form.authors.filter(function (author) {
-          return author && author.name;
+          return author;
         }).map(function (author) {
-          return author.name.trim();
+          return author.trim();
         });
 
 	(form.volume ?
@@ -109,7 +100,7 @@ module.directive('volumeEditOverviewForm', [
               form.authors = [];
 
               angular.forEach(res.authors, function (author) {
-                form.authors.push({name: author});
+                form.authors.push(author);
               });
             }
 
@@ -144,7 +135,7 @@ module.directive('volumeEditOverviewForm', [
           form.authors = [];
         }
 
-        form.authors.push({});
+        form.authors.push("");
       };
 
       form.addAuthorEnabled = function() {
@@ -152,7 +143,7 @@ module.directive('volumeEditOverviewForm', [
 	    return true;
 	  }
 	  var lastAuth = form.authors[form.authors.length - 1];
-	  return lastAuth.name && lastAuth.name.trim();
+	  return lastAuth && lastAuth.trim();
       };
 
       form.removeAuthor = function (author) {
