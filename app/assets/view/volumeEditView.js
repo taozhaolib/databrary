@@ -103,8 +103,6 @@ module.controller('volumeEditView', [
 
     var forms = {
       overview: undefined,
-      citations: undefined,
-      excerpts: undefined,
       materials: undefined,
       funding: undefined,
       access: undefined,
@@ -150,20 +148,6 @@ module.controller('volumeEditView', [
         };
         forms.overview.form.volume = volume;
         forms.overview.form.cancelFn = cancelFn;
-      },
-
-      'volume-edit-excerpts': function (step) {
-        if (!volume) {
-          return;
-        }
-
-        forms.excerpts = {
-          step: step,
-          form: step.volumeEditMaterialsForm,
-        };
-        forms.excerpts.form.volume = volume;
-        forms.excerpts.form.slot = slot;
-        forms.excerpts.form.cancelFn = cancelFn;
       },
 
       'volume-edit-materials': function (step) {
@@ -224,29 +208,6 @@ module.controller('volumeEditView', [
           }, volume);
         } else {
           forms.overview.form.init({}, volume);
-        }
-      },
-
-      'volume-edit-citations': function () {
-        if (!volume) {
-          return;
-        }
-
-        var study, citations = [];
-
-        if (volume) {
-          angular.forEach(volume.citations, function (citation) {
-            if (citation.study) {
-              study = citation;
-            } else {
-              citations.push(citation);
-            }
-          });
-
-          forms.citations.form.init({
-            study: study,
-            citation: citations,
-          });
         }
       },
 
