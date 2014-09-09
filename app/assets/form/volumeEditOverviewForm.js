@@ -113,6 +113,7 @@ module.directive('volumeEditOverviewForm', [
               });
             }
 
+	    /* why is this in a timeout? */
             page.$timeout(function () {
               form.name.$setViewValue(res.title);
               form['citation.url'].$setViewValue(res.url);

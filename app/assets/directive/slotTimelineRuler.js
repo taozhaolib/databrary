@@ -25,6 +25,7 @@ module.directive('slotTimelineRuler', [
 
         };
 
+	/* why is this in a timeout? */
         page.$timeout(function () {
           ruler.draw();
         });

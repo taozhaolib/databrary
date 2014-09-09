@@ -19,6 +19,7 @@ module.directive('partyEditProfileForm', [
 	  avatar: party.avatar,
 	  url: party.url
 	};
+	form.avatarUrl = form.party.avatarRoute();
       };
 
       //
@@ -62,7 +63,7 @@ module.directive('partyEditProfileForm', [
 	    form.$setPristine();
 
 	    if (upload)
-	      form.avatarUrl = form.getAvatar();
+	      form.avatarUrl = form.party.avatarRoute(undefined, Date.now());
 	  }, function (res) {
 	    form.validator.server(res);
 	    page.display.scrollTo(form.$element);
@@ -97,16 +98,6 @@ module.directive('partyEditProfileForm', [
 	  tips: page.constants.message('party.edit.url.help')
 	}
       }, true);
-
-      //
-
-      form.getAvatar = function () {
-	return form.party && form.party.avatarRoute(undefined, Date.now());
-      };
-
-      page.$timeout(function () {
-	form.avatarUrl = form.getAvatar();
-      });
 
       //
 

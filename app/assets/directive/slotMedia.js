@@ -11,6 +11,7 @@ module.directive('slotMedia', [
 
       $scope.media = media;
 
+      /* why is this in a timeout? */
       page.$timeout(function () {
         $scope.ctrl.registerMedia(media);
 

@@ -232,9 +232,7 @@ module.controller('TagsPanel', [
     };
 
     var emptyAutoAfter = function (after) {
-      page.$timeout(function () {
-        emptyAuto();
-      }, angular.isNumber(after) ? after : 1);
+      page.$timeout(emptyAuto, after);
     };
 
     $scope.fillAuto = function (form, autoTag) {

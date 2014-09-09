@@ -779,7 +779,7 @@ module.directive('spreadsheet', [
 		return unedit(event);
 	      });
 	    });
-	  }, 0);
+	  });
 	}
 
 	var selectStyles = document.head.appendChild(document.createElement('style')).sheet;
