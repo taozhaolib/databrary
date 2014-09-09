@@ -19,12 +19,10 @@
       </tr>
       <tr id="spreadsheet-head-metrics">
 	<th id="ss-name" class="first" ng-click="clickSlot('name')"/>
-	<th id="ss-date"><a href="" ng-click="clickSlot('date')">date</a></th>
-	<th id="ss-consent" class="last"><a href="" ng-click="clickSlot('consent')">consent</a></th>
+	<th id="ss-date" ng-click="clickSlot('date')">test date</th>
+	<th id="ss-consent" class="last" ng-click="clickSlot('consent')"></th>
 
-	<th ng-repeat="col in metricCols track by $index" id="ss-metric_{{$index}}" ng-class="{'first': col.first, 'last': col.last}">
-	  <a href="" ng-click="clickMetric(col)" ng-bind="col.metric.name"></a>
-	</th>
+	<th ng-repeat="col in metricCols track by $index" id="ss-metric_{{$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.name"></th>
       </tr>
       <tr ng-if="editing">
 	<td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>

@@ -22,12 +22,12 @@ module.filter('age', [
           return (days/MONTH).toFixed(1) + ' mos';
 
         case 'days':
-          return days.toFixed() + ' dys';
+          return days.toFixed() + ' days';
 
         default:
 	  var months = days / MONTH;
           if (months < 3)
-            return days.toFixed() + ' dys';
+            return days.toFixed() + ' days';
 	  else if (months < 37)
             return months.toFixed(1) + ' mos';
           else
