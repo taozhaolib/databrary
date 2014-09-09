@@ -54,7 +54,7 @@ img
     height 1em
     width auto
     position relative
-    top 1em / 8
+    top (1em / 8)
 
 // u, b, strong, i, em
 
@@ -162,15 +162,15 @@ hr
 
   &:before
     left 50%
-    top -shift
-    margin-left -size
+    top -(shift)
+    margin-left -(size)
     border-bottom-color color-diamond
 
 
   &:after
     left 50%
     top 1px
-    margin-left -shift
+    margin-left -(shift)
     border-top-color color-diamond
 
 // code, kbd, samp, pre
@@ -193,14 +193,14 @@ samp
   border = 1px
   line-height (2/3)
   border-width border 0
-  border-padding-height border f8
+  // border-padding-height border f8
   padding-width f4
 
 
 pre
   border = 2px
   border-width border 0
-  border-padding-height border f2
+  // border-padding-height border f2
   padding-width f2
 
 
@@ -458,7 +458,7 @@ mark
   font-line .9 (2/3)
   border-width border 0
   border-style solid
-  border-padding-height border f8
+  // border-padding-height border f8
   padding-width f4
   text-decoration none
 
@@ -486,7 +486,7 @@ abbr[title]
   font-line .9 (2/3)
   border-width border 0
   border-style solid
-  border-padding-height border f8
+  // border-padding-height border f8
   padding-width f4
   text-decoration none
   font-style normal
