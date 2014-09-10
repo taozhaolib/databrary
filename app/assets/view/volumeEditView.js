@@ -217,7 +217,7 @@ module.controller('volumeEditView', [
         }
 
         if (slot) {
-          forms.materials.form.init(slot);
+          forms.materials.form.init({assets: slot.assets});
         }
       },
 

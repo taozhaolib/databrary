@@ -36,7 +36,7 @@ module.directive('volumeEditMaterialsForm', [
           //replace file
           file.asset = f.subform.asset;
 	  file.replace = file.asset.asset.id;
-	  file.containingForm = angular.element(event.srcElement).scope().form;
+	  file.containingForm = f.subform;
         }
         else {
           //new asset
@@ -63,8 +63,8 @@ module.directive('volumeEditMaterialsForm', [
 	 file.asset.replace(data) :
 	 form.slot.createAsset(data))
 	  .then(function (asset) {
-            file.asset = asset;
-            file.asset.asset.creation = {date: Date.now(), name: file.file.name};
+            file.containingForm.asset = asset;
+            file.containingForm.asset.asset.creation = {date: Date.now(), name: file.file.name};
 	    if(file.containingForm && file.containingForm.subform){
 	      form.clean(file.containingForm.subform);
 	    }
@@ -101,16 +101,17 @@ module.directive('volumeEditMaterialsForm', [
       //
 
       form.save = function (subform) {
-	var data = {};
-        data.classification = page.classification[subform.asset.classification];
+	var data = {
+	  classification:  page.classification[subform.asset.classification],
+	  name:		   subform.asset.name || '',
+	  container:	   form.slot.container.id,
+	};
         if (subform.asset.excerpt === 0 || subform.asset.excerpt) {
           data.excerpt = page.classification[subform.asset.excerpt];
         }
         else {
           data.excerpt = "";
         }
-        data.name = subform.asset.name || '';
-        data.container = form.slot.container.id;
 
 	if(subform.asset.asset && subform.asset.asset.creation) // NOT for file operations. just metadata
 	{

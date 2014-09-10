@@ -4,11 +4,13 @@
       <div class="vem-float-dropzone" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
         <span class="icon line add"></span>
         <span class="vem-float-dropzone-message" bo-text="'material.add-drop' | message"></span>
-        <upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
       </div>
 
       <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="volumeEditMaterialsForm.disableSaveButton()"></button>
       <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-text="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+      <div class="vem-float-progress">
+	<upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
+      </div>
     </div>
   </section>
 
@@ -18,8 +20,9 @@
 
       <validator form="form" name="file" label="'material.file' | message">
         <div ng-if="!asset.asset.creation">
-          <div ng-if="asset.file" ng-bind="asset.file.name">
-            <span bo-text="'material.upload-progress' | message"></span>
+          <div ng-if="asset.file">
+	    <span ng-bind="asset.file.name"></span>
+	    <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
           </div>
 
 	  <div ng-if="!asset.file" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>{{'material.add-drop.replace' | message}}</div> <!--DO NOT USE ng-bind or bo-text: problem with flow-btn/assignBrowse's child input-->
@@ -35,7 +38,6 @@
 	  </button>
 	</div>
 
-        <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
       </validator>
 
       <validator form="form" name="classification" label="'material.classification' | message">
