@@ -743,7 +743,7 @@ module.factory('modelService', [
 	  if (idents[i] in this.measures)
 	    ident.push(this.measures[idents[i]]);
 
-	return ident.length ? ident.join(', ') : this.id;
+	return ident.length ? ident.join(', ') : '[' + this.id + ']';
       }
     });
 
