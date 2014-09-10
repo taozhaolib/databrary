@@ -52,16 +52,16 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.assetCall = function (file) {
-        var data = {};
-        data.name = file.asset.name;
-        data.classification = page.classification[file.asset.classification];
-        data.excerpt = page.classification[file.asset.excerpt];
-        data.container = form.slot.container.id;
-        data.upload = file.uniqueIdentifier;
+        var data = {
+	  name: file.asset.name,
+	  classification: page.classification[file.asset.classification],
+	  excerpt: page.classification[file.asset.excerpt],
+	  upload: file.uniqueIdentifier,
+	};
 
 	(file.replace ?
 	 file.asset.replace(data) :
-	 form.volume.createAsset(data))
+	 form.slot.createAsset(data))
 	  .then(function (asset) {
             file.asset = asset;
             file.asset.asset.creation = {date: Date.now(), name: file.file.name};

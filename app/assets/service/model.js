@@ -240,9 +240,8 @@ module.factory('modelService', [
     Party.prototype.authorizeApply = function (target, data) {
       var p = this;
       return router.http(router.controllers.PartyApi.authorizeApply, this.id, target, data)
-	.finally(function () {
+	.then(function (res) {
 	  p.clear('parents');
-	}).then(function (res) {
 	  return p.update(res.data);
 	});
     };
@@ -250,9 +249,8 @@ module.factory('modelService', [
     Party.prototype.authorizeSave = function (target, data) {
       var p = this;
       return router.http(router.controllers.PartyApi.authorizeChange, this.id, target, data)
-	.finally(function () {
+	.then(function (res) {
 	  p.clear('children');
-	}).then(function (res) {
 	  return p.update(res.data);
 	});
     };
@@ -260,9 +258,8 @@ module.factory('modelService', [
     Party.prototype.authorizeDelete = function (target) {
       var p = this;
       return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
-	.finally(function () {
+	.then(function (res) {
 	  p.clear('children');
-	}).then(function (res) {
 	  return p.update(res.data);
 	});
     };
@@ -462,9 +459,8 @@ module.factory('modelService', [
     Volume.prototype.accessSave = function (target, data) {
       var v = this;
       return router.http(router.controllers.VolumeApi.accessChange, this.id, target, data)
-	.finally(function () {
+	.then(function (res) {
 	  v.clear('access');
-	}).then(function (res) {
 	  return v.update(res.data);
 	});
     };
@@ -472,9 +468,8 @@ module.factory('modelService', [
     Volume.prototype.accessDelete = function (target) {
       var v = this;
       return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
-	.finally(function () {
+	.then(function (res) {
 	  v.clear('access');
-	}).then(function (res) {
 	  return v.update(res.data);
 	});
     };
@@ -482,9 +477,8 @@ module.factory('modelService', [
     Volume.prototype.fundingSave = function (funder, data) {
       var v = this;
       return router.http(router.controllers.VolumeApi.fundingChange, this.id, funder, data)
-	.finally(function () {
+	.then(function (res) {
 	  v.clear('funding');
-	}).then(function (res) {
 	  return v.update(res.data);
 	});
     };
@@ -492,9 +486,8 @@ module.factory('modelService', [
     Volume.prototype.fundingDelete = function (funder) {
       var v = this;
       return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
-	.finally(function () {
+	.then(function (res) {
 	  v.clear('funding');
-	}).then(function (res) {
 	  return v.update(res.data);
 	});
     };
@@ -515,6 +508,11 @@ module.factory('modelService', [
     Slot.prototype.class = 'slot';
 
     Slot.prototype.staticFields = ['consent', 'context'];
+
+    Slot.prototype.clear = function (/*f...*/) {
+      Model.prototype.clear.apply(this, arguments);
+      Model.prototype.clear.apply(this.container, arguments);
+    };
 
     function slotInit(slot, init) {
       if ('assets' in init)
@@ -818,14 +816,6 @@ module.factory('modelService', [
 	});
     };
 
-    Volume.prototype.createAsset = function (data) {
-      var v = this;
-      return router.http(router.controllers.AssetApi.upload, this.id, data)
-	.then(function (res) {
-	  return assetMake(v, res.data);
-	});
-    };
-
     ///////////////////////////////// SlotAsset
 
     function SlotAsset(context, init) {
@@ -867,19 +857,33 @@ module.factory('modelService', [
       }
     });
 
-    SlotAsset.prototype.replace = function (data) {
-      var a = this.asset;
-      return router.http(router.controllers.AssetApi.replace, a.id, data)
+    Slot.prototype.createAsset = function (data) {
+      var s = this;
+      data.container = this.container.id;
+      if (!('position' in data) && isFinite(this.segment.l))
+	data.position = this.segment.l;
+      return router.http(router.controllers.AssetApi.upload, this.volume.id, data)
 	.then(function (res) {
-	  return assetMake(a.volume, res.data);
+	  s.clear('assets');
+	  return assetMake(s.volume, res.data);
+	});
+    };
+
+    SlotAsset.prototype.replace = function (data) {
+      var s = this;
+      return router.http(router.controllers.AssetApi.replace, this.asset.id, data)
+	.then(function (res) {
+	  s.clear('assets');
+	  return assetMake(s.volume, res.data);
 	});
     };
 
     SlotAsset.prototype.remove = function () {
-      var a = this.asset;
-      return router.http(router.controllers.AssetApi.remove, a.id)
+      var s = this;
+      return router.http(router.controllers.AssetApi.remove, this.asset.id)
 	.then(function (res) {
-	  return a.update(res.data);
+	  s.clear('assets');
+	  return s.asset.update(res.data);
 	});
     };
 
@@ -925,10 +929,9 @@ module.factory('modelService', [
 	reply = this.id;
       return router.http(router.controllers.CommentApi.post, this.container.id, this.segment.format(), reply, data)
 	.then(function (res) {
-	  return new Comment(s.container, res.data);
-	}).finally(function () {
 	  s.volume.clear('comments');
 	  s.clear('comments');
+	  return new Comment(s.container, res.data);
 	});
     };
 
@@ -944,10 +947,11 @@ module.factory('modelService', [
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
       return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
-	.finally(function () {
-	  s.volume.clear("tags");
-	  s.clear("tags");
-	}).then(resData);
+	.then(function (res) {
+	  s.volume.clear('tags');
+	  s.clear('tags');
+	  return res.data;
+	});
     };
 
     /////////////////////////////////
