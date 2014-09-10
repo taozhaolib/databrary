@@ -15,7 +15,7 @@ module.controller('NetworkPanel', [
     });
 
     var getPartyAuth = function () {
-      $scope.party.get({parents:'all', children:'all'}).then(function (party) {
+      $scope.party.get(['parents', 'children']).then(function (party) {
 	$scope.party = party;
 
 	if (page.models.Login.checkAccess(page.permission.ADMIN, party))

@@ -223,7 +223,7 @@ module.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            return page.models.Party.get(page.$route.current.params.id, {'parents':'all', 'children':'all'});
+            return page.models.Party.get(page.$route.current.params.id, ['parents', 'children']);
           }
         ],
       },

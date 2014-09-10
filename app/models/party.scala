@@ -106,16 +106,18 @@ final class SiteParty(access : Access)(implicit val site : Site)
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options
-    , "parents" -> (opt => party.authorizeParents(opt.contains("all") && checkPermission(Permission.ADMIN))
+    , "parents" -> { opt =>
+	val full = checkPermission(Permission.ADMIN)
+	party.authorizeParents(full)
         .map(JsonArray.map(a =>
-	  (if (checkPermission(Permission.ADMIN)) a.json
-	  else JsonObject()) + ('party -> a.parent.json)))
-      )
-    , "children" -> (opt => party.authorizeChildren(opt.contains("all") && checkPermission(Permission.ADMIN))
+	  (if (full) a.json else JsonObject()) + ('party -> a.parent.json)))
+      }
+    , "children" -> { opt =>
+	val full = checkPermission(Permission.ADMIN)
+	party.authorizeChildren(full)
         .map(JsonArray.map(a =>
-	  (if (checkPermission(Permission.ADMIN)) a.json
-	  else JsonObject()) + ('party -> a.child.json)))
-      )
+	  (if (full) a.json else JsonObject()) + ('party -> a.child.json)))
+      }
     , "access" -> (opt => if (checkPermission(Permission.ADMIN)) party.access.map(a => Json.toJson(a.site)) else async(JsNull))
     , "volumes" -> (opt => volumeAccess.map(JsonArray.map(_.json - "party")))
     , "comments" -> (opt => party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)

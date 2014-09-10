@@ -153,16 +153,19 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
   }
 
   lazy val json : JsonRecord =
-    JsonRecord.flatten(id,
-      Some('name -> name),
-      alias.map('alias -> _),
-      Some('body -> body),
-      Some('creation -> creation),
-      Some('permission -> permission)
+    JsonRecord.flatten(id
+    , Some('name -> name)
+    , alias.map('alias -> _)
+    , Some('body -> body)
+    , Some('creation -> creation)
+    , Some('permission -> permission)
+    , _citation.peek.map(c => 'citation -> c.map(_.json))
     )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
-    JsonOptions(json, options,
+    JsonOptions(json,
+      /* this could be generalized for all fields in json when there's overlap: */
+      if (_citation.peek.isDefined) options - "citation" else options,
       ("summary", opt => summary.map(_.json.js)),
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
 	.map(JsonArray.map(_.json - "volume"))),

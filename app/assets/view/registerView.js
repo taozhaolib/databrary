@@ -71,7 +71,7 @@ module.controller('registerView', [
     //
 
     var updateUserAuth = function () {
-      page.models.Login.user.get({parents:'all',children:'all'}).then(function (data) {
+      page.models.Login.user.get(['parents', 'children']).then(function (data) {
         if (data.parents.length)
           user.pending = true;
 
