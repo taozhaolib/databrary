@@ -2,14 +2,13 @@
 
 module.factory('assetService', [
   'routerService', function (router) { return {
-    fileAddedImmediateUpload: function (file) {
+    assetStart: function (file) {
       file.pause();
       return router.http(router.controllers.AssetApi.uploadStart, {
 	filename: file.name,
 	size: file.size
-      }).then(function (res) {
-        file.uniqueIdentifier = res.data;
-        file.resume();
+      }).then(function(res){
+	file.uniqueIdentifier = res.data;
       });
     },
 

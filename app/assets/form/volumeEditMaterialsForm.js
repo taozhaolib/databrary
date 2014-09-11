@@ -31,24 +31,37 @@ module.directive('volumeEditMaterialsForm', [
           }
         }
 
+	var badFileFormatErrorMsg = function (res) {
+	  form.messages.addError({
+	    type: 'red',
+	    body: "Uploading '"+  file.file.name + "' failed. Format not supported. ", 
+	    report: res,
+	  });
+	};
 	var f = angular.element(event.srcElement).scope().form;
         if (f) {
           //replace file
-          file.asset = f.subform.asset;
-	  file.replace = file.asset.asset.id;
-	  file.containingForm = f.subform;
+	  assets.assetStart(file).then(function(){
+	    file.asset = f.subform.asset;
+	    file.replace = file.asset.asset.id;
+	    file.containingForm = f.subform;
+	    file.asset.file = file.file; 
+	    file.resume();
+	  }, badFileFormatErrorMsg);
         }
         else {
           //new asset
-	  var index = form.add() - 1;
-          file.asset = form.data.assets[index];
-	  page.$timeout(function(){
-	    file.containingForm = form['asset-' + index].subform;
-	    page.display.scrollTo(file.containingForm.$element);
-	  });
+	  assets.assetStart(file).then(function(){
+	    var index = form.add() - 1;
+	    file.asset = form.data.assets[index];
+	    file.asset.file = file.file;
+	    file.resume();
+	    page.$timeout(function(){
+	      file.containingForm = form['asset-' + index].subform;
+	      page.display.scrollTo(file.containingForm.$element);
+	    });
+	  }, badFileFormatErrorMsg);
         }
-        file.asset.file = file.file; 
-        assets.fileAddedImmediateUpload(file);
       };
 
       form.assetCall = function (file) {
@@ -63,7 +76,7 @@ module.directive('volumeEditMaterialsForm', [
 	 file.asset.replace(data) :
 	 form.slot.createAsset(data))
 	  .then(function (asset) {
-            file.containingForm.asset = asset;
+	    file.containingForm.asset = asset;
             file.containingForm.asset.asset.creation = {date: Date.now(), name: file.file.name};
 	    if(file.containingForm && file.containingForm.subform){
 	      form.clean(file.containingForm.subform);
