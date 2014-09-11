@@ -18,6 +18,7 @@
 
     <div class="vem-repeat-content" ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this;">
 
+  <expanding-select></expanding-select>
       <validator form="form" name="file" label="'material.file' | message">
         <div ng-if="!asset.asset.creation">
           <div ng-if="asset.file">
@@ -46,7 +47,6 @@
 
       <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">&nbsp;
       <span bo-text="'material.excerpt.checkbox-label' | message"></span>
-
       <validator form="form" name="excerpt" ng-show="excerptOn" label="'material.excerpt' | message">
         <select name="excerpt" ng-model="asset.excerpt" ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
       </validator>
