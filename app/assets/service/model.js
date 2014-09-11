@@ -873,8 +873,14 @@ module.factory('modelService', [
       var s = this;
       return router.http(router.controllers.AssetApi.replace, this.asset.id, data)
 	.then(function (res) {
-	  s.clear('assets');
-	  return assetMake(s.volume, res.data);
+	  var a = assetMake(s.volume, res.data);
+	  if (a instanceof SlotAsset) {
+	    s.clear('assets');
+	    return a;
+	  } else /* Asset */ {
+	    s.asset = a;
+	    return s;
+	  }
 	});
     };
 
