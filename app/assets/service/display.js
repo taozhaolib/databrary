@@ -91,11 +91,13 @@ module.factory('displayService', [
 
     //
 
-    display.isMobile =
-      typeof $window.orientation !== 'undefined';
-
-    display.videoSupported =
-      !($window.navigator.userAgent.toLowerCase().contains('firefox') && $window.navigator.platform.toLowerCase().contains('mac'));
+    if ($window.navigator.userAgent.toLowerCase().contains('firefox') /* &&
+	$window.navigator.platform.toLowerCase().contains('mac')*/)
+      messages.add({
+	type: 'yellow',
+	closeable: true,
+	body: constants.message('video.unsupported')
+      });
 
     //
 

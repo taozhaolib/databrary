@@ -40,7 +40,7 @@ error.report.subject=[Error {0}] {1}
 error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
 
 scraper.error=Could not retrieve required document "{0}".
-video.unsupported=Unfortunately, playing videos may not work in Firefox on OS X. Please try Safari or Chrome.
+video.unsupported=Unfortunately, playing videos may not yet work in Firefox on OS X. If you have trouble, please try Safari or Chrome.
 
 error.forbidden.title=Access denied
 error.forbidden.body=If you are not logged-in, try logging in.
