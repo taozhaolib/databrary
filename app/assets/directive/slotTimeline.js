@@ -16,6 +16,7 @@ module.directive('slotTimeline', [
         });
 
         timeline.tracks = [];
+	timeline.uploadsInProgress = [];
 
         timeline.sortTracks = function () {
           timeline.tracks.sort(function sortTracksFn(a, b) {

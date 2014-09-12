@@ -9,6 +9,7 @@ module.directive('slotTimelineTrack', [
 
         track.asset = $scope.$eval($attrs.asset);
         track.spare = $attrs.spare !== undefined;
+	track.drop = $attrs.drop;
 
         track.classes = function () {
           var cls = [];

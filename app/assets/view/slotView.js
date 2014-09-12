@@ -1,10 +1,11 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
+  '$scope', 'slot', 'pageService', 'assetService', function ($scope, slot, page, assets) {
     var volume = slot.volume;
     page.display.title = slot.displayName;
-
+    $scope.flowOptions = assets.flowOptions;
+    
     // helpers
 
     function getAsset(media) {
@@ -14,6 +15,37 @@ module.controller('slotView', [
     function getElement(media) {
       return $('#' + media.id).find('video')[0];
     }
+
+    // upload
+    var tl;
+    $scope.fileAdded = function(file, e) {
+      tl = angular.element(event.srcElement).scope().timeline; //TODO: DO THIS SOME BETTER WAY@#@!#!!!!
+      //console.log(file);
+      //console.log(tl);
+      //console.log($scope);
+      assets.assetStart(file).then(function(){
+	file.pause();
+	tl.uploadsInProgress.push(angular.copy(file)); //create a better object here. let uploadsInProgress have editable metadata
+	file.resume();
+      });
+    };
+
+    $scope.fileSuccess = function(file) {
+	console.log(file.file.name + " finished! ");
+	var data = {
+	    name: file.file.name,
+	    classification: 0,
+	    upload: file.uniqueIdentifier
+	};
+	ctrl.slot.createAsset(data).then(function(res){
+	    for(var i in tl.uploadsInProgress){
+	      if (tl.uploadsInProgress[i].uniqueIdentifier == file.uniqueIdentifier){
+		tl.uploadsInProgress.splice(i, 1);	  
+	      }
+	    }
+	    tl.tracks.push(res);
+	});
+    };
 
     // controller
 
