@@ -30,7 +30,7 @@ object Orcid {
   def apply(s : String) : Orcid =
     new Orcid(s.filterNot(c => c == '-' || c.isSpaceChar).stripPrefix("http://").stripPrefix("orcid.org/"))
 
-  implicit val formatter : Formatter[Orcid] = new Formatter[Orcid] {
+  implicit object formatter extends Formatter[Orcid] {
     override val format = Some(("format.orcid", Nil))
     def bind(key: String, data: Map[String, String]) = {
       val orcid = apply(data.get(key).getOrElse(""))

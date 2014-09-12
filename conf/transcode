@@ -75,5 +75,6 @@ ls -l "$OUT"
 if [[ $r -ne 0 ]] ; then
 	rm -f "$OUT"
 fi
+sha1=`sha1sum "$OUT"`
 
-curl -sSk -F "pid=$PID" -F "res=$r" -F "log=<$LOG" "$url"
+curl -sSk -F "pid=$PID" -F "res=$r" -F "sha1=${sha1%% *}" -F "log=<$LOG" "$url"

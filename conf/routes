@@ -209,7 +209,7 @@ POST    /api/tag/:name                                                          
 GET     /api/cite                                                                                 controllers.SiteApi.cite
 
 # transcode remote
-POST    /transcoded/:id                                                                           controllers.AssetApi.transcoded(id : models.Asset.Id, auth : String)
+POST    /transcoded/:id                                                                           controllers.AssetApi.transcoded(id : models.Transcode.Id, auth : String)
 
 # ===== /API ===== #
 

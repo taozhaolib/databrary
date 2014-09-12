@@ -303,7 +303,7 @@ CREATE FUNCTION "segment_shift" (segment, interval, interval = '0') RETURNS segm
 			CASE WHEN lower_inc($1) THEN '[' ELSE '(' END || CASE WHEN upper_inc($1) THEN ']' ELSE ')' END)
 	END
 $$;
-COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end points of a segment by the specified interval.';
+COMMENT ON FUNCTION "segment_shift" (segment, interval, interval) IS 'Shift both end points of a segment by the specified interval.';
 
 -- this probably needs an order by segment for most uses:
 CREATE AGGREGATE "segment_union" (segment) (SFUNC = range_union, STYPE = segment, INITCOND = 'empty');
@@ -433,10 +433,9 @@ COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case
 SELECT audit.CREATE_TABLE ('slot_asset', 'slot');
 
 CREATE TABLE "asset_revision" (
-	"prev" integer NOT NULL References "asset",
-	"next" integer Unique NOT NULL References "asset",
-	Primary Key ("next", "prev"),
-	Check "prev" < "next" -- prevent cycles
+	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
+	"asset" integer Unique NOT NULL References "asset" ON DELETE CASCADE,
+	Check ("orig" < "asset") -- prevent cycles
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
@@ -444,13 +443,13 @@ CREATE VIEW "asset_revisions" AS
 	WITH RECURSIVE r AS (
 		SELECT * FROM asset_revision
 		UNION ALL
-		SELECT asset_revision.prev, r.next FROM asset_revision JOIN r ON asset_revision.next = r.prev
+		SELECT asset_revision.orig, r.asset FROM asset_revision JOIN r ON asset_revision.asset = r.orig
 	) SELECT * FROM r;
-COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
+COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.';
 
 CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer, "diff" interval = '0') RETURNS void STRICT LANGUAGE plpgsql AS $$
 BEGIN
-	PERFORM next FROM asset_revision WHERE prev = asset_new;
+	PERFORM asset FROM asset_revision WHERE orig = asset_new;
 	IF FOUND THEN
 		RAISE 'Asset % already superseded', asset_new;
 	END IF;
@@ -474,17 +473,15 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE TABLE "transcode" (
-	"id" serial NOT NULL Primary Key,
+	"asset" integer NOT NULL Primary Key Default nextval('asset_id_seq'),
 	"owner" integer NOT NULL References "party",
-	"input" integer NOT NULL References "asset" ON DELETE CASCADE,
+	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Default '(,)',
 	"options" text[] NOT NULL Default '{}',
-	"output" integer Unique References "asset" ON DELETE SET NULL,
 	"start" timestamp Default now(),
 	"process" integer,
-	"log" text,
-	Foreign Key ("output", "input") References "asset_revision" ON DELETE CASCADE
-);
+	"log" text
+) INHERITS ("asset_revision");
 COMMENT ON TABLE "transcode" IS 'Format conversions that are being or have been applied to transform in input asset.';
 
 ----------------------------------------------------------- comments

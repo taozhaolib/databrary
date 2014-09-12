@@ -18,6 +18,16 @@ object Mappings {
   val tag : Mapping[String] =
     Forms.text.transform[String](_.trim.toLowerCase, identity)
     .verifying("tag.invalid", models.Tag.isValid _)
+
+  private def arrayLength(length : Int) : Constraint[Array[_]] =
+    Constraint[Array[_]]("constraint.length", length) { a =>
+      if (a.length != length) Invalid(ValidationError(if (a.length > length) "error.maxLength" else "error.minLength", length))
+      else Valid
+    }
+  def encoded(encoding : store.Encoding) : Mapping[Array[Byte]] =
+    FieldMapping[Array[Byte]]()(encoding.formatter)
+  def hash(hash : store.Hash, encoding : store.Encoding = store.Hex) : Mapping[Array[Byte]] =
+    encoded(encoding) verifying arrayLength(hash.size)
 }
 
 object EmptyMapping extends Mapping[Unit] {

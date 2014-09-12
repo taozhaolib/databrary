@@ -5,6 +5,7 @@ import scala.concurrent.{Future,ExecutionContext,Await,duration}
 import scala.sys.process.Process
 import play.api.Play.current
 import play.api.libs.Files.TemporaryFile
+import play.api.mvc.RequestHeader
 import macros._
 import macros.async._
 import dbrary._
@@ -39,35 +40,44 @@ object Transcode {
   private def ctl(id : models.Transcode.Id, args : String*) : String = {
     val cmd = ctlCmd ++ Seq("-i", id.toString) ++ args
     logger.debug(cmd.mkString(" "))
-    Process(cmd).!!(procLogger(id.toString)).trim
+    Process(cmd).!!(procLogger(id.toString)).trim // XXX blocking, should be futurable
   }
 
   /* we use database transactions here to lock the transcode table */
 
-  def start(asset : models.Asset, segment : Segment = dbrary.Segment.full, options : String*)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
+  private def run(tc : models.Transcode)(implicit request : RequestHeader, siteDB : Site.DB) : Future[Boolean] = {
+    val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
+      val r = ctl(tc.id, tc.args : _*)
+      Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
+    }.left.map(_.toString).joinRight
+    logger.debug("running " + tc.id + ": " + pid.merge.toString)
+    tc.setStatus(pid)
+  }
+
+  def start(asset : models.Asset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.create(asset, segment, options.toIndexedSeq).flatMap { tc =>
-      val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
-	val r = ctl(tc.id, tc.args : _*)
-	Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
-      }.left.map(_.toString).joinRight
-      logger.debug("running " + tc.id + ": " + pid.merge.toString)
-      tc.setStatus(pid)
-    }
+      models.Transcode.create(asset, segment, options).flatMap(run)
     }
 
   def stop(id : models.Transcode.Id) : Future[Unit] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.get(id, None).flatMap(_.foreachAsync { tc =>
-      tc.setStatus(Left("aborted")).map { _ =>
-	tc.process.foreach((pid : Int) => ctl(tc.id, "-k", pid.toString))
+    models.Transcode.get(id).flatMap(_.foreachAsync { tc =>
+      tc.process.foreachAsync { pid =>
+	tc.setStatus(Left("aborted")).map { _ =>
+	  ctl(tc.id, "-k", pid.toString)
+	}
       }
     })
     }
 
-  def collect(id : models.Transcode.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
+  def restart(id : models.Transcode.Id)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.get(id, Some(pid)).flatMap(_.foreachAsync { tc =>
+      models.Transcode.get(id).flatMap(_.filter(_.process.isEmpty).foreachAsync(run))
+    }
+
+  def collect(id : models.Transcode.Id, pid : Int, res : Int, sha1 : Array[Byte], log : String) : Future[Unit] =
+    implicitly[Site.DB].inTransaction { implicit siteDB =>
+    models.Transcode.get(id).flatMap(_.filter(_.process.exists(_ == pid)).foreachAsync { tc =>
       // implicit val site = new LocalAuth(tc.owner, superuser = true)
       logger.debug("result " + tc.id + ": " + log)
       (for {
@@ -75,7 +85,7 @@ object Transcode {
 	_ = if (res != 0) scala.sys.error("exit " + res)
 	o = TemporaryFile(Upload.file(tc.id + ".mp4"))
 	_ = ctl(tc.id, "-c", o.file.getAbsolutePath)
-	r <- tc.fillOutput(o)
+	r <- tc.complete(o, sha1)
       } yield(r)).recoverWith { case e : Throwable =>
 	logger.error("collecting " + id, e)
 	tc.setStatus(Left(e.getMessage))

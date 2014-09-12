@@ -149,7 +149,7 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
   private[models] val row : Selector[Container => ContextSlot] = columns
     .map { (segment, consent) =>
       if (segment.isFull) { (container : Container) =>
-	container._consent = consent
+	container.consent_ = consent
 	container
       } else { (container : Container) =>
 	new SlotConsent(container, segment, consent)
