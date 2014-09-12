@@ -31,79 +31,55 @@ object Transcode {
     val ctl = current.getExistingFile("conf/transctl.sh")
       .getOrElse(throw new RuntimeException("conf/transctl.sh not found"))
     ctl.setExecutable(true)
-    ctl.getPath +: (dir.toSeq.flatMap(d => Seq("-d", d.getPath)) ++ host.toSeq.flatMap(Seq("-h", _)))
+    ctl.getPath +: (Seq("-v", Site.version) ++
+      (dir : Iterable[File]).flatMap(d => Seq("-d", d.getPath)) ++
+      (host : Iterable[String]).flatMap(Seq("-h", _)))
   }
 
-  private def ctl(aid : models.Asset.Id, args : String*) : String = {
-    val cmd = ctlCmd ++ Seq("-a", aid.toString) ++ args
+  private def ctl(id : models.Transcode.Id, args : String*) : String = {
+    val cmd = ctlCmd ++ Seq("-i", id.toString) ++ args
     logger.debug(cmd.mkString(" "))
-    Process(cmd).!!(procLogger(aid.toString)).trim
+    Process(cmd).!!(procLogger(id.toString)).trim
   }
 
-  private def setResult(aid : models.Asset.Id, pid : Option[Int], result : String) : Future[Boolean] =
-    SQL("UPDATE transcode SET result = ?, process = NULL WHERE asset = ? AND", if (pid.isEmpty) "process IS NULL" else "process = ?")
-    .apply(SQLArgs(result, aid) ++ SQLArgs.fromOption(pid)).execute
+  /* we use database transactions here mainly to lock the transcode table */
 
-  def start(asset : models.Asset)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
-    (for {
-      _ <- stop(asset.id)
-      _ <- SQL("INSERT INTO transcode (asset, owner) VALUES (?, ?)")
-	.apply(asset.id, request.identity.id).execute
-      src = FileAsset.file(asset)
-      pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
-	val r = ctl(asset.id,
-	  "-f", src.getAbsolutePath,
-	  "-r", new controllers.AssetApi.TranscodedForm(asset.id)._action.absoluteURL(play.api.Play.isProd))
-	Maybe.toInt(r.trim).toRight(new RuntimeException("Unexpected transcode result: " + r))
+  def start(asset : models.Asset, segment : Segment = Segment.full, options : String*)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
+    implicitly[Site.DB].inTransaction { implicit dbc =>
+    models.Transcode.create(asset, request.identity, segment, options).flatMap { tc =>
+      val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
+	val r = ctl(tc.id, tc.args : _*)
+	Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
       }.joinRight
-      _ = logger.debug("running " + asset.id + ": " + pid.merge.toString)
-      r <- SQL("UPDATE transcode SET process = ?::integer, result = ? WHERE asset = ?")
-	.apply(pid.right.toOption, pid.left.toOption.map(_.toString), asset.id).execute
-    } yield (r)).recoverWith { case e : Throwable =>
-      logger.error("starting " + asset.id, e)
-      SQL("UPDATE transcode SET result = ? WHERE asset = ?")
-	.apply(e.toString, asset.id).execute
+      logger.debug("running " + tc.id + ": " + pid.merge.toString)
+      tc.setStatus(pid)
+    }
     }
 
   def stop(id : models.Asset.Id) : Future[Unit] =
-    for {
-      pid <- SQL("DELETE FROM transcode WHERE asset = ? RETURNING process")
-	.apply(id).singleOpt(SQLCols[Option[Int]])
-      _ = pid.flatten.foreach((pid : Int) => ctl(id, "-k", pid.toString))
-    } yield ()
-
-  def collect(aid : models.Asset.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
-    if (res != 0)
-      SQL("UPDATE transcode SET result = ? WHERE asset = ? AND process = ?")
-	.apply("exit " + res + "\n" + log, aid, pid).execute
-    else {
-      SQL("DELETE FROM transcode WHERE asset = ? AND process = ? RETURNING owner")
-      .apply(aid, pid).singleOpt(SQLCols[models.Party.Id])
-      .flatMap(_.flatMapAsync(
-	/* we just need the user to assign audits -- we shouldn't check permissions here (hence superuser) */
-	models.Authorization._get(_)
-	.flatMap(_.flatMapAsync(a =>
-	  models.Asset.get(aid)(new LocalAuth(a, superuser = true))))))
-      .flatMap(_.foreachAsync({ asset =>
-	val f = FileAsset.file(asset)
-	val t = TemporaryFile(new File(f.getPath + ".mp4"))
-	ctl(asset.id, "-c", t.file.getAbsolutePath)
-	val sp = media.AV.probe(f)
-	val tp = media.AV.probe(t.file)
-	if (!tp.isVideo || (sp.duration - tp.duration).abs > Offset.ofSeconds(0.5))
-	  scala.sys.error("check failed: " + sp.duration + "," + tp.duration)
-	for {
-	  a <- models.Asset.create(asset.volume, models.AssetFormat.Video, asset.classification, tp.duration, asset.name, t)
-	  _ <- a.supersede(asset)
-	  /* fixup slot_asset duration to reflect transcoding slop */
-	  _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ? AND duration(segment) = ? AND lower_inc(segment)")
-	    .apply(tp.duration, a.id, sp.duration).execute
-	} yield (())
-      }, false))
-      .recoverWith { case e : Throwable =>
-	logger.error("collecting " + aid, e)
-	SQL("INSERT INTO transcode (asset, owner, result) VALUES (?, -1, ?)")
-	  .apply(aid, e.toString + "\n" + log).execute
+    implicitly[Site.DB].inTransaction { implicit dbc =>
+    models.Transcode.complete(id, None).flatMap(_.flatMapAsync { tc =>
+      tc.setStatus(Left("aborted")).map {
+	tc.pid.foreach((pid : Int) => ctl(tc.id, "-k", pid.toString))
       }
+    })
+    }
+
+  def collect(id : models.Transcode.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
+    implicitly[Site.DB].inTransaction { implicit dbc =>
+    models.Transcode.complete(id, Some(pid)).flatMap(_.flatMapAsync { tc =>
+      // implicit val site = new LocalAuth(tc.owner, superuser = true)
+      logger.debug("result " + tc.id + ": " + log)
+      (for {
+	_ <- tc.setStatus(Left(log))
+	_ = if (res != 0) scala.sys.error("exit " + res)
+	o = TemporaryFile(Upload.file(tc.id + ".mp4"))
+	_ = ctl(asset.id, "-c", o.file.getAbsolutePath)
+	r <- tc.fillOutput(o)
+      } yield(r)).recoverWith { case e : Throwable =>
+	logger.error("collecting " + id, e)
+	tc.setStatus(Left(e.getMessage))
+      }
+    })
     }
 }

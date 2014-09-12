@@ -204,16 +204,18 @@ object Volume extends TableId[Volume]("volume") {
   private[models] val condition = Permission.condition
 
   private final val defaultCreation = new Timestamp(1357900000000L)
-  private[models] def row(implicit site : Site) = Columns(
+  private[models] val columns = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("alias")
     , SelectColumn[Option[String]]("body")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
-    ).*(Permission.row)
-      .map { case ((id, name, alias, body, creation), permission) =>
+    ).map { (id, name, alias, body, creation) =>
+      (permission : models.Permission.Value) =>
 	new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))
-      }
+    }
+  private[models] def row(implicit site : Site) =
+    columns.*(Permission.row).map(tupleApply)
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */

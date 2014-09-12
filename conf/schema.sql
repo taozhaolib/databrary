@@ -297,9 +297,9 @@ CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE ST
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
 COMMENT ON FUNCTION "singleton" (segment) IS 'Determine if a segment represents a single point and return it, or NULL if not.';
 
-CREATE FUNCTION "segment_shift" (segment, interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS $$
+CREATE FUNCTION "segment_shift" (segment, interval, interval = '0') RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS $$
 	SELECT CASE WHEN isempty($1) THEN 'empty' ELSE
-		segment(lower($1) + $2, upper($1) + $2,
+		segment(lower($1) + $2, upper($1) + $2 + $3,
 			CASE WHEN lower_inc($1) THEN '[' ELSE '(' END || CASE WHEN upper_inc($1) THEN ']' ELSE ')' END)
 	END
 $$;
@@ -433,10 +433,10 @@ COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case
 SELECT audit.CREATE_TABLE ('slot_asset', 'slot');
 
 CREATE TABLE "asset_revision" (
-	-- consider uniques on these
 	"prev" integer NOT NULL References "asset",
-	"next" integer NOT NULL References "asset",
-	Primary Key ("next", "prev")
+	"next" integer Unique NOT NULL References "asset",
+	Primary Key ("next", "prev"),
+	Check "prev" < "next" -- prevent cycles
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
@@ -448,14 +448,14 @@ CREATE VIEW "asset_revisions" AS
 	) SELECT * FROM r;
 COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
 
-CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer) RETURNS void STRICT LANGUAGE plpgsql AS $$
+CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer, "diff" interval = '0') RETURNS void STRICT LANGUAGE plpgsql AS $$
 BEGIN
 	PERFORM next FROM asset_revision WHERE prev = asset_new;
 	IF FOUND THEN
 		RAISE 'Asset % already superseded', asset_new;
 	END IF;
-	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
 	INSERT INTO asset_revision VALUES (asset_old, asset_new);
+	UPDATE slot_asset SET asset = asset_new, segment = segment_shift(segment, '0', diff) WHERE asset = asset_old;
 END; $$;
 
 
@@ -474,12 +474,18 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE TABLE "transcode" (
-	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
+	"id" serial NOT NULL Primary Key,
 	"owner" integer NOT NULL References "party",
+	"input" integer NOT NULL References "asset" ON DELETE CASCADE,
+	"segment" segment NOT NULL Default '(,)',
+	"options" text[] NOT NULL Default '{}',
+	"output" integer Unique References "asset" ON DELETE SET NULL,
 	"start" timestamp Default now(),
 	"process" integer,
-	"result" text
+	"log" text,
+	Foreign Key ("output", "input") References "asset_revision" ON DELETE CASCADE
 );
+COMMENT ON TABLE "transcode" IS 'Format conversions that are being or have been applied to transform in input asset.';
 
 ----------------------------------------------------------- comments
 

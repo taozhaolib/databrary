@@ -258,7 +258,7 @@ object Party extends TableId[Party]("party") {
 }
 
 object SiteParty {
-  def row(implicit site : Site) =
+  private[models] def row(implicit site : Site) =
     Party.row
     .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
     .pushArgs(SQLArgs(site.identity.id))

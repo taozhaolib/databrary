@@ -90,7 +90,7 @@ abstract class StructForm(val _action : Call) {
   protected final case class OptionalFile() extends FileMember[Option[FilePart]] {
     def bind(data : FileData) : Seq[FormError] = {
       value = data.file(name)
-      value.toSeq.flatMap(applyConstraints(_))
+      (value : Iterable[FilePart]).flatMap(applyConstraints(_)).toSeq
     }
   }
 
