@@ -81,7 +81,15 @@ module.directive('volumeEditMaterialsForm', [
 	    if(file.containingForm && file.containingForm.subform){
 	      form.clean(file.containingForm.subform);
 	    }
-        });
+        },
+	  function (res){
+	    form.messages.addError({
+	      type: 'red',
+	      body: 'Asset creation failed',
+	      report: res,
+	    });
+	  }
+	);
       };
 
       form.perFileProgress = function (file) {
