@@ -10,7 +10,7 @@ if [[ ! -f $cmd ]] ; then
 	exit 2
 fi
 
-while getopts 'i:h:d:c:k:f:r:v:' opt ; do case "$opt" in
+while getopts 'i:h:d:v:c:k:f:r:' opt ; do case "$opt" in
 	i) id=$OPTARG ;;
 	h) host=$OPTARG ;;
 	d) dir=$OPTARG ;;
@@ -20,6 +20,8 @@ while getopts 'i:h:d:c:k:f:r:v:' opt ; do case "$opt" in
 	k) kill=$OPTARG ;;
 	f) src=$OPTARG ;;
 	r) url=$OPTARG ;;
+
+	?) exit 1 ;;
 esac ; done
 
 if [[ -z $id || -z $dir || -z $collect$kill && ( -z $src || -z $url ) ]] ; then
@@ -52,7 +54,7 @@ elif [[ -n $host ]] ; then
 elif [[ -n $kill ]] ; then
 	"$cmd" "$@"
 else
-	ln -sfT $src $dir/$id
+	ln -sfT "$src" "$dir/$id"
 	"$cmd" "$@" &
 	echo $!
 fi

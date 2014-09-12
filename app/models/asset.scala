@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext,Future}
 import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
@@ -134,12 +134,10 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
-  private[this] var _name = name_
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
   /** Title or name of the asset as used in the container. */
-  def name : Option[String] = _name
-  private[this] var _classification = classification_
-  def classification : Classification.Value = _classification
+  def name : Option[String] = name_
+  def classification : Classification.Value = classification_
 
   def duration : Offset = Offset.ZERO
   def source = this
@@ -153,8 +151,8 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def change(classification : Option[Classification.Value] = None, name : Option[Option[String]] = None) : Future[Boolean] = {
     Audit.change("asset", SQLTerms.flatten(classification.map('classification -> _), name.map('name -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        classification.foreach(_classification = _)
-        name.foreach(_name = _)
+        classification.foreach(classification_ = _)
+        name.foreach(name_ = _)
       }
   }
 
@@ -267,7 +265,7 @@ object Asset extends TableId[Asset]("asset") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext = context.process) : Future[Asset] =
+  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site, siteDB : Site.DB, defaultContext : ExecutionContext = context.process) : Future[Asset] =
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
@@ -278,7 +276,7 @@ object Asset extends TableId[Asset]("asset") {
       a
     }
 
-  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext = context.process) : Future[Asset] =
+  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site, siteDB : Site.DB, defaultContext : ExecutionContext = context.process) : Future[Asset] =
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")

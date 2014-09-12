@@ -10,16 +10,13 @@ import site._
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[String], body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
-  private[this] var _name = name_
+final class Volume private (val id : Volume.Id, private[this] var name_ : String, private[this] var alias_ : Option[String], private[this] var body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   /** Title headline. */
-  def name = _name
-  private[this] var _alias = alias_
+  def name = name_
   /** Short, internal name, only available to editors. */
-  def alias = _alias.filter(_ => checkPermission(Permission.EDIT))
-  private[this] var _body = body_
+  def alias = alias_.filter(_ => checkPermission(Permission.EDIT))
   /** Longer, abstract-like description. */
-  def body = _body
+  def body = body_
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
@@ -30,8 +27,9 @@ final class Volume private (val id : Volume.Id, name_ : String, alias_ : Option[
 	body.map('body -> _)),
       sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
-        name.foreach(_name = _)
-        body.foreach(_body = _)
+        name.foreach(name_ = _)
+	alias.foreach(alias_ = _)
+        body.foreach(body_ = _)
       }
 
   /** List of parties access to this volume, sorted by level (ADMIN first). */
@@ -211,11 +209,11 @@ object Volume extends TableId[Volume]("volume") {
     , SelectColumn[Option[String]]("body")
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
     ).map { (id, name, alias, body, creation) =>
-      (permission : models.Permission.Value) =>
-	new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))
+      (permission : models.Permission.Value, site : Site) =>
+	new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
-    columns.*(Permission.row).map(tupleApply)
+    columns.*(Permission.row).map { case (v, p) => v(p, site) }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */

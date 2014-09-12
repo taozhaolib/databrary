@@ -42,39 +42,39 @@ object Transcode {
     Process(cmd).!!(procLogger(id.toString)).trim
   }
 
-  /* we use database transactions here mainly to lock the transcode table */
+  /* we use database transactions here to lock the transcode table */
 
-  def start(asset : models.Asset, segment : Segment = Segment.full, options : String*)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
-    implicitly[Site.DB].inTransaction { implicit dbc =>
-    models.Transcode.create(asset, request.identity, segment, options).flatMap { tc =>
+  def start(asset : models.Asset, segment : Segment = dbrary.Segment.full, options : String*)(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
+    implicitly[Site.DB].inTransaction { implicit siteDB =>
+    models.Transcode.create(asset, segment, options.toIndexedSeq).flatMap { tc =>
       val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
 	val r = ctl(tc.id, tc.args : _*)
 	Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
-      }.joinRight
+      }.left.map(_.toString).joinRight
       logger.debug("running " + tc.id + ": " + pid.merge.toString)
       tc.setStatus(pid)
     }
     }
 
-  def stop(id : models.Asset.Id) : Future[Unit] =
-    implicitly[Site.DB].inTransaction { implicit dbc =>
-    models.Transcode.complete(id, None).flatMap(_.flatMapAsync { tc =>
-      tc.setStatus(Left("aborted")).map {
-	tc.pid.foreach((pid : Int) => ctl(tc.id, "-k", pid.toString))
+  def stop(id : models.Transcode.Id) : Future[Unit] =
+    implicitly[Site.DB].inTransaction { implicit siteDB =>
+    models.Transcode.get(id, None).flatMap(_.foreachAsync { tc =>
+      tc.setStatus(Left("aborted")).map { _ =>
+	tc.process.foreach((pid : Int) => ctl(tc.id, "-k", pid.toString))
       }
     })
     }
 
   def collect(id : models.Transcode.Id, pid : Int, res : Int, log : String) : Future[Boolean] =
-    implicitly[Site.DB].inTransaction { implicit dbc =>
-    models.Transcode.complete(id, Some(pid)).flatMap(_.flatMapAsync { tc =>
+    implicitly[Site.DB].inTransaction { implicit siteDB =>
+    models.Transcode.get(id, Some(pid)).flatMap(_.foreachAsync { tc =>
       // implicit val site = new LocalAuth(tc.owner, superuser = true)
       logger.debug("result " + tc.id + ": " + log)
       (for {
 	_ <- tc.setStatus(Left(log))
 	_ = if (res != 0) scala.sys.error("exit " + res)
 	o = TemporaryFile(Upload.file(tc.id + ".mp4"))
-	_ = ctl(asset.id, "-c", o.file.getAbsolutePath)
+	_ = ctl(tc.id, "-c", o.file.getAbsolutePath)
 	r <- tc.fillOutput(o)
       } yield(r)).recoverWith { case e : Throwable =>
 	logger.error("collecting " + id, e)

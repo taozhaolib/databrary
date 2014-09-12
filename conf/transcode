@@ -10,24 +10,31 @@ if [[ $PBS != /* ]] ; then
 	PBS=$PWD/$PBS
 fi
 
-while getopts 'a:d:hk:r:' opt ; do case "$opt" in
-	a) aid=$OPTARG ;;
+while getopts 'i:h:d:v:k:f:r:' opt ; do case "$opt" in
+	i) id=$OPTARG ;;
+	h) hpc=$OPTARG ;;
 	d) dir=$OPTARG ;;
-	h) hpc=1 ;;
-	k) kill=$OPTARG ;;
-	r) url=$OPTARG ;;
-esac ; done
+	v) version=$OPTARG ;;
 
-if [[ $# -ge $OPTIND || -z $aid || -z $kill && -z $url ]] ; then
+	k) kill=$OPTARG ;;
+	f) ;;
+	r) url=$OPTARG ;;
+
+	?) exit 1 ;;
+esac ; done
+shift $[OPTIND-1]
+args=("$@")
+
+if [[ -z $id || -z $kill && -z $url ]] ; then
 	echo "$0: usage error: $*" >&2
 	exit 1
 fi
 
 cd $dir
 
-IN=$aid
-OUT=$aid.mp4
-LOG=$aid.log
+IN=$id
+OUT=$id.mp4
+LOG=$id.log
 
 if [[ -n $kill ]] ; then
 	if [[ -n $hpc ]] ; then
@@ -44,12 +51,16 @@ if [[ ! -f $IN ]] ; then
 	exit 1
 fi
 
+IFS='
+'
 if [[ -n $hpc ]] ; then
 	rate=131072
 	sec=$[60+`stat -c %s "$IN"`/$rate]
-	exec qsub -q s48 -N "$aid" -v "dir=$PWD,aid=$aid,url=$url" -l walltime=$sec "$PBS"
+	echo "${args[*]}" > $id.args
+	exec qsub -q s48 -N "$id" -v "dir=$PWD,id=$id,url=$url" -l walltime=$sec "$PBS"
 elif [[ -n $PBS_JOBNAME ]] ; then
 	PID=${PBS_JOBID%%.*}
+	read -d '' -r -a args < $id.args
 else
 	PID=$$
 fi
@@ -57,8 +68,8 @@ exec >$LOG 2>&1
 
 sleep 5 # hope server knows job has started by now
 
-ls -l $aid $aid.*
-ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
+ls -l $id $id.*
+ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac "${args[@]}" -y "$OUT"
 r=$?
 ls -l "$OUT"
 if [[ $r -ne 0 ]] ; then

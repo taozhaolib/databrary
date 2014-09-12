@@ -11,19 +11,15 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[Orcid], affiliation_ : Option[String], url_ : Option[URL] = None)
+final class Party protected (val id : Party.Id, private[this] var name_ : String, private[this] var orcid_ : Option[Orcid], private[this] var affiliation_ : Option[String], private[this] var url_ : Option[URL] = None)
   extends TableRowId[Party] with SitePage {
-  private[this] var _name = name_
-  def name = _name
-  private[this] var _orcid = orcid_
-  def orcid = _orcid
-  private[this] var _affiliation = affiliation_
-  def affiliation = _affiliation
-  private[this] var _url = url_
-  def url = _url
+  def name = name_
+  def orcid = orcid_
+  def affiliation = affiliation_
+  def url = url_
 
-  private[models] var _account : Option[Account] = None
-  def account = _account
+  private[models] var account_ : Option[Account] = None
+  def account = account_
 
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
@@ -34,10 +30,10 @@ final class Party protected (val id : Party.Id, name_ : String, orcid_ : Option[
       url.map('url -> _)),
       SQLTerms('id -> id))
     .execute.andThen { case scala.util.Success(true) =>
-      name.foreach(_name = _)
-      orcid.foreach(_orcid = _)
-      affiliation.foreach(_affiliation = _)
-      url.foreach(_url = _)
+      name.foreach(name_ = _)
+      orcid.foreach(orcid_ = _)
+      affiliation.foreach(affiliation_ = _)
+      url.foreach(url_ = _)
     }
 
   /** List of authorizations granted to this user.
@@ -129,31 +125,28 @@ final class SiteParty(access : Access)(implicit val site : Site)
 }
 
 /** Refines Party for individuals with registered (but not necessarily authorized) accounts on the site. */
-final class Account protected (val party : Party, email_ : String, password_ : String, openid_ : Option[URL])
+final class Account protected (val party : Party, private[this] var email_ : String, private[this] var password_ : String, private[this] var openid_ : Option[URL])
   extends TableRowId[Party] {
   def ===(a : Party) = party === a
 
-  party._account = Some(this)
+  party.account_ = Some(this)
 
   val id : Account.Id = party.id
-  private[this] var _email = email_
-  def email = _email
-  private[this] var _password = password_
+  def email = email_
   /** Crypted password, using standard unix format, currently \$2a\$-style bcrypt */
-  def password = _password
-  private[this] var _openid = openid_
-  def openid = _openid
+  def password = password_
+  def openid = openid_
 
   /** Update the given values in the database and this object in-place. */
   def change(email : Option[String] = None, password : Option[String] = None, openid : Option[Option[URL]] = None)(implicit site : Site) : Future[Boolean] = {
-    (if (password.exists(!_.equals(_password)))
+    (if (password.exists(!_.equals(password_)))
       clearTokens(cast[AuthSite](site).map(_.token))
     else async(false)).flatMap { _ =>
     Audit.change("account", SQLTerms.flatten(email.map('email -> _), password.map('password -> _), openid.map('openid -> _)), SQLTerms('id -> id))
       .execute.andThen { case scala.util.Success(true) =>
-        email.foreach(_email = _)
-        password.foreach(_password = _)
-        openid.foreach(_openid = _)
+        email.foreach(email_ = _)
+        password.foreach(password_ = _)
+        openid.foreach(openid_ = _)
       }
     }
   }
