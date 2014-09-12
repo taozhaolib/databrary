@@ -8,6 +8,7 @@ module.directive('expandingSelect', [
           {short: 'short', long: 'laaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaang'},
           {short: 'b-short', long: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'}
       ];
+      //how to make select show the dropdown right away?!!!????!! trigger click seems to fail... maybe can't do select at all?
       $scope.focus = false;
       $scope.value = $scope.choices[0];
     };

@@ -18,7 +18,6 @@
 
     <div class="vem-repeat-content" ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this;">
 
-  <expanding-select></expanding-select>
       <validator form="form" name="file" label="'material.file' | message">
         <div ng-if="!asset.asset.creation">
           <div ng-if="asset.file">
