@@ -3,28 +3,15 @@
 module.controller('volumeEditView', [
   '$scope', 'volume', 'pageService',
   function ($scope, volume, page) {
-    var slot = volume && volume.top;
-    page.display.title = page.constants.message('page.title.stub');
-
-    if (volume) {
-      page.display.toolbarLinks = [
-        {
-          type: 'yellow',
-          html: page.constants.message('volume.edit.exit'),
-          url: volume.route
-        },
-      ];
-    } else {
-      page.display.toolbarLinks = [
-        {
-          type: 'yellow',
-          html: page.constants.message('volume.edit.cancel'),
-          url: page.router.prevUrl,
-        }
-      ];
-    }
-
     $scope.volume = volume;
+    var slot = volume && volume.top;
+    page.display.title = volume ? volume.title : page.constants.message('page.title.volume');
+
+    page.display.toolbarLinks.push({
+      type: 'yellow',
+      html: page.constants.message('volume.edit.' + (volume ? 'exit' : 'cancel')),
+      url: volume ? volume.route : page.router.prevUrl
+    });
 
     //
 

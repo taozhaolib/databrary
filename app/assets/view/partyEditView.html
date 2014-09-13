@@ -8,20 +8,20 @@
       </hgroup>
 
       <div class="col">
-        <wizard retrieve="retrieveWizard" update="updateWizard" confirm-nav="true">
-          <wizard-step id="party-edit-profile">
+        <wizard name="party-edit">
+          <wizard-step name="profile">
             <party-edit-profile-form></party-edit-profile-form>
           </wizard-step>
 
-          <wizard-step id="party-edit-account">
+          <wizard-step name="account" enabled="!party.institution && page.models.Login.checkAccess(page.permission.SUPER, party)">
             <party-edit-account-form></party-edit-account-form>
           </wizard-step>
 
-          <wizard-step id="party-edit-apply">
+          <wizard-step name="apply" enabled="page.models.Login.checkAccess(page.permission.ADMIN, party)">
             <party-edit-apply-form></party-edit-apply-form>
           </wizard-step>
 
-          <wizard-step id="party-edit-grant">
+          <wizard-step name="grant" enabled="page.models.Login.checkAccess(page.permission.ADMIN, party)">
             <party-edit-grant-form></party-edit-grant-form>
           </wizard-step>
         </wizard>

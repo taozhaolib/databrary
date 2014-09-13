@@ -7,8 +7,8 @@ module.directive('authApplyForm', [
 
       $scope.page = page;
 
-      form.party = $scope.$eval($attrs.party) || $scope.party;
-      form.other = $scope.$eval($attrs.other) || undefined;
+      form.party = $scope.party;
+      form.other = $scope.$eval($attrs.other);
 
       form.notFound = {
         query: form.other && form.other.query || undefined,

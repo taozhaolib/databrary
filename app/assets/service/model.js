@@ -295,7 +295,9 @@ module.factory('modelService', [
 
     Login.checkAccess = function (level, object) {
       return (object ? object.permission : Login.user.access) >= level ||
-	Login.user.superuser;
+	Login.user.superuser ||
+	/* you always have permission over yourself: */
+	(Login.user === object && Login.user.id != constants.party.NOBODY);
     };
 
     Login.isAuthorized = function () {

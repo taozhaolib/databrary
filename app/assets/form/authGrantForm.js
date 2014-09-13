@@ -5,8 +5,8 @@ module.directive('authGrantForm', [
     var link = function ($scope, $element, $attrs) {
       var form = $scope.authGrantForm;
 
-      form.party = page.$parse($attrs.party)($scope) || undefined;
-      form.other = page.$parse($attrs.other)($scope) || undefined;
+      form.party = $scope.party;
+      form.other = $scope.$eval($attrs.other);
       if(!form.other.expires){
 	var d = new Date();
 	d.setFullYear(d.getFullYear()+2);

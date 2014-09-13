@@ -3,64 +3,22 @@
 module.directive('partyEditApplyForm', [
   'pageService', function (page) {
     var link = function ($scope) {
+      var party = $scope.party;
       var form = $scope.partyEditApplyForm;
 
-      form.data = {};
-
-      //
-
-      form.init = function (party, parents) {
-        form.party = form.party || party;
-        form.data = parents;
-      };
-
-      //
+      function init() {
+	form.data = party.parents.slice();
+      }
+      init();
 
       var subforms = [];
 
-      $scope.$watch(function () {
-        var clean = true;
-
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
-            clean = false;
-            return false;
-          }
-        });
-
-        if (clean) {
-          form.$setPristine();
-        }
-      });
-
-      form.saveAll = function () {
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
-            subform.save(false);
-          }
-        });
-      };
-
-      form.scrollToFuture = function (party) {
-        var remove = $scope.$watch(function () {
-          return subforms[subforms.length - 1];
-        }, function (subform) {
-          if (subform && subform.other && subform.other.party == party) {
-            page.display.scrollTo(subform.$element);
-            remove();
-          }
-        });
-      };
-
-      //
-
-      form.resetAll = function(force){
-	if(force || confirm(page.constants.message('navigation.confirmation'))){
-	  page.$route.reload();
-	  return true;
-	}
-	return false;
-      };
+      function checkDirty() {
+	if (!subforms.some(function (subform) {
+	  return subform.$dirty;
+	}))
+	  form.$setPristine();
+      }
 
       page.events.listen($scope, 'authApplyForm-init', function (event, applyForm) {
         subforms.push(applyForm);
@@ -71,6 +29,7 @@ module.directive('partyEditApplyForm', [
             type: 'green',
             countdown: 3000,
           });
+	  checkDirty();
         };
 
         applyForm.cancelFn = function () {
@@ -82,15 +41,18 @@ module.directive('partyEditApplyForm', [
 
           form.data.splice(form.data.indexOf(applyForm.other), 1);
           subforms.splice(subforms.indexOf(applyForm), 1);
+	  checkDirty();
         };
-
-        event.stopPropagation();
       });
 
+      var preSelect;
+      form.preSelect = function (party) {
+	preSelect = party;
+      };
+
       page.events.listen($scope, 'authSearchForm-init', function (event, searchForm) {
-        if (searchForm.principal == 'child') {
+        if (searchForm.principal === 'child')
           return;
-        }
 
         searchForm.selectFn = function (found) {
 	  form.data.push({
@@ -111,27 +73,22 @@ module.directive('partyEditApplyForm', [
 	  });
         };
 
-        event.stopPropagation();
+	if (preSelect)
+	  searchForm.selectFn(preSelect);
+	preSelect = null;
       });
-
-      //
 
       var $float = $('.peap-float');
       var $floater = $('.peap-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
-      page.$w.scroll($scope.scrollFn);
+      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      page.$w.scroll(form.scrollFn);
 
-
-      page.events.talk('partyEditApplyForm-init', form, $scope);
+      page.events.talk('partyEditApplyForm-init', form);
     };
-
-    //
 
     return {
       restrict: 'E',
       templateUrl: 'partyEditApplyForm.html',
-      scope: false,
-      replace: true,
       link: link
     };
   }

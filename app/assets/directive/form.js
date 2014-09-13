@@ -3,11 +3,12 @@
 module.directive('form', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
-      if (!$attrs.name) {
+      if (!$attrs.name)
         return;
-      }
 
       var form = $scope[$attrs.name];
+      if ($scope.forms)
+	$scope.forms[$attrs.name] = form;
       form.messages = page.messages;
 
       var unclaimed = {};
@@ -82,6 +83,14 @@ module.directive('form', [
           },
         };
       }
+
+      form.resetAll = function (force) {
+	if (force || confirm(page.constants.message('navigation.confirmation'))) {
+	  page.$route.reload();
+	  return true;
+	}
+	return false;
+      };
     };
 
     return {

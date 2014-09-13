@@ -21,9 +21,7 @@ module.factory('displayService', [
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-      if (display.toolbarLinks) {
-        display.toolbarLinks = [];
-      }
+      display.toolbarLinks = [];
     });
 
     //
@@ -91,8 +89,8 @@ module.factory('displayService', [
 
     //
 
-    if ($window.navigator.userAgent.toLowerCase().contains('firefox') /* &&
-	$window.navigator.platform.toLowerCase().contains('mac')*/)
+    if ($window.navigator.userAgent.toLowerCase().contains('firefox') &&
+	$window.navigator.platform.toLowerCase().contains('mac'))
       messages.add({
 	type: 'yellow',
 	closeable: true,

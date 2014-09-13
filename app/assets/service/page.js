@@ -28,7 +28,7 @@ module.factory('pageService', [
 
     //
 
-    angular.forEach([
+    [
       '$anchorScroll',
       '$animate',
       '$cacheFactory',
@@ -50,7 +50,7 @@ module.factory('pageService', [
       '$templateCache',
       '$timeout',
       '$window'
-    ], function (dependency) {
+    ].forEach(function (dependency) {
       page[dependency] = $injector.get(dependency);
     });
 

@@ -63,35 +63,17 @@ module.controller('NetworkPanel', [
 
     $scope.grant = function () {
       page.$location.url(page.models.Login.user.editRoute('grant'));
-      var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form, $thatScope) {
+      var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form) {
+	form.preSelect($scope.party);
         remove();
-
-        remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
-          if (searchForm.principal != 'child') {
-            return;
-          }
-
-          searchForm.selectFn($scope.party);
-          form.scrollToFuture($scope.party);
-          remove();
-        });
       });
     };
 
     $scope.apply = function () {
       page.$location.url(page.models.Login.user.editRoute('apply'));
-      var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form, $thatScope) {
+      var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form) {
+	form.preSelect($scope.party);
         remove();
-
-        remove = page.events.listen($thatScope, 'authSearchForm-init', function (event, searchForm) {
-          if (searchForm.principal == 'child') {
-            return;
-          }
-
-          searchForm.selectFn($scope.party);
-          form.scrollToFuture($scope.party);
-          remove();
-        });
       });
     };
   }

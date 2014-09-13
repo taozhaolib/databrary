@@ -27,7 +27,7 @@ object.invalid=Invalid {0} specified
 funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
-url.invalid=Invalid. Please check your typing.
+url.invalid=Invalid URL
 file.notfound=File not found
 
 error.generic=Something''s gone terribly wrong.
@@ -102,8 +102,6 @@ account=Account
 password=Password
 link=link
 me=Me
-dataset=Dataset
-study=Study
 
 toolbar.login=login
 toolbar.logout=logout
@@ -152,8 +150,7 @@ reset.again.help=Enter the same password again.
 page.title.home=Welcome
 page.title.register=Register
 page.title.search=Search
-page.title.stub=Create Study
-page.title.error=There''s been an Error!
+page.title.error=Error
 
 # --- Formats
 page.title.help.formats=Supported File Formats
@@ -327,47 +324,6 @@ auth.info.prompt=Expedite the authorization process by providing contact informa
 auth.request.info.title=Contact info
 auth.request.info.help=Enter contact information (name, email, phone number) for your authorizing co-signer.
 
-# Access
-access.global.legend=Share this study
-access.global.save.success=Sharing settings updated.
-access.global.save.error=Unable to update sharing settings.
-access.global.NONE.NONE=Private: Share with collaborators selected below.
-access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
-access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
-
-access.remove=Remove
-access.grant.inherit=Extend access to those in {0}''s lab/group.
-access.grant.save.success=Access changed successfully.
-access.grant.save.error=Could not update access at this time.
-access.grant.remove.success=Access removed successfully.
-access.grant.remove.error=Could not remove access at this time.
-access.delete.self=You cannot remove your own access to a volume.
-access.grant.restricted=You are not authorized to share data with {0}.
-access.grant.special.legend=Collaborators
-
-access.search.legend=Add another collaborator
-access.search=Search for a user, group, or institution...
-access.search.name.help=Enter the user, group, or institution to which you want to grant access.
-access.search.name.error=Enter at least 3 characters for auto-search to begin.
-access.search.error=Could not retrieve any users or institutions.
-access.notfound=None of these
-
-# Funding
-funding.save.success=Funding source updated.
-funding.save.error=Could not update funding agency at this time.
-funding.remove.success=Funding source removed.
-funding.remove.error=Could not remove funding agency at this time.
-
-funding.awards=Grant #
-funding.awards.placeholder=XXX-XXXXXX-XX
-funding.awards.add=Add another grant
-funding.search.legend=Add a funding source
-funding.search.placeholder=Search for a funding agency...
-funding.search.more=Find more...
-funding.search.repeat={0} has already been added.
-
-funding.search.name.help=Start typing the name of the desired funding agency.
-
 # Permission levels
 auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
@@ -444,7 +400,10 @@ object.tip.slot=Sessions group files and data collected at the same time.
 object.tip.asset=Files can potentially contain a lot of valuable data.
 
 # Volume page
+page.title.volume=Study
 volume=Volume
+dataset=Dataset
+study=Study
 volume.overview.title=Overview
 volume.authors.title=Original Authors
 volume.contributors.title=Investigators
@@ -533,6 +492,47 @@ tags.vote.down.success=Tag <strong>{0}</strong> voted down.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
 tags.new.success=Tag <strong>{0}</strong> added.
 tags.new.error=Error while adding tag <strong>{0}</strong>.
+
+# Access
+access.global.legend=Share this study
+access.global.save.success=Sharing settings updated.
+access.global.save.error=Unable to update sharing settings.
+access.global.NONE.NONE=Private: Share with collaborators selected below.
+access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
+access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
+
+access.remove=Remove
+access.grant.inherit=Extend access to those in {0}''s lab/group.
+access.grant.save.success=Access changed successfully.
+access.grant.save.error=Could not update access at this time.
+access.grant.remove.success=Access removed successfully.
+access.grant.remove.error=Could not remove access at this time.
+access.delete.self=You cannot remove your own access to a volume.
+access.grant.restricted=You are not authorized to share data with {0}.
+access.grant.special.legend=Collaborators
+
+access.search.legend=Add another collaborator
+access.search=Search for a user, group, or institution...
+access.search.name.help=Enter the user, group, or institution to which you want to grant access.
+access.search.name.error=Enter at least 3 characters for auto-search to begin.
+access.search.error=Could not retrieve any users or institutions.
+access.notfound=None of these
+
+# Funding
+funding.save.success=Funding source updated.
+funding.save.error=Could not update funding agency at this time.
+funding.remove.success=Funding source removed.
+funding.remove.error=Could not remove funding agency at this time.
+
+funding.awards=Grant #
+funding.awards.placeholder=XXX-XXXXXX-XX
+funding.awards.add=Add another grant
+funding.search.legend=Add a funding source
+funding.search.placeholder=Search for a funding agency...
+funding.search.more=Find more...
+funding.search.repeat={0} has already been added.
+
+funding.search.name.help=Start typing the name of the desired funding agency.
 
 search.title=Search
 search.prompt=Start your search...

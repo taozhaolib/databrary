@@ -3,28 +3,22 @@
 module.directive('partyEditAccountForm', [
   'pageService', function (page) {
     var link = function ($scope) {
+      var party = $scope.party;
       var form = $scope.partyEditAccountForm;
 
-      form.data = {};
-      form.authors = [];
-
-      //
-
-      form.init = function (party) {
-        form.party = form.party || party;
-        form.data = {
-          email: party.email,
-        };
-      };
+      function init() {
+	form.data = {
+	  email: party.email,
+	};
+      }
+      init();
 
       $scope.$watch('partyEditAccountForm.data.password.again', function () {
-        form['password.again'].$setValidity('match', !form.data.password || form.data.password.once == form.data.password.again);
+        form['password.again'].$setValidity('match', !form.data.password || form.data.password.once === form.data.password.again);
       });
 
-      //
-
       form.save = function () {
-	form.party.save(form.data).then(
+	party.save(form.data).then(
           function () {
             form.validator.server({});
 
@@ -34,67 +28,32 @@ module.directive('partyEditAccountForm', [
               body: page.constants.message('party.edit.profile.success'),
             });
 
+	    init();
             form.$setPristine();
-            form.clearPasswordFields();
           }, function (res) {
             form.validator.server(res);
-            page.display.scrollTo(form.$element);
           });
       };
 
-      form.resetAll = function(force){
-	if(force || confirm(page.constants.message('navigation.confirmation'))){
-	  page.$route.reload();
-	  return true;
-	}
-	return false;
-      };
-
-      form.ready = function () {
-        return form.$dirty && form.$valid && form.data.auth && (!form.data.password || (!form.data.password.once || form.data.password.once == form.data.password.again));
-      };
-
-      //
-
-      form.validator.client({
-        email: {
-          tips: page.constants.message('party.edit.email.help'),
-          errors: page.constants.message('login.email.error'),
-        },
-        password: {
-          tips: page.constants.message('party.edit.password.help'),
-        },
-        'password.again': {
-          tips: page.constants.message('party.edit.password.again.help'),
-          errors: page.constants.message('party.edit.password.again.error'),
-        },
-        auth: {
-          tips: page.constants.message('party.edit.auth.help'),
-        },
-      }, true);
-
-      form.clearPasswordFields = function () {
-        form.data.auth = undefined;
-        if (form.data.password) {
-          form.data.password.again = undefined;
-          form.data.password.once = undefined;
-        }
-      };
+      var validate = {};
+      ['email', 'password', 'password.again', 'auth'].forEach(function (f) {
+	validate[f] = {
+	  tips: page.constants.message('party.edit.' + f + '.help')
+	};
+      });
+      validate.email.errors = page.constants.message('login.email.error');
+      validate['password.again'].errors = page.constants.message('party.edit.password.again.error');
+      form.validator.client(validate, true);
 
       var $float = $('.peac-float');
       var $floater = $('.peac-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
       page.$w.scroll($scope.scrollFn);
-
     };
-
-    //
 
     return {
       restrict: 'E',
       templateUrl: 'partyEditAccountForm.html',
-      scope: false,
-      replace: true,
       link: link
     };
   }

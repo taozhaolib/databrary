@@ -3,26 +3,19 @@
 module.directive('partyEditProfileForm', [
   'pageService', function (page) {
     var link = function ($scope) {
+      var party = $scope.party;
       var form = $scope.partyEditProfileForm;
 
-      form.data = {};
-      form.authors = [];
+      var fields = ['name', 'affiliation', 'orcid', 'url'];
 
-      //
-
-      form.init = function (party) {
-	form.party = form.party || party;
-	form.data = {
-	  name: party.name,
-	  orcid: party.orcid,
-	  affiliation: party.affiliation,
-	  avatar: party.avatar,
-	  url: party.url
-	};
-	form.avatarUrl = form.party.avatarRoute();
-      };
-
-      //
+      function init() {
+	form.data = {};
+	fields.forEach(function (f) {
+	  form.data[f] = party[f];
+	});
+	form.avatarUrl = party.avatarRoute();
+      }
+      init();
 
       form.save = function () {
 	var fd, upload;
@@ -30,13 +23,10 @@ module.directive('partyEditProfileForm', [
 	  fd = new FormData();
 
 	  fd.append('avatar', form.data.avatar[0]);
-	  form.data.avatar = undefined;
 
-	  for (var prop in form.data) {
-	    if (form.data.hasOwnProperty(prop) && angular.isDefined(form.data[prop]) && form.data[prop] !== null) {
+	  for (var prop in form.data)
+	    if (form.data.hasOwnProperty(prop) && form.data[prop] !== undefined)
 	      fd.append(prop, form.data[prop]);
-	    }
-	  }
 
 	  upload = form.messages.add({
 	    type: 'yellow',
@@ -45,8 +35,8 @@ module.directive('partyEditProfileForm', [
 	} else
 	  fd = form.data;
 	
-	form.party.save(fd)
-	  .then(function (res) {
+	party.save(fd)
+	  .then(function () {
 	    form.validator.server({});
 
 	    form.messages.add({
@@ -55,65 +45,39 @@ module.directive('partyEditProfileForm', [
 	      body: page.constants.message('party.edit.profile.success'),
 	    });
 
-	    if (upload) {
-	      form.data.avatar = res.data.avatar;
-	      form.messages.remove(upload);
-	    }
+	    if (upload)
+	      upload.remove();
 
+	    init();
 	    form.$setPristine();
 
 	    if (upload)
-	      form.avatarUrl = form.party.avatarRoute(undefined, Date.now());
+	      form.avatarUrl = party.avatarRoute(undefined, Date.now());
 	  }, function (res) {
 	    form.validator.server(res);
-	    page.display.scrollTo(form.$element);
 
 	    if (upload)
-	      form.messages.remove(upload);
+	      upload.remove();
 	  });
       };
 
-      form.resetAll = function(force){
-	if(force || confirm(page.constants.message('navigation.confirmation'))){
-	  page.$route.reload();
-	  return true;
-	}
-	return false;
-      };
-
-
-      //
-
-      form.validator.client({
-	name: {
-	  tips: page.constants.message('party.edit.name.help')
-	},
-	affiliation: {
-	  tips: page.constants.message('party.edit.affiliation.help')
-	},
-	orcid: {
-	  tips: page.constants.message('party.edit.orcid.help')
-	},
-	url: {
-	  tips: page.constants.message('party.edit.url.help')
-	}
-      }, true);
-
-      //
+      var validate = {};
+      fields.forEach(function (f) {
+	validate[f] = {
+	  tips: page.constants.message('party.edit.' + f + '.help')
+	};
+      });
+      form.validator.client(validate, true);
 
       var $float = $('.pep-float');
       var $floater = $('.pep-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
-      page.$w.scroll($scope.scrollFn);
+      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      page.$w.scroll(form.scrollFn);
     };
-
-    //
 
     return {
       restrict: 'E',
       templateUrl: 'partyEditProfileForm.html',
-      scope: false,
-      replace: true,
       link: link
     };
   }
