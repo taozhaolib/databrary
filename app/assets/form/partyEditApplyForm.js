@@ -6,10 +6,7 @@ module.directive('partyEditApplyForm', [
       var party = $scope.party;
       var form = $scope.partyEditApplyForm;
 
-      function init() {
-	form.data = party.parents.slice();
-      }
-      init();
+      form.data = party.parents.slice();
 
       var subforms = [];
 

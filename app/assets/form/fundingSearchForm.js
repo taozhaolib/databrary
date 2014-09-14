@@ -42,16 +42,11 @@ module.directive('fundingSearchForm', [
 
       //
 
-      form.selectFn = undefined;
-
       form.select = function (found) {
         form.nameVal = '';
         form.search();
 
-        if (angular.isFunction(form.selectFn)) {
-          form.selectFn(found);
-        }
-
+	form.selectFn(found);
         form.$setPristine();
       };
 
@@ -81,7 +76,6 @@ module.directive('fundingSearchForm', [
     return {
       restrict: 'E',
       templateUrl: 'fundingSearchForm.html',
-      scope: false,
       replace: true,
       link: link
     };

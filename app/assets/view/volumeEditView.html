@@ -14,20 +14,20 @@
       </hgroup>
 
       <div class="col">
-        <wizard retrieve="retrieveWizard" update="updateWizard" confirm-nav="true">
-          <wizard-step id="volume-edit-overview">
+        <wizard name="volume-edit">
+          <wizard-step name="overview">
             <volume-edit-overview-form></volume-edit-overview-form>
           </wizard-step>
 
-          <wizard-step id="volume-edit-materials">
+          <wizard-step name="materials" allow="volume">
             <volume-edit-materials-form></volume-edit-materials-form>
           </wizard-step>
 
-          <wizard-step id="volume-edit-funding">
+          <wizard-step name="funding" allow="volume">
             <volume-edit-funding-form></volume-edit-funding-form>
           </wizard-step>
 
-          <wizard-step id="volume-edit-access">
+          <wizard-step name="access" allow="volume" enabled="page.models.Login.checkAccess(page.permission.ADMIN, volume)">
             <volume-edit-access-form></volume-edit-access-form>
           </wizard-step>
         </wizard>

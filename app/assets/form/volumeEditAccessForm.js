@@ -3,83 +3,55 @@
 module.directive('volumeEditAccessForm', [
   'pageService', function (page) {
     var link = function ($scope) {
+      var volume = $scope.volume;
       var form = $scope.volumeEditAccessForm;
 
+      form.global = page.constants.accessGlobal[0].slice();
       form.data = [];
-      form.global = angular.copy(page.constants.accessGlobal[0]);
-
-      form.volume = undefined;
-
-      //
-
-      form.init = function (data, volume) {
-        if (form.data.length === 0) {
-          angular.forEach(data, function (access) {
-            var i = page.constants.accessGlobal.parties.indexOf(access.party.id);
-            if (i >= 0) {
-              form.global[i] = page.constants.permission[access.children || 0];
-            } else {
-              form.data.push(access);
-            }
-          });
-          form.calcGlobalVal();
-
-          form.volume = form.volume || volume;
-        }
-      };
-
-      form.calcGlobalVal = function () {
-        form.globalVal = undefined;
-
-        angular.forEach(page.constants.accessGlobal, function (preset, i) {
-          if (preset.every(function (x, i) {
-            return form.global[i] === x;
-          })) {
-            form.globalVal = i;
-          }
-        });
-      };
-
-      form.changeAccessGlobal = function () {
-        angular.copy(page.constants.accessGlobal[form.globalVal], form.global);
-        form.accessGlobalDirty = true;
-        form.$setDirty();
-      };
-
-      //
-
-      var subforms = [];
-
-      $scope.$watch(function () {
-	if (subforms.every(function(x){return !x.$dirty;}) && !form.accessGlobalDirty){
-          form.$setPristine();
-        }
+      volume.access.forEach(function (access) {
+	var i = page.constants.accessGlobal.parties.indexOf(access.party.id);
+	if (i >= 0)
+	  form.global[i] = access.children;
+	else
+	  form.data.push(access);
       });
 
+      form.globalVal = page.constants.accessGlobal.findIndex(function (preset) {
+	return preset.every(function (p, i) {
+	  return form.global[i] === p;
+	});
+      });
+      if (form.globalVal === -1)
+	form.globalVal = undefined;
+
+      var globalForm = $scope.accessGlobalForm;
+      var subforms = [];
+
+      function checkDirty() {
+	if (!globalForm.$dirty &&
+	    !subforms.some(function (subform) {
+	      return subform.$dirty;
+	    }))
+	  form.$setPristine();
+      }
+
+      $scope.permissionName = function (p) {
+	return page.constants.permission[p];
+      };
+
       form.saveAll = function () {
-        angular.forEach(subforms, function (subform) {
-          if (subform.$dirty) {
+        subforms.forEach(function (subform) {
+          if (subform.$dirty)
             subform.save(false);
-          }
         });
-	if (form.accessGlobalDirty){
+	if (globalForm.$dirty)
 	  form.saveGlobal();
-	}
       };
-
-      form.resetAll = function(force){
-	if(force || confirm(page.constants.message('navigation.confirmation'))){
-	  page.$route.reload();
-	  return true;
-	}
-	return false;
-      };
-
-      //
 
       form.saveGlobal = function () {
+	form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
         page.$q.all(page.constants.accessGlobal.parties.map(function (party, i) {
-          var p = page.constants.permissionName[form.global[i]];
+          var p = form.global[i];
 	  form.volume.accessSave(party, {
             individual: p,
             children: p,
@@ -90,35 +62,25 @@ module.directive('volumeEditAccessForm', [
             type: 'green',
             countdown: 3000,
           });
-
-          form.accessGlobalDirty = false;
-          form.$setPristine();
+	  checkDirty();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.global.save.error'),
             report: res,
           });
-          page.display.scrollTo(form.$element);
         });
       };
-
-      //
 
       $scope.$on('accessGrantForm-init', function (event, grantForm) {
         subforms.push(grantForm);
 
         grantForm.removeSuccessFn = function (access) {
           form.data.splice(form.data.indexOf(access), 1);
+          subforms.splice(subforms.indexOf(grantForm), 1);
+	  checkDirty();
         };
-
-        event.stopPropagation();
       });
 
-      var $float = $('.vea-float');
-      var $floater = $('.vea-float-floater');
-      $scope.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
-      page.$w.scroll($scope.scrollFn);
-      
       $scope.$on('accessSearchForm-init', function (event, searchForm) {
         searchForm.selectFn = function (found) {
 	  form.data.push({
@@ -133,18 +95,17 @@ module.directive('volumeEditAccessForm', [
 	    page.display.scrollTo(newEl);
 	  });
         };
-
-        event.stopPropagation();
       });
-    };
 
-    //
+      var $float = $('.vea-float');
+      var $floater = $('.vea-float-floater');
+      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      page.$w.scroll(form.scrollFn);
+    };
 
     return {
       restrict: 'E',
       templateUrl: 'volumeEditAccessForm.html',
-      scope: false,
-      replace: true,
       link: link
     };
   }

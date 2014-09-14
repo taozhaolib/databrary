@@ -4,30 +4,28 @@
 
     <div class="col message message-yellow message-content" bo-if="!page.models.Login.checkAccess(page.permission.EDIT)" bo-text="'access.global.restricted' | message"></div>
 
-    <div ng-repeat="(val, perms) in page.constants.accessGlobal track by val">
-      <input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="val" ng-change="volumeEditAccessForm.changeAccessGlobal()">
-      <label bo-text="'access.global.'+perms.join('.') | message" class="option"></label>
+    <div ng-repeat="perms in page.constants.accessGlobal track by $index">
+      <input type="radio" ng-model="volumeEditAccessForm.globalVal" name="accessGlobal" ng-value="$index">
+      <label bo-text="'access.global.'+perms.map(permissionName).join('.') | message" class="option"></label>
     </div>
   </fieldset>
 
   <fieldset class="clean vea-float">
     <div class="vea-float-floater row">
-      <access-search-form class="col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-2" volume="volumeEditAccessForm.volume" placeholder-text="{{'access.search.legend' | message}}"></access-search-form>
+      <access-search-form class="col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-2" placeholder-text="{{'access.search.legend' | message}}"></access-search-form>
       <button ng-click="volumeEditAccessForm.saveAll()" class="green col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'save' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
       <button ng-click="volumeEditAccessForm.resetAll()" class="yellow col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'revert' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
     </div>
   </fieldset>
 
   <fieldset ng-if="volumeEditAccessForm.data.length > 0">
-    <legend bo-text="'access.grant.special.legend' | message"></legend>
+    <legend bo-text="'access.grant.legend' | message"></legend>
 
     <article ng-repeat="access in volumeEditAccessForm.data" class="permission-auth cf">
       <div class="row">
-       <access-grant-form volume="volumeEditAccessForm.volume" access="access"></access-grant-form>
+       <access-grant-form></access-grant-form>
       </div>
     </article>
   </fieldset>
 
-
 </form>
-

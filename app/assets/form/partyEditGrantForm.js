@@ -6,26 +6,14 @@ module.directive('partyEditGrantForm', [
       var party = $scope.party;
       var form = $scope.partyEditGrantForm;
 
-      form.data = [];
-
-      function init() {
-	form.data = party.children.map(function (auth) {
-	  return {
-	    party: auth.party,
-	    member: auth.member,
-	    site: auth.site,
-	    expires: auth.expires
-	  };
-	});
-      }
-      init();
+      form.data = party.children.slice();
 
       var subforms = [];
 
       function checkDirty() {
 	if (!subforms.some(function (subform) {
-	  return subform.$dirty;
-	}))
+	      return subform.$dirty;
+	    }))
 	  form.$setPristine();
       }
 
@@ -39,23 +27,8 @@ module.directive('partyEditGrantForm', [
       page.events.listen($scope, 'authGrantForm-init', function (event, grantForm) {
         subforms.push(grantForm);
 
-        grantForm.successFn = function () {
-          form.messages.add({
-            body: page.constants.message('auth.grant.save.success'),
-            type: 'green',
-            countdown: 3000,
-          });
-	  checkDirty();
-        };
-
-        grantForm.denySuccessFn = function () {
-          form.messages.add({
-            body: page.constants.message('auth.grant.remove.success'),
-            type: 'green',
-            countdown: 3000,
-          });
-
-          form.data.splice(form.data.indexOf(grantForm.other), 1);
+        grantForm.denySuccessFn = function (auth) {
+          form.data.splice(form.data.indexOf(auth), 1);
           subforms.splice(subforms.indexOf(grantForm), 1);
 	  checkDirty();
         };
@@ -71,11 +44,14 @@ module.directive('partyEditGrantForm', [
           return;
 
         searchForm.selectFn = function (found) {
+	  var exp = new Date();
+	  exp.setFullYear(exp.getFullYear()+2);
 	  form.data.push({
 	    new: true,
 	    party: found,
 	    site: 0,
 	    member: 0,
+	    expires: exp.getTime()
 	  });
 	  //warning: next line is template dependent! if classnames change this will no longer work
 	  page.$timeout(function() {

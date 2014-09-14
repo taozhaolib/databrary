@@ -53,8 +53,8 @@ module.factory('constantService', [
     });
 
     constants.accessGlobal = [
-      ['NONE', 'NONE'],
-      ['PUBLIC', 'SHARED']
+      [constants.permissionName.NONE, constants.permissionName.NONE],
+      [constants.permissionName.PUBLIC, constants.permissionName.SHARED]
     ];
     constants.accessGlobal.parties = [
       constants.party.NOBODY,

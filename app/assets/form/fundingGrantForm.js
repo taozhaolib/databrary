@@ -3,57 +3,32 @@
 module.directive('fundingGrantForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
+      var volume = $scope.volume;
+      var funding = $scope.funding;
       var form = $scope.fundingGrantForm;
-      form.funding = angular.isDefined($attrs.funding);
 
-      form.volume = page.$parse($attrs.volume)($scope) || undefined;
-      form.data = page.$parse($attrs.funder)($scope) || {};
-      form.awards = [
-        {
-          val: '',
-        }
-      ];
-
-      var backup = $.extend(true, {}, form.data);
-
-      if (form.data.awards) {
-        form.awards = form.data.awards.map(function (award) {
-          return {
-            val: award,
-          };
-        });
-
-        if (form.awards.length === 0) {
-          form.awards.push({
-            val: '',
-          });
-        }
-      }
-
-      //
-
-      form.extend = function () {
-        form.data.inherit = form.data === form.data.inherit ? 0 : Math.min(form.data, page.permission.CONTRIBUTE);
+      form.data = {
+	awards: funding.awards && funding.awards.length ? funding.awards.slice(0) : ['']
       };
-
-      //
+      if (funding.new)
+	form.$setDirty();
 
       form.save = function () {
-        form.data.awards = form.awards.filter(function(award){
-	  return award.val;
-	}).map(function (award) {
-          return award.val.trim();
-        });
+        form.data.awards = form.data.awards
+	  .map(function (grant) {
+	    return grant.trim();
+	  }).filter(function (grant) {
+	    return grant !== '';
+	  });
 
-	form.volume.fundingSave(form.data.funder.id, form.data).then(function () {
+	volume.fundingSave(funding.funder.id, form.data).then(function () {
           form.messages.add({
             body: page.constants.message('funding.save.success'),
             type: 'green',
             countdown: 3000,
           });
 
-          delete form.data.new;
-          backup = $.extend(true, {}, form.data);
+          delete funding.new;
           form.$setPristine();
         }, function (res) {
           form.messages.addError({
@@ -65,44 +40,16 @@ module.directive('fundingGrantForm', [
         });
       };
 
-      form.reset = function () {
-        form.validator.clearServer();
-
-        if (form.data.awards) {
-          form.awards = form.data.awards.map(function (award) {
-            return {
-              val: award,
-            };
-          });
-        }
-
-        form.data = $.extend(true, {}, backup);
-
-        if (!form.data.new) {
-          form.$setPristine();
-        } else {
-          form.remove();
-        }
-      };
-
-      //
-
-      form.removeSuccessFn = undefined;
-
       form.remove = function () {
-	form.volume.fundingDelete(form.data.funder.id, form.data).then(function () {
-          if (angular.isFunction(form.removeSuccessFn)) {
-            form.removeSuccessFn();
-          }
-
+	volume.fundingDelete(funding.funder.id).then(function () {
           form.messages.add({
             body: page.constants.message('funding.remove.success'),
             type: 'green',
             countdown: 3000,
           });
 
-          delete form.data.new;
           form.$setPristine();
+	  form.removeSuccessFn(funding);
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('funding.remove.error'),
@@ -116,25 +63,20 @@ module.directive('fundingGrantForm', [
       //
 
       form.addAward = function () {
-        if (!form.awards) {
-          form.awards = [];
-        }
-
-        form.awards.push({});
+	form.data.awards.push('');
       };
 
-      form.removeAward = function (award) {
-        var i = form.awards.indexOf(award);
+      form.addAwardEnabled = function() {
+	return form.data.awards.every(function (grant) {
+	  return grant.trim() !== '';
+	});
+      };
 
-        if (i > -1) {
-          form.awards.splice(i, 1);
-        }
-	if (form.awards.length === 0)
-	{
-	  form.remove();
-	}
-
+      form.removeAward = function (i) {
+	form.data.awards.splice(i, 1);
         form.$setDirty();
+	if (!form.data.awards.length)
+	  form.remove();
       };
 
       //
@@ -147,8 +89,6 @@ module.directive('fundingGrantForm', [
     return {
       restrict: 'E',
       templateUrl: 'fundingGrantForm.html',
-      scope: false,
-      replace: true,
       link: link
     };
   }

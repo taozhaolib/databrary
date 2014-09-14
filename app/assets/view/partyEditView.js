@@ -12,15 +12,8 @@ module.controller('partyEditView', [
     });
 
     $scope.forms = {};
-    var forms = {
-      profile: 'partyEditProfileForm',
-      account: 'partyEditAccountForm',
-      apply: 'partyEditApplyForm',
-      grant: 'partyEditGrantForm',
-    };
-
     $scope.registerStep = function (step) {
-      step.form = $scope.forms[forms[step.name]];
+      step.form = $scope.forms['partyEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };
 
     $scope.switchStep = function (step) {

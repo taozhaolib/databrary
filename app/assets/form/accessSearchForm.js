@@ -3,18 +3,12 @@
 module.directive('accessSearchForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
+      var volume = $scope.volume;
       var form = $scope.accessSearchForm;
 
-      form.volume = $scope.$eval($attrs.volume);
       form.nameVal = '';
       form.found = [];
-      form.institution = $element.attr('institution') === 'true';
       form.placeholderText = $attrs.placeholderText || page.constants.messages['access.search'];
-
-      $attrs.$observe('institution', function () {
-        form.nameVal = '';
-        form.found = [];
-      });
 
       //
 
@@ -38,31 +32,23 @@ module.directive('accessSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-	  form.volume.accessSearch({
-            name: form.nameVal,
-            institution: form.institution,
+	  volume.accessSearch({
+            name: form.nameVal
           }).then(function (data) {
             form.found = data;
 
             fin();
-          }, function (res) {
-            fin(res);
-          });
+          }, fin);
         }
       };
 
       //
 
-      form.selectFn = undefined;
-
       form.select = function (found) {
         form.nameVal = '';
         form.search();
 
-        if (angular.isFunction(form.selectFn)) {
-          form.selectFn(found);
-        }
-
+	form.selectFn(found);
         form.$setPristine();
       };
 
@@ -99,7 +85,6 @@ module.directive('accessSearchForm', [
     return {
       restrict: 'E',
       templateUrl: 'accessSearchForm.html',
-      scope: false,
       replace: true,
       link: link
     };

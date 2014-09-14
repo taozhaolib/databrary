@@ -28,10 +28,10 @@
 
     <label bo-text="'citation.authors' | message"></label>
 
-    <div ng-repeat="author in volumeEditOverviewForm.authors track by $index">
+    <div ng-repeat="author in volumeEditOverviewForm.data.citation.authors track by $index">
       <validator form="volumeEditOverviewForm" name="citation.author">
-        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.authors[$index]" bo-attr bo-attr-placeholder="'volume.edit.citation.author.placeholder' | message">
-        <button ng-click="volumeEditOverviewForm.removeAuthor(author)" bo-text="'remove' | message" class="red mini pull"></button>
+        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.data.citation.authors[$index]" bo-attr bo-attr-placeholder="'volume.edit.citation.author.placeholder' | message">
+        <button ng-click="volumeEditOverviewForm.removeAuthor($index)" bo-text="'remove' | message" class="red mini pull"></button>
       </validator>
     </div>
     <button ng-click="volumeEditOverviewForm.addAuthor()" bo-text="'volume.edit.citation.author.add' | message" class="neutral mini add_f2" ng-disabled="!volumeEditOverviewForm.addAuthorEnabled()"></button>

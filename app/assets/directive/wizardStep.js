@@ -12,11 +12,11 @@ module.directive('wizardStep', [
         $scope.name = $attrs.name;
         $scope.id = wizard.name + '-' + $scope.name;
 
-	$scope.allow = true;
+	$scope.allow = $attrs.allow === undefined || $scope.$parent.$eval($attrs.allow);
         var enabled = $attrs.enabled === undefined || $scope.$parent.$eval($attrs.enabled);
 
 	if (enabled)
-	  wizard.addStep($scope, $attrs.enabled);
+	  wizard.addStep($scope);
       }
     };
   }

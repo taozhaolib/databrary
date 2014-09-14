@@ -3,12 +3,13 @@
 module.directive('authSearchForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
+      var party = $scope.party;
       var form = $scope.authSearchForm;
 
       form.nameVal = '';
       form.found = [];
-      form.id = $attrs.party || undefined;
       form.principal = $attrs.principal;
+      form.apply = form.principal !== 'child';
       form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
 
       $scope.$watch(function () {
@@ -43,8 +44,7 @@ module.directive('authSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-          sentSearch = ($scope.party || page.models.Login.user).authorizeSearch({
-            id: form.id || page.models.Login.user.id,
+          sentSearch = party.authorizeSearch(form.apply, {
             name: form.nameVal,
             institution: form.principal === 'principal' ? true :
                 form.principal === 'affiliate' ? false : undefined,
@@ -52,28 +52,21 @@ module.directive('authSearchForm', [
             form.found = data;
 
             fin();
-          }, function (res) {
-            fin(res);
-          });
+          }, fin);
         }
       };
 
       //
-
-      form.selectFn = undefined;
 
       form.select = function (found) {
         form.nameVal = '';
         form.search();
 
-        if (angular.isFunction(form.selectFn)) {
-          form.selectFn(found);
-        }
+	form.selectFn(found);
+        form.$setPristine();
       };
 
       //
-
-      form.notFoundFn = undefined;
 
       form.notFound = function () {
         var query = form.nameVal;
@@ -81,9 +74,8 @@ module.directive('authSearchForm', [
         form.nameVal = '';
         form.search();
 
-        if (angular.isFunction(form.notFoundFn)) {
-          form.notFoundFn(query, form);
-        }
+	form.notFoundFn(query, form);
+        form.$setPristine();
       };
 
       //
@@ -104,7 +96,6 @@ module.directive('authSearchForm', [
     return {
       restrict: 'E',
       templateUrl: 'authSearchForm.html',
-      scope: false,
       replace: true,
       link: link
     };

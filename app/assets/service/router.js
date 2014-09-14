@@ -1,4 +1,5 @@
 'use strict';
+/* jslint eqnull:true */
 
 module.provider('routerService', [
   '$routeProvider', 'routeData',
@@ -21,9 +22,8 @@ module.provider('routerService', [
       var q = url.contains('?');
 
       angular.forEach(params, function (value, key) {
-        if (value === null || value === undefined) {
+        if (value == null)
           return;
-        }
 
         if (!Array.isArray(value)) {
           value = [value];
@@ -50,7 +50,7 @@ module.provider('routerService', [
       var ph = arguments.length < 3;
       if (ph)
 	args = argNames.map(function (a) { return ':' + a; });
-      else if (data === undefined || data === null)
+      else if (data == null)
 	args = [];
       else if (Array.isArray(data))
 	args = data;
