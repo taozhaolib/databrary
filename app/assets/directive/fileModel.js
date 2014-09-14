@@ -1,26 +1,39 @@
 'use strict';
 
 module.directive('fileModel', [
-  'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
-      $element.bind('change', function () {
-        $scope.$apply(function () {
-          page.$parse($attrs.fileModel).assign($scope, $element[0].files);
+  'pageService',
+  function (page) { return {
+    restrict: 'A',
+    controller: [function () {
+      this.$setPristine = function () {
+	this.$dirty = false;
+	this.$pristine = true;
+      };
+      this.$setPristine();
+    }],
+    require: ['fileModel', '^form'],
+    link: function ($scope, $element, $attrs, ctrls) {
+      var file = ctrls[0], form = ctrls[1];
+      var model = page.$parse($attrs.fileModel);
 
-          if ($attrs.fileModelForm)
-            $scope.$eval($attrs.fileModelForm).$setDirty();
-        });
+      form.$addControl(file);
+      $scope.$on('$destroy', function() {
+	form.$removeControl(file);
       });
 
-      $scope.$watch($attrs.fileModel, function (val) {
-        if (!val)
-          $element[0].value = '';
+      $element.on('change', function () {
+	model.assign($scope, $element[0].files);
+	if (file.$pristine) {
+	  file.$dirty = true;
+	  file.$pristine = false;
+	  form.$setDirty();
+	}
       });
-    };
 
-    return {
-      restrict: 'A',
-      link: link
-    };
-  }
+      $scope.$watch(model, function (val) {
+	if (!val)
+	  $element[0].value = '';
+      });
+    }
+  }; }
 ]);
