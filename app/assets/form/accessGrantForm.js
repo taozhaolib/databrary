@@ -2,7 +2,7 @@
 
 module.directive('accessGrantForm', [
   'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
+    var link = function ($scope) {
       var volume = $scope.volume;
       var access = $scope.access;
       var form = $scope.accessGrantForm;

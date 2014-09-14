@@ -2,7 +2,7 @@
 
 module.directive('fundingGrantForm', [
   'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
+    var link = function ($scope) {
       var volume = $scope.volume;
       var funding = $scope.funding;
       var form = $scope.fundingGrantForm;

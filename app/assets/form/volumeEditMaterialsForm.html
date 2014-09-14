@@ -1,4 +1,4 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.assets.flowOptions"
+<ng-form name="volumeEditMaterialsForm" bindonce flow-init="page.assets.flowOptions"
     flow-file-added="volumeEditMaterialsForm.fileAdded($file,$event)"
     flow-file-success="volumeEditMaterialsForm.fileSuccess($file)"
     flow-file-progress="volumeEditMaterialsForm.fileProgress($file)"
@@ -23,7 +23,7 @@
       flow-drag-enter="dropClasses['over-form'] = true"
       flow-drag-leave="dropClasses['over-form'] = false"
       ng-init="dropClasses={'drop-zone': true}"
-      novalidate expose style="position: relative;" class="vem-repeat">
+      expose style="position: relative;" class="vem-repeat">
 
     <div class="vem-repeat-content">
 

@@ -24,6 +24,10 @@ module.directive('volumeEditMaterialsForm', [
 	};
       });
 
+      function materialName(material) {
+	return material.file && material.file.file.name || material.asset && material.asset.name || page.constants.message('file');
+      }
+
       form.fileAdded = function (file, event) {
 	var material = angular.element(event.srcElement).scope().material;
 
@@ -36,6 +40,8 @@ module.directive('volumeEditMaterialsForm', [
 	    },
 	  };
 	  form.materials.push(material);
+	  /* need a better scroll target: */
+	  page.display.scrollTo(page.$d.height());
 	}
 	material.file = file;
 	material.progress = 0;
@@ -46,7 +52,7 @@ module.directive('volumeEditMaterialsForm', [
 	}, function (res) {
 	  form.messages.addError({
 	    type: 'red',
-	    body: page.constants('asset.upload.rejected', file.file.name), 
+	    body: page.constants('asset.upload.rejected', materialName(material)), 
 	    report: res,
 	  });
 	  delete material.file;
@@ -55,6 +61,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.fileSuccess = function (file) {
 	form.save(file.material);
+	form.totalProgress();
       };
 
       form.fileProgress = function (file) {
@@ -100,14 +107,14 @@ module.directive('volumeEditMaterialsForm', [
 	  form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message('volume.edit.materials.update.success', material.asset.name || page.constants.message('file')),
+	    body: page.constants.message('volume.edit.materials.update.success', materialName(material)),
 	  });
 
 	  material.form.$setPristine();
 	}, function (res) {
 	  form.messages.addError({
 	    type: 'red',
-	    body: page.constants.message('volume.edit.materials.update.error', material.file && material.file.file.name || material.asset && material.asset.name || page.constants.message('file')),
+	    body: page.constants.message('volume.edit.materials.update.error', materialName(material)),
 	    report: res,
 	  });
 	});

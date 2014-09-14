@@ -29,14 +29,14 @@ module.directive('partyEditApplyForm', [
 	  checkDirty();
         };
 
-        applyForm.cancelFn = function () {
+        applyForm.cancelFn = function (auth) {
           form.messages.add({
             body: page.constants.message('auth.apply.remove.success'),
             type: 'green',
             countdown: 3000,
           });
 
-          form.data.splice(form.data.indexOf(applyForm.other), 1);
+          form.data.splice(form.data.indexOf(auth), 1);
           subforms.splice(subforms.indexOf(applyForm), 1);
 	  checkDirty();
         };

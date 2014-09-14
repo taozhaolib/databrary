@@ -1,4 +1,4 @@
-<form name="partyEditGrantForm" bindonce novalidate>
+<ng-form name="partyEditGrantForm" bindonce>
   <fieldset class="clean peg-float">
     <div class="peg-float-floater row">
       <auth-search-form principal="child" placeholder-text="{{'auth.search.grant.legend' | message}}" class="col-desktop-8 col-laptop-6 col-tablet-3 col-mobile-2"></auth-search-form>
@@ -8,7 +8,7 @@
   </fieldset>
   <fieldset ng-if="partyEditGrantForm.data.length > 0">
     <legend bo-text="'auth.grant.legend' | message"></legend>
-    <article ng-repeat="auth in partyEditGrantForm.data" class="permission-auth cf peg">
+    <article ng-repeat="auth in partyEditGrantForm.data track by auth.party.id" class="permission-auth cf peg">
       <div class="row">
         <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" bo-class="{inst: auth.party.institution}">

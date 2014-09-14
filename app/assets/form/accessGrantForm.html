@@ -1,4 +1,4 @@
-<form name="accessGrantForm" bindonce novalidate>
+<ng-form name="accessGrantForm" bindonce>
   <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
     <figure class="figure-avatar" bo-class="{inst: access.party.institution}">
       <figmedia><img bo-src="access.party.avatarRoute()"></figmedia>
@@ -18,7 +18,7 @@
       <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
         <fieldset class="clean radio-set access-grant-radioset" ng-disabled="!accessGrantForm.canChange()">
           <div ng-repeat="(val, name) in page.constants.permission" ng-if="accessGrantForm.canGrantAccess(val)">
-            <input type="radio" ng-model="accessGrantForm.data.individual" name="accessOption" ng-value="val">
+	    <input type="radio" ng-model="accessGrantForm.data.individual" name="access-{{access.party.id}}-individual" ng-value="val">
             <label bo-text="'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{name}}"></label>
           </div>
         </fieldset>

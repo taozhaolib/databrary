@@ -1,6 +1,6 @@
 <panel ng-controller="TagsPanel" id="panel-tags" panel-title="{{'tags.title' | message}}" fold>
   <div class="panel-tags-list">
-    <form name="tagForm" novalidate>
+    <ng-form name="tagForm">
       <ul class="panel-tags-items">
         <li ng-repeat="tag in tags" class="panel-tags-item">
           <div class="panel-tag-weight">{{tag.weight}}</div>
@@ -24,7 +24,7 @@
   </div>
 
   <div id="tag-add" class="panel-tags-form" ng-if="page.models.Login.isLoggedIn()">
-    <form name="tagNewForm" novalidate ng-submit="voteNew(tagNewForm)" class="panel-tags-new-form">
+    <ng-form name="tagNewForm" ng-submit="voteNew(tagNewForm)" class="panel-tags-new-form">
       <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur()">
       <button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
 

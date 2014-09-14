@@ -3,15 +3,14 @@
 module.directive('authApplyForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
+      var party = $scope.party;
+      var auth = $scope.auth;
       var form = $scope.authApplyForm;
 
       $scope.page = page;
 
-      form.party = $scope.party;
-      form.other = $scope.$eval($attrs.other);
-
       form.notFound = {
-        query: form.other && form.other.query || undefined,
+        query: auth.query,
         info: undefined
       };
 
@@ -22,10 +21,10 @@ module.directive('authApplyForm', [
       form.successFn = undefined;
 
       var saveAuth = function () {
-	form.party.authorizeApply(form.other.party.id, {info:form.notFound.info}).then(function () {
+	party.authorizeApply(auth.party.id, {info:form.notFound.info}).then(function () {
           form.validator.server({});
           form.$setPristine();
-          delete form.other.new;
+          delete auth.new;
 
           if (angular.isFunction(form.successFn)) {
             form.successFn();
@@ -37,14 +36,14 @@ module.directive('authApplyForm', [
       };
 
       var saveQuery = function () {
-	form.party.authorizeSearch(true, {
+	party.authorizeSearch(true, {
           notfound: true,
           name: form.notFound.query,
           info: form.notFound.info
         }).then(function () {
           form.validator.server({});
           form.$setPristine();
-          delete form.other.new;
+          delete auth.new;
 
           form.messages.add({
             type: 'green',
@@ -71,12 +70,8 @@ module.directive('authApplyForm', [
 
       //
 
-      form.cancelFn = undefined;
-
       form.cancel = function () {
-        if (angular.isFunction(form.cancelFn)) {
-          form.cancelFn();
-        }
+	form.cancelFn(auth);
       };
 
       //

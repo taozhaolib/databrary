@@ -57,7 +57,7 @@
 	      </li>
 
               <li ng-if="page.models.Login.user.superuser !== undefined" class="toolbar-password-form">
-                <form name="superuserForm" ng-if="!page.models.Login.user.superuser" class="cf" novalidate>
+                <ng-form name="superuserForm" ng-if="!page.models.Login.user.superuser" class="cf">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
                   <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
                     activate SU

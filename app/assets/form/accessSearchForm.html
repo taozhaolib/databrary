@@ -1,4 +1,4 @@
-<form name="accessSearchForm" novalidate>
+<ng-form name="accessSearchForm">
   <validator class="auth-search" form="accessSearchForm" name="name">
     <input type="search" name="name" placeholder="{{accessSearchForm.placeholderText}}" ng-model="accessSearchForm.nameVal" ng-change="accessSearchForm.search()">
   </validator>

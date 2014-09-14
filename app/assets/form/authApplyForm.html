@@ -1,8 +1,8 @@
-<form name="authApplyForm" class="auth-apply-form" novalidate bindonce>
+<ng-form name="authApplyForm" class="auth-apply-form" bindonce>
   <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
-    <legend ng-bind="'auth.request.title' | message:authApplyForm.other.party.name"></legend>
+    <legend ng-bind="'auth.request.title' | message:auth.party.name"></legend>
 
-    <div ng-if="authApplyForm.other.party.institution">
+    <div ng-if="auth.party.institution">
       <div bo-text="'auth.info.prompt' | message"></div>
 
       <validator form="authApplyForm" name="info" label="'auth.request.info.title' | message">
@@ -22,8 +22,6 @@
   </fieldset>
 
   <fieldset class="clean">
-    <input type="hidden" name="id" ng-value="authApplyForm.other.id">
-
     <button ng-click="authApplyForm.save()" class="green" bo-text="'auth.request' | message"></button>
     <button ng-click="authApplyForm.cancel()" class="yellow" bo-text="'cancel' | message"></button>
   </fieldset>
