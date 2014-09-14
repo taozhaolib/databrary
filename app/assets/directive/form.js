@@ -85,11 +85,15 @@ module.directive('form', [
       }
 
       form.resetAll = function (force) {
-	if (force || confirm(page.constants.message('navigation.confirmation'))) {
-	  page.$route.reload();
-	  return true;
-	}
-	return false;
+	if (!(force || confirm(page.constants.message('navigation.confirmation'))))
+	  return false;
+	var x = window.pageXOffset,
+	    y = window.pageYOffset;
+	page.$route.reload();
+	page.$timeout(function () {
+	  window.scrollTo(x, y);
+	});
+	return true;
       };
     };
 

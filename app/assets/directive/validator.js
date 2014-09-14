@@ -11,7 +11,7 @@ module.directive('validator', [
     var post = function ($scope, $element, $attrs) {
       var validator = $scope.validator;
 
-      validator.form = $scope[$attrs.form];
+      validator.form = $scope.$eval($attrs.form);
       validator.name = validator.form[$attrs.name];
       validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
       validator.changed = false;
@@ -171,7 +171,6 @@ module.directive('validator', [
 
     return {
       restrict: 'E',
-      replace: true,
       scope: true,
       transclude: true,
       templateUrl: 'validator.html',

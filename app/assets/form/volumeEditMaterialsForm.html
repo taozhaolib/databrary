@@ -1,4 +1,8 @@
-<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="flowOptions" flow-file-added="volumeEditMaterialsForm.addedCall($file,$event)" flow-file-success="volumeEditMaterialsForm.assetCall($file)" flow-file-progress="volumeEditMaterialsForm.perFileProgress($file)" flow-progress="totalProgress()">
+<form name="volumeEditMaterialsForm" bindonce novalidate flow-init="page.assets.flowOptions"
+    flow-file-added="volumeEditMaterialsForm.fileAdded($file,$event)"
+    flow-file-success="volumeEditMaterialsForm.fileSuccess($file)"
+    flow-file-progress="volumeEditMaterialsForm.fileProgress($file)"
+    flow-progress="volumeEditMaterialsForm.totalProgress()">
   <section class="vem-float" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
     <div class="vem-float-floater">
       <div class="vem-float-dropzone" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
@@ -6,52 +10,57 @@
         <span class="vem-float-dropzone-message" bo-text="'material.add-drop' | message"></span>
       </div>
 
-      <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="volumeEditMaterialsForm.disableSaveButton()"></button>
+      <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
       <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-text="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
       <div class="vem-float-progress">
-	<upload-progress progress-value="volumeEditMaterialsForm.totalProgress"></upload-progress>
+	<upload-progress progress-value="volumeEditMaterialsForm.progress"></upload-progress>
       </div>
     </div>
   </section>
 
-  <fieldset ng-repeat="asset in volumeEditMaterialsForm.data.assets" ng-form="volumeEditMaterialsForm.asset-{{$index}}" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true};" novalidate expose style="position: relative;" class="vem-repeat">
+  <fieldset ng-repeat="material in volumeEditMaterialsForm.materials"
+      ng-form="material.form"
+      flow-drag-enter="dropClasses['over-form'] = true"
+      flow-drag-leave="dropClasses['over-form'] = false"
+      ng-init="dropClasses={'drop-zone': true}"
+      novalidate expose style="position: relative;" class="vem-repeat">
 
-    <div class="vem-repeat-content" ng-init="form = volumeEditMaterialsForm['asset-'+$index]; form.subform = this;">
+    <div class="vem-repeat-content">
 
-      <validator form="form" name="file" label="'material.file' | message">
-        <div ng-if="!asset.asset.creation">
-          <div ng-if="asset.file">
-	    <span ng-bind="asset.file.name"></span>
-	    <upload-progress progress-value="asset.fileUploadProgress"></upload-progress>
-          </div>
-
-	  <div ng-if="!asset.file" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>{{'material.add-drop.replace' | message}}</div> <!--DO NOT USE ng-bind or bo-text: problem with flow-btn/assignBrowse's child input-->
-        </div>
-
-	<div ng-if="asset.asset.creation" class="row">
-	  <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-3">
-	    <input type="text" name="filename" bo-value="asset.asset.creation.name + ', ' + page.$filter('date')(asset.asset.creation.date, 'medium')" disabled outside="volumeEditMaterialsForm">
-	    <button ng-click="volumeEditMaterialsForm.replace(this)" bo-text="'replace' | message" class="blue mini pull"></button>
-	  </div>
-	  <button class="red mini" ng-click="volumeEditMaterialsForm.remove(this)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
-	    <span class="icon line vem-trash trash"></span>
-	  </button>
+      <validator form="material.form" name="file" label="'material.file' | message">
+	<div ng-if="material.file">
+	  <span ng-bind="material.file.name"></span>
+	  <upload-progress progress-value="material.progress"></upload-progress>
 	</div>
 
+	<div ng-if="material.replace" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>
+	  <!--DO NOT USE ng-bind or bo-text: problem with flow-btn/assignBrowse's child input-->
+	  {{'material.add-drop.replace' | message}}
+	</div>
+
+	<div ng-if="!(material.file || material.replace)" class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-3">
+	  <input type="text" name="filename" ng-value="material.asset.asset.creation.name + ' ' + page.$filter('date')(material.asset.asset.creation.date, 'medium')" disabled outside="volumeEditMaterialsForm">
+	  <button ng-click="volumeEditMaterialsForm.replace(material)" bo-text="'replace' | message" class="blue mini pull"></button>
+	</div>
+
+	<button class="red mini" ng-click="volumeEditMaterialsForm.remove(material)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+	  <span class="icon line vem-trash trash"></span>
+	</button>
+
       </validator>
 
-      <validator form="form" name="classification" label="'material.classification' | message">
-        <select name="classification" ng-model="asset.classification" ng-options="c as 'classification.'+c | message for c in page.constants.classification" ng-init="asset.classification = page.constants.classification[asset.asset && asset.asset.classification || 0]" ng-required></select>
+      <validator form="material.form" name="classification" label="'material.classification' | message">
+        <select name="classification" ng-model="material.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
       </validator>
 
-      <input type="checkbox" name="excerptsOn" ng-model="excerptOn" ng-init="excerptOn = !!asset.excerpt; volumeEditMaterialsForm.updateExcerptChoice(this, true)" ng-change="volumeEditMaterialsForm.updateExcerptChoice(this)">&nbsp;
+      <input type="checkbox" name="excerptOn" ng-model="material.data.excerptOn">&nbsp;
       <span bo-text="'material.excerpt.checkbox-label' | message"></span>
-      <validator form="form" name="excerpt" ng-show="excerptOn" label="'material.excerpt' | message">
-        <select name="excerpt" ng-model="asset.excerpt" ng-options="c as 'classification.excerpt.'+c | message for c in volumeEditMaterialsForm.excerptOptions(asset.classification)" ng-required></select>
+      <validator form="material.form" name="excerpt" ng-show="material.data.excerptOn" label="'material.excerpt' | message">
+        <select name="excerpt" ng-model="material.data.excerpt" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in volumeEditMaterialsForm.excerptOptions(material)"></select>
       </validator>
 
-      <validator form="form" name="name" label="'material.name' | message">
-        <input type="text" name="name" ng-model="asset.name" placeholder="{{'material.name.placeholder' | message}}">
+      <validator form="material.form" name="name" label="'material.name' | message">
+        <input type="text" name="name" ng-model="material.data.name" placeholder="{{'material.name.placeholder' | message}}">
       </validator>
     </div>
   </fieldset>

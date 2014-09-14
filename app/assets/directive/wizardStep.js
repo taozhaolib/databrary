@@ -9,6 +9,7 @@ module.directive('wizardStep', [
       scope: {},
       transclude: true,
       link: function ($scope, $element, $attrs, wizard) {
+	$scope.page = page;
         $scope.name = $attrs.name;
         $scope.id = wizard.name + '-' + $scope.name;
 

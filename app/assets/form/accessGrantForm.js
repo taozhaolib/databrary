@@ -51,6 +51,10 @@ module.directive('accessGrantForm', [
       };
 
       form.remove = function () {
+	if (access.new) {
+	  form.removeSuccessFn(access);
+	  return;
+	}
 	volume.accessDelete(access.party.id).then(function () {
           form.messages.add({
             body: page.constants.message('access.grant.remove.success'),

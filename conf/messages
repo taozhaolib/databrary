@@ -646,22 +646,16 @@ material.name.help=You may optionally provide a brief description of this file f
 material.name.placeholder=
 material.classification=Classification
 material.excerpt=
-material.excerpt.checkbox-label=Select for display as highlighted excerpt
+material.excerpt.checkbox-label=Highlight as excerpt
 material.add-drop=Drop file here or click to upload a new file.
 material.add-drop.replace=Drop file here or click to upload replacement file.
 material.upload-progress=(in progress)
-
+asset.upload.rejected=File {0} was not accepted for upload.
 
 volume.edit.materials.update.success=Updated {0} successfully.
 volume.edit.materials.update.error=Unable to update {0}.
-volume.edit.materials.create=Upload of {0} in progress.  Please wait.
-volume.edit.materials.create.success=Uploaded {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
-volume.edit.materials.create.error=Unable to upload {0}.
-volume.edit.materials.replace.success=Replaced {0} successfully.  Some types of files such as videos may take some time to process before they are displayed properly.
-volume.edit.materials.replace.error=Unable to replace {0}.
 volume.edit.materials.remove.success=Removed {0} successfully.
 volume.edit.materials.remove.error=Unable to remove {0}.
-volume.edit.materials.refresh.error=Could not update materials display. Please refresh before making any new edits.
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.

@@ -62,23 +62,23 @@ module.directive('authGrantForm', [
       //
 
       form.deny = function () {
-        if (form.data.new)
+        if (auth.new) {
 	  form.denySuccessFn(auth);
-        else {
-	  party.authorizeDelete(auth.party.id).then(function () {
-            form.validator.server({});
-	    form.messages.add({
-	      body: page.constants.message('auth.grant.remove.success'),
-	      type: 'green',
-	      countdown: 3000,
-	    });
-	    form.$setPristine();
-	    form.denySuccessFn(auth);
-          }, function (res) {
-            form.validator.server(res);
-            page.display.scrollTo(form.$element);
-          });
-        }
+	  return;
+	}
+	party.authorizeDelete(auth.party.id).then(function () {
+	  form.validator.server({});
+	  form.messages.add({
+	    body: page.constants.message('auth.grant.remove.success'),
+	    type: 'green',
+	    countdown: 3000,
+	  });
+	  form.$setPristine();
+	  form.denySuccessFn(auth);
+	}, function (res) {
+	  form.validator.server(res);
+	  page.display.scrollTo(form.$element);
+	});
       };
 
       //

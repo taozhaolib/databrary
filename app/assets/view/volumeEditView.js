@@ -4,7 +4,6 @@ module.controller('volumeEditView', [
   '$scope', 'volume', 'pageService',
   function ($scope, volume, page) {
     $scope.volume = volume;
-    var slot = volume && volume.top;
     page.display.title = volume ? volume.title : page.constants.message('page.title.volume');
 
     page.display.toolbarLinks.push({
@@ -41,14 +40,5 @@ module.controller('volumeEditView', [
 	step.error = step.form.$invalid;
       });
     });
-
-
-
-    // TODO: SEND THIS INFO FROM THE START
-    if (slot) {
-      angular.forEach(slot.assets, function (asset) {
-	asset.asset.get(['creation']);
-      });
-    }
   }
 ]);

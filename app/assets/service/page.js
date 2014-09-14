@@ -11,6 +11,7 @@ module.factory('pageService', [
       events: $injector.get('eventService'),
       messages: $injector.get('messageService'),
       models: $injector.get('modelService'),
+      assets: $injector.get('assetService'),
       panels: $injector.get('panelService'),
       router: $injector.get('routerService'),
       slotClock: $injector.get('slotClockService'),
