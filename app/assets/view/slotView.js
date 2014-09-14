@@ -39,7 +39,7 @@ module.controller('slotView', [
 	};
 	ctrl.slot.createAsset(data).then(function(res){
 	    for(var i in tl.uploadsInProgress){
-	      if (tl.uploadsInProgress[i].uniqueIdentifier == file.uniqueIdentifier){
+	      if (tl.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
 		tl.uploadsInProgress.splice(i, 1);	  
 	      }
 	    }
@@ -78,11 +78,7 @@ module.controller('slotView', [
       },
 
       deregisterMedia: function (media) {
-	var i = ctrl.media.indexOf(media);
-
-	if (i > -1) {
-	  ctrl.media.splice(i, 1);
-	}
+	ctrl.media.remove(media);
       },
 
       setCurrent: function (asset) {

@@ -28,3 +28,13 @@ if (!Array.prototype.findIndex) {
     }
   });
 }
+
+/* This is non-standard, but useful. */
+Object.defineProperty(Array.prototype, 'remove', {
+  value: function (value) {
+    var i = this.indexOf(value);
+    if (i < 0)
+      return;
+    return this.splice(i, 1)[0];
+  }
+});

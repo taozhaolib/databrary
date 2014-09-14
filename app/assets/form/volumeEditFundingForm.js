@@ -28,8 +28,8 @@ module.directive('volumeEditFundingForm', [
         subforms.push(grantForm);
 
         grantForm.removeSuccessFn = function (funding) {
-          form.data.splice(form.data.indexOf(funding), 1);
-          subforms.splice(subforms.indexOf(grantForm), 1);
+          form.data.remove(funding);
+          subforms.remove(grantForm);
 	  checkDirty();
         };
       });

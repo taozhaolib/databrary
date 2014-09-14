@@ -373,11 +373,9 @@ module.factory('browserService', [
     browserService.addRecordGroup = function (group) {
       browserService.setRecordGroupToggle(undefined);
 
-      var i = browserService.options.record.categories.indexOf(group);
-
       group.active = true;
 
-      browserService.options.record.categories.push(browserService.options.record.categories.splice(i, 1)[0]);
+      browserService.options.record.categories.push(browserService.options.record.categories.remove(group));
 
       rebuildData(group);
     };
@@ -389,10 +387,7 @@ module.factory('browserService', [
     browserService.removeRecordGroup = function (group) {
       group.active = false;
 
-      var group_i = browserService.options.record.categories.indexOf(group);
-
-      browserService.options.record.categories.splice(group_i, 1);
-      browserService.options.record.categories.push(group);
+      browserService.options.record.categories.push(browserService.options.record.categories.remove(group));
 
       rebuildData();
     };

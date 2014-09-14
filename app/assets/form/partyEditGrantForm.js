@@ -28,8 +28,8 @@ module.directive('partyEditGrantForm', [
         subforms.push(grantForm);
 
         grantForm.denySuccessFn = function (auth) {
-          form.data.splice(form.data.indexOf(auth), 1);
-          subforms.splice(subforms.indexOf(grantForm), 1);
+          form.data.remove(auth);
+          subforms.remove(grantForm);
 	  checkDirty();
         };
       });

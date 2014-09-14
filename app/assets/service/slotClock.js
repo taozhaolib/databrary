@@ -107,11 +107,7 @@ module.factory('slotClockService', [
       }
 
       return function cancelFn() {
-        var index;
-
-        if ((index = fns.indexOf(fn)) > -1) {
-          return fns.splice(index, 1);
-        }
+	fns.remove(fn);
       };
     };
 

@@ -75,8 +75,8 @@ module.directive('volumeEditAccessForm', [
         subforms.push(grantForm);
 
         grantForm.removeSuccessFn = function (access) {
-          form.data.splice(form.data.indexOf(access), 1);
-          subforms.splice(subforms.indexOf(grantForm), 1);
+          form.data.remove(access);
+          subforms.remove(grantForm);
 	  checkDirty();
         };
       });

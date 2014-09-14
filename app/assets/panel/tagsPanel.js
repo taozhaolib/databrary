@@ -79,7 +79,7 @@ module.controller('TagsPanel', [
     $scope.vote = function (tag, vote) {
       $scope.target.setTag(tag.id, vote).then(function (newTag) {
         if (newTag.weight === 0 && !newTag.vote) {
-          $scope.tags.splice($scope.tags.indexOf(tag), 1);
+          $scope.tags.remove(tag);
         }
         else {
           $scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);

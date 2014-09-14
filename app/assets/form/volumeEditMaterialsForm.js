@@ -139,7 +139,7 @@ module.directive('volumeEditMaterialsForm', [
 	  material.file.cancel();
 	  delete material.file;
 	  if (!material.asset)
-	    form.materials.splice(form.materials.indexOf(material), 1);
+	    form.materials.remove(material);
 	  return;
 	}
 
@@ -150,7 +150,7 @@ module.directive('volumeEditMaterialsForm', [
 	    body: page.constants.message('volume.edit.materials.remove.success', material.asset.name || page.constants.message('file')),
 	  });
 
-	  form.materials.splice(form.materials.indexOf(material), 1);
+	  form.materials.remove(material);
 	}, function (res) {
 	  form.messages.addError({
 	    type: 'red',

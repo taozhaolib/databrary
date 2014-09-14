@@ -36,8 +36,8 @@ module.directive('partyEditApplyForm', [
             countdown: 3000,
           });
 
-          form.data.splice(form.data.indexOf(auth), 1);
-          subforms.splice(subforms.indexOf(applyForm), 1);
+          form.data.remove(auth);
+          subforms.remove(applyForm);
 	  checkDirty();
         };
       });
