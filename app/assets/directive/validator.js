@@ -8,11 +8,10 @@ module.directive('validator', [
       $scope.validator.prefix = $scope.validator.label ? '<strong>' + $scope.validator.label + ':</strong> ' : '';
     };
 
-    var post = function ($scope, $element, $attrs) {
+    var post = function ($scope, $element, $attrs, form) {
       var validator = $scope.validator;
 
-      validator.form = $scope.$eval($attrs.form);
-      validator.name = validator.form[$attrs.name];
+      validator.name = form[$attrs.name];
       validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
       validator.changed = false;
       validator.focus = false;
@@ -158,8 +157,8 @@ module.directive('validator', [
 
       //
 
-      if (validator.form && validator.form.validator) {
-        validator.form.validator.add($attrs.name, validator);
+      if (form && form.validator) {
+        form.validator.add($attrs.name, validator);
       }
 
       if (validator.name) {
@@ -174,6 +173,7 @@ module.directive('validator', [
       scope: true,
       transclude: true,
       templateUrl: 'validator.html',
+      require: '^form',
       link: {
         pre: pre,
         post: post,

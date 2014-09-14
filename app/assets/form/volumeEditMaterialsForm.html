@@ -27,7 +27,7 @@
 
     <div class="vem-repeat-content">
 
-      <validator form="material.form" name="file" label="'material.file' | message">
+      <validator name="file" label="'material.file' | message">
 	<div ng-if="material.file">
 	  <span ng-bind="material.file.name"></span>
 	  <upload-progress progress-value="material.progress"></upload-progress>
@@ -49,17 +49,17 @@
 
       </validator>
 
-      <validator form="material.form" name="classification" label="'material.classification' | message">
+      <validator name="classification" label="'material.classification' | message">
         <select name="classification" ng-model="material.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
       </validator>
 
       <input type="checkbox" name="excerptOn" ng-model="material.data.excerptOn">&nbsp;
       <span bo-text="'material.excerpt.checkbox-label' | message"></span>
-      <validator form="material.form" name="excerpt" ng-show="material.data.excerptOn" label="'material.excerpt' | message">
+      <validator name="excerpt" ng-show="material.data.excerptOn" label="'material.excerpt' | message">
         <select name="excerpt" ng-model="material.data.excerpt" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in volumeEditMaterialsForm.excerptOptions(material)"></select>
       </validator>
 
-      <validator form="material.form" name="name" label="'material.name' | message">
+      <validator name="name" label="'material.name' | message">
         <input type="text" name="name" ng-model="material.data.name" placeholder="{{'material.name.placeholder' | message}}">
       </validator>
     </div>

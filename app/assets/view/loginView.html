@@ -11,11 +11,11 @@
         <ng-form name="loginForm">
           <div ng-switch="method">
             <div ng-switch-default>
-              <validator form="loginForm" name="email" label="'email' | message">
+              <validator name="email" label="'email' | message">
                 <input id="loginEmail" name="email" type="email" ng-model="loginData.email">
               </validator>
 
-              <validator form="loginForm" name="password" label="'password' | message">
+              <validator name="password" label="'password' | message">
                 <input id="loginPassword" name="password" type="password" ng-model="loginData.password" ng-required>
               </validator>
             </div>

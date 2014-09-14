@@ -8,17 +8,17 @@
 
   <fieldset>
     <legend bo-text="'party.edit.account' | message"></legend>
-    <validator form="partyEditAccountForm" name="email" label="'party.edit.email.title' | message">
+    <validator name="email" label="'party.edit.email.title' | message">
       <input type="email" name="email" ng-model="partyEditAccountForm.data.email">
     </validator>
 
     <p bo-html="'password.advice' | message"></p>
 
-    <validator form="partyEditAccountForm" name="password" label="'party.edit.password.title' | message">
+    <validator name="password" label="'party.edit.password.title' | message">
       <input type="password" name="password" ng-model="partyEditAccountForm.data.password.once">
     </validator>
 
-    <validator form="partyEditAccountForm" name="password.again" label="'party.edit.password.again.title' | message">
+    <validator name="password.again" label="'party.edit.password.again.title' | message">
       <input type="password" name="password.again" ng-model="partyEditAccountForm.data.password.again">
     </validator>
   </fieldset>
@@ -26,7 +26,7 @@
   <fieldset>
     <legend bo-text="'party.edit.confirm' | message"></legend>
 
-    <validator form="partyEditAccountForm" name="auth" label="'party.edit.auth.title' | message">
+    <validator name="auth" label="'party.edit.auth.title' | message">
       <input type="password" name="auth" ng-model="partyEditAccountForm.data.auth">
     </validator>
   </fieldset>

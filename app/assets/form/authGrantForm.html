@@ -24,7 +24,7 @@
   </fieldset>
 
   <fieldset class="clean">
-    <validator form="authGrantForm" name="expires" label="'auth.expiration' | message">
+    <validator name="expires" label="'auth.expiration' | message">
       <input type="date" ng-model="authGrantForm.data.expires" name="expires" class="half" date-model date-min="now" date-max="2 years">
     </validator>
     <button ng-click="authGrantForm.deny()" class="red" bo-text="'remove' | message"></button>
