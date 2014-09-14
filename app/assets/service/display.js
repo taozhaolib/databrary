@@ -43,9 +43,16 @@ module.factory('displayService', [
 
     var $scroll = $('html,body');
 
-    display.scrollTo = function (id) {
+    display.scrollTo = function (target) {
       $timeout(function () {
-        var target = angular.isNumber(id) ? id : (angular.isString(id) ? $('#' + id) : id).offset().top - 72;
+	if (angular.isFunction(target))
+	  target = target();
+	if (angular.isString(target))
+	  target = $(target);
+	if (!angular.isNumber(target)) {
+	  if (!target.length) return;
+	  target = target.offset().top - 72;
+	}
         $scroll.animate({
           scrollTop: target
         }, 500);

@@ -21,7 +21,7 @@
   <fieldset ng-if="volumeEditAccessForm.data.length > 0">
     <legend bo-text="'access.grant.legend' | message"></legend>
 
-    <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" class="permission-auth cf">
+    <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" class="access-grant cf">
       <div class="row">
        <access-grant-form></access-grant-form>
       </div>

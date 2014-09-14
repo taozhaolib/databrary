@@ -40,8 +40,7 @@ module.directive('volumeEditMaterialsForm', [
 	    },
 	  };
 	  form.materials.push(material);
-	  /* need a better scroll target: */
-	  page.display.scrollTo(page.$d.height());
+	  page.display.scrollTo('fieldset.vem-repeat:last');
 	}
 	material.file = file;
 	material.progress = 0;

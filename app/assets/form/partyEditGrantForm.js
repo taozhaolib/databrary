@@ -54,10 +54,7 @@ module.directive('partyEditGrantForm', [
 	    expires: exp.getTime()
 	  });
 	  //warning: next line is template dependent! if classnames change this will no longer work
-	  page.$timeout(function() {
-	    var newEl = $('fieldset article.permission-auth.peg').last();
-	    page.display.scrollTo(newEl);
-	  });
+	  page.display.scrollTo('fieldset article.permission-auth.peg:last');
         };
 
         searchForm.notFoundFn = function () {

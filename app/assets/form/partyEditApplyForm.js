@@ -57,10 +57,7 @@ module.directive('partyEditApplyForm', [
 	    party: found,
 	  });
 	  //warning: next line is template dependent! if classnames change this will no longer work
-	  page.$timeout(function() {
-	    var newEl = $('fieldset article.permission-auth.pef').last();
-	    page.display.scrollTo(newEl);
-	  });
+	  page.display.scrollTo('fieldset article.permission-auth.pef:last');
         };
 
         searchForm.notFoundFn = function (query) {

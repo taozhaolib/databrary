@@ -54,10 +54,7 @@ module.directive('volumeEditFundingForm', [
 	  });
 
 	  //warning: next line is template dependent! if classnames or structure change this may no longer work
-	  page.$timeout(function() {
-	    var newEl = $('form fieldset.permission-auth').last();
-	    page.display.scrollTo(newEl);
-	  });
+	  page.display.scrollTo('fieldset.funding-grant:last');
         };
       });
 
