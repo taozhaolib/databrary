@@ -12,7 +12,6 @@
 	        <li><a href="@asset.pageURL">view</a></li>
 	    @if(asset.checkPermission(Permission.EDIT) && asset.entire) {
 	        <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
-	        <li><a href="@controllers.routes.AssetHtml.remove(asset.assetId)">remove</a></li>
 	    }
         </ul>
     </div>
