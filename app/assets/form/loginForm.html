@@ -2,16 +2,16 @@
   <div ng-switch="loginForm.method">
     <div ng-switch-default>
       <validator name="email" label="'email' | message">
-	<input id="loginEmail" name="email" type="email" ng-model="loginForm.data.email">
+	<input id="loginEmail" name="email" type="email" ng-model="loginForm.data.email" required>
       </validator>
 
       <validator name="password" label="'password' | message">
-	<input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" ng-required>
+	<input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required>
       </validator>
     </div>
 
     <div ng-switch-when="openid">
-      <input id="loginOpenid" type="text" ng-model="loginForm.data.openid" bo-attr bo-attr-placeholder="'openid' | message" ng-required>
+      <input id="loginOpenid" type="text" ng-model="loginForm.data.openid" bo-attr bo-attr-placeholder="'openid' | message" required>
     </div>
   </div>
 

@@ -8,9 +8,6 @@ module.directive('ngForm', [
       if (!form)
         return;
 
-      if ($scope.forms)
-	$scope.forms[name] = form;
-
       form.messages = page.messages;
       form.$element = $element;
 

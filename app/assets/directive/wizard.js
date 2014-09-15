@@ -28,7 +28,7 @@ module.directive('wizard', [
           if (!newStep.allow || $scope.activeStep === newStep)
             return;
 
-	  if (!$scope.switchStep(newStep))
+	  if ($scope.switchStep && !$scope.switchStep(newStep))
 	    return;
 
 	  if ($scope.activeStep)

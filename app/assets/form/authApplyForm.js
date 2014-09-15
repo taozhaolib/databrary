@@ -3,7 +3,7 @@
 module.directive('authApplyForm', [
   'pageService', function (page) {
     var link = function ($scope) {
-      var party = $scope.party;
+      var party = $scope.party || page.models.Login.user;
       var auth = $scope.auth;
       var form = $scope.authApplyForm;
 

@@ -4,133 +4,32 @@ module.controller('registerView', [
   '$scope', 'pageService', function ($scope, page) {
     page.display.title = page.constants.message('page.title.register');
 
-    // TODO: Remove analytics
-    $scope.$watch(function () {
-      if (!($scope.wizard && $scope.wizard.steps)) {
-        return;
-      }
+    $scope.forms = {};
 
-      for (var i = 0, l = $scope.wizard.steps.length; i < l; i++) {
-        if ($scope.wizard.steps[i].active) {
-          return $scope.wizard.steps[i];
-        }
-      }
-    }, function (step) {
-      if (!step) {
-        return;
-      }
+    var initStep = {
+      create: function (step) {
+	var form = $scope.registerForm = step.$scope.registerForm;
+        form.data = {};
+        form.sent = false;
 
-      page.analytics.add('change', {
-        type: 'wizard',
-        id: step.id,
-        name: step.name
-      });
-
-      page.models.analytic();
-    });
-
-    //
-
-    $scope.wizard = {};
-
-    var user = {
-      anon: true,
-      password: false,
-      pending: false,
-      auth: false
-    };
-
-    $scope.retrieveWizard = function (wizard) {
-      $scope.wizard = wizard;
-    };
-
-    $scope.updateWizard = function (activate) {
-      activate = angular.isUndefined(activate) ? true : activate;
-
-      if ($scope.wizard.newStep) {
-        $scope.prepareStep[$scope.wizard.newStep.id]($scope.wizard.newStep);
-      }
-
-      user.anon = !page.models.Login.isLoggedIn();
-      user.password = page.auth.isPasswordPending();
-      user.auth = page.models.Login.isAuthorized();
-
-      angular.forEach($scope.wizard.steps, function (step) {
-        $scope.updateStep[step.id](step, activate);
-      });
-    };
-
-    //
-
-    $scope.registerForm = {};
-    $scope.userPasswordForm = {};
-    $scope.authSearchForm = {};
-    $scope.authApplyForm = {};
-    $scope.infoForm = {};
-
-    //
-
-    var updateUserAuth = function () {
-      page.models.Login.user.get(['parents', 'children']).then(function (data) {
-        if (data.parents.length)
-          user.pending = true;
-
-        $scope.updateWizard();
-      }, function (res) {
-        page.messages.addError({
-          body: page.constants.message('register.authquery.error'),
-          report: res,
-        });
-      });
-    };
-
-    //
-
-    $scope.prepareStep = {
-      'register-create': function (step) {
-        $scope.registerForm = step.registerForm;
-        $scope.registerForm.data = {};
-        $scope.registerForm.sent = false;
-
-        $scope.registerForm.ready = function () {
-          return $scope.registerForm.$dirty &&
-            $scope.registerForm.$valid &&
-            $scope.registerForm.data.name &&
-            $scope.registerForm.data.email;
-        };
-
-        $scope.registerForm.proceed = function () {
-          $scope.updateWizard();
-        };
-
-        //
-
-        $scope.registerForm.validator.client({
-          fieldName: {
-            tips: page.constants.message('register.name.help'),
-          },
-          fieldEmail: {
-            errors: page.constants.message('register.email.error'),
-            tips: page.constants.message('register.email.help'),
-          },
-          fieldAffiliation: {
-            tips: page.constants.message('register.affiliation.help'),
-          },
-        }, true);
+	var validate = {};
+	['name', 'email', 'affiliation'].forEach(function (f) {
+	  validate[f] = {
+	    tips: page.constants.message('register.' + f + '.help')
+	  };
+	});
+	validate.email.errors = page.constants.message('register.email.error');
+        form.validator.client(validate, true);
       },
 
-      'register-agreement': function (step) {
-        step.ready = function () {
-          return step.agreementCheckbox;
-        };
-
-        step.proceed = function () {
+      agreement: function (step) {
+        step.$scope.proceed = function () {
           $scope.registerForm.data.agreement = true;
 
 	  page.models.Login.register($scope.registerForm.data)
             .then(function () {
               $scope.registerForm.sent = true;
-              $scope.updateWizard();
+              proceed();
             }, function (errors, status) {
               page.messages.addError({
                 body: page.constants.message('error.generic'),
@@ -141,193 +40,118 @@ module.controller('registerView', [
         };
       },
 
-      'register-email': function (step) {
-        step.registerForm = $scope.registerForm;
+      email: function (step) {
       },
 
-      'register-password': function (step) {
-        $scope.userPasswordForm = step.userPasswordForm;
-        $scope.userPasswordForm.sent = false;
+      password: function (step) {
+        var form = $scope.userPasswordForm = step.$scope.userPasswordForm;
+        form.sent = false;
 
-        $scope.userPasswordForm.saveSuccessFn = function () {
-          $scope.userPasswordForm.sent = true;
+        form.saveSuccessFn = function () {
+          form.sent = true;
 	  page.$location.url(page.router.register());
-          $scope.updateWizard();
+          proceed();
         };
       },
 
-      'register-agent': function (step) {
-        $scope.authSearchForm = step.authSearchForm;
-        $scope.authSearchForm.data = {};
+      agent: function (step) {
+        var form = $scope.authSearchForm = step.$scope.authSearchForm;
+        form.data = {};
 
-        $scope.authSearchForm.selectFn = function (found) {
-          $scope.authSearchForm.data.party = found;
-          $scope.infoForm.data.query = undefined;
-          $scope.updateWizard();
+        form.selectFn = function (found) {
+          form.data.party = found;
+          $scope.authApplyForm.other =  {
+            id: found.id,
+            party: found
+	  };
+          proceed();
         };
 
-        $scope.authSearchForm.notFoundFn = function (query) {
-          $scope.authSearchForm.data.party = true;
-          $scope.infoForm.data.query = query;
-          $scope.updateWizard();
+        form.notFoundFn = function (query) {
+          form.data.party = true;
+          proceed();
         };
       },
 
-      'register-request': function (step) {
-        $scope.authApplyForm = step.authApplyForm;
-        $scope.authApplyForm.sent = false;
+      request: function (step) {
+        var form = $scope.authApplyForm = step.$scope.authApplyForm;
+        form.sent = false;
 
-        $scope.infoForm = step.infoForm;
-        $scope.infoForm.data = {};
-
-        step.ifInfo = function () {
-          return angular.isString($scope.infoForm.data.query);
+        form.successFn = function () {
+          form.sent = true;
+	  updateUserAuth();
         };
 
-        //
-
-        $scope.infoForm.validator.client({
-          info: {
-            tips: page.constants.message('auth.request.info.help'),
-          },
-        }, true);
-
-        //
-
-        $scope.authApplyForm.successFn = function () {
-          $scope.authApplyForm.sent = true;
-          updateUserAuth();
-          $scope.updateWizard();
-        };
-
-        $scope.authApplyForm.cancelFn = function () {
+        form.cancelFn = function () {
           $scope.authSearchForm.data.party = undefined;
-          $scope.authApplyForm.other = undefined;
-          $scope.updateWizard();
+          form.other = undefined;
+	  proceed();
         };
 
-        //
-
-        $scope.infoForm.ready = function () {
-          return $scope.infoForm.$dirty &&
-            $scope.infoForm.$valid &&
-            $scope.infoForm.data.info;
-        };
-
-        $scope.infoForm.proceed = function () {
+        step.$scope.proceed = function () {
 	  page.models.Login.user.authorizeSearch(true, {
 	      notfound: true,
-	      name: $scope.infoForm.data.query,
-	      info: $scope.infoForm.data.info
+	      // name: info.data.query,
+	      // info: info.data.info
 	    }).then(function () {
-              $scope.authApplyForm.successFn();
+              form.successFn();
             }, function (errors, status) {
-              $scope.infoForm.messages.addError({
+              page.messages.addError({
                 body: page.constants.message('error.generic'),
                 errors: errors,
                 status: status
               });
             });
         };
-
-        $scope.infoForm.cancel = function () {
-          $scope.infoForm.data.info = '';
-          $scope.authSearchForm.data.party = undefined;
-          $scope.authApplyForm.other = undefined;
-          $scope.infoForm.data.query = undefined;
-          $scope.updateWizard();
-        };
       },
 
-      'register-pending': function () {
+      pending: function () {
       }
     };
 
-    //
-
-    $scope.updateStep = {
-      'register-create': function (step, activate) {
-        step.allow = user.anon && !user.password && !$scope.registerForm.sent;
-
-        if (activate && user.anon && !user.password && !$scope.registerForm.ready()) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon || user.password || !!$scope.registerForm.ready() ? true : undefined;
-      },
-
-      'register-agreement': function (step, activate) {
-        step.allow = user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent;
-
-        if (activate && user.anon && !user.password && $scope.registerForm.ready() && !$scope.registerForm.sent) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon || user.password || !!$scope.registerForm.sent ? true : undefined;
-      },
-
-      'register-email': function (step, activate) {
-        step.allow = user.anon && !user.password && $scope.registerForm.sent;
-
-        if (activate && user.anon && !user.password && $scope.registerForm.sent) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon || user.password ? true : undefined;
-      },
-
-      'register-password': function (step, activate) {
-        step.allow = user.anon && user.password && !$scope.userPasswordForm.sent;
-
-        if (activate && user.anon && user.password && !$scope.userPasswordForm.sent) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon ? true : undefined;
-      },
-
-      'register-agent': function (step, activate) {
-        step.allow = !user.anon && !user.pending && !$scope.authApplyForm.sent;
-
-        if (activate && !user.anon && !user.pending && !$scope.authSearchForm.data.party) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon && (user.pending || user.auth || !!$scope.authSearchForm.data.party) ? true : undefined;
-      },
-
-      'register-request': function (step, activate) {
-        step.allow = !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent;
-
-        if (activate && !user.anon && !user.pending && $scope.authSearchForm.data.party && !$scope.authApplyForm.sent) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = !user.anon && (user.pending || user.auth || !!$scope.authApplyForm.sent) ? true : undefined;
-
-        //
-
-        $scope.authApplyForm.party = page.models.Login.user;
-
-        step.authSearchForm = $scope.authSearchForm;
-
-        if ($scope.authSearchForm.data.party) {
-          $scope.authApplyForm.other = {
-            id: $scope.authSearchForm.data.party.id,
-            party: $scope.authSearchForm.data.party,
-          };
-        }
-      },
-
-      'register-pending': function (step, activate) {
-        step.allow = !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent);
-
-        if (activate && !user.anon && !user.auth && (user.pending || !!$scope.authApplyForm.sent)) {
-          $scope.wizard.activateStep(step);
-        }
-
-        step.complete = user.auth ? true : undefined;
-      }
+    $scope.registerStep = function (step) {
+      initStep[step.name](step);
     };
+
+    function updateUserAuth() {
+      page.models.Login.user.get(['parents', 'children']).then(function (data) {
+        proceed();
+      }, function (res) {
+        page.messages.addError({
+          body: page.constants.message('register.authquery.error'),
+          report: res,
+        });
+      });
+    }
+
+    function proceed() {
+      var s;
+      if (!page.models.Login.isLoggedIn())
+	if (!page.auth.isPasswordPending())
+	  if (!$scope.registerForm.sent) {
+	    s.create = true;
+	    s.agreement = $scope.registerForm.$valid;
+	  } else
+	    s.email = true;
+	else
+	  s.password = !$scope.userPasswordForm.sent;
+      else if (!(page.models.Login.user.parents && page.models.Login.user.parents.length) && !$scope.authApplyForm.sent) {
+	s.agent = true;
+	s.request = $scope.authSearchForm.data.party;
+      } else if (!page.models.Login.isAuthorized())
+	s.pending = true;
+
+      var c = false;
+      for (var si = $scope.steps.length-1; si >= 0; si --) {
+	var step = $scope.steps[si];
+	step.complete = c;
+	if ((step.allow = s[step.name]) && !c) {
+	  $scope.activateStep(step);
+	  c = true;
+	}
+      }
+      if (!c)
+	;
+    }
   }
 ]);

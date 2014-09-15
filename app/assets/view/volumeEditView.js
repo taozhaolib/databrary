@@ -12,9 +12,8 @@ module.controller('volumeEditView', [
       url: volume ? volume.route : page.router.prevUrl
     });
 
-    $scope.forms = {};
     $scope.registerStep = function (step) {
-      step.form = $scope.forms['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
+      step.form = step.$scope['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };
 
     $scope.switchStep = function (step) {

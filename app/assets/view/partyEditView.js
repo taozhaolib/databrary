@@ -11,9 +11,8 @@ module.controller('partyEditView', [
       url: party.route,
     });
 
-    $scope.forms = {};
     $scope.registerStep = function (step) {
-      step.form = $scope.forms['partyEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
+      step.form = step.$scope['partyEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };
 
     $scope.switchStep = function (step) {
@@ -29,7 +28,7 @@ module.controller('partyEditView', [
       return true;
     };
 
-    page.display.navigationFn = function () {
+    page.display.navigationFn = function (event, url) {
       return $scope.activeStep.form.$pristine;
     };
 
