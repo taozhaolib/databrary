@@ -87,8 +87,8 @@ module.factory('messageService', [
 
         if (angular.isObject(message.errors)) {
           angular.forEach(message.errors, function (errorArray, field) {
-            moreBody += '<dl class="comma"><dt>' + (field || '') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
-            messageBody += 'Field "' + (field || 'validation') + '":\n' + errorArray.join('\n') + '\n\n';
+            moreBody += '<dl class="comma"><dt>' + (field || 'Reason') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
+            messageBody += (field || 'Reason') + ':\n' + errorArray.join('\n') + '\n\n';
           });
         }
 
