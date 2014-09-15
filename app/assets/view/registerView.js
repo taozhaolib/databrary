@@ -97,7 +97,7 @@ module.controller('registerView', [
     };
 
     function updateUserAuth() {
-      page.models.Login.user.get(['parents', 'children']).then(function (data) {
+      page.models.Login.user.get(['parents', 'children']).then(function () {
         $scope.proceed();
       }, function (res) {
         page.messages.addError({
