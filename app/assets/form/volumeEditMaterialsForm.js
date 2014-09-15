@@ -107,14 +107,14 @@ module.directive('volumeEditMaterialsForm', [
 	  material.form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message('volume.edit.materials.update.success', materialName(material)),
+	    body: page.constants.message('asset.update.success', materialName(material)),
 	  });
 
 	  material.form.$setPristine();
 	}, function (res) {
 	  material.form.messages.addError({
 	    type: 'red',
-	    body: page.constants.message('volume.edit.materials.update.error', materialName(material)),
+	    body: page.constants.message('asset.update.error', materialName(material)),
 	    report: res,
 	  });
 	});
@@ -149,14 +149,14 @@ module.directive('volumeEditMaterialsForm', [
 	  form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message('volume.edit.materials.remove.success', material.asset.name || page.constants.message('file')),
+	    body: page.constants.message('asset.remove.success', material.asset.name || page.constants.message('file')),
 	  });
 
 	  form.materials.remove(material);
 	}, function (res) {
 	  material.form.messages.addError({
 	    type: 'red',
-	    body: page.constants.message('volume.edit.materials.remove.error', material.asset.name || page.constants.message('file')),
+	    body: page.constants.message('asset.remove.error', material.asset.name || page.constants.message('file')),
 	    report: res,
 	  });
 	});
