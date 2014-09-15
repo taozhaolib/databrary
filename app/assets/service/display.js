@@ -61,26 +61,6 @@ module.factory('displayService', [
 
     //
 
-    display.navigationFn = undefined;
-
-    $rootScope.$on('$locationChangeStart', function (event, url) {
-      if (!angular.isFunction(display.navigationFn)) {
-        return;
-      }
-
-      var result = display.navigationFn(event, url);
-
-      if (angular.isUndefined(result)) {
-        return;
-      } else if (result === true || confirm(constants.message('navigation.confirmation'))) {
-        return (display.navigationFn = undefined);
-      }
-
-      event.preventDefault();
-    });
-
-    //
-
     var ageKeys = ['science', 'days', 'months', 'years'],
       ageKey = storage.get('displayAge') || 'science';
 

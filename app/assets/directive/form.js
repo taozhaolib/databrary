@@ -110,9 +110,11 @@ module.directive('ngForm', [
 	},
       };
 
-      form.resetAll = function (force) {
-	if (!(force || confirm(page.constants.message('navigation.confirmation'))))
+      form.resetAll = function (force, check) {
+	if (!(force || form.$pristine || confirm(page.constants.message('navigation.confirmation'))))
 	  return false;
+	if (check)
+	  return true;
 	var x = window.pageXOffset,
 	    y = window.pageYOffset;
 	page.$route.reload();

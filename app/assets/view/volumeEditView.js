@@ -16,10 +16,12 @@ module.controller('volumeEditView', [
       step.form = step.$scope['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };
 
-    $scope.switchStep = function (step) {
-      var cur = $scope.activeStep;
+    function leavingSoSoon() {
+      return !$scope.activeStep || $scope.activeStep.form.resetAll(false, true);
+    }
 
-      if (cur && cur.form.$dirty && !cur.form.resetAll())
+    $scope.switchStep = function (step) {
+      if (!leavingSoSoon())
 	return false;
 
       //to avoid bug where "float" elements fixed to top of page at lower scrolls are already at top
@@ -29,14 +31,21 @@ module.controller('volumeEditView', [
       return true;
     };
 
-    page.display.navigationFn = function () {
-      return $scope.activeStep.form.$pristine;
-    };
+    var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
+      /* hacky: */
+      if (url.contains(volume ? volume.editRoute() : page.router.volumeCreate()))
+	return;
+      if (!leavingSoSoon())
+	return event.preventDefault();
+      done();
+    });
 
     $scope.$watch(function () {
       $scope.steps.forEach(function (step) {
-	step.complete = step.form.$pristine;
-	step.error = step.form.$invalid;
+	if (step.form) {
+	  step.complete = step.form.$pristine;
+	  step.error = step.form.$invalid;
+	}
       });
     });
   }

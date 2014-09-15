@@ -6,8 +6,8 @@ module.directive('volumeEditOverviewForm', [
       var volume = $scope.volume;
       var form = $scope.volumeEditOverviewForm;
 
-      function init() {
-	var citation = volume ? volume.citation : {};
+      function init(volume) {
+	var citation = volume.citation || {};
 	form.data = {
 	  name: volume.name,
 	  alias: volume.alias,
@@ -20,7 +20,7 @@ module.directive('volumeEditOverviewForm', [
 	  }
 	};
       }
-      init();
+      init(volume || {});
 
       form.setAutomatic = function (auto) {
         form.automatic = auto;
@@ -42,7 +42,7 @@ module.directive('volumeEditOverviewForm', [
 	(volume ?
           volume.save(form.data) :
           page.models.Volume.create(form.data, page.$routeParams.owner))
-	  .then(function (res) {
+	  .then(function (vol) {
 	    form.validator.server({});
 
 	    form.messages.add({
@@ -51,11 +51,11 @@ module.directive('volumeEditOverviewForm', [
 	      body: page.constants.message('volume.edit.overview.success'),
 	    });
 
-	    init();
+	    init(vol);
 	    form.$setPristine();
 
 	    if (!volume)
-	      page.$location.url(res.editRoute());
+	      page.$location.url(vol.editRoute());
 	  }, function (res) {
 	    form.validator.server(res);
 	  });
@@ -114,6 +114,7 @@ module.directive('volumeEditOverviewForm', [
 	};
       });
       form.validator.client(validate, true);
+      form.setAutomatic(!volume);
 
       var $float = $('.veo-float');
       var $floater = $('.veo-float-floater');
