@@ -42,10 +42,8 @@ module.controller('volumeEditView', [
 
     $scope.$watch(function () {
       $scope.steps.forEach(function (step) {
-	if (step.form) {
-	  step.complete = step.form.$pristine;
-	  step.error = step.form.$invalid;
-	}
+	step.complete = step.form.$pristine;
+	step.error = step.form.$invalid;
       });
     });
   }
