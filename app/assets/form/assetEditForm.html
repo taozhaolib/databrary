@@ -1,0 +1,12 @@
+<ng-form ng-show="ctrl.mode === 'edit'" name="assetEditForm">
+  <validator name="classification" label="'material.classification' | message">
+    <select name="classification" ng-model="assetEditForm.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
+  </validator>
+
+  <validator name="name" label="'material.name' | message">
+    <input type="text" name="name" ng-model="assetEditForm.data.name">
+  </validator>
+
+  <button class="green" ng-click="assetEditForm.saveAsset()" bo-text="'save' | message" ng-disabled="assetEditForm.$pristine"></button>
+</ng-form>
+

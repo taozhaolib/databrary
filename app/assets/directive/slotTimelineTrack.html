@@ -5,7 +5,7 @@
         <img class="slot-track-asset-thumb" bo-if="ctrl.hasDisplay(track.asset)" bo-src="asset.thumbRoute()">
         <img class="slot-track-asset-icon" bo-if="!ctrl.hasDisplay(track.asset)" bo-src="track.asset.icon">
 
-        <div class="slot-track-asset-info-name" bo-text="track.asset.displayName"></div>
+	<div class="slot-track-asset-info-name">{{track.asset.displayName}}</div>
       </div>
     </div>
     <div class="slot-track-asset" ng-if="track.spare && track.drop" flow-drop>

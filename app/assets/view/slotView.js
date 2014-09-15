@@ -83,6 +83,7 @@ module.controller('slotView', [
 
       setCurrent: function (asset) {
 	ctrl.current = getAsset(asset);
+	ctrl.updateEditData();
       },
 
       isCurrent: function (media) {

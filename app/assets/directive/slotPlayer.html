@@ -1,29 +1,33 @@
 <section class="slot-player" bindonce>
   <div class="player-main">
+
     <div class="player-main-info" ng-class="{playable: ctrl.current && ctrl.hasDisplay(ctrl.current)}">
       <div ng-if="ctrl.current">
         <nav class="player-main-info-actions">
           <img ng-src="{{ctrl.current.icon}}" hint="format-{{ctrl.current.format.extension}}" class="player-main-info-file-icon">
-          <a ng-href="{{ctrl.current.editRoute()}}" target="_self" ng-if="page.models.Login.checkAccess(page.permission.CONTRIBUTE, ctrl.current)" class="player-main-info-link icon edit line"></a>
           <a ng-href="{{ctrl.current.downloadRoute(false)}}" target="_self" ng-if="page.models.Login.checkAccess(page.permission.READ, ctrl.current)" class="player-main-info-link icon download line"></a>
           <a ng-click="ctrl.jump(ctrl.current)" class="player-main-info-link icon jump line"></a>
         </nav>
 
-        <dl class="player-main-info-list cf">
-          <dt bo-text="'material.classification' | message"></dt>
-          <dd>
-            <span class="classification icon" ng-class="page.constants.classification[ctrl.current.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[ctrl.current.asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[ctrl.current.asset.classification]"></span>
-          </dd>
+	<div ng-if="ctrl.mode === 'view'">
+	  <dl class="player-main-info-list cf">
+	    <dt bo-text="'material.classification' | message"></dt>
+	    <dd>
+	      <span class="classification icon" ng-class="page.constants.classification[ctrl.current.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[ctrl.current.asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[ctrl.current.asset.classification]"></span>
+	    </dd>
 
-          <dt>File Type</dt>
-          <dd ng-bind="ctrl.current.format.name"></dd>
+	    <dt>File Type</dt>
+	    <dd ng-bind="ctrl.current.format.name"></dd>
 
-          <dt ng-if="ctrl.current.asset.duration || ctrl.hasPosition(ctrl.current)">Position</dt>
-	  <dd>
-	    <span ng-if="ctrl.hasPosition(ctrl.current)">{{ctrl.current.segment.l | timecode}} &ndash; {{ctrl.current.segment.u | timecode}}</span>
-	    <span ng-if="ctrl.current.asset.duration"> ({{ctrl.current.asset.duration | timecode}})</span>
-	  </dd>
-        </dl>
+	    <dt ng-if="ctrl.current.asset.duration || ctrl.hasPosition(ctrl.current)">Position</dt>
+	    <dd>
+	      <span ng-if="ctrl.hasPosition(ctrl.current)">{{ctrl.current.segment.l | timecode}} &ndash; {{ctrl.current.segment.u | timecode}}</span>
+	      <span ng-if="ctrl.current.asset.duration"> ({{ctrl.current.asset.duration | timecode}})</span>
+	    </dd>
+	  </dl>
+	</div>
+
+	<asset-edit-form></asset-edit-form>
       </div>
     </div>
 
@@ -31,7 +35,7 @@
       <slot-media asset="ctrl.current" ng-if="ctrl.hasDisplay(ctrl.current)"></slot-media>
     </div>
 
-    <div class="player-main-float" ng-if="ctrl.current">
+    <div class="player-main-float" ng-if="ctrl.current && ctrl.mode == 'view'">
       <h1 class="player-main-info-name">
         <span class="filename" ng-bind="ctrl.current.displayName"></span>
       </h1>

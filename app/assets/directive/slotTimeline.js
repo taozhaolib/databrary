@@ -7,6 +7,7 @@ module.directive('slotTimeline', [
       function ($scope, $element) {
         var timeline = this;
         var ctrl = $scope.ctrl;
+	ctrl.timeline = timeline;
         var $now;
 
         var nowListener = $scope.$on('shout-slotTimelineNow', function (e, $scope, $element) {
