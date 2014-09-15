@@ -375,7 +375,7 @@ funding.search.name.help=Start typing the name of the desired funding agency.
 auth.site=Access to others'' shared Databrary data
 auth.site.NONE.title=No access
 # for lockdown only:
-auth.site.NONE=Cannot access Databrary at all (during beta).
+auth.site.NONE=Can only access public data.
 #auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
 auth.site.PUBLIC.title=Provisional access
 auth.site.PUBLIC=Authorized to browse Databrary studies and volumes, but only to view public data.

@@ -18,17 +18,19 @@ module.directive('authGrantForm', [
 			};
 			
 			$scope.canGrantSite = function (p) {
-				return  p <= page.constants.data.permissionName.PUBLIC ||
-					p == page.constants.data.permissionName.READ ||
-					p > page.constants.data.permissionName.READ &&
-					page.auth.hasAccess(p+1);
+				return  p == page.permission.NONE ||
+					p == page.permission.READ ||
+					p > page.permission.READ &&
+					page.auth.hasAccess(p+1) ||
+					page.auth.hasAccess(page.permission.ADMIN);
 			};
 
 			$scope.canGrantMember = function (p) {
-				return  p == page.constants.data.permissionName.NONE ||
-					p == page.constants.data.permissionName.READ ||
-					p == page.constants.data.permissionName.EDIT ||
-					p == page.constants.data.permissionName.ADMIN;
+				return  p == page.permission.NONE ||
+					p == page.permission.READ ||
+					p == page.permission.EDIT ||
+					p == page.permission.ADMIN ||
+					page.auth.hasAccess(page.permission.ADMIN);
 			};
 
 			//
