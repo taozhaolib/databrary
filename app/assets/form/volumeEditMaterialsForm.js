@@ -45,17 +45,17 @@ module.directive('volumeEditMaterialsForm', [
 	material.file = file;
 	material.progress = 0;
 	file.material = material;
-	material.form.$setDirty();
 
 	page.assets.assetStart(file).then(function () {
+	  material.form.$setDirty();
 	  file.resume();
 	}, function (res) {
 	  form.messages.addError({
 	    type: 'red',
-	    body: page.constants('asset.upload.rejected', materialName(material)), 
+	    body: page.constants.message('asset.upload.rejected', materialName(material)), 
 	    report: res,
 	  });
-	  delete material.file;
+	  form.remove(material);
 	});
       };
 
