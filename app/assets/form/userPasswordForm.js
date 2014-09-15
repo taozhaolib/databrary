@@ -83,7 +83,7 @@ module.directive('userPasswordForm', [
       form.ready = function () {
         if (form.data.token) {
           return form.$dirty && form.$valid && form.data.password.once &&
-            form.data.password.once == form.data.password.again;
+            form.data.password.once === form.data.password.again;
         }
         else {
           return form.$dirty && form.$valid && form.data.email;

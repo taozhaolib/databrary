@@ -1,8 +1,8 @@
 <ng-form name="partyEditProfileForm" bindonce>
   <fieldset class="clean pep-float">
     <div class="pep-float-floater">
-      <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="!(partyEditProfileForm.$dirty && partyEditProfileForm.$valid)"></button>
-      <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="!partyEditProfileForm.$dirty"></button>
+      <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
+      <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
     </div>
   </fieldset>
   <fieldset>

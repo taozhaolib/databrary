@@ -12,6 +12,7 @@ module.directive('authGrantForm', [
 	member: auth.member,
 	expires: auth.expires,
       };
+
       if (auth.new)
 	form.$setDirty();
 

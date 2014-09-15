@@ -10,8 +10,8 @@
         <span class="vem-float-dropzone-message" bo-text="'material.add-drop' | message"></span>
       </div>
 
-      <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
-      <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-text="'revert' | message" ng-disabled="!volumeEditMaterialsForm.$dirty"></button>
+      <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
+      <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-text="'revert' | message" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
       <div class="vem-float-progress">
 	<upload-progress progress-value="volumeEditMaterialsForm.progress"></upload-progress>
       </div>

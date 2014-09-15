@@ -50,12 +50,6 @@ module.directive('commentReplyForm', [
 
       //
 
-      form.ready = function () {
-        return form.$dirty && form.$valid && form.data.text;
-      };
-
-      //
-
       form.validator.client({
         text: {
           tips: page.constants.message('comments.text.help'),

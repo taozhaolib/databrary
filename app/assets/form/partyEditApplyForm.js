@@ -8,25 +8,13 @@ module.directive('partyEditApplyForm', [
 
       form.data = party.parents.slice();
 
-      var subforms = [];
-
-      function checkDirty() {
-	if (!subforms.some(function (subform) {
-	  return subform.$dirty;
-	}))
-	  form.$setPristine();
-      }
-
       page.events.listen($scope, 'authApplyForm-init', function (event, applyForm) {
-        subforms.push(applyForm);
-
         applyForm.successFn = function () {
           form.messages.add({
             body: page.constants.message('auth.apply.save.success'),
             type: 'green',
             countdown: 3000,
           });
-	  checkDirty();
         };
 
         applyForm.cancelFn = function (auth) {
@@ -37,8 +25,6 @@ module.directive('partyEditApplyForm', [
           });
 
           form.data.remove(auth);
-          subforms.remove(applyForm);
-	  checkDirty();
         };
       });
 

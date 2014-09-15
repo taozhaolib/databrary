@@ -3,18 +3,57 @@
 module.directive('ngForm', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
-      if (!$attrs.name)
+      var name = $attrs.name || $attrs.ngForm;
+      var form = name && $scope.$eval(name);
+      if (!form)
         return;
 
-      var form = $scope[$attrs.name];
       if ($scope.forms)
-	$scope.forms[$attrs.name] = form;
+	$scope.forms[name] = form;
+
       form.messages = page.messages;
-
-      var unclaimed = {};
-
       form.$element = $element;
 
+      var controls = [];
+
+      function checkDirty() {
+	if (controls.every(function (control) {
+	    return control.$pristine;
+	  })) {
+	  /* effectively call form.$setPristine, without the controls. */
+	  page.$animate.removeClass($element, 'ng-dirty');
+	  page.$animate.addClass($element, 'ng-pristine');
+	  form.$dirty = false;
+	  form.$pristine = true;
+	}
+      }
+
+      var $addControl = form.$addControl;
+      var $removeControl = form.$removeControl;
+
+      /* this is unfortunate, just because we can't access the existing controls list. */
+      form.$addControl = function (control) {
+	if ('$pristine' in control)
+	  controls.push(control);
+	return $addControl(control);
+      };
+
+      form.$removeControl = function (control) {
+	controls.remove(control);
+	checkDirty();
+	return $removeControl(control);
+      };
+
+      form.subformControl = {
+	$setPristine: checkDirty
+      };
+
+      /* it'd be nicer to handle this in $addControl, but it happens too early */
+      var parentForm = $element.parent().controller('form');
+      if (parentForm && parentForm.subformControl)
+	form.$addControl(parentForm.subformControl);
+
+      var unclaimed = {};
       form.validators = {};
       form.validator = {
 	server: function (res, replace) {
@@ -30,19 +69,11 @@ module.directive('ngForm', [
 
 	  var name;
 	  for (name in form.validators) {
-	    if (form.validators.hasOwnProperty(name)) {
-	      form.validators[name].server(res.data[name] || {}, replace);
-	    } else if (form.messages) {
-	      form.messages.add({
-		type: 'red',
-		closeable: true,
-		body: Array.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
-	      });
-	    }
+	    form.validators[name].server(res.data[name] || {}, replace);
 	  }
 
 	  for (name in res.data) {
-	    if (res.data.hasOwnProperty(name) && form.validators[name]) {
+	    if (form.validators[name]) {
 	      form.validators[name].server(res.data[name], replace);
 	    } else if (form.messages) {
 	      form.messages.add({
@@ -96,7 +127,7 @@ module.directive('ngForm', [
     };
 
     return {
-      restrict: 'E',
+      restrict: 'EA',
       link: {
 	pre: pre
       }

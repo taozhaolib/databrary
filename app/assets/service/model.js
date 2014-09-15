@@ -810,14 +810,6 @@ module.factory('modelService', [
 	return $q.successful(a);
     };
 
-    Asset.prototype.save = function (data) {
-      var a = this;
-      return router.http(router.controllers.AssetApi.update, this.id, data)
-	.then(function (res) {
-	  return a.update(res.data);
-	});
-    };
-
     ///////////////////////////////// SlotAsset
 
     function SlotAsset(context, init) {
@@ -858,6 +850,14 @@ module.factory('modelService', [
 	return '/public/images/filetype/16px/' + this.format.extension + '.png';
       }
     });
+
+    SlotAsset.prototype.save = function (data) {
+      var a = this;
+      return router.http(router.controllers.AssetApi.update, this.asset.id, data)
+	.then(function (res) {
+	  return 'id' in res.data ? a.asset.update(res.data) : a.update(res.data);
+	});
+    };
 
     Slot.prototype.createAsset = function (data) {
       var s = this;

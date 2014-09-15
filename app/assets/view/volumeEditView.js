@@ -31,12 +31,12 @@ module.controller('volumeEditView', [
     };
 
     page.display.navigationFn = function () {
-      return !$scope.activeStep.form.$dirty;
+      return $scope.activeStep.form.$pristine;
     };
 
     $scope.$watch(function () {
       $scope.steps.forEach(function (step) {
-	step.complete = !step.form.$dirty;
+	step.complete = step.form.$pristine;
 	step.error = step.form.$invalid;
       });
     });

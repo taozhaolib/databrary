@@ -1,8 +1,8 @@
 <ng-form name="volumeEditOverviewForm" bindonce>
   <fieldset class="clean veo-float">
     <div class="veo-float-floater">
-      <button ng-click="volumeEditOverviewForm.save()" bo-text="'save' | message" class="green" ng-disabled="!volumeEditOverviewForm.$dirty || !volumeEditOverviewForm.$valid"></button>
-      <button ng-click="volumeEditOverviewForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="!volumeEditOverviewForm.$dirty"></button>
+      <button ng-click="volumeEditOverviewForm.save()" bo-text="'save' | message" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
+      <button ng-click="volumeEditOverviewForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
     </div>
   </fieldset>
 

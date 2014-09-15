@@ -30,6 +30,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       _ <- asset.change(name = form.name.get, classification = form.classification.get)
       sa <- container.mapAsync(asset.link(_, form.position.get))
       _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _))
+      /* link doesn't return correct excerpt: */
+      sa <- asset.slot
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
 
   private def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =

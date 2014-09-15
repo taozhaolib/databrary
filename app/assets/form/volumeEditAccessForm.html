@@ -13,8 +13,8 @@
   <fieldset class="clean vea-float">
     <div class="vea-float-floater row">
       <access-search-form class="col-desktop-9 col-laptop-6 col-tablet-3 col-mobile-2" placeholder-text="{{'access.search.legend' | message}}"></access-search-form>
-      <button ng-click="volumeEditAccessForm.saveAll()" class="green col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'save' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
-      <button ng-click="volumeEditAccessForm.resetAll()" class="yellow col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'revert' | message" ng-disabled="!volumeEditAccessForm.$dirty"></button>
+      <button ng-click="volumeEditAccessForm.saveAll()" class="green col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'save' | message" ng-disabled="volumeEditAccessForm.$pristine"></button>
+      <button ng-click="volumeEditAccessForm.resetAll()" class="yellow col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1" bo-text="'revert' | message" ng-disabled="volumeEditAccessForm.$pristine"></button>
     </div>
   </fieldset>
 

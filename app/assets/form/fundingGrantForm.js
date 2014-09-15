@@ -10,6 +10,7 @@ module.directive('fundingGrantForm', [
       form.data = {
 	awards: funding.awards && funding.awards.length ? funding.awards.slice(0) : ['']
       };
+
       if (funding.new)
 	form.$setDirty();
 

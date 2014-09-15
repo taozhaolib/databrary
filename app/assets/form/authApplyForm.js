@@ -14,7 +14,8 @@ module.directive('authApplyForm', [
         info: undefined
       };
 
-      form.$setDirty();
+      if (auth.new)
+	form.$setDirty();
 
       //
 

@@ -8,32 +8,8 @@
       </hgroup>
 
       <div class="col">
-        <ng-form name="loginForm">
-          <div ng-switch="method">
-            <div ng-switch-default>
-              <validator name="email" label="'email' | message">
-                <input id="loginEmail" name="email" type="email" ng-model="loginData.email">
-              </validator>
-
-              <validator name="password" label="'password' | message">
-                <input id="loginPassword" name="password" type="password" ng-model="loginData.password" ng-required>
-              </validator>
-            </div>
-
-            <div ng-switch-when="openid">
-              <input id="loginOpenid" type="text" ng-model="loginData.openid" bo-attr bo-attr-placeholder="'openid' | message" ng-required>
-            </div>
-          </div>
-
-          <button id="loginSubmit" type="submit" class="green" ng-click="submitForm()" ng-disabled="loginForm.$invalid" bo-text="'login.login' | message"></button>
-
-          <a ng-click="switchMethod('openid')" ng-show="false && showMethodLink('openid')" bo-text="'login.method.openid' | message"></a>
-          <a ng-click="switchMethod('databrary')" ng-show="false && showMethodLink('databrary')" bo-text="'login.method.password' | message"></a>
-
-          <a bo-href="page.router.password()" bo-text="'login.forgot' | message"></a>
-        </form>
+	<login-form></login-form>
       </div>
     </div>
   </div>
 </article>
-

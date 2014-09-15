@@ -10,13 +10,6 @@ module.directive('partyEditGrantForm', [
 
       var subforms = [];
 
-      function checkDirty() {
-	if (!subforms.some(function (subform) {
-	      return subform.$dirty;
-	    }))
-	  form.$setPristine();
-      }
-
       form.saveAll = function () {
         subforms.forEach(function (subform) {
           if (subform.$dirty)
@@ -30,7 +23,6 @@ module.directive('partyEditGrantForm', [
         grantForm.denySuccessFn = function (auth) {
           form.data.remove(auth);
           subforms.remove(grantForm);
-	  checkDirty();
         };
       });
 

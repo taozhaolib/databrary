@@ -45,6 +45,7 @@ module.directive('volumeEditMaterialsForm', [
 	material.file = file;
 	material.progress = 0;
 	file.material = material;
+	material.form.$setDirty();
 
 	page.assets.assetStart(file).then(function () {
 	  file.resume();
@@ -88,7 +89,7 @@ module.directive('volumeEditMaterialsForm', [
 	  material.data.upload = material.file.uniqueIdentifier;
 	  act = material.asset ? material.asset.replace(material.data) : slot.createAsset(material.data);
 	} else
-	  act = material.asset.asset.save(material.data);
+	  act = material.asset.save(material.data);
 
 	act.then(function (asset) {
 	  if (asset instanceof page.models.SlotAsset)
@@ -103,7 +104,7 @@ module.directive('volumeEditMaterialsForm', [
 	    delete material.file;
 	  }
 
-	  form.messages.add({
+	  material.form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
 	    body: page.constants.message('volume.edit.materials.update.success', materialName(material)),
@@ -111,7 +112,7 @@ module.directive('volumeEditMaterialsForm', [
 
 	  material.form.$setPristine();
 	}, function (res) {
-	  form.messages.addError({
+	  material.form.messages.addError({
 	    type: 'red',
 	    body: page.constants.message('volume.edit.materials.update.error', materialName(material)),
 	    report: res,
@@ -128,6 +129,7 @@ module.directive('volumeEditMaterialsForm', [
 
       form.replace = function (material) {
 	material.replace = true;
+	material.form.$setDirty();
       };
 
       form.remove = function (material) {
@@ -152,7 +154,7 @@ module.directive('volumeEditMaterialsForm', [
 
 	  form.materials.remove(material);
 	}, function (res) {
-	  form.messages.addError({
+	  material.form.messages.addError({
 	    type: 'red',
 	    body: page.constants.message('volume.edit.materials.remove.error', material.asset.name || page.constants.message('file')),
 	    report: res,

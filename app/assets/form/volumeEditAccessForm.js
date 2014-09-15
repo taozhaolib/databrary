@@ -27,14 +27,6 @@ module.directive('volumeEditAccessForm', [
       var globalForm = $scope.accessGlobalForm;
       var subforms = [];
 
-      function checkDirty() {
-	if (!globalForm.$dirty &&
-	    !subforms.some(function (subform) {
-	      return subform.$dirty;
-	    }))
-	  form.$setPristine();
-      }
-
       $scope.permissionName = function (p) {
 	return page.constants.permission[p];
       };
@@ -62,7 +54,6 @@ module.directive('volumeEditAccessForm', [
             type: 'green',
             countdown: 3000,
           });
-	  checkDirty();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.global.save.error'),
@@ -77,7 +68,6 @@ module.directive('volumeEditAccessForm', [
         grantForm.removeSuccessFn = function (access) {
           form.data.remove(access);
           subforms.remove(grantForm);
-	  checkDirty();
         };
       });
 
