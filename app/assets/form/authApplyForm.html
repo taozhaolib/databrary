@@ -1,23 +1,23 @@
 <ng-form name="authApplyForm" class="auth-apply-form" bindonce>
-  <fieldset class="clean" ng-if="!authApplyForm.notFound.query">
+  <fieldset class="clean" ng-if="auth.party">
     <legend ng-bind="'auth.request.title' | message:auth.party.name"></legend>
 
     <div ng-if="auth.party.institution">
       <div bo-text="'auth.info.prompt' | message"></div>
 
       <validator name="info" label="'auth.request.info.title' | message">
-        <textarea id="field-guess" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+        <textarea id="field-guess" name="info" ng-model="authApplyForm.data.info"></textarea>
       </validator>
     </div>
   </fieldset>
 
-  <fieldset class="clean" ng-if="authApplyForm.notFound.query">
+  <fieldset class="clean" ng-if="!auth.party">
     <legend bo-text="'auth.request.notfound.title' | message"></legend>
 
     <div bo-html="'auth.request.notfound.instructions' | message"></div>
 
     <validator name="info" label="'auth.request.info.title' | message">
-      <textarea id="field-info" name="info" ng-model="authApplyForm.notFound.info"></textarea>
+      <textarea id="field-info" name="info" ng-model="authApplyForm.data.info"></textarea>
     </validator>
   </fieldset>
 

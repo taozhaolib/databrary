@@ -79,6 +79,7 @@ object SiteApi extends SiteController {
     , LoginApi.logout
     , LoginApi.superuserOn
     , LoginApi.superuserOff
+    , LoginApi.register
     , TokenHtml.getPassword
     , TokenHtml.issuePassword
     , TokenHtml.token

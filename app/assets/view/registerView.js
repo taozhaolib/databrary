@@ -2,9 +2,10 @@
 
 module.controller('registerView', [
   '$scope', 'pageService', function ($scope, page) {
+    $scope.page = page;
     page.display.title = page.constants.message('page.title.register');
 
-    $scope.forms = {};
+    $scope.auth = {};
 
     var initStep = {
       create: function (step) {
@@ -24,12 +25,10 @@ module.controller('registerView', [
 
       agreement: function (step) {
         step.$scope.proceed = function () {
-          $scope.registerForm.data.agreement = true;
-
 	  page.models.Login.register($scope.registerForm.data)
             .then(function () {
               $scope.registerForm.sent = true;
-              proceed();
+              $scope.proceed();
             }, function (errors, status) {
               page.messages.addError({
                 body: page.constants.message('error.generic'),
@@ -50,7 +49,7 @@ module.controller('registerView', [
         form.saveSuccessFn = function () {
           form.sent = true;
 	  page.$location.url(page.router.register());
-          proceed();
+          $scope.proceed();
         };
       },
 
@@ -59,17 +58,15 @@ module.controller('registerView', [
         form.data = {};
 
         form.selectFn = function (found) {
-          form.data.party = found;
-          $scope.authApplyForm.other =  {
-            id: found.id,
-            party: found
-	  };
-          proceed();
+	  $scope.auth.party = found;
+	  delete $scope.auth.query;
+          $scope.proceed();
         };
 
         form.notFoundFn = function (query) {
-          form.data.party = true;
-          proceed();
+	  delete $scope.auth.party;
+	  $scope.auth.query = query;
+          $scope.proceed();
         };
       },
 
@@ -83,25 +80,9 @@ module.controller('registerView', [
         };
 
         form.cancelFn = function () {
-          $scope.authSearchForm.data.party = undefined;
-          form.other = undefined;
-	  proceed();
-        };
-
-        step.$scope.proceed = function () {
-	  page.models.Login.user.authorizeSearch(true, {
-	      notfound: true,
-	      // name: info.data.query,
-	      // info: info.data.info
-	    }).then(function () {
-              form.successFn();
-            }, function (errors, status) {
-              page.messages.addError({
-                body: page.constants.message('error.generic'),
-                errors: errors,
-                status: status
-              });
-            });
+          delete $scope.auth.party;
+          delete $scope.auth.query;
+	  $scope.proceed();
         };
       },
 
@@ -111,11 +92,13 @@ module.controller('registerView', [
 
     $scope.registerStep = function (step) {
       initStep[step.name](step);
+      if (step.name === 'pending')
+	$scope.proceed();
     };
 
     function updateUserAuth() {
       page.models.Login.user.get(['parents', 'children']).then(function (data) {
-        proceed();
+        $scope.proceed();
       }, function (res) {
         page.messages.addError({
           body: page.constants.message('register.authquery.error'),
@@ -124,34 +107,34 @@ module.controller('registerView', [
       });
     }
 
-    function proceed() {
-      var s;
+    $scope.proceed = function () {
+      var s = {};
       if (!page.models.Login.isLoggedIn())
 	if (!page.auth.isPasswordPending())
 	  if (!$scope.registerForm.sent) {
 	    s.create = true;
-	    s.agreement = $scope.registerForm.$valid;
+	    s.agreement = $scope.registerForm.$dirty && $scope.registerForm.$valid;
 	  } else
 	    s.email = true;
 	else
 	  s.password = !$scope.userPasswordForm.sent;
       else if (!(page.models.Login.user.parents && page.models.Login.user.parents.length) && !$scope.authApplyForm.sent) {
 	s.agent = true;
-	s.request = $scope.authSearchForm.data.party;
+	s.request = $scope.auth.party || $scope.auth.query;
       } else if (!page.models.Login.isAuthorized())
 	s.pending = true;
 
-      var c = false;
+      var a;
       for (var si = $scope.steps.length-1; si >= 0; si --) {
 	var step = $scope.steps[si];
-	step.complete = c;
-	if ((step.allow = s[step.name]) && !c) {
-	  $scope.activateStep(step);
-	  c = true;
-	}
+	step.complete = !!a;
+	if ((step.allow = !!s[step.name]))
+	  a = a || step;
       }
-      if (!c)
-	;
-    }
+      if (a)
+	$scope.activateStep(a);
+      else
+	alert('Your registration is complete.'); // and how did you get here?
+    };
   }
 ]);

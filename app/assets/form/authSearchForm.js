@@ -3,14 +3,13 @@
 module.directive('authSearchForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
-      var party = $scope.party;
+      var party = $scope.party || page.models.Login.user;
       var form = $scope.authSearchForm;
 
       form.nameVal = '';
       form.found = [];
       form.principal = $attrs.principal;
       form.apply = form.principal !== 'child';
-      form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
 
       $scope.$watch(function () {
         return form.principal;
@@ -22,6 +21,7 @@ module.directive('authSearchForm', [
             tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
           }
         }, true);
+	form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
       });
 
       //

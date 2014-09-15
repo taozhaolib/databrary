@@ -40,11 +40,8 @@ module.directive('userPasswordForm', [
             if (angular.isFunction(form.resetSuccessFn)) {
               form.resetSuccessFn();
             }
-          }, function (data, status) {
-            form.validator.server({
-              data: data,
-              status: status,
-            });
+          }, function (res) {
+            form.validator.server(res);
           });
       };
 
@@ -68,11 +65,8 @@ module.directive('userPasswordForm', [
             if (angular.isFunction(form.saveSuccessFn)) {
               form.saveSuccessFn();
             }
-          }, function (data, status) {
-            form.validator.server({
-              data: data,
-              status: status,
-            });
+          }, function (res) {
+            form.validator.server(res);
 
             page.$window.$play.object = null;
           });

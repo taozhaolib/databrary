@@ -32,11 +32,11 @@
           <wizard-step name="agreement">
 	    <div ng-bind-html="'wizard.register-agreement.agreement-contents' | message:{sce:page.$sce.HTML}"></div>
 
-            <p><input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="agreementCheckbox">
+            <p><input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="registerForm.data.agreement">
 	      <label for="agreement-checkbox" class="option" ng-bind-html="'wizard.register-agreement.agree' | message:{sce:page.$sce.HTML}"></label>
             </p>
 
-            <button class="green" ng-click="proceed()" ng-disabled="!agreementCheckbox">{{'register.register' | message}}</button>
+            <button class="green" ng-click="proceed()" ng-disabled="!registerForm.data.agreement">{{'register.register' | message}}</button>
           </wizard-step>
 
           <wizard-step name="email">

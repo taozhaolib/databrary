@@ -7,29 +7,20 @@ module.directive('authApplyForm', [
       var auth = $scope.auth;
       var form = $scope.authApplyForm;
 
-      $scope.page = page;
-
-      form.notFound = {
-        query: auth.query,
-        info: undefined
-      };
+      form.data = {};
 
       if (auth.new)
 	form.$setDirty();
 
       //
 
-      form.successFn = undefined;
-
       var saveAuth = function () {
-	party.authorizeApply(auth.party.id, {info:form.notFound.info}).then(function () {
+	party.authorizeApply(auth.party.id, form.data).then(function () {
           form.validator.server({});
           form.$setPristine();
           delete auth.new;
 
-          if (angular.isFunction(form.successFn)) {
-            form.successFn();
-          }
+	  form.successFn();
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
@@ -37,11 +28,10 @@ module.directive('authApplyForm', [
       };
 
       var saveQuery = function () {
-	party.authorizeSearch(true, {
+	party.authorizeSearch(true, angular.extend({
           notfound: true,
-          name: form.notFound.query,
-          info: form.notFound.info
-        }).then(function () {
+          name: auth.query
+	}, form.data)).then(function () {
           form.validator.server({});
           form.$setPristine();
           delete auth.new;
@@ -52,9 +42,7 @@ module.directive('authApplyForm', [
             body: page.constants.message('auth.request.notfound.success')
           });
 
-          if (angular.isFunction(form.successFn)) {
-            form.successFn();
-          }
+	  form.successFn();
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
@@ -62,11 +50,10 @@ module.directive('authApplyForm', [
       };
 
       form.save = function () {
-        if (form.notFound.query) {
-          saveQuery();
-        } else {
+        if (auth.party)
           saveAuth();
-        }
+	else
+          saveQuery();
       };
 
       //
