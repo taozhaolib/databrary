@@ -20,11 +20,19 @@ module.directive('assetEditForm', [
 	  form.slotAsset.save(form.data).then(function (res){
 	      form.$setPristine();
 	      $scope.ctrl.timeline.parseTracks();
-	      //TODO - success message?
+	      form.messages.add({
+		type: 'green',
+		countdown: 3000,
+		body: page.constants.message('asset.update.success', res.name),
+	      });
 	    },
 	    function (error){
-	      //TODO - error message? 
-	    }
+	      form.messages.addError({
+		type: 'red',
+		body: page.constants.message('asset.update.error', form.data.name),
+		report: error,
+	    });
+	  }
 	  );
 	};
 

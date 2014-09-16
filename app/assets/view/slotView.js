@@ -22,7 +22,15 @@ module.controller('slotView', [
 	file.pause();
 	tl.uploadsInProgress.push(angular.copy(file)); //create a better object here. let uploadsInProgress have editable metadata
 	file.resume();
-      });
+      },
+      function(error){
+	page.messages.addError({
+	  type: 'red',
+	  body: page.constants.message('asset.upload.rejected', file.file.name), 
+	  report: error,
+	});
+      }
+      );
     };
 
     $scope.fileSuccess = function(file) {
@@ -33,13 +41,30 @@ module.controller('slotView', [
 	    upload: file.uniqueIdentifier
 	};
 	ctrl.slot.createAsset(data).then(function(res){
-	    for(var i in tl.uploadsInProgress){
-	      if (tl.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
-		tl.uploadsInProgress.splice(i, 1);	  
-	      }
-	    }
+	    removeUploadInProgress(file, tl);
 	    tl.tracks.push(res);
+	    page.messages.add({
+	      type: 'green',
+	      countdown: 3000,
+	      body: page.constants.message('asset.upload.success', data.name) + (res.transcoding ? page.constants.message('asset.upload.transcoding') : ''), 
+	    });
+	},
+	function(error){
+	    removeUploadInProgress(file, tl);
+	    page.messages.addError({
+	      type: 'red',
+	      body: page.constants.message('asset.update.error', data.name),
+	      report: error
+	    });
 	});
+    };
+
+    var removeUploadInProgress = function (file, tl){
+	for(var i in tl.uploadsInProgress){
+	  if (tl.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
+	    tl.uploadsInProgress.splice(i, 1);	  
+	  }
+	}
     };
 
     // controller

@@ -84,12 +84,15 @@ module.directive('volumeEditMaterialsForm', [
 	if (!material.data.excerptOn)
 	  material.data.excerpt = '';
 
-	var act;
+	var act; var newFile;
 	if (material.file) {
+	  newFile = true;
 	  material.data.upload = material.file.uniqueIdentifier;
 	  act = material.asset ? material.asset.replace(material.data) : slot.createAsset(material.data);
-	} else
+	} else{
+	  newFile = false;
 	  act = material.asset.save(material.data);
+	}
 
 	act.then(function (asset) {
 	  if (asset instanceof page.models.SlotAsset)
@@ -104,10 +107,11 @@ module.directive('volumeEditMaterialsForm', [
 	    delete material.file;
 	  }
 
+	  var msg = newFile ? 'asset.upload.success' : 'asset.update.success';
 	  material.form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message('asset.update.success', materialName(material)),
+	    body: page.constants.message(msg, materialName(material)) + (asset.transcoding ? page.constants.message('asset.upload.trancoding') : ''),
 	  });
 
 	  material.form.$setPristine();
