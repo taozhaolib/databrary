@@ -1,10 +1,9 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'slot', 'pageService', 'assetService', function ($scope, slot, page, assets) {
+  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
     var volume = slot.volume;
     page.display.title = slot.displayName;
-    $scope.flowOptions = assets.flowOptions;
     
     // helpers
 
@@ -19,7 +18,7 @@ module.controller('slotView', [
     // upload
     $scope.fileAdded = function(file, e) {
       var tl = $scope.ctrl.timeline;
-      assets.assetStart(file).then(function(){
+      page.assets.assetStart(file).then(function(){
 	file.pause();
 	tl.uploadsInProgress.push(angular.copy(file)); //create a better object here. let uploadsInProgress have editable metadata
 	file.resume();

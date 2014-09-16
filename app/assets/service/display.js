@@ -76,6 +76,7 @@ module.factory('displayService', [
 
     //
 
+    /* TODO: this should really use .canPlayType */
     if ($window.navigator.userAgent.toLowerCase().contains('firefox') &&
 	$window.navigator.platform.toLowerCase().contains('mac'))
       messages.add({
