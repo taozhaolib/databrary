@@ -20,7 +20,7 @@ module.controller('slotView', [
       var tl = $scope.ctrl.timeline;
       page.assets.assetStart(file).then(function(){
 	file.pause();
-	tl.uploadsInProgress.push(angular.copy(file)); //create a better object here. let uploadsInProgress have editable metadata
+	tl.uploadsInProgress.push(file); //create a better object here. let uploadsInProgress have editable metadata
 	file.resume();
       },
       function(error){
@@ -65,6 +65,10 @@ module.controller('slotView', [
 	    tl.uploadsInProgress.splice(i, 1);	  
 	  }
 	}
+    };
+
+    $scope.fileProgress = function(file){
+	file.progressVal = file.progress();
     };
 
     // controller

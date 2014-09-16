@@ -12,9 +12,8 @@
 
   <div class="slot-timeline-tracks">
     <slot-timeline-track ng-repeat="asset in timeline.tracks" asset="asset"></slot-timeline-track>
-    <slot-timeline-track ng-repeat="x in timeline.uploadsInProgress" spare></slot-timeline-track>
+    <slot-timeline-track ng-repeat="file in timeline.uploadsInProgress" file="file" spare></slot-timeline-track>
     <slot-timeline-track spare drop="true" ng-if="ctrl.mode == 'edit'"></slot-timeline-track> <!-- THIS AND BELOW SHOULD BE ONE LINE, with appropriate attribute to determine -->
-    <slot-timeline-track spare ng-if="ctrl.mode != 'edit'"></slot-timeline-track> 
   </div>
 
   <div class="slot-timeline-now-zone">
