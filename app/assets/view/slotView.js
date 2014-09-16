@@ -46,7 +46,7 @@ module.controller('slotView', [
 	    page.messages.add({
 	      type: 'green',
 	      countdown: 3000,
-	      body: page.constants.message('asset.upload.success', data.name) + (res.transcoding ? page.constants.message('asset.upload.transcoding') : ''), 
+	      body: page.constants.message('asset.upload.success', data.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
 	    });
 	},
 	function(error){

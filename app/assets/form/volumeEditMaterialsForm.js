@@ -111,7 +111,7 @@ module.directive('volumeEditMaterialsForm', [
 	  material.form.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message(msg, materialName(material)) + (asset.transcoding ? page.constants.message('asset.upload.trancoding') : ''),
+	    body: page.constants.message(msg, materialName(material)) + (newFile && asset.asset.format.transcodable ? page.constants.message('asset.upload.trancoding') : ''),
 	  });
 
 	  material.form.$setPristine();
