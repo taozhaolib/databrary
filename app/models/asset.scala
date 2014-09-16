@@ -30,7 +30,8 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
     extension.map('extension -> _),
-    Some('name -> name)
+    Some('name -> name),
+    if (isTranscodable) Some('transcodable -> true) else None
   )
 }
 
