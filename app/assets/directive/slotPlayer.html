@@ -6,6 +6,7 @@
         <nav class="player-main-info-actions">
           <img ng-src="{{ctrl.current.icon}}" hint="format-{{ctrl.current.format.extension}}" class="player-main-info-file-icon">
           <a ng-href="{{ctrl.current.downloadRoute(false)}}" target="_self" ng-if="page.models.Login.checkAccess(page.permission.READ, ctrl.current)" class="player-main-info-link icon download line"></a>
+          <a ng-if="ctrl.mode === 'edit'" ng-click="assetEditForm.removeAsset(true)" class="player-main-info-link icon trash line"></a>
           <a ng-click="ctrl.jump(ctrl.current)" class="player-main-info-link icon jump line"></a>
         </nav>
 

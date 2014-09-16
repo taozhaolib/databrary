@@ -19,7 +19,6 @@ module.directive('assetEditForm', [
 	form.saveAsset = function() {
 	  form.slotAsset.save(form.data).then(function (res){
 	      form.$setPristine();
-	      $scope.ctrl.timeline.parseTracks();
 	      form.messages.add({
 		type: 'green',
 		countdown: 3000,
@@ -36,6 +35,24 @@ module.directive('assetEditForm', [
 	  );
 	};
 
+	form.removeAsset = function(conf){
+	  if(conf && !confirm(page.constants.message('asset.remove.confirm'))) return;
+	  form.slotAsset.remove().then(function() {
+	    form.messages.add({
+	      type: 'green',
+	      countdown: 3000,
+	      body: page.constants.message('asset.remove.success', form.data.name || page.constants.message('file')),
+	    });
+	    $scope.ctrl.timeline.tracks.splice($scope.ctrl.timeline.tracks.indexOf(form.slotAsset, 1));
+	    $scope.ctrl.current = undefined;
+	  }, function (res) {
+	    form.messages.addError({
+	      type: 'red',
+	      body: page.constants.message('asset.remove.error', form.data.name || page.constants.message('file')),
+	      report: res,
+	    });
+	  });
+	};
     };
 
     //
