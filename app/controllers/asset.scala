@@ -243,11 +243,34 @@ object AssetHtml extends AssetController with HtmlController {
       form.Ok
     }
 
-  def transcode(a : models.Asset.Id, stop : Boolean = false) =
-    SiteAction.rootAccess(Permission.ADMIN).andThen(action(a, Permission.EDIT)).async { implicit request =>
-      (if (stop) store.Transcode.stop(request.obj.id)
-      else       store.Transcode.start(request.obj))
-      .map(_ => Ok("transcoding"))
+  final class TranscodeForm(val transcode : Transcode)(implicit val request : SiteRequest[_])
+    extends HtmlForm[TranscodeForm](routes.AssetHtml.transcode(transcode.id),
+      f => views.html.asset.transcodes(Some(f))) {
+    val start = Field(Forms.optional(Forms.of[Offset])).fill(transcode.segment.lowerBound)
+    val end = Field(Forms.optional(Forms.of[Offset])).fill(transcode.segment.upperBound)
+    val stop = Field(Forms.boolean).fill(false)
+  }
+
+  def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
+    Transcode.get(id).flatMap(_.orElseAsync(Asset.get(id).map(_.map(Transcode(_)))))
+
+  def transcoding(id : Option[Asset.Id]) =
+    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+      id.fold[Future[Iterable[Transcode]]](Transcode.getActive)(getTranscode(_).map(_.toIterable))
+      .map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
+    }
+
+  def transcode(id : Asset.Id) =
+    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+      getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
+	val form = new TranscodeForm(t)._bind
+	if (t.fake)
+	  store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).map(Some(_))
+	else if (form.stop.get)
+	  store.Transcode.stop(t.id)
+	else
+	  store.Transcode.restart(t.id)
+      }).map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
 
   def formats = SiteAction { implicit request =>

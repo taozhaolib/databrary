@@ -45,40 +45,39 @@ object Transcode {
 
   /* we use database transactions here to lock the transcode table */
 
-  private def run(tc : models.Transcode)(implicit request : RequestHeader, siteDB : Site.DB) : Future[Boolean] = {
+  private def run(tc : models.TranscodeJob)(implicit request : RequestHeader, siteDB : Site.DB) : Future[models.TranscodeJob] = {
     val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
       val r = ctl(tc.id, tc.args : _*)
       Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
     }.left.map(_.toString).joinRight
     logger.debug("running " + tc.id + ": " + pid.merge.toString)
-    tc.setStatus(pid)
+    tc.setStatus(pid).map(_ => tc)
   }
 
-  def start(asset : models.Asset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit request : controllers.SiteRequest[_]) : Future[Boolean] =
+  def start(asset : models.Asset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit request : controllers.SiteRequest[_]) : Future[models.Transcode] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-      models.Transcode.create(asset, segment, options).flatMap(run)
+      models.Transcode.createJob(asset, segment, options).flatMap(run)
     }
 
-  def stop(id : models.Transcode.Id) : Future[Unit] =
+  def stop(id : models.Transcode.Id) : Future[Option[models.Transcode]] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.get(id).flatMap(_.foreachAsync { tc =>
-      tc.process.foreachAsync { pid =>
+    models.Transcode.getJob(id).flatMap(_.mapAsync { tc =>
+      tc.process.foreachAsync({ pid =>
 	tc.setStatus(Left("aborted")).map { _ =>
 	  ctl(tc.id, "-k", pid.toString)
 	}
-      }
+      }, tc)
     })
     }
 
-  def restart(id : models.Transcode.Id)(implicit request : controllers.SiteRequest[_]) : Future[Unit] =
+  def restart(id : models.Transcode.Id)(implicit request : controllers.SiteRequest[_]) : Future[Option[models.Transcode]] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-      models.Transcode.get(id).flatMap(_.filter(_.process.isEmpty).foreachAsync(run))
+      models.Transcode.getJob(id).flatMap(t => t.filter(_.process.isEmpty).foreachAsync(run, t))
     }
 
   def collect(id : models.Transcode.Id, pid : Int, res : Int, sha1 : Array[Byte], log : String) : Future[Unit] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.get(id).flatMap(_.filter(_.process.exists(_ == pid)).foreachAsync { tc =>
-      // implicit val site = new LocalAuth(tc.owner, superuser = true)
+    models.Transcode.getJob(id).flatMap(_.filter(_.process.exists(_ == pid)).foreachAsync { tc =>
       logger.debug("result " + tc.id + ": " + log)
       (for {
 	_ <- tc.setStatus(Left(log))

@@ -1,0 +1,57 @@
+@(transcodes : Iterable[AssetHtml.TranscodeForm])(implicit request : SiteRequest[_])
+
+@template.action("Transcodes") {
+<table>
+  <thead>
+    <th>
+      <td>ID</td>
+      <td>Owner</td>
+      <td>Source</td>
+      <td>Segment</td>
+      <td>Options</td>
+      <td>PID</td>
+      <td>Log</td>
+      <td>Action</td>
+    </th>
+  </thead>
+  <tbody>
+    @transcodes.map { form =>
+    @defining(form.transcode) { t =>
+    @widget.tag.form(form) {
+    <tr>
+      <td>@t.id</td>
+      <td>@display(t.owner)</td>
+      <td>@display(t.orig)</td>
+      <td>
+	@if(t.fake) {
+	  @widget.tag.inputText(form.start())
+	  &ndash;
+	  @widget.tag.inputText(form.end())
+	} else {
+	  @display(t.segment)
+	}
+      </td>
+      <td>
+      <td>@t.options.mkString(" ")</td>
+      <td>@t.process</td>
+      <td>@t.log</td>
+      <td>
+	@if(t.process) {
+	  <button name='stop' value='true'>stop</button>
+	} else {
+	  <button type='submit'>
+	    @if(t.fake) {
+	      start
+	    } else {
+	      restart
+	    }
+	  </button>
+	}
+      </td>
+    </tr>
+    }
+    }
+    }
+  </tbody>
+</table>
+}

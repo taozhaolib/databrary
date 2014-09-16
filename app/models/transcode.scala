@@ -8,13 +8,20 @@ import macros._
 import dbrary._
 import site._
 
-final class Transcode private[models] (val id : Transcode.Id, val owner : Access, val orig : Asset, val segment : Segment, val options : Seq[String], val process : Option[Int] = None, val log : Option[String] = None)
-  extends TableRowId[Asset] with InVolume {
-  def volume = orig.volume
-  def ownerId = owner.identity.id
-  def origId = orig.id
-  def start = segment.lowerBound.getOrElse(Offset.ZERO)
+sealed class Transcode(val owner : Party, val orig : Asset, val segment : Segment, val options : Seq[String])
+  extends InVolume {
+  def id : Asset.Id = orig.id
+  def process : Option[Int] = None
+  def log : Option[String] = None
+  final def volume = orig.volume
+  final def origId = orig.id
+  final def ownerId = owner.id
+  final def start = segment.lowerBound.getOrElse(Offset.ZERO)
+  final def fake = id === orig.id
+}
 
+final class TranscodeJob private[models] (override val id : Transcode.Id, owner : Party, orig : Asset, segment : Segment, options : Seq[String], override val process : Option[Int] = None, override val log : Option[String] = None)
+  extends Transcode(owner, orig, segment, options) with TableRowId[Asset] {
   def args(implicit request : RequestHeader) = Seq(
     "-f", store.FileAsset.file(orig).getAbsolutePath,
     "-r", new controllers.AssetApi.TranscodedForm(orig.id)._action.absoluteURL(Play.isProd(Play.current)),
@@ -22,7 +29,6 @@ final class Transcode private[models] (val id : Transcode.Id, val owner : Access
     (segment.lowerBound : Iterable[Offset]).flatMap(s => Seq("-ss", s.toString)) ++
     (segment.upperBound : Iterable[Offset]).flatMap(t => Seq("-t", (t-start).toString)) ++
     options
-
   def setStatus(status : Either[String, Int])(implicit siteDB : Site.DB, exc : ExecutionContext) =
     SQL("UPDATE transcode SET process = ?, log = NULLIF(COALESCE(log || E'\\n', '') || COALESCE(?, ''), '') WHERE asset = ?")
     .apply(status.right.toOption, status.left.toOption, id).execute
@@ -42,36 +48,43 @@ final class Transcode private[models] (val id : Transcode.Id, val owner : Access
 }
 
 object Transcode extends TableId[Asset]("transcode") {
-  private val columns = Columns(
+  /* This does not check permissions as you might expect */
+  private val row = Columns(
       SelectColumn[Id]("asset")
     , SelectColumn[Segment]("segment")
     , SelectColumn[IndexedSeq[String]]("options")
     , SelectColumn[Option[Int]]("process")
     , SelectColumn[Option[String]]("log")
-    ) map { (id, segment, options, process, log) =>
-      (owner : Access, orig : Asset) =>
-	new Transcode(id, owner, orig, segment, options, process, log)
-    }
-  private val row = columns
-    .join(Party.row
+    ).join(Party.row
       .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
       .map { case (p, a) => Authorization.make(p)(a) },
       "transcode.owner = party.id")
     .join(Asset.columns, "transcode.orig = asset.id")
     .join(Volume.columns, "asset.volume = volume.id")
-    .map { case (((t, o), a), v) =>
-      t(o, a(v(Permission.ADMIN, new LocalAuth(o, superuser = true))))
+    .map { case ((((id, segment, options, process, log), owner), orig), volume) =>
+      new TranscodeJob(id, owner.identity, orig(volume(Permission.ADMIN, new LocalAuth(owner, superuser = true))), segment, options, process, log)
     }
-
-  def create(orig : Asset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[Transcode] =
-    SQL("INSERT INTO transcode (owner, orig, segment, options) VALUES (?, ?, ?, ?) RETURNING id")
-    .apply(site.identity.id, orig.id, segment, options).single(SQLCols[Id])
-    .map(new Transcode(_, site.access, orig, segment, options))
-
-  def get(id : Id)(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[Option[Transcode]] =
+      
+  def getJob(id : Id)(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[Option[TranscodeJob]] =
     row.SELECT("""
       WHERE transcode.asset = ?
         AND NOT EXISTS (SELECT asset.id FROM asset WHERE asset.id = transcode.asset)
       FOR NO KEY UPDATE OF transcode""")
     .apply(id).singleOpt
+
+  def get(id : Id)(implicit exc : ExecutionContext) : Future[Option[Transcode]] =
+    row.SELECT("WHERE transcode.asset = ?")
+    .apply(id).singleOpt
+
+  def getActive(implicit site : Site, exc : ExecutionContext) : Future[Seq[Transcode]] =
+    row.SELECT("WHERE NOT EXISTS (SELECT asset.id FROM asset WHERE asset.id = transcode.asset)")
+    .apply().list
+
+  def createJob(orig : Asset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
+    SQL("INSERT INTO transcode (owner, orig, segment, options) VALUES (?, ?, ?, ?) RETURNING id")
+    .apply(site.identity.id, orig.id, segment, options).single(SQLCols[Id])
+    .map(new TranscodeJob(_, site.identity, orig, segment, options))
+
+  def apply(orig : Asset, segment : Segment = Segment.full, options : Seq[String] = Nil)(implicit site : Site) =
+    new Transcode(site.identity, orig, segment, options)
 }
