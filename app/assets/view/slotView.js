@@ -17,12 +17,8 @@ module.controller('slotView', [
     }
 
     // upload
-    var tl;
     $scope.fileAdded = function(file, e) {
-      tl = angular.element(event.srcElement).scope().timeline; //TODO: DO THIS SOME BETTER WAY@#@!#!!!!
-      //console.log(file);
-      //console.log(tl);
-      //console.log($scope);
+      var tl = $scope.ctrl.timeline;
       assets.assetStart(file).then(function(){
 	file.pause();
 	tl.uploadsInProgress.push(angular.copy(file)); //create a better object here. let uploadsInProgress have editable metadata
@@ -31,7 +27,7 @@ module.controller('slotView', [
     };
 
     $scope.fileSuccess = function(file) {
-	console.log(file.file.name + " finished! ");
+	var tl = $scope.ctrl.timeline;
 	var data = {
 	    name: file.file.name,
 	    classification: 0,
@@ -83,7 +79,7 @@ module.controller('slotView', [
 
       setCurrent: function (asset) {
 	ctrl.current = getAsset(asset);
-	ctrl.updateEditData();
+	if(ctrl.current && ctrl.current.asset) ctrl.updateEditData();
       },
 
       isCurrent: function (media) {
