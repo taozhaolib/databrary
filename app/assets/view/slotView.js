@@ -43,6 +43,7 @@ module.controller('slotView', [
 	ctrl.slot.createAsset(data).then(function(res){
 	    removeUploadInProgress(file, tl);
 	    tl.tracks.push(res);
+	    ctrl.setCurrent(res);
 	    page.messages.add({
 	      type: 'green',
 	      countdown: 3000,
