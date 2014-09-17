@@ -19,7 +19,7 @@ module.controller('slotView', [
 
     // upload
     $scope.fileAdded = function(file) {
-      if ($scope.ctrl.current){
+      if ($scope.ctrl.current && $scope.ctrl.replaceable){
 	file.replace = $scope.ctrl.current.asset.id;
       }
       page.assets.assetStart(file).then(function(){
