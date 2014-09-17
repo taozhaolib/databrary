@@ -251,14 +251,28 @@ object AssetHtml extends AssetController with HtmlController {
     val stop = Field(Forms.boolean).fill(false)
   }
 
-  def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
-    Transcode.get(id).flatMap(_.orElseAsync(Asset.get(id).map(_.map(Transcode(_)))))
+  private def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
+    Transcode.get(id).flatMap(_.orElseAsync(Asset.get(id).flatMap(_.mapAsync { a =>
+      for {
+	revs <- Asset.getRevisions(a)
+	o = if (revs.nonEmpty) revs.minBy(_._id) else a
+	s <- a.slot.flatMap(_.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
+	  for {
+	    l <- s.segment.lowerBound
+	    u <- s.segment.upperBound
+	  } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
+	})))
+      } yield (Transcode(o, s.getOrElse(Segment.full)))
+    })))
 
-  def transcoding(id : Option[Asset.Id]) =
+  private def transcoding_(id : Option[Asset.Id]) =
     SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
       id.fold[Future[Iterable[Transcode]]](Transcode.getActive)(getTranscode(_).map(_.toIterable))
       .map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
+
+  def transcodingAll = transcoding_(None)
+  def transcoding(id : Asset.Id) = transcoding_(Some(id))
 
   def transcode(id : Asset.Id) =
     SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>

@@ -1,18 +1,22 @@
 @(transcodes : Iterable[AssetHtml.TranscodeForm])(implicit request : SiteRequest[_])
 
+@implicitFieldConstructor = @{
+  helper.FieldConstructor(widget.tag.rawFieldConstructor.f)
+}
+
 @template.action("Transcodes") {
 <table>
   <thead>
-    <th>
-      <td>ID</td>
-      <td>Owner</td>
-      <td>Source</td>
-      <td>Segment</td>
-      <td>Options</td>
-      <td>PID</td>
-      <td>Log</td>
-      <td>Action</td>
-    </th>
+    <tr>
+      <th>ID</th>
+      <th>Owner</th>
+      <th>Source</th>
+      <th>Segment</th>
+      <th>Options</th>
+      <th>PID</th>
+      <th>Log</th>
+      <th>Action</th>
+    </tr>
   </thead>
   <tbody>
     @transcodes.map { form =>
@@ -24,17 +28,16 @@
       <td>@display(t.orig)</td>
       <td>
 	@if(t.fake) {
-	  @widget.tag.inputText(form.start())
+	  @widget.tag.inputText(form.start(), args = 'size -> 9)
 	  &ndash;
-	  @widget.tag.inputText(form.end())
+	  @widget.tag.inputText(form.end(), args = 'size -> 9)
 	} else {
 	  @display(t.segment)
 	}
       </td>
-      <td>
       <td>@t.options.mkString(" ")</td>
       <td>@t.process</td>
-      <td>@t.log</td>
+      <td><pre>@t.log</pre></td>
       <td>
 	@if(t.process) {
 	  <button name='stop' value='true'>stop</button>
