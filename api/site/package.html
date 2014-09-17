@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>site - site</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/package_big.png" />
         
-        <h1>site</h1>
+        <h1>site</h1> <span class="permalink">
+      <a href="../index.html#site.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -92,8 +100,12 @@
       <span class="symbol">
         <a href="Access.html"><span class="name">Access</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">An effective authorization of identity by target.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@AccessextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An effective authorization of identity by target.</p>
     </li><li name="site.AnonSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AnonSiteextendsSite"></a>
       <a id="AnonSite:AnonSite"></a>
@@ -105,7 +117,11 @@
       <span class="symbol">
         <a href="AnonSite.html"><span class="name">AnonSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@AnonSiteextendsSite" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.AuthSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="AuthSiteextendsSite"></a>
@@ -118,7 +134,11 @@
       <span class="symbol">
         <a href="AuthSite.html"><span class="name">AuthSite</span></a><span class="result"> extends <a href="Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@AuthSiteextendsSite" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsField" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="JsFieldextendsAnyRef"></a>
@@ -131,7 +151,11 @@
       <span class="symbol">
         <a href="JsField.html"><span class="name">JsField</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsFieldextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonField" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonFieldextends(String,play.api.libs.json.JsValue)withJsField"></a>
@@ -144,7 +168,11 @@
       <span class="symbol">
         <a href="JsonField.html"><span class="name">JsonField</span></a><span class="result"> extends (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.libs.json.JsValue">JsValue</span>) with <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonFieldextends(String,play.api.libs.json.JsValue)withJsField" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonObject" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonObjectextendsJsonValue"></a>
@@ -157,7 +185,11 @@
       <span class="symbol">
         <a href="JsonObject.html"><span class="name">JsonObject</span></a><span class="result"> extends <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonObjectextendsJsonValue" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonRecordextendsJsonObjectwithJsonValuewithJsField"></a>
@@ -170,7 +202,11 @@
       <span class="symbol">
         <a href="JsonRecord.html"><span class="name">JsonRecord</span></a><span class="result"> extends <a href="JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a> with <a href="JsonValue.html" class="extype" name="site.JsonValue">JsonValue</a> with <a href="JsField.html" class="extype" name="site.JsField">JsField</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonRecordextendsJsonObjectwithJsonValuewithJsField" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonValue" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="JsonValueextendsAnyRef"></a>
@@ -183,7 +219,28 @@
       <span class="symbol">
         <a href="JsonValue.html"><span class="name">JsonValue</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonValueextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="site.LocalAuth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="LocalAuthextendsSite"></a>
+      <a id="LocalAuth:LocalAuth"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="LocalAuth.html"><span class="name">LocalAuth</span></a><span class="result"> extends <a href="Site.html" class="extype" name="site.Site">Site</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@LocalAuthextendsSite" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.PerSite" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="PerSiteextendsAnyRef"></a>
@@ -196,9 +253,13 @@
       <span class="symbol">
         <a href="PerSite.html"><span class="name">PerSite</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@PerSiteextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="site.Site" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="site.Site" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="SiteextendsAnyRef"></a>
       <a id="Site:Site"></a>
       <h4 class="signature">
@@ -209,8 +270,12 @@
       <span class="symbol">
         <a href="Site.html"><span class="name">Site</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">Basic information about each request.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@SiteextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Basic information about each request.</p><div class="fullcomment"><div class="comment cmt"><p>Basic information about each request.  Primarily implemented by <a href="../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">controllers.SiteRequest</a>.</p></div></div>
     </li><li name="site.SiteObject" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SiteObjectextendsSitePagewithHasPermission"></a>
       <a id="SiteObject:SiteObject"></a>
@@ -222,7 +287,11 @@
       <span class="symbol">
         <a href="SiteObject.html"><span class="name">SiteObject</span></a><span class="result"> extends <a href="SitePage.html" class="extype" name="site.SitePage">SitePage</a> with <a href="../models/HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@SiteObjectextendsSitePagewithHasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.SitePage" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SitePageextendsAnyRef"></a>
@@ -235,8 +304,12 @@
       <span class="symbol">
         <a href="SitePage.html"><span class="name">SitePage</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">An object with a corresponding page on the site.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@SitePageextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An object with a corresponding page on the site.</p>
     </li></ol>
             </div>
 
@@ -244,7 +317,24 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="site.Global" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="site.AnonSite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="AnonSite"></a>
+      <a id="AnonSite:AnonSite"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="AnonSite$.html"><span class="name">AnonSite</span></a><span class="result"> extends <a href="AnonSite.html" class="extype" name="site.AnonSite">AnonSite</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@AnonSite" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="site.Global" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Global"></a>
       <a id="Global:Global"></a>
       <h4 class="signature">
@@ -255,7 +345,11 @@
       <span class="symbol">
         <a href="Global$.html"><span class="name">Global</span></a><span class="result"> extends <span class="extype" name="play.api.GlobalSettings">GlobalSettings</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@Global" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonArray" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonArray"></a>
@@ -268,7 +362,11 @@
       <span class="symbol">
         <a href="JsonArray$.html"><span class="name">JsonArray</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonArray" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonField" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonField"></a>
@@ -281,7 +379,11 @@
       <span class="symbol">
         <a href="JsonField$.html"><span class="name">JsonField</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonField" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonObject" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonObject"></a>
@@ -294,7 +396,11 @@
       <span class="symbol">
         <a href="JsonObject$.html"><span class="name">JsonObject</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonOptions"></a>
@@ -307,7 +413,11 @@
       <span class="symbol">
         <a href="JsonOptions$.html"><span class="name">JsonOptions</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonOptions" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonRecord"></a>
@@ -320,7 +430,11 @@
       <span class="symbol">
         <a href="JsonRecord$.html"><span class="name">JsonRecord</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonValue" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="JsonValue"></a>
@@ -333,7 +447,11 @@
       <span class="symbol">
         <a href="JsonValue$.html"><span class="name">JsonValue</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@JsonValue" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.Mail" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Mail"></a>
@@ -346,7 +464,11 @@
       <span class="symbol">
         <a href="Mail$.html"><span class="name">Mail</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@Mail" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.Resource" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Resource"></a>
@@ -359,7 +481,11 @@
       <span class="symbol">
         <a href="Resource$.html"><span class="name">Resource</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@Resource" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Site"></a>
@@ -372,7 +498,11 @@
       <span class="symbol">
         <a href="Site$.html"><span class="name">Site</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.context" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="context"></a>
@@ -385,9 +515,13 @@
       <span class="symbol">
         <a href="context$.html"><span class="name">context</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@context" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="site.package#siteDB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="site#siteDB" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="siteDB:site.Site.DB"></a>
       <a id="siteDB:DB"></a>
       <h4 class="signature">
@@ -398,7 +532,11 @@
       <span class="symbol">
         <span class="name">siteDB</span><span class="result">: <a href="Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.package@siteDB:site.Site.DB" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -429,6 +567,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

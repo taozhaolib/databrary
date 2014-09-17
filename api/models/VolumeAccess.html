@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>VolumeAccess - models.VolumeAccess</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="VolumeAccess$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="VolumeAccess$.html" title="Go to companion">VolumeAccess</a></h1>
+        <h1><a href="VolumeAccess$.html" title="Go to companion">VolumeAccess</a></h1> <span class="permalink">
+      <a href="../index.html#models.VolumeAccess" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -83,7 +91,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.VolumeAccess#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(volume:models.Volume,party:models.Party,access:models.Permission.Value,inherit:models.Permission.Value,funding:Option[String]):models.VolumeAccess"></a>
+      <a id="&lt;init&gt;(volume:models.Volume,party:models.Party,individual:models.Permission.Value,children:models.Permission.Value):models.VolumeAccess"></a>
       <a id="&lt;init&gt;:VolumeAccess"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -91,10 +99,14 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="inherit">inherit: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="funding">funding: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">scala.None</span></span>)</span>
+        <span class="name">VolumeAccess</span><span class="params">(<span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="party">party: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="individual">individual: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>, <span name="children">children: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">volume</dt><dd class="cmt"><p>the volume to which access is being granted; the target</p></dd><dt class="param">party</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">access</dt><dd class="cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></dd><dt class="param">inherit</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@&lt;init&gt;(volume:models.Volume,party:models.Party,individual:models.Permission.Value,children:models.Permission.Value):models.VolumeAccess" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">create an access object, not (yet) persisted to the database</p><div class="fullcomment"><div class="comment cmt"><p>create an access object, not (yet) persisted to the database</p></div><dl class="paramcmts block"><dt class="param">volume</dt><dd class="cmt"><p>the volume to which access is being granted; the target</p></dd><dt class="param">party</dt><dd class="cmt"><p>the party being granted the access; the user</p></dd><dt class="param">individual</dt><dd class="cmt"><p>the level of permission granted directly to the party.</p></dd><dt class="param">children</dt><dd class="cmt"><p>the level of permission granted to all descendents/members of the party
 </p></dd></dl></div>
     </li></ol>
             </div>
@@ -106,19 +118,6 @@ Only one of these is necessary to gain access (they are unioned, not intersected
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -129,8 +128,12 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -142,22 +145,13 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -168,21 +162,12 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.VolumeAccess#access" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="access:models.Permission.Value"></a>
-      <a id="access:Permission.Value"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">access</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">the level of permission granted directly to the party.</p><div class="fullcomment"><div class="comment cmt"><p>the level of permission granted directly to the party. Levels at or above <a href="Permission$.html#EDIT:models.Permission.Value" class="extmbr" name="models.Permission#EDIT">Permission.EDIT</a> are considered volume &quot;membership.&quot;</p></div></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -194,7 +179,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
@@ -207,8 +196,30 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">checkPermission</span><span class="params">(<span name="need">need: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@checkPermission(need:models.Permission.Value):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
+    </li><li name="models.VolumeAccess#children" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="children:models.Permission.Value"></a>
+      <a id="children:Permission.Value"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">children</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@children:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">the level of permission granted to all descendents/members of the party
+</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -220,7 +231,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -228,6 +243,23 @@ Only one of these is necessary to gain access (they are unioned, not intersected
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.HasPermission#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value,Consent.Value):HasPermission"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p><div class="fullcomment"><div class="comment cmt"><p>The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -239,7 +271,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -252,7 +288,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -265,7 +305,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -273,19 +317,6 @@ Only one of these is necessary to gain access (they are unioned, not intersected
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.VolumeAccess#funding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="funding:Option[String]"></a>
-      <a id="funding:Option[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">funding</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -297,7 +328,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -310,22 +345,29 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.VolumeAccess#inherit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="inherit:models.Permission.Value"></a>
-      <a id="inherit:Permission.Value"></a>
+    </li><li name="models.VolumeAccess#individual" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="individual:models.Permission.Value"></a>
+      <a id="individual:Permission.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">inherit</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
+        <span class="name">individual</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">the level of permission granted to all descendents/members of the party, which cannot be <a href="Permission$.html#ADMIN:models.Permission.Value" class="extmbr" name="models.Permission#ADMIN">Permission.ADMIN</a>
-</p>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@individual:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">the level of permission granted directly to the party.</p>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -337,7 +379,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.VolumeAccess#json" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="json:site.JsonObject"></a>
@@ -350,7 +396,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">json</span><span class="result">: <a href="../site/JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@json:site.JsonObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -363,7 +413,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -376,7 +430,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -389,7 +447,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.VolumeAccess#party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="party:models.Party"></a>
@@ -402,7 +464,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">party</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@party:models.Party" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">the party being granted the access; the user</p>
     </li><li name="models.VolumeAccess#partyId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="partyId:models.Party.Id"></a>
@@ -415,7 +481,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">partyId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@partyId:models.Party.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
@@ -428,7 +498,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@permission:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
@@ -441,7 +515,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">site</span><span class="result">: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@site:site.Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -454,7 +532,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -467,7 +549,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.VolumeAccess#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
@@ -480,7 +566,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@volume:models.Volume" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">the volume to which access is being granted; the target</p><div class="fullcomment"><div class="comment cmt"><p>the volume to which access is being granted; the target</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.VolumeAccess">VolumeAccess</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
@@ -493,7 +583,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@volumeId:models.Volume.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -506,7 +600,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -525,7 +623,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -544,7 +646,11 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.VolumeAccess@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -589,6 +695,7 @@ Only one of these is necessary to gain access (they are unioned, not intersected
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

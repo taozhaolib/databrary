@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>root - _root_</title>
@@ -9,6 +8,11 @@
           
       <link href="lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="lib/template.js"></script>
+      <script type="text/javascript" src="lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = 'index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="lib/package_big.png" />
         
-        <h1>root package</h1>
+        <h1>root package</h1> <span class="permalink">
+      <a href="index.html#package" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -73,7 +81,11 @@
       <span class="symbol">
         <a href="Routes$.html"><span class="name">Routes</span></a><span class="result"> extends <span class="extype" name="play.core.Router.Routes">Routes</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@Routes" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="_root_.controllers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="controllers"></a>
@@ -86,7 +98,11 @@
       <span class="symbol">
         <a href="controllers/package.html"><span class="name">controllers</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@controllers" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="_root_.ingest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ingest"></a>
@@ -99,9 +115,13 @@
       <span class="symbol">
         <a href="ingest/package.html"><span class="name">ingest</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@ingest" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="_root_.models" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="_root_.models" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="models"></a>
       <a id="models:models"></a>
       <h4 class="signature">
@@ -112,8 +132,15 @@
       <span class="symbol">
         <a href="models/package.html"><span class="name">models</span></a>
       </span>
-      </h4>
-      <p class="comment cmt">Models provide an interface to the postgres database.</p>
+      </h4><span class="permalink">
+      <a href="index.html#package@models" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Models provide an interface to the postgres database.</p><div class="fullcomment"><div class="comment cmt"><p>Models provide an interface to the postgres database.
+In general, models provide all of the information necessary to serve requests, but do not do any validation or permission checking beyond what the database does itself.
+Controllers and other callers should do any necessary checking to ensure appropriate semantics.
+</p></div></div>
     </li><li name="_root_.site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="site"></a>
       <a id="site:site"></a>
@@ -125,7 +152,11 @@
       <span class="symbol">
         <a href="site/package.html"><span class="name">site</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@site" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="_root_.store" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="store"></a>
@@ -138,7 +169,11 @@
       <span class="symbol">
         <a href="store/package.html"><span class="name">store</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@store" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="_root_.views" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="views"></a>
@@ -151,7 +186,11 @@
       <span class="symbol">
         <a href="views/package.html"><span class="name">views</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="index.html#package@views" title="Permalink" target="_top">
+        <img src="lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -178,6 +217,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="lib/template.js"></script>
+
+
     </body>
       </html>

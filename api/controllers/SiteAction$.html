@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>SiteAction - controllers.SiteAction</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/object_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
-        <h1>SiteAction</h1>
+        <h1>SiteAction</h1> <span class="permalink">
+      <a href="../index.html#controllers.SiteAction$" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -35,13 +43,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <span class="name">SiteAction</span><span class="result"> extends <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
+        <span class="name">SiteAction</span><span class="result"> extends <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/site.scala" target="_blank">site.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>], <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="play.api.mvc.Request">Request</span>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>], <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>], <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<span class="extype" name="play.api.mvc.Request">Request</span>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>], <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.SiteAction"><span>SiteAction</span></li><li class="in" name="controllers.ActionCreator"><span>ActionCreator</span></li><li class="in" name="controllers.ActionFunction"><span>ActionFunction</span></li><li class="in" name="play.api.mvc.ActionBuilder"><span>ActionBuilder</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.SiteAction"><span>SiteAction</span></li><li class="in" name="play.api.mvc.ActionBuilder"><span>ActionBuilder</span></li><li class="in" name="play.api.mvc.ActionFunction"><span>ActionFunction</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -92,10 +100,14 @@
       <span class="symbol">
         <a href="SiteAction$$Access.html"><span class="name">Access</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.Access.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@Access[R[_]&lt;:controllers.SiteRequest[_]]extendsSiteAction.AccessCheck[R]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteAction.AccessCheck" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AccessCheck[R[_]&lt;:controllers.SiteRequest[_]]extendsActionHandler[R]"></a>
+      <a id="AccessCheck[R[_]&lt;:controllers.SiteRequest[_]]extendsActionFilter[R]"></a>
       <a id="AccessCheck[R[_]&lt;:SiteRequest[_]]:AccessCheck[R]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -103,9 +115,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$$AccessCheck.html"><span class="name">AccessCheck</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="result"> extends <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.SiteAction.AccessCheck.R">R</span>]</span>
+        <a href="SiteAction$$AccessCheck.html"><span class="name">AccessCheck</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.ActionFilter">ActionFilter</span>[<span class="extype" name="controllers.SiteAction.AccessCheck.R">R</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@AccessCheck[R[_]&lt;:controllers.SiteRequest[_]]extendsActionFilter[R]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteAction.RootAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RootAccess[R[_]&lt;:controllers.SiteRequest[_]]extendsSiteAction.AccessCheck[R]withProductwithSerializable"></a>
@@ -116,9 +132,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$$RootAccess.html"><span class="name">RootAccess</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol">models.Permission.ADMIN</span></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.RootAccess.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SiteAction$$RootAccess.html"><span class="name">RootAccess</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.ADMIN</a></span></span></span>)</span><span class="result"> extends <a href="SiteAction$$AccessCheck.html" class="extype" name="controllers.SiteAction.AccessCheck">AccessCheck</a>[<span class="extype" name="controllers.SiteAction.RootAccess.R">R</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@RootAccess[R[_]&lt;:controllers.SiteRequest[_]]extendsSiteAction.AccessCheck[R]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -128,19 +148,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -151,8 +158,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -164,22 +175,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -190,8 +192,12 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.SiteAction.Auth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Auth"></a>
       <a id="Auth:Auth"></a>
@@ -201,36 +207,48 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$$Auth$.html"><span class="name">Auth</span></a><span class="result"> extends <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>, <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
+        <a href="SiteAction$$Auth$.html"><span class="name">Auth</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.ActionRefiner">ActionRefiner</span>[<a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>, <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
       </span>
-      </h4>
-      
-    </li><li name="controllers.SiteAction.Unlocked" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Unlocked"></a>
-      <a id="Unlocked:Unlocked"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="SiteAction$$Unlocked$.html"><span class="name">Unlocked</span></a><span class="result"> extends <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
-      </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@Auth" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteAction#access" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="access(access:models.Permission.Value):controllers.ActionCreator[controllers.SiteRequest.Auth]"></a>
-      <a id="access(models.Permission.Value):ActionCreator[Auth]"></a>
+      <a id="access(access:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]"></a>
+      <a id="access(models.Permission.Value):ActionBuilder[Auth]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">access</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
+        <span class="name">access</span><span class="params">(<span name="access">access: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@access(access:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
+    </li><li name="play.api.mvc.ActionBuilder#andThen" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="andThen[Q[_]](other:play.api.mvc.ActionFunction[R,Q]):play.api.mvc.ActionBuilder[Q]"></a>
+      <a id="andThen[Q[_]](ActionFunction[Base,Q]):ActionBuilder[Q]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">andThen</span><span class="tparams">[<span name="Q">Q<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="other">other: <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <span class="extype" name="play.api.mvc.ActionBuilder.andThen.Q">Q</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<span class="extype" name="play.api.mvc.ActionBuilder.andThen.Q">Q</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@andThen[Q[_]](other:play.api.mvc.ActionFunction[R,Q]):play.api.mvc.ActionBuilder[Q]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder → ActionFunction</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(block:=&gt;play.api.mvc.Result):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="apply(⇒Result):Action[AnyContent]"></a>
@@ -242,7 +260,11 @@
       <span class="symbol">
         <span class="name">apply</span><span class="params">(<span name="block">block: ⇒ <span class="extype" name="play.api.mvc.Result">Result</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@apply(block:=&gt;play.api.mvc.Result):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply(block:R[play.api.mvc.AnyContent]=&gt;play.api.mvc.Result):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
@@ -255,7 +277,11 @@
       <span class="symbol">
         <span class="name">apply</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]) ⇒ <span class="extype" name="play.api.mvc.Result">Result</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@apply(block:R[play.api.mvc.AnyContent]=&gt;play.api.mvc.Result):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply[A](bodyParser:play.api.mvc.BodyParser[A])(block:R[A]=&gt;play.api.mvc.Result):play.api.mvc.Action[A]"></a>
@@ -268,7 +294,11 @@
       <span class="symbol">
         <span class="name">apply</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="bodyParser">bodyParser: <span class="extype" name="play.api.mvc.BodyParser">BodyParser</span>[<span class="extype" name="play.api.mvc.ActionBuilder.apply.A">A</span>]</span>)</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.ActionBuilder.apply.A">A</span>]) ⇒ <span class="extype" name="play.api.mvc.Result">Result</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.ActionBuilder.apply.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@apply[A](bodyParser:play.api.mvc.BodyParser[A])(block:R[A]=&gt;play.api.mvc.Result):play.api.mvc.Action[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -281,59 +311,79 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="async[A](bodyParser:play.api.mvc.BodyParser[A])(block:R[A]=&gt;scala.concurrent.Future[play.api.mvc.SimpleResult]):play.api.mvc.Action[A]"></a>
-      <a id="async[A](BodyParser[A])((Base[A])⇒Future[SimpleResult]):Action[A]"></a>
+      <a id="async[A](bodyParser:play.api.mvc.BodyParser[A])(block:R[A]=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[A]"></a>
+      <a id="async[A](BodyParser[A])((Base[A])⇒Future[Result]):Action[A]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">async</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="bodyParser">bodyParser: <span class="extype" name="play.api.mvc.BodyParser">BodyParser</span>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]</span>)</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]</span>
+        <span class="name">async</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="bodyParser">bodyParser: <span class="extype" name="play.api.mvc.BodyParser">BodyParser</span>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]</span>)</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.ActionBuilder.async.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@async[A](bodyParser:play.api.mvc.BodyParser[A])(block:R[A]=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="async(block:R[play.api.mvc.AnyContent]=&gt;scala.concurrent.Future[play.api.mvc.SimpleResult]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="async((Base[AnyContent])⇒Future[SimpleResult]):Action[AnyContent]"></a>
+      <a id="async(block:R[play.api.mvc.AnyContent]=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="async((Base[AnyContent])⇒Future[Result]):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">async</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">async</span><span class="params">(<span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@async(block:R[play.api.mvc.AnyContent]=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="async(block:=&gt;scala.concurrent.Future[play.api.mvc.SimpleResult]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
-      <a id="async(⇒Future[SimpleResult]):Action[AnyContent]"></a>
+      <a id="async(block:=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="async(⇒Future[Result]):Action[AnyContent]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">async</span><span class="params">(<span name="block">block: ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+        <span class="name">async</span><span class="params">(<span name="block">block: ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@async(block:=&gt;scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="controllers.SiteAction#auth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="auth:controllers.ActionCreator[controllers.SiteRequest.Auth]"></a>
-      <a id="auth:ActionCreator[Auth]"></a>
+      <a id="auth:play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]"></a>
+      <a id="auth:ActionBuilder[Auth]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">auth</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
+        <span class="name">auth</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@auth:play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -346,7 +396,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -354,6 +408,40 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="play.api.mvc.ActionFunction#compose" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="compose(other:&lt;?&gt;):play.api.mvc.ActionBuilder[P]"></a>
+      <a id="compose(ActionBuilder[Request]):ActionBuilder[Base]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">compose</span><span class="params">(<span name="other">other: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<span class="extype" name="play.api.mvc.Request">Request</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@compose(other:play.api.mvc.ActionBuilder[R]):play.api.mvc.ActionBuilder[P]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionFunction</dd></dl></div>
+    </li><li name="play.api.mvc.ActionFunction#compose" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="compose[Q&lt;:&lt;?&gt;](other:&lt;?&gt;):play.api.mvc.ActionFunction[Q,P]"></a>
+      <a id="compose[Q[_]](ActionFunction[Q,Request]):ActionFunction[Q,Base]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">compose</span><span class="tparams">[<span name="Q">Q<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="other">other: <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<span class="extype" name="play.api.mvc.ActionFunction.compose.Q">Q</span>, <span class="extype" name="play.api.mvc.Request">Request</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<span class="extype" name="play.api.mvc.ActionFunction.compose.Q">Q</span>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@compose[Q[_]](other:play.api.mvc.ActionFunction[Q,R]):play.api.mvc.ActionFunction[Q,P]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ActionFunction</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#composeAction" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="composeAction[A&lt;:&lt;?&gt;](action:&lt;?&gt;):play.api.mvc.Action[A]"></a>
       <a id="composeAction[A](Action[A]):Action[A]"></a>
@@ -365,7 +453,11 @@
       <span class="symbol">
         <span class="name">composeAction</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="action">action: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.ActionBuilder.composeAction.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.ActionBuilder.composeAction.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@composeAction[A](action:play.api.mvc.Action[A]):play.api.mvc.Action[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="play.api.mvc.ActionBuilder#composeParser" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="composeParser[A&lt;:&lt;?&gt;](bodyParser:&lt;?&gt;):play.api.mvc.BodyParser[A]"></a>
@@ -378,7 +470,11 @@
       <span class="symbol">
         <span class="name">composeParser</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="bodyParser">bodyParser: <span class="extype" name="play.api.mvc.BodyParser">BodyParser</span>[<span class="extype" name="play.api.mvc.ActionBuilder.composeParser.A">A</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.BodyParser">BodyParser</span>[<span class="extype" name="play.api.mvc.ActionBuilder.composeParser.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@composeParser[A](bodyParser:play.api.mvc.BodyParser[A]):play.api.mvc.BodyParser[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -391,7 +487,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -404,9 +504,13 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="play.api.mvc.ActionBuilder#executionContext" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="play.api.mvc.ActionFunction#executionContext" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="executionContext:scala.concurrent.ExecutionContext"></a>
       <a id="executionContext:ExecutionContext"></a>
       <h4 class="signature">
@@ -417,8 +521,12 @@
       <span class="symbol">
         <span class="name">executionContext</span><span class="result">: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>ActionBuilder</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@executionContext:scala.concurrent.ExecutionContext" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>ActionFunction</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -430,7 +538,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -449,7 +561,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -462,21 +578,29 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.SiteAction#invokeBlock" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="invokeBlock[A](request:play.api.mvc.Request[A],block:controllers.SiteRequest.Base[A]=&gt;scala.concurrent.Future[play.api.mvc.SimpleResult]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="invokeBlock[A](Request[A],(Base[A])⇒Future[SimpleResult]):Future[SimpleResult]"></a>
+      <a id="invokeBlock[A](request:play.api.mvc.Request[A],block:controllers.SiteRequest.Base[A]=&gt;scala.concurrent.Future[play.api.mvc.Result]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="invokeBlock[A](Request[A],(Base[A])⇒Future[Result]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">invokeBlock</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteAction.invokeBlock.A">A</span>]</span>, <span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteAction.invokeBlock.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">invokeBlock</span><span class="tparams">[<span name="A">A</span>]</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteAction.invokeBlock.A">A</span>]</span>, <span name="block">block: (<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>[<span class="extype" name="controllers.SiteAction.invokeBlock.A">A</span>]) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteAction">SiteAction</a> → <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a> → ActionBuilder</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@invokeBlock[A](request:play.api.mvc.Request[A],block:controllers.SiteRequest.Base[A]=&gt;scala.concurrent.Future[play.api.mvc.Result]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.SiteAction">SiteAction</a> → ActionFunction</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -488,7 +612,11 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -501,7 +629,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -514,7 +646,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -527,20 +663,28 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="controllers.SiteAction#rootAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="rootAccess(permission:models.Permission.Value):controllers.ActionCreator[controllers.SiteRequest.Auth]"></a>
-      <a id="rootAccess(models.Permission.Value):ActionCreator[Auth]"></a>
+      <a id="rootAccess(permission:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]"></a>
+      <a id="rootAccess(models.Permission.Value):ActionBuilder[Auth]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">rootAccess</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.ADMIN</a></span></span></span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
+        <span class="name">rootAccess</span><span class="params">(<span name="permission">permission: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a> = <span class="symbol"><span class="name"><a href="../models/package.html">Permission.ADMIN</a></span></span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@rootAccess(permission:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.SiteRequest.Auth]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -553,7 +697,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -566,7 +714,11 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -579,7 +731,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -598,7 +754,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -617,7 +777,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteAction$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -625,19 +789,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="controllers.ActionCreator#~&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="~&gt;[Q[_]](child:controllers.ActionFunction[P,Q]):controllers.ActionCreator[Q]"></a>
-      <a id="~&gt;[Q[_]](ActionFunction[Base,Q]):ActionCreator[Q]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $tilde$greater" class="name">~&gt;</span><span class="tparams">[<span name="Q">Q<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="params">(<span name="child">child: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <span class="extype" name="controllers.ActionCreator.~&gt;.Q">Q</span>]</span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<span class="extype" name="controllers.ActionCreator.~&gt;.Q">Q</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Compose this ActionFunction with another.</p><div class="fullcomment"><div class="comment cmt"><p>Compose this ActionFunction with another.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a> → <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a></dd></dl></div>
     </li></ol>
             </div>
 
@@ -647,12 +798,10 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.ActionCreator">
-              <h3>Inherited from <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</h3>
-            </div><div class="parent" name="controllers.ActionFunction">
-              <h3>Inherited from <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="play.api.mvc.Request">Request</span>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</h3>
-            </div><div class="parent" name="play.api.mvc.ActionBuilder">
+        <div class="parent" name="play.api.mvc.ActionBuilder">
               <h3>Inherited from <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</h3>
+            </div><div class="parent" name="play.api.mvc.ActionFunction">
+              <h3>Inherited from <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<span class="extype" name="play.api.mvc.Request">Request</span>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
@@ -673,6 +822,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

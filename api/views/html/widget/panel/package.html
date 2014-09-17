@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>panel - views.html.widget.panel</title>
@@ -9,6 +8,11 @@
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../../../../lib/package_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="views">views</a>.<a href="../../package.html" class="extype" name="views.html">html</a>.<a href="../package.html" class="extype" name="views.html.widget">widget</a></p>
-        <h1>panel</h1>
+        <h1>panel</h1> <span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -62,33 +70,7 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="views.html.widget.panel.asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="asset"></a>
-      <a id="asset:asset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="asset$.html"><span class="name">asset</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.browser" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="browser"></a>
-      <a id="browser:browser"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="browser$.html"><span class="name">browser</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../../models/Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Any">Any</span>)])], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.comments" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="views.html.widget.panel.comments" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="comments"></a>
       <a id="comments:comments"></a>
       <h4 class="signature">
@@ -97,10 +79,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="comments$.html"><span class="name">comments</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="scala.Option">Option</span>[<a href="../../../../controllers/CommentController$$Form.html" class="extype" name="controllers.CommentController.Form">Form</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Comment.html" class="extype" name="models.Comment">Comment</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="comments$.html"><span class="name">comments</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="scala.Option">Option</span>[<a href="../../../../controllers/CommentController$$Form.html" class="extype" name="controllers.CommentController.Form">Form</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Comment.html" class="extype" name="models.Comment">Comment</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@comments" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.error" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="error"></a>
       <a id="error:error"></a>
@@ -110,10 +96,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="error$.html"><span class="name">error</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="error$.html"><span class="name">error</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template2">Template2</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.twirl.api.Html">Html</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@error" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.form" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="form"></a>
       <a id="form:form"></a>
@@ -123,23 +113,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="form$.html"><span class="name">form</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.templates.Html">Html</span>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="form$.html"><span class="name">form</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template5">Template5</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.twirl.api.Html">Html</span>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.ingest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ingest"></a>
-      <a id="ingest:ingest"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ingest$.html"><span class="name">ingest</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.templates.Html">Html</span>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@form" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.materials" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="materials"></a>
       <a id="materials:materials"></a>
@@ -149,62 +130,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="materials$.html"><span class="name">materials</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="materials$.html"><span class="name">materials</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="party"></a>
-      <a id="party:party"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="party$.html"><span class="name">party</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Authorize.html" class="extype" name="models.Authorize">Authorize</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Authorize.html" class="extype" name="models.Authorize">Authorize</a>], <a href="../../../../controllers/PartyHtml$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.PartyHtml.Request">controllers.PartyHtml.Request</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.people" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="people"></a>
-      <a id="people:people"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="people$.html"><span class="name">people</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.player" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="player"></a>
-      <a id="player:player"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="player$.html"><span class="name">player</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template0">Template0</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.publications" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="publications"></a>
-      <a id="publications:publications"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="publications$.html"><span class="name">publications</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@materials" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.raw" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="raw"></a>
       <a id="raw:raw"></a>
@@ -214,23 +147,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="raw$.html"><span class="name">raw</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="raw$.html"><span class="name">raw</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.twirl.api.Html">Html</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.record" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="record"></a>
-      <a id="record:record"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="record$.html"><span class="name">record</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../../models/Record.html" class="extype" name="models.Record">Record</a>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@raw" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.records" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="records"></a>
       <a id="records:records"></a>
@@ -240,36 +164,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="records$.html"><span class="name">records</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Record.html" class="extype" name="models.Record">Record</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="records$.html"><span class="name">records</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Record.html" class="extype" name="models.Record">Record</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="search"></a>
-      <a id="search:search"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="search$.html"><span class="name">search</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="play.api.templates.Html">Html</span>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="slot"></a>
-      <a id="slot:slot"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="slot$.html"><span class="name">slot</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@records" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.tags" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="tags"></a>
       <a id="tags:tags"></a>
@@ -279,23 +181,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="tags$.html"><span class="name">tags</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<a href="../../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <span class="extype" name="scala.Option">Option</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <a href="../../../../controllers/TagController$$Form.html" class="extype" name="controllers.TagController.Form">Form</a>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="tags$.html"><span class="name">tags</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <a href="../../../../controllers/TagController$$Form.html" class="extype" name="controllers.TagController.Form">Form</a>, <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.panel.volume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="volume"></a>
-      <a id="volume:volume"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="volume$.html"><span class="name">volume</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <a href="../../../../models/Volume$$Summary.html" class="extype" name="models.Volume.Summary">Summary</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
-      </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@tags" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.panel.volumes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="volumes"></a>
       <a id="volumes:volumes"></a>
@@ -305,10 +198,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="volumes$.html"><span class="name">volumes</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="volumes$.html"><span class="name">volumes</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>], <a href="../../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.panel.package@volumes" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 
@@ -334,6 +231,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../lib/template.js"></script>
+
+
     </body>
       </html>

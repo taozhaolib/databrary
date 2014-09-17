@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>ingest - ingest</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/package_big.png" />
         
-        <h1>ingest</h1>
+        <h1>ingest</h1> <span class="permalink">
+      <a href="../index.html#ingest.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -92,7 +100,11 @@
       <span class="symbol">
         <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@AssetextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="ingest.IngestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IngestExceptionextendsRuntimeException"></a>
@@ -105,7 +117,11 @@
       <span class="symbol">
         <a href="IngestException.html"><span class="name">IngestException</span></a><span class="result"> extends <span class="extype" name="java.lang.RuntimeException">RuntimeException</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@IngestExceptionextendsRuntimeException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="ingest.ParseException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ParseExceptionextendsIngestExceptionwithProductwithSerializable"></a>
@@ -118,7 +134,11 @@
       <span class="symbol">
         <a href="ParseException.html"><span class="name">ParseException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="context">context: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@ParseExceptionextendsIngestExceptionwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PopulateExceptionextendsIngestExceptionwithProductwithSerializable"></a>
@@ -129,9 +149,13 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="PopulateException.html"><span class="name">PopulateException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="target">target: <span class="extype" name="scala.Option">Option</span>[<a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>] = <span class="symbol">scala.None</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="PopulateException.html"><span class="name">PopulateException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="target">target: <span class="extype" name="scala.Option">Option</span>[<a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@PopulateExceptionextendsIngestExceptionwithProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -151,9 +175,13 @@
       <span class="symbol">
         <a href="Adolph$.html"><span class="name">Adolph</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@Adolph" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="ingest.CSV" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="ingest.CSV" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CSV"></a>
       <a id="CSV:CSV"></a>
       <h4 class="signature">
@@ -164,8 +192,13 @@
       <span class="symbol">
         <a href="CSV$.html"><span class="name">CSV</span></a><span class="result"> extends <span class="extype" name="scala.util.parsing.combinator.RegexParsers">RegexParsers</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">Simple CSV parser based on RFC 4180.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@CSV" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Simple CSV parser based on RFC 4180.</p><div class="fullcomment"><div class="comment cmt"><p>Simple CSV parser based on RFC 4180.
+Throws a ParseException on failure.</p></div></div>
     </li><li name="ingest.Curated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Curated"></a>
       <a id="Curated:Curated"></a>
@@ -177,7 +210,11 @@
       <span class="symbol">
         <a href="Curated$.html"><span class="name">Curated</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@Curated" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="ingest.ParseException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ParseException"></a>
@@ -190,7 +227,11 @@
       <span class="symbol">
         <a href="ParseException$.html"><span class="name">ParseException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@ParseException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PopulateException"></a>
@@ -203,7 +244,11 @@
       <span class="symbol">
         <a href="PopulateException$.html"><span class="name">PopulateException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@PopulateException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -234,6 +279,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

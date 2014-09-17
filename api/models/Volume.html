@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Volume - models.Volume</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="Volume$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Volume$.html" title="Go to companion">Volume</a></h1>
+        <h1><a href="Volume$.html" title="Go to companion">Volume</a></h1> <span class="permalink">
+      <a href="../index.html#models.Volume" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -42,7 +50,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Main organizational unit or package of data, within which everything else exists.
 Usually represents a single project or dataset with a single set of procedures.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/volume.scala" target="_blank">volume.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Volume">Volume</a>], <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -60,7 +68,7 @@ Usually represents a single project or dataset with a single set of procedures.<
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Volume"><span>Volume</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Volume"><span>Volume</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.HasGenericId"><span>HasGenericId</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -87,19 +95,6 @@ Usually represents a single project or dataset with a single set of procedures.<
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -110,8 +105,12 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -123,22 +122,13 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -149,21 +139,63 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.TableRowId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="===[X&gt;:T](a:models.TableRowId[X]):Boolean"></a>
-      <a id="===[X&gt;:Volume](TableRowId[X]):Boolean"></a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.HasGenericId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean"></a>
+      <a id="===[X&gt;:Volume](HasGenericId[Int,X]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Volume">Volume</a></span>]</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.TableRowId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Volume">Volume</a></span>]</span><span class="params">(<span name="i">i: <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="models.HasGenericId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId</dd></dl></div>
+    </li><li name="models.TableRowId#_id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_id:Int"></a>
+      <a id="_id:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_id</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@_id:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
+    </li><li name="models.Volume#adminAccessVia" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="adminAccessVia:scala.concurrent.Future[Seq[models.SiteParty]]"></a>
+      <a id="adminAccessVia:Future[Seq[SiteParty]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">adminAccessVia</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SiteParty.html" class="extype" name="models.SiteParty">SiteParty</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@adminAccessVia:scala.concurrent.Future[Seq[models.SiteParty]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">List of parties through whom the current user has the given access to this volume.</p>
     </li><li name="models.Volume#alias" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="alias:Option[String]"></a>
       <a id="alias:Option[String]"></a>
@@ -175,7 +207,11 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">alias</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@alias:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Short, internal name, only available to editors.</p>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -188,8 +224,29 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Volume#auditDownload" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
+      <a id="auditDownload(Site):Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">auditDownload</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Volume#body" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="body:Option[String]"></a>
       <a id="body:Option[String]"></a>
@@ -201,8 +258,29 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">body</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@body:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Longer, abstract-like description.</p>
+    </li><li name="models.HasGenericId#canEqual" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="canEqual(i:Any):Boolean"></a>
+      <a id="canEqual(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">canEqual</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@canEqual(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals</dd></dl></div>
     </li><li name="models.Volume#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[Boolean]"></a>
       <a id="change(Option[String],Option[Option[String]],Option[Option[String]]):Future[Boolean]"></a>
@@ -214,7 +292,11 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="alias">alias: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
@@ -227,21 +309,29 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">checkPermission</span><span class="params">(<span name="need">need: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@checkPermission(need:models.Permission.Value):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
-    </li><li name="models.Volume#citations" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="citations:scala.concurrent.Future[Seq[models.VolumeCitation]]"></a>
-      <a id="citations:Future[Seq[VolumeCitation]]"></a>
+    </li><li name="models.Volume#citation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="citation:scala.concurrent.Future[Option[models.Citation]]"></a>
+      <a id="citation:Future[Option[Citation]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">citations</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>]]</span>
+        <span class="name">citation</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Citation.html" class="extype" name="models.Citation">Citation</a>]]</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">List of all citations on this volume.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@citation:scala.concurrent.Future[Option[models.Citation]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -253,7 +343,11 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -272,7 +366,11 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">comments</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@comments:scala.concurrent.Future[Seq[models.Comment]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of comments in this volume.</p>
     </li><li name="models.Volume#consumers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="consumers:scala.concurrent.Future[Seq[models.Volume]]"></a>
@@ -285,7 +383,11 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">consumers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.Volume">Volume</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@consumers:scala.concurrent.Future[Seq[models.Volume]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Volumes (&quot;studies&quot;) which include data provided by this volume.</p>
     </li><li name="models.Volume#containers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="containers:scala.concurrent.Future[Seq[models.Container]]"></a>
@@ -298,8 +400,12 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">containers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]]</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">List of containers within this volume, except the top.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@containers:scala.concurrent.Future[Seq[models.Container]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">List of containers within this volume.</p>
     </li><li name="models.Volume#creation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="creation:dbrary.Timestamp"></a>
       <a id="creation:Timestamp"></a>
@@ -311,8 +417,29 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">creation</span><span class="result">: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@creation:dbrary.Timestamp" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
+    </li><li name="models.HasPermission#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value,Consent.Value):HasPermission"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p><div class="fullcomment"><div class="comment cmt"><p>The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -324,10 +451,14 @@ Usually represents a single project or dataset with a single set of procedures.<
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:Any):Boolean"></a>
+    </li><li name="models.HasGenericId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(i:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -335,11 +466,15 @@ Usually represents a single project or dataset with a single set of procedures.<
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.
-This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@equals(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Equality based on id value.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on id value.
+This doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals → AnyRef → Any</dd></dl></div>
     </li><li name="models.Volume#excerpts" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="excerpts:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
       <a id="excerpts:Future[Seq[SlotAsset]]"></a>
@@ -351,8 +486,29 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">excerpts</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@excerpts:scala.concurrent.Future[Seq[models.SlotAsset]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">List of toplevel assets within this volume.</p>
+    </li><li name="models.Volume#fileName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="fileName:scala.concurrent.Future[String]"></a>
+      <a id="fileName:Future[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">lazy val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fileName</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@fileName:scala.concurrent.Future[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -364,7 +520,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -372,6 +532,23 @@ This assumes that two objects representing the same row are the same (even if th
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.Volume#funding" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="funding:scala.concurrent.Future[Seq[models.Funding]]"></a>
+      <a id="funding:Future[Seq[Funding]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">funding</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Funding.html" class="extype" name="models.Funding">Funding</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@funding:scala.concurrent.Future[Seq[models.Funding]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -383,9 +560,13 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.TableRowId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -396,8 +577,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Volume#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="id:models.Volume.Id"></a>
       <a id="id:Volume.Id"></a>
@@ -409,8 +594,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">id</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@id:models.Volume.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -422,7 +611,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Volume#json" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="json(options:site.JsonOptions.Options):scala.concurrent.Future[site.JsonRecord]"></a>
@@ -435,7 +628,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">json</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@json(options:site.JsonOptions.Options):scala.concurrent.Future[site.JsonRecord]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Volume#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="json:site.JsonRecord"></a>
@@ -448,7 +645,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">json</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@json:site.JsonRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="models.Volume#name" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="name:String"></a>
@@ -461,7 +662,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@name:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Title headline.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -474,7 +679,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -487,7 +696,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -500,7 +713,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="site.SitePage#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageCrumbName:Option[String]"></a>
@@ -513,7 +730,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">pageCrumbName</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@pageCrumbName:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Optional override of pageName for breadcrumbs and other abbreviated locations</p><div class="fullcomment"><div class="comment cmt"><p>Optional override of pageName for breadcrumbs and other abbreviated locations</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Volume#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageName:String"></a>
@@ -526,7 +747,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">pageName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@pageName:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:None.type" class="extmbr" name="models.Volume#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:None.type" class="extmbr" name="models.Volume#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Volume#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageParent:None.type"></a>
@@ -539,7 +764,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">pageParent</span><span class="result">: <span class="extype" name="scala.None">None</span>.type</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@pageParent:None.type" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Volume#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageURL:play.api.mvc.Call"></a>
@@ -552,7 +781,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">pageURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@pageURL:play.api.mvc.Call" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Volume#partyAccess" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="partyAccess(access:models.Permission.Value):scala.concurrent.Future[Seq[models.VolumeAccess]]"></a>
@@ -565,7 +798,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">partyAccess</span><span class="params">(<span name="access">access: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a> = <span class="symbol"><span class="name"><a href="Permission$.html">Permission.NONE</a></span></span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@partyAccess(access:models.Permission.Value):scala.concurrent.Future[Seq[models.VolumeAccess]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">List of parties access to this volume, sorted by level (ADMIN first).</p>
     </li><li name="models.Volume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
@@ -578,7 +815,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@permission:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request.</p><div class="fullcomment"><div class="comment cmt"><p>the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than <a href="Permission$.html#VIEW:models.Permission.Value" class="extmbr" name="models.Permission#VIEW">Permission.VIEW</a> except possibly for transient objects, as unavailable volumes should never be returned in the first place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.Volume#providers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="providers:scala.concurrent.Future[Seq[models.Volume]]"></a>
@@ -591,21 +832,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">providers</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.Volume">Volume</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@providers:scala.concurrent.Future[Seq[models.Volume]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Volumes (&quot;datasets&quot;) which provide data included in this volume.</p>
-    </li><li name="models.Volume#recordCategorySlots" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="recordCategorySlots:scala.concurrent.Future[Seq[(models.RecordCategory,Seq[(models.Record,Seq[models.Slot])])]]"></a>
-      <a id="recordCategorySlots:Future[Seq[(RecordCategory,Seq[(Record,Seq[Slot])])]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">recordCategorySlots</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[(<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>])])]]</span>
-      </span>
-      </h4>
-      
     </li><li name="models.Volume#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="records(category:Option[models.RecordCategory]):scala.concurrent.Future[Seq[models.Record]]"></a>
       <a id="records(Option[RecordCategory]):Future[Seq[Record]]"></a>
@@ -617,33 +849,45 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">records</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@records(category:Option[models.RecordCategory]):scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">List of records defined in this volume.</p><div class="fullcomment"><div class="comment cmt"><p>List of records defined in this volume.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>restrict to the specified category</p></dd><dt>returns</dt><dd class="cmt"><p>records sorted by category</p></dd></dl></div>
     </li><li name="models.Volume#sessions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="sessions:scala.concurrent.Future[Seq[(models.Container,Seq[(Option[models.RecordCategory.Id],Seq[(dbrary.Segment,models.Record)])])]]"></a>
-      <a id="sessions:Future[Seq[(Container,Seq[(Option[RecordCategory.Id],Seq[(Segment,Record)])])]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sessions</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[(<a href="Container.html" class="extype" name="models.Container">Container</a>, <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory$.html#Id=models.IntId[T]" class="extmbr" name="models.RecordCategory.Id">RecordCategory.Id</a>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="dbrary.Segment">Segment</span>, <a href="Record.html" class="extype" name="models.Record">Record</a>)])])]]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Volume#setCitations" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="setCitations(list:Seq[models.VolumeCitation]):scala.concurrent.Future[Boolean]"></a>
-      <a id="setCitations(Seq[VolumeCitation]):Future[Boolean]"></a>
+      <a id="sessions:scala.concurrent.Future[Seq[models.Volume.Session.Group]]"></a>
+      <a id="sessions:Future[Seq[Group]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setCitations</span><span class="params">(<span name="list">list: <span class="extype" name="scala.Seq">Seq</span>[<a href="VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">sessions</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Volume$$Session$.html#Group=(models.Container,Seq[(dbrary.Segment,models.Record)])" class="extmbr" name="models.Volume.Session.Group">Group</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@sessions:scala.concurrent.Future[Seq[models.Volume.Session.Group]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.Volume#setCitation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="setCitation(cite:Option[models.Citation]):scala.concurrent.Future[Boolean]"></a>
+      <a id="setCitation(Option[Citation]):Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">setCitation</span><span class="params">(<span name="cite">cite: <span class="extype" name="scala.Option">Option</span>[<a href="Citation.html" class="extype" name="models.Citation">Citation</a>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@setCitation(cite:Option[models.Citation]):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Volume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
@@ -656,7 +900,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">site</span><span class="result">: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@site:site.Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
     </li><li name="models.Volume#summary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="summary:scala.concurrent.Future[models.Volume.Summary]"></a>
@@ -669,7 +917,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">summary</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Volume$$Summary.html" class="extype" name="models.Volume.Summary">Summary</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@summary:scala.concurrent.Future[models.Volume.Summary]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Basic summary information on this volume.</p><div class="fullcomment"><div class="comment cmt"><p>Basic summary information on this volume.
 For now this only includes session (cross participant) information.</p></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -683,7 +935,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Volume#tags" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]"></a>
@@ -696,7 +952,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">tags</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of tags on this volume and their use on the topSlot by the current user.</p>
     </li><li name="models.Volume#thumb" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="thumb:scala.concurrent.Future[Option[models.SlotAsset]]"></a>
@@ -709,9 +969,13 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">thumb</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@thumb:scala.concurrent.Future[Option[models.SlotAsset]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">An image-able &quot;asset&quot; that may be used as the volume's thumbnail.</p>
-    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasGenericId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -722,8 +986,12 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Volume#top" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="top:scala.concurrent.Future[models.Container]"></a>
       <a id="top:Future[Container]"></a>
@@ -735,7 +1003,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">top</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Container.html" class="extype" name="models.Container">Container</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@top:scala.concurrent.Future[models.Container]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The master container corresponding to this volume, which serves as a proxy target for many annotations.</p>
     </li><li name="models.Volume#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
@@ -748,7 +1020,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">volume</span><span class="result">: <a href="" class="extype" name="models.Volume">Volume</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@volume:models.Volume" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
@@ -761,7 +1037,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@volumeId:models.Volume.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -774,7 +1054,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -793,7 +1077,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -812,7 +1100,11 @@ For now this only includes session (cross participant) information.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -841,6 +1133,12 @@ For now this only includes session (cross participant) information.</p></div></d
               <h3>Inherited from <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></h3>
             </div><div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Volume">Volume</a>]</h3>
+            </div><div class="parent" name="models.HasId">
+              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Volume">Volume</a>]</h3>
+            </div><div class="parent" name="models.HasGenericId">
+              <h3>Inherited from <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Volume">Volume</a>]</h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">
@@ -863,6 +1161,7 @@ For now this only includes session (cross participant) information.</p></div></d
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

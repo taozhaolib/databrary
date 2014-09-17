@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>JsonOptions - site.JsonOptions</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/object_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="site">site</a></p>
-        <h1>JsonOptions</h1>
+        <h1>JsonOptions</h1> <span class="permalink">
+      <a href="../index.html#site.JsonOptions$" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -92,7 +100,11 @@
       <span class="symbol">
         <span class="name">Key</span><span class="result"> = <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@Key=String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions.Opt" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Opt=Seq[String]"></a>
@@ -105,7 +117,11 @@
       <span class="symbol">
         <span class="name">Opt</span><span class="result"> = <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@Opt=Seq[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions.Options" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Options=Map[String,site.JsonOptions.Opt]"></a>
@@ -118,24 +134,32 @@
       <span class="symbol">
         <span class="name">Options</span><span class="result"> = <span class="extype" name="scala.collection.immutable.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@Options=Map[String,site.JsonOptions.Opt]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions.Tuple" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Tuple=(site.JsonOptions.Key,site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue])"></a>
-      <a id="Tuple:(Key,(Opt)⇒Future[JsValue])"></a>
+      <a id="Tuple=(site.JsonOptions.Key,site.JsonOptions.Value)"></a>
+      <a id="Tuple:Tuple"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">type</span>
       </span>
       <span class="symbol">
-        <span class="name">Tuple</span><span class="result"> = (<a href="#Key=String" class="extmbr" name="site.JsonOptions.Key">Key</a>, (<a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsValue">JsValue</span>])</span>
+        <span class="name">Tuple</span><span class="result"> = (<a href="#Key=String" class="extmbr" name="site.JsonOptions.Key">Key</a>, <a href="#Value=site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue]" class="extmbr" name="site.JsonOptions.Value">Value</a>)</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@Tuple=(site.JsonOptions.Key,site.JsonOptions.Value)" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions.Value" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Value=site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue]"></a>
-      <a id="Value:(Opt)⇒Future[JsValue]"></a>
+      <a id="Value:Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
@@ -144,7 +168,11 @@
       <span class="symbol">
         <span class="name">Value</span><span class="result"> = (<a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsValue">JsValue</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@Value=site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -154,19 +182,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -177,8 +192,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -190,22 +209,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -216,33 +226,45 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="site.JsonOptions#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(base:play.api.libs.json.JsObject,options:site.JsonOptions.Options,opts:(site.JsonOptions.Key,site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue])*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
-      <a id="apply(JsObject,Options,(Key,(Opt)⇒Future[JsValue])*)(ExecutionContext):Future[JsObject]"></a>
+      <a id="apply(base:play.api.libs.json.JsObject,options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
+      <a id="apply(JsObject,Options,Tuple*)(ExecutionContext):Future[JsObject]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="base">base: <span class="extype" name="play.api.libs.json.JsObject">JsObject</span></span>, <span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: (<a href="#Key=String" class="extmbr" name="site.JsonOptions.Key">Key</a>, (<a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsValue">JsValue</span>])*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exceutionContext">exceutionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
+        <span class="name">apply</span><span class="params">(<span name="base">base: <span class="extype" name="play.api.libs.json.JsObject">JsObject</span></span>, <span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: <a href="#Tuple=(site.JsonOptions.Key,site.JsonOptions.Value)" class="extmbr" name="site.JsonOptions.Tuple">Tuple</a>*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exceutionContext">exceutionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@apply(base:play.api.libs.json.JsObject,options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="site.JsonOptions#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(base:site.JsonRecord,options:site.JsonOptions.Options,opts:(site.JsonOptions.Key,site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue])*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[site.JsonRecord]"></a>
-      <a id="apply(JsonRecord,Options,(Key,(Opt)⇒Future[JsValue])*)(ExecutionContext):Future[JsonRecord]"></a>
+      <a id="apply(base:site.JsonRecord,options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[site.JsonRecord]"></a>
+      <a id="apply(JsonRecord,Options,Tuple*)(ExecutionContext):Future[JsonRecord]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="base">base: <a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>, <span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: (<a href="#Key=String" class="extmbr" name="site.JsonOptions.Key">Key</a>, (<a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsValue">JsValue</span>])*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exceutionContext">exceutionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
+        <span class="name">apply</span><span class="params">(<span name="base">base: <a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>, <span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: <a href="#Tuple=(site.JsonOptions.Key,site.JsonOptions.Value)" class="extmbr" name="site.JsonOptions.Tuple">Tuple</a>*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exceutionContext">exceutionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@apply(base:site.JsonRecord,options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexceutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[site.JsonRecord]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -255,7 +277,11 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -268,7 +294,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -287,7 +317,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -300,7 +334,11 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -313,7 +351,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -332,7 +374,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -345,7 +391,11 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -358,7 +408,11 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -371,7 +425,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -384,7 +442,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -397,20 +459,28 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="site.JsonOptions#run" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="run(options:site.JsonOptions.Options,opts:(site.JsonOptions.Key,site.JsonOptions.Opt=&gt;scala.concurrent.Future[play.api.libs.json.JsValue])*)(implicitexecutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
-      <a id="run(Options,(Key,(Opt)⇒Future[JsValue])*)(ExecutionContext):Future[JsObject]"></a>
+      <a id="run(options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexecutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
+      <a id="run(Options,Tuple*)(ExecutionContext):Future[JsObject]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">run</span><span class="params">(<span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: (<a href="#Key=String" class="extmbr" name="site.JsonOptions.Key">Key</a>, (<a href="#Opt=Seq[String]" class="extmbr" name="site.JsonOptions.Opt">Opt</a>) ⇒ <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsValue">JsValue</span>])*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="executionContext">executionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
+        <span class="name">run</span><span class="params">(<span name="options">options: <a href="#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>, <span name="opts">opts: <a href="#Tuple=(site.JsonOptions.Key,site.JsonOptions.Value)" class="extmbr" name="site.JsonOptions.Tuple">Tuple</a>*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="executionContext">executionContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@run(options:site.JsonOptions.Options,opts:site.JsonOptions.Tuple*)(implicitexecutionContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[play.api.libs.json.JsObject]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -423,7 +493,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -436,7 +510,11 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -449,7 +527,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -468,7 +550,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -487,7 +573,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#site.JsonOptions$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -524,6 +614,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

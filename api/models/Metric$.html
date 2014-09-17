@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Metric - models.Metric</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="Metric.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Metric.html" title="Go to companion">Metric</a></h1>
+        <h1><a href="Metric.html" title="Go to companion">Metric</a></h1> <span class="permalink">
+      <a href="../index.html#models.Metric$" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -41,7 +49,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/measure.scala" target="_blank">measure.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.ProvidesId">ProvidesId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.ProvidesId"><span>ProvidesId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,7 +89,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="models.ProvidesId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Id=models.IntId[T]"></a>
       <a id="Id:Id"></a>
       <h4 class="signature">
@@ -92,8 +100,12 @@
       <span class="symbol">
         <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@Id=models.IntId[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ProvidesId</dd></dl></div>
     </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Row=R"></a>
       <a id="Row:Row"></a>
@@ -105,7 +117,11 @@
       <span class="symbol">
         <span class="name">Row</span><span class="result"> = <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@Row=R" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
     </li></ol>
             </div>
@@ -115,19 +131,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -138,8 +141,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -151,22 +158,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -177,9 +175,13 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Metric#Birthdate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Metric#Birthdate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Birthdate:models.Metric[dbrary.Date]"></a>
       <a id="Birthdate:Metric[Date]"></a>
       <h4 class="signature">
@@ -190,22 +192,11 @@
       <span class="symbol">
         <span class="name">Birthdate</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="dbrary.Date">Date</span>]</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Date of birth for any records representing organisms or other entities with dates of origination.</p><div class="fullcomment"><div class="comment cmt"><p>Date of birth for any records representing organisms or other entities with dates of origination.
-These are treated specially in combination with <a href="Container.html#date:Option[dbrary.Date]" class="extmbr" name="models.Container#date">Container.date</a> to compute ages.
-<a href="Classification$.html#IDENTIFIED:models.Classification.Value" class="extmbr" name="models.Classification#IDENTIFIED">Classification.IDENTIFIED</a> implies all authorized researchers get full access to these.</p></div></div>
-    </li><li name="models.Metric#Country" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Country:models.Metric[String]"></a>
-      <a id="Country:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Country</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@Birthdate:models.Metric[dbrary.Date]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
@@ -218,73 +209,29 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DELETE(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="DELETE(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <a id="DELETE(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="DELETE(SQLTerms,String)(DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">DELETE</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerms.html" class="extype" name="models.SQLTerms">SQLTerms</a></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@DELETE(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.Metric#Description" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Description:models.Metric[String]"></a>
-      <a id="Description:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Description</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Disability" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Disability:models.Metric[String]"></a>
-      <a id="Disability:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Disability</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Ethnicity" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Ethnicity:models.Metric[String]"></a>
-      <a id="Ethnicity:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Ethnicity</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Gender" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Gender:models.Metric[String]"></a>
-      <a id="Gender:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Gender</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Gender is treated as a text enumeration.</p>
     </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
       <a id="INSERT(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
@@ -296,22 +243,30 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="INSERT(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="INSERT(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <a id="INSERT(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="INSERT(SQLTerms,String)(DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">INSERT</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerms.html" class="extype" name="models.SQLTerms">SQLTerms</a></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@INSERT(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.Metric#Ident" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Metric#Ident" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Ident:models.Metric[String]"></a>
       <a id="Ident:Metric[String]"></a>
       <h4 class="signature">
@@ -322,115 +277,31 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">Ident</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Identifiers providing generic labels for records or data, such as participant id, condition name, etc.</p><div class="fullcomment"><div class="comment cmt"><p>Identifiers providing generic labels for records or data, such as participant id, condition name, etc.
-<a href="Classification$.html#DEIDENTIFIED:models.Classification.Value" class="extmbr" name="models.Classification#DEIDENTIFIED">Classification.DEIDENTIFIED</a> implies these contain no identifying information, as per human subject regulations for identifiers.</p></div></div>
-    </li><li name="models.Metric#Info" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Info:models.Metric[String]"></a>
-      <a id="Info:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Info</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@Ident:models.Metric[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="models.Metric#Language" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Language:models.Metric[String]"></a>
-      <a id="Language:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Language</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Race" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Race:models.Metric[String]"></a>
-      <a id="Race:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Race</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Reason" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Reason:models.Metric[String]"></a>
-      <a id="Reason:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Reason</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Setting" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Setting:models.Metric[String]"></a>
-      <a id="Setting:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Setting</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#State" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="State:models.Metric[String]"></a>
-      <a id="State:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">State</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#Summary" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Summary:models.Metric[String]"></a>
-      <a id="Summary:Metric[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Summary</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="scala.Predef.String">String</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="models.Metric#add" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="add(m:models.Metric[_]):Unit"></a>
-      <a id="add(Metric[_]):Unit"></a>
+    </li><li name="models.Metric#_getName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="_getName[T](name:String):models.Metric[T]"></a>
+      <a id="_getName[T](String):Metric[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">add</span><span class="params">(<span name="m">m: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
+        <span class="name">_getName</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <a href="Metric.html" class="extype" name="models.Metric">Metric</a>[<span class="extype" name="models.Metric._getName.T">T</span>]</span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
-    </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asId(i:Int):HasId.this.Id"></a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@_getName[T](name:String):models.Metric[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.ProvidesId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asId(i:Int):ProvidesId.this.Id"></a>
       <a id="asId(Int):Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -440,8 +311,12 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">asId</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@asId(i:Int):ProvidesId.this.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>ProvidesId</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -453,7 +328,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -466,7 +345,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -485,7 +368,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -498,7 +385,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -511,7 +402,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -519,7 +414,7 @@ These are treated specially in combination with <a href="Container.html#date:Opt
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TableView#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>
       <h4 class="signature">
@@ -530,8 +425,12 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">fromTable</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@fromTable:dbrary.FromTable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Metric#get" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="get(id:models.Metric.Id):Option[models.Metric[_]]"></a>
       <a id="get(Id):Option[Metric[_]]"></a>
@@ -543,7 +442,11 @@ These are treated specially in combination with <a href="Container.html#date:Opt
       <span class="symbol">
         <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Id</a></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@get(id:models.Metric.Id):Option[models.Metric[_]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Retrieve a single metric by id.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a single metric by id.
 Metrics are strongly cached, so this provides a synchronous interface which may block on occasion.</p></div></div>
     </li><li name="models.Metric#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
@@ -557,7 +460,11 @@ Metrics are strongly cached, so this provides a synchronous interface which may 
       <span class="symbol">
         <span class="name">getAll</span><span class="result">: <span class="extype" name="scala.Iterable">Iterable</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@getAll:Iterable[models.Metric[_]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Retrieve all metrics that have been retrieved.</p>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -570,7 +477,11 @@ Metrics are strongly cached, so this provides a synchronous interface which may 
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Metric#getName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getName(name:String):Option[models.Metric[_]]"></a>
@@ -583,7 +494,11 @@ Metrics are strongly cached, so this provides a synchronous interface which may 
       <span class="symbol">
         <span class="name">getName</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@getName(name:String):Option[models.Metric[_]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Retrieve a single metric by name.</p><div class="fullcomment"><div class="comment cmt"><p>Retrieve a single metric by name.
 Like getAll, this only includes already-retrieved (by get) metrics.</p></div></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -597,7 +512,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -610,7 +529,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -623,7 +546,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -636,7 +563,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -649,7 +580,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -662,7 +597,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -675,7 +614,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -688,7 +631,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -707,7 +654,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -726,7 +677,11 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -745,14 +700,12 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
         <div id="inheritedMembers">
         <div class="parent" name="models.TableId">
               <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
-            </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
+            </div><div class="parent" name="models.ProvidesId">
+              <h3>Inherited from <span class="extype" name="models.ProvidesId">ProvidesId</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
             </div><div class="parent" name="models.Table">
               <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Metric.html" class="extype" name="models.Metric">Metric</a>[_]]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
-            </div><div class="parent" name="models.HasTable">
-              <h3>Inherited from <span class="extype" name="models.HasTable">HasTable</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
@@ -773,6 +726,7 @@ Like getAll, this only includes already-retrieved (by get) metrics.</p></div></d
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

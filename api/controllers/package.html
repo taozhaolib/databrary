@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>controllers - controllers</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/package_big.png" />
         
-        <h1>controllers</h1>
+        <h1>controllers</h1> <span class="permalink">
+      <a href="../index.html#controllers.package" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -69,85 +77,11 @@
       <span class="symbol">
         <a href="AHtmlForm.html"><span class="name">AHtmlForm</span></a><span class="tparams">[<span name="F">+F &lt;: <a href="AHtmlForm.html" class="extype" name="controllers.AHtmlForm">AHtmlForm</a>[<span class="extype" name="controllers.AHtmlForm.F">F</span>]</span>]</span><span class="result"> extends <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></span>
       </span>
-      </h4>
-      
-    </li><li name="controllers.ActionChecker" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionChecker[R[_]]extendsActionHandler[R]"></a>
-      <a id="ActionChecker[R[_]]:ActionChecker[R]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionChecker.html"><span class="name">ActionChecker</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionHandler.html" class="extype" name="controllers.ActionHandler">ActionHandler</a>[<span class="extype" name="controllers.ActionChecker.R">R</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ActionCreator" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionCreator[P[_]]extendsActionBuilder[P]withActionFunction[play.api.mvc.Request,P]"></a>
-      <a id="ActionCreator[P[_]]:ActionCreator[P]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionCreator.html"><span class="name">ActionCreator</span></a><span class="tparams">[<span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<span class="extype" name="controllers.ActionCreator.P">P</span>] with <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="play.api.mvc.Request">Request</span>, <span class="extype" name="controllers.ActionCreator.P">P</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ActionFunction" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionFunction[-R[_],P[_]]extendsAnyRef"></a>
-      <a id="ActionFunction[-R[_],P[_]]:ActionFunction[R,P]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionFunction.html"><span class="name">ActionFunction</span></a><span class="tparams">[<span name="R">-R<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
-      </span>
-      </h4>
-      <p class="comment cmt">A generic version of ActionBuilder parameterized over the request type.</p>
-    </li><li name="controllers.ActionHandler" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionHandler[R[_]]extendsActionRefiner[R,R]"></a>
-      <a id="ActionHandler[R[_]]:ActionHandler[R]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionHandler.html"><span class="name">ActionHandler</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<span class="extype" name="controllers.ActionHandler.R">R</span>, <span class="extype" name="controllers.ActionHandler.R">R</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ActionRefiner" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionRefiner[-R[_],P[_]]extendsActionFunction[R,P]"></a>
-      <a id="ActionRefiner[-R[_],P[_]]:ActionRefiner[R,P]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionRefiner.html"><span class="name">ActionRefiner</span></a><span class="tparams">[<span name="R">-R<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<span class="extype" name="controllers.ActionRefiner.R">R</span>, <span class="extype" name="controllers.ActionRefiner.P">P</span>]</span>
-      </span>
-      </h4>
-      
-    </li><li name="controllers.ActionTransformer" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="ActionTransformer[-R[_],P[_]]extendsActionRefiner[R,P]"></a>
-      <a id="ActionTransformer[-R[_],P[_]]:ActionTransformer[R,P]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="ActionTransformer.html"><span class="name">ActionTransformer</span></a><span class="tparams">[<span name="R">-R<span class="tparams">[<span name="_">_</span>]</span></span>, <span name="P">P<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <a href="ActionRefiner.html" class="extype" name="controllers.ActionRefiner">ActionRefiner</a>[<span class="extype" name="controllers.ActionTransformer.R">R</span>, <span class="extype" name="controllers.ActionTransformer.P">P</span>]</span>
-      </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@AHtmlForm[+F&lt;:controllers.AHtmlForm[F]]extendsHtmlFormView" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ApiController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ApiControllerextendsSiteController"></a>
@@ -160,7 +94,11 @@
       <span class="symbol">
         <a href="ApiController.html"><span class="name">ApiController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ApiControllerextendsSiteController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ApiException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ApiExceptionextendsSiteException"></a>
@@ -173,7 +111,11 @@
       <span class="symbol">
         <a href="ApiException.html"><span class="name">ApiException</span></a><span class="result"> extends <a href="SiteException.html" class="extype" name="controllers.SiteException">SiteException</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ApiExceptionextendsSiteException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ApiForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ApiFormextendsFormView"></a>
@@ -186,7 +128,47 @@
       <span class="symbol">
         <a href="ApiForm.html"><span class="name">ApiForm</span></a><span class="result"> extends <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ApiFormextendsFormView" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.DeferredAction" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="DeferredAction[R[_]]extendsEssentialAction"></a>
+      <a id="DeferredAction[R[_]]:DeferredAction[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DeferredAction.html"><span class="name">DeferredAction</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span></span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.EssentialAction">EssentialAction</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@DeferredAction[R[_]]extendsEssentialAction" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">An action that is created by pre-processing the RequestHeader alone first (with an empty body) using an ActionBuilder[R] to produce a R for input into the main action body.</p><div class="fullcomment"><div class="comment cmt"><p>An action that is created by pre-processing the RequestHeader alone first (with an empty body) using an ActionBuilder[R] to produce a R for input into the main action body.
+Basically this allows existing ActionBuilders to be used in cases when body processing should be deferred, and all the necessary content for the builder is in the header already.
+</p></div></div>
+    </li><li name="controllers.DeferredSiteAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeferredSiteAction[R[_]&lt;:controllers.SiteRequest[_]]extendsDeferredAction[R]"></a>
+      <a id="DeferredSiteAction[R[_]&lt;:SiteRequest[_]]:DeferredSiteAction[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="DeferredSiteAction.html"><span class="name">DeferredSiteAction</span></a><span class="tparams">[<span name="R">R<span class="tparams">[<span name="_">_</span>]</span> &lt;: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>]</span><span class="result"> extends <a href="DeferredAction.html" class="extype" name="controllers.DeferredAction">DeferredAction</a>[<span class="extype" name="controllers.DeferredSiteAction.R">R</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@DeferredSiteAction[R[_]&lt;:controllers.SiteRequest[_]]extendsDeferredAction[R]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.EitherMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="EitherMapping[L,R]extendsMapping[Either[L,R]]withProductwithSerializable"></a>
@@ -197,9 +179,30 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="EitherMapping.html"><span class="name">EitherMapping</span></a><span class="tparams">[<span name="L">L</span>, <span name="R">R</span>]</span><span class="params">(<span name="leftMapping">leftMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>]</span>, <span name="rightMapping">rightMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.R">R</span>]</span>, <span name="key">key: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>, <span name="constraints">constraints: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]]] = <span class="symbol">immutable.this.Nil</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="EitherMapping.html"><span class="name">EitherMapping</span></a><span class="tparams">[<span name="L">L</span>, <span name="R">R</span>]</span><span class="params">(<span name="leftMapping">leftMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>]</span>, <span name="rightMapping">rightMapping: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.EitherMapping.R">R</span>]</span>, <span name="key">key: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>, <span name="constraints">constraints: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]]] = <span class="symbol">Nil</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Either">Either</span>[<span class="extype" name="controllers.EitherMapping.L">L</span>, <span class="extype" name="controllers.EitherMapping.R">R</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EitherMapping[L,R]extendsMapping[Either[L,R]]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.EmptyRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="EmptyRequestextendsRequest[play.api.mvc.AnyContentAsEmpty.type]withProductwithSerializable"></a>
+      <a id="EmptyRequest:EmptyRequest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">case class</span>
+      </span>
+      <span class="symbol">
+        <a href="EmptyRequest.html"><span class="name">EmptyRequest</span></a><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="play.api.mvc.AnyContentAsEmpty">AnyContentAsEmpty</span>.type] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EmptyRequestextendsRequest[play.api.mvc.AnyContentAsEmpty.type]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.FormView" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="FormViewextendsStructForm"></a>
@@ -212,7 +215,11 @@
       <span class="symbol">
         <a href="FormView.html"><span class="name">FormView</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@FormViewextendsStructForm" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.HtmlController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="HtmlControllerextendsSiteController"></a>
@@ -225,7 +232,11 @@
       <span class="symbol">
         <a href="HtmlController.html"><span class="name">HtmlController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@HtmlControllerextendsSiteController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.HtmlException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="HtmlExceptionextendsSiteException"></a>
@@ -238,7 +249,11 @@
       <span class="symbol">
         <a href="HtmlException.html"><span class="name">HtmlException</span></a><span class="result"> extends <a href="SiteException.html" class="extype" name="controllers.SiteException">SiteException</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@HtmlExceptionextendsSiteException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.HtmlForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="HtmlForm[+F&lt;:controllers.HtmlForm[F]]extendsHtmlFormView"></a>
@@ -251,7 +266,11 @@
       <span class="symbol">
         <a href="HtmlForm.html"><span class="name">HtmlForm</span></a><span class="tparams">[<span name="F">+F &lt;: <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<span class="extype" name="controllers.HtmlForm.F">F</span>]</span>]</span><span class="result"> extends <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@HtmlForm[+F&lt;:controllers.HtmlForm[F]]extendsHtmlFormView" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.HtmlFormView" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="HtmlFormViewextendsFormView"></a>
@@ -264,7 +283,11 @@
       <span class="symbol">
         <a href="HtmlFormView.html"><span class="name">HtmlFormView</span></a><span class="result"> extends <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@HtmlFormViewextendsFormView" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.MaybeMapping" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="MaybeMapping[T]extendsMapping[Option[T]]"></a>
@@ -277,7 +300,11 @@
       <span class="symbol">
         <a href="MaybeMapping.html"><span class="name">MaybeMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.MaybeMapping.T">T</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@MaybeMapping[T]extendsMapping[Option[T]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.NoMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="NoMapping[T]extendsMaybeMapping[T]withProductwithSerializable"></a>
@@ -290,7 +317,11 @@
       <span class="symbol">
         <a href="NoMapping.html"><span class="name">NoMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">()</span><span class="result"> extends <a href="MaybeMapping.html" class="extype" name="controllers.MaybeMapping">MaybeMapping</a>[<span class="extype" name="controllers.NoMapping.T">T</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@NoMapping[T]extendsMaybeMapping[T]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ObjectController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ObjectController[O&lt;:site.SiteObject]extendsSiteController"></a>
@@ -303,7 +334,11 @@
       <span class="symbol">
         <a href="ObjectController.html"><span class="name">ObjectController</span></a><span class="tparams">[<span name="O">O &lt;: <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>]</span><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ObjectController[O&lt;:site.SiteObject]extendsSiteController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.OptionMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="OptionMapping[T]extendsMapping[Option[T]]withProductwithSerializable"></a>
@@ -314,10 +349,14 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="OptionMapping.html"><span class="name">OptionMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="wrapped">wrapped: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]</span>, <span name="constraints">constraints: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]]] = <span class="symbol">immutable.this.Nil</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="OptionMapping.html"><span class="name">OptionMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="wrapped">wrapped: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]</span>, <span name="constraints">constraints: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.Constraint">Constraint</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]]] = <span class="symbol">Nil</span></span>)</span><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="controllers.OptionMapping.T">T</span>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">Identical to OptionalMapping except that empty fields are not treated as missing.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@OptionMapping[T]extendsMapping[Option[T]]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Identical to OptionalMapping except that empty fields are not treated as missing.</p>
     </li><li name="controllers.PartyController" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="PartyControllerextendsObjectController[models.SiteParty]"></a>
       <a id="PartyController:PartyController"></a>
@@ -329,7 +368,11 @@
       <span class="symbol">
         <a href="PartyController.html"><span class="name">PartyController</span></a><span class="result"> extends <a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a>[<a href="../models/SiteParty.html" class="extype" name="models.SiteParty">SiteParty</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@PartyControllerextendsObjectController[models.SiteParty]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.RequestObject" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="RequestObject[+O]extendsAnyRef"></a>
@@ -342,7 +385,11 @@
       <span class="symbol">
         <a href="RequestObject.html"><span class="name">RequestObject</span></a><span class="tparams">[<span name="O">+O</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@RequestObject[+O]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseAssetApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseAssetApiextendsAnyRef"></a>
@@ -355,7 +402,11 @@
       <span class="symbol">
         <a href="ReverseAssetApi.html"><span class="name">ReverseAssetApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseAssetApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseAssetHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseAssetHtmlextendsAnyRef"></a>
@@ -368,7 +419,11 @@
       <span class="symbol">
         <a href="ReverseAssetHtml.html"><span class="name">ReverseAssetHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseAssetHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseAssets" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseAssetsextendsAnyRef"></a>
@@ -381,7 +436,11 @@
       <span class="symbol">
         <a href="ReverseAssets.html"><span class="name">ReverseAssets</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseAssetsextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseCommentApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseCommentApiextendsAnyRef"></a>
@@ -394,7 +453,11 @@
       <span class="symbol">
         <a href="ReverseCommentApi.html"><span class="name">ReverseCommentApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseCommentApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseCommentHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseCommentHtmlextendsAnyRef"></a>
@@ -407,7 +470,11 @@
       <span class="symbol">
         <a href="ReverseCommentHtml.html"><span class="name">ReverseCommentHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseCommentHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseIngestController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseIngestControllerextendsAnyRef"></a>
@@ -420,7 +487,11 @@
       <span class="symbol">
         <a href="ReverseIngestController.html"><span class="name">ReverseIngestController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseIngestControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseLoginApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseLoginApiextendsAnyRef"></a>
@@ -433,7 +504,11 @@
       <span class="symbol">
         <a href="ReverseLoginApi.html"><span class="name">ReverseLoginApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseLoginApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseLoginHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseLoginHtmlextendsAnyRef"></a>
@@ -446,7 +521,11 @@
       <span class="symbol">
         <a href="ReverseLoginHtml.html"><span class="name">ReverseLoginHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseLoginHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReversePartyApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReversePartyApiextendsAnyRef"></a>
@@ -459,7 +538,11 @@
       <span class="symbol">
         <a href="ReversePartyApi.html"><span class="name">ReversePartyApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReversePartyApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReversePartyHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReversePartyHtmlextendsAnyRef"></a>
@@ -472,7 +555,11 @@
       <span class="symbol">
         <a href="ReversePartyHtml.html"><span class="name">ReversePartyHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReversePartyHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseRecordApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseRecordApiextendsAnyRef"></a>
@@ -485,7 +572,11 @@
       <span class="symbol">
         <a href="ReverseRecordApi.html"><span class="name">ReverseRecordApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseRecordApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseRecordHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseRecordHtmlextendsAnyRef"></a>
@@ -498,7 +589,11 @@
       <span class="symbol">
         <a href="ReverseRecordHtml.html"><span class="name">ReverseRecordHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseRecordHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSite" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSiteextendsAnyRef"></a>
@@ -511,7 +606,11 @@
       <span class="symbol">
         <a href="ReverseSite.html"><span class="name">ReverseSite</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSiteextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSiteApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSiteApiextendsAnyRef"></a>
@@ -524,7 +623,11 @@
       <span class="symbol">
         <a href="ReverseSiteApi.html"><span class="name">ReverseSiteApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSiteApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSlotApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSlotApiextendsAnyRef"></a>
@@ -537,7 +640,11 @@
       <span class="symbol">
         <a href="ReverseSlotApi.html"><span class="name">ReverseSlotApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSlotAssetApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSlotAssetApiextendsAnyRef"></a>
@@ -550,7 +657,28 @@
       <span class="symbol">
         <a href="ReverseSlotAssetApi.html"><span class="name">ReverseSlotAssetApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotAssetApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.ReverseSlotAssetController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseSlotAssetControllerextendsAnyRef"></a>
+      <a id="ReverseSlotAssetController:ReverseSlotAssetController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseSlotAssetController.html"><span class="name">ReverseSlotAssetController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotAssetControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSlotAssetHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSlotAssetHtmlextendsAnyRef"></a>
@@ -563,7 +691,28 @@
       <span class="symbol">
         <a href="ReverseSlotAssetHtml.html"><span class="name">ReverseSlotAssetHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotAssetHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.ReverseSlotController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ReverseSlotControllerextendsAnyRef"></a>
+      <a id="ReverseSlotController:ReverseSlotController"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ReverseSlotController.html"><span class="name">ReverseSlotController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseSlotHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseSlotHtmlextendsAnyRef"></a>
@@ -576,7 +725,11 @@
       <span class="symbol">
         <a href="ReverseSlotHtml.html"><span class="name">ReverseSlotHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseSlotHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseTagApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseTagApiextendsAnyRef"></a>
@@ -589,7 +742,11 @@
       <span class="symbol">
         <a href="ReverseTagApi.html"><span class="name">ReverseTagApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseTagApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseTagHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseTagHtmlextendsAnyRef"></a>
@@ -602,7 +759,11 @@
       <span class="symbol">
         <a href="ReverseTagHtml.html"><span class="name">ReverseTagHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseTagHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseTokenApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseTokenApiextendsAnyRef"></a>
@@ -615,7 +776,11 @@
       <span class="symbol">
         <a href="ReverseTokenApi.html"><span class="name">ReverseTokenApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseTokenApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseTokenHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseTokenHtmlextendsAnyRef"></a>
@@ -628,7 +793,11 @@
       <span class="symbol">
         <a href="ReverseTokenHtml.html"><span class="name">ReverseTokenHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseTokenHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseVolumeApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseVolumeApiextendsAnyRef"></a>
@@ -641,7 +810,11 @@
       <span class="symbol">
         <a href="ReverseVolumeApi.html"><span class="name">ReverseVolumeApi</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseVolumeApiextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseVolumeController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseVolumeControllerextendsAnyRef"></a>
@@ -654,7 +827,11 @@
       <span class="symbol">
         <a href="ReverseVolumeController.html"><span class="name">ReverseVolumeController</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseVolumeControllerextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ReverseVolumeHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ReverseVolumeHtmlextendsAnyRef"></a>
@@ -667,7 +844,11 @@
       <span class="symbol">
         <a href="ReverseVolumeHtml.html"><span class="name">ReverseVolumeHtml</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ReverseVolumeHtmlextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SiteControllerextendsController"></a>
@@ -680,7 +861,11 @@
       <span class="symbol">
         <a href="SiteController.html"><span class="name">SiteController</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.Controller">Controller</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteControllerextendsController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteException" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SiteExceptionextendsExceptionwithResults"></a>
@@ -693,7 +878,11 @@
       <span class="symbol">
         <a href="SiteException.html"><span class="name">SiteException</span></a><span class="result"> extends <span class="extype" name="scala.Exception">Exception</span> with <span class="extype" name="play.api.mvc.Results">Results</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteExceptionextendsExceptionwithResults" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteRequest" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="SiteRequest[A]extendsRequest[A]withSite"></a>
@@ -706,7 +895,11 @@
       <span class="symbol">
         <a href="SiteRequest.html"><span class="name">SiteRequest</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.A">A</span>] with <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteRequest[A]extendsRequest[A]withSite" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SomeMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SomeMapping[T]extendsMaybeMapping[T]withProductwithSerializable"></a>
@@ -719,9 +912,13 @@
       <span class="symbol">
         <a href="SomeMapping.html"><span class="name">SomeMapping</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="wrapped">wrapped: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.SomeMapping.T">T</span>]</span>)</span><span class="result"> extends <a href="MaybeMapping.html" class="extype" name="controllers.MaybeMapping">MaybeMapping</a>[<span class="extype" name="controllers.SomeMapping.T">T</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SomeMapping[T]extendsMaybeMapping[T]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="controllers.StructForm" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+    </li><li name="controllers.StructForm" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="StructFormextendsAnyRef"></a>
       <a id="StructForm:StructForm"></a>
       <h4 class="signature">
@@ -732,8 +929,13 @@
       <span class="symbol">
         <a href="StructForm.html"><span class="name">StructForm</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">This is an alternative to play.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@StructFormextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">This is an alternative to play.api.data.Form that provides more structure and safety.</p><div class="fullcomment"><div class="comment cmt"><p>This is an alternative to play.api.data.Form that provides more structure and safety.
+The disadvantage of this class is mutability and less efficiency.</p></div></div>
     </li><li name="controllers.routes" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="routesextendsObject"></a>
       <a id="routes:routes"></a>
@@ -745,7 +947,11 @@
       <span class="symbol">
         <a href="routes.html"><span class="name">routes</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@routesextendsObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -765,7 +971,11 @@
       <span class="symbol">
         <a href="AssetApi$.html"><span class="name">AssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@AssetApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.AssetController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetController"></a>
@@ -778,7 +988,11 @@
       <span class="symbol">
         <a href="AssetController$.html"><span class="name">AssetController</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@AssetController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.AssetHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="AssetHtml"></a>
@@ -791,7 +1005,11 @@
       <span class="symbol">
         <a href="AssetHtml$.html"><span class="name">AssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.AssetController">AssetController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@AssetHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.CommentApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommentApi"></a>
@@ -804,7 +1022,11 @@
       <span class="symbol">
         <a href="CommentApi$.html"><span class="name">CommentApi</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@CommentApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.CommentController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommentController"></a>
@@ -817,7 +1039,11 @@
       <span class="symbol">
         <a href="CommentController$.html"><span class="name">CommentController</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@CommentController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.CommentHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="CommentHtml"></a>
@@ -830,7 +1056,28 @@
       <span class="symbol">
         <a href="CommentHtml$.html"><span class="name">CommentHtml</span></a><span class="result"> extends <span class="extype" name="controllers.CommentController">CommentController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@CommentHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.DeferredAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="DeferredAction"></a>
+      <a id="DeferredAction:DeferredAction"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="DeferredAction$.html"><span class="name">DeferredAction</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@DeferredAction" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.EmptyMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="EmptyMapping"></a>
@@ -843,7 +1090,11 @@
       <span class="symbol">
         <a href="EmptyMapping$.html"><span class="name">EmptyMapping</span></a><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@EmptyMapping" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.HTTP" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="HTTP"></a>
@@ -856,7 +1107,11 @@
       <span class="symbol">
         <a href="HTTP$.html"><span class="name">HTTP</span></a><span class="result"> extends <span class="extype" name="play.api.http.HeaderNames">HeaderNames</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@HTTP" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.IngestController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IngestController"></a>
@@ -869,7 +1124,11 @@
       <span class="symbol">
         <a href="IngestController$.html"><span class="name">IngestController</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@IngestController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.LoginApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoginApi"></a>
@@ -882,7 +1141,11 @@
       <span class="symbol">
         <a href="LoginApi$.html"><span class="name">LoginApi</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@LoginApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.LoginController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoginController"></a>
@@ -895,7 +1158,11 @@
       <span class="symbol">
         <a href="LoginController$.html"><span class="name">LoginController</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@LoginController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.LoginHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoginHtml"></a>
@@ -908,7 +1175,11 @@
       <span class="symbol">
         <a href="LoginHtml$.html"><span class="name">LoginHtml</span></a><span class="result"> extends <span class="extype" name="controllers.LoginController">LoginController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@LoginHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.Mappings" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Mappings"></a>
@@ -921,7 +1192,11 @@
       <span class="symbol">
         <a href="Mappings$.html"><span class="name">Mappings</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@Mappings" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.MaybeMapping" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="MaybeMapping"></a>
@@ -934,7 +1209,11 @@
       <span class="symbol">
         <a href="MaybeMapping$.html"><span class="name">MaybeMapping</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@MaybeMapping" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.PartyApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PartyApi"></a>
@@ -947,7 +1226,11 @@
       <span class="symbol">
         <a href="PartyApi$.html"><span class="name">PartyApi</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@PartyApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.PartyController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PartyController"></a>
@@ -960,7 +1243,11 @@
       <span class="symbol">
         <a href="PartyController$.html"><span class="name">PartyController</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@PartyController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.PartyHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PartyHtml"></a>
@@ -973,7 +1260,11 @@
       <span class="symbol">
         <a href="PartyHtml$.html"><span class="name">PartyHtml</span></a><span class="result"> extends <a href="PartyController.html" class="extype" name="controllers.PartyController">PartyController</a> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@PartyHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.RecordApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RecordApi"></a>
@@ -986,7 +1277,11 @@
       <span class="symbol">
         <a href="RecordApi$.html"><span class="name">RecordApi</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@RecordApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.RecordController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RecordController"></a>
@@ -999,7 +1294,11 @@
       <span class="symbol">
         <a href="RecordController$.html"><span class="name">RecordController</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@RecordController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.RecordHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RecordHtml"></a>
@@ -1012,7 +1311,11 @@
       <span class="symbol">
         <a href="RecordHtml$.html"><span class="name">RecordHtml</span></a><span class="result"> extends <span class="extype" name="controllers.RecordController">RecordController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@RecordHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.RequestObject" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="RequestObject"></a>
@@ -1025,7 +1328,11 @@
       <span class="symbol">
         <a href="RequestObject$.html"><span class="name">RequestObject</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@RequestObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ServiceUnavailableException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ServiceUnavailableException"></a>
@@ -1038,7 +1345,11 @@
       <span class="symbol">
         <a href="ServiceUnavailableException$.html"><span class="name">ServiceUnavailableException</span></a><span class="result"> extends <a href="SiteException.html" class="extype" name="controllers.SiteException">SiteException</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ServiceUnavailableException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.Site" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Site"></a>
@@ -1051,7 +1362,11 @@
       <span class="symbol">
         <a href="Site$.html"><span class="name">Site</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteAction" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SiteAction"></a>
@@ -1062,9 +1377,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SiteAction$.html"><span class="name">SiteAction</span></a><span class="result"> extends <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
+        <a href="SiteAction$.html"><span class="name">SiteAction</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteAction" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SiteApi"></a>
@@ -1077,7 +1396,11 @@
       <span class="symbol">
         <a href="SiteApi$.html"><span class="name">SiteApi</span></a><span class="result"> extends <a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SiteException"></a>
@@ -1088,9 +1411,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="SiteException$.html"><span class="name">SiteException</span></a><span class="result"> extends <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="SiteException$.html"><span class="name">SiteException</span></a><span class="result"> extends <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>] with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteRequest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SiteRequest"></a>
@@ -1103,7 +1430,11 @@
       <span class="symbol">
         <a href="SiteRequest$.html"><span class="name">SiteRequest</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SiteRequest" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotApi"></a>
@@ -1116,7 +1447,11 @@
       <span class="symbol">
         <a href="SlotApi$.html"><span class="name">SlotApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotAssetApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotAssetApi"></a>
@@ -1129,7 +1464,11 @@
       <span class="symbol">
         <a href="SlotAssetApi$.html"><span class="name">SlotAssetApi</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotAssetApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotAssetController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotAssetController"></a>
@@ -1142,7 +1481,11 @@
       <span class="symbol">
         <a href="SlotAssetController$.html"><span class="name">SlotAssetController</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotAssetController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotAssetHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotAssetHtml"></a>
@@ -1155,7 +1498,11 @@
       <span class="symbol">
         <a href="SlotAssetHtml$.html"><span class="name">SlotAssetHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotAssetController">SlotAssetController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotAssetHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotController"></a>
@@ -1168,7 +1515,11 @@
       <span class="symbol">
         <a href="SlotController$.html"><span class="name">SlotController</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SlotHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SlotHtml"></a>
@@ -1181,7 +1532,11 @@
       <span class="symbol">
         <a href="SlotHtml$.html"><span class="name">SlotHtml</span></a><span class="result"> extends <span class="extype" name="controllers.SlotController">SlotController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@SlotHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TagApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagApi"></a>
@@ -1194,7 +1549,11 @@
       <span class="symbol">
         <a href="TagApi$.html"><span class="name">TagApi</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TagApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TagController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagController"></a>
@@ -1207,7 +1566,11 @@
       <span class="symbol">
         <a href="TagController$.html"><span class="name">TagController</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TagController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TagHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TagHtml"></a>
@@ -1220,7 +1583,11 @@
       <span class="symbol">
         <a href="TagHtml$.html"><span class="name">TagHtml</span></a><span class="result"> extends <span class="extype" name="controllers.TagController">TagController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TagHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TokenApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TokenApi"></a>
@@ -1233,7 +1600,11 @@
       <span class="symbol">
         <a href="TokenApi$.html"><span class="name">TokenApi</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TokenApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TokenController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TokenController"></a>
@@ -1246,7 +1617,11 @@
       <span class="symbol">
         <a href="TokenController$.html"><span class="name">TokenController</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TokenController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.TokenHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="TokenHtml"></a>
@@ -1259,7 +1634,11 @@
       <span class="symbol">
         <a href="TokenHtml$.html"><span class="name">TokenHtml</span></a><span class="result"> extends <span class="extype" name="controllers.TokenController">TokenController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@TokenHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.VolumeApi" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="VolumeApi"></a>
@@ -1272,7 +1651,11 @@
       <span class="symbol">
         <a href="VolumeApi$.html"><span class="name">VolumeApi</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span> with <a href="ApiController.html" class="extype" name="controllers.ApiController">ApiController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@VolumeApi" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.VolumeController" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="VolumeController"></a>
@@ -1285,7 +1668,11 @@
       <span class="symbol">
         <a href="VolumeController$.html"><span class="name">VolumeController</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@VolumeController" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.VolumeHtml" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="VolumeHtml"></a>
@@ -1298,7 +1685,11 @@
       <span class="symbol">
         <a href="VolumeHtml$.html"><span class="name">VolumeHtml</span></a><span class="result"> extends <span class="extype" name="controllers.VolumeController">VolumeController</span> with <a href="HtmlController.html" class="extype" name="controllers.HtmlController">HtmlController</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@VolumeHtml" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.javascript" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="javascript"></a>
@@ -1311,7 +1702,11 @@
       <span class="symbol">
         <a href="javascript/package.html"><span class="name">javascript</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@javascript" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.ref" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ref"></a>
@@ -1324,7 +1719,11 @@
       <span class="symbol">
         <a href="ref/package.html"><span class="name">ref</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.package@ref" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -1351,6 +1750,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

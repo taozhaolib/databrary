@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>AssetApi - controllers.AssetApi</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/object_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
-        <h1>AssetApi</h1>
+        <h1>AssetApi</h1> <span class="permalink">
+      <a href="../index.html#controllers.AssetApi$" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -92,10 +100,14 @@
       <span class="symbol">
         <span class="name">Request</span><span class="tparams">[<span name="A">A</span>]</span><span class="result"> = <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>[<span class="extype" name="controllers.ObjectController.Request.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Request[A]=controllers.RequestObject[O]#Site[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a></dd></dl></div>
     </li><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="StatusextendsSimpleResult"></a>
+      <a id="StatusextendsResult"></a>
       <a id="Status:Status"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -103,10 +115,31 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@StatusextendsResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
+    </li><li name="controllers.AssetApi.TranscodedForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TranscodedFormextendsStructForm"></a>
+      <a id="TranscodedForm:TranscodedForm"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="AssetApi$$TranscodedForm.html"><span class="name">TranscodedForm</span></a><span class="result"> extends <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TranscodedFormextendsStructForm" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 
@@ -115,19 +148,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -138,8 +158,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -151,22 +175,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -177,20 +192,28 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.SiteController#ABadRequest" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ABadRequest[C](c:C)(implicitevidence$2:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="ABadRequest[C](C)(Writeable[C]):Future[SimpleResult]"></a>
+      <a id="ABadRequest[C](c:C)(implicitevidence$2:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="ABadRequest[C](C)(Writeable[C]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ABadRequest</span><span class="tparams">[<span name="C">C</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="controllers.SiteController.ABadRequest.C">C</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="play.api.http.Writeable">Writeable</span>[<span class="extype" name="controllers.SiteController.ABadRequest.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">ABadRequest</span><span class="tparams">[<span name="C">C</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="controllers.SiteController.ABadRequest.C">C</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="play.api.http.Writeable">Writeable</span>[<span class="extype" name="controllers.SiteController.ABadRequest.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ABadRequest[C](c:C)(implicitevidence$2:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCEPT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPT:String"></a>
@@ -203,7 +226,11 @@
       <span class="symbol">
         <span class="name">ACCEPT</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPT:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#ACCEPTED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPTED:Int"></a>
@@ -216,7 +243,11 @@
       <span class="symbol">
         <span class="name">ACCEPTED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPTED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCEPT_CHARSET" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPT_CHARSET:String"></a>
@@ -229,7 +260,11 @@
       <span class="symbol">
         <span class="name">ACCEPT_CHARSET</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPT_CHARSET:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCEPT_ENCODING" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPT_ENCODING:String"></a>
@@ -242,7 +277,11 @@
       <span class="symbol">
         <span class="name">ACCEPT_ENCODING</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPT_ENCODING:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCEPT_LANGUAGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPT_LANGUAGE:String"></a>
@@ -255,7 +294,11 @@
       <span class="symbol">
         <span class="name">ACCEPT_LANGUAGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPT_LANGUAGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCEPT_RANGES" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCEPT_RANGES:String"></a>
@@ -268,7 +311,11 @@
       <span class="symbol">
         <span class="name">ACCEPT_RANGES</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCEPT_RANGES:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_ALLOW_CREDENTIALS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_ALLOW_CREDENTIALS:String"></a>
@@ -281,7 +328,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_ALLOW_CREDENTIALS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_ALLOW_CREDENTIALS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_ALLOW_HEADERS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_ALLOW_HEADERS:String"></a>
@@ -294,7 +345,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_ALLOW_HEADERS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_ALLOW_HEADERS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_ALLOW_METHODS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_ALLOW_METHODS:String"></a>
@@ -307,7 +362,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_ALLOW_METHODS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_ALLOW_METHODS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_ALLOW_ORIGIN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_ALLOW_ORIGIN:String"></a>
@@ -320,7 +379,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_ALLOW_ORIGIN</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_ALLOW_ORIGIN:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_EXPOSE_HEADERS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_EXPOSE_HEADERS:String"></a>
@@ -333,7 +396,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_EXPOSE_HEADERS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_EXPOSE_HEADERS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_MAX_AGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_MAX_AGE:String"></a>
@@ -346,7 +413,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_MAX_AGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_MAX_AGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_REQUEST_HEADERS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_REQUEST_HEADERS:String"></a>
@@ -359,7 +430,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_REQUEST_HEADERS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_REQUEST_HEADERS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ACCESS_CONTROL_REQUEST_METHOD" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ACCESS_CONTROL_REQUEST_METHOD:String"></a>
@@ -372,7 +447,11 @@
       <span class="symbol">
         <span class="name">ACCESS_CONTROL_REQUEST_METHOD</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ACCESS_CONTROL_REQUEST_METHOD:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#AGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AGE:String"></a>
@@ -385,7 +464,11 @@
       <span class="symbol">
         <span class="name">AGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@AGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ALLOW" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ALLOW:String"></a>
@@ -398,46 +481,62 @@
       <span class="symbol">
         <span class="name">ALLOW</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ALLOW:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.SiteController#ANotFound" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ANotFound(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="ANotFound(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="ANotFound(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="ANotFound(SiteRequest[_]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ANotFound</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">ANotFound</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ANotFound(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
     </li><li name="controllers.SiteController#AOk" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="AOk[C](c:C)(implicitevidence$1:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="AOk[C](C)(Writeable[C]):Future[SimpleResult]"></a>
+      <a id="AOk[C](c:C)(implicitevidence$1:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="AOk[C](C)(Writeable[C]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">AOk</span><span class="tparams">[<span name="C">C</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="controllers.SiteController.AOk.C">C</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="play.api.http.Writeable">Writeable</span>[<span class="extype" name="controllers.SiteController.AOk.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">AOk</span><span class="tparams">[<span name="C">C</span>]</span><span class="params">(<span name="c">c: <span class="extype" name="controllers.SiteController.AOk.C">C</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="arg0">arg0: <span class="extype" name="play.api.http.Writeable">Writeable</span>[<span class="extype" name="controllers.SiteController.AOk.C">C</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@AOk[C](c:C)(implicitevidence$1:play.api.http.Writeable[C]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
     </li><li name="controllers.SiteController#ARedirect" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ARedirect(c:play.api.mvc.Call):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="ARedirect(Call):Future[SimpleResult]"></a>
+      <a id="ARedirect(c:play.api.mvc.Call):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="ARedirect(Call):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">ARedirect</span><span class="params">(<span name="c">c: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">ARedirect</span><span class="params">(<span name="c">c: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ARedirect(c:play.api.mvc.Call):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="SiteController.html" class="extype" name="controllers.SiteController">SiteController</a></dd></dl></div>
     </li><li name="play.api.http.HeaderNames#AUTHORIZATION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AUTHORIZATION:String"></a>
@@ -450,7 +549,11 @@
       <span class="symbol">
         <span class="name">AUTHORIZATION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@AUTHORIZATION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#Accepted" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Accepted:Results.this.Status"></a>
@@ -461,22 +564,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Accepted:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="controllers.AssetController#Action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Action(i:models.Asset.Id,p:models.Permission.Value):controllers.ActionCreator[controllers.RequestObject[models.Asset]#Site]"></a>
-      <a id="Action(models.Asset.Id,models.Permission.Value):ActionCreator[Site]"></a>
+      <a id="Action(i:models.Asset.Id,p:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.RequestObject[models.Asset]#Site]"></a>
+      <a id="Action(models.Asset.Id,models.Permission.Value):ActionBuilder[Site]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Action</span><span class="params">(<span name="i">i: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="p">p: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <a href="ActionCreator.html" class="extype" name="controllers.ActionCreator">ActionCreator</a>[<a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">Action</span><span class="params">(<span name="i">i: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="p">p: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Action(i:models.Asset.Id,p:models.Permission.Value):play.api.mvc.ActionBuilder[controllers.RequestObject[models.Asset]#Site]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="play.api.http.Status#BAD_GATEWAY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BAD_GATEWAY:Int"></a>
@@ -489,7 +600,11 @@
       <span class="symbol">
         <span class="name">BAD_GATEWAY</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@BAD_GATEWAY:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#BAD_REQUEST" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BAD_REQUEST:Int"></a>
@@ -502,7 +617,11 @@
       <span class="symbol">
         <span class="name">BAD_REQUEST</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@BAD_REQUEST:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#BINARY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BINARY:String"></a>
@@ -515,7 +634,11 @@
       <span class="symbol">
         <span class="name">BINARY</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@BINARY:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.mvc.Results#BadGateway" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BadGateway:Results.this.Status"></a>
@@ -526,9 +649,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@BadGateway:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#BadRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BadRequest:Results.this.Status"></a>
@@ -539,9 +666,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@BadRequest:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CACHE_CONTROL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CACHE_CONTROL:String"></a>
@@ -554,8 +685,29 @@
       <span class="symbol">
         <span class="name">CACHE_CONTROL</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CACHE_CONTROL:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
+    </li><li name="play.api.http.ContentTypes#CACHE_MANIFEST" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="CACHE_MANIFEST:String"></a>
+      <a id="CACHE_MANIFEST:String"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">CACHE_MANIFEST</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CACHE_MANIFEST:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.HttpProtocol#CHUNKED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CHUNKED:String"></a>
       <a id="CHUNKED:String"></a>
@@ -567,7 +719,11 @@
       <span class="symbol">
         <span class="name">CHUNKED</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CHUNKED:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
     </li><li name="play.api.http.Status#CONFLICT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONFLICT:Int"></a>
@@ -580,7 +736,11 @@
       <span class="symbol">
         <span class="name">CONFLICT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONFLICT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONNECTION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONNECTION:String"></a>
@@ -593,7 +753,11 @@
       <span class="symbol">
         <span class="name">CONNECTION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONNECTION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_DISPOSITION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_DISPOSITION:String"></a>
@@ -606,7 +770,11 @@
       <span class="symbol">
         <span class="name">CONTENT_DISPOSITION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_DISPOSITION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_ENCODING" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_ENCODING:String"></a>
@@ -619,7 +787,11 @@
       <span class="symbol">
         <span class="name">CONTENT_ENCODING</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_ENCODING:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_LANGUAGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_LANGUAGE:String"></a>
@@ -632,7 +804,11 @@
       <span class="symbol">
         <span class="name">CONTENT_LANGUAGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_LANGUAGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_LENGTH" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_LENGTH:String"></a>
@@ -645,7 +821,11 @@
       <span class="symbol">
         <span class="name">CONTENT_LENGTH</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_LENGTH:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_LOCATION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_LOCATION:String"></a>
@@ -658,7 +838,11 @@
       <span class="symbol">
         <span class="name">CONTENT_LOCATION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_LOCATION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_MD5" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_MD5:String"></a>
@@ -671,7 +855,11 @@
       <span class="symbol">
         <span class="name">CONTENT_MD5</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_MD5:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_RANGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_RANGE:String"></a>
@@ -684,7 +872,11 @@
       <span class="symbol">
         <span class="name">CONTENT_RANGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_RANGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_TRANSFER_ENCODING" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_TRANSFER_ENCODING:String"></a>
@@ -697,7 +889,11 @@
       <span class="symbol">
         <span class="name">CONTENT_TRANSFER_ENCODING</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_TRANSFER_ENCODING:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#CONTENT_TYPE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTENT_TYPE:String"></a>
@@ -710,7 +906,11 @@
       <span class="symbol">
         <span class="name">CONTENT_TYPE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTENT_TYPE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#CONTINUE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CONTINUE:Int"></a>
@@ -723,7 +923,11 @@
       <span class="symbol">
         <span class="name">CONTINUE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CONTINUE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#COOKIE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="COOKIE:String"></a>
@@ -736,7 +940,11 @@
       <span class="symbol">
         <span class="name">COOKIE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@COOKIE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#CREATED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CREATED:Int"></a>
@@ -749,7 +957,11 @@
       <span class="symbol">
         <span class="name">CREATED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CREATED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#CSS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="CSS(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -762,7 +974,11 @@
       <span class="symbol">
         <span class="name">CSS</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@CSS(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.mvc.Results#Conflict" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Conflict:Results.this.Status"></a>
@@ -773,9 +989,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Conflict:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Created" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Created:Results.this.Status"></a>
@@ -786,9 +1006,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Created</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Created</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Created:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#DATE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DATE:String"></a>
@@ -801,7 +1025,11 @@
       <span class="symbol">
         <span class="name">DATE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@DATE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ETAG" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ETAG:String"></a>
@@ -814,7 +1042,11 @@
       <span class="symbol">
         <span class="name">ETAG</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ETAG:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#EVENT_STREAM" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EVENT_STREAM(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -827,7 +1059,11 @@
       <span class="symbol">
         <span class="name">EVENT_STREAM</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@EVENT_STREAM(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#EXPECT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EXPECT:String"></a>
@@ -840,7 +1076,11 @@
       <span class="symbol">
         <span class="name">EXPECT</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@EXPECT:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#EXPECTATION_FAILED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EXPECTATION_FAILED:Int"></a>
@@ -853,7 +1093,11 @@
       <span class="symbol">
         <span class="name">EXPECTATION_FAILED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@EXPECTATION_FAILED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#EXPIRES" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EXPIRES:String"></a>
@@ -866,7 +1110,11 @@
       <span class="symbol">
         <span class="name">EXPIRES</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@EXPIRES:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#EntityTooLarge" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EntityTooLarge:Results.this.Status"></a>
@@ -877,9 +1125,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@EntityTooLarge:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ExpectationFailed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ExpectationFailed:Results.this.Status"></a>
@@ -890,9 +1142,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ExpectationFailed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#FAILED_DEPENDENCY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FAILED_DEPENDENCY:Int"></a>
@@ -905,7 +1161,11 @@
       <span class="symbol">
         <span class="name">FAILED_DEPENDENCY</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FAILED_DEPENDENCY:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#FORBIDDEN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FORBIDDEN:Int"></a>
@@ -918,7 +1178,11 @@
       <span class="symbol">
         <span class="name">FORBIDDEN</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FORBIDDEN:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#FORM" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FORM(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -931,7 +1195,11 @@
       <span class="symbol">
         <span class="name">FORM</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FORM(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.Status#FOUND" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FOUND:Int"></a>
@@ -944,7 +1212,11 @@
       <span class="symbol">
         <span class="name">FOUND</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FOUND:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#FROM" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FROM:String"></a>
@@ -957,7 +1229,11 @@
       <span class="symbol">
         <span class="name">FROM</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FROM:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#FailedDependency" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FailedDependency:Results.this.Status"></a>
@@ -968,9 +1244,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@FailedDependency:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Forbidden" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Forbidden:Results.this.Status"></a>
@@ -981,22 +1261,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Forbidden:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Found" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Found(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="Found(String):SimpleResult"></a>
+      <a id="Found(url:String):play.api.mvc.Result"></a>
+      <a id="Found(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Found(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#GATEWAY_TIMEOUT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GATEWAY_TIMEOUT:Int"></a>
@@ -1009,7 +1297,11 @@
       <span class="symbol">
         <span class="name">GATEWAY_TIMEOUT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@GATEWAY_TIMEOUT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#GONE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GONE:Int"></a>
@@ -1022,7 +1314,11 @@
       <span class="symbol">
         <span class="name">GONE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@GONE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#GatewayTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GatewayTimeout:Results.this.Status"></a>
@@ -1033,9 +1329,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@GatewayTimeout:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Gone" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Gone:Results.this.Status"></a>
@@ -1046,9 +1346,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Gone:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#HOST" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HOST:String"></a>
@@ -1061,7 +1365,11 @@
       <span class="symbol">
         <span class="name">HOST</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HOST:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#HTML" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HTML(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -1074,7 +1382,11 @@
       <span class="symbol">
         <span class="name">HTML</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HTML(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.HttpProtocol#HTTP_1_0" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HTTP_1_0:String"></a>
@@ -1087,7 +1399,11 @@
       <span class="symbol">
         <span class="name">HTTP_1_0</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HTTP_1_0:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
     </li><li name="play.api.http.HttpProtocol#HTTP_1_1" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HTTP_1_1:String"></a>
@@ -1100,7 +1416,11 @@
       <span class="symbol">
         <span class="name">HTTP_1_1</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HTTP_1_1:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HttpProtocol</dd></dl></div>
     </li><li name="play.api.http.Status#HTTP_VERSION_NOT_SUPPORTED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HTTP_VERSION_NOT_SUPPORTED:Int"></a>
@@ -1113,7 +1433,11 @@
       <span class="symbol">
         <span class="name">HTTP_VERSION_NOT_SUPPORTED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HTTP_VERSION_NOT_SUPPORTED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#HttpVersionNotSupported" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HttpVersionNotSupported:Results.this.Status"></a>
@@ -1124,9 +1448,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@HttpVersionNotSupported:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#IF_MATCH" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="IF_MATCH:String"></a>
@@ -1139,7 +1467,11 @@
       <span class="symbol">
         <span class="name">IF_MATCH</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@IF_MATCH:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#IF_MODIFIED_SINCE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="IF_MODIFIED_SINCE:String"></a>
@@ -1152,7 +1484,11 @@
       <span class="symbol">
         <span class="name">IF_MODIFIED_SINCE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@IF_MODIFIED_SINCE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#IF_NONE_MATCH" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="IF_NONE_MATCH:String"></a>
@@ -1165,7 +1501,11 @@
       <span class="symbol">
         <span class="name">IF_NONE_MATCH</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@IF_NONE_MATCH:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#IF_RANGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="IF_RANGE:String"></a>
@@ -1178,7 +1518,11 @@
       <span class="symbol">
         <span class="name">IF_RANGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@IF_RANGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#IF_UNMODIFIED_SINCE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="IF_UNMODIFIED_SINCE:String"></a>
@@ -1191,7 +1535,11 @@
       <span class="symbol">
         <span class="name">IF_UNMODIFIED_SINCE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@IF_UNMODIFIED_SINCE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#INSUFFICIENT_STORAGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="INSUFFICIENT_STORAGE:Int"></a>
@@ -1204,7 +1552,11 @@
       <span class="symbol">
         <span class="name">INSUFFICIENT_STORAGE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@INSUFFICIENT_STORAGE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#INTERNAL_SERVER_ERROR" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="INTERNAL_SERVER_ERROR:Int"></a>
@@ -1217,7 +1569,11 @@
       <span class="symbol">
         <span class="name">INTERNAL_SERVER_ERROR</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@INTERNAL_SERVER_ERROR:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#InsufficientStorage" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="InsufficientStorage:Results.this.Status"></a>
@@ -1228,9 +1584,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@InsufficientStorage:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#InternalServerError" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="InternalServerError:Results.this.Status"></a>
@@ -1241,9 +1601,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@InternalServerError:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#JAVASCRIPT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="JAVASCRIPT(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -1256,7 +1620,11 @@
       <span class="symbol">
         <span class="name">JAVASCRIPT</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@JAVASCRIPT(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#JSON" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="JSON(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -1269,7 +1637,11 @@
       <span class="symbol">
         <span class="name">JSON</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@JSON(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#LAST_MODIFIED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LAST_MODIFIED:String"></a>
@@ -1282,7 +1654,11 @@
       <span class="symbol">
         <span class="name">LAST_MODIFIED</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@LAST_MODIFIED:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#LENGTH_REQUIRED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LENGTH_REQUIRED:Int"></a>
@@ -1295,7 +1671,11 @@
       <span class="symbol">
         <span class="name">LENGTH_REQUIRED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@LENGTH_REQUIRED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#LOCATION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LOCATION:String"></a>
@@ -1308,7 +1688,11 @@
       <span class="symbol">
         <span class="name">LOCATION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@LOCATION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#LOCKED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="LOCKED:Int"></a>
@@ -1321,7 +1705,11 @@
       <span class="symbol">
         <span class="name">LOCKED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@LOCKED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#Locked" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Locked:Results.this.Status"></a>
@@ -1332,9 +1720,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Locked:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#MAX_FORWARDS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MAX_FORWARDS:String"></a>
@@ -1347,7 +1739,11 @@
       <span class="symbol">
         <span class="name">MAX_FORWARDS</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MAX_FORWARDS:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#METHOD_NOT_ALLOWED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="METHOD_NOT_ALLOWED:Int"></a>
@@ -1360,7 +1756,11 @@
       <span class="symbol">
         <span class="name">METHOD_NOT_ALLOWED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@METHOD_NOT_ALLOWED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#MOVED_PERMANENTLY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MOVED_PERMANENTLY:Int"></a>
@@ -1373,7 +1773,11 @@
       <span class="symbol">
         <span class="name">MOVED_PERMANENTLY</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MOVED_PERMANENTLY:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#MULTIPLE_CHOICES" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MULTIPLE_CHOICES:Int"></a>
@@ -1386,7 +1790,11 @@
       <span class="symbol">
         <span class="name">MULTIPLE_CHOICES</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MULTIPLE_CHOICES:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#MULTI_STATUS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MULTI_STATUS:Int"></a>
@@ -1399,7 +1807,11 @@
       <span class="symbol">
         <span class="name">MULTI_STATUS</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MULTI_STATUS:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#MethodNotAllowed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MethodNotAllowed:Results.this.Status"></a>
@@ -1410,22 +1822,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MethodNotAllowed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MovedPermanently" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MovedPermanently(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="MovedPermanently(String):SimpleResult"></a>
+      <a id="MovedPermanently(url:String):play.api.mvc.Result"></a>
+      <a id="MovedPermanently(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MovedPermanently(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MultiStatus" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MultiStatus:Results.this.Status"></a>
@@ -1436,9 +1856,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@MultiStatus:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#NON_AUTHORITATIVE_INFORMATION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NON_AUTHORITATIVE_INFORMATION:Int"></a>
@@ -1451,7 +1875,11 @@
       <span class="symbol">
         <span class="name">NON_AUTHORITATIVE_INFORMATION</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NON_AUTHORITATIVE_INFORMATION:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#NOT_ACCEPTABLE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NOT_ACCEPTABLE:Int"></a>
@@ -1464,7 +1892,11 @@
       <span class="symbol">
         <span class="name">NOT_ACCEPTABLE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NOT_ACCEPTABLE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#NOT_FOUND" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NOT_FOUND:Int"></a>
@@ -1477,7 +1909,11 @@
       <span class="symbol">
         <span class="name">NOT_FOUND</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NOT_FOUND:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#NOT_IMPLEMENTED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NOT_IMPLEMENTED:Int"></a>
@@ -1490,7 +1926,11 @@
       <span class="symbol">
         <span class="name">NOT_IMPLEMENTED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NOT_IMPLEMENTED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#NOT_MODIFIED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NOT_MODIFIED:Int"></a>
@@ -1503,7 +1943,11 @@
       <span class="symbol">
         <span class="name">NOT_MODIFIED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NOT_MODIFIED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#NO_CONTENT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NO_CONTENT:Int"></a>
@@ -1516,20 +1960,28 @@
       <span class="symbol">
         <span class="name">NO_CONTENT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NO_CONTENT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#NoContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NoContent:play.api.mvc.SimpleResult"></a>
-      <a id="NoContent:SimpleResult"></a>
+      <a id="NoContent:play.api.mvc.Result"></a>
+      <a id="NoContent:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NoContent:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NonAuthoritativeInformation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NonAuthoritativeInformation:Results.this.Status"></a>
@@ -1540,9 +1992,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NonAuthoritativeInformation:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotAcceptable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotAcceptable:Results.this.Status"></a>
@@ -1553,9 +2009,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NotAcceptable:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotFound" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotFound:Results.this.Status"></a>
@@ -1566,9 +2026,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NotFound:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotImplemented" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotImplemented:Results.this.Status"></a>
@@ -1579,22 +2043,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NotImplemented:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotModified" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NotModified:play.api.mvc.SimpleResult"></a>
-      <a id="NotModified:SimpleResult"></a>
+      <a id="NotModified:play.api.mvc.Result"></a>
+      <a id="NotModified:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@NotModified:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#OK" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="OK:Int"></a>
@@ -1607,7 +2079,11 @@
       <span class="symbol">
         <span class="name">OK</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@OK:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#ORIGIN" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ORIGIN:String"></a>
@@ -1620,7 +2096,11 @@
       <span class="symbol">
         <span class="name">ORIGIN</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ORIGIN:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#Ok" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Ok:Results.this.Status"></a>
@@ -1631,9 +2111,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Ok:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#PARTIAL_CONTENT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PARTIAL_CONTENT:Int"></a>
@@ -1646,7 +2130,11 @@
       <span class="symbol">
         <span class="name">PARTIAL_CONTENT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PARTIAL_CONTENT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#PAYMENT_REQUIRED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PAYMENT_REQUIRED:Int"></a>
@@ -1659,7 +2147,11 @@
       <span class="symbol">
         <span class="name">PAYMENT_REQUIRED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PAYMENT_REQUIRED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#PRAGMA" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PRAGMA:String"></a>
@@ -1672,7 +2164,11 @@
       <span class="symbol">
         <span class="name">PRAGMA</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PRAGMA:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#PRECONDITION_FAILED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PRECONDITION_FAILED:Int"></a>
@@ -1685,7 +2181,11 @@
       <span class="symbol">
         <span class="name">PRECONDITION_FAILED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PRECONDITION_FAILED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#PROXY_AUTHENTICATE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PROXY_AUTHENTICATE:String"></a>
@@ -1698,7 +2198,11 @@
       <span class="symbol">
         <span class="name">PROXY_AUTHENTICATE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PROXY_AUTHENTICATE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#PROXY_AUTHENTICATION_REQUIRED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PROXY_AUTHENTICATION_REQUIRED:Int"></a>
@@ -1711,7 +2215,11 @@
       <span class="symbol">
         <span class="name">PROXY_AUTHENTICATION_REQUIRED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PROXY_AUTHENTICATION_REQUIRED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#PROXY_AUTHORIZATION" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PROXY_AUTHORIZATION:String"></a>
@@ -1724,7 +2232,11 @@
       <span class="symbol">
         <span class="name">PROXY_AUTHORIZATION</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PROXY_AUTHORIZATION:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#PartialContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PartialContent:Results.this.Status"></a>
@@ -1735,9 +2247,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PartialContent:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#PreconditionFailed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PreconditionFailed:Results.this.Status"></a>
@@ -1748,9 +2264,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@PreconditionFailed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#RANGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RANGE:String"></a>
@@ -1763,7 +2283,11 @@
       <span class="symbol">
         <span class="name">RANGE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@RANGE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#REFERER" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="REFERER:String"></a>
@@ -1776,7 +2300,11 @@
       <span class="symbol">
         <span class="name">REFERER</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@REFERER:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#REQUESTED_RANGE_NOT_SATISFIABLE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="REQUESTED_RANGE_NOT_SATISFIABLE:Int"></a>
@@ -1789,7 +2317,11 @@
       <span class="symbol">
         <span class="name">REQUESTED_RANGE_NOT_SATISFIABLE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@REQUESTED_RANGE_NOT_SATISFIABLE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#REQUEST_ENTITY_TOO_LARGE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="REQUEST_ENTITY_TOO_LARGE:Int"></a>
@@ -1802,7 +2334,11 @@
       <span class="symbol">
         <span class="name">REQUEST_ENTITY_TOO_LARGE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@REQUEST_ENTITY_TOO_LARGE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#REQUEST_TIMEOUT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="REQUEST_TIMEOUT:Int"></a>
@@ -1815,7 +2351,11 @@
       <span class="symbol">
         <span class="name">REQUEST_TIMEOUT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@REQUEST_TIMEOUT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#REQUEST_URI_TOO_LONG" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="REQUEST_URI_TOO_LONG:Int"></a>
@@ -1828,7 +2368,11 @@
       <span class="symbol">
         <span class="name">REQUEST_URI_TOO_LONG</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@REQUEST_URI_TOO_LONG:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#RESET_CONTENT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RESET_CONTENT:Int"></a>
@@ -1841,7 +2385,11 @@
       <span class="symbol">
         <span class="name">RESET_CONTENT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@RESET_CONTENT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#RETRY_AFTER" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RETRY_AFTER:String"></a>
@@ -1854,46 +2402,62 @@
       <span class="symbol">
         <span class="name">RETRY_AFTER</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@RETRY_AFTER:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(Call):SimpleResult"></a>
+      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.Result"></a>
+      <a id="Redirect(Call):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Redirect(call:play.api.mvc.Call):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(String,Map[String,Seq[String]],Int):SimpleResult"></a>
+      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.Result"></a>
+      <a id="Redirect(String,Map[String,Seq[String]],Int):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,status:Int):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(String,Int):SimpleResult"></a>
+      <a id="Redirect(url:String,status:Int):play.api.mvc.Result"></a>
+      <a id="Redirect(String,Int):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Redirect(url:String,status:Int):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#RequestTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RequestTimeout:Results.this.Status"></a>
@@ -1904,22 +2468,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@RequestTimeout:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ResetContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ResetContent:play.api.mvc.SimpleResult"></a>
-      <a id="ResetContent:SimpleResult"></a>
+      <a id="ResetContent:play.api.mvc.Result"></a>
+      <a id="ResetContent:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ResetContent:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#SEE_OTHER" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SEE_OTHER:Int"></a>
@@ -1932,7 +2504,11 @@
       <span class="symbol">
         <span class="name">SEE_OTHER</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SEE_OTHER:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#SERVER" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SERVER:String"></a>
@@ -1945,7 +2521,11 @@
       <span class="symbol">
         <span class="name">SERVER</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SERVER:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#SERVICE_UNAVAILABLE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SERVICE_UNAVAILABLE:Int"></a>
@@ -1958,7 +2538,11 @@
       <span class="symbol">
         <span class="name">SERVICE_UNAVAILABLE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SERVICE_UNAVAILABLE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#SET_COOKIE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SET_COOKIE:String"></a>
@@ -1971,7 +2555,11 @@
       <span class="symbol">
         <span class="name">SET_COOKIE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SET_COOKIE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#SET_COOKIE2" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SET_COOKIE2:String"></a>
@@ -1984,7 +2572,11 @@
       <span class="symbol">
         <span class="name">SET_COOKIE2</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SET_COOKIE2:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#SWITCHING_PROTOCOLS" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="SWITCHING_PROTOCOLS:Int"></a>
@@ -1997,20 +2589,28 @@
       <span class="symbol">
         <span class="name">SWITCHING_PROTOCOLS</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SWITCHING_PROTOCOLS:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#SeeOther" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SeeOther(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="SeeOther(String):SimpleResult"></a>
+      <a id="SeeOther(url:String):play.api.mvc.Result"></a>
+      <a id="SeeOther(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@SeeOther(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ServiceUnavailable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ServiceUnavailable:Results.this.Status"></a>
@@ -2021,9 +2621,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ServiceUnavailable:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Status(code:Int):Results.this.Status"></a>
@@ -2034,9 +2638,13 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Status(code:Int):Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#TE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TE:String"></a>
@@ -2049,7 +2657,11 @@
       <span class="symbol">
         <span class="name">TE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#TEMPORARY_REDIRECT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TEMPORARY_REDIRECT:Int"></a>
@@ -2062,7 +2674,11 @@
       <span class="symbol">
         <span class="name">TEMPORARY_REDIRECT</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TEMPORARY_REDIRECT:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#TEXT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TEXT(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -2075,7 +2691,11 @@
       <span class="symbol">
         <span class="name">TEXT</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TEXT(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.mvc.Controller#TODO" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TODO:play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
@@ -2088,7 +2708,11 @@
       <span class="symbol">
         <span class="name">TODO</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TODO:play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="play.api.http.Status#TOO_MANY_REQUEST" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TOO_MANY_REQUEST:Int"></a>
@@ -2101,7 +2725,11 @@
       <span class="symbol">
         <span class="name">TOO_MANY_REQUEST</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TOO_MANY_REQUEST:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#TRAILER" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TRAILER:String"></a>
@@ -2114,7 +2742,11 @@
       <span class="symbol">
         <span class="name">TRAILER</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TRAILER:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#TRANSFER_ENCODING" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TRANSFER_ENCODING:String"></a>
@@ -2127,20 +2759,28 @@
       <span class="symbol">
         <span class="name">TRANSFER_ENCODING</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TRANSFER_ENCODING:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.mvc.Results#TemporaryRedirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TemporaryRedirect(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="TemporaryRedirect(String):SimpleResult"></a>
+      <a id="TemporaryRedirect(url:String):play.api.mvc.Result"></a>
+      <a id="TemporaryRedirect(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TemporaryRedirect(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#TooManyRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TooManyRequest:Results.this.Status"></a>
@@ -2151,9 +2791,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@TooManyRequest:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.Status#UNAUTHORIZED" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UNAUTHORIZED:Int"></a>
@@ -2166,7 +2810,11 @@
       <span class="symbol">
         <span class="name">UNAUTHORIZED</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UNAUTHORIZED:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#UNPROCESSABLE_ENTITY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UNPROCESSABLE_ENTITY:Int"></a>
@@ -2179,7 +2827,11 @@
       <span class="symbol">
         <span class="name">UNPROCESSABLE_ENTITY</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UNPROCESSABLE_ENTITY:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.Status#UNSUPPORTED_MEDIA_TYPE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UNSUPPORTED_MEDIA_TYPE:Int"></a>
@@ -2192,7 +2844,11 @@
       <span class="symbol">
         <span class="name">UNSUPPORTED_MEDIA_TYPE</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UNSUPPORTED_MEDIA_TYPE:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#UPGRADE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UPGRADE:String"></a>
@@ -2205,7 +2861,11 @@
       <span class="symbol">
         <span class="name">UPGRADE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UPGRADE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#USER_AGENT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="USER_AGENT:String"></a>
@@ -2218,7 +2878,11 @@
       <span class="symbol">
         <span class="name">USER_AGENT</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@USER_AGENT:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.Status#USE_PROXY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="USE_PROXY:Int"></a>
@@ -2231,7 +2895,11 @@
       <span class="symbol">
         <span class="name">USE_PROXY</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@USE_PROXY:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Status</dd></dl></div>
     </li><li name="play.api.mvc.Results#Unauthorized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Unauthorized:Results.this.Status"></a>
@@ -2242,9 +2910,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@Unauthorized:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UnprocessableEntity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UnprocessableEntity:Results.this.Status"></a>
@@ -2255,9 +2927,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UnprocessableEntity:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UnsupportedMediaType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UnsupportedMediaType:Results.this.Status"></a>
@@ -2268,9 +2944,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UnsupportedMediaType:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UriTooLong" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UriTooLong:Results.this.Status"></a>
@@ -2281,9 +2961,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
+        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.AssetApi.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@UriTooLong:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#VARY" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="VARY:String"></a>
@@ -2296,7 +2980,11 @@
       <span class="symbol">
         <span class="name">VARY</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@VARY:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#VIA" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="VIA:String"></a>
@@ -2309,7 +2997,11 @@
       <span class="symbol">
         <span class="name">VIA</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@VIA:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#WARNING" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="WARNING:String"></a>
@@ -2322,7 +3014,11 @@
       <span class="symbol">
         <span class="name">WARNING</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@WARNING:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#WWW_AUTHENTICATE" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="WWW_AUTHENTICATE:String"></a>
@@ -2335,7 +3031,11 @@
       <span class="symbol">
         <span class="name">WWW_AUTHENTICATE</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@WWW_AUTHENTICATE:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.ContentTypes#XML" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="XML(implicitcodec:play.api.mvc.Codec):String"></a>
@@ -2348,7 +3048,11 @@
       <span class="symbol">
         <span class="name">XML</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@XML(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#X_FORWARDED_FOR" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="X_FORWARDED_FOR:String"></a>
@@ -2361,7 +3065,11 @@
       <span class="symbol">
         <span class="name">X_FORWARDED_FOR</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@X_FORWARDED_FOR:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#X_FORWARDED_HOST" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="X_FORWARDED_HOST:String"></a>
@@ -2374,7 +3082,11 @@
       <span class="symbol">
         <span class="name">X_FORWARDED_HOST</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@X_FORWARDED_HOST:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#X_FORWARDED_PORT" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="X_FORWARDED_PORT:String"></a>
@@ -2387,7 +3099,11 @@
       <span class="symbol">
         <span class="name">X_FORWARDED_PORT</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@X_FORWARDED_PORT:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="play.api.http.HeaderNames#X_FORWARDED_PROTO" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="X_FORWARDED_PROTO:String"></a>
@@ -2400,10 +3116,14 @@
       <span class="symbol">
         <span class="name">X_FORWARDED_PROTO</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@X_FORWARDED_PROTO:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HeaderNames</dd></dl></div>
     </li><li name="controllers.AssetController#action" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="action(i:models.Asset.Id,p:models.Permission.Value):controllers.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[models.Asset]#Site]"></a>
+      <a id="action(i:models.Asset.Id,p:models.Permission.Value):play.api.mvc.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[models.Asset]#Site]"></a>
       <a id="action(models.Asset.Id,models.Permission.Value):ActionFunction[Base,Site]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -2411,9 +3131,13 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">action</span><span class="params">(<span name="i">i: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="p">p: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <a href="ActionFunction.html" class="extype" name="controllers.ActionFunction">ActionFunction</a>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
+        <span class="name">action</span><span class="params">(<span name="i">i: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>, <span name="p">p: <a href="../models/Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">models.Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@action(i:models.Asset.Id,p:models.Permission.Value):play.api.mvc.ActionFunction[controllers.SiteRequest.Base,controllers.RequestObject[models.Asset]#Site]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -2426,7 +3150,11 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2439,7 +3167,11 @@
       <span class="symbol">
         <span class="name">chunk</span><span class="params">(<span name="trailers">trailers: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.libs.iteratee.Iteratee">Iteratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]]]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -2452,7 +3184,11 @@
       <span class="symbol">
         <span class="name">chunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@chunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -2465,7 +3201,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -2484,7 +3224,11 @@
       <span class="symbol">
         <span class="name">dechunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@dechunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -2497,7 +3241,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -2510,7 +3258,11 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -2523,7 +3275,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -2531,19 +3287,6 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="play.api.mvc.Controller#flash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="flash(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Flash"></a>
-      <a id="flash(RequestHeader):Flash"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">flash</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Flash">Flash</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="controllers.AssetApi#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="get(i:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="get(models.Asset.Id):Action[AnyContent]"></a>
@@ -2555,7 +3298,11 @@
       <span class="symbol">
         <span class="name">get</span><span class="params">(<span name="i">i: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@get(i:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -2568,7 +3315,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -2581,7 +3332,11 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -2594,21 +3349,12 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="play.api.mvc.Controller#lang" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="lang(implicitrequest:play.api.mvc.RequestHeader):play.api.i18n.Lang"></a>
-      <a id="lang(RequestHeader):Lang"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">implicit </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">lang</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.i18n.Lang">Lang</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -2620,7 +3366,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -2633,7 +3383,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -2646,20 +3400,96 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="play.api.mvc.Controller#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session"></a>
-      <a id="session(RequestHeader):Session"></a>
+    </li><li name="controllers.AssetController#remove" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="remove(a:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="remove(models.Asset.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="params">(<span name="a">a: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@remove(a:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
+    </li><li name="controllers.AssetController#replace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="replace(o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="replace(models.Asset.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">replace</span><span class="params">(<span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@replace(o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
+    </li><li name="play.api.mvc.Controller#request2flash" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="request2flash(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Flash"></a>
+      <a id="request2flash(RequestHeader):Flash"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">implicit </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">session</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Session">Session</span></span>
+        <span class="name">request2flash</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Flash">Flash</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@request2flash(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Flash" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
+    </li><li name="play.api.mvc.Controller#request2lang" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="request2lang(implicitrequest:play.api.mvc.RequestHeader):play.api.i18n.Lang"></a>
+      <a id="request2lang(RequestHeader):Lang"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">request2lang</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.i18n.Lang">Lang</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@request2lang(implicitrequest:play.api.mvc.RequestHeader):play.api.i18n.Lang" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
+    </li><li name="play.api.mvc.Controller#request2session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="request2session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session"></a>
+      <a id="request2session(RequestHeader):Session"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">implicit </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">request2session</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Session">Session</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@request2session(implicitrequest:play.api.mvc.RequestHeader):play.api.mvc.Session" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Controller</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -2672,7 +3502,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -2685,8 +3519,29 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="controllers.AssetApi#transcoded" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="transcoded(i:models.Transcode.Id,auth:String):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="transcoded(models.Transcode.Id,String):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">transcoded</span><span class="params">(<span name="i">i: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>, <span name="auth">auth: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@transcoded(i:models.Transcode.Id,auth:String):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Called from remote transcoding process only.</p>
     </li><li name="controllers.AssetController#update" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="update(o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="update(models.Asset.Id):Action[AnyContent]"></a>
@@ -2698,8 +3553,80 @@
       <span class="symbol">
         <span class="name">update</span><span class="params">(<span name="o">o: <a href="../models/Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">models.Asset.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@update(o:models.Asset.Id):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
+    </li><li name="controllers.AssetController#upload" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="upload(v:models.Volume.Id):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="upload(models.Volume.Id):Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">upload</span><span class="params">(<span name="v">v: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@upload(v:models.Volume.Id):play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AssetController</dd></dl></div>
+    </li><li name="controllers.AssetApi#uploadChunk" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="uploadChunk:play.api.mvc.EssentialAction"></a>
+      <a id="uploadChunk:EssentialAction"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">uploadChunk</span><span class="result">: <span class="extype" name="play.api.mvc.EssentialAction">EssentialAction</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@uploadChunk:play.api.mvc.EssentialAction" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.AssetApi#uploadChunkTest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="uploadChunkTest:play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="uploadChunkTest:Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">uploadChunkTest</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@uploadChunkTest:play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.AssetApi#uploadStart" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="uploadStart:play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
+      <a id="uploadStart:Action[AnyContent]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">uploadStart</span><span class="result">: <span class="extype" name="play.api.mvc.Action">Action</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@uploadStart:play.api.mvc.Action[play.api.mvc.AnyContent]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -2711,7 +3638,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -2730,7 +3661,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -2749,7 +3684,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -2768,33 +3707,18 @@
       <span class="symbol">
         <span class="name">withCharset</span><span class="params">(<span name="mimeType">mimeType: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="codec">codec: <span class="extype" name="play.api.mvc.Codec">Codec</span></span>)</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.AssetApi$@withCharset(mimeType:String)(implicitcodec:play.api.mvc.Codec):String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ContentTypes</dd></dl></div>
     </li></ol>
             </div>
 
         
 
-        <div id="values" class="values members">
-              <h3>Deprecated Value Members</h3>
-              <ol><li name="play.api.mvc.Results#Async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Async(promise:scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.AsyncResult"></a>
-      <a id="Async(Future[Result]):AsyncResult"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 2.2.0) Use Action.async to build async actions instead">Async</span><span class="params">(<span name="promise">promise: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.AsyncResult">AsyncResult</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd><dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 2.2.0)</i> Use Action.async to build async actions instead</p></dd></dl></div>
-    </li></ol>
-            </div>
+        
         </div>
 
         <div id="inheritedMembers">
@@ -2846,6 +3770,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

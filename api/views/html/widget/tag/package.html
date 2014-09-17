@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>tag - views.html.widget.tag</title>
@@ -9,6 +8,11 @@
           
       <link href="../../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../../../../lib/package_big.png" />
         <p id="owner"><a href="../../../package.html" class="extype" name="views">views</a>.<a href="../../package.html" class="extype" name="views.html">html</a>.<a href="../package.html" class="extype" name="views.html.widget">widget</a></p>
-        <h1>tag</h1>
+        <h1>tag</h1> <span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -62,7 +70,7 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="views.html.widget.tag.checkbox" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="views.html.widget.tag.checkbox" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkbox"></a>
       <a id="checkbox:checkbox"></a>
       <h4 class="signature">
@@ -71,10 +79,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="checkbox$.html"><span class="name">checkbox</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="checkbox$.html"><span class="name">checkbox</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML input checkbox.</p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@checkbox" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML input checkbox.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML input checkbox.</p><p>Example:</p><pre>@checkbox(field = myForm(<span class="lit">"done"</span>))</pre></div></div>
     </li><li name="views.html.widget.tag.form" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="form"></a>
       <a id="form:form"></a>
@@ -84,10 +96,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="form$.html"><span class="name">form</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<a href="../../../../controllers/StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="form$.html"><span class="name">form</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<a href="../../../../controllers/StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="play.twirl.api.Html">Html</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@form" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.tag.input" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="input"></a>
       <a id="input:input"></a>
@@ -97,11 +113,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="input$.html"><span class="name">input</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>], (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="input$.html"><span class="name">input</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>], (<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>], <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>]) ⇒ <span class="extype" name="play.twirl.api.Html">Html</span>, <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Prepare a generic HTML input.</p>
-    </li><li name="views.html.widget.tag.inputDate" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@input" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Prepare a generic HTML input.</p>
+    </li><li name="views.html.widget.tag.inputDate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputDate"></a>
       <a id="inputDate:inputDate"></a>
       <h4 class="signature">
@@ -110,11 +130,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputDate$.html"><span class="name">inputDate</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputDate$.html"><span class="name">inputDate</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML5 input date.</p>
-    </li><li name="views.html.widget.tag.inputFile" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputDate" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML5 input date.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML5 input date.</p><p>Example:</p><pre>@inputDate(field = myForm(<span class="lit">"releaseDate"</span>), args = 'size -&gt; <span class="num">10</span>)</pre></div></div>
+    </li><li name="views.html.widget.tag.inputFile" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputFile"></a>
       <a id="inputFile:inputFile"></a>
       <h4 class="signature">
@@ -123,10 +147,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputFile$.html"><span class="name">inputFile</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputFile$.html"><span class="name">inputFile</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML input file.</p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputFile" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML input file.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML input file.</p><p>Example:</p><pre>@inputFile(field = myForm(<span class="lit">"name"</span>), args = 'size -&gt; <span class="num">10</span>)</pre></div></div>
     </li><li name="views.html.widget.tag.inputHidden" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="inputHidden"></a>
       <a id="inputHidden:inputHidden"></a>
@@ -136,11 +164,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputHidden$.html"><span class="name">inputHidden</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputHidden$.html"><span class="name">inputHidden</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.tag.inputPassword" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputHidden" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="views.html.widget.tag.inputPassword" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputPassword"></a>
       <a id="inputPassword:inputPassword"></a>
       <h4 class="signature">
@@ -149,11 +181,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputPassword$.html"><span class="name">inputPassword</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputPassword$.html"><span class="name">inputPassword</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML input password.</p>
-    </li><li name="views.html.widget.tag.inputRadioGroup" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputPassword" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML input password.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML input password.</p><p>Example:</p><pre>@inputPassword(field = myForm(<span class="lit">"password"</span>), args = 'size -&gt; <span class="num">10</span>)</pre></div></div>
+    </li><li name="views.html.widget.tag.inputRadioGroup" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputRadioGroup"></a>
       <a id="inputRadioGroup:inputRadioGroup"></a>
       <h4 class="signature">
@@ -162,11 +198,19 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputRadioGroup$.html"><span class="name">inputRadioGroup</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputRadioGroup$.html"><span class="name">inputRadioGroup</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML radio group</p>
-    </li><li name="views.html.widget.tag.inputText" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputRadioGroup" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML radio group</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML radio group</p><p>Example:</p><pre>@inputRadioGroup(
+contactForm(<span class="lit">"gender"</span>),
+options = <span class="std">Seq</span>(<span class="lit">"M"</span>-&gt;<span class="lit">"Male"</span>,<span class="lit">"F"</span>-&gt;<span class="lit">"Female"</span>)
+'_label -&gt; <span class="lit">"Gender"</span>,
+'_error -&gt; contactForm(<span class="lit">"gender"</span>).error.map(_.withMessage(<span class="lit">"select gender"</span>)))</pre></div></div>
+    </li><li name="views.html.widget.tag.inputText" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inputText"></a>
       <a id="inputText:inputText"></a>
       <h4 class="signature">
@@ -175,10 +219,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="inputText$.html"><span class="name">inputText</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="inputText$.html"><span class="name">inputText</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML input text.</p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@inputText" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML input text.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML input text.</p><p>Example:</p><pre>@inputText(field = myForm(<span class="lit">"name"</span>), args = 'size -&gt; <span class="num">10</span>, 'placeholder -&gt; <span class="lit">"Your name"</span>)</pre></div></div>
     </li><li name="views.html.widget.tag.labeledFieldConstructor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="labeledFieldConstructor"></a>
       <a id="labeledFieldConstructor:labeledFieldConstructor"></a>
@@ -188,10 +236,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="labeledFieldConstructor$.html"><span class="name">labeledFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="labeledFieldConstructor$.html"><span class="name">labeledFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@labeledFieldConstructor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.tag.minimalFieldConstructor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="minimalFieldConstructor"></a>
       <a id="minimalFieldConstructor:minimalFieldConstructor"></a>
@@ -201,10 +253,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="minimalFieldConstructor$.html"><span class="name">minimalFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="minimalFieldConstructor$.html"><span class="name">minimalFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@minimalFieldConstructor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.tag.rawFieldConstructor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="rawFieldConstructor"></a>
       <a id="rawFieldConstructor:rawFieldConstructor"></a>
@@ -214,10 +270,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="rawFieldConstructor$.html"><span class="name">rawFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="rawFieldConstructor$.html"><span class="name">rawFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@rawFieldConstructor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget.tag.repeat" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="repeat"></a>
       <a id="repeat:repeat"></a>
@@ -227,11 +287,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="repeat$.html"><span class="name">repeat</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Int">Int</span>, (<span class="extype" name="play.api.data.Field">Field</span>) ⇒ <span class="extype" name="play.api.templates.Html">Html</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="repeat$.html"><span class="name">repeat</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Int">Int</span>, (<span class="extype" name="play.api.data.Field">Field</span>) ⇒ <span class="extype" name="play.twirl.api.Html">Html</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.tag.select" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@repeat" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="views.html.widget.tag.select" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="select"></a>
       <a id="select:select"></a>
       <h4 class="signature">
@@ -240,10 +304,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="select$.html"><span class="name">select</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Iterable">Iterable</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="select$.html"><span class="name">select</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template5">Template5</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Iterable">Iterable</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)], <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML select.</p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@select" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML select.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML select.</p><p>Example:</p><pre>@select(field = myForm(<span class="lit">"isDone"</span>), options = options(<span class="lit">"Yes"</span>,<span class="lit">"No"</span>))</pre></div></div>
     </li><li name="views.html.widget.tag.tableFieldConstructor" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="tableFieldConstructor"></a>
       <a id="tableFieldConstructor:tableFieldConstructor"></a>
@@ -253,11 +321,15 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="tableFieldConstructor$.html"><span class="name">tableFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="tableFieldConstructor$.html"><span class="name">tableFieldConstructor</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template1">Template1</span>[<span class="extype" name="views.html.helper.FieldElements">FieldElements</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
-    </li><li name="views.html.widget.tag.textarea" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@tableFieldConstructor" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="views.html.widget.tag.textarea" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="textarea"></a>
       <a id="textarea:textarea"></a>
       <h4 class="signature">
@@ -266,10 +338,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="textarea$.html"><span class="name">textarea</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="textarea$.html"><span class="name">textarea</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template4">Template4</span>[<span class="extype" name="play.api.data.Field">Field</span>, <span class="extype" name="scala.Array">Array</span>[(<span class="extype" name="scala.Symbol">Symbol</span>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="views.html.helper.FieldConstructor">FieldConstructor</span>, <span class="extype" name="play.api.i18n.Lang">Lang</span>, <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt">Generate an HTML textarea.</p>
+      </h4><span class="permalink">
+      <a href="../../../../index.html#views.html.widget.tag.package@textarea" title="Permalink" target="_top">
+        <img src="../../../../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Generate an HTML textarea.</p><div class="fullcomment"><div class="comment cmt"><p>Generate an HTML textarea.</p><p>Example:</p><pre>@textarea(field = myForm(<span class="lit">"address"</span>), args = 'rows -&gt; <span class="num">3</span>, 'cols -&gt; <span class="num">50</span>)</pre></div></div>
     </li></ol>
             </div>
 
@@ -295,6 +371,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../../lib/template.js"></script>
+
+
     </body>
       </html>

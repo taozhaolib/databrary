@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>html - views.html</title>
@@ -9,6 +8,11 @@
           
       <link href="../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../lib/template.js"></script>
+      <script type="text/javascript" src="../../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../../lib/package_big.png" />
         <p id="owner"><a href="../package.html" class="extype" name="views">views</a></p>
-        <h1>html</h1>
+        <h1>html</h1> <span class="permalink">
+      <a href="../../index.html#views.html.package" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -81,21 +89,8 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="views.html.El" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ElextendsProductwithSerializable"></a>
-      <a id="El:El"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="El.html"><span class="name">El</span></a><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>, <span name="attrs">attrs: <span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.List">List</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>)</span><span class="params">(<span name="content">content: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="views.html.Path" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PathextendsSeqForwarder[views.html.PathCrumb]"></a>
+              <ol><li name="views.html.Path" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PathextendsAnyRef"></a>
       <a id="Path:Path"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -103,22 +98,30 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Path.html"><span class="name">Path</span></a><span class="result"> extends <span class="extype" name="scala.collection.generic.SeqForwarder">SeqForwarder</span>[<a href="PathCrumb.html" class="extype" name="views.html.PathCrumb">PathCrumb</a>]</span>
+        <a href="Path.html"><span class="name">Path</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@PathextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.PathCrumb" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="PathCrumbextendsProductwithSerializable"></a>
+      <a id="PathCrumbextendsAnyRef"></a>
       <a id="PathCrumb:PathCrumb"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="PathCrumb.html"><span class="name">PathCrumb</span></a><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="url">url: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.mvc.Call">Call</span>] = <span class="symbol">scala.None</span></span>, <span name="li">li: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="PathCrumb.html"><span class="name">PathCrumb</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@PathCrumbextendsAnyRef" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -127,20 +130,7 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="views.html.El" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="El"></a>
-      <a id="El:El"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="El$.html"><span class="name">El</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4>
-      
-    </li><li name="views.html.Path" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="views.html.Path" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Path"></a>
       <a id="Path:Path"></a>
       <h4 class="signature">
@@ -151,7 +141,11 @@
       <span class="symbol">
         <a href="Path$.html"><span class="name">Path</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@Path" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.PathCrumb" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PathCrumb"></a>
@@ -162,9 +156,13 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="PathCrumb$.html"><span class="name">PathCrumb</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="PathCrumb$.html"><span class="name">PathCrumb</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@PathCrumb" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="asset"></a>
@@ -177,7 +175,11 @@
       <span class="symbol">
         <a href="asset/package.html"><span class="name">asset</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@asset" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.display" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="display"></a>
@@ -190,7 +192,11 @@
       <span class="symbol">
         <a href="display$.html"><span class="name">display</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@display" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.error" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="error"></a>
@@ -203,7 +209,11 @@
       <span class="symbol">
         <a href="error/package.html"><span class="name">error</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@error" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.ingest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="ingest"></a>
@@ -216,7 +226,11 @@
       <span class="symbol">
         <a href="ingest/package.html"><span class="name">ingest</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@ingest" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.party" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="party"></a>
@@ -229,7 +243,11 @@
       <span class="symbol">
         <a href="party/package.html"><span class="name">party</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@party" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.record" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="record"></a>
@@ -242,7 +260,11 @@
       <span class="symbol">
         <a href="record/package.html"><span class="name">record</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@record" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="slot"></a>
@@ -255,7 +277,11 @@
       <span class="symbol">
         <a href="slot/package.html"><span class="name">slot</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@slot" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.template" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="template"></a>
@@ -268,7 +294,11 @@
       <span class="symbol">
         <a href="template/package.html"><span class="name">template</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@template" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="token"></a>
@@ -281,7 +311,11 @@
       <span class="symbol">
         <a href="token/package.html"><span class="name">token</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@token" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.volume" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="volume"></a>
@@ -294,7 +328,11 @@
       <span class="symbol">
         <a href="volume/package.html"><span class="name">volume</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@volume" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="views.html.welcome" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="welcome"></a>
@@ -305,10 +343,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="welcome$.html"><span class="name">welcome</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template1">Template1</span>[<a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="welcome$.html"><span class="name">welcome</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template1">Template1</span>[<a href="../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@welcome" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.widget" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="widget"></a>
       <a id="widget:widget"></a>
@@ -320,7 +362,11 @@
       <span class="symbol">
         <a href="widget/package.html"><span class="name">widget</span></a>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../../index.html#views.html.package@widget" title="Permalink" target="_top">
+        <img src="../../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -351,6 +397,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../lib/template.js"></script>
+
+
     </body>
       </html>

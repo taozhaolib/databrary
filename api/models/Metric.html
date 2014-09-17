@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Metric - models.Metric</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,12 +30,16 @@
       <div id="definition">
         <a href="Metric$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Metric$.html" title="Go to companion">Metric</a></h1>
+        <h1><a href="Metric$.html" title="Go to companion">Metric</a></h1> <span class="permalink">
+      <a href="../index.html#models.Metric" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
       <span class="modifier_kind">
-        <span class="modifier">sealed </span>
+        <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
@@ -41,7 +49,7 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Types of measurements (i.e., &quot;units&quot;).</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/measure.scala" target="_blank">measure.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Metric">Metric</a>[_]], <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Metric"><span>Metric</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.HasGenericId"><span>HasGenericId</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -86,19 +94,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -109,8 +104,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -122,22 +121,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -148,21 +138,46 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.TableRowId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="===[X&gt;:T](a:models.TableRowId[X]):Boolean"></a>
-      <a id="===[X&gt;:Metric[_]](TableRowId[X]):Boolean"></a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.HasGenericId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean"></a>
+      <a id="===[X&gt;:Metric[_]](HasGenericId[Int,X]):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Metric">Metric</a>[_]</span>]</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.TableRowId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Metric">Metric</a>[_]</span>]</span><span class="params">(<span name="i">i: <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="models.HasGenericId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId</dd></dl></div>
+    </li><li name="models.TableRowId#_id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_id:Int"></a>
+      <a id="_id:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_id</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@_id:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -174,20 +189,62 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Metric#assumed" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="assumed:Option[T]"></a>
+      <a id="assumed:Option[T]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">assumed</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="models.Metric.T">T</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@assumed:Option[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.HasGenericId#canEqual" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="canEqual(i:Any):Boolean"></a>
+      <a id="canEqual(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">canEqual</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@canEqual(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals</dd></dl></div>
     </li><li name="models.Metric#classification" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="classification:models.Classification.Value"></a>
       <a id="classification:Classification.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">classification</span><span class="result">: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@classification:models.Classification.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">privacy-determining identification level of measurements of this type.</p>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -200,7 +257,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -213,13 +274,17 @@
       <a id="dataType:DataType.Value"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">dataType</span><span class="result">: <a href="DataType$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.DataType.Value">DataType.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@dataType:models.DataType.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -232,10 +297,14 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:Any):Boolean"></a>
+    </li><li name="models.HasGenericId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(i:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -243,11 +312,15 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.
-This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@equals(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Equality based on id value.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on id value.
+This doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -259,7 +332,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -278,9 +355,13 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.TableRowId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -291,21 +372,29 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Metric#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="id:models.Metric.Id"></a>
       <a id="id:Metric.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">id</span><span class="result">: <a href="Metric$.html#Id=models.IntId[T]" class="extmbr" name="models.Metric.Id">Metric.Id</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Metric">Metric</a> → TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@id:models.Metric.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Metric">Metric</a> → TableRowId</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -317,46 +406,79 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Metric#json" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="json:site.JsonRecord"></a>
+      <a id="json:JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@json:site.JsonRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Metric#long" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="long:Boolean"></a>
       <a id="long:Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">long</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@long:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Metric#measureType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="measureType:models.MeasureType[T]"></a>
       <a id="measureType:MeasureType[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">implicit </span>
+        <span class="modifier">implicit final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">measureType</span><span class="result">: <span class="extype" name="models.MeasureType">MeasureType</span>[<span class="extype" name="models.Metric.T">T</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@measureType:models.MeasureType[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Metric#name" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="name:String"></a>
       <a id="name:String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@name:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -369,7 +491,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -382,7 +508,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -395,33 +525,45 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Metric#options" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="options:IndexedSeq[String]"></a>
       <a id="options:IndexedSeq[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">options</span><span class="result">: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@options:IndexedSeq[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Metric#sqlType" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="sqlType:dbrary.SQLType[T]"></a>
       <a id="sqlType:SQLType[T]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">sqlType</span><span class="result">: <span class="extype" name="dbrary.SQLType">SQLType</span>[<span class="extype" name="models.Metric.T">T</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@sqlType:dbrary.SQLType[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -434,9 +576,13 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasGenericId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -447,8 +593,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -460,7 +610,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -479,7 +633,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -498,7 +656,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Metric@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -517,6 +679,12 @@ This assumes that two objects representing the same row are the same (even if th
         <div id="inheritedMembers">
         <div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Metric">Metric</a>[_]]</h3>
+            </div><div class="parent" name="models.HasId">
+              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Metric">Metric</a>[_]]</h3>
+            </div><div class="parent" name="models.HasGenericId">
+              <h3>Inherited from <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Metric">Metric</a>[_]]</h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">
@@ -539,6 +707,7 @@ This assumes that two objects representing the same row are the same (even if th
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

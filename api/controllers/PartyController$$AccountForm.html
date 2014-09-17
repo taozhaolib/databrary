@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>AccountForm - controllers.PartyController.AccountForm</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/trait_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a>.<a href="PartyController$.html" class="extype" name="controllers.PartyController">PartyController</a></p>
-        <h1>AccountForm</h1>
+        <h1>AccountForm</h1> <span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -43,9 +51,9 @@
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a>, <a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a>, <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a>], <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a>, <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a>, <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="PartyController$$AccountCreateForm.html" class="extype" name="controllers.PartyController.AccountCreateForm">AccountCreateForm</a>, <a href="PartyController$$AccountEditForm.html" class="extype" name="controllers.PartyController.AccountEditForm">AccountEditForm</a></div>
-        </div></div>
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="PartyController$$AccountCreateForm.html" class="extype" name="controllers.PartyController.AccountCreateForm">AccountCreateForm</a>, <a href="PartyController$$AccountEditForm.html" class="extype" name="controllers.PartyController.AccountEditForm">AccountEditForm</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -84,7 +92,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="controllers.StructForm.Field" visbl="prt" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="controllers.StructForm.Field" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Field[T]extendsStructForm.this.Member[T]withProductwithSerializable"></a>
       <a id="Field[T]:Field[T]"></a>
       <h4 class="signature">
@@ -95,8 +103,12 @@
       <span class="symbol">
         <a href="StructForm$Field.html"><span class="name">Field</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="map">map: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="controllers.StructForm.Field.T">T</span>]</span>)</span><span class="result"> extends <a href="StructForm$Member.html" class="extype" name="controllers.StructForm.Member">Member</a>[<span class="extype" name="controllers.StructForm.Field.T">T</span>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
-      <p class="comment cmt">A field in this form, which should only be used to declare vals.</p>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A field in this form, which should only be used to declare vals.</p><div class="fullcomment"><div class="comment cmt"><p>A field in this form, which should only be used to declare vals.</p></div><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.File" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FileextendsStructForm.this.FileMember[StructForm.this.FilePart]withProductwithSerializable"></a>
       <a id="File:File"></a>
@@ -108,7 +120,11 @@
       <span class="symbol">
         <a href="StructForm$File.html"><span class="name">File</span></a><span class="params">()</span><span class="result"> extends <a href="StructForm$FileMember.html" class="extype" name="controllers.StructForm.FileMember">FileMember</a>[<a href="StructForm.html#FilePart=play.api.mvc.MultipartFormData.FilePart[play.api.libs.Files.TemporaryFile]" class="extmbr" name="controllers.StructForm.FilePart">FilePart</a>] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@FileextendsStructForm.this.FileMember[StructForm.this.FilePart]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.FileMember" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="FileMember[T]extendsStructForm.this.Member[T]"></a>
@@ -121,7 +137,11 @@
       <span class="symbol">
         <a href="StructForm$FileMember.html"><span class="name">FileMember</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <a href="StructForm$Member.html" class="extype" name="controllers.StructForm.Member">Member</a>[<span class="extype" name="controllers.StructForm.FileMember.T">T</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@FileMember[T]extendsStructForm.this.Member[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.FilePart" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FilePart=play.api.mvc.MultipartFormData.FilePart[play.api.libs.Files.TemporaryFile]"></a>
@@ -134,7 +154,11 @@
       <span class="symbol">
         <span class="name">FilePart</span><span class="result"> = <span class="extype" name="play.api.mvc.MultipartFormData.FilePart">play.api.mvc.MultipartFormData.FilePart</span>[<span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@FilePart=play.api.mvc.MultipartFormData.FilePart[play.api.libs.Files.TemporaryFile]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.Member" visbl="prt" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="Member[T]extendsAnyRef"></a>
@@ -147,7 +171,11 @@
       <span class="symbol">
         <a href="StructForm$Member.html"><span class="name">Member</span></a><span class="tparams">[<span name="T">T</span>]</span><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@Member[T]extendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.OptionalFile" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="OptionalFileextendsStructForm.this.FileMember[Option[StructForm.this.FilePart]]withProductwithSerializable"></a>
@@ -160,7 +188,11 @@
       <span class="symbol">
         <a href="StructForm$OptionalFile.html"><span class="name">OptionalFile</span></a><span class="params">()</span><span class="result"> extends <a href="StructForm$FileMember.html" class="extype" name="controllers.StructForm.FileMember">FileMember</a>[<span class="extype" name="scala.Option">Option</span>[<a href="StructForm.html#FilePart=play.api.mvc.MultipartFormData.FilePart[play.api.libs.Files.TemporaryFile]" class="extmbr" name="controllers.StructForm.FilePart">FilePart</a>]] with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@OptionalFileextendsStructForm.this.FileMember[Option[StructForm.this.FilePart]]withProductwithSerializable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm.form" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="formextendsForm[StructForm.this.type]"></a>
@@ -173,7 +205,11 @@
       <span class="symbol">
         <a href="StructForm$form.html"><span class="name">form</span></a><span class="result"> extends <span class="extype" name="play.api.data.Form">Form</span>[<a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>.this.type]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@formextendsForm[StructForm.this.type]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li></ol>
             </div>
@@ -191,7 +227,11 @@
       <span class="symbol">
         <span class="name">actionName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@actionName:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="controllers.PartyController.AccountForm#email" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="email:AccountForm.this.Field[Option[String]]"></a>
@@ -204,7 +244,11 @@
       <span class="symbol">
         <span class="name">email</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@email:AccountForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.PartyController.PartyForm#name" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="name:PartyForm.this.Field[Option[String]]"></a>
@@ -217,7 +261,11 @@
       <span class="symbol">
         <span class="name">name</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@name:PartyForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li></ol>
             </div>
@@ -225,19 +273,6 @@
         <div id="values" class="values members">
               <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -248,8 +283,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -261,22 +300,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -287,20 +317,28 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.HtmlFormView#Bad" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Bad(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="Bad(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="Bad(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="Bad(SiteRequest[_]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Bad</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">Bad</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@Bad(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></dd></dl></div>
     </li><li name="controllers.StructForm#Const" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Const[T](x:T):StructForm.this.Field[T]"></a>
@@ -313,20 +351,28 @@
       <span class="symbol">
         <span class="name">Const</span><span class="tparams">[<span name="T">T</span>]</span><span class="params">(<span name="x">x: <span class="extype" name="controllers.StructForm.Const.T">T</span></span>)</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="controllers.StructForm.Const.T">T</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@Const[T](x:T):StructForm.this.Field[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.HtmlFormView#Ok" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Ok:scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="Ok:Future[SimpleResult]"></a>
+      <a id="Ok:scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="Ok:Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Ok</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">Ok</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@Ok:scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></dd></dl></div>
     </li><li name="controllers.StructForm#_action" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_action:play.api.mvc.Call"></a>
@@ -339,7 +385,11 @@
       <span class="symbol">
         <span class="name">_action</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_action:play.api.mvc.Call" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.FormView#_bind" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_bind(implicitrequest:play.api.mvc.Request[play.api.mvc.AnyContent]):FormView.this.type"></a>
@@ -352,7 +402,11 @@
       <span class="symbol">
         <span class="name">_bind</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.Request">play.api.mvc.Request</span>[<span class="extype" name="play.api.mvc.AnyContent">AnyContent</span>]</span>)</span><span class="result">: <a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a>.this.type</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_bind(implicitrequest:play.api.mvc.Request[play.api.mvc.AnyContent]):FormView.this.type" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="FormView.html" class="extype" name="controllers.FormView">FormView</a> → <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#_enctype" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_enctype:String"></a>
@@ -365,20 +419,28 @@
       <span class="symbol">
         <span class="name">_enctype</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_enctype:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.HtmlFormView#_exception" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="_exception:controllers.FormException"></a>
-      <a id="_exception:FormException"></a>
+      <a id="_exception(status:play.api.mvc.Results.Status):controllers.FormException"></a>
+      <a id="_exception(play.api.mvc.Results.Status):FormException"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">_exception</span><span class="result">: <span class="extype" name="controllers.FormException">FormException</span></span>
+        <span class="name">_exception</span><span class="params">(<span name="status">status: <span class="extype" name="play.api.mvc.Results.Status">play.api.mvc.Results.Status</span></span>)</span><span class="result">: <span class="extype" name="controllers.FormException">FormException</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_exception(status:play.api.mvc.Results.Status):controllers.FormException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a> → <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></dd></dl></div>
     </li><li name="controllers.StructForm._mapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_mapping"></a>
@@ -391,7 +453,11 @@
       <span class="symbol">
         <a href="StructForm$_mapping$.html"><span class="name">_mapping</span></a><span class="result"> extends <span class="extype" name="play.api.data.Mapping">Mapping</span>[<a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>.this.type]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.StructForm@_mapping" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.FormView#_throw" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_throw:Nothing"></a>
@@ -404,20 +470,28 @@
       <span class="symbol">
         <span class="name">_throw</span><span class="result">: <span class="extype" name="scala.Nothing">Nothing</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_throw:Nothing" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></dd></dl></div>
     </li><li name="controllers.HtmlForm#_view" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_view:scala.concurrent.Future[play.api.templates.HtmlFormat.Appendable]"></a>
-      <a id="_view:Future[play.api.templates.HtmlFormat.Appendable]"></a>
+      <a id="_view:Future[play.twirl.api.HtmlFormat.Appendable]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">_view</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <span class="name">_view</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@_view:scala.concurrent.Future[play.api.templates.HtmlFormat.Appendable]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a> → <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></dd></dl></div>
     </li><li name="controllers.PartyController.PartyForm#affiliation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="affiliation:PartyForm.this.Field[Option[Option[String]]]"></a>
@@ -430,7 +504,11 @@
       <span class="symbol">
         <span class="name">affiliation</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@affiliation:PartyForm.this.Field[Option[Option[String]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#apply" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apply():StructForm.this.form"></a>
@@ -443,7 +521,11 @@
       <span class="symbol">
         <span class="name">apply</span><span class="params">()</span><span class="result">: <a href="#formextendsForm[StructForm.this.type]" class="extmbr" name="controllers.StructForm.form">form</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@apply():StructForm.this.form" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -456,7 +538,11 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#checkPassword" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPassword(account:models.Account):Unit"></a>
@@ -469,7 +555,11 @@
       <span class="symbol">
         <span class="name">checkPassword</span><span class="params">(<span name="account">account: <a href="../models/Account.html" class="extype" name="models.Account">Account</a></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@checkPassword(account:models.Account):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -482,7 +572,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -501,21 +595,12 @@
       <span class="symbol">
         <span class="name">cryptPassword</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@cryptPassword:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
-    </li><li name="controllers.PartyController.PartyForm#duns" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="duns:PartyForm.this.Field[Option[Option[models.DUNS]]]"></a>
-      <a id="duns:Field[Option[Option[DUNS]]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">duns</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/DUNS.html" class="extype" name="models.DUNS">DUNS</a>]]]</span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -527,7 +612,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -540,7 +629,11 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -553,7 +646,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -572,7 +669,11 @@
       <span class="symbol">
         <span class="name">formName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@formName:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a> → <a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -585,7 +686,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="controllers.StructForm#globalErrors" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="globalErrors:Seq[play.api.data.FormError]"></a>
@@ -598,8 +703,12 @@
       <span class="symbol">
         <span class="name">globalErrors</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.FormError">FormError</span>]</span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Like this().</p><div class="fullcomment"><div class="comment cmt"><p>Like this().globalErrors but also includes errors attached to missing fields, as this is a common bug.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@globalErrors:Seq[play.api.data.FormError]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Like this().globalErrors but also includes errors attached to missing fields, as this is a common bug.</p><div class="fullcomment"><div class="comment cmt"><p>Like this().globalErrors but also includes errors attached to missing fields, as this is a common bug.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#hasErrors" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hasErrors:Boolean"></a>
       <a id="hasErrors:Boolean"></a>
@@ -611,7 +720,11 @@
       <span class="symbol">
         <span class="name">hasErrors</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@hasErrors:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -624,7 +737,11 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -637,7 +754,11 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -650,7 +771,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -663,7 +788,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -676,20 +805,28 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="controllers.PartyController.AccountForm#openid" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="openid:AccountForm.this.Field[Option[String]]"></a>
-      <a id="openid:Field[Option[String]]"></a>
+      <a id="openid:AccountForm.this.Field[Option[Option[java.net.URL]]]"></a>
+      <a id="openid:Field[Option[Option[URL]]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">openid</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+        <span class="name">openid</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.net.URL">URL</span>]]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@openid:AccountForm.this.Field[Option[Option[java.net.URL]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.FormView#orThrow" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="orThrow():FormView.this.type"></a>
@@ -702,7 +839,11 @@
       <span class="symbol">
         <span class="name">orThrow</span><span class="params">()</span><span class="result">: <a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a>.this.type</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@orThrow():FormView.this.type" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="FormView.html" class="extype" name="controllers.FormView">FormView</a></dd></dl></div>
     </li><li name="controllers.PartyController.PartyForm#orcid" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="orcid:PartyForm.this.Field[Option[Option[models.Orcid]]]"></a>
@@ -715,7 +856,11 @@
       <span class="symbol">
         <span class="name">orcid</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/Orcid.html" class="extype" name="models.Orcid">Orcid</a>]]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@orcid:PartyForm.this.Field[Option[Option[models.Orcid]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="controllers.PartyController.AccountForm#password" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="password:AccountForm.this.Field[Option[String]]"></a>
@@ -728,7 +873,11 @@
       <span class="symbol">
         <span class="name">password</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@password:AccountForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a> → <a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#passwordField" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="passwordField:PasswordChangeForm.this.Field[Option[String]]"></a>
@@ -741,7 +890,11 @@
       <span class="symbol">
         <span class="name">passwordField</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@passwordField:PasswordChangeForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#passwordInputMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="passwordInputMapping:play.api.data.Mapping[Option[String]]"></a>
@@ -754,7 +907,11 @@
       <span class="symbol">
         <span class="name">passwordInputMapping</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@passwordInputMapping:play.api.data.Mapping[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#passwordMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="passwordMapping:play.api.data.Mapping[Option[String]]"></a>
@@ -767,7 +924,11 @@
       <span class="symbol">
         <span class="name">passwordMapping</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@passwordMapping:play.api.data.Mapping[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#passwordOnceMapping" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="passwordOnceMapping:play.api.data.Mapping[Option[String]]"></a>
@@ -780,7 +941,11 @@
       <span class="symbol">
         <span class="name">passwordOnceMapping</span><span class="result">: <span class="extype" name="play.api.data.Mapping">Mapping</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@passwordOnceMapping:play.api.data.Mapping[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="controllers.LoginController.PasswordChangeForm#passwordRequired" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="passwordRequired:Boolean"></a>
@@ -793,7 +958,11 @@
       <span class="symbol">
         <span class="name">passwordRequired</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@passwordRequired:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="LoginController$$PasswordChangeForm.html" class="extype" name="controllers.LoginController.PasswordChangeForm">PasswordChangeForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -806,7 +975,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -819,8 +992,29 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="controllers.PartyController.PartyForm#url" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="url:PartyForm.this.Field[Option[Option[java.net.URL]]]"></a>
+      <a id="url:Field[Option[Option[URL]]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">url</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.net.URL">URL</span>]]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@url:PartyForm.this.Field[Option[Option[java.net.URL]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="PartyController$$PartyForm.html" class="extype" name="controllers.PartyController.PartyForm">PartyForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>
@@ -832,7 +1026,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -851,7 +1049,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -870,7 +1072,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -889,7 +1095,11 @@
       <span class="symbol">
         <span class="name">withError</span><span class="params">(<span name="error">error: <span class="extype" name="play.api.data.FormError">FormError</span></span>)</span><span class="result">: <a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a>.this.type</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@withError(error:play.api.data.FormError):StructForm.this.type" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#withGlobalError" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="withGlobalError(message:String,args:Any*):StructForm.this.type"></a>
@@ -902,7 +1112,11 @@
       <span class="symbol">
         <span class="name">withGlobalError</span><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="args">args: <span class="extype" name="scala.Any">Any</span>*</span>)</span><span class="result">: <a href="" class="extype" name="controllers.PartyController.AccountForm">AccountForm</a>.this.type</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.PartyController$$AccountForm@withGlobalError(message:String,args:Any*):StructForm.this.type" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li></ol>
             </div>
@@ -945,6 +1159,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

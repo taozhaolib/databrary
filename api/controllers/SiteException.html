@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>SiteException - controllers.SiteException</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="SiteException$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a></p>
-        <h1><a href="SiteException$.html" title="Go to companion">SiteException</a></h1>
+        <h1><a href="SiteException$.html" title="Go to companion">SiteException</a></h1> <span class="permalink">
+      <a href="../index.html#controllers.SiteException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -43,9 +51,9 @@
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="play.api.mvc.Results">Results</span>, <span class="extype" name="java.lang.Exception">Exception</span>, <span class="extype" name="java.lang.Throwable">Throwable</span>, <span class="extype" name="java.io.Serializable">Serializable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="ApiException.html" class="extype" name="controllers.ApiException">ApiException</a>, <a href="HtmlException.html" class="extype" name="controllers.HtmlException">HtmlException</a>, <a href="ServiceUnavailableException$.html" class="extype" name="controllers.ServiceUnavailableException">ServiceUnavailableException</a></div>
-        </div></div>
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="ApiException.html" class="extype" name="controllers.ApiException">ApiException</a>, <a href="HtmlException.html" class="extype" name="controllers.HtmlException">HtmlException</a>, <a href="ServiceUnavailableException$.html" class="extype" name="controllers.ServiceUnavailableException">ServiceUnavailableException</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -93,7 +101,11 @@
       <span class="symbol">
         <span class="name">SiteException</span><span class="params">()</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@&lt;init&gt;():controllers.SiteException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -101,7 +113,7 @@
         <div id="types" class="types members">
               <h3>Type Members</h3>
               <ol><li name="play.api.mvc.Results.Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="StatusextendsSimpleResult"></a>
+      <a id="StatusextendsResult"></a>
       <a id="Status:Status"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -109,9 +121,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Status</span><span class="result"> extends <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@StatusextendsResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li></ol>
             </div>
@@ -119,30 +135,38 @@
         <div id="values" class="values members">
               <h3>Abstract Value Members</h3>
               <ol><li name="controllers.SiteException#resultApi" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="resultApi:scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="resultApi:Future[SimpleResult]"></a>
+      <a id="resultApi:scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="resultApi:Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">resultApi</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">resultApi</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@resultApi:scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="controllers.SiteException#resultHtml" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="resultHtml(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="resultHtml(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="resultHtml(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="resultHtml(SiteRequest[_]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">abstract </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">resultHtml</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">resultHtml</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@resultHtml(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -150,19 +174,6 @@
         <div id="values" class="values members">
               <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -173,8 +184,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -186,22 +201,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -212,8 +218,12 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="play.api.mvc.Results#Accepted" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Accepted:Results.this.Status"></a>
       <a id="Accepted:Status"></a>
@@ -223,9 +233,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Accepted</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Accepted:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#BadGateway" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BadGateway:Results.this.Status"></a>
@@ -236,9 +250,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">BadGateway</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@BadGateway:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#BadRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="BadRequest:Results.this.Status"></a>
@@ -249,9 +267,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">BadRequest</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@BadRequest:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Conflict" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Conflict:Results.this.Status"></a>
@@ -262,9 +284,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Conflict</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Conflict:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Created" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Created:Results.this.Status"></a>
@@ -275,9 +301,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Created</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Created</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Created:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#EntityTooLarge" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="EntityTooLarge:Results.this.Status"></a>
@@ -288,9 +318,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">EntityTooLarge</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@EntityTooLarge:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ExpectationFailed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ExpectationFailed:Results.this.Status"></a>
@@ -301,9 +335,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">ExpectationFailed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@ExpectationFailed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#FailedDependency" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="FailedDependency:Results.this.Status"></a>
@@ -314,9 +352,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">FailedDependency</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@FailedDependency:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Forbidden" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Forbidden:Results.this.Status"></a>
@@ -327,22 +369,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Forbidden</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Forbidden:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Found" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Found(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="Found(String):SimpleResult"></a>
+      <a id="Found(url:String):play.api.mvc.Result"></a>
+      <a id="Found(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Found</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Found(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#GatewayTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="GatewayTimeout:Results.this.Status"></a>
@@ -353,9 +403,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">GatewayTimeout</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@GatewayTimeout:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Gone" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Gone:Results.this.Status"></a>
@@ -366,9 +420,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Gone</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Gone:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#HttpVersionNotSupported" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="HttpVersionNotSupported:Results.this.Status"></a>
@@ -379,9 +437,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">HttpVersionNotSupported</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@HttpVersionNotSupported:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#InsufficientStorage" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="InsufficientStorage:Results.this.Status"></a>
@@ -392,9 +454,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">InsufficientStorage</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@InsufficientStorage:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#InternalServerError" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="InternalServerError:Results.this.Status"></a>
@@ -405,9 +471,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">InternalServerError</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@InternalServerError:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Locked" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Locked:Results.this.Status"></a>
@@ -418,9 +488,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Locked</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Locked:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MethodNotAllowed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MethodNotAllowed:Results.this.Status"></a>
@@ -431,22 +505,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">MethodNotAllowed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@MethodNotAllowed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MovedPermanently" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="MovedPermanently(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="MovedPermanently(String):SimpleResult"></a>
+      <a id="MovedPermanently(url:String):play.api.mvc.Result"></a>
+      <a id="MovedPermanently(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">MovedPermanently</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@MovedPermanently(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#MultiStatus" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="MultiStatus:Results.this.Status"></a>
@@ -457,22 +539,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">MultiStatus</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@MultiStatus:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NoContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NoContent:play.api.mvc.SimpleResult"></a>
-      <a id="NoContent:SimpleResult"></a>
+      <a id="NoContent:play.api.mvc.Result"></a>
+      <a id="NoContent:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">NoContent</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NoContent:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NonAuthoritativeInformation" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NonAuthoritativeInformation:Results.this.Status"></a>
@@ -483,9 +573,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">NonAuthoritativeInformation</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NonAuthoritativeInformation:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotAcceptable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotAcceptable:Results.this.Status"></a>
@@ -496,9 +590,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">NotAcceptable</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NotAcceptable:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotFound" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotFound:Results.this.Status"></a>
@@ -509,9 +607,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">NotFound</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NotFound:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotImplemented" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="NotImplemented:Results.this.Status"></a>
@@ -522,22 +624,30 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">NotImplemented</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NotImplemented:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#NotModified" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="NotModified:play.api.mvc.SimpleResult"></a>
-      <a id="NotModified:SimpleResult"></a>
+      <a id="NotModified:play.api.mvc.Result"></a>
+      <a id="NotModified:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">NotModified</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@NotModified:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Ok" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Ok:Results.this.Status"></a>
@@ -548,9 +658,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Ok</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Ok:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#PartialContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PartialContent:Results.this.Status"></a>
@@ -561,9 +675,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">PartialContent</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@PartialContent:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#PreconditionFailed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="PreconditionFailed:Results.this.Status"></a>
@@ -574,48 +692,64 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">PreconditionFailed</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@PreconditionFailed:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(Call):SimpleResult"></a>
+      <a id="Redirect(call:play.api.mvc.Call):play.api.mvc.Result"></a>
+      <a id="Redirect(Call):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="call">call: <span class="extype" name="play.api.mvc.Call">Call</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Redirect(call:play.api.mvc.Call):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(String,Map[String,Seq[String]],Int):SimpleResult"></a>
+      <a id="Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.Result"></a>
+      <a id="Redirect(String,Map[String,Seq[String]],Int):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Redirect(url:String,queryString:Map[String,Seq[String]],status:Int):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Redirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Redirect(url:String,status:Int):play.api.mvc.SimpleResult"></a>
-      <a id="Redirect(String,Int):SimpleResult"></a>
+      <a id="Redirect(url:String,status:Int):play.api.mvc.Result"></a>
+      <a id="Redirect(String,Int):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">Redirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="status">status: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Redirect(url:String,status:Int):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#RequestTimeout" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="RequestTimeout:Results.this.Status"></a>
@@ -626,35 +760,47 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">RequestTimeout</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@RequestTimeout:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ResetContent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ResetContent:play.api.mvc.SimpleResult"></a>
-      <a id="ResetContent:SimpleResult"></a>
+      <a id="ResetContent:play.api.mvc.Result"></a>
+      <a id="ResetContent:Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">ResetContent</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@ResetContent:play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#SeeOther" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SeeOther(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="SeeOther(String):SimpleResult"></a>
+      <a id="SeeOther(url:String):play.api.mvc.Result"></a>
+      <a id="SeeOther(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">SeeOther</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@SeeOther(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#ServiceUnavailable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ServiceUnavailable:Results.this.Status"></a>
@@ -665,9 +811,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">ServiceUnavailable</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@ServiceUnavailable:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Status" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Status(code:Int):Results.this.Status"></a>
@@ -678,22 +828,30 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Status</span><span class="params">(<span name="code">code: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Status(code:Int):Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#TemporaryRedirect" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TemporaryRedirect(url:String):play.api.mvc.SimpleResult"></a>
-      <a id="TemporaryRedirect(String):SimpleResult"></a>
+      <a id="TemporaryRedirect(url:String):play.api.mvc.Result"></a>
+      <a id="TemporaryRedirect(String):Result"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span></span>
+        <span class="name">TemporaryRedirect</span><span class="params">(<span name="url">url: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Result">Result</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@TemporaryRedirect(url:String):play.api.mvc.Result" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#TooManyRequest" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="TooManyRequest:Results.this.Status"></a>
@@ -704,9 +862,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">TooManyRequest</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@TooManyRequest:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#Unauthorized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Unauthorized:Results.this.Status"></a>
@@ -717,9 +879,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">Unauthorized</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@Unauthorized:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UnprocessableEntity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UnprocessableEntity:Results.this.Status"></a>
@@ -730,9 +896,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">UnprocessableEntity</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@UnprocessableEntity:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UnsupportedMediaType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UnsupportedMediaType:Results.this.Status"></a>
@@ -743,9 +913,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">UnsupportedMediaType</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@UnsupportedMediaType:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#UriTooLong" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="UriTooLong:Results.this.Status"></a>
@@ -756,9 +930,13 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsSimpleResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
+        <span class="name">UriTooLong</span><span class="result">: <a href="#StatusextendsResult" class="extmbr" name="controllers.SiteException.Status">Status</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@UriTooLong:Results.this.Status" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="java.lang.Throwable#addSuppressed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="addSuppressed(x$1:Throwable):Unit"></a>
@@ -771,7 +949,11 @@
       <span class="symbol">
         <span class="name">addSuppressed</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.lang.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@addSuppressed(x$1:Throwable):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -784,7 +966,11 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -797,7 +983,11 @@
       <span class="symbol">
         <span class="name">chunk</span><span class="params">(<span name="trailers">trailers: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.libs.iteratee.Iteratee">Iteratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>)]]]</span>)</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@chunk(trailers:Option[play.api.libs.iteratee.Iteratee[Array[Byte],Seq[(String,String)]]]):play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="play.api.mvc.Results#chunk" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="chunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]"></a>
@@ -810,7 +1000,11 @@
       <span class="symbol">
         <span class="name">chunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@chunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -823,7 +1017,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -842,7 +1040,11 @@
       <span class="symbol">
         <span class="name">dechunk</span><span class="result">: <span class="extype" name="play.api.libs.iteratee.Enumeratee">Enumeratee</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>], <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@dechunk:play.api.libs.iteratee.Enumeratee[Array[Byte],Array[Byte]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -855,7 +1057,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -868,7 +1074,11 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="java.lang.Throwable#fillInStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fillInStackTrace():Throwable"></a>
@@ -881,7 +1091,11 @@
       <span class="symbol">
         <span class="name">fillInStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@fillInStackTrace():Throwable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -894,7 +1108,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -913,7 +1131,11 @@
       <span class="symbol">
         <span class="name">getCause</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getCause():Throwable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -926,7 +1148,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="java.lang.Throwable#getLocalizedMessage" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getLocalizedMessage():String"></a>
@@ -939,7 +1165,11 @@
       <span class="symbol">
         <span class="name">getLocalizedMessage</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getLocalizedMessage():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="java.lang.Throwable#getMessage" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getMessage():String"></a>
@@ -952,7 +1182,11 @@
       <span class="symbol">
         <span class="name">getMessage</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getMessage():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="java.lang.Throwable#getStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getStackTrace():Array[StackTraceElement]"></a>
@@ -965,7 +1199,11 @@
       <span class="symbol">
         <span class="name">getStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.StackTraceElement">StackTraceElement</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getStackTrace():Array[StackTraceElement]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="java.lang.Throwable#getSuppressed" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getSuppressed():Array[Throwable]"></a>
@@ -978,7 +1216,11 @@
       <span class="symbol">
         <span class="name">getSuppressed</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.Throwable">Throwable</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@getSuppressed():Array[Throwable]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -991,7 +1233,11 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="java.lang.Throwable#initCause" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="initCause(x$1:Throwable):Throwable"></a>
@@ -1004,7 +1250,11 @@
       <span class="symbol">
         <span class="name">initCause</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.lang.Throwable">Throwable</span></span>)</span><span class="result">: <span class="extype" name="java.lang.Throwable">Throwable</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@initCause(x$1:Throwable):Throwable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -1017,7 +1267,11 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -1030,7 +1284,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -1043,7 +1301,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -1056,7 +1318,11 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="java.lang.Throwable#printStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="printStackTrace(x$1:java.io.PrintWriter):Unit"></a>
@@ -1069,7 +1335,11 @@
       <span class="symbol">
         <span class="name">printStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.io.PrintWriter">PrintWriter</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@printStackTrace(x$1:java.io.PrintWriter):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="java.lang.Throwable#printStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="printStackTrace(x$1:java.io.PrintStream):Unit"></a>
@@ -1082,7 +1352,11 @@
       <span class="symbol">
         <span class="name">printStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="java.io.PrintStream">PrintStream</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@printStackTrace(x$1:java.io.PrintStream):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="java.lang.Throwable#printStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="printStackTrace():Unit"></a>
@@ -1095,20 +1369,28 @@
       <span class="symbol">
         <span class="name">printStackTrace</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@printStackTrace():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="controllers.SiteException#result" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="result(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.SimpleResult]"></a>
-      <a id="result(SiteRequest[_]):Future[SimpleResult]"></a>
+      <a id="result(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]"></a>
+      <a id="result(SiteRequest[_]):Future[Result]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">result</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.SimpleResult">SimpleResult</span>]</span>
+        <span class="name">result</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@result(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[play.api.mvc.Result]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="java.lang.Throwable#setStackTrace" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setStackTrace(x$1:Array[StackTraceElement]):Unit"></a>
@@ -1121,7 +1403,11 @@
       <span class="symbol">
         <span class="name">setStackTrace</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="java.lang.StackTraceElement">StackTraceElement</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@setStackTrace(x$1:Array[StackTraceElement]):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -1134,7 +1420,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="java.lang.Throwable#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -1147,7 +1437,11 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Throwable → AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -1160,7 +1454,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1179,7 +1477,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1198,7 +1500,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteException@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1211,26 +1517,7 @@
 
         
 
-        <div id="values" class="values members">
-              <h3>Deprecated Value Members</h3>
-              <ol><li name="play.api.mvc.Results#Async" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="Async(promise:scala.concurrent.Future[play.api.mvc.Result]):play.api.mvc.AsyncResult"></a>
-      <a id="Async(Future[Result]):AsyncResult"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name deprecated" title="Deprecated: (Since version 2.2.0) Use Action.async to build async actions instead">Async</span><span class="params">(<span name="promise">promise: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.mvc.Result">Result</span>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.AsyncResult">AsyncResult</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd><dt>Annotations</dt><dd>
-                <span class="name">@deprecated</span>
-              
-        </dd><dt>Deprecated</dt><dd class="cmt"><p><i>(Since version 2.2.0)</i> Use Action.async to build async actions instead</p></dd></dl></div>
-    </li></ol>
-            </div>
+        
         </div>
 
         <div id="inheritedMembers">
@@ -1262,6 +1549,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

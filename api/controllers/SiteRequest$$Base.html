@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Base - controllers.SiteRequest.Base</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../lib/class_big.png" />
         <p id="owner"><a href="package.html" class="extype" name="controllers">controllers</a>.<a href="SiteRequest$.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></p>
-        <h1>Base</h1>
+        <h1>Base</h1> <span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -43,9 +51,9 @@
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>], <a href="../site/Site.html" class="extype" name="site.Site">Site</a>, <span class="extype" name="play.api.mvc.WrappedRequest">WrappedRequest</span>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>], <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>], <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="RequestObject$Anon.html" class="extype" name="controllers.RequestObject.Anon">Anon</a>, <a href="SiteRequest$$Anon.html" class="extype" name="controllers.SiteRequest.Anon">Anon</a>, <a href="RequestObject$Auth.html" class="extype" name="controllers.RequestObject.Auth">Auth</a>, <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a></div>
-        </div></div>
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="SiteRequest$$Anon.html" class="extype" name="controllers.SiteRequest.Anon">Anon</a>, <a href="RequestObject$Anon.html" class="extype" name="controllers.RequestObject.Anon">Anon</a>, <a href="RequestObject$Auth.html" class="extype" name="controllers.RequestObject.Auth">Auth</a>, <a href="SiteRequest$$Auth.html" class="extype" name="controllers.SiteRequest.Auth">Auth</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -93,7 +101,11 @@
       <span class="symbol">
         <span class="name">Base</span><span class="params">(<span name="request">request: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>]</span>)</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@&lt;init&gt;(request:play.api.mvc.Request[A]):controllers.SiteRequest.Base[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -113,7 +125,11 @@
       <span class="symbol">
         <span class="name">access</span><span class="result">: <a href="../site/Access.html" class="extype" name="site.Access">Access</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@access:site.Access" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="site.Site#superuser" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="superuser:Boolean"></a>
@@ -126,7 +142,11 @@
       <span class="symbol">
         <span class="name">superuser</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@superuser:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="controllers.SiteRequest#withObj" visbl="pub" data-isabs="true" fullComment="yes" group="Ungrouped">
       <a id="withObj[O](obj:O):controllers.RequestObject[O]#Site[A]"></a>
@@ -139,7 +159,11 @@
       <span class="symbol">
         <span class="name">withObj</span><span class="tparams">[<span name="O">O</span>]</span><span class="params">(<span name="obj">obj: <span class="extype" name="controllers.SiteRequest.withObj.O">O</span></span>)</span><span class="result">: <a href="RequestObject$Site.html" class="extype" name="controllers.RequestObject.Site">Site</a>[<span class="extype" name="controllers.SiteRequest.Base.A">A</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@withObj[O](obj:O):controllers.RequestObject[O]#Site[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li></ol>
             </div>
@@ -147,19 +171,6 @@
         <div id="values" class="values members">
               <h3>Concrete Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -170,8 +181,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -183,22 +198,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -209,8 +215,12 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#acceptLanguages" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="acceptLanguages:Seq[play.api.i18n.Lang]"></a>
       <a id="acceptLanguages:Seq[Lang]"></a>
@@ -222,7 +232,11 @@
       <span class="symbol">
         <span class="name">acceptLanguages</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.i18n.Lang">Lang</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@acceptLanguages:Seq[play.api.i18n.Lang]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#acceptedTypes" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="acceptedTypes:Seq[play.api.http.MediaRange]"></a>
@@ -235,7 +249,11 @@
       <span class="symbol">
         <span class="name">acceptedTypes</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.http.MediaRange">MediaRange</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@acceptedTypes:Seq[play.api.http.MediaRange]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#accepts" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="accepts(mimeType:String):Boolean"></a>
@@ -248,7 +266,11 @@
       <span class="symbol">
         <span class="name">accepts</span><span class="params">(<span name="mimeType">mimeType: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@accepts(mimeType:String):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="controllers.SiteRequest#apiOptions" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="apiOptions:site.JsonOptions.Options"></a>
@@ -261,7 +283,11 @@
       <span class="symbol">
         <span class="name">apiOptions</span><span class="result">: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@apiOptions:site.JsonOptions.Options" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -274,7 +300,11 @@
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#body" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="body:A"></a>
@@ -287,7 +317,11 @@
       <span class="symbol">
         <span class="name">body</span><span class="result">: <span class="extype" name="controllers.SiteRequest.Base.A">A</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@body:A" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → Request</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#charset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="charset:Option[String]"></a>
@@ -300,7 +334,11 @@
       <span class="symbol">
         <span class="name">charset</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@charset:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="controllers.SiteRequest#clientIP" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clientIP:dbrary.Inet"></a>
@@ -313,7 +351,11 @@
       <span class="symbol">
         <span class="name">clientIP</span><span class="result">: <span class="extype" name="dbrary.Inet">Inet</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@clientIP:dbrary.Inet" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">IP of the client's host.</p><div class="fullcomment"><div class="comment cmt"><p>IP of the client's host.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a> → <a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -326,7 +368,11 @@
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -345,7 +391,11 @@
       <span class="symbol">
         <span class="name">contentType</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@contentType:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#cookies" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="cookies:play.api.mvc.Cookies"></a>
@@ -358,20 +408,28 @@
       <span class="symbol">
         <span class="name">cookies</span><span class="result">: <span class="extype" name="play.api.mvc.Cookies">Cookies</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@cookies:play.api.mvc.Cookies" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#copy" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="copy(id:Long,tags:Map[String,String],uri:String,path:String,method:String,version:String,queryString:Map[String,Seq[String]],headers:play.api.mvc.Headers,remoteAddress:String):play.api.mvc.RequestHeader"></a>
-      <a id="copy(Long,Map[String,String],String,String,String,String,Map[String,Seq[String]],Headers,String):RequestHeader"></a>
+      <a id="copy(id:Long,tags:Map[String,String],uri:String,path:String,method:String,version:String,queryString:Map[String,Seq[String]],headers:play.api.mvc.Headers,remoteAddress:String,secure:Boolean):play.api.mvc.RequestHeader"></a>
+      <a id="copy(Long,Map[String,String],String,String,String,String,Map[String,Seq[String]],Headers,String,Boolean):RequestHeader"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">copy</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Long">Long</span></span>, <span name="tags">tags: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="uri">uri: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="method">method: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="version">version: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="headers">headers: <span class="extype" name="play.api.mvc.Headers">Headers</span></span>, <span name="remoteAddress">remoteAddress: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>
+        <span class="name">copy</span><span class="params">(<span name="id">id: <span class="extype" name="scala.Long">Long</span></span>, <span name="tags">tags: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="uri">uri: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="path">path: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="method">method: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="version">version: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="queryString">queryString: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>, <span name="headers">headers: <span class="extype" name="play.api.mvc.Headers">Headers</span></span>, <span name="remoteAddress">remoteAddress: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="secure">secure: <span class="extype" name="scala.Boolean">Boolean</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@copy(id:Long,tags:Map[String,String],uri:String,path:String,method:String,version:String,queryString:Map[String,Seq[String]],headers:play.api.mvc.Headers,remoteAddress:String,secure:Boolean):play.api.mvc.RequestHeader" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#domain" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="domain:String"></a>
@@ -384,7 +442,11 @@
       <span class="symbol">
         <span class="name">domain</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@domain:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -397,7 +459,11 @@
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -410,7 +476,11 @@
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -423,7 +493,11 @@
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -442,7 +516,11 @@
       <span class="symbol">
         <span class="name">flash</span><span class="result">: <span class="extype" name="play.api.mvc.Flash">Flash</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@flash:play.api.mvc.Flash" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -455,7 +533,11 @@
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#getQueryString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getQueryString(key:String):Option[String]"></a>
@@ -468,7 +550,11 @@
       <span class="symbol">
         <span class="name">getQueryString</span><span class="params">(<span name="key">key: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@getQueryString(key:String):Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -481,7 +567,11 @@
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#headers" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="headers:play.api.mvc.Headers"></a>
@@ -494,7 +584,11 @@
       <span class="symbol">
         <span class="name">headers</span><span class="result">: <span class="extype" name="play.api.mvc.Headers">Headers</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@headers:play.api.mvc.Headers" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#host" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="host:String"></a>
@@ -507,7 +601,11 @@
       <span class="symbol">
         <span class="name">host</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@host:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="id:Long"></a>
@@ -520,7 +618,11 @@
       <span class="symbol">
         <span class="name">id</span><span class="result">: <span class="extype" name="scala.Long">Long</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@id:Long" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="site.Site#identity" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="identity:models.Party"></a>
@@ -533,7 +635,11 @@
       <span class="symbol">
         <span class="name">identity</span><span class="result">: <a href="../models/Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@identity:models.Party" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt"><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p><div class="fullcomment"><div class="comment cmt"><p><a href="../models/Party.html" class="extype" name="models.Party">models.Party</a> of the logged-in user, possibly <a href="../models/Party$.html#Nobody:models.Party" class="extmbr" name="models.Party#Nobody">models.Party.Nobody</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="controllers.SiteRequest#isApi" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isApi:Boolean"></a>
@@ -546,7 +652,11 @@
       <span class="symbol">
         <span class="name">isApi</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@isApi:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -559,8 +669,29 @@
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="site.Site#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="json:site.JsonRecord"></a>
+      <a id="json:JsonRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">json</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@json:site.JsonRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="play.api.mvc.Request#map" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="map[B](f:A=&gt;B):play.api.mvc.Request[B]"></a>
       <a id="map[B]((A)⇒B):Request[B]"></a>
@@ -572,7 +703,11 @@
       <span class="symbol">
         <span class="name">map</span><span class="tparams">[<span name="B">B</span>]</span><span class="params">(<span name="f">f: (<span class="extype" name="controllers.SiteRequest.Base.A">A</span>) ⇒ <span class="extype" name="play.api.mvc.Request.map.B">B</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Request">Request</span>[<span class="extype" name="play.api.mvc.Request.map.B">B</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@map[B](f:A=&gt;B):play.api.mvc.Request[B]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Request</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#mediaType" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="mediaType:Option[play.api.http.MediaType]"></a>
@@ -585,7 +720,11 @@
       <span class="symbol">
         <span class="name">mediaType</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="play.api.http.MediaType">MediaType</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@mediaType:Option[play.api.http.MediaType]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#method" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="method:String"></a>
@@ -598,7 +737,11 @@
       <span class="symbol">
         <span class="name">method</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@method:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -611,7 +754,11 @@
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -624,7 +771,11 @@
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -637,7 +788,11 @@
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#path" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="path:String"></a>
@@ -650,7 +805,11 @@
       <span class="symbol">
         <span class="name">path</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@path:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#queryString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="queryString:Map[String,Seq[String]]"></a>
@@ -663,7 +822,11 @@
       <span class="symbol">
         <span class="name">queryString</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@queryString:Map[String,Seq[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#rawQueryString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="rawQueryString:String"></a>
@@ -676,7 +839,11 @@
       <span class="symbol">
         <span class="name">rawQueryString</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@rawQueryString:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#remoteAddress" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="remoteAddress:String"></a>
@@ -689,7 +856,28 @@
       <span class="symbol">
         <span class="name">remoteAddress</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@remoteAddress:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
+    </li><li name="play.api.mvc.WrappedRequest#secure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="secure:Boolean"></a>
+      <a id="secure:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">secure</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@secure:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#session" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="session:play.api.mvc.Session"></a>
@@ -702,7 +890,11 @@
       <span class="symbol">
         <span class="name">session</span><span class="result">: <span class="extype" name="play.api.mvc.Session">Session</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@session:play.api.mvc.Session" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -715,7 +907,11 @@
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#tags" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="tags:Map[String,String]"></a>
@@ -728,7 +924,11 @@
       <span class="symbol">
         <span class="name">tags</span><span class="result">: <span class="extype" name="scala.Predef.Map">Map</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@tags:Map[String,String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="play.api.mvc.RequestHeader#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -741,7 +941,11 @@
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader → AnyRef → Any</dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#uri" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="uri:String"></a>
@@ -754,7 +958,11 @@
       <span class="symbol">
         <span class="name">uri</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@uri:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="site.Site#user" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="user:Option[models.Account]"></a>
@@ -767,7 +975,11 @@
       <span class="symbol">
         <span class="name">user</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Account.html" class="extype" name="models.Account">Account</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@user:Option[models.Account]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Some(identity) only if actual logged-in user.</p><div class="fullcomment"><div class="comment cmt"><p>Some(identity) only if actual logged-in user.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="../site/Site.html" class="extype" name="site.Site">Site</a></dd></dl></div>
     </li><li name="play.api.mvc.WrappedRequest#version" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="version:String"></a>
@@ -780,7 +992,11 @@
       <span class="symbol">
         <span class="name">version</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@version:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>WrappedRequest → RequestHeader</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -793,7 +1009,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -812,7 +1032,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -831,7 +1055,11 @@
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -857,7 +1085,11 @@
       <span class="symbol">
         <span class="name deprecated" title="Deprecated: (Since version 2.1) Use acceptedTypes instead">accept</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.SiteRequest$$Base@accept:Seq[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>RequestHeader</dd><dt>Annotations</dt><dd>
                 <span class="name">@deprecated</span>
               
@@ -897,6 +1129,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>volume - views.html.volume</title>
@@ -9,6 +8,11 @@
           
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../../../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../../../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../../../lib/template.js"></script>
+      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../../../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <img src="../../../lib/package_big.png" />
         <p id="owner"><a href="../../package.html" class="extype" name="views">views</a>.<a href="../package.html" class="extype" name="views.html">html</a></p>
-        <h1>volume</h1>
+        <h1>volume</h1> <span class="permalink">
+      <a href="../../../index.html#views.html.volume.package" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -71,10 +79,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="access$.html"><span class="name">access</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template5">Template5</span>[<a href="../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../controllers/VolumeController$$AccessForm.html" class="extype" name="controllers.VolumeController.AccessForm">AccessForm</a>], <a href="../../../controllers/VolumeController$$AccessSearchForm.html" class="extype" name="controllers.VolumeController.AccessSearchForm">AccessSearchForm</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../controllers/VolumeController$$AccessForm.html" class="extype" name="controllers.VolumeController.AccessForm">AccessForm</a>], <a href="../../../controllers/VolumeHtml$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeHtml.Request">controllers.VolumeHtml.Request</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="access$.html"><span class="name">access</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template5">Template5</span>[<a href="../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../controllers/VolumeController$$AccessForm.html" class="extype" name="controllers.VolumeController.AccessForm">AccessForm</a>], <a href="../../../controllers/VolumeController$$AccessSearchForm.html" class="extype" name="controllers.VolumeController.AccessSearchForm">AccessSearchForm</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../controllers/VolumeController$$AccessForm.html" class="extype" name="controllers.VolumeController.AccessForm">AccessForm</a>], <a href="../../../controllers/VolumeHtml$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeHtml.Request">controllers.VolumeHtml.Request</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../index.html#views.html.volume.package@access" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.volume.edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="edit"></a>
       <a id="edit:edit"></a>
@@ -84,10 +96,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="edit$.html"><span class="name">edit</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template2">Template2</span>[<a href="../../../controllers/VolumeController$$VolumeForm.html" class="extype" name="controllers.VolumeController.VolumeForm">VolumeForm</a>, <a href="../../../controllers/RequestObject$.html#Site[A]=controllers.RequestObject[site.SiteObject]#Site[A]" class="extmbr" name="controllers.RequestObject.Site">Site</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="edit$.html"><span class="name">edit</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template2">Template2</span>[<a href="../../../controllers/VolumeController$$VolumeForm.html" class="extype" name="controllers.VolumeController.VolumeForm">VolumeForm</a>, <a href="../../../controllers/RequestObject$.html#Site[A]=controllers.RequestObject[site.SiteObject]#Site[A]" class="extmbr" name="controllers.RequestObject.Site">Site</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../index.html#views.html.volume.package@edit" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.volume.search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="search"></a>
       <a id="search:search"></a>
@@ -97,10 +113,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="search$.html"><span class="name">search</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>])], <a href="../../../controllers/VolumeController$$SearchForm.html" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>, <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="search$.html"><span class="name">search</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template3">Template3</span>[<span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Volume.html" class="extype" name="models.Volume">Volume</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Party.html" class="extype" name="models.Party">Party</a>])], <a href="../../../controllers/VolumeController$$SearchForm.html" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>, <a href="../../../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../index.html#views.html.volume.package@search" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="views.html.volume.view" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="view"></a>
       <a id="view:view"></a>
@@ -110,10 +130,14 @@
         <span class="kind">object</span>
       </span>
       <span class="symbol">
-        <a href="view$.html"><span class="name">view</span></a><span class="result"> extends <span class="extype" name="play.templates.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>, <span class="extype" name="play.templates.Format">Format</span>[<span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.api.templates.Template10">Template10</span>[<a href="../../../models/Volume$$Summary.html" class="extype" name="models.Volume.Summary">Summary</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>], <a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>, <span class="extype" name="scala.Any">Any</span>)], <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>, <span class="extype" name="scala.Seq">Seq</span>[(<a href="../../../models/Record.html" class="extype" name="models.Record">Record</a>, <span class="extype" name="scala.Any">Any</span>)])], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/VolumeCitation.html" class="extype" name="models.VolumeCitation">VolumeCitation</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <a href="../../../controllers/VolumeHtml$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeHtml.Request">controllers.VolumeHtml.Request</a>[_], <span class="extype" name="play.templates.Format.Appendable">play.api.templates.HtmlFormat.Appendable</span>]</span>
+        <a href="view$.html"><span class="name">view</span></a><span class="result"> extends <span class="extype" name="play.twirl.api.BaseScalaTemplate">BaseScalaTemplate</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>, <span class="extype" name="play.twirl.api.Format">Format</span>[<span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]] with <span class="extype" name="play.twirl.api.Template11">Template11</span>[<a href="../../../models/Volume$$Summary.html" class="extype" name="models.Volume.Summary">Summary</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/VolumeAccess.html" class="extype" name="models.VolumeAccess">VolumeAccess</a>], <a href="../../../models/Container.html" class="extype" name="models.Container">Container</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Slot.html" class="extype" name="models.Slot">Slot</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Record.html" class="extype" name="models.Record">Record</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>], <span class="extype" name="scala.Option">Option</span>[<a href="../../../models/Citation.html" class="extype" name="models.Citation">Citation</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Funding.html" class="extype" name="models.Funding">Funding</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/Comment.html" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="../../../models/TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>], <a href="../../../controllers/VolumeHtml$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeHtml.Request">controllers.VolumeHtml.Request</a>[_], <span class="extype" name="play.twirl.api.Format.Appendable">play.twirl.api.HtmlFormat.Appendable</span>]</span>
       </span>
-      </h4>
-      <p class="comment cmt"></p>
+      </h4><span class="permalink">
+      <a href="../../../index.html#views.html.volume.package@view" title="Permalink" target="_top">
+        <img src="../../../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li></ol>
             </div>
 
@@ -139,6 +163,7 @@
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../../../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../../../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../../../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../../../lib/template.js"></script>
+
+
     </body>
       </html>

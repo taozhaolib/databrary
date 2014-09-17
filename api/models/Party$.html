@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Party - models.Party</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="Party.html" title="Go to companion"><img src="../lib/object_to_class_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Party.html" title="Go to companion">Party</a></h1>
+        <h1><a href="Party.html" title="Go to companion">Party</a></h1> <span class="permalink">
+      <a href="../index.html#models.Party$" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -41,7 +49,7 @@
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/party.scala" target="_blank">party.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.Table">Table</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="models.HasTable">HasTable</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.ProvidesId">ProvidesId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.Table">Table</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>], <span class="extype" name="models.TableView">TableView</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -59,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Party"><span>Party</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="models.HasTable"><span>HasTable</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Party"><span>Party</span></li><li class="in" name="models.TableId"><span>TableId</span></li><li class="in" name="models.ProvidesId"><span>ProvidesId</span></li><li class="in" name="models.Table"><span>Table</span></li><li class="in" name="models.TableView"><span>TableView</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -81,7 +89,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="models.HasId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+              <ol><li name="models.ProvidesId.Id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Id=models.IntId[T]"></a>
       <a id="Id:Id"></a>
       <h4 class="signature">
@@ -92,8 +100,12 @@
       <span class="symbol">
         <span class="name">Id</span><span class="result"> = <a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@Id=models.IntId[T]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>ProvidesId</dd></dl></div>
     </li><li name="models.Table.Row" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Row=R"></a>
       <a id="Row:Row"></a>
@@ -105,7 +117,11 @@
       <span class="symbol">
         <span class="name">Row</span><span class="result"> = <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@Row=R" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
     </li></ol>
             </div>
@@ -115,19 +131,6 @@
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -138,8 +141,12 @@
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -151,22 +158,13 @@
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -177,8 +175,12 @@
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
       <a id="DELETE(SQLTerm[_]*)(DB,ExecutionContext):SQLResult"></a>
@@ -190,20 +192,28 @@
       <span class="symbol">
         <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@DELETE(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.TableView#DELETE" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="DELETE(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="DELETE(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <a id="DELETE(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="DELETE(SQLTerms,String)(DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">DELETE</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">DELETE</span><span class="params">(<span name="args">args: <a href="SQLTerms.html" class="extype" name="models.SQLTerms">SQLTerms</a></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@DELETE(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
@@ -216,20 +226,28 @@
       <span class="symbol">
         <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[_]*</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@INSERT(args:models.SQLTerm[_]*)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.TableView#INSERT" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="INSERT(args:models.SQLTerms)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
-      <a id="INSERT(SQLTerms)(DB,ExecutionContext):SQLResult"></a>
+      <a id="INSERT(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult"></a>
+      <a id="INSERT(SQLTerms,String)(DB,ExecutionContext):SQLResult"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">INSERT</span><span class="params">(<span name="args">args: <span class="extype" name="models.SQLTerms">SQLTerms</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
+        <span class="name">INSERT</span><span class="params">(<span name="args">args: <a href="SQLTerms.html" class="extype" name="models.SQLTerms">SQLTerms</a></span>, <span name="returning">returning: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="dbc">dbc: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="dbrary.SQLResult">SQLResult</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@INSERT(args:models.SQLTerms,returning:String)(implicitdbc:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):dbrary.SQLResult" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Party#NOBODY" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="NOBODY:models.Party.Id"></a>
@@ -242,7 +260,11 @@
       <span class="symbol">
         <span class="name">NOBODY</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@NOBODY:models.Party.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Party#Nobody" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Nobody:models.Party"></a>
@@ -255,7 +277,11 @@
       <span class="symbol">
         <span class="name">Nobody</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@Nobody:models.Party" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The special party group representing everybody (including anonymous users) on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing everybody (including anonymous users) on the site.
 This is also in the database, but is cached here for special handling.</p></div></div>
     </li><li name="models.Party#ROOT" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
@@ -269,7 +295,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">ROOT</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@ROOT:models.Party.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Party#Root" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Root:models.Party"></a>
@@ -282,11 +312,15 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">Root</span><span class="result">: <a href="Party.html" class="extype" name="models.Party">Party</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@Root:models.Party" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The special party group representing authorized users on the site.</p><div class="fullcomment"><div class="comment cmt"><p>The special party group representing authorized users on the site.
 This is also in the database, but is cached here for special handling.</p></div></div>
-    </li><li name="models.HasId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="asId(i:Int):HasId.this.Id"></a>
+    </li><li name="models.ProvidesId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asId(i:Int):ProvidesId.this.Id"></a>
       <a id="asId(Int):Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -296,8 +330,12 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">asId</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@asId(i:Int):ProvidesId.this.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p><div class="fullcomment"><div class="comment cmt"><p>Create an <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a> value.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>ProvidesId</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -309,7 +347,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -322,7 +364,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -331,17 +377,21 @@ This is also in the database, but is cached here for special handling.</p></div>
               
         </dd></dl></div>
     </li><li name="models.Party#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="create(name:String,orcid:Option[models.Orcid],affiliation:Option[String],duns:Option[models.DUNS])(implicitsite:site.Site):scala.concurrent.Future[models.Party]"></a>
-      <a id="create(String,Option[Orcid],Option[String],Option[DUNS])(Site):Future[Party]"></a>
+      <a id="create(name:String,orcid:Option[models.Orcid],affiliation:Option[String],url:Option[java.net.URL])(implicitsite:site.Site):scala.concurrent.Future[models.Party]"></a>
+      <a id="create(String,Option[Orcid],Option[String],Option[URL])(Site):Future[Party]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="orcid">orcid: <span class="extype" name="scala.Option">Option</span>[<a href="Orcid.html" class="extype" name="models.Orcid">Orcid</a>] = <span class="symbol">None</span></span>, <span name="affiliation">affiliation: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="duns">duns: <span class="extype" name="scala.Option">Option</span>[<a href="DUNS.html" class="extype" name="models.DUNS">DUNS</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
+        <span class="name">create</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="orcid">orcid: <span class="extype" name="scala.Option">Option</span>[<a href="Orcid.html" class="extype" name="models.Orcid">Orcid</a>] = <span class="symbol">None</span></span>, <span name="affiliation">affiliation: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="url">url: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.net.URL">URL</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@create(name:String,orcid:Option[models.Orcid],affiliation:Option[String],url:Option[java.net.URL])(implicitsite:site.Site):scala.concurrent.Future[models.Party]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Create a new party.</p>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -354,7 +404,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -367,7 +421,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
@@ -380,7 +438,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -388,7 +450,7 @@ This is also in the database, but is cached here for special handling.</p></div>
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.HasTable#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.TableView#fromTable" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fromTable:dbrary.FromTable"></a>
       <a id="fromTable:FromTable"></a>
       <h4 class="signature">
@@ -399,8 +461,12 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">fromTable</span><span class="result">: <span class="extype" name="dbrary.FromTable">FromTable</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>HasTable</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@fromTable:dbrary.FromTable" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Party#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="get(i:models.Party.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]"></a>
       <a id="get(Id)(Site):Future[Option[Party]]"></a>
@@ -412,20 +478,28 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">get</span><span class="params">(<span name="i">i: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@get(i:models.Party.Id)(implicitsite:site.Site):scala.concurrent.Future[Option[models.Party]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Look up a party by id.</p>
     </li><li name="models.Party#getAll" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getAll(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="getAll(Site):Future[Seq[Party]]"></a>
+      <a id="getAll:scala.concurrent.Future[Seq[models.Authorization]]"></a>
+      <a id="getAll:Future[Seq[Authorization]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getAll</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
+        <span class="name">getAll</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Authorization.html" class="extype" name="models.Authorization">Authorization</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@getAll:scala.concurrent.Future[Seq[models.Authorization]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -438,7 +512,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -451,7 +529,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -464,7 +546,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -477,7 +563,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -490,7 +580,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -503,48 +597,29 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.Party#search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="search(query:Option[String],access:Option[models.Permission.Value])(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="search(Option[String],Option[Permission.Value])(Site):Future[Seq[Party]]"></a>
+    </li><li name="models.Party#search" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="search(query:Option[String],access:Option[models.Permission.Value],institution:Option[Boolean],authorize:Option[models.Party],volume:Option[models.Volume])(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]"></a>
+      <a id="search(Option[String],Option[Permission.Value],Option[Boolean],Option[Party],Option[Volume])(Site):Future[Seq[Party]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">search</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="access">access: <span class="extype" name="scala.Option">Option</span>[<a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
+        <span class="name">search</span><span class="params">(<span name="query">query: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="access">access: <span class="extype" name="scala.Option">Option</span>[<a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a>] = <span class="symbol">None</span></span>, <span name="institution">institution: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>, <span name="authorize">authorize: <span class="extype" name="scala.Option">Option</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>] = <span class="symbol">None</span></span>, <span name="volume">volume: <span class="extype" name="scala.Option">Option</span>[<a href="Volume.html" class="extype" name="models.Volume">Volume</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
       </span>
-      </h4>
-      
-    </li><li name="models.Party#searchForAuthorize" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="searchForAuthorize(name:String,who:models.Party,institute:Boolean):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="searchForAuthorize(String,Party,Boolean):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">searchForAuthorize</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="who">who: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="institute">institute: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Search for parties by name for the purpose of authorization.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of authorization.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">who</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized</p></dd><dt class="param">institute</dt><dd class="cmt"><p>limit to institutions
-</p></dd></dl></div>
-    </li><li name="models.Party#searchForVolumeAccess" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="searchForVolumeAccess(name:String,volume:models.Volume):scala.concurrent.Future[Seq[models.Party]]"></a>
-      <a id="searchForVolumeAccess(String,Volume):Future[Seq[Party]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">searchForVolumeAccess</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">Search for parties by name for the purpose of volume access.</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties by name for the purpose of volume access.</p></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">volume</dt><dd class="cmt"><p>volume to which to grant access, to exclude parties with access already.
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@search(query:Option[String],access:Option[models.Permission.Value],institution:Option[Boolean],authorize:Option[models.Party],volume:Option[models.Volume])(implicitsite:site.Site):scala.concurrent.Future[Seq[models.Party]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Search for parties</p><div class="fullcomment"><div class="comment cmt"><p>Search for parties</p></div><dl class="paramcmts block"><dt class="param">query</dt><dd class="cmt"><p>string to match against name/email (case insensitive substring)</p></dd><dt class="param">access</dt><dd class="cmt"><p>limit to users with specific site access level</p></dd><dt class="param">institution</dt><dd class="cmt"><p>limit to institutions</p></dd><dt class="param">authorize</dt><dd class="cmt"><p>party doing the authorization, to exclude parties already authorized</p></dd><dt class="param">volume</dt><dd class="cmt"><p>volume to which to grant access, to exclude parties with access already.
 </p></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -557,7 +632,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
@@ -570,7 +649,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -583,7 +666,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -602,7 +689,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -621,7 +712,11 @@ This is also in the database, but is cached here for special handling.</p></div>
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Party$@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -640,14 +735,12 @@ This is also in the database, but is cached here for special handling.</p></div>
         <div id="inheritedMembers">
         <div class="parent" name="models.TableId">
               <h3>Inherited from <span class="extype" name="models.TableId">TableId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
-            </div><div class="parent" name="models.HasId">
-              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
+            </div><div class="parent" name="models.ProvidesId">
+              <h3>Inherited from <span class="extype" name="models.ProvidesId">ProvidesId</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
             </div><div class="parent" name="models.Table">
               <h3>Inherited from <span class="extype" name="models.Table">Table</span>[<a href="Party.html" class="extype" name="models.Party">Party</a>]</h3>
             </div><div class="parent" name="models.TableView">
               <h3>Inherited from <span class="extype" name="models.TableView">TableView</span></h3>
-            </div><div class="parent" name="models.HasTable">
-              <h3>Inherited from <span class="extype" name="models.HasTable">HasTable</span></h3>
             </div><div class="parent" name="scala.AnyRef">
               <h3>Inherited from <span class="extype" name="scala.AnyRef">AnyRef</span></h3>
             </div><div class="parent" name="scala.Any">
@@ -668,6 +761,7 @@ This is also in the database, but is cached here for special handling.</p></div>
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>Comment - models.Comment</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="Comment$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="Comment$.html" title="Go to companion">Comment</a></h1>
+        <h1><a href="Comment$.html" title="Go to companion">Comment</a></h1> <span class="permalink">
+      <a href="../index.html#models.Comment" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -42,7 +50,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A comment made by a particular user applied to exactly one object.
 These are immutable (and unaudited), although the author may be considered to have ownership.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/comment.scala" target="_blank">comment.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Comment">Comment</a>], <span class="extype" name="scala.Equals">Equals</span>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -60,7 +68,7 @@ These are immutable (and unaudited), although the author may be considered to ha
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.Comment"><span>Comment</span></li><li class="in" name="models.Slot"><span>Slot</span></li><li class="in" name="site.SiteObject"><span>SiteObject</span></li><li class="in" name="site.SitePage"><span>SitePage</span></li><li class="in" name="models.InVolume"><span>InVolume</span></li><li class="in" name="models.HasPermission"><span>HasPermission</span></li><li class="in" name="site.PerSite"><span>PerSite</span></li><li class="in" name="models.TableRowId"><span>TableRowId</span></li><li class="in" name="models.HasId"><span>HasId</span></li><li class="in" name="models.HasGenericId"><span>HasGenericId</span></li><li class="in" name="scala.Equals"><span>Equals</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -87,19 +95,6 @@ These are immutable (and unaudited), although the author may be considered to ha
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -110,8 +105,12 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -123,22 +122,13 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -149,8 +139,12 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="===(a:models.Slot):Boolean"></a>
       <a id="===(Slot):Boolean"></a>
@@ -162,21 +156,63 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="params">(<span name="a">a: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@===(a:models.Slot):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.TableRowId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="===[X&gt;:T](a:models.TableRowId[X]):Boolean"></a>
-      <a id="===[X&gt;:Comment](TableRowId[X]):Boolean"></a>
+    </li><li name="models.HasGenericId#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean"></a>
+      <a id="===[X&gt;:Comment](HasGenericId[Int,X]):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Comment">Comment</a></span>]</span><span class="params">(<span name="i">i: <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <span class="extype" name="models.HasGenericId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@===[X&gt;:T](i:models.HasGenericId[I,X]):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId</dd></dl></div>
+    </li><li name="models.Slot#@&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="@&gt;(a:models.Slot):Boolean"></a>
+      <a id="@&gt;(Slot):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="tparams">[<span name="X">X &gt;: <a href="" class="extype" name="models.Comment">Comment</a></span>]</span><span class="params">(<span name="a">a: <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.TableRowId.===.X">X</span>]</span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span title="gt4s: $at$greater" class="name">@&gt;</span><span class="params">(<span name="a">a: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@@&gt;(a:models.Slot):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.TableRowId#_id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_id:Int"></a>
+      <a id="_id:Int"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_id</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@_id:Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -188,7 +224,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Slot#assets" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="assets:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
@@ -201,8 +241,46 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">assets</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@assets:scala.concurrent.Future[Seq[models.SlotAsset]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">List of asset that overlap with this slot.</p><div class="fullcomment"><div class="comment cmt"><p>List of asset that overlap with this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Slot#auditDownload" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
+      <a id="auditDownload(Site):Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">auditDownload</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.HasGenericId#canEqual" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="canEqual(i:Any):Boolean"></a>
+      <a id="canEqual(Any):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">canEqual</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@canEqual(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals</dd></dl></div>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -214,7 +292,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">checkPermission</span><span class="params">(<span name="need">need: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@checkPermission(need:models.Permission.Value):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -227,7 +309,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -246,7 +332,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">comments</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.Comment">Comment</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@comments:scala.concurrent.Future[Seq[models.Comment]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of comments that apply to this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments that apply to this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#consent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="consent:models.Consent.Value"></a>
@@ -259,8 +349,29 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">consent</span><span class="result">: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@consent:models.Consent.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The effective consent level that applies to contained data.</p><div class="fullcomment"><div class="comment cmt"><p>The effective consent level that applies to contained data.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Slot#consents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="consents:scala.concurrent.Future[Seq[models.ContextSlot]]"></a>
+      <a id="consents:Future[Seq[ContextSlot]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">consents</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@consents:scala.concurrent.Future[Seq[models.ContextSlot]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#container" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="container:models.Container"></a>
       <a id="container:Container"></a>
@@ -272,7 +383,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">container</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@container:models.Container" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#containerId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="containerId:models.Container.Id"></a>
@@ -285,7 +400,11 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">containerId</span><span class="result">: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@containerId:models.Container.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Comment#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:models.ContextSlot"></a>
@@ -298,34 +417,46 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">context</span><span class="result">: <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@context:models.ContextSlot" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The containing consent slot, or container.</p><div class="fullcomment"><div class="comment cmt"><p>The containing consent slot, or container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="dataPermission:models.HasPermission"></a>
-      <a id="dataPermission:HasPermission"></a>
+      <a id="dataPermission(classification:models.Classification.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value):HasPermission"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">dataPermission</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">The permisison level granted to identifiable data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The permisison level granted to identifiable data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.Slot#downloadable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="downloadable:Boolean"></a>
-      <a id="downloadable:Boolean"></a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@dataPermission(classification:models.Classification.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The permisison level granted to restricted data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The permisison level granted to restricted data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.HasPermission#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value,Consent.Value):HasPermission"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">lazy val</span>
+        <span class="modifier"></span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">downloadable</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Whether the current user may download identifiable data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Whether the current user may download identifiable data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p><div class="fullcomment"><div class="comment cmt"><p>The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -337,10 +468,14 @@ These are immutable (and unaudited), although the author may be considered to ha
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="models.TableRowId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="equals(a:Any):Boolean"></a>
+    </li><li name="models.HasGenericId#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="equals(i:Any):Boolean"></a>
       <a id="equals(Any):Boolean"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -348,11 +483,32 @@ These are immutable (and unaudited), although the author may be considered to ha
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">equals</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">equals</span><span class="params">(<span name="i">i: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Equality is based on primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Equality is based on primary key.
-This assumes that two objects representing the same row are the same (even if they aren't), and also doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@equals(i:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Equality based on id value.</p><div class="fullcomment"><div class="comment cmt"><p>Equality based on id value.
+This doesn't properly check types due to erasure, so === should be preferred.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals → AnyRef → Any</dd></dl></div>
+    </li><li name="models.Slot#fileName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fileName:scala.concurrent.Future[String]"></a>
+      <a id="fileName:Future[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fileName</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@fileName:scala.concurrent.Future[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -364,7 +520,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -383,7 +543,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#getDate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getDate:Option[org.joda.time.ReadablePartial]"></a>
@@ -396,9 +560,13 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">getDate</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.ReadablePartial">ReadablePartial</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@getDate:Option[org.joda.time.ReadablePartial]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.TableRowId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasId#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>
       <h4 class="signature">
@@ -409,8 +577,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Comment#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="id:models.Comment.Id"></a>
       <a id="id:Comment.Id"></a>
@@ -422,8 +594,12 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">id</span><span class="result">: <a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Primary key.</p><div class="fullcomment"><div class="comment cmt"><p>Primary key.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → TableRowId</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@id:models.Comment.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → TableRowId</dd></dl></div>
     </li><li name="models.Slot#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="idents:scala.concurrent.Future[Seq[String]]"></a>
       <a id="idents:Future[Seq[String]]"></a>
@@ -435,7 +611,11 @@ This assumes that two objects representing the same row are the same (even if th
       <span class="symbol">
         <span class="name">idents</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@idents:scala.concurrent.Future[Seq[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
 This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#isFull" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -449,7 +629,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">isFull</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@isFull:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">True if this is its container's full slot.</p><div class="fullcomment"><div class="comment cmt"><p>True if this is its container's full slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -462,7 +646,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.Comment#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="json:site.JsonRecord"></a>
@@ -470,12 +658,16 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">json</span><span class="result">: <a href="../site/JsonRecord.html" class="extype" name="site.JsonRecord">JsonRecord</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@json:site.JsonRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -488,7 +680,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -501,7 +697,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -514,20 +714,28 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Slot#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageCrumbName:Option[String]"></a>
       <a id="pageCrumbName:Option[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">pageCrumbName</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@pageCrumbName:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Optional override of pageName for breadcrumbs and other abbreviated locations</p><div class="fullcomment"><div class="comment cmt"><p>Optional override of pageName for breadcrumbs and other abbreviated locations</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Slot#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageName:String"></a>
@@ -540,8 +748,12 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">pageName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Option[site.SitePage]" class="extmbr" name="models.Comment#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Option[site.SitePage]" class="extmbr" name="models.Comment#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@pageName:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="Slot.html#pageParent:Option[site.SitePage]" class="extmbr" name="models.Slot#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="Slot.html#pageParent:Option[site.SitePage]" class="extmbr" name="models.Slot#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Slot#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageParent:Option[site.SitePage]"></a>
       <a id="pageParent:Option[SitePage]"></a>
@@ -553,7 +765,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">pageParent</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@pageParent:Option[site.SitePage]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Slot#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageURL:play.api.mvc.Call"></a>
@@ -566,7 +782,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">pageURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@pageURL:play.api.mvc.Call" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.Comment#parentId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="parentId:Option[models.Comment.Id]"></a>
@@ -579,7 +799,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">parentId</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@parentId:Option[models.Comment.Id]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.InVolume#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
@@ -592,7 +816,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@permission:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.Slot#position" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="position:dbrary.Offset"></a>
@@ -605,20 +833,28 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">position</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@position:dbrary.Offset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Effective start point of this slot within the container.</p><div class="fullcomment"><div class="comment cmt"><p>Effective start point of this slot within the container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[Boolean]"></a>
-      <a id="postComment(String,Option[Comment.Id])(AuthSite):Future[Boolean]"></a>
+      <a id="postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[models.Comment]"></a>
+      <a id="postComment(String,Option[Comment.Id])(AuthSite):Future[Comment]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="parent">parent: <span class="extype" name="scala.Option">Option</span>[<a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="parent">parent: <span class="extype" name="scala.Option">Option</span>[<a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[models.Comment]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="records:scala.concurrent.Future[Seq[models.Record]]"></a>
@@ -631,8 +867,29 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">records</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@records:scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of records that apply to this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records that apply to this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Slot#restricted" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="restricted:Boolean"></a>
+      <a id="restricted:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">restricted</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@restricted:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Whether the current user may not download restricted data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Whether the current user may not download restricted data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Comment#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="segment:dbrary.Segment"></a>
       <a id="segment:Segment"></a>
@@ -644,7 +901,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Segment">Segment</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@segment:dbrary.Segment" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Comment">Comment</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#setConsent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setConsent(consent:models.Consent.Value):scala.concurrent.Future[Boolean]"></a>
@@ -657,7 +918,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">setConsent</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@setConsent(consent:models.Consent.Value):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#setTag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]"></a>
@@ -670,7 +935,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">setTag</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Tag this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Tag this slot.</p></div><dl class="paramcmts block"><dt class="param">up</dt><dd class="cmt"><p>Some(true) for up, Some(false) for down, or None to remove</p></dd><dt>returns</dt><dd class="cmt"><p>true if the tag name is valid
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -684,33 +953,45 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">site</span><span class="result">: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@site:site.Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
     </li><li name="models.Slot#slotJson" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="slotJson(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
       <a id="slotJson(Options):Future[JsObject]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">slotJson</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@slotJson(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#slotJson" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="slotJson:site.JsonObject"></a>
       <a id="slotJson:JsonObject"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">slotJson</span><span class="result">: <a href="../site/JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@slotJson:site.JsonObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -723,7 +1004,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Slot#tags" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]"></a>
@@ -736,7 +1021,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">tags</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of tags on the current slot along with the current user's applications.</p><div class="fullcomment"><div class="comment cmt"><p>The list of tags on the current slot along with the current user's applications.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Comment#text" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="text:String"></a>
@@ -749,21 +1038,12 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">text</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@text:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="models.Slot#thumb" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="thumb:scala.concurrent.Future[Option[models.SlotAsset]]"></a>
-      <a id="thumb:Future[Option[SlotAsset]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">thumb</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">An image-able &quot;asset&quot; that may be used as the slot's thumbnail.</p><div class="fullcomment"><div class="comment cmt"><p>An image-able &quot;asset&quot; that may be used as the slot's thumbnail.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Comment#time" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="time:dbrary.Timestamp"></a>
       <a id="time:Timestamp"></a>
@@ -775,9 +1055,13 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">time</span><span class="result">: <span class="extype" name="dbrary.Timestamp">Timestamp</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@time:dbrary.Timestamp" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="models.TableRowId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.HasGenericId#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
       <h4 class="signature">
@@ -788,8 +1072,12 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → AnyRef → Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#top" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="top:Boolean"></a>
       <a id="top:Boolean"></a>
@@ -801,7 +1089,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">top</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@top:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
@@ -814,7 +1106,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@volume:models.Volume" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
@@ -827,7 +1123,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@volumeId:models.Volume.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -840,7 +1140,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -859,7 +1163,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -878,7 +1186,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -897,20 +1209,28 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">who</span><span class="result">: <a href="Account.html" class="extype" name="models.Account">Account</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@who:models.Account" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Comment#whoId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="whoId:models.Party.Id"></a>
-      <a id="whoId:Party.Id"></a>
+      <a id="whoId:models.Account.Id"></a>
+      <a id="whoId:Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">whoId</span><span class="result">: <a href="Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">Party.Id</a></span>
+        <span class="name">whoId</span><span class="result">: <a href="Account$.html#Id=models.Party.Id" class="extmbr" name="models.Account.Id">Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Comment@whoId:models.Account.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li></ol>
             </div>
@@ -935,6 +1255,12 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
               <h3>Inherited from <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></h3>
             </div><div class="parent" name="models.TableRowId">
               <h3>Inherited from <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Comment">Comment</a>]</h3>
+            </div><div class="parent" name="models.HasId">
+              <h3>Inherited from <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Comment">Comment</a>]</h3>
+            </div><div class="parent" name="models.HasGenericId">
+              <h3>Inherited from <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Comment">Comment</a>]</h3>
+            </div><div class="parent" name="scala.Equals">
+              <h3>Inherited from <span class="extype" name="scala.Equals">Equals</span></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">
@@ -957,6 +1283,7 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>

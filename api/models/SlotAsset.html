@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html >
 <html>
         <head>
           <title>SlotAsset - models.SlotAsset</title>
@@ -9,6 +8,11 @@
           
       <link href="../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
+      <script type="text/javascript" src="../lib/jquery.js" id="jquery-js"></script>
+      <script type="text/javascript" src="../lib/jquery-ui.js"></script>
+      <script type="text/javascript" src="../lib/template.js"></script>
+      <script type="text/javascript" src="../lib/tools.tooltip.js"></script>
+      
       <script type="text/javascript">
          if(top === self) {
             var url = '../index.html';
@@ -26,7 +30,11 @@
       <div id="definition">
         <a href="SlotAsset$.html" title="Go to companion"><img src="../lib/class_to_object_big.png" /></a>
         <p id="owner"><a href="package.html" class="extype" name="models">models</a></p>
-        <h1><a href="SlotAsset$.html" title="Go to companion">SlotAsset</a></h1>
+        <h1><a href="SlotAsset$.html" title="Go to companion">SlotAsset</a></h1> <span class="permalink">
+      <a href="../index.html#models.SlotAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       </div>
 
       <h4 id="signature" class="signature">
@@ -44,9 +52,9 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a>, <a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div><div class="toggleContainer block">
-          <span class="toggle">Known Subclasses</span>
-          <div class="subClasses hiddenContent"><a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a></div>
-        </div></div>
+            <span class="toggle">Known Subclasses</span>
+            <div class="subClasses hiddenContent"><a href="SlotTimeseries.html" class="extype" name="models.SlotTimeseries">SlotTimeseries</a></div>
+          </div></div>
         
 
       <div id="mbrsel">
@@ -84,7 +92,7 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.SlotAsset#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(asset:models.Asset,asset_segment:dbrary.Segment,slot:models.Slot,excerpt_segment:Option[dbrary.Segment]):models.SlotAsset"></a>
+      <a id="&lt;init&gt;(asset:models.Asset,asset_segment:dbrary.Segment,slot:models.Slot,excerpt:Option[models.Excerpt]):models.SlotAsset"></a>
       <a id="&lt;init&gt;:SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -92,9 +100,13 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">SlotAsset</span><span class="params">(<span name="asset">asset: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="asset_segment">asset_segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="excerpt_segment">excerpt_segment: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Segment">Segment</span>]</span>)</span>
+        <span class="name">SlotAsset</span><span class="params">(<span name="asset">asset: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="asset_segment">asset_segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="slot">slot: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>, <span name="excerpt">excerpt: <span class="extype" name="scala.Option">Option</span>[<a href="Excerpt.html" class="extype" name="models.Excerpt">Excerpt</a>]</span>)</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@&lt;init&gt;(asset:models.Asset,asset_segment:dbrary.Segment,slot:models.Slot,excerpt:Option[models.Excerpt]):models.SlotAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li></ol>
             </div>
@@ -106,19 +118,6 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
         <div id="values" class="values members">
               <h3>Value Members</h3>
               <ol><li name="scala.AnyRef#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="!=(x$1:AnyRef):Boolean"></a>
-      <a id="!=(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#!=" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="!=(x$1:Any):Boolean"></a>
       <a id="!=(Any):Boolean"></a>
       <h4 class="signature">
@@ -129,8 +128,12 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span title="gt4s: $bang$eq" class="name">!=</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@!=(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef###" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="##():Int"></a>
       <a id="##():Int"></a>
@@ -142,22 +145,13 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span title="gt4s: $hash$hash" class="name">##</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@##():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="scala.AnyRef#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="==(x$1:AnyRef):Boolean"></a>
-      <a id="==(AnyRef):Boolean"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
-      </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="scala.Any#==" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="==(x$1:Any):Boolean"></a>
       <a id="==(Any):Boolean"></a>
       <h4 class="signature">
@@ -168,8 +162,12 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span title="gt4s: $eq$eq" class="name">==</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@==(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#===" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="===(a:models.Slot):Boolean"></a>
       <a id="===(Slot):Boolean"></a>
@@ -181,7 +179,28 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span title="gt4s: $eq$eq$eq" class="name">===</span><span class="params">(<span name="a">a: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@===(a:models.Slot):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Slot#@&gt;" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="@&gt;(a:models.Slot):Boolean"></a>
+      <a id="@&gt;(Slot):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span title="gt4s: $at$greater" class="name">@&gt;</span><span class="params">(<span name="a">a: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@@&gt;(a:models.Slot):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
@@ -194,7 +213,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">asInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Any.asInstanceOf.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@asInstanceOf[T0]:T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.SlotAsset#asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="asset:models.Asset"></a>
@@ -207,7 +230,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">asset</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@asset:models.Asset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.SlotAsset#assetId" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="assetId:models.Asset.Id"></a>
@@ -220,7 +247,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">assetId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@assetId:models.Asset.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Slot#assets" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="assets:scala.concurrent.Future[Seq[models.SlotAsset]]"></a>
@@ -233,9 +264,13 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">assets</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@assets:scala.concurrent.Future[Seq[models.SlotAsset]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">List of asset that overlap with this slot.</p><div class="fullcomment"><div class="comment cmt"><p>List of asset that overlap with this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.SlotAsset#auditDownload" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.SlotAsset#auditDownload" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]"></a>
       <a id="auditDownload(Site):Future[Boolean]"></a>
       <h4 class="signature">
@@ -246,8 +281,12 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">auditDownload</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
-      </h4>
-      
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@auditDownload(implicitsite:site.Site):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -259,7 +298,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">checkPermission</span><span class="params">(<span name="need">need: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@checkPermission(need:models.Permission.Value):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.SlotAsset#classification" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="classification:models.Classification.Value"></a>
@@ -272,7 +315,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">classification</span><span class="result">: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@classification:models.Classification.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
@@ -285,7 +332,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@clone():Object" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -304,7 +355,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">comments</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@comments:scala.concurrent.Future[Seq[models.Comment]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of comments that apply to this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The list of comments that apply to this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#consent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="consent:models.Consent.Value"></a>
@@ -317,8 +372,29 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">consent</span><span class="result">: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@consent:models.Consent.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The effective consent level that applies to contained data.</p><div class="fullcomment"><div class="comment cmt"><p>The effective consent level that applies to contained data.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Slot#consents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="consents:scala.concurrent.Future[Seq[models.ContextSlot]]"></a>
+      <a id="consents:Future[Seq[ContextSlot]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">consents</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@consents:scala.concurrent.Future[Seq[models.ContextSlot]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#container" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="container:models.Container"></a>
       <a id="container:Container"></a>
@@ -330,7 +406,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">container</span><span class="result">: <a href="Container.html" class="extype" name="models.Container">Container</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@container:models.Container" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#containerId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="containerId:models.Container.Id"></a>
@@ -343,7 +423,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">containerId</span><span class="result">: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@containerId:models.Container.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#context" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="context:models.ContextSlot"></a>
@@ -356,34 +440,46 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">context</span><span class="result">: <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@context:models.ContextSlot" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The containing consent slot, or container.</p><div class="fullcomment"><div class="comment cmt"><p>The containing consent slot, or container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="dataPermission:models.HasPermission"></a>
-      <a id="dataPermission:HasPermission"></a>
+      <a id="dataPermission(classification:models.Classification.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value):HasPermission"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">dataPermission</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">The permisison level granted to identifiable data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The permisison level granted to identifiable data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.Slot#downloadable" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="downloadable:Boolean"></a>
-      <a id="downloadable:Boolean"></a>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@dataPermission(classification:models.Classification.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The permisison level granted to restricted data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The permisison level granted to restricted data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.HasPermission#dataPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission"></a>
+      <a id="dataPermission(Classification.Value,Consent.Value):HasPermission"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">lazy val</span>
+        <span class="modifier"></span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">downloadable</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">dataPermission</span><span class="params">(<span name="classification">classification: <a href="Classification$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Classification.Value">Classification.Value</a></span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></span>
       </span>
-      </h4>
-      <p class="shortcomment cmt">Whether the current user may download identifiable data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Whether the current user may download identifiable data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@dataPermission(classification:models.Classification.Value,consent:models.Consent.Value):models.HasPermission" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p><div class="fullcomment"><div class="comment cmt"><p>The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.SlotAsset#entire" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="entire:Boolean"></a>
       <a id="entire:Boolean"></a>
@@ -395,7 +491,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">entire</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@entire:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
@@ -408,7 +508,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">eq</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@eq(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#equals" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="equals(x$1:Any):Boolean"></a>
@@ -421,7 +525,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">equals</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Any">Any</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@equals(x$1:Any):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.BackedAsset#etag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="etag:String"></a>
@@ -434,22 +542,30 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">etag</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@etag:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="models.SlotAsset#excerpt" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="excerpt:Boolean"></a>
-      <a id="excerpt:Boolean"></a>
+      <a id="excerpt:Option[models.Excerpt]"></a>
+      <a id="excerpt:Option[Excerpt]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
+        <span class="modifier"></span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">excerpt</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+        <span class="name">excerpt</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="Excerpt.html" class="extype" name="models.Excerpt">Excerpt</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@excerpt:Option[models.Excerpt]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
-    </li><li name="models.SlotAsset#fileName" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+    </li><li name="models.SlotAsset#fileName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="fileName:scala.concurrent.Future[String]"></a>
       <a id="fileName:Future[String]"></a>
       <h4 class="signature">
@@ -460,8 +576,12 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">fileName</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
-      
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@fileName:scala.concurrent.Future[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#finalize" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="finalize():Unit"></a>
       <a id="finalize():Unit"></a>
@@ -473,7 +593,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@finalize():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../java$lang.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -492,7 +616,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">format</span><span class="result">: <a href="AssetFormat.html" class="extype" name="models.AssetFormat">AssetFormat</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@format:models.AssetFormat" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
@@ -505,7 +633,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">getClass</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.Class">Class</span>[_]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@getClass():Class[_]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#getDate" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getDate:Option[org.joda.time.ReadablePartial]"></a>
@@ -518,7 +650,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">getDate</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="org.joda.time.ReadablePartial">ReadablePartial</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@getDate:Option[org.joda.time.ReadablePartial]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
@@ -531,7 +667,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">hashCode</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Int">Int</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@hashCode():Int" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="idents:scala.concurrent.Future[Seq[String]]"></a>
@@ -544,7 +684,11 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       <span class="symbol">
         <span class="name">idents</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@idents:scala.concurrent.Future[Seq[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
 This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#inContainer" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
@@ -558,7 +702,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">inContainer</span><span class="result">: <a href="" class="extype" name="models.SlotAsset">SlotAsset</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@inContainer:models.SlotAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.SlotAsset#inContext" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="inContext:models.SlotAsset"></a>
@@ -571,7 +719,11 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       <span class="symbol">
         <span class="name">inContext</span><span class="result">: <a href="" class="extype" name="models.SlotAsset">SlotAsset</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@inContext:models.SlotAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">&quot;Expand&quot; this slot asset to a larger one with equivalent permissions.</p><div class="fullcomment"><div class="comment cmt"><p>&quot;Expand&quot; this slot asset to a larger one with equivalent permissions.
 This determines what segment should be shown to users when they request a smaller one.
 </p></div></div>
@@ -586,7 +738,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">isFull</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@isFull:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">True if this is its container's full slot.</p><div class="fullcomment"><div class="comment cmt"><p>True if this is its container's full slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -599,7 +755,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">isInstanceOf</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@isInstanceOf[T0]:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
     </li><li name="models.SlotAsset#json" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="json(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
@@ -612,7 +772,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">json</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@json(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.SlotAsset#json" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="json:site.JsonObject"></a>
@@ -620,12 +784,16 @@ This determines what segment should be shown to users when they request a smalle
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">json</span><span class="result">: <a href="../site/JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@json:site.JsonObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
@@ -638,7 +806,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">ne</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.AnyRef">AnyRef</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@ne(x$1:AnyRef):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notify" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notify():Unit"></a>
@@ -651,7 +823,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">notify</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@notify():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="scala.AnyRef#notifyAll" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="notifyAll():Unit"></a>
@@ -664,20 +840,28 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">notifyAll</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@notifyAll():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Slot#pageCrumbName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageCrumbName:Option[String]"></a>
       <a id="pageCrumbName:Option[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">pageCrumbName</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@pageCrumbName:Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Optional override of pageName for breadcrumbs and other abbreviated locations</p><div class="fullcomment"><div class="comment cmt"><p>Optional override of pageName for breadcrumbs and other abbreviated locations</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageName" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageName:String"></a>
@@ -690,7 +874,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">pageName</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@pageName:String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Some[models.Slot]" class="extmbr" name="models.SlotAsset#pageParent">pageParent</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The title of the object/page in the hierarchy, which may only make sense within <a href="#pageParent:Some[models.Slot]" class="extmbr" name="models.SlotAsset#pageParent">pageParent</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageParent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageParent:Some[models.Slot]"></a>
@@ -703,7 +891,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">pageParent</span><span class="result">: <span class="extype" name="scala.Some">Some</span>[<a href="Slot.html" class="extype" name="models.Slot">Slot</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@pageParent:Some[models.Slot]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p><div class="fullcomment"><div class="comment cmt"><p>The object &quot;above&quot; this one (in terms of breadcrumbs and nesting).</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#pageURL" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="pageURL:play.api.mvc.Call"></a>
@@ -716,7 +908,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">pageURL</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@pageURL:play.api.mvc.Call" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p><div class="fullcomment"><div class="comment cmt"><p>The URL of the page, usually determined by <a href="../controllers/routes.html" class="extype" name="controllers.routes">controllers.routes</a>.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a></dd></dl></div>
     </li><li name="models.SlotAsset#permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="permission:models.Permission.Value"></a>
@@ -729,7 +925,11 @@ This determines what segment should be shown to users when they request a smalle
       <span class="symbol">
         <span class="name">permission</span><span class="result">: <a href="Permission$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Permission.Value">Permission.Value</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@permission:models.Permission.Value" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Effective permission the site user has over this segment, specifically in regards to the asset itself.</p><div class="fullcomment"><div class="comment cmt"><p>Effective permission the site user has over this segment, specifically in regards to the asset itself.
 Asset permissions depend on volume permissions, but can be further restricted by consent levels.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
     </li><li name="models.Slot#position" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -743,20 +943,28 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">position</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@position:dbrary.Offset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Effective start point of this slot within the container.</p><div class="fullcomment"><div class="comment cmt"><p>Effective start point of this slot within the container.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#postComment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[Boolean]"></a>
-      <a id="postComment(String,Option[Comment.Id])(AuthSite):Future[Boolean]"></a>
+      <a id="postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[models.Comment]"></a>
+      <a id="postComment(String,Option[Comment.Id])(AuthSite):Future[Comment]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="parent">parent: <span class="extype" name="scala.Option">Option</span>[<a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">postComment</span><span class="params">(<span name="text">text: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="parent">parent: <span class="extype" name="scala.Option">Option</span>[<a href="Comment$.html#Id=models.IntId[T]" class="extmbr" name="models.Comment.Id">Comment.Id</a>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Comment.html" class="extype" name="models.Comment">Comment</a>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@postComment(text:String,parent:Option[models.Comment.Id])(implicitsite:site.AuthSite):scala.concurrent.Future[models.Comment]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="records:scala.concurrent.Future[Seq[models.Record]]"></a>
@@ -769,7 +977,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">records</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@records:scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of records that apply to this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records that apply to this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#relativeSegment" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="relativeSegment:dbrary.Range[dbrary.Offset]{valisEmpty:Boolean;valsingleton:Option[dbrary.Offset]}"></a>
@@ -782,8 +994,29 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">relativeSegment</span><span class="result">: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>] { ... /* 2 definitions in type refinement */ }</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@relativeSegment:dbrary.Range[dbrary.Offset]{valisEmpty:Boolean;valsingleton:Option[dbrary.Offset]}" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Segment occupied by asset wrt slot position.</p>
+    </li><li name="models.Slot#restricted" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="restricted:Boolean"></a>
+      <a id="restricted:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">restricted</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@restricted:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">Whether the current user may not download restricted data within this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Whether the current user may not download restricted data within this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#segment" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="segment:dbrary.Range[dbrary.Offset]"></a>
       <a id="segment:Range[Offset]"></a>
@@ -795,7 +1028,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">segment</span><span class="result">: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Offset">Offset</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@segment:dbrary.Range[dbrary.Offset]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#setConsent" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setConsent(consent:models.Consent.Value):scala.concurrent.Future[Boolean]"></a>
@@ -808,7 +1045,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">setConsent</span><span class="params">(<span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@setConsent(consent:models.Consent.Value):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#setTag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]"></a>
@@ -821,7 +1062,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">setTag</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">Tag this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Tag this slot.</p></div><dl class="paramcmts block"><dt class="param">up</dt><dd class="cmt"><p>Some(true) for up, Some(false) for down, or None to remove</p></dd><dt>returns</dt><dd class="cmt"><p>true if the tag name is valid
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
@@ -835,7 +1080,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">site</span><span class="result">: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@site:site.Site" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
     </li><li name="models.SlotAsset#slot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="slot:models.Slot"></a>
@@ -848,33 +1097,45 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">slot</span><span class="result">: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@slot:models.Slot" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       
     </li><li name="models.Slot#slotJson" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="slotJson(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]"></a>
       <a id="slotJson(Options):Future[JsObject]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
+        <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">slotJson</span><span class="params">(<span name="options">options: <a href="../site/JsonOptions$.html#Options=Map[String,site.JsonOptions.Opt]" class="extmbr" name="site.JsonOptions.Options">Options</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.json.JsObject">JsObject</span>]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@slotJson(options:site.JsonOptions.Options):scala.concurrent.Future[play.api.libs.json.JsObject]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#slotJson" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="slotJson:site.JsonObject"></a>
       <a id="slotJson:JsonObject"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
       </span>
       <span class="symbol">
         <span class="name">slotJson</span><span class="result">: <a href="../site/JsonObject.html" class="extype" name="site.JsonObject">JsonObject</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@slotJson:site.JsonObject" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#source" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="source:models.Asset"></a>
@@ -887,7 +1148,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">source</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@source:models.Asset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The backing asset from which this data is taken, which may be itself or a containing asset.</p><div class="fullcomment"><div class="comment cmt"><p>The backing asset from which this data is taken, which may be itself or a containing asset.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="models.BackedAsset#sourceId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="sourceId:models.Asset.Id"></a>
@@ -900,7 +1165,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">sourceId</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@sourceId:models.Asset.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></dd></dl></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
@@ -913,7 +1182,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">synchronized</span><span class="tparams">[<span name="T0">T0</span>]</span><span class="params">(<span name="arg0">arg0: ⇒ <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>)</span><span class="result">: <span class="extype" name="java.lang.AnyRef.synchronized.T0">T0</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@synchronized[T0](x$1:=&gt;T0):T0" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="models.Slot#tags" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]"></a>
@@ -926,21 +1199,12 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">tags</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@tags:scala.concurrent.Future[IndexedSeq[models.TagWeight]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <p class="shortcomment cmt">The list of tags on the current slot along with the current user's applications.</p><div class="fullcomment"><div class="comment cmt"><p>The list of tags on the current slot along with the current user's applications.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
-    </li><li name="models.Slot#thumb" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="thumb:scala.concurrent.Future[Option[models.SlotAsset]]"></a>
-      <a id="thumb:Future[Option[SlotAsset]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">thumb</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="" class="extype" name="models.SlotAsset">SlotAsset</a>]]</span>
-      </span>
-      </h4>
-      <p class="shortcomment cmt">An image-able &quot;asset&quot; that may be used as the slot's thumbnail.</p><div class="fullcomment"><div class="comment cmt"><p>An image-able &quot;asset&quot; that may be used as the slot's thumbnail.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#toString" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="toString():String"></a>
       <a id="toString():String"></a>
@@ -952,7 +1216,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">toString</span><span class="params">()</span><span class="result">: <span class="extype" name="java.lang.String">String</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@toString():String" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Slot#top" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="top:Boolean"></a>
@@ -965,7 +1233,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">top</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@top:Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.SlotAsset#volume" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volume:models.Volume"></a>
@@ -978,7 +1250,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">volume</span><span class="result">: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@volume:models.Volume" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.SlotAsset">SlotAsset</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="models.InVolume#volumeId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="volumeId:models.Volume.Id"></a>
@@ -991,7 +1267,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">volumeId</span><span class="result">: <a href="Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">Volume.Id</a></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@volumeId:models.Volume.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a></dd></dl></div>
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
@@ -1004,7 +1284,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">wait</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@wait():Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1023,7 +1307,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>, <span name="arg1">arg1: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@wait(x$1:Long,x$2:Int):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1042,7 +1330,11 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <span class="symbol">
         <span class="name">wait</span><span class="params">(<span name="arg0">arg0: <span class="extype" name="scala.Long">Long</span></span>)</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
-      </h4>
+      </h4><span class="permalink">
+      <a href="../index.html#models.SlotAsset@wait(x$1:Long):Unit" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
@@ -1095,6 +1387,7 @@ Asset permissions depend on volume permissions, but can be further restricted by
       <div id="tooltip"></div>
 
       <div id="footer">  </div>
-      <script defer="defer" type="text/javascript" id="jquery-js" src="../lib/jquery.js"></script><script defer="defer" type="text/javascript" id="jquery-ui-js" src="../lib/jquery-ui.js"></script><script defer="defer" type="text/javascript" id="tools-tooltip-js" src="../lib/tools.tooltip.js"></script><script defer="defer" type="text/javascript" id="template-js" src="../lib/template.js"></script>
+
+
     </body>
       </html>
