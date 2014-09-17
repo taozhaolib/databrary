@@ -112,7 +112,6 @@ module.provider('routerService', [
         ]
       },
       reloadOnSearch: false,
-      authenticate: false
     });
 
     //
@@ -145,7 +144,6 @@ module.provider('routerService', [
       controller: 'helpFormatsView',
       templateUrl: 'helpFormatsView.html',
       reloadOnSearch: false,
-      authenticate: true,
     });
 
     //
@@ -189,7 +187,6 @@ module.provider('routerService', [
         ]
       },
       reloadOnSearch: false,
-      authenticate: true
     });
 
     //
@@ -209,7 +206,6 @@ module.provider('routerService', [
         ],
       },
       reloadOnSearch: false,
-      authenticate: true
     };
 
     routes.profile = makeRoute(controllers.PartyHtml.profile, [], partyView);
@@ -228,7 +224,6 @@ module.provider('routerService', [
         ],
       },
       reloadOnSearch: false,
-      authenticate: true
     });
 
     //
@@ -254,7 +249,6 @@ module.provider('routerService', [
         ],
       },
       reloadOnSearch: false,
-      authenticate: true
     };
 
     routes.volumeCreate = makeRoute(controllers.VolumeHtml.add, ['owner'], volumeEdit);
@@ -274,7 +268,6 @@ module.provider('routerService', [
         ]
       },
       reloadOnSearch: false,
-      authenticate: true
     });
 
     //
@@ -295,7 +288,6 @@ module.provider('routerService', [
         ]
       },
       reloadOnSearch: false,
-      authenticate: true
     });
 
     //
