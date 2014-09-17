@@ -1,7 +1,7 @@
 <ng-form name="volumeEditMaterialsForm" bindonce flow-init="page.assets.flowOptions"
     flow-file-added="volumeEditMaterialsForm.fileAdded($file,$event)"
     flow-file-success="volumeEditMaterialsForm.fileSuccess($file)"
-    flow-file-progress="volumeEditMaterialsForm.fileProgress($file)"
+    flow-file-progress="volumeEditMaterialsForm.fileProgress($file)">
   <section class="vem-float" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
     <div class="vem-float-floater">
       <div class="vem-float-dropzone" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
