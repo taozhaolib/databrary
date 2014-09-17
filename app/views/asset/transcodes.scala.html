@@ -39,6 +39,7 @@
       <td>@t.process</td>
       <td><pre>@t.log</pre></td>
       <td>
+	@widget.formErrors(form)
 	@if(t.process) {
 	  <button name='stop' value='true'>stop</button>
 	} else {

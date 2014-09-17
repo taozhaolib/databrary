@@ -42,7 +42,7 @@ final class TranscodeJob private[models] (override val id : Transcode.Id, owner 
       a = new TimeseriesAsset(id, volume, AssetFormat.Video, orig.classification, tp.duration, orig.name, sha1)
       _ = store.FileAsset.store(a, file)
       _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, lower(segment) + ?) WHERE asset = ?")
-	.apply(id, start, start + a.duration)
+	.apply(id, start, start + a.duration, orig.id)
     } yield (a)
   }
 }
