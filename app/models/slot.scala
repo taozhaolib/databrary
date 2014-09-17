@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsObject,JsNull,Json}
 import macros._
 import dbrary._
 import site._
@@ -31,7 +31,8 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   /** Intersect this Slot with a segment, in the current context.
     * If current context is not consented, the result may be incorrect.  */
-  private[models] def *(seg : Segment) : Slot = Slot.make(segment * seg, context)
+  private[models] def *(seg : Segment) : Slot =
+    if (seg @> segment) this else Slot.make(segment * seg, context)
 
   /** Update the given values in the database and this object in-place. */
   final def setConsent(consent : Consent.Value) : Future[Boolean] = {
@@ -56,6 +57,8 @@ trait Slot extends TableRow with InVolume with SiteObject {
       if (restricted) new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
       else date
     }
+
+  def consents : Future[Seq[ContextSlot]] = SlotConsent.getAll(this)
 
   /** List of asset that overlap with this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
@@ -126,6 +129,14 @@ trait Slot extends TableRow with InVolume with SiteObject {
       }))
     , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
+    , "consents" -> (opt => consents.map {
+	case Seq() => JsNull
+	case Seq(c) if c.segment === segment => Json.toJson(c.consent)
+	case s => JsonArray(s.map { s => JsonObject(
+	  'segment -> s.segment,
+	  'consent -> s.consent)
+	})
+      })
     )
 }
 
@@ -133,6 +144,8 @@ trait ContextSlot extends Slot {
   // override val container : Container
   final override def context = this
   // override val consent : Consent.Value
+
+  override def consents = if (consent == Consent.NONE) super.consents else async(Seq(this))
 
   override def pageParent = Some(volume)
 }
@@ -155,6 +168,11 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
 	new SlotConsent(container, segment, consent)
       }
     }
+
+  def getAll(slot : Slot) : Future[Seq[ContextSlot]] =
+    row.map(_(slot.container))
+    .SELECT("WHERE slot_consent.container = ? AND slot_consent.segment && ?")
+    .apply(slot.containerId, slot.segment).list
 }
 
 /** A generic type of Table that includes (presumably inheriting from) slot. */
