@@ -27,6 +27,13 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   
   def description = name
 
+  def stripExtension(filename : String) : String =
+    (for {
+      ext <- extension
+      i <- Maybe(filename.lastIndexOf('.')).opt
+      if ext.equals(filename.substring(i + 1).toLowerCase)
+    } yield (filename.substring(0, i))).getOrElse(filename)
+
   final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
     extension.map('extension -> _),

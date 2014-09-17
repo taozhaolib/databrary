@@ -73,20 +73,23 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       }
       _ <- when(file.file.length <= 0,
 	form.file.withError("file.size.invalid")._throw)
-      asset <- ifmt
+      fmt = ifmt
 	.orElse(ftype.flatMap(AssetFormat.getMimetype(_)))
 	.orElse(fname.flatMap(AssetFormat.getFilename(_)))
-	.getOrElse(form.format.withError("file.format.unknown")._throw) match {
+	.getOrElse(form.format.withError("file.format.unknown")._throw)
+      name = fname.map(fmt.stripExtension)
+      classification = form.classification.get.getOrElse(Classification(0))
+      asset <- fmt match {
 	case fmt : TimeseriesFormat if adm && form.timeseries.get =>
 	  val probe = media.AV.probe(file.file)
-	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), probe.duration, fname, file)
+	  models.Asset.create(form.volume, fmt, classification, probe.duration, name, file)
 	case fmt =>
 	  if (fmt.isTranscodable) try {
 	    media.AV.probe(file.file)
 	  } catch { case e : media.AV.Error =>
 	    form.file.withError("file.invalid", e.getMessage)._throw
 	  }
-	  models.Asset.create(form.volume, fmt, form.classification.get.getOrElse(Classification(0)), fname, file)
+	  models.Asset.create(form.volume, fmt, classification, name, file)
       }
       _ = if (asset.format.isTranscodable && !form.timeseries.get)
 	store.Transcode.start(asset)
