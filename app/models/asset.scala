@@ -169,7 +169,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def isSuperseded : Future[Boolean] =
-    SQL("SELECT next FROM asset_revision WHERE prev = ?").apply(id).execute
+    SQL("SELECT asset FROM asset_revision WHERE orig = ?").apply(id).execute
   def supersede(old : Asset) : Future[Boolean] =
     SQL("SELECT asset_supersede(?, ?)").apply(old.id, id).execute
 
@@ -248,13 +248,13 @@ object Asset extends TableId[Asset]("asset") {
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[Asset]] =
     rowVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ?")
+    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ?")
     .apply(a.id).list
 
   /** Get a particular older version of this asset. */
   def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
     rowVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ?")
+    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ? AND asset.id = ?")
     .apply(a.id, o).singleOpt
 
   def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] =

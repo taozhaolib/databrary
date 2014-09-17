@@ -2,7 +2,7 @@
 -- understand all in one place.
 
 -- Whenever you make changes to this file, you must also write a new evolution
--- in evolutions/default and check the result using "project/runsql check".
+-- in evolutions/default and check the result using "tools/runsql check".
 -- Note that this while this file is valid SQL, evolutions require semi-colons
 -- to be doubled when they do not terminate statements.
 
@@ -297,13 +297,13 @@ CREATE FUNCTION "singleton" (segment) RETURNS interval LANGUAGE sql IMMUTABLE ST
 	$$ SELECT lower($1) WHERE lower_inc($1) AND upper_inc($1) AND lower($1) = upper($1) $$;
 COMMENT ON FUNCTION "singleton" (segment) IS 'Determine if a segment represents a single point and return it, or NULL if not.';
 
-CREATE FUNCTION "segment_shift" (segment, interval, interval = '0') RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS $$
+CREATE FUNCTION "segment_shift" (segment, interval) RETURNS segment LANGUAGE sql IMMUTABLE STRICT AS $$
 	SELECT CASE WHEN isempty($1) THEN 'empty' ELSE
-		segment(lower($1) + $2, upper($1) + $2 + $3,
+		segment(lower($1) + $2, upper($1) + $2,
 			CASE WHEN lower_inc($1) THEN '[' ELSE '(' END || CASE WHEN upper_inc($1) THEN ']' ELSE ')' END)
 	END
 $$;
-COMMENT ON FUNCTION "segment_shift" (segment, interval, interval) IS 'Shift both end points of a segment by the specified interval.';
+COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end points of a segment by the specified interval.';
 
 -- this probably needs an order by segment for most uses:
 CREATE AGGREGATE "segment_union" (segment) (SFUNC = range_union, STYPE = segment, INITCOND = 'empty');
@@ -434,27 +434,25 @@ SELECT audit.CREATE_TABLE ('slot_asset', 'slot');
 
 CREATE TABLE "asset_revision" (
 	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
-	"asset" integer Unique NOT NULL References "asset" ON DELETE CASCADE,
-	Check ("orig" < "asset") -- prevent cycles
+	"asset" integer Unique NOT NULL References "asset" ON DELETE CASCADE
+	-- Check ("orig" < "asset") -- this would be nice, but we have some ingests that were done the other way
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
-CREATE VIEW "asset_revisions" AS
-	WITH RECURSIVE r AS (
-		SELECT * FROM asset_revision
-		UNION ALL
-		SELECT asset_revision.orig, r.asset FROM asset_revision JOIN r ON asset_revision.asset = r.orig
-	) SELECT * FROM r;
+CREATE RECURSIVE VIEW "asset_revisions" ("orig", "asset") AS
+	SELECT * FROM asset_revision
+	UNION
+	SELECT o.orig, a.asset FROM asset_revision o JOIN asset_revisions a ON o.asset = a.orig;
 COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.';
 
-CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer, "diff" interval = '0') RETURNS void STRICT LANGUAGE plpgsql AS $$
+CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer) RETURNS void STRICT LANGUAGE plpgsql AS $$
 BEGIN
 	PERFORM asset FROM asset_revision WHERE orig = asset_new;
 	IF FOUND THEN
 		RAISE 'Asset % already superseded', asset_new;
 	END IF;
 	INSERT INTO asset_revision VALUES (asset_old, asset_new);
-	UPDATE slot_asset SET asset = asset_new, segment = segment_shift(segment, '0', diff) WHERE asset = asset_old;
+	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
 END; $$;
 
 
