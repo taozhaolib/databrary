@@ -29,7 +29,7 @@ module.directive('volumeEditMaterialsForm', [
       }
 
       form.fileAdded = function (file, event) {
-	var material = angular.element(event.srcElement).scope().material;
+	var material = angular.element(event.target).scope().material;
 
 	if (material)
 	  delete material.replace;
