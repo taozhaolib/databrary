@@ -375,9 +375,9 @@ object AssetApi extends AssetController with ApiController {
     }
   }
 
-  class TranscodedForm(aid : Asset.Id) extends {
-      val auth = play.api.libs.Crypto.sign(aid.toString)
-    } with StructForm(routes.AssetApi.transcoded(aid, auth)) {
+  class TranscodedForm(id : Transcode.Id) extends {
+      val auth = play.api.libs.Crypto.sign(id.toString)
+    } with StructForm(routes.AssetApi.transcoded(id, auth)) {
     val pid = Field(Forms.number)
     val res = Field(Forms.number)
     val sha1 = Field(Mappings.hash(store.SHA1, store.Hex))

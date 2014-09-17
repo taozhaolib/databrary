@@ -24,7 +24,7 @@ final class TranscodeJob private[models] (override val id : Transcode.Id, owner 
   extends Transcode(owner, orig, segment, options) with TableRowId[Asset] {
   def args(implicit request : RequestHeader) = Seq(
     "-f", store.FileAsset.file(orig).getAbsolutePath,
-    "-r", new controllers.AssetApi.TranscodedForm(orig.id)._action.absoluteURL(Play.isProd(Play.current)),
+    "-r", new controllers.AssetApi.TranscodedForm(id)._action.absoluteURL(Play.isProd(Play.current)),
     "--") ++
     (segment.lowerBound : Iterable[Offset]).flatMap(s => Seq("-ss", s.toString)) ++
     (segment.upperBound : Iterable[Offset]).flatMap(t => Seq("-t", (t-start).toString)) ++
