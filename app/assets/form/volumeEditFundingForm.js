@@ -26,29 +26,27 @@ module.directive('volumeEditFundingForm', [
         };
       });
 
-      $scope.$on('fundingSearchForm-init', function (event, searchForm) {
-        searchForm.selectFn = function (found) {
-	  if (form.data.some(function (funding) {
-		return funding.funder.id === found.id;
-	      })) {
-            searchForm.messages.add({
-              type: 'yellow',
-              countdown: 3000,
-              body: page.constants.message('funding.search.repeat', found.name),
-            });
-	    return;
-	  }
-
-	  form.data.push({
-	    funder: found,
-	    awards: [],
-	    new: true,
+      $scope.selectFn = function (found) {
+	if (form.data.some(function (funding) {
+	      return funding.funder.id === found.id;
+	    })) {
+	  form.messages.add({
+	    type: 'yellow',
+	    countdown: 3000,
+	    body: page.constants.message('funding.search.repeat', found.name),
 	  });
+	  return;
+	}
 
-	  //warning: next line is template dependent! if classnames or structure change this may no longer work
-	  page.display.scrollTo('fieldset.funding-grant:last');
-        };
-      });
+	form.data.push({
+	  funder: found,
+	  awards: [],
+	  new: true,
+	});
+
+	//warning: next line is template dependent! if classnames or structure change this may no longer work
+	page.display.scrollTo('fieldset.funding-grant:last');
+      };
 
       var $float = $('.vef-float');
       var $floater = $('.vef-float-floater');

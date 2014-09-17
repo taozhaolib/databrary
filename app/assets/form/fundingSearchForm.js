@@ -46,7 +46,7 @@ module.directive('fundingSearchForm', [
         form.nameVal = '';
         form.search();
 
-	form.selectFn(found);
+	$scope.selectFn(found);
         form.$setPristine();
       };
 
@@ -66,9 +66,6 @@ module.directive('fundingSearchForm', [
         },
       }, true);
 
-      //
-
-      $scope.$emit('fundingSearchForm-init', form);
     };
 
     //
