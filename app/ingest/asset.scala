@@ -24,7 +24,8 @@ trait Asset {
 	      for {
 		o <- populate(volume, orig)
 		a <- models.Asset.create(volume, fmt, classification, duration, n, infile)
-		_ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
+		r <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
+		if r
 	      } yield (a)
 	    case Asset.TranscodableFileInfo(_, fmt, _) =>
 	      for {
@@ -34,7 +35,8 @@ trait Asset {
 	    case Asset.FileInfo(_, fmt) =>
 	      models.Asset.create(volume, fmt, classification, n, infile)
 	  }
-	  _ <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
+	  r <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
+	  if r
 	} yield (asset)
       case Seq(iid) =>
 	for {
