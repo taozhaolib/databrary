@@ -48,7 +48,7 @@ module.directive('accessSearchForm', [
         form.nameVal = '';
         form.search();
 
-	form.selectFn(found);
+	$scope.selectFn(found);
         form.$setPristine();
       };
 
@@ -75,9 +75,6 @@ module.directive('accessSearchForm', [
         },
       }, true);
 
-      //
-
-      $scope.$emit('accessSearchForm-init', form);
     };
 
     //

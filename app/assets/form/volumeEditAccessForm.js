@@ -71,18 +71,16 @@ module.directive('volumeEditAccessForm', [
         };
       });
 
-      $scope.$on('accessSearchForm-init', function (event, searchForm) {
-        searchForm.selectFn = function (found) {
-	  form.data.push({
-	    new: true,
-	    party: found,
-	    individual: 0,
-	    children: 0,
-	  });
-	  //warning: next line is template dependent! if classnames change this will no longer work
-	  page.display.scrollTo('fieldset .access-grant:last');
-        };
-      });
+      $scope.selectFn = function (found) {
+	form.data.push({
+	  new: true,
+	  party: found,
+	  individual: 0,
+	  children: 0,
+	});
+	//warning: next line is template dependent! if classnames change this will no longer work
+	page.display.scrollTo('fieldset .access-grant:last');
+      };
 
       var $float = $('.vea-float');
       var $floater = $('.vea-float-floater');
