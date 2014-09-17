@@ -1,6 +1,6 @@
-<div class="slot-timeline-track" bo-class="{last: track.spare}" ng-click="!track.file && track.select()" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
+<div class="slot-timeline-track" ng-click="!track.file && track.select()" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
   <div class="slot-track" ng-class="track.classes()">
-    <div class="slot-track-asset" ng-style="track.styles()" ng-if="!track.spare">
+    <div class="slot-track-asset" ng-style="track.styles()" ng-if="track.asset">
       <div class="slot-track-asset-info">
         <img class="slot-track-asset-thumb" bo-if="ctrl.hasDisplay(track.asset)" bo-src="asset.thumbRoute()">
         <img class="slot-track-asset-icon" bo-if="!ctrl.hasDisplay(track.asset)" bo-src="track.asset.icon">
@@ -8,15 +8,19 @@
 	<div class="slot-track-asset-info-name">{{track.asset.displayName}}</div>
       </div>
     </div>
-    <div ng-if="track.spare && track.file">
+    <div ng-if="track.file">
       <span>{{track.file.name}}</span>
       <upload-progress progress-value="track.file.progressVal" ng-if="track.file.progressVal != 1"></upload-progress>
       <span ng-if="track.file.progressVal == 1"><br>Completing...</span>
     </div>
-    <div class="slot-track-asset" ng-if="track.spare && track.drop" flow-drop>
+    <div class="slot-track-asset" ng-if="track.drop" flow-drop>
       <div class="slot-track-asset-info">
 	<span style="text-align: center;">DROP</span>
       </div>
     </div>
+    <div class="slot-track-asset" ng-if="!track.asset && !track.file && !track.drop">
+      <span>Click to add new...</span>
+    </div>
+
   </div>
 </div>
