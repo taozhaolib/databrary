@@ -133,6 +133,7 @@ opts () {
 	while getopts "$opts" opt ; do case "$opt" in
 		p) play=1 ;;
 		P) play=1 ; fake=1 ;;
+		?) exit 1 ;;
 	esac ; done
 }
 

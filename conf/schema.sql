@@ -2,7 +2,7 @@
 -- understand all in one place.
 
 -- Whenever you make changes to this file, you must also write a new evolution
--- in evolutions/default and check the result using "project/runsql check".
+-- in evolutions/default and check the result using "tools/runsql check".
 -- Note that this while this file is valid SQL, evolutions require semi-colons
 -- to be doubled when they do not terminate statements.
 
@@ -433,29 +433,26 @@ COMMENT ON TABLE "slot_asset" IS 'Attachment point of assets, which, in the case
 SELECT audit.CREATE_TABLE ('slot_asset', 'slot');
 
 CREATE TABLE "asset_revision" (
-	-- consider uniques on these
-	"prev" integer NOT NULL References "asset",
-	"next" integer NOT NULL References "asset",
-	Primary Key ("next", "prev")
+	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
+	"asset" integer Unique NOT NULL References "asset" ON DELETE CASCADE
+	-- Check ("orig" < "asset") -- this would be nice, but we have some ingests that were done the other way
 );
 COMMENT ON TABLE "asset_revision" IS 'Assets that reflect different versions of the same content, either generated automatically from reformatting or a replacement provided by the user.';
 
-CREATE VIEW "asset_revisions" AS
-	WITH RECURSIVE r AS (
-		SELECT * FROM asset_revision
-		UNION ALL
-		SELECT asset_revision.prev, r.next FROM asset_revision JOIN r ON asset_revision.next = r.prev
-	) SELECT * FROM r;
-COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.  Revisions must never form a cycle or this will not terminate.';
+CREATE RECURSIVE VIEW "asset_revisions" ("orig", "asset") AS
+	SELECT * FROM asset_revision
+	UNION
+	SELECT o.orig, a.asset FROM asset_revision o JOIN asset_revisions a ON o.asset = a.orig;
+COMMENT ON VIEW "asset_revisions" IS 'Transitive closure of asset_revision.';
 
 CREATE FUNCTION "asset_supersede" ("asset_old" integer, "asset_new" integer) RETURNS void STRICT LANGUAGE plpgsql AS $$
 BEGIN
-	PERFORM next FROM asset_revision WHERE prev = asset_new;
+	PERFORM asset FROM asset_revision WHERE orig = asset_new;
 	IF FOUND THEN
 		RAISE 'Asset % already superseded', asset_new;
 	END IF;
-	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
 	INSERT INTO asset_revision VALUES (asset_old, asset_new);
+	UPDATE slot_asset SET asset = asset_new WHERE asset = asset_old;
 END; $$;
 
 
@@ -474,12 +471,16 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE TABLE "transcode" (
-	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
+	"asset" integer NOT NULL Primary Key Default nextval('asset_id_seq'),
 	"owner" integer NOT NULL References "party",
+	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
+	"segment" segment NOT NULL Default '(,)',
+	"options" text[] NOT NULL Default '{}',
 	"start" timestamp Default now(),
 	"process" integer,
-	"result" text
-);
+	"log" text
+) INHERITS ("asset_revision");
+COMMENT ON TABLE "transcode" IS 'Format conversions that are being or have been applied to transform in input asset.';
 
 ----------------------------------------------------------- comments
 

@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext,Future}
 import scala.collection.concurrent
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Files.TemporaryFile
@@ -37,7 +37,8 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   final lazy val json = JsonRecord.flatten(id,
     Some('mimetype -> mimetype),
     extension.map('extension -> _),
-    Some('name -> name)
+    Some('name -> name),
+    if (isTranscodable) Some('transcodable -> true) else None
   )
 }
 
@@ -141,12 +142,10 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
-  private[this] var _name = name_
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
   /** Title or name of the asset as used in the container. */
-  def name : Option[String] = _name
-  private[this] var _classification = classification_
-  def classification : Classification.Value = _classification
+  def name : Option[String] = name_
+  def classification : Classification.Value = classification_
 
   def duration : Offset = Offset.ZERO
   def source = this
@@ -160,8 +159,8 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def change(classification : Option[Classification.Value] = None, name : Option[Option[String]] = None) : Future[Boolean] = {
     Audit.change("asset", SQLTerms.flatten(classification.map('classification -> _), name.map('name -> _)), SQLTerms('id -> id)).execute
       .andThen { case scala.util.Success(true) =>
-        classification.foreach(_classification = _)
-        name.foreach(_name = _)
+        classification.foreach(classification_ = _)
+        name.foreach(name_ = _)
       }
   }
 
@@ -170,14 +169,15 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def link(c : Container, offset : Option[Offset] = None, duration : Offset = duration) : Future[SlotAsset] = {
     val seg = offset.fold[Segment](c.segment)(o => Segment(o, o + duration))
     for {
-      _ <- Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> seg), SQLTerms('asset -> id)).execute
+      r <- Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> seg), SQLTerms('asset -> id)).execute
+      if r
     } yield (SlotAsset.make(this, seg, c, None))
   }
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def isSuperseded : Future[Boolean] =
-    SQL("SELECT next FROM asset_revision WHERE prev = ?").apply(id).execute
+    SQL("SELECT asset FROM asset_revision WHERE orig = ?").apply(id).execute
   def supersede(old : Asset) : Future[Boolean] =
     SQL("SELECT asset_supersede(?, ?)").apply(old.id, id).execute
 
@@ -256,13 +256,13 @@ object Asset extends TableId[Asset]("asset") {
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[Asset]] =
     rowVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ?")
+    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ?")
     .apply(a.id).list
 
   /** Get a particular older version of this asset. */
   def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
     rowVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = prev WHERE next = ? AND asset.id = ?")
+    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ? AND asset.id = ?")
     .apply(a.id, o).singleOpt
 
   def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] =
@@ -274,8 +274,7 @@ object Asset extends TableId[Asset]("asset") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile) : Future[Asset] = {
-    implicit val site = volume.site
+  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     implicit val defaultContext = context.process
     for {
       sha1 <- Future(store.SHA1(file.file))
@@ -288,8 +287,7 @@ object Asset extends TableId[Asset]("asset") {
     }
   }
 
-  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile) : Future[Asset] = {
-    implicit val site = volume.site
+  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
     implicit val defaultContext = context.process
     for {
       sha1 <- Future(store.SHA1(file.file))

@@ -21,7 +21,7 @@ object async {
     c.withApply(failed)
   def catching[T](exceptions : Class[_]*) : Catch[Future[T]] =
     apply(Exception.catching(exceptions : _*))
-  /** Wrap any thrown exception in a future. */
+  /** Wrap any thrown exception in a future (basically same as Future but in this execution context). */
   def Try[A](a : => A) : Future[A] =
     /* this is stupid: Promise lacks the direct constructor */
     scala.util.Try(a) match {

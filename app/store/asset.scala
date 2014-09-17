@@ -47,8 +47,8 @@ object Stage extends StoreDir("store.stage") {
 
 object Upload extends StoreDir("store.upload") {
   baseDir.mkdir
-  def file(token : Token.Id) : File =
-    new File(baseDir, token)
+  def file(name : String) : File =
+    new File(baseDir, name)
 }
 
 object FileAsset extends StoreDir("store.master") {
@@ -60,7 +60,7 @@ object FileAsset extends StoreDir("store.master") {
     new File(baseDir, rel.getPath)
   private val fallbackDir =
     current.configuration.getString("store.fallback").map(new File(_))
-  protected[store] def file(asset : models.Asset) : File = {
+  def file(asset : models.Asset) : File = {
     val r = relativeFile(asset)
     val f = masterFile(r)
     fallbackDir.filterNot(_ => f.exists).fold(f)(new File(_, r.getPath))

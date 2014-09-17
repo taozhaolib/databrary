@@ -248,11 +248,48 @@ object AssetHtml extends AssetController with HtmlController {
       form.Ok
     }
 
-  def transcode(a : models.Asset.Id, stop : Boolean = false) =
-    SiteAction.rootAccess(Permission.ADMIN).andThen(action(a, Permission.EDIT)).async { implicit request =>
-      (if (stop) store.Transcode.stop(request.obj.id)
-      else       store.Transcode.start(request.obj))
-      .map(_ => Ok("transcoding"))
+  final class TranscodeForm(val transcode : Transcode)(implicit val request : SiteRequest[_])
+    extends HtmlForm[TranscodeForm](routes.AssetHtml.transcode(transcode.id),
+      f => views.html.asset.transcodes(Some(f))) {
+    val start = Field(Forms.optional(Forms.of[Offset])).fill(transcode.segment.lowerBound)
+    val end = Field(Forms.optional(Forms.of[Offset])).fill(transcode.segment.upperBound)
+    val stop = Field(Forms.boolean).fill(false)
+  }
+
+  private def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
+    Transcode.get(id).flatMap(_.orElseAsync(Asset.get(id).flatMap(_.mapAsync { a =>
+      for {
+	revs <- Asset.getRevisions(a)
+	o = if (revs.nonEmpty) revs.minBy(_._id) else a
+	s <- a.slot.flatMap(_.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
+	  for {
+	    l <- s.segment.lowerBound
+	    u <- s.segment.upperBound
+	  } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
+	})))
+      } yield (Transcode(o, s.getOrElse(Segment.full)))
+    })))
+
+  private def transcoding_(id : Option[Asset.Id]) =
+    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+      id.fold[Future[Iterable[Transcode]]](Transcode.getActive)(getTranscode(_).map(_.toIterable))
+      .map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
+    }
+
+  def transcodingAll = transcoding_(None)
+  def transcoding(id : Asset.Id) = transcoding_(Some(id))
+
+  def transcode(id : Asset.Id) =
+    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+      getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
+	val form = new TranscodeForm(t)._bind
+	if (t.fake)
+	  store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).map(Some(_))
+	else if (form.stop.get)
+	  store.Transcode.stop(t.id)
+	else
+	  store.Transcode.restart(t.id)
+      }).map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
 
   def formats = SiteAction { implicit request =>
@@ -343,22 +380,23 @@ object AssetApi extends AssetController with ApiController {
     }
   }
 
-  class TranscodedForm(aid : Asset.Id) extends {
-      val auth = play.api.libs.Crypto.sign(aid.toString)
-    } with StructForm(routes.AssetApi.transcoded(aid, auth)) {
+  class TranscodedForm(id : Transcode.Id) extends {
+      val auth = play.api.libs.Crypto.sign(id.toString)
+    } with StructForm(routes.AssetApi.transcoded(id, auth)) {
     val pid = Field(Forms.number)
     val res = Field(Forms.number)
+    val sha1 = Field(Mappings.hash(store.SHA1, store.Hex))
     val log = Field(Forms.text)
   }
 
   /** Called from remote transcoding process only. */
-  def transcoded(i : models.Asset.Id, auth : String) =
+  def transcoded(i : models.Transcode.Id, auth : String) =
     play.api.mvc.Action { implicit request =>
       val form = new TranscodedForm(i)._bind
       if (!auth.equals(form.auth) || form.hasErrors)
 	BadRequest("")
       else {
-	store.Transcode.collect(i, form.pid.get, form.res.get, form.log.get)
+	store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
 	Ok("")
       }
     }
