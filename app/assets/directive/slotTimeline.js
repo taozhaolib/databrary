@@ -16,11 +16,8 @@ module.directive('slotTimeline', [
           e.stopPropagation();
         });
 
-        timeline.tracks = [];
-	timeline.uploadsInProgress = [];
-
         timeline.sortTracks = function () {
-          timeline.tracks.sort(function sortTracksFn(a, b) {
+          $scope.tracks.sort(function sortTracksFn(a, b) {
 	    var al = a.segment.l;
 	    var bl = b.segment.l;
 	    return isFinite(bl) - isFinite(al) ||
@@ -31,7 +28,7 @@ module.directive('slotTimeline', [
         };
 
         timeline.parseTracks = function () {
-          timeline.tracks.splice.apply(timeline.tracks, [0, timeline.tracks.length].concat(page.$filter('toArray')(ctrl.slot.assets)));
+          $scope.tracks.splice.apply($scope.tracks, [0, $scope.tracks.length].concat(page.$filter('toArray')(ctrl.slot.assets)));
           timeline.time.left = ctrl.clock.start;
           timeline.time.right = ctrl.clock.duration;
           timeline.sortTracks();

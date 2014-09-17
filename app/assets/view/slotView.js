@@ -5,6 +5,8 @@ module.controller('slotView', [
     var volume = slot.volume;
     page.display.title = slot.displayName;
     
+    $scope.tracks = []; $scope.uploadsInProgress = [];
+
     // helpers
 
     function getAsset(media) {
@@ -17,13 +19,12 @@ module.controller('slotView', [
 
     // upload
     $scope.fileAdded = function(file) {
-      var tl = $scope.ctrl.timeline;
       if ($scope.ctrl.current){
 	file.replace = $scope.ctrl.current.asset.id;
       }
       page.assets.assetStart(file).then(function(){
 	file.pause();
-	tl.uploadsInProgress.push(file); //create a better object here. let uploadsInProgress have editable metadata
+	$scope.uploadsInProgress.push(file); //create a better object here. let uploadsInProgress have editable metadata
 	file.resume();
       },
       function(error){
@@ -37,7 +38,6 @@ module.controller('slotView', [
     };
 
     $scope.fileSuccess = function(file) {
-	var tl = $scope.ctrl.timeline;
 	var data;
 	  
 	if(!file.replace){
@@ -47,8 +47,8 @@ module.controller('slotView', [
 	    upload: file.uniqueIdentifier
 	  };
 	  ctrl.slot.createAsset(data).then(function(res){
-	      removeUploadInProgress(file, tl);
-	      tl.tracks.push(res);
+	      removeUploadInProgress(file);
+	      $scope.tracks.push(res);
 	      ctrl.setCurrent(res);
 	      page.messages.add({
 		type: 'green',
@@ -57,7 +57,7 @@ module.controller('slotView', [
 	      });
 	  },
 	  function(error){
-	      removeUploadInProgress(file, tl);
+	      removeUploadInProgress(file);
 	      page.messages.addError({
 		type: 'red',
 		body: page.constants.message('asset.update.error', data.name),
@@ -73,10 +73,10 @@ module.controller('slotView', [
 	  };
 	  ctrl.current.replace(data).then(function(res){
 	    ctrl.replaceable = false;
-	    removeUploadInProgress(file, tl);
-	    for(var i in tl.tracks){
-	      if(tl.tracks[i].asset.id == ctrl.current.asset.id){
-		tl.tracks[i] = res;
+	    removeUploadInProgress(file);
+	    for(var i in $scope.tracks){
+	      if($scope.tracks[i].asset.id == ctrl.current.asset.id){
+		$scope.tracks[i] = res;
 		break;
 	      }
 	    }
@@ -90,10 +90,10 @@ module.controller('slotView', [
 	}
     };
 
-    var removeUploadInProgress = function (file, tl){
-	for(var i in tl.uploadsInProgress){
-	  if (tl.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
-	    tl.uploadsInProgress.splice(i, 1);	  
+    var removeUploadInProgress = function (file){
+	for(var i in $scope.uploadsInProgress){
+	  if ($scope.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
+	    $scope.uploadsInProgress.splice(i, 1);	  
 	  }
 	}
     };
