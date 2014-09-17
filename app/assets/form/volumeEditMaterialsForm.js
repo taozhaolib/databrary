@@ -62,15 +62,10 @@ module.directive('volumeEditMaterialsForm', [
 
       form.fileSuccess = function (file) {
 	form.save(file.material);
-	form.totalProgress();
       };
 
       form.fileProgress = function (file) {
         file.material.progress = file.progress();
-      };
-
-      form.totalProgress = function () {
-        form.progress = $scope.$flow.progress();
       };
 
       form.excerptOptions = function (material) {

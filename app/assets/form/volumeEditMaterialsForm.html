@@ -2,7 +2,6 @@
     flow-file-added="volumeEditMaterialsForm.fileAdded($file,$event)"
     flow-file-success="volumeEditMaterialsForm.fileSuccess($file)"
     flow-file-progress="volumeEditMaterialsForm.fileProgress($file)"
-    flow-progress="volumeEditMaterialsForm.totalProgress()">
   <section class="vem-float" flow-drag-enter="dropClasses['over-form'] = true" flow-drag-leave="dropClasses['over-form'] = false" ng-init="dropClasses={'drop-zone': true}">
     <div class="vem-float-floater">
       <div class="vem-float-dropzone" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses">
@@ -12,9 +11,6 @@
 
       <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" bo-text="'save' | message" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
       <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" bo-text="'revert' | message" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
-      <div class="vem-float-progress">
-	<upload-progress progress-value="volumeEditMaterialsForm.progress"></upload-progress>
-      </div>
     </div>
   </section>
 
