@@ -269,6 +269,7 @@ Java_media_AV_00024__1frame(
 		goto error;
 	}
 	os->codec->time_base = is->codec->time_base;
+	os->time_base = is->time_base;
 	AVRational sar = av_guess_sample_aspect_ratio(in, is, frame);
 	AVRational dsr = av_make_q(frame->width, frame->height);
 	if (sar.num)
