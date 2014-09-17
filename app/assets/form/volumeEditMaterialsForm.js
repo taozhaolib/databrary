@@ -39,23 +39,24 @@ module.directive('volumeEditMaterialsForm', [
 	      classification: page.classification.RESTRICTED+'',
 	    },
 	  };
-	  form.materials.push(material);
-	  page.display.scrollTo('fieldset.vem-repeat:last');
 	}
 	material.file = file;
 	material.progress = 0;
 	file.material = material;
 
 	page.assets.assetStart(file).then(function () {
-	  material.form.$setDirty();
 	  file.resume();
+	  if(!material.asset){
+	    form.materials.push(material);
+	    page.display.scrollTo('fieldset.vem-repeat:last');
+	  }
 	}, function (res) {
 	  form.messages.addError({
 	    type: 'red',
 	    body: page.constants.message('asset.upload.rejected', materialName(material)), 
 	    report: res,
 	  });
-	  form.remove(material);
+	  file.cancel();
 	});
       };
 
