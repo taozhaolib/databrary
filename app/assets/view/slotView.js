@@ -16,8 +16,11 @@ module.controller('slotView', [
     }
 
     // upload
-    $scope.fileAdded = function(file, e) {
+    $scope.fileAdded = function(file) {
       var tl = $scope.ctrl.timeline;
+      if ($scope.ctrl.current){
+	file.replace = $scope.ctrl.current.asset.id;
+      }
       page.assets.assetStart(file).then(function(){
 	file.pause();
 	tl.uploadsInProgress.push(file); //create a better object here. let uploadsInProgress have editable metadata
@@ -35,29 +38,56 @@ module.controller('slotView', [
 
     $scope.fileSuccess = function(file) {
 	var tl = $scope.ctrl.timeline;
-	var data = {
+	var data;
+	  
+	if(!file.replace){
+	  data = {
 	    name: file.file.name,
 	    classification: 0,
 	    upload: file.uniqueIdentifier
-	};
-	ctrl.slot.createAsset(data).then(function(res){
+	  };
+	  ctrl.slot.createAsset(data).then(function(res){
+	      removeUploadInProgress(file, tl);
+	      tl.tracks.push(res);
+	      ctrl.setCurrent(res);
+	      page.messages.add({
+		type: 'green',
+		countdown: 3000,
+		body: page.constants.message('asset.upload.success', data.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
+	      });
+	  },
+	  function(error){
+	      removeUploadInProgress(file, tl);
+	      page.messages.addError({
+		type: 'red',
+		body: page.constants.message('asset.update.error', data.name),
+		report: error
+	      });
+	  });
+	}
+	else{
+	  data = {
+	    name: ctrl.current.asset.name || '',
+	    classification: ctrl.current.asset.classification,
+	    upload: file.uniqueIdentifier
+	  };
+	  ctrl.current.replace(data).then(function(res){
+	    ctrl.replaceable = false;
 	    removeUploadInProgress(file, tl);
-	    tl.tracks.push(res);
+	    for(var i in tl.tracks){
+	      if(tl.tracks[i].asset.id == ctrl.current.asset.id){
+		tl.tracks[i] = res;
+		break;
+	      }
+	    }
 	    ctrl.setCurrent(res);
 	    page.messages.add({
 	      type: 'green',
 	      countdown: 3000,
 	      body: page.constants.message('asset.upload.success', data.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
 	    });
-	},
-	function(error){
-	    removeUploadInProgress(file, tl);
-	    page.messages.addError({
-	      type: 'red',
-	      body: page.constants.message('asset.update.error', data.name),
-	      report: error
-	    });
-	});
+	  });
+	}
     };
 
     var removeUploadInProgress = function (file, tl){
@@ -109,10 +139,16 @@ module.controller('slotView', [
       setCurrent: function (asset) {
 	ctrl.current = getAsset(asset);
 	if(ctrl.current && ctrl.current.asset) ctrl.updateEditData();
+	ctrl.replaceable = false;
       },
 
       isCurrent: function (media) {
 	return ctrl.current === getAsset(media);
+      },
+
+      toggleReplace: function() {
+	if(!ctrl.replaceable)  ctrl.replaceable = true;
+	else ctrl.replaceable = !ctrl.replaceable;
       },
 
       jump: function (asset) {

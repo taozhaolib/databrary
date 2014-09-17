@@ -8,8 +8,8 @@ module.directive('assetEditForm', [
 	form.updateData = function() {
 	  form.slotAsset = $scope.ctrl.current;
 	  form.data = {
-	    id:		    form.slotAsset.asset.id,
 	    name:	    form.slotAsset.asset.name,
+	    id:		    form.slotAsset.asset.id,
 	    classification: form.slotAsset.asset.classification+''
 	  };
 	};
