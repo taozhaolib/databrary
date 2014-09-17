@@ -15,15 +15,12 @@ module.controller('volumeView', [
     };
 
     page.display.title = volume.name;
-    page.display.toolbarLinks = [
-      {
+    if (page.models.Login.checkAccess(page.permission.EDIT, volume))
+      page.display.toolbarLinks.push({
         type: 'yellow',
         html: page.constants.message('volume.edit'),
         url: volume.editRoute(),
-        access: page.permission.CONTRIBUTE,
-        object: volume,
-      },
-    ];
+      });
 
     page.browser.initialize(volume);
   }

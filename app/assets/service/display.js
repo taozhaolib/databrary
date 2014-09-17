@@ -21,7 +21,6 @@ module.factory('displayService', [
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-      display.toolbarLinks = [];
     });
 
     //

@@ -8,14 +8,11 @@ module.controller('partyView', [
     });
 
     page.display.title = party.name;
-    page.display.toolbarLinks = [
-      {
+    if (page.models.Login.checkAccess(page.permission.EDIT, party))
+      page.display.toolbarLinks.push({
         type: 'yellow',
         html: page.constants.message('party.edit'),
         url: party.editRoute(),
-        access: page.permission.CONTRIBUTE,
-        object: party,
-      },
-    ];
+      });
   }
 ]);

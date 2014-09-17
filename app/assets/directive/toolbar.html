@@ -2,13 +2,13 @@
   <div class="wrap">
     <div class="row">
       <div class="title cf col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
-        <h1 class="toolbar-site" ng-hide="page.$route.current.controller==='homeView'">
-          <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
+        <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='homeView'">
+	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
         </h1>
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
-            <li ng-repeat="link in toolbar.links()" bindonce>
+            <li ng-repeat="link in page.display.toolbarLinks" bindonce>
               <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target" ng-click="link.click()">
 		<span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
                 <span class="text" bo-text="link.html.toLowerCase()"></span>
@@ -28,7 +28,7 @@
         </span>
 
         <span ng-if="page.models.Login.isLoggedIn()">
-          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: page.models.Login.user.superuser}" ng-click="toolbar.hoverUser = true; $event.stopPropagation()">
+          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
             <span class="username hide-mobile" ng-bind="page.models.Login.user.name.split(' ').shift()"></span>
             <span class="username show-mobile" bo-text="'me' | message"></span>
             <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-avatar"> </a>
@@ -39,19 +39,19 @@
         <a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar-contact" target="_blank" tooltip="'toolbar.contact' | message" tooltip-type="green"></a>
       </div>
 
-      <section class="toolbar-hover user" ng-if="page.models.Login.isLoggedIn() && toolbar.hoverUser" click-elsewhere="toolbar.hideHover()">
+      <section class="toolbar-hover user" ng-if="page.models.Login.isLoggedIn() && hoverUser" click-elsewhere="hoverUserToggle()">
         <div class="row">
           <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
             <ul class="flat">
               <li><strong bo-text="page.models.Login.user.name"></strong></li>
               <li ng-if="!page.models.Login.isAuthorized()">
-                <a href="" ng-click="page.$location.url(page.router.register()); toolbar.hideHover()" class="toolbar-user-link" bo-text="'toolbar.reregister' | message"></a>
+                <a bo-href="page.router.register()" class="toolbar-user-link" bo-text="'toolbar.reregister' | message"></a>
               </li>
               <li>
-                <a href="" ng-click="page.$location.url(page.router.profile()); toolbar.hideHover()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
+                <a bo-href="page.router.profile()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
               </li>
               <li>
-                <a href="" ng-click="page.$location.url(page.router.volumeCreate());toolbar.hideHover()" bo-text="'volume.edit.create' | message | lowercase" ng-if="page.models.Login.isAuthorized()"></a>
+                <a bo-href="page.router.volumeCreate()" bo-text="'volume.edit.create' | message | lowercase" ng-if="page.models.Login.isAuthorized()"></a>
               </li>
               <li><a href="" ng-click="page.auth.logout()" bo-text="'toolbar.logout' | message"></a>
 	      </li>
@@ -59,12 +59,12 @@
               <li ng-if="page.models.Login.user.superuser !== undefined" class="toolbar-password-form">
                 <ng-form name="superuserForm" ng-if="!page.models.Login.user.superuser" class="cf">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password">
-                  <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm); toolbar.hideHover()">
+                  <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm)">
                     activate SU
                   </button>
                 </form>
 
-                <a ng-if="page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU(); toolbar.hideHover()">deactivate SU</a>
+                <a ng-if="page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate SU</a>
               </li>
             </ul>
           </div>

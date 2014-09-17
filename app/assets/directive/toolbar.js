@@ -2,30 +2,21 @@
 
 module.directive('toolbar', [
   'pageService', function (page) {
-    var controller = [function () {
-      this.hoverUser = false;
-
-      this.hideHover = function () {
-        this.hoverUser = false;
-      };
-
-      //
-
-      this.links = function () {
-        return page.$filter('filter')(page.display.toolbarLinks, function (link) {
-          return link.access && link.object ? page.models.Login.checkAccess(link.access, link.object) :
-            link.auth ? page.models.Login.checkAccess(link.auth) : true;
-        });
-      };
-    }];
-
     return {
       restrict: 'A',
       templateUrl: 'toolbar.html',
-      replace: true,
-      scope: true,
-      controller: controller,
-      controllerAs: 'toolbar',
+      scope: {},
+      link: function ($scope) {
+	$scope.page = page;
+	$scope.hoverUserToggle = function ($event) {
+	  $scope.hoverUser = !$scope.hoverUser;
+	  if ($event)
+	    $event.stopPropagation();
+	};
+	page.$rootScope.$on('$locationChangeStart', function () {
+	  $scope.hoverUser = false;
+	});
+      }
     };
   }
 ]);
