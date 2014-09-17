@@ -15,14 +15,14 @@
             </h1>
           </header>
 
-          <div bo-switch="current.asset.format.type">
+          <div bo-switch="current.format.type">
             <div bo-switch-when="image">
               <img bo-src="current.downloadRoute(true)" style="max-width: 100%;">
             </div>
 
             <div bo-switch-when="video">
               <video controls excerpt="current">
-                <source ng-src="{{srcRoute}}" type="{{current.asset.format.mimetype}}">
+                <source ng-src="{{srcRoute}}" type="{{current.format.mimetype}}">
               </video>
             </div>
 

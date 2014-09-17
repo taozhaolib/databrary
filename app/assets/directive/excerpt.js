@@ -3,7 +3,7 @@
 module.directive('excerpt', [
   function () {
     var link = function ($scope, $el, $attr) {
-      var obj = $scope[$attr.excerpt].object || $scope[$attr.excerpt];
+      var obj = $scope[$attr.excerpt];
 
       var context = obj.inContext();
       $scope.srcRoute = context.downloadRoute();
