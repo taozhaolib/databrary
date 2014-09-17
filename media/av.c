@@ -268,7 +268,7 @@ Java_media_AV_00024__1frame(
 		throw(env, 0, jinfile, "cannot find JPEG codec or create output stream");
 		goto error;
 	}
-	os->time_base = is->codec->time_base;
+	os->codec->time_base = is->codec->time_base;
 	AVRational sar = av_guess_sample_aspect_ratio(in, is, frame);
 	AVRational dsr = av_make_q(frame->width, frame->height);
 	if (sar.num)
