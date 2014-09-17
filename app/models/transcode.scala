@@ -81,7 +81,7 @@ object Transcode extends TableId[Asset]("transcode") {
     .apply().list
 
   def createJob(orig : Asset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
-    SQL("INSERT INTO transcode (owner, orig, segment, options) VALUES (?, ?, ?, ?) RETURNING id")
+    SQL("INSERT INTO transcode (owner, orig, segment, options) VALUES (?, ?, ?, ?) RETURNING asset")
     .apply(site.identity.id, orig.id, segment, options).single(SQLCols[Id])
     .map(new TranscodeJob(_, site.identity, orig, segment, options))
 
