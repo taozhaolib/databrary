@@ -7,7 +7,7 @@
             <a bo-href="jumpLink(current)" class="icon line jump tool" target="_self" tooltip="'excerpts.jump' | message"></a>
             <a bo-href="current.downloadRoute(false)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></a>
 
-            <div class="classification icon line tool" bo-class="page.constants.classification[current.excerpt || current.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
+            <div class="classification icon line tool" bo-class="page.constants.classification[current.excerpt || current.asset.classification]" hint="classification-{{page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
 
             <h1 class="panel-excerpts-player-heading">
               <img class="icon" bo-src="current.icon" hint="format-{{current.format.extension}}">

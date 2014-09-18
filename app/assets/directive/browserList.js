@@ -60,12 +60,12 @@ module.directive('browserList', [
         }
 
         if (!records[1]) {
-          return category.name.charAt(0).toUpperCase() + category.name.slice(1);
+          return $scope.capitalize(category.name);
         }
         else {
           switch (category.name) {
             default:
-              return category.name.charAt(0).toUpperCase() + category.name.slice(1) + 's';
+              return $scope.capitalize(category.name) + 's';
           }
         }
       };

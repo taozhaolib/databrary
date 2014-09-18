@@ -290,7 +290,7 @@ module.directive('spreadsheet', [
 	    v = page.display.formatAge(v);
 	  else if (m === 'consent') {
 	    if (v in page.constants.consent) {
-	      var cn = page.constants.consent[v].toLowerCase();
+	      var cn = page.constants.consent[v];
 	      c.className = cn + ' consent icon hint-consent-' + cn;
 	      v = '';
 	    }
