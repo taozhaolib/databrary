@@ -90,7 +90,6 @@ module.factory('modelService', [
 	  obj.cache.removeAll();
       };
 
-      obj.peek = obj.cache.get;
       obj.poke = function (x) {
 	return obj.cache.put(x.id, x);
       };
@@ -140,8 +139,12 @@ module.factory('modelService', [
 	partyMakeSubArray(this.children);
     };
 
+    function partyPeek(id) {
+      return id === Login.user.id && Login.user || Party.cache.get(id);
+    }
+
     function partyMake(init) {
-      var p = init.id === Login.user.id && Login.user || Party.peek(init.id);
+      var p = partyPeek(init.id);
       return p ? p.update(init) : Party.poke(new Party(init));
     }
 
@@ -171,7 +174,7 @@ module.factory('modelService', [
     }
 
     Party.get = function (id, options) {
-      return partyGet(id, Party.peek(id), options);
+      return partyGet(id, partyPeek(id), options);
     };
 
     Party.prototype.get = function (options) {
@@ -375,7 +378,7 @@ module.factory('modelService', [
     };
 
     function volumeMake(init) {
-      var v = Volume.peek(init.id);
+      var v = Volume.cache.get(init.id);
       return v ? v.update(init) : Volume.poke(new Volume(init));
     }
 
@@ -396,7 +399,7 @@ module.factory('modelService', [
     }
 
     Volume.get = function (id, options) {
-      return volumeGet(id, Volume.peek(id), options);
+      return volumeGet(id, Volume.cache.get(id), options);
     };
 
     Volume.prototype.get = function (options) {
@@ -415,6 +418,8 @@ module.factory('modelService', [
     Volume.create = function (data, owner) {
       return router.http(router.controllers.VolumeApi.create, owner, data)
 	.then(function (res) {
+	  if (owner && (owner = partyPeek(owner)))
+	    owner.clear('volumes');
 	  return volumeMake(res.data);
 	});
     };
