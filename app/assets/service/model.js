@@ -860,6 +860,8 @@ module.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.update, this.asset.id, data)
 	.then(function (res) {
+	  if ('excerpt' in data)
+	    a.volume.clear('excerpts');
 	  return 'id' in res.data ? a.asset.update(res.data) : a.update(res.data);
 	});
     };
