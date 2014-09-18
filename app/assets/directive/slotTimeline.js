@@ -16,24 +16,6 @@ module.directive('slotTimeline', [
           e.stopPropagation();
         });
 
-        timeline.sortTracks = function () {
-          $scope.tracks.sort(function sortTracksFn(a, b) {
-	    var al = a.segment.l;
-	    var bl = b.segment.l;
-	    return isFinite(bl) - isFinite(al) ||
-	      al - bl ||
-	      a.segment.u - b.segment.u ||
-	      a.id - b.id;
-          });
-        };
-
-        timeline.parseTracks = function () {
-          $scope.tracks.splice.apply($scope.tracks, [0, $scope.tracks.length].concat(page.$filter('toArray')(ctrl.slot.assets)));
-          timeline.time.left = ctrl.clock.start;
-          timeline.time.right = ctrl.clock.duration;
-          timeline.sortTracks();
-        };
-
         timeline.time = {
           left: 0,
           right: null,
@@ -62,7 +44,7 @@ module.directive('slotTimeline', [
 
         // init
 
-        timeline.parseTracks();
+        $scope.parseTracks();
       }
     ];
 

@@ -1,4 +1,4 @@
-<div class="slot-timeline-track" ng-click="!track.file && track.select()" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
+<div class="slot-timeline-track" ng-click="track.select()" ng-class="{select: track.asset && ctrl.isCurrent(track.asset)}" bindonce bo-id="'slot-timeline-track-'+track.asset.asset.id">
   <div class="slot-track" ng-class="track.classes()">
     <div class="slot-track-asset" ng-style="track.styles()" ng-if="track.asset">
       <div class="slot-track-asset-info">
