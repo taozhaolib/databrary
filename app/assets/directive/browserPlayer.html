@@ -5,7 +5,7 @@
         <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip="'player.close' | message"></a>
         <a ng-href="{{played.object.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip="'player.download' | message"></a>
 
-        <div class="classification icon line tool" bo-class="page.constants.classification[played.object.asset.classification].toLowerCase()" hint="classification-{{page.constants.classification[played.object.asset.classification]}}"></div>
+        <div class="classification icon line tool" bo-class="page.constants.classification[played.object.asset.classification]" hint="classification-{{page.constants.classification[played.object.asset.classification]}}"></div>
 
         <h1 class="browser-player-heading">
           <img class="icon" bo-src="played.object.icon" hint="format-{{played.object.format.extension}}">
