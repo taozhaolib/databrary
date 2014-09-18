@@ -12,7 +12,7 @@
         <ul class="actions">
 	        <li><a href="@slot.pageURL">view</a></li>
 	    @if(slot.checkPermission(Permission.EDIT)) {
-	        <li><a href="@controllers.routes.SlotHtml.edit(slot.containerId, slot.segment)">edit</a></li>
+	        <li><a href="@controllers.routes.SlotHtml.edit(slot.volumeId, slot.containerId, slot.segment)">edit</a></li>
 		<li><a href="@controllers.routes.AssetHtml.create(slot.volumeId, Some(slot.containerId), slot.segment.lowerBound)">add file</a></li>
 	    }
         </ul>

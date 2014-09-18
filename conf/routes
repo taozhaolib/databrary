@@ -58,7 +58,7 @@ GET     /volume/$vID<[0-9]+>/slot/container                                     
 POST    /volume/$vID<[0-9]+>/slot/container                                                       controllers.SlotHtml.create(vID : models.Volume.Id)
 
 GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>                                                    controllers.SlotHtml.view(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
-GET     /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.edit(sID : models.Container.Id, segment : dbrary.Segment)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/edit                                               controllers.SlotHtml.edit(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
 POST    /slot/$sID<[0-9]+>/edit                                                                   controllers.SlotHtml.update(sID : models.Container.Id, segment : dbrary.Segment)
 GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/zip                                                controllers.SlotController.zip(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment)
 

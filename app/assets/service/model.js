@@ -676,7 +676,7 @@ module.factory('modelService', [
     });
 
     Slot.prototype.editRoute = function () {
-      return router.slotEdit([this.container.id, this.segment.format()]);
+      return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
     };
 
     ///////////////////////////////// Record

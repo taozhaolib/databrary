@@ -272,7 +272,7 @@ module.provider('routerService', [
 
     //
 
-    routes.slot = makeRoute(controllers.SlotHtml.view, ['vid', 'id', 'segment'], {
+    function slotRoute(edit) { return {
       controller: 'slotView',
       templateUrl: 'slotView.html',
       resolve: {
@@ -284,11 +284,16 @@ module.provider('routerService', [
 		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
 		  ['assets', 'tags', 'comments', 'records']);
 	      });
-	  }
-        ]
+	  },
+        ],
+	edit: function () {
+	  return edit;
+	}
       },
       reloadOnSearch: false,
-    });
+    }; }
+    routes.slot = makeRoute(controllers.SlotHtml.view, ['vid', 'id', 'segment'], slotRoute(false));
+    routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['vid', 'id', 'segment'], slotRoute(true));
 
     //
 
@@ -298,7 +303,6 @@ module.provider('routerService', [
     routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
-    routes.slotEdit = makeRoute(controllers.SlotHtml.edit, ['id', 'segment']);
     routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
     routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
 

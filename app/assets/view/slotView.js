@@ -1,11 +1,23 @@
 'use strict';
 
 module.controller('slotView', [
-  '$scope', 'slot', 'pageService', function ($scope, slot, page) {
-    var volume = slot.volume;
+  '$scope', 'slot', 'edit', 'pageService',
+  function ($scope, slot, editing, page) {
+    $scope.slot = slot;
+    var volume = $scope.volume = slot.volume;
+    $scope.editing = editing;
+    $scope.mode = editing ? 'edit' : 'view';
     page.display.title = slot.displayName;
     
-    $scope.tracks = []; $scope.uploadsInProgress = [];
+    if (editing || page.models.Login.checkAccess(page.permission.EDIT, slot))
+      page.display.toolbarLinks.push({
+	type: 'yellow',
+	html: page.constants.message(editing ? 'slot.view' : 'slot.edit'),
+	url: editing ? slot.route : slot.editRoute(),
+      });
+
+    $scope.tracks = [];
+    $scope.uploadsInProgress = [];
 
     // helpers
 
@@ -118,6 +130,7 @@ module.controller('slotView', [
       slot: slot,
       volume: volume,
       segment: slot.segment,
+      mode: $scope.mode,
 
       media: [],
 
@@ -276,36 +289,6 @@ module.controller('slotView', [
     });
 
     // return
-
-    $scope.$watch('page.$location.search().mode', function (val) {
-      if (val === 'edit') {
-	ctrl.mode = 'edit';
-	page.display.toolbarLinks = [
-	  {
-	    type: 'yellow',
-	    html: page.constants.message('slot.view'),
-	    click: function () {
-	      page.$location.search('mode', 'view');
-	    },
-	    access: page.permission.VIEW,
-	    object: volume,
-	  },
-	];
-      } else {
-	ctrl.mode = 'view';
-	page.display.toolbarLinks = [
-	  {
-	    type: 'yellow',
-	    html: page.constants.message('slot.edit'),
-	    click: function () {
-	      page.$location.search('mode', 'edit');
-	    },
-	    access: page.permission.CONTRIBUTE,
-	    object: volume,
-	  },
-	];
-      }
-    });
 
     $scope.ctrl = ctrl;
     return ctrl;

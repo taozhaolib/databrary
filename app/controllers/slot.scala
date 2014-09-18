@@ -99,7 +99,7 @@ object SlotHtml extends SlotController with HtmlController {
     } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))
   }
 
-  def view(v: Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
+  def view(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
     show().map(Ok(_))
   }
 
@@ -110,7 +110,7 @@ object SlotHtml extends SlotController with HtmlController {
       selectList = all diff records
     } yield (views.html.slot.edit(form getOrElse editForm, records, recordForm orElse Some(new RecordController.SelectForm), selectList))
 
-  def edit(i : Container.Id, segment : Segment) =
+  def edit(v : Volume.Id, i : Container.Id, segment : Segment) =
     Action(i, segment, Permission.EDIT).async { implicit request =>
       editForm.Ok
     }
