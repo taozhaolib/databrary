@@ -27,6 +27,7 @@ object.invalid=Invalid {0} specified
 funder.notfound=Funder ID {0} not found
 agreement.required=You must consent to the user agreement.
 tag.invalid=Invalid tag name (must be 3-32 letters)
+tag.invalid.long=<dl><dt>Tag Name</dt><dd>Must be between 3 and 32 characters.</dd><dd>Only letters, spaces, and dashes (-) allowed.</dd></dl>
 url.invalid=Invalid URL
 file.notfound=File not found
 

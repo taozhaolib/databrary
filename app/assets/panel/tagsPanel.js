@@ -234,14 +234,10 @@ module.controller('TagsPanel', [
         var message = {
           enabled: true,
           type: 'red',
-          body: '<dl>' +
-            '<dt>Tag Name</dt>' +
-            '<dd>Must be between 3 and 32 characters.</dd>' +
-            '<dd>Only letters, spaces, and dashes (-) allowed.</dd>' +
-            '</dl>'
-        };
+          body: page.constants.message('tag.invalid.long', {sce: page.$sce.HTML})
+	};
 
-        $scope.tagNewFormMessage = $scope.messages.add(message);
+        $scope.tagNewFormMessage = page.messages.add(message);
       }
     };
 
