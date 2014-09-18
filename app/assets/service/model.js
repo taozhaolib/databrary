@@ -956,7 +956,11 @@ module.factory('modelService', [
     var Tag = {};
 
     Tag.search = function (query) {
-      return router.http(router.controllers.TagApi.search, query);
+      return router.http(router.controllers.TagApi.search, query)
+	.then(function(res){
+	  //do other stuff?
+	  return res.data;
+      });
     };
 
     Slot.prototype.setTag = function (tag, vote) {
