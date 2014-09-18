@@ -10,14 +10,9 @@ module.controller('TagsPanel', [
     //
 
     var createMessage = function (message) {
-      if (typeof(message) == 'string') {
-        $scope.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
+      page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
           body: message,
-        }));
-      }
-      else {
-        $scope.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
-      }
+      }));
     };
 
     //
@@ -85,19 +80,8 @@ module.controller('TagsPanel', [
           $scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
         }
 
-        switch (vote) {
-          case -1:
-            createMessage(page.constants.message('tags.vote.down.success', tag.id));
-            break;
-
-          case 0:
-            createMessage(page.constants.message('tags.vote.null.success', tag.id));
-            break;
-
-          case 1:
-            createMessage(page.constants.message('tags.vote.up.success', tag.id));
-            break;
-        }
+	var directions = {'-1': 'down', 0: 'null', 1: 'up'};
+        createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
       }, function (res) {
         $scope.messages.addError({
           body: page.constants.message('tags.vote.error', tag.id),

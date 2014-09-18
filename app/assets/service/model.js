@@ -956,12 +956,12 @@ module.factory('modelService', [
     var Tag = {};
 
     Tag.search = function (query) {
-      return router.http(router.controller.TagApi.search, query);
+      return router.http(router.controllers.TagApi.search, query);
     };
 
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
-      return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
 	.then(function (res) {
 	  s.volume.clear('tags');
 	  s.clear('tags');
