@@ -26,7 +26,7 @@ grid-make(keyword, spread, column, gutter)
       grid-offset col*-1, column, gutter
 
 grid-offset(offset, column, gutter)
-  margin-left (column + gutter) * offset
+  margin-left (column + unit(gutter,"")) * offset
 
 grid-padding(gutter)
   padding-left (gutter/2)
@@ -53,9 +53,9 @@ grid-col(spread, column, gutter)
 // grid width
 
 grid-width(spread, column, gutter)
-  width (column + gutter) * spread
+  width (column + unit(gutter, "")) * spread
 
 // grid height
 
 grid-height(spread, column, gutter)
-  height (column + gutter) * spread
+  height (column + unit(gutter, "")) * spread
