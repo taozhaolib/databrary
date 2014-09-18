@@ -59,7 +59,7 @@ module.controller('TagsPanel', [
 	  $scope.volume.get(['tags']).then(
 	    $scope.refreshPanel,
 	    function (res) {
-	      $scope.messages.addError({
+	      page.messages.addError({
 		body: page.constants.message('tags.update.error'),
 		report: res,
 	      });
@@ -83,8 +83,8 @@ module.controller('TagsPanel', [
 	var directions = {'-1': 'down', 0: 'null', 1: 'up'};
         createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
       }, function (res) {
-        $scope.messages.addError({
-          body: page.constants.message('tags.vote.error', tag.id),
+        page.messages.addError({
+          body: page.constants.message('tags.vote.error', {sce: page.$sce.HTML}, tag.id),
           report: res,
         });
       });
@@ -101,13 +101,13 @@ module.controller('TagsPanel', [
       form.newNameVal = '';
 
       $scope.target.setTag(tag, true).then(function () {
-        createMessage(page.constants.message('tags.new.success', tag));
+        createMessage(page.constants.message('tags.new.success', {sce: page.$sce.HTML}, tag));
         emptyAuto();
 
         $scope.retrieveTags();
       }, function (res) {
-        $scope.messages.addError({
-          body: page.constants.message('tags.new.error', tag),
+        page.messages.addError({
+          body: page.constants.message('tags.new.error', {sce: page.$sce.HTML}, tag),
           report: res,
         });
 
@@ -198,8 +198,8 @@ module.controller('TagsPanel', [
             $scope.autoList = data;
           }
         }, function (errors, status) {
-          $scope.messages.addError({
-            body: page.constants.message('tags.auto.error'),
+          page.messages.addError({
+	    body: page.constants.message('tags.auto.error', {sce: page.$sce.HTML}),
             errors: errors,
             status: status
           });
