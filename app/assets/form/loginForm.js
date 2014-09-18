@@ -39,6 +39,8 @@ module.directive('loginForm', [
           tips: page.constants.message('login.password.help'),
         },
       }, true);
+
+      page.$timeout(function(){angular.element('#loginEmail').focus();},300);
     }
   }; }
 ]);
