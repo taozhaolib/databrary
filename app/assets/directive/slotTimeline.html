@@ -11,12 +11,12 @@
   </div>
 
   <div class="slot-timeline-tracks">
-    <slot-timeline-track ng-repeat="asset in tracks" asset="asset"></slot-timeline-track>
-    <slot-timeline-track ng-repeat="file in uploadsInProgress" file="file" spare></slot-timeline-track>
+    <slot-timeline-track ng-repeat="i in tracks" asset="i.slotAsset" track="i"></slot-timeline-track>
+    <slot-timeline-track ng-repeat="i in uploadsInProgress" file="i.flowFile" track="i"></slot-timeline-track>
     <slot-timeline-track ng-if="ctrl.mode == 'edit'"></slot-timeline-track> 
   </div>
 
   <div class="slot-timeline-now-zone">
-    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow" ng-if="ctrl.current && ctrl.hasPosition(ctrl.current)"></div>
+    <div class="slot-timeline-now" broadcast="shout-slotTimelineNow" ng-if="ctrl.current && ctrl.current.slotAsset && ctrl.hasPosition(ctrl.current.slotAsset)"></div>
   </div>
 </section>

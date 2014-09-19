@@ -58,6 +58,16 @@ module.factory('displayService', [
       }, 1);
     };
 
+    //will give error if $float or $floater are not elements with offset() available
+    display.makeFloatScrollFn = function(float, floater, x) {
+      return function () {
+	if (window.pageYOffset + x >= float.offset().top)
+	  floater.addClass('float');
+	else
+	  floater.removeClass('float');
+      };
+    };
+
     //
 
     var ageKeys = ['science', 'days', 'months', 'years'],
@@ -85,18 +95,6 @@ module.factory('displayService', [
       });
 
     //
-
-    //will give error if $float or $floater are not elements with offset() available
-    display.makeFloatScrollFn = function($float, $floater, x){
-      return function () {
-	if (window.pageYOffset + x >= $float.offset().top) {
-	  $floater.addClass('float');
-	} else {
-	  $floater.removeClass('float');
-	}
-      };
-    };
-
     return display;
   }
 ]);

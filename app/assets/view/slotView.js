@@ -21,6 +21,7 @@ module.controller('slotView', [
 
     // helpers
 
+    // TODO - update for addition of formData
     function getAsset(media) {
       return media && '$scope' in media ? media.asset : media;
     }
@@ -29,15 +30,57 @@ module.controller('slotView', [
       return $('#' + media.id).find('video')[0];
     }
 
+    var slotAssetToTrack = function(x){
+      return {
+	slotAsset:  x,
+	formData:   {
+	  id: x.asset.id,
+	  name: x.asset.name,
+	  classification: x.asset.classification+'',
+	}
+      };
+    };
+
+    var flowFileToUploadInProgress = function(x){
+      var ans = {
+	flowFile: x,
+	formData: {
+	  name: x.replace ? ctrl.current.name : undefined,
+	  classification: (x.replace ? ctrl.current.classification : 0) + ''
+	},
+      };
+      x.backRef = ans;
+      return ans;
+    };
+
+    $scope.parseTracks = function () {
+      $scope.tracks = $.map(ctrl.slot.assets, slotAssetToTrack); //this is only valid in the beginning, before it wiped out
+      ctrl.timeline.time.left = ctrl.clock.start;
+      ctrl.timeline.time.right = ctrl.clock.duration;
+
+      $scope.tracks.sort(function sortTracksFn(a, b) {
+	var al = a.slotAsset.segment.l;
+	var bl = b.slotAsset.segment.l;
+	return isFinite(bl) - isFinite(al) ||
+	  al - bl ||
+	  a.slotAsset.segment.u - b.slotAsset.segment.u ||
+	  a.id - b.id;
+      });
+      if (!ctrl.current) ctrl.setCurrent($scope.tracks[0]); //might be a better place for this...
+    };
+
     // upload
     $scope.fileAdded = function(file) {
       if ($scope.ctrl.current && $scope.ctrl.replaceable){
 	file.replace = $scope.ctrl.current.asset.id;
       }
+
       page.assets.assetStart(file).then(function(){
 	file.pause();
-	$scope.uploadsInProgress.push(file); //create a better object here. let uploadsInProgress have editable metadata
+	var newTrack = flowFileToUploadInProgress(file);
+	$scope.uploadsInProgress.push(newTrack); 
 	file.resume();
+	ctrl.setCurrent(newTrack);
       },
       function(error){
 	page.messages.addError({
@@ -50,26 +93,23 @@ module.controller('slotView', [
     };
 
     $scope.fileSuccess = function(file) {
-	var data;
-	  
+	var data = file.backRef.formData;
+	data.upload = file.uniqueIdentifier;
+
 	if(!file.replace){
-	  data = {
-	    name: file.file.name,
-	    classification: 0,
-	    upload: file.uniqueIdentifier
-	  };
 	  ctrl.slot.createAsset(data).then(function(res){
-	      removeUploadInProgress(file);
-	      $scope.tracks.push(res);
-	      ctrl.setCurrent(res);
+	      removeUploadInProgress(file.backRef);
+	      var newTrack = slotAssetToTrack(res);
+	      $scope.tracks.push(newTrack);
+	      ctrl.setCurrent(newTrack); //conditional on isCurrent?
 	      page.messages.add({
 		type: 'green',
 		countdown: 3000,
-		body: page.constants.message('asset.upload.success', data.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
+		body: page.constants.message('asset.upload.success', res.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
 	      });
 	  },
 	  function(error){
-	      removeUploadInProgress(file);
+	      removeUploadInProgress(file.backRef);
 	      page.messages.addError({
 		type: 'red',
 		body: page.constants.message('asset.update.error', data.name),
@@ -78,28 +118,64 @@ module.controller('slotView', [
 	  });
 	}
 	else{
-	  data = {
-	    name: ctrl.current.asset.name || '',
-	    classification: ctrl.current.asset.classification,
-	    upload: file.uniqueIdentifier
-	  };
-	  ctrl.current.replace(data).then(function(res){
+	  ctrl.current.replace(file.data).then(function(res){
 	    ctrl.replaceable = false;
-	    removeUploadInProgress(file);
+	    removeUploadInProgress(file.backRef);
+	    var newTrack = slotAssetToTrack(res);
+
+	    //perform replacement in tracks list
 	    for(var i in $scope.tracks){
-	      if($scope.tracks[i].asset.id == ctrl.current.asset.id){
-		$scope.tracks[i] = res;
+	      if($scope.tracks[i].slotAsset.asset.id == file.replace){
+		$scope.tracks[i] = slotAssetToTrack(newTrack);
 		break;
 	      }
 	    }
-	    ctrl.setCurrent(res);
+	    ctrl.setCurrent(newTrack); //condition on isCurrent?
 	    page.messages.add({
 	      type: 'green',
 	      countdown: 3000,
-	      body: page.constants.message('asset.upload.success', data.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
+	      body: page.constants.message('asset.upload.success', res.asset.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
 	    });
 	  });
 	}
+    };
+
+    $scope.saveAsset = function() {
+      ctrl.current.slotAsset.save(ctrl.current.formData).then(function (res){
+	  ctrl.assetEditForm.$setPristine();
+	  ctrl.assetEditForm.messages.add({
+	    type: 'green',
+	    countdown: 3000,
+	    body: page.constants.message('asset.update.success', res.name),
+	  });
+	},
+	function (error){
+	  ctrl.assetEditForm.messages.addError({
+	    type: 'red',
+	    body: page.constants.message('asset.update.error', ctrl.current.formData.name),
+	    report: error,
+	});
+      }
+      );
+    };
+
+    $scope.removeAsset = function(conf){
+      if(conf && !confirm(page.constants.message('asset.remove.confirm'))) return;
+      ctrl.current.slotAsset.remove().then(function() {
+	page.messages.add({
+	  type: 'green',
+	  countdown: 3000,
+	  body: page.constants.message('asset.remove.success', ctrl.current.slotAsset.asset.name || page.constants.message('file')),
+	});
+	$scope.tracks.remove(ctrl.current); 
+	$scope.ctrl.current = undefined;
+      }, function (res) {
+	page.messages.addError({
+	  type: 'red',
+	  body: page.constants.message('asset.remove.error', ctrl.current.slotAsset.asset.name || page.constants.message('file')),
+	  report: res,
+	});
+      });
     };
 
     var removeUploadInProgress = function (file){
@@ -126,6 +202,7 @@ module.controller('slotView', [
       }
     }
 
+    //TODO - update 'has' functions to reflect addition of formData
     var ctrl = {
       slot: slot,
       volume: volume,
@@ -133,8 +210,6 @@ module.controller('slotView', [
       mode: $scope.mode,
 
       media: [],
-
-      current: slot.assets[0],
 
       registerMedia: function (media) {
 	ctrl.media.push(media);
@@ -149,10 +224,19 @@ module.controller('slotView', [
 	ctrl.media.remove(media);
       },
 
-      setCurrent: function (asset) {
-	ctrl.current = getAsset(asset);
-	if(ctrl.current && ctrl.current.asset) ctrl.updateEditData();
+      setCurrent: function (track) {
+	if(ctrl.current && ctrl.assetEditForm){
+	  ctrl.current.formData.dirty = ctrl.assetEditForm.$dirty;
+	}
+	ctrl.current = track;
 	ctrl.replaceable = false;
+	if(track && ctrl.assetEditForm){
+	  if(track.formData.dirty){
+	    ctrl.assetEditForm.$setDirty();
+	  } else {
+	    ctrl.assetEditForm.$setPristine();
+	  }
+	}
       },
 
       isCurrent: function (media) {
@@ -160,8 +244,7 @@ module.controller('slotView', [
       },
 
       toggleReplace: function() {
-	if(!ctrl.replaceable)  ctrl.replaceable = true;
-	else ctrl.replaceable = !ctrl.replaceable;
+	ctrl.replaceable = !ctrl.replaceable;
       },
 
       jump: function (asset) {
@@ -171,13 +254,14 @@ module.controller('slotView', [
 
       hasPosition: function (media) {
 	var asset = getAsset(media);
-	return asset && isFinite(asset.segment.l);
+	return asset && asset.segment && isFinite(asset.segment.l);
       },
 
       hasDisplay: function (media) {
 	var asset = getAsset(media);
-	if (!asset)
+	if (!asset || !asset.slotAsset)
 	  return false;
+	asset = asset.slotAsset;
 	var type = asset.asset.format.type;
 	return type === 'video' || type === 'image';
       },
@@ -200,6 +284,7 @@ module.controller('slotView', [
 	return getElement(media).paused;
       },
     };
+
 
     // clock
 

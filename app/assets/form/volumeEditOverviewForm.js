@@ -116,9 +116,7 @@ module.directive('volumeEditOverviewForm', [
       form.validator.client(validate, true);
       form.setAutomatic(!volume);
 
-      var $float = $('.veo-float');
-      var $floater = $('.veo-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.veo-float'), $('.veo-float-floater'), 24*1.5);
       page.$w.scroll(form.scrollFn);
     };
 

@@ -115,7 +115,7 @@ module.directive('spreadsheet', [
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	$scope.editable = page.models.Login.checkAccess(page.permission.EDIT, volume);
+	$scope.editable = volume.checkPermission(page.permission.EDIT);
 	var editing = $scope.editing = false;
 
 	function getSlot(slot) {

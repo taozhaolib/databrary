@@ -48,9 +48,7 @@ module.directive('volumeEditFundingForm', [
 	page.display.scrollTo('fieldset.funding-grant:last');
       };
 
-      var $float = $('.vef-float');
-      var $floater = $('.vef-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.vef-float'), $('.vef-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
     };
 

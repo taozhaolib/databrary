@@ -10,14 +10,9 @@ module.controller('TagsPanel', [
     //
 
     var createMessage = function (message) {
-      if (typeof(message) == 'string') {
-        $scope.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
+      page.messages.add(angular.extend({}, DEFAULT_MESSAGE, {
           body: message,
-        }));
-      }
-      else {
-        $scope.messages.add(angular.extend({}, DEFAULT_MESSAGE, message));
-      }
+      }));
     };
 
     //
@@ -64,7 +59,7 @@ module.controller('TagsPanel', [
 	  $scope.volume.get(['tags']).then(
 	    $scope.refreshPanel,
 	    function (res) {
-	      $scope.messages.addError({
+	      page.messages.addError({
 		body: page.constants.message('tags.update.error'),
 		report: res,
 	      });
@@ -85,22 +80,11 @@ module.controller('TagsPanel', [
           $scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
         }
 
-        switch (vote) {
-          case -1:
-            createMessage(page.constants.message('tags.vote.down.success', tag.id));
-            break;
-
-          case 0:
-            createMessage(page.constants.message('tags.vote.null.success', tag.id));
-            break;
-
-          case 1:
-            createMessage(page.constants.message('tags.vote.up.success', tag.id));
-            break;
-        }
+	var directions = {'-1': 'down', 0: 'null', 1: 'up'};
+        createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
       }, function (res) {
-        $scope.messages.addError({
-          body: page.constants.message('tags.vote.error', tag.id),
+        page.messages.addError({
+          body: page.constants.message('tags.vote.error', {sce: page.$sce.HTML}, tag.id),
           report: res,
         });
       });
@@ -117,13 +101,13 @@ module.controller('TagsPanel', [
       form.newNameVal = '';
 
       $scope.target.setTag(tag, true).then(function () {
-        createMessage(page.constants.message('tags.new.success', tag));
+        createMessage(page.constants.message('tags.new.success', {sce: page.$sce.HTML}, tag));
         emptyAuto();
 
         $scope.retrieveTags();
       }, function (res) {
-        $scope.messages.addError({
-          body: page.constants.message('tags.new.error', tag),
+        page.messages.addError({
+          body: page.constants.message('tags.new.error', {sce: page.$sce.HTML}, tag),
           report: res,
         });
 
@@ -214,8 +198,8 @@ module.controller('TagsPanel', [
             $scope.autoList = data;
           }
         }, function (errors, status) {
-          $scope.messages.addError({
-            body: page.constants.message('tags.auto.error'),
+          page.messages.addError({
+	    body: page.constants.message('tags.auto.error', {sce: page.$sce.HTML}),
             errors: errors,
             status: status
           });
@@ -250,14 +234,10 @@ module.controller('TagsPanel', [
         var message = {
           enabled: true,
           type: 'red',
-          body: '<dl>' +
-            '<dt>Tag Name</dt>' +
-            '<dd>Must be between 3 and 32 characters.</dd>' +
-            '<dd>Only letters, spaces, and dashes (-) allowed.</dd>' +
-            '</dl>'
-        };
+          body: page.constants.message('tag.invalid.long', {sce: page.$sce.HTML})
+	};
 
-        $scope.tagNewFormMessage = $scope.messages.add(message);
+        $scope.tagNewFormMessage = page.messages.add(message);
       }
     };
 

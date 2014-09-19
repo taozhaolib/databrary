@@ -1,0 +1,19 @@
+<div class="asset-display" bo-switch="asset.format.type">
+  <div bo-switch-when="image">
+    <img bo-src="asset.downloadRoute(true)">
+  </div>
+
+  <div bo-switch-when="video">
+    <div bo-if="!asset.duration" bo-text="'asset.untranscoded | message"></div>
+    <video controls video-clip="clip">
+      <source bo-src="asset.downloadRoute(true)" bo-attr bo-attr-type="asset.format.mimetype">
+    </video>
+  </div>
+
+  <div bo-switch-default>
+    <aside>
+      <div bo-text="asset.displayName"></div>
+    </aside>
+  </div>
+</div>
+

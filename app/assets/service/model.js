@@ -296,11 +296,17 @@ module.factory('modelService', [
       return Login.user.id !== constants.party.NOBODY;
     };
 
-    Login.checkAccess = function (level, object) {
-      return (object ? object.permission : Login.user.access) >= level ||
-	Login.user.superuser ||
-	/* you always have permission over yourself: */
-	(Login.user === object && Login.user.id != constants.party.NOBODY);
+    Login.checkAccess = function (level) {
+      return Login.user.access >= level;
+    };
+
+    Model.prototype.checkPermission = function (level) {
+      return this.permission >= level || Login.user.superuser;
+    };
+
+    /* a little hacky, but to get people SUPER on themselves: */
+    Login.prototype.checkPermission = function (level) {
+      return this.id !== constants.party.NOBODY;
     };
 
     Login.isAuthorized = function () {
@@ -556,8 +562,9 @@ module.factory('modelService', [
       /* not type-safe for descendents:
       if (this.context === undefined)
 	return this.container; */
-      var s = Object.create(Object.getPrototypeOf(this));
-      return angular.extend(s, this, {segment:Segment.make(this.context)});
+      var s = angular.extend(Object.create(Object.getPrototypeOf(this)), this, {segment:Segment.make(this.context)});
+      s.clear('format');
+      return s;
     };
 
     function Container(volume, init) {
@@ -956,12 +963,16 @@ module.factory('modelService', [
     var Tag = {};
 
     Tag.search = function (query) {
-      return router.http(router.controller.TagApi.search, query);
+      return router.http(router.controllers.TagApi.search, query)
+	.then(function(res){
+	  //do other stuff?
+	  return res.data;
+      });
     };
 
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
-      return router.http(router.controller.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
 	.then(function (res) {
 	  s.volume.clear('tags');
 	  s.clear('tags');

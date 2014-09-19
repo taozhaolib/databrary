@@ -36,7 +36,6 @@ module.directive('slotTimelineTrack', [
 
         track.getPosition = function () {
 	  left = (track.asset.segment.l - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
-	  console.log(left);
 	  right = (ctrl.clock.duration - track.asset.segment.u) / (ctrl.clock.duration - ctrl.clock.start);
         };
 
@@ -61,7 +60,7 @@ module.directive('slotTimelineTrack', [
         // behavior
 
         track.select = function () {
-          $scope.ctrl.setCurrent(track.asset);
+          $scope.ctrl.setCurrent($scope.$eval($attrs.track));
         };
       }
     ];
