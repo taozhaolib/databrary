@@ -562,8 +562,9 @@ module.factory('modelService', [
       /* not type-safe for descendents:
       if (this.context === undefined)
 	return this.container; */
-      var s = Object.create(Object.getPrototypeOf(this));
-      return angular.extend(s, this, {segment:Segment.make(this.context)});
+      var s = angular.extend(Object.create(Object.getPrototypeOf(this)), this, {segment:Segment.make(this.context)});
+      s.clear('format');
+      return s;
     };
 
     function Container(volume, init) {

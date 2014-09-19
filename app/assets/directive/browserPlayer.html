@@ -13,21 +13,7 @@
         </h1>
       </header>
 
-      <div ng-switch="getMimeGroup(played.object)">
-        <div ng-switch-when="image">
-          <img ng-src="{{played.object.downloadRoute(true)}}" style="max-width: 100%;">
-        </div>
-
-        <div ng-switch-when="video">
-          <div bo-if="!played.object.asset.duration" bo-text="'asset.untranscoded | message"></div>
-
-          <video controls excerpt="played">
-            <source ng-src="{{played.object.downloadRoute(true)}}" type="{{played.object.format.mimetype}}">
-          </video>
-        </div>
-
-        <div ng-switch-default></div>
-      </div>
+      <asset-display asset="played.object">
     </div>
   </section>
 </section>

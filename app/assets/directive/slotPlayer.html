@@ -34,7 +34,7 @@
     </div>
 
     <div class="player-main-viewport">
-      <slot-media asset="ctrl.current.slotAsset" ng-if="ctrl.hasDisplay(ctrl.current) && !ctrl.replaceable"></slot-media>
+      <asset-display asset="ctrl.current.slotAsset" ng-if="ctrl.hasDisplay(ctrl.current) && !ctrl.replaceable"></asset-display>
       <div ng-if="ctrl.mode === 'edit' && (!ctrl.current || ctrl.replaceable)" flow-drop flow-btn style="background-color: yellow; width: 100%; height: 100%">DROP OR SELECT FILE HERE</div>
     </div>
 

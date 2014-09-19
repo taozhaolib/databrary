@@ -15,19 +15,7 @@
             </h1>
           </header>
 
-          <div bo-switch="current.format.type">
-            <div bo-switch-when="image">
-              <img bo-src="current.downloadRoute(true)" style="max-width: 100%;">
-            </div>
-
-            <div bo-switch-when="video">
-              <video controls excerpt="current">
-                <source ng-src="{{srcRoute}}" type="{{current.format.mimetype}}">
-              </video>
-            </div>
-
-            <div bo-switch-default></div>
-          </div>
+	  <asset-display asset="current">
 	</div>
       </section>
 
