@@ -82,9 +82,7 @@ module.directive('volumeEditAccessForm', [
 	page.display.scrollTo('fieldset .access-grant:last');
       };
 
-      var $float = $('.vea-float');
-      var $floater = $('.vea-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.vea-float'), $('.vea-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
     };
 

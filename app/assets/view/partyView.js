@@ -8,7 +8,7 @@ module.controller('partyView', [
     });
 
     page.display.title = party.name;
-    if (page.models.Login.checkAccess(page.permission.EDIT, party))
+    if (party.checkPermission(page.permission.EDIT))
       page.display.toolbarLinks.push({
         type: 'yellow',
         html: page.constants.message('party.edit'),

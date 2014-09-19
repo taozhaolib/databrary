@@ -162,9 +162,7 @@ module.directive('volumeEditMaterialsForm', [
 	});
       };
 
-      var $float = $('.vem-float');
-      var $floater = $('.vem-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.vem-float'), $('.vem-float-floater'), 24*1.5);
       page.$w.scroll(form.scrollFn);
     };
 

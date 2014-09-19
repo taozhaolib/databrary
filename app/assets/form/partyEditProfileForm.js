@@ -69,9 +69,7 @@ module.directive('partyEditProfileForm', [
       });
       form.validator.client(validate, true);
 
-      var $float = $('.pep-float');
-      var $floater = $('.pep-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.pep-float'), $('.pep-float-floater'), 24*1.5);
       page.$w.scroll(form.scrollFn);
     };
 

@@ -58,9 +58,7 @@ module.directive('partyEditApplyForm', [
 	preSelect = null;
       });
 
-      var $float = $('.peap-float');
-      var $floater = $('.peap-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.peap-float'), $('.peap-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
 
       page.events.talk('partyEditApplyForm-init', form);

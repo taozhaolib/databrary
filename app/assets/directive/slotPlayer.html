@@ -5,7 +5,7 @@
       <div ng-if="ctrl.current">
         <nav class="player-main-info-actions" ng-if="ctrl.current.slotAsset">
           <img ng-src="{{ctrl.current.slotAsset.icon}}" hint="format-{{ctrl.current.slotAsset.format.extension}}" class="player-main-info-file-icon">
-          <a ng-href="{{ctrl.current.slotAsset.downloadRoute(false)}}" target="_self" ng-if="page.models.Login.checkAccess(page.permission.READ, ctrl.current.slotAsset)" class="player-main-info-link icon download line"></a>
+          <a ng-href="{{ctrl.current.slotAsset.downloadRoute(false)}}" target="_self" ng-if="ctrl.current.slotAsset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
           <a ng-if="ctrl.mode === 'edit'" ng-click="removeAsset(true)" class="player-main-info-link icon trash line"></a>
 	  <a ng-if="ctrl.mode === 'edit'" ng-click="ctrl.toggleReplace()" class="player-main-info-link icon">R</a>
 	  <a ng-click="ctrl.jump(ctrl.current.slotAsset)" class="player-main-info-link icon jump line"></a> <!-- the idea of removing this icon has been floated -->
@@ -34,7 +34,7 @@
     </div>
 
     <div class="player-main-viewport">
-      <slot-media asset="ctrl.current.slotAsset" ng-if="ctrl.hasDisplay(ctrl.current) && !ctrl.replaceable"></slot-media>
+      <asset-display asset="ctrl.current.slotAsset" ng-if="ctrl.hasDisplay(ctrl.current) && !ctrl.replaceable"></asset-display>
       <div ng-if="ctrl.mode === 'edit' && (!ctrl.current || ctrl.replaceable)" flow-drop flow-btn style="background-color: yellow; width: 100%; height: 100%">DROP OR SELECT FILE HERE</div>
     </div>
 
