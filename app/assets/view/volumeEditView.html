@@ -27,7 +27,7 @@
             <volume-edit-funding-form></volume-edit-funding-form>
           </wizard-step>
 
-          <wizard-step name="access" ng-if="volume" enabled="page.models.Login.checkAccess(page.permission.ADMIN, volume)">
+          <wizard-step name="access" ng-if="volume" enabled="volume.checkPermission(page.permission.ADMIN)">
             <volume-edit-access-form></volume-edit-access-form>
           </wizard-step>
         </wizard>

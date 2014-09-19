@@ -15,7 +15,7 @@ module.controller('volumeView', [
     };
 
     page.display.title = volume.name;
-    if (page.models.Login.checkAccess(page.permission.EDIT, volume))
+    if (volume.checkPermission(page.permission.EDIT))
       page.display.toolbarLinks.push({
         type: 'yellow',
         html: page.constants.message('volume.edit'),

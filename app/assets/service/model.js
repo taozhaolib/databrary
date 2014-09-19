@@ -296,11 +296,17 @@ module.factory('modelService', [
       return Login.user.id !== constants.party.NOBODY;
     };
 
-    Login.checkAccess = function (level, object) {
-      return (object ? object.permission : Login.user.access) >= level ||
-	Login.user.superuser ||
-	/* you always have permission over yourself: */
-	(Login.user === object && Login.user.id != constants.party.NOBODY);
+    Login.checkAccess = function (level) {
+      return Login.user.access >= level;
+    };
+
+    Model.prototype.checkPermission = function (level) {
+      return this.permission >= level || Login.user.superuser;
+    };
+
+    /* a little hacky, but to get people SUPER on themselves: */
+    Login.prototype.checkPermission = function (level) {
+      return this.id !== constants.party.NOBODY;
     };
 
     Login.isAuthorized = function () {

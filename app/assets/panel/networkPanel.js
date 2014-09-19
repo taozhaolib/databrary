@@ -15,10 +15,8 @@ module.controller('NetworkPanel', [
     });
 
     var getPartyAuth = function () {
-      $scope.party.get(['parents', 'children']).then(function (party) {
-	$scope.party = party;
-
-	if (page.models.Login.checkAccess(page.permission.ADMIN, party))
+      $scope.party.get(['parents', 'children']).then(function () {
+	if ($scope.party.checkPermission(page.permission.ADMIN))
           angular.forEach($scope.party.children, function (party) {
             if (!party.member && !party.site) {
               if (!actionMessages[party.id]) {
@@ -46,7 +44,7 @@ module.controller('NetworkPanel', [
 
     //
 
-    $scope.isAdmin = page.models.Login.checkAccess(page.permission.ADMIN, $scope.party);
+    $scope.isAdmin = $scope.party.checkPermission(page.permission.ADMIN);
 
     var userExists = function (list) {
       var user = page.models.Login.user.id;

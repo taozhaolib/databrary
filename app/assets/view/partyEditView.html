@@ -13,15 +13,15 @@
             <party-edit-profile-form></party-edit-profile-form>
           </wizard-step>
 
-          <wizard-step name="account" enabled="!party.institution && page.models.Login.checkAccess(page.permission.SUPER, party)">
+          <wizard-step name="account" enabled="!party.institution && party.checkPermission(page.permission.SUPER)">
             <party-edit-account-form></party-edit-account-form>
           </wizard-step>
 
-          <wizard-step name="apply" enabled="page.models.Login.checkAccess(page.permission.ADMIN, party)">
+          <wizard-step name="apply" enabled="party.checkPermission(page.permission.ADMIN)">
             <party-edit-apply-form></party-edit-apply-form>
           </wizard-step>
 
-          <wizard-step name="grant" enabled="page.models.Login.checkAccess(page.permission.ADMIN, party)">
+          <wizard-step name="grant" enabled="party.checkPermission(page.permission.ADMIN)">
             <party-edit-grant-form></party-edit-grant-form>
           </wizard-step>
         </wizard>
