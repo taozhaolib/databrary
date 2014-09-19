@@ -43,7 +43,7 @@
 
       <section class="toolbar-hover user" ng-if="page.models.Login.isLoggedIn() && hoverUser" click-elsewhere="hoverUserToggle()">
         <div class="row">
-          <div class="toolbar-user-menu col-desktop-10 col-laptop-2 col-tablet-2 col-mobile-2">
+          <div class="toolbar-user-menu">
             <ul class="flat">
               <li><strong bo-text="page.models.Login.user.name"></strong></li>
               <li ng-if="!page.models.Login.isAuthorized()">
