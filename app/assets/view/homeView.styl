@@ -106,7 +106,7 @@
 
 // media
 
-@media screen and (min-width: grid-mobile-width) and (max-width: (grid-tablet-width - 1))
+@media screen and (max-width: grid-mobile-width)
   .home-feature-info
     width auto
     top auto
@@ -121,7 +121,7 @@
     font-line 1.25 2
     letter-spacing 1px
 
-@media screen and (min-width: grid-tablet-width) and (max-width: (grid-laptop-width - 1))
+@media screen and (min-width: (grid-mobile-width + 1)) and (max-width: (grid-tablet-width))
   .home-feature-info
     width 10
     top 0
@@ -131,7 +131,7 @@
   .home-parties-header
     font-line 2 3
 
-@media screen and (min-width: grid-laptop-width) and (max-width: (grid-desktop-width - 1))
+@media screen and (min-width: grid-tablet-width + 1)
   .home-feature-info
     width 13.25
     right b1 * -9.75
