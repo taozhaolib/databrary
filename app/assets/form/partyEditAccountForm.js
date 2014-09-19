@@ -45,9 +45,7 @@ module.directive('partyEditAccountForm', [
       validate['password.again'].errors = page.constants.message('party.edit.password.again.error');
       form.validator.client(validate, true);
 
-      var $float = $('.peac-float');
-      var $floater = $('.peac-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*1.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.peac-float'), $('.peac-float-floater'), 24*1.5);
       page.$w.scroll($scope.scrollFn);
     };
 

@@ -62,9 +62,7 @@ module.directive('partyEditGrantForm', [
 	preSelect = null;
       });
 
-      var $float = $('.peg-float');
-      var $floater = $('.peg-float-floater');
-      form.scrollFn = page.display.makeFloatScrollFn($float, $floater, 24*2.5);
+      form.scrollFn = page.display.makeFloatScrollFn($('.peg-float'), $('.peg-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
 
       page.events.talk('partyEditGrantForm-init', form, $scope);
