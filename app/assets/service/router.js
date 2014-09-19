@@ -186,7 +186,7 @@ module.provider('routerService', [
           }
         ]
       },
-      reloadOnSearch: false,
+      reloadOnSearch: true,
     });
 
     //
