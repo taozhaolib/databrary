@@ -20,7 +20,7 @@
           </div>
         </li>
       </ul>
-    </form>
+    </ng-form>
   </div>
 
   <div id="tag-add" class="panel-tags-form" ng-if="page.models.Login.isLoggedIn()">
@@ -32,6 +32,6 @@
         <li ng-repeat="autoTag in autoList" ng-class="{active: autoSelect == $index}">
           <a href="" ng-click="fillAuto(tagNewForm, autoTag)">{{autoTag}}</a></li>
       </ul>
-    </form>
+    </ng-form>
   </div>
 </panel>
