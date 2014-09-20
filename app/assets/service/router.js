@@ -186,7 +186,6 @@ module.provider('routerService', [
           }
         ]
       },
-      reloadOnSearch: true,
     });
 
     //

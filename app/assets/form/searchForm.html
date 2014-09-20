@@ -1,5 +1,5 @@
-<ng-form name="searchForm" class="search-form">
+<ng-form class="search-form">
       <div class="search-form-search">
-        <input type="search" ng-model="searchForm.data.query" placeholder="{{'search.prompt' | message}}" ng-focus="searchForm.focus()" ng-blur="searchForm.blur()" focus="searchForm.searchFocus">
+        <input type="search" ng-model="search.query" placeholder="{{'search.prompt' | message}}" ng-keypress="keypress($event)"/>
       </div>
 </ng-form>

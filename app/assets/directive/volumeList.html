@@ -1,9 +1,12 @@
-<div class="volume-list" bindonce>
-  <ul class="flat">
-    <li ng-repeat="volume in volumes">
-      <article class="volume-list-result cf" bo-class="volumeClasses(volume)">
+<div class="volume-list">
+  <div ng-if="!volumes.length">
+    No matching data found.
+  </div>
+  <ul class="flat" ng-if="volumes.length">
+    <li ng-repeat="volume in volumes" bindonce>
+      <article class="volume-list-result cf" bo-class="{study: volume.citation, dataset: !volume.citation}">
         <h1>
-          <span class="icon" bo-class="iconClass(volume)" hint="object-{{volume.type}}"></span>
+	  <span class="icon" bo-class="{study: volume.citation, dataset: !volume.citation}" hint="object-{{volume.type}}"></span>
 	  <a bo-href="volume.route" bo-text="name(volume)"></a>
         </h1>
 
