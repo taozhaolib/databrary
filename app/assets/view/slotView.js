@@ -1,381 +1,350 @@
 'use strict';
+/* jslint eqnull:true */
 
 module.controller('slotView', [
   '$scope', 'slot', 'edit', 'pageService',
   function ($scope, slot, editing, page) {
     $scope.slot = slot;
-    var volume = $scope.volume = slot.volume;
+    $scope.volume = slot.volume;
     $scope.editing = editing;
     $scope.mode = editing ? 'edit' : 'view';
     page.display.title = slot.displayName;
-    
-    if (editing || page.models.Login.checkAccess(page.permission.EDIT, slot))
+
+    var targetAsset = page.$location.search().asset;
+    var video;
+
+    if (editing || slot.checkPermission(page.permission.EDIT))
       page.display.toolbarLinks.push({
 	type: 'yellow',
 	html: page.constants.message(editing ? 'slot.view' : 'slot.edit'),
 	url: editing ? slot.route : slot.editRoute(),
       });
+    
 
-    $scope.tracks = [];
-    $scope.uploadsInProgress = [];
-
-    // helpers
-
-    // TODO - update for addition of formData
-    function getAsset(media) {
-      return media && '$scope' in media ? media.asset : media;
+    function updateRange(segment) {
+      if (isFinite(slot.segment.l))
+	$scope.range.l = slot.segment.l;
+      else if (isFinite(segment.l) && segment.l < $scope.range.l)
+	$scope.range.l = segment.l;
+      
+      if (isFinite(slot.segment.u))
+	$scope.range.u = slot.segment.u;
+      else if (isFinite(segment.u) && segment.u > $scope.range.u)
+	$scope.range.u = segment.u;
     }
 
-    function getElement(media) {
-      return $('#' + media.id).find('video')[0];
+    function offsetPosition(offset) {
+      return (offset - $scope.range.base) / ($scope.range.u - $scope.range.l);
     }
 
-    var slotAssetToTrack = function(x){
-      return {
-	slotAsset:  x,
-	formData:   {
-	  id: x.asset.id,
-	  name: x.asset.name,
-	  classification: x.asset.classification+'',
-	}
-      };
+    function positionOffset(position) {
+      var tl = $(document.getElementById('slot-timeline'));
+      var p = (position - tl.offset().left) / tl.outerWidth();
+      if (p < 0 || p > 1)
+	return;
+      return $scope.range.l + p * ($scope.range.u - $scope.range.l);
+    }
+
+    $scope.positionStyle = function (p) {
+      var styles = {}, l, r;
+      if (p == null)
+	return styles;
+      if (p instanceof page.models.Segment) {
+	l = offsetPosition(p.l);
+	r = offsetPosition(p.u);
+      } else
+	l = offsetPosition(p);
+      if (l >= 0 && l <= 1)
+	styles.left = 100*l + '%';
+      if (r >= 0 && r <= 1)
+	styles.right = 100 - 100*r + '%';
+      return styles;
     };
 
-    var flowFileToUploadInProgress = function(x){
-      var ans = {
-	flowFile: x,
-	formData: {
-	  name: x.replace ? ctrl.current.name : undefined,
-	  classification: (x.replace ? ctrl.current.classification : 0) + ''
-	},
-      };
-      x.backRef = ans;
-      return ans;
+    function seekOffset(o) {
+      if (video && $scope.current && $scope.current.asset && $scope.current.asset.segment.contains(o))
+	video.currentTime = (o - $scope.current.asset.segment.base) / 1000;
+      $scope.position = o;
+    }
+
+    $scope.seekPosition = function (pos) {
+      var o = positionOffset(pos);
+      if (o)
+	seekOffset(o);
     };
 
-    $scope.parseTracks = function () {
-      $scope.tracks = $.map(ctrl.slot.assets, slotAssetToTrack); //this is only valid in the beginning, before it wiped out
-      ctrl.timeline.time.left = ctrl.clock.start;
-      ctrl.timeline.time.right = ctrl.clock.duration;
+    $scope.play = function () {
+      if (video)
+	video.play();
+      $scope.playing = 1;
+    };
 
-      $scope.tracks.sort(function sortTracksFn(a, b) {
-	var al = a.slotAsset.segment.l;
-	var bl = b.slotAsset.segment.l;
-	return isFinite(bl) - isFinite(al) ||
-	  al - bl ||
-	  a.slotAsset.segment.u - b.slotAsset.segment.u ||
-	  a.id - b.id;
+    $scope.pause = function () {
+      if (video)
+	video.pause();
+      $scope.playing = 0;
+    };
+
+    function sortTracks() {
+      if (!$scope.tracks)
+	return;
+      $scope.tracks.sort(function (a, b) {
+	return !a.asset - !b.asset || !a.file - !b.file ||
+	  (a.asset ?
+	    isFinite(b.asset.segment.l) - isFinite(a.asset.segment.l) ||
+	    a.asset.segment.l - b.asset.segment.l ||
+	    a.asset.segment.u - b.asset.segment.u ||
+	    a.id - b.id :
+	    b.progress - a.progress);
       });
-      if (!ctrl.current) ctrl.setCurrent($scope.tracks[0]); //might be a better place for this...
+    }
+
+    /* There is a lot of unfortunate duplication between here and volumeEditMaterialsForm,
+     * but this should be considered authoritative. */
+
+    function Track(asset) {
+      if (asset)
+	this.setAsset(asset);
+      else
+	this.fillData();
+    }
+
+    Track.prototype.setAsset = function (asset) {
+      this.asset = asset;
+      updateRange(asset.segment);
+      sortTracks();
+      if (targetAsset == asset.id)
+	this.select();
+      if (editing)
+	this.fillData();
     };
 
-    // upload
-    $scope.fileAdded = function(file) {
-      if ($scope.ctrl.current && $scope.ctrl.replaceable){
-	file.replace = $scope.ctrl.current.asset.id;
+    function selectTrack(track) {
+      if ($scope.current && $scope.form.edit)
+	$scope.current.dirty = $scope.form.edit.$dirty;
+      $scope.current = track;
+      page.$location.search('asset', track && track.asset && track.asset.id);
+      targetAsset = undefined;
+      if ($scope.current && $scope.form.edit) {
+	if ($scope.current.dirty)
+	  $scope.form.edit.$setDirty();
+	else
+	  $scope.form.edit.$setPristine();
       }
+      delete $scope.replace;
+    }
 
-      page.assets.assetStart(file).then(function(){
-	file.pause();
-	var newTrack = flowFileToUploadInProgress(file);
-	$scope.uploadsInProgress.push(newTrack); 
-	file.resume();
-	ctrl.setCurrent(newTrack);
-      },
-      function(error){
-	page.messages.addError({
-	  type: 'red',
-	  body: page.constants.message('asset.upload.rejected', file.file.name), 
-	  report: error,
-	});
+    Track.prototype.select = function () {
+      selectTrack(this);
+    };
+
+    Object.defineProperty(Track.prototype, 'name', {
+      get: function () {
+	if (!(this.file || this.asset))
+	  return page.constants.message('asset.add');
+	return this.file && this.file.file.name || this.asset && this.asset.name || page.constants.message('file');
       }
-      );
+    });
+
+    Track.prototype.positionStyle = function () {
+      return this.asset && $scope.positionStyle(this.asset.segment);
     };
 
-    $scope.fileSuccess = function(file) {
-	var data = file.backRef.formData;
-	data.upload = file.uniqueIdentifier;
+    if (editing) {
+      $scope.form = {};
 
-	if(!file.replace){
-	  ctrl.slot.createAsset(data).then(function(res){
-	      removeUploadInProgress(file.backRef);
-	      var newTrack = slotAssetToTrack(res);
-	      $scope.tracks.push(newTrack);
-	      ctrl.setCurrent(newTrack); //conditional on isCurrent?
-	      page.messages.add({
-		type: 'green',
-		countdown: 3000,
-		body: page.constants.message('asset.upload.success', res.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
-	      });
-	  },
-	  function(error){
-	      removeUploadInProgress(file.backRef);
-	      page.messages.addError({
-		type: 'red',
-		body: page.constants.message('asset.update.error', data.name),
-		report: error
-	      });
-	  });
-	}
-	else{
-	  ctrl.current.replace(file.data).then(function(res){
-	    ctrl.replaceable = false;
-	    removeUploadInProgress(file.backRef);
-	    var newTrack = slotAssetToTrack(res);
+      Track.prototype.fillData = function () {
+	var asset = this.asset || {
+	  classification: page.classification.RESTRICTED
+	};
+	this.data = {
+	  name: asset.name,
+	  classification: asset.classification+''
+	};
+      };
 
-	    //perform replacement in tracks list
-	    for(var i in $scope.tracks){
-	      if($scope.tracks[i].slotAsset.asset.id == file.replace){
-		$scope.tracks[i] = slotAssetToTrack(newTrack);
-		break;
-	      }
-	    }
-	    ctrl.setCurrent(newTrack); //condition on isCurrent?
-	    page.messages.add({
-	      type: 'green',
-	      countdown: 3000,
-	      body: page.constants.message('asset.upload.success', res.asset.name) + (res.asset.format.transcodable ? page.constants.message('asset.upload.transcoding') : ''), 
-	    });
-	  });
-	}
-    };
-
-    $scope.saveAsset = function() {
-      ctrl.current.slotAsset.save(ctrl.current.formData).then(function (res){
-	  ctrl.assetEditForm.$setPristine();
-	  ctrl.assetEditForm.messages.add({
+      Track.prototype.remove = function () {
+	var track = this;
+	if (!confirm(page.constants.message('asset.remove.confirm')))
+	  return;
+	track.asset.remove().then(function() {
+	  page.messages.add({
 	    type: 'green',
 	    countdown: 3000,
-	    body: page.constants.message('asset.update.success', res.name),
+	    body: page.constants.message('asset.remove.success', track.name),
 	  });
-	},
-	function (error){
-	  ctrl.assetEditForm.messages.addError({
+	  if (track === $scope.current)
+	    selectTrack();
+	  $scope.tracks.remove(track);
+	}, function (res) {
+	  page.messages.addError({
 	    type: 'red',
-	    body: page.constants.message('asset.update.error', ctrl.current.formData.name),
-	    report: error,
+	    body: page.constants.message('asset.remove.error', track.name),
+	    report: res,
+	  });
 	});
-      }
-      );
-    };
+      };
 
-    $scope.removeAsset = function(conf){
-      if(conf && !confirm(page.constants.message('asset.remove.confirm'))) return;
-      ctrl.current.slotAsset.remove().then(function() {
-	page.messages.add({
-	  type: 'green',
-	  countdown: 3000,
-	  body: page.constants.message('asset.remove.success', ctrl.current.slotAsset.asset.name || page.constants.message('file')),
-	});
-	$scope.tracks.remove(ctrl.current); 
-	$scope.ctrl.current = undefined;
-      }, function (res) {
-	page.messages.addError({
-	  type: 'red',
-	  body: page.constants.message('asset.remove.error', ctrl.current.slotAsset.asset.name || page.constants.message('file')),
-	  report: res,
-	});
-      });
-    };
+      Track.prototype.save = function () {
+	var track = this;
+	var act;
+	if (track.file) {
+	  track.data.upload = track.file.uniqueIdentifier;
+	  act = track.asset ? track.asset.replace(track.data) : slot.createAsset(track.data);
+	} else
+	  act = track.asset.save(track.data);
 
-    var removeUploadInProgress = function (file){
-	for(var i in $scope.uploadsInProgress){
-	  if ($scope.uploadsInProgress[i].uniqueIdentifier === file.uniqueIdentifier){
-	    $scope.uploadsInProgress.splice(i, 1);	  
+	act.then(function (asset) {
+	  if (asset instanceof page.models.Asset) {
+	    track.asset.asset = asset;
+	    asset = track.asset;
 	  }
-	}
-    };
+	  track.setAsset(asset);
 
-    $scope.fileProgress = function(file){
-	file.progressVal = file.progress();
-    };
+	  page.messages.add({
+	    type: 'green',
+	    countdown: 3000,
+	    body: page.constants.message('asset.' + (track.file ? 'upload' : 'update') + '.success', track.name) +
+	      (track.file && asset.format.transcodable ? ' ' + page.constants.message('asset.upload.transcoding') : ''), 
+	  });
 
-    // controller
+	  if (track.file) {
+	    if (!('creation' in track.asset.asset))
+	      track.asset.asset.creation = {date: Date.now(), name: track.file.file.name}; 
+	    track.file.cancel();
+	    delete track.file;
+	    delete track.progress;
+	  }
+	  delete track.dirty;
+	  if (track === $scope.current)
+	    $scope.form.edit.$setPristine();
+	}, function (error) {
+	  page.messages.addError({
+	    type: 'red',
+	    body: page.constants.message('asset.update.error', track.name),
+	    report: error,
+	  });
+	  if (track.file) {
+	    track.file.cancel();
+	    delete track.file;
+	    delete track.progress;
+	    delete track.data.upload;
+	  }
+	});
+      };
 
-    function syncPlayback(media) {
-      var el = getElement(media);
+      Track.prototype.upload = function (file) {
+	var track = this;
+	track.file = file;
+	track.progress = 0;
+	file.track = track;
+	delete $scope.replace;
 
-      if (ctrl.clock.playing && el && el.paused) {
-	ctrl.clock.play();
-      } else if (el && !el.paused) {
-	ctrl.clock.pause();
-      }
+	page.assets.assetStart(file).then(function () {
+	  file.resume();
+	  if (!track.asset)
+	    $scope.tracks.push(new Track());
+	},
+	function (error) {
+	  page.messages.addError({
+	    type: 'red',
+	    body: page.constants.message('asset.upload.rejected', track.name), 
+	    report: error,
+	  });
+	  file.cancel();
+	  delete track.file;
+	  delete track.progress;
+	});
+      };
     }
 
-    //TODO - update 'has' functions to reflect addition of formData
-    var ctrl = {
-      slot: slot,
-      volume: volume,
-      segment: slot.segment,
-      mode: $scope.mode,
+    $scope.fileAdded = function (file) {
+      if (!editing)
+	return;
 
-      media: [],
+      if ($scope.current)
+	$scope.current.upload(file);
+    };
 
-      registerMedia: function (media) {
-	ctrl.media.push(media);
-	syncPlayback(media);
+    $scope.fileSuccess = function (file) {
+      file.track.progress = 100;
+      file.track.save();
+    };
 
-	media.$scope.$on('$destroy', function () {
-	  ctrl.deregisterMedia(media);
-	});
+    $scope.fileProgress = function (file) {
+      file.track.progress = file.progress();
+    };
+
+    var videoEvents = {
+      pause: function () {
+	$scope.playing = 0;
       },
-
-      deregisterMedia: function (media) {
-	ctrl.media.remove(media);
+      playing: function () {
+	$scope.playing = 1;
       },
-
-      setCurrent: function (track) {
-	if(ctrl.current && ctrl.assetEditForm){
-	  ctrl.current.formData.dirty = ctrl.assetEditForm.$dirty;
-	}
-	ctrl.current = track;
-	ctrl.replaceable = false;
-	if(track && ctrl.assetEditForm){
-	  if(track.formData.dirty){
-	    ctrl.assetEditForm.$setDirty();
-	  } else {
-	    ctrl.assetEditForm.$setPristine();
-	  }
-	}
+      ratechange: function (event) {
+	console.log(event);
       },
-
-      isCurrent: function (media) {
-	return ctrl.current === getAsset(media);
+      timeupdate: function (event) {
+	console.log(event);
       },
-
-      toggleReplace: function() {
-	ctrl.replaceable = !ctrl.replaceable;
-      },
-
-      jump: function (asset) {
-	var $track = $('#slot-timeline-track-' + asset.asset.id);
-	page.display.scrollTo($track);
-      },
-
-      hasPosition: function (media) {
-	var asset = getAsset(media);
-	return asset && asset.segment && isFinite(asset.segment.l);
-      },
-
-      hasDisplay: function (media) {
-	var asset = getAsset(media);
-	if (!asset || !asset.slotAsset)
-	  return false;
-	asset = asset.slotAsset;
-	var type = asset.asset.format.type;
-	return type === 'video' || type === 'image';
-      },
-
-      hasTime: function (media) {
-	var asset = getAsset(media);
-	return asset && asset.asset.duration;
-      },
-
-      isNowPlayable: function (media) {
-	var asset = getAsset(media);
-	return ctrl.clock.position > asset.segment.l && ctrl.clock.position < asset.segment.u;
-      },
-
-      isReady: function (media) {
-	return getElement(media).readyState >= 4;
-      },
-
-      isPaused: function (media) {
-	return getElement(media).paused;
+      ended: function () {
+	$scope.playing = 0;
+	/* look for something else to play? */
       },
     };
 
+    this.deregisterVideo = function (v) {
+      if (video !== v)
+	return;
+      console.log("no video");
+      video = undefined;
+      v.off(videoEvents);
+    };
 
-    // clock
+    this.registerVideo = function (v) {
+      if (video)
+	this.deregisterVideo(video);
+      video = v;
+      console.log(video);
+      v.on(videoEvents);
+    };
 
-    ctrl.clock = new page.slotClock(slot, ctrl);
+    $scope.range = new page.models.Segment(Infinity, -Infinity);
+    updateRange(page.models.Segment.full);
 
-    // sort records
+    $scope.tracks = slot.assets.map(function (asset) {
+      return new Track(asset);
+    });
+    if (editing)
+      $scope.tracks.push(new Track());
+    sortTracks();
+    $scope.current = undefined;
+
+    $scope.playing = 0;
+    $scope.position = $scope.leftTime;
+    
+
+
+
+    /////// OLD
 
     var sortRecords = function () {
-      ctrl.records = {};
-      ctrl.noteOptions = {
+      $scope.records = {};
+      $scope.noteOptions = {
 	comments: 'comments',
       };
 
-      angular.forEach(volume.containers[slot.container.id].records, function (record) {
-	if (!(volume.records[record.id].category in ctrl.records)) {
-	  ctrl.records[volume.records[record.id].category] = [];
-	  ctrl.noteOptions[volume.records[record.id].category] = page.constants.category[volume.records[record.id].category].name;
+      angular.forEach(slot.records, function (record) {
+	if (!(slot.volume.records[record.id].category in $scope.records)) {
+	  $scope.records[slot.volume.records[record.id].category] = [];
+	  $scope.noteOptions[slot.volume.records[record.id].category] = page.constants.category[slot.volume.records[record.id].category].name;
 	}
 
-	ctrl.records[volume.records[record.id].category].push(record);
+	$scope.records[slot.volume.records[record.id].category].push(record);
       });
     };
 
     sortRecords();
-
-    // callbacks
-
-    var asapMediaFn = function (fn) {
-      ctrl.media.forEach(function (media) {
-	if (ctrl.hasTime(media) && ctrl.hasDisplay(media)) {
-	  var el = getElement(media);
-	  var $el = $(el);
-
-	  var cb = function () {
-	    if (el.readyState === 4) {
-	      fn(media, el);
-	    } else {
-	      $el.one('loadeddata', function () {
-		cb();
-	      });
-	    }
-	  };
-
-	  cb();
-	}
-      });
-    };
-
-    var callbackPlay = function () {
-      asapMediaFn(function (media, el) {
-	if (ctrl.isNowPlayable(media) && ctrl.isPaused(media)) {
-	  el.currentTime = (ctrl.clock.position - media.asset.segment.l) / 1000;
-	  el.play();
-	} else if (!ctrl.isPaused(media)) {
-	  el.pause();
-	}
-      });
-    };
-
-    var callbackJump = function () {
-      asapMediaFn(syncPlayback);
-    };
-
-    var callbackPause = function () {
-      asapMediaFn(function (media, el) {
-	el.pause();
-      });
-    };
-
-    var callbackTime = function () {
-      asapMediaFn(function (media, el) {
-	if (ctrl.isNowPlayable(media) && el.paused && !el.seeking) {
-	  syncPlayback(media);
-	}
-      });
-    };
-
-    ctrl.clock.playFn(callbackPlay);
-    ctrl.clock.jumpFn(callbackJump);
-    ctrl.clock.pauseFn(callbackPause);
-    ctrl.clock.timeFn(callbackTime);
-
-    // failsafe
-
-    $scope.$on('$destroy', function () {
-      ctrl.clock.pause();
-    });
-
-    // return
-
-    $scope.ctrl = ctrl;
-    return ctrl;
   }
 ]);

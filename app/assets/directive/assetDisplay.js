@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('assetDisplay', [
-  'pageService', function (page) { return {
+  function () { return {
     restrict: 'E',
     templateUrl: 'assetDisplay.html',
     scope: {

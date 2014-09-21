@@ -5,29 +5,16 @@ module.directive('slotAnnotations', [
     var controller = [
       '$scope', '$element',
       function ($scope, $element) {
-	var ctrl = $scope.ctrl;
 	var notes = this;
 	notes.list = [];
 
 	var $list, $head;
 
 	notes.noteStyle = function (note) {
-	  var left, right;
-
-	  if (angular.isArray(note.record.segment)) {
-	    left = note.record.segment && note.record.segment[0] ? (note.record.segment[0] - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start) : 0;
-	    right = note.record.segment && note.record.segment[1] ? (ctrl.clock.duration - note.record.segment[1]) / (ctrl.clock.duration - ctrl.clock.start) : 0;
-	  } else if (angular.isNumber(note.record.segment)) {
-	    left = (note.record.segment - ctrl.clock.start) / (ctrl.clock.duration - ctrl.clock.start);
-	    right = 1 - left;
-	  }
-
-	  return {
-	    'z-index': note.level,
-	    'top': 24 * (note.level + 1),
-	    'left': (angular.isNumber(left) ? left * 100 : 0) + '%',
-	    'right': (angular.isNumber(right) ? right * 100 : 0) + '%',
-	  };
+	  var style = $scope.positionStyle(note.record.segment);
+	  style['z-index'] = note.level;
+	  style.top = 24 * (note.level + 1);
+	  return style;
 	};
 
 	var drawNote = function (levels, level, record) {
@@ -49,15 +36,13 @@ module.directive('slotAnnotations', [
 	      break;
 
 	    default:
-	      if (!ctrl.records[mode]) {
-		ctrl.noteMode = null;
+	      if (!$scope.records[mode]) {
+		$scope.noteMode = null;
 		$head.height(0);
 		return;
 	      }
 
-	      ctrl.mode = page.constants.category[mode].name;
-
-	      angular.forEach(ctrl.records[mode], function (record) {
+	      angular.forEach($scope.records[mode], function (record) {
 		var l = levels.length;
 
 		if (!record.segment) {
@@ -99,8 +84,8 @@ module.directive('slotAnnotations', [
 	page.$timeout(function () {
 	  $list = $element.find('.slot-note-list');
 	  $head = $element.find('.slot-note-head');
-	  $scope.$watch('ctrl.noteMode', drawNotes);
-	  drawNotes(ctrl.noteMode);
+	  $scope.$watch('noteMode', drawNotes);
+	  drawNotes($scope.noteMode);
 	});
 
 	return notes;

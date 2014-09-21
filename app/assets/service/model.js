@@ -305,7 +305,7 @@ module.factory('modelService', [
     };
 
     /* a little hacky, but to get people SUPER on themselves: */
-    Login.prototype.checkPermission = function (level) {
+    Login.prototype.checkPermission = function (/*level*/) {
       return this.id !== constants.party.NOBODY;
     };
 
@@ -909,15 +909,15 @@ module.factory('modelService', [
 	});
     };
 
-    SlotAsset.prototype.thumbRoute = function(size) {
+    SlotAsset.prototype.thumbRoute = function (size) {
       return router.assetThumb([this.container.id, this.segment.format(), this.asset.id, size]);
     };
 
-    SlotAsset.prototype.downloadRoute = function(inline) {
+    SlotAsset.prototype.downloadRoute = function (inline) {
       return router.assetDownload([this.container.id, this.segment.format(), this.asset.id, inline]);
     };
 
-    SlotAsset.prototype.editRoute = function() {
+    SlotAsset.prototype.editRoute = function () {
       return router.assetEdit([this.asset.id]);
     };
 

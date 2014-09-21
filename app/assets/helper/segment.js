@@ -3,7 +3,7 @@
 module.factory('Segment', [
   function () {
     function Segment(l, u) {
-      if (arguments.length === 2) {
+      if (arguments.length >= 2) {
 	this.l = l;
 	this.u = u;
       } else if (l === undefined) {
@@ -17,7 +17,7 @@ module.factory('Segment', [
 	this.u = l+0.1; // this is floored out later
       } else if (l === null) {
 	this.l = 0;
-	this.u = -1;
+	this.u = 0;
       } else if (l instanceof Object && 'l' in l && 'u' in l) {
 	this.l = l.l;
 	this.u = l.u;
@@ -120,6 +120,17 @@ module.factory('Segment', [
 
     Segment.prototype.overlaps = function (that) {
       return !this.intersect(that).empty;
+    };
+
+    Segment.prototype.contains = function (that) {
+      if (typeof that === 'number')
+	return that >= this.l && that < this.u;
+      if (Segment.isFull(that))
+	return this.full;
+      if (Segment.isEmpty(that))
+	return !this.empty;
+      that = Segment.make(that);
+      return this.l <= that.l && this.u >= that.u;
     };
 
     Segment.prototype.relativeTo = function (b) {

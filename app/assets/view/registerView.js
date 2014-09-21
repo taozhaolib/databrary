@@ -39,7 +39,7 @@ module.controller('registerView', [
         };
       },
 
-      email: function (step) {
+      email: function (/*step*/) {
       },
 
       password: function (step) {

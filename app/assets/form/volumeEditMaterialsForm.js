@@ -7,6 +7,7 @@ module.directive('volumeEditMaterialsForm', [
       var slot = volume.top;
       var form = $scope.volumeEditMaterialsForm;
 
+      /* There is a lot of unfortunate duplication between here and slotView. */
       function materialData(asset) {
 	return {
 	  name: asset.asset.name,
@@ -57,10 +58,13 @@ module.directive('volumeEditMaterialsForm', [
 	    report: res,
 	  });
 	  file.cancel();
+	  delete material.file;
+	  delete material.progress;
 	});
       };
 
       form.fileSuccess = function (file) {
+	file.material.progress = 100;
 	form.save(file.material);
       };
 
@@ -80,15 +84,12 @@ module.directive('volumeEditMaterialsForm', [
 	if (!material.data.excerptOn)
 	  material.data.excerpt = '';
 
-	var act; var newFile;
+	var act;
 	if (material.file) {
-	  newFile = true;
 	  material.data.upload = material.file.uniqueIdentifier;
 	  act = material.asset ? material.asset.replace(material.data) : slot.createAsset(material.data);
-	} else{
-	  newFile = false;
+	} else
 	  act = material.asset.save(material.data);
-	}
 
 	act.then(function (asset) {
 	  if (asset instanceof page.models.SlotAsset)
@@ -96,19 +97,21 @@ module.directive('volumeEditMaterialsForm', [
 	  else
 	    material.asset.asset = asset;
 	  material.data = materialData(material.asset);
+
+	  material.form.messages.add({
+	    type: 'green',
+	    countdown: 3000,
+	    body: page.constants.message('asset.' + (material.file ? 'upload' : 'update') + '.success', materialName(material)) +
+	      (material.file && asset.format.transcodable ? ' ' + page.constants.message('asset.upload.trancoding') : ''),
+	  });
+
 	  if (material.file) {
 	    if (!('creation' in material.asset.asset))
 	      material.asset.asset.creation = {date: Date.now(), name: material.file.file.name}; 
 	    material.file.cancel();
 	    delete material.file;
+	    delete material.progress;
 	  }
-
-	  var msg = newFile ? 'asset.upload.success' : 'asset.update.success';
-	  material.form.messages.add({
-	    type: 'green',
-	    countdown: 3000,
-	    body: page.constants.message(msg, materialName(material)) + (newFile && asset.asset.format.transcodable ? page.constants.message('asset.upload.trancoding') : ''),
-	  });
 
 	  material.form.$setPristine();
 	}, function (res) {
@@ -117,6 +120,12 @@ module.directive('volumeEditMaterialsForm', [
 	    body: page.constants.message('asset.update.error', materialName(material)),
 	    report: res,
 	  });
+	  if (material.file) {
+	    material.file.cancel();
+	    delete material.file;
+	    delete material.progress;
+	    delete material.data.upload;
+	  }
 	});
       };
 

@@ -1,0 +1,235 @@
+.slot-player
+  margin-bottom b4
+
+.player-main
+  width 100%
+  background white
+  padding b4
+  box-shadow box-shadow-def
+  text-align center
+  position relative
+
+  &:hover
+    .player-main-float
+      opacity 1
+
+.player-main-viewport
+  background-color pale
+  box-shadow inset 0 0 b2 black
+
+.player-main-float
+  position absolute
+  top b1 * 5.5
+  left b1
+  right b1
+  opacity 0
+  transition opacity trans-time trans-ease
+  background white
+  box-shadow box-shadow-def
+
+.player-main-info
+  text-align left
+  height 6.25 // should be able to shrink this back when properly styled
+  border-bottom 1px solid pale
+  padding-bottom b4
+  margin-bottom b4
+
+.player-main-info-actions
+  float right
+  margin-top b8
+
+.player-main-info-file-icon
+  margin-right b8
+  position relative
+  top -b6
+
+.player-main-info-name
+  font-line 1
+
+.player-main-info-list
+  margin-bottom 0
+
+  .icon
+    position relative
+    top b12
+
+  dt
+    float left
+    clear left
+    width 150px
+
+    &:after
+      content ':'
+
+  dd
+    float left
+    margin-left b6
+
+.player-main-info-link
+  link-color orange
+  display inline-block
+
+.player-main-drop
+  background-color: yellow
+  width: 100%
+  height: 100%
+
+
+.slot-toolbar
+  margin-bottom b4
+  min-height 1.5
+  background white
+  box-shadow box-shadow-def
+  padding b4
+
+.slot-toolbar-left
+  float left
+
+.slot-toolbar-right
+  float right
+
+.slot-toolbar-group
+  float left
+
+.slot-toolbar-sep
+  float left
+  margin-right b4
+  height 1
+  border-right 1px solid pale
+
+.slot-toolbar-time
+  float left
+  margin-right b4
+  color gray
+  position relative
+  top b24
+
+.slot-toolbar-select
+  margin-bottom 0
+  font-size f34
+  padding-height b12
+  padding-width b8
+
+
+.slot-timeline
+  background-color white
+  box-shadow box-shadow-def
+  overflow hidden
+  position relative
+  user-select none
+
+.slot-timeline-ruler
+  z-index 500
+  position relative
+  width 100%
+  padding-width b6
+  box-shadow box-shadow-def
+  height 2
+  cursor default
+
+.slot-timeline-ruler-time
+  margin-top b1 + b8
+  font-size f23
+
+  &.left
+    float left
+    margin-left b12
+
+  &.right
+    float right
+    margin-right b12
+
+.slot-timeline-tracks
+  z-index 100
+  position relative
+  background rgba(255, 255, 255, .75)
+
+.slot-timeline-track
+  border-bottom 1px solid pale
+  padding b6
+  width 100%
+
+  &.dirty
+    background-color fade-out(red, 90%)
+
+  &.select
+    background-color fade-out(yellow, 90%)
+
+.slot-track
+  height b1 + b3 + b12
+
+.slot-track-asset
+  min-width b8
+  border 1px solid orange32
+  background-color orange51
+  cursor pointer
+  transition box-shadow, background-color, border-color trans-time trans-ease
+
+.slot-track-asset-info
+  margin b6
+  overflow ellipsis
+
+.slot-track-asset-thumb
+  height b1
+  width auto
+  margin-right b6
+  float left
+
+.slot-track-asset-icon
+  margin-height b6
+  margin-right b6
+  float left
+
+.slot-track-positioned
+  position relative
+
+  .slot-track-asset
+    border-color blue32
+    background-color blue51
+    position absolute
+    top 0
+    bottom 0
+    z-index -1
+
+.slot-track-select
+  .slot-track-asset
+    border 1px solid orange33
+    background-color orange52
+    box-shadow box-shadow-def
+
+  &.slot-track-positioned
+    .slot-track-asset
+      border-color blue33
+      background-color blue52
+
+.slot-timeline-now-zone
+  z-index 200
+  position absolute
+  top 0
+  bottom 0
+  left b6
+  right b6
+  pointer-events none
+
+.slot-timeline-now
+  position absolute
+  z-index 100
+  top 2 * b1
+  left 0
+  height 1000
+  border-left 1px solid green
+  transition left .05s linear
+
+  &:before
+    content ''
+    border-radius b1
+    size b3
+    position absolute
+    top -b3
+    left -b6
+    background-color green
+
+.slot-timeline-canvas
+  position absolute
+  top 0
+  left 0

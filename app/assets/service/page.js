@@ -14,7 +14,6 @@ module.factory('pageService', [
       assets: $injector.get('assetService'),
       panels: $injector.get('panelService'),
       router: $injector.get('routerService'),
-      slotClock: $injector.get('slotClockService'),
       storage: $injector.get('storageService'),
       tooltips: $injector.get('tooltipService'),
     };
@@ -59,7 +58,6 @@ module.factory('pageService', [
 
     page.$b = $('body');
     page.$m = $('main');
-    page.$d = $(page.$document);
     page.$w = $(page.$window);
 
     //

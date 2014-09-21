@@ -6,13 +6,116 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <h1 class="view-title smaller with-link" bo-text="ctrl.slot.displayName"></h1>
-          <a class="view-link" bo-href="ctrl.slot.volume.route" bo-text="'return.volume' | message"></a>
+          <a class="view-link" bo-href="volume.route" bo-text="volume.alias || volume.name"></a>
+          <h1 class="view-title smaller with-link" bo-text="slot.displayName"></h1>
+	  <h2 bo-if="slot.date" bo-text="slot.date"></h2>
         </hgroup>
 
-        <slot-player></slot-player>
-        <slot-toolbar></slot-toolbar>
-        <slot-timeline></slot-timeline>
+	<section class="slot-player">
+	  <div class="player-main" ng-if="current">
+	    <div class="player-main-info">
+	      <nav class="player-main-info-actions" ng-if="current.asset">
+		<img ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+		<a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+		<a bo-if="editing" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+		<a bo-if="editing" ng-click="replace = !replace" class="player-main-info-link icon">R</a>
+	      </nav>
+
+	      <div bo-if="!editing" ng-if="current.asset">
+		<dl class="player-main-info-list cf">
+		  <dt bo-text="'material.classification' | message"></dt>
+		  <dd>
+		    <span class="classification icon" ng-class="page.constants.classification[current.slotAsset.asset.classification]" hint="classification-{{page.constants.classification[current.slotAsset.asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[current.slotAsset.asset.classification]"></span>
+		  </dd>
+
+		  <dt>File Type</dt>
+		  <dd ng-bind="current.format.name"></dd>
+
+		  <dt ng-if="!current.asset.segment.full">Position</dt>
+		  <dd>
+		    <span ng-if="!current.asset.segment.full">{{current.asset.segment.l | timecode}} &ndash; {{current.asset.segment.u | timecode}}</span>
+		    <span ng-if="current.asset.duration"> ({{current.asset.duration | timecode}})</span>
+		  </dd>
+		</dl>
+	      </div>
+
+	      <ng-form bo-if="editing" name="form.edit">
+		<validator name="classification" label="'material.classification' | message">
+		  <select name="classification" ng-model="current.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
+		</validator>
+
+		<validator name="name" label="'material.name' | message">
+		  <input type="text" name="name" ng-model="current.data.name">
+		</validator>
+
+		<button ng-if="current.asset" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+	      </ng-form>
+	    </div>
+
+	    <div class="player-main-viewport" viewer-aspect="9/16">
+	      <asset-display ng-repeat="current in [current]" asset="current.asset" ng-if="current.asset && !replace"></asset-display>
+	      <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
+	      </div>
+	    </div>
+
+	    <div class="player-main-float" bo-if="!editing" ng-if="current">
+	      <h1 class="player-main-info-name">
+		<span class="filename" ng-bind="current.displayName"></span>
+	      </h1>
+	    </div>
+	  </div>
+	</section>
+
+	<section class="slot-toolbar cf">
+	  <div class="slot-toolbar-left">
+	    <div class="slot-toolbar-group slot-toolbar-group-player">
+	      <div class="slot-toolbar-button icon play" ng-click="play()"></div>
+	      <div class="slot-toolbar-button icon pause" ng-click="pause()"></div>
+	      <div class="slot-toolbar-time" ng-bind="position | timecode"></div>
+	    </div>
+
+	    <div class="slot-toolbar-sep"></div>
+
+	  </div>
+
+	  <div class="slot-toolbar-right">
+	    <div class="slot-toolbar-group slot-toolbar-group-right slot-toolbar-group-display">
+	      <select class="slot-toolbar-select" ng-options="key as val for (key, val) in noteOptions" ng-model="noteMode"></select>
+	    </div>
+	  </div>
+	</section>
+
+	<section id="slot-timeline" class="slot-timeline">
+	  <div class="slot-timeline-temporal" ng-if="!range.empty">
+	    <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
+	      <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
+	      <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
+	    </div>
+
+	    <slot-annotations></slot-annotations>
+	  </div>
+
+	  <div class="slot-timeline-tracks">
+	    <div ng-repeat="track in tracks" class="slot-timeline-track" ng-click="track.select()" ng-class="{select: current === track, dirty: track.dirty}" >
+	      <div class="slot-track" ng-class="{'slot-track-positioned': track.asset && !track.asset.segment.full, 'slot-track-select': current === track}">
+		<div class="slot-track-asset-info">
+		  <img class="slot-track-asset-thumb" bo-if="track.asset" bo-src="track.asset.thumbRoute(24)">
+		  <div class="slot-track-asset-info-name">{{track.name}}</div>
+		</div>
+		<div class="slot-track-asset" bo-if="track.asset && !track.asset.segment.full" bo-style="track.positionStyle()">
+		</div>
+		<div bo-if="track.file">
+		  <upload-progress progress-value="track.file.progressVal" ng-if="track.file.progressVal < 1"></upload-progress>
+		  <span ng-if="track.file.progressVal >= 1"><br>Completing...</span>
+		</div>
+	      </div>
+	    </div>
+	  </div>
+
+	  <div class="slot-timeline-now-zone">
+	    <div class="slot-timeline-now" ng-if="position !== undefined" ng-style="positionStyle(position)"></div>
+	  </div>
+	</section>
       </div>
     </div>
   </div>
