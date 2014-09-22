@@ -170,7 +170,9 @@ module.controller('slotView', [
 	};
 	this.data = {
 	  name: asset.name,
-	  classification: asset.classification+''
+	  classification: asset.classification+'',
+	  container: slot.container.id, /* required for position, which has the side-effect of restoring deleted/moved assets */
+	  position: asset.segment && isFinite(asset.segment.l) ? page.$filter('timecode')(asset.segment.l, true) : undefined
 	};
       };
 
