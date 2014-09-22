@@ -33,12 +33,16 @@
 	      </div>
 
 	      <ng-form bo-if="editing" name="form.edit">
-		<validator name="classification" label="'material.classification' | message">
+		<validator name="classification" label="'asset.classification' | message">
 		  <select name="classification" ng-model="current.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
 		</validator>
 
 		<validator name="name" label="'material.name' | message">
 		  <input type="text" name="name" ng-model="current.data.name">
+		</validator>
+
+		<validator name="position" label="'asset.position' | message">
+		  <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
 		</validator>
 
 		<button ng-if="current.asset" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
