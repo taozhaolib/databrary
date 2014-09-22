@@ -4,7 +4,7 @@ module.directive('video', [
   'pageService',
   function (page) { return {
     restrict: 'E',
-    require: ['?^slotView'],
+    require: ['^?ngController'],
     link: function ($scope, $element, $attr, listeners) {
       $element.on('loadedmetadata', function () {
 	var seek = $scope.$eval($attr.seek), stop;
@@ -30,7 +30,7 @@ module.directive('video', [
 	}
 
 	listeners.forEach(function (l) {
-	  if (!l)
+	  if (!l || !l.registerVideo)
 	    return;
 	  l.registerVideo($element);
 	  $scope.$on('$destroy', function () {
