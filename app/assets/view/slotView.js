@@ -19,10 +19,9 @@ module.controller('slotView', [
 	type: 'yellow',
 	html: page.constants.message(editing ? 'slot.view' : 'slot.edit'),
 	click: function(){
-	    //TODO - check/confirm for current uploads? if($scope.$flow.files[0] && !confirm.... ) return
-	    var index = $scope.tracks.indexOf($scope.current);
-	    var baseUrl = editing ? slot.route : slot.editRoute(); //could this ever NOT have a ?param already? if so should do stuff with $location instead of manual stirng manip 
-	    page.$location.url(baseUrl+'&current='+index);
+	    var track = $scope.current;
+	    var baseUrl = editing ? slot.route : slot.editRoute();
+	    page.$location.url(baseUrl).search('asset', track && track.asset && track.asset.id);
 	}
       });
     
@@ -328,6 +327,8 @@ module.controller('slotView', [
       v.on(videoEvents);
     };
 
+    $scope.current = undefined;
+
     $scope.range = new page.models.Segment(Infinity, -Infinity);
     updateRange(page.models.Segment.full);
 
@@ -341,8 +342,6 @@ module.controller('slotView', [
     $scope.playing = 0;
     $scope.position = $scope.leftTime;
     
-    $scope.current = $scope.tracks[page.$routeParams.current];
-
     /////// OLD
 
     var sortRecords = function () {
