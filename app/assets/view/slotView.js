@@ -127,19 +127,21 @@ module.controller('slotView', [
     function selectTrack(track) {
       if ($scope.current && $scope.form.edit)
 	$scope.current.dirty = $scope.form.edit.$dirty;
+
       $scope.current = track;
       page.$location.search('asset', track && track.asset && track.asset.id);
       targetAsset = undefined;
-      if ($scope.current && $scope.form.edit) {
-	if ($scope.current.dirty)
-	  $scope.form.edit.$setDirty();
-	else
-	  $scope.form.edit.$setPristine();
-
-	delete $scope.replace;
+      if ($scope.current) {
 	$scope.playing = 0;
 	if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
 	  $scope.position = $scope.current.asset.segment.l;
+	if($scope.form.edit){
+	  if ($scope.current.dirty)
+	    $scope.form.edit.$setDirty();
+	  else
+	    $scope.form.edit.$setPristine();
+	}
+	delete $scope.replace;
       }
     }
 
