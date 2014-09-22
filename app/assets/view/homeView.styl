@@ -25,7 +25,7 @@
   position absolute
   bottom b1
   right b1 * -13.25
-  width 15
+  //width 15
   background white
   box-shadow box-shadow-def
   padding f6 f3
@@ -133,10 +133,13 @@
 
 @media screen and (min-width: (grid-mobile-width + 1)) and (max-width: (grid-tablet-width))
   .home-feature-info
-    width 10
     top 0
     bottom b4
-    right b1 * -10
+    left 100%
+    overflow hidden
+
+    h1
+      font-line f90
 
   .home-parties-header
     font-line 2 3
