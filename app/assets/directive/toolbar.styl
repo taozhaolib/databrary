@@ -92,6 +92,7 @@ body
 
 .toolbar-user
   text-align right
+  position relative
 
   form
     display inline-block
@@ -110,6 +111,7 @@ body
   padding f2
   line-height 1
 
+  /*
   &:after,
   &:before
     content ""
@@ -126,9 +128,12 @@ body
   &:before
     border-bottom-color gray
     top -b2 - 1px
+*/
 
 .toolbar-user-menu
   text-align right
+  width inherit
+  float left
 
   ul
     padding-left 0
@@ -144,3 +149,7 @@ body
 
 .toolbar-static-input
   width 50px
+
+.user-icon
+  float right
+  padding 3px

@@ -1,7 +1,7 @@
 <section id="toolbar" class="toolbar cf" bindonce>
   <div class="wrap">
     <div class="row">
-      <div class="title cf col-desktop-7 col-laptop-5 col-tablet-3 col-mobile-4">
+      <div class="title cf col-desktop-7 col-tablet-3 col-mobile-4">
         <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='homeView'">
 	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
         </h1>
@@ -18,7 +18,8 @@
         </nav>
       </div>
 
-      <div class="toolbar-user col-desktop-4 col-laptop-3 col-tablet-3 col-mobile-2">
+      <div class="toolbar-user col-desktop-8 col-tablet-6 col-mobile-2">
+        <div class="toolbar-search"><search-form></search-form></div>
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a bo-href="page.router.login()" bo-text="'toolbar.login' | message"></a>
 
@@ -37,15 +38,12 @@
         <span class="sep">|</span>
 
         <a href="mailto:feedback@databrary.org" class="icon contact" id="toolbar-contact" target="_blank" tooltip="'toolbar.contact' | message" tooltip-type="green"></a>
-      </div>
 
-      <div class="toolbar-search">
-        <search-form></search-form>
       </div>
 
       <section class="toolbar-hover user" ng-if="page.models.Login.isLoggedIn() && hoverUser" click-elsewhere="hoverUserToggle()">
         <div class="row">
-          <div class="toolbar-user-menu col-desktop-2 col-laptop-2 col-tablet-2 col-mobile-2">
+          <div class="toolbar-user-menu">
             <ul class="flat">
               <li><strong bo-text="page.models.Login.user.name"></strong></li>
               <li ng-if="!page.models.Login.isAuthorized()">
@@ -73,7 +71,7 @@
             </ul>
           </div>
 
-          <div class="user-icon col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+          <div class="user-icon">
             <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-hover-avatar">
           </div>
         </div>
