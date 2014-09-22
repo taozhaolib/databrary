@@ -16,21 +16,14 @@
 	    <div class="player-main-info">
 	      <nav class="player-main-info-actions" ng-if="current.asset">
 		<img ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+		<span class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
 		<a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+		<a bo-if="editing" ng-click="current.replace()" class="player-main-info-link icon">R</a>
 		<a bo-if="editing" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
-		<a bo-if="editing" ng-click="replace = !replace" class="player-main-info-link icon">R</a>
 	      </nav>
 
 	      <div bo-if="!editing" ng-if="current.asset">
 		<dl class="player-main-info-list cf">
-		  <dt bo-text="'material.classification' | message"></dt>
-		  <dd>
-		    <span class="classification icon" ng-class="page.constants.classification[current.slotAsset.asset.classification]" hint="classification-{{page.constants.classification[current.slotAsset.asset.classification]}}"></span>&nbsp;<span ng-bind="page.constants.classification[current.slotAsset.asset.classification]"></span>
-		  </dd>
-
-		  <dt>File Type</dt>
-		  <dd ng-bind="current.format.name"></dd>
-
 		  <dt ng-if="!current.asset.segment.full">Position</dt>
 		  <dd>
 		    <span ng-if="!current.asset.segment.full">{{current.asset.segment.l | timecode}} &ndash; {{current.asset.segment.u | timecode}}</span>
@@ -96,7 +89,7 @@
 	  </div>
 
 	  <div class="slot-timeline-tracks">
-	    <div ng-repeat="track in tracks" class="slot-timeline-track" ng-click="track.select()" ng-class="{select: current === track, dirty: track.dirty}" >
+	    <div ng-repeat="track in tracks" class="slot-timeline-track" ng-click="track.select($event)" ng-class="{select: current === track, dirty: track.dirty}" >
 	      <div class="slot-track" ng-class="{'slot-track-positioned': track.asset && !track.asset.segment.full, 'slot-track-select': current === track}">
 		<div class="slot-track-asset-info">
 		  <img class="slot-track-asset-thumb" bo-if="track.asset" bo-src="track.asset.thumbRoute(24)">

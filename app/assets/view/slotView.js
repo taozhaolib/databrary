@@ -4,11 +4,12 @@
 module.controller('slotView', [
   '$scope', 'slot', 'edit', 'pageService',
   function ($scope, slot, editing, page) {
+    page.display.title = slot.displayName;
     $scope.slot = slot;
     $scope.volume = slot.volume;
     $scope.editing = editing;
     $scope.mode = editing ? 'edit' : 'view';
-    page.display.title = slot.displayName;
+    $scope.form = {};
 
     var targetAsset = page.$location.search().asset;
     var video;
@@ -112,7 +113,6 @@ module.controller('slotView', [
     Track.prototype.setAsset = function (asset) {
       this.asset = asset;
       updateRange(asset.segment);
-      sortTracks();
       if (targetAsset == asset.id)
 	this.select();
       if (editing)
@@ -132,10 +132,17 @@ module.controller('slotView', [
 	  $scope.form.edit.$setPristine();
       }
       delete $scope.replace;
+
+      $scope.playing = 0;
+      if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
+	$scope.position = $scope.current.asset.segment.l;
     }
 
-    Track.prototype.select = function () {
-      selectTrack(this);
+    Track.prototype.select = function (event) {
+      if ($scope.current !== this)
+	return selectTrack(this);
+      if (event)
+	$scope.seekPosition(event.clientX);
     };
 
     Object.defineProperty(Track.prototype, 'name', {
@@ -151,8 +158,6 @@ module.controller('slotView', [
     };
 
     if (editing) {
-      $scope.form = {};
-
       Track.prototype.fillData = function () {
 	var asset = this.asset || {
 	  classification: page.classification.RESTRICTED
@@ -218,6 +223,7 @@ module.controller('slotView', [
 	  delete track.dirty;
 	  if (track === $scope.current)
 	    $scope.form.edit.$setPristine();
+	  sortTracks();
 	}, function (error) {
 	  page.messages.addError({
 	    type: 'red',
@@ -255,6 +261,10 @@ module.controller('slotView', [
 	  delete track.file;
 	  delete track.progress;
 	});
+      };
+
+      Track.prototype.replace = function () {
+	$scope.replace = !$scope.replace;
       };
     }
 
@@ -313,13 +323,13 @@ module.controller('slotView', [
     $scope.range = new page.models.Segment(Infinity, -Infinity);
     updateRange(page.models.Segment.full);
 
+    $scope.current = undefined;
     $scope.tracks = slot.assets.map(function (asset) {
       return new Track(asset);
     });
     if (editing)
       $scope.tracks.push(new Track());
     sortTracks();
-    $scope.current = undefined;
 
     $scope.playing = 0;
     $scope.position = $scope.leftTime;

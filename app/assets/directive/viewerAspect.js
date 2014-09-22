@@ -26,6 +26,7 @@ module.directive('viewerAspect', [
         }
 
         page.$w.resize(resize);
+	resize();
       }
     };
   }
