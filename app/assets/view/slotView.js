@@ -130,12 +130,12 @@ module.controller('slotView', [
 	  $scope.form.edit.$setDirty();
 	else
 	  $scope.form.edit.$setPristine();
-      }
-      delete $scope.replace;
 
-      $scope.playing = 0;
-      if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
-	$scope.position = $scope.current.asset.segment.l;
+	delete $scope.replace;
+	$scope.playing = 0;
+	if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
+	  $scope.position = $scope.current.asset.segment.l;
+      }
     }
 
     Track.prototype.select = function (event) {
@@ -179,7 +179,7 @@ module.controller('slotView', [
 	    body: page.constants.message('asset.remove.success', track.name),
 	  });
 	  if (track === $scope.current)
-	    selectTrack();
+	    selectTrack(); //set current track to blank, undefined
 	  $scope.tracks.remove(track);
 	}, function (res) {
 	  page.messages.addError({
