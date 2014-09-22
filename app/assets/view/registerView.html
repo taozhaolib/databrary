@@ -20,7 +20,7 @@
               </validator>
 
               <validator name="affiliation" label="'affiliation' | message">
-                <input id="field-affiliation" name="affiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{'register.affiliation.placeholder' | message}}">
+                <input id="field-affiliation" name="affiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{'register.affiliation.placeholder' | message}}" key-enter="proceed()">
               </validator>
 
               <button class="green" type="submit" ng-disabled="registerForm.$pristine || registerForm.$invalid" ng-click="proceed()">

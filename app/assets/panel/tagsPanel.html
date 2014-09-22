@@ -25,7 +25,7 @@
 
   <div id="tag-add" class="panel-tags-form" ng-if="page.models.Login.isLoggedIn()">
     <ng-form name="tagNewForm" ng-submit="voteNew(tagNewForm)" class="panel-tags-new-form">
-      <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur()">
+      <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur()" key-enter="voteNew(tagNewForm)">
       <button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
 
       <ul class="panel-tags-auto-list">

@@ -7,15 +7,10 @@ module.directive('searchForm', [
     templateUrl: 'searchForm.html',
     scope: true,
     link: function ($scope) {
-      $scope.search = {};
-
-      $scope.keypress = function (event) {
-	var code = (event.keyCode ? event.keyCode : event.which);
-	if (code == 13) {
-	  page.$location.path(page.router.search());
-	  page.$location.search($scope.search);
-	}
+      $scope.search = function () {
+	page.$location.path(page.router.search()).search($scope.search.data);
       };
+      $scope.search.data = {};
     }
   }; }
 ]);
