@@ -1,7 +1,7 @@
 <section id="toolbar" class="toolbar cf" bindonce>
   <div class="wrap">
     <div class="row">
-      <div class="title cf col-desktop-7 col-tablet-3 col-mobile-4">
+      <div class="title cf col-desktop-7 col-tablet-5 col-mobile-4">
         <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='homeView'">
 	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
         </h1>
@@ -18,7 +18,7 @@
         </nav>
       </div>
 
-      <div class="toolbar-user col-desktop-8 col-tablet-6 col-mobile-2">
+      <div class="toolbar-user col-desktop-8 col-tablet-4 col-mobile-2">
         <div class="toolbar-search"><search-form></search-form></div>
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a bo-href="page.router.login()" bo-text="'toolbar.login' | message"></a>
@@ -31,7 +31,7 @@
         <span ng-if="page.models.Login.isLoggedIn()">
           <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
             <span class="username hide-mobile" ng-bind="page.models.Login.user.name.split(' ').shift()"></span>
-            <span class="username show-mobile" bo-text="'me' | message"></span>
+            <span class="username show-mobile" bo-text=" | message"></span>
             <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-avatar"> </a>
         </span>
 
