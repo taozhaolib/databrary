@@ -92,14 +92,13 @@
 	    <div ng-repeat="track in tracks" class="slot-timeline-track" ng-click="track.select($event)" ng-class="{select: current === track, dirty: track.dirty}" >
 	      <div class="slot-track" ng-class="{'slot-track-positioned': track.asset && !track.asset.segment.full, 'slot-track-select': current === track}">
 		<div class="slot-track-asset-info">
-		  <img class="slot-track-asset-thumb" bo-if="track.asset" bo-src="track.asset.thumbRoute(24)">
+		  <img class="slot-track-asset-thumb" ng-if="track.asset" bo-src="track.asset.thumbRoute(24)">
 		  <div class="slot-track-asset-info-name">{{track.name}}</div>
 		</div>
-		<div class="slot-track-asset" bo-if="track.asset && !track.asset.segment.full" bo-style="track.positionStyle()">
+		<div class="slot-track-asset" ng-if="track.asset && !track.asset.segment.full" bo-style="track.positionStyle()">
 		</div>
-		<div bo-if="track.file">
-		  <upload-progress progress-value="track.file.progressVal" ng-if="track.file.progressVal < 1"></upload-progress>
-		  <span ng-if="track.file.progressVal >= 1"><br>Completing...</span>
+		<div ng-if="track.file">
+		  <upload-progress progress-value="track.progress" display-completing="true"></upload-progress>
 		</div>
 	      </div>
 	    </div>
