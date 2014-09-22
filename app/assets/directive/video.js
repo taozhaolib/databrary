@@ -4,8 +4,8 @@ module.directive('video', [
   'pageService',
   function (page) { return {
     restrict: 'E',
-    require: ['^?ngController'],
-    link: function ($scope, $element, $attr, listeners) {
+    require: '^?ngController',
+    link: function ($scope, $element, $attr, view) {
       $element.on('loadedmetadata', function () {
 	var seek = $scope.$eval($attr.seek), stop;
 	if (seek instanceof page.models.Segment) {
@@ -29,14 +29,12 @@ module.directive('video', [
 	  $element.on('timeupdate', checkStop);
 	}
 
-	listeners.forEach(function (l) {
-	  if (!l || !l.registerVideo)
-	    return;
-	  l.registerVideo($element);
+	if (view && view.registerVideo) {
+	  view.registerVideo($element);
 	  $scope.$on('$destroy', function () {
-	    l.deregisterVideo($element);
+	    view.deregisterVideo($element);
 	  });
-	});
+	}
       });
     }
   }; }

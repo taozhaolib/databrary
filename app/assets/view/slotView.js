@@ -64,7 +64,7 @@ module.controller('slotView', [
 
     function seekOffset(o) {
       if (video && $scope.current && $scope.current.asset && $scope.current.asset.segment.contains(o))
-	video.currentTime = (o - $scope.current.asset.segment.base) / 1000;
+	video[0].currentTime = (o - $scope.current.asset.segment.base) / 1000;
       $scope.position = o;
     }
 
@@ -76,13 +76,13 @@ module.controller('slotView', [
 
     $scope.play = function () {
       if (video)
-	video.play();
+	video[0].play();
       $scope.playing = 1;
     };
 
     $scope.pause = function () {
       if (video)
-	video.pause();
+	video[0].pause();
       $scope.playing = 0;
     };
 
@@ -292,22 +292,24 @@ module.controller('slotView', [
       playing: function () {
 	$scope.playing = 1;
       },
-      ratechange: function (event) {
-	console.log(event);
+      ratechange: function () {
+	$scope.playing = video[0].playbackRate;
       },
-      timeupdate: function (event) {
-	console.log(event);
+      timeupdate: function () {
+	if ($scope.current && $scope.current.asset)
+	  $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime;
       },
       ended: function () {
 	$scope.playing = 0;
 	/* look for something else to play? */
       },
     };
+    for (var ve in videoEvents)
+      videoEvents[ve] = $scope.$lift(videoEvents[ve]);
 
     this.deregisterVideo = function (v) {
       if (video !== v)
 	return;
-      console.log("no video");
       video = undefined;
       v.off(videoEvents);
     };
@@ -316,7 +318,6 @@ module.controller('slotView', [
       if (video)
 	this.deregisterVideo(video);
       video = v;
-      console.log(video);
       v.on(videoEvents);
     };
 

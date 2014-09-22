@@ -774,11 +774,7 @@ module.directive('spreadsheet', [
 	  page.$timeout(function () {
 	    var input = e.children('[name=edit]');
 	    input.focus();
-	    input.change(function (event) {
-	      return $scope.$apply(function () {
-		return unedit(event);
-	      });
-	    });
+	    input.change($scope.$lift(unedit));
 	  });
 	}
 
