@@ -1,19 +1,16 @@
 'use strict';
 
 module.directive('uploadProgress', [
-	function () {
-		var link = function($scope) {
-			$scope.progressFloat = undefined;
-		};
+  function () {
 
-		return {
-			restrict: 'E',
-			scope: {
-				progressFloat: '=progressValue'
-			},
-			templateUrl: 'uploadProgress.html',
-			link: link
-		};
-	}
+    return {
+      restrict: 'E',
+      scope: {
+	progressFloat: '=progressValue',
+	displayCompleting: '=displayCompleting'
+      },
+      templateUrl: 'uploadProgress.html',
+      };
+  }
 ]);
 

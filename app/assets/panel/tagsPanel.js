@@ -165,11 +165,9 @@ module.controller('TagsPanel', [
     $scope.newNameFocus = function (form) {
       emptyAuto();
 
-      $('#newName').on('keydown', function (event) {
-        $scope.$apply(function () {
-          keypress(event, form);
-        });
-      });
+      $('#newName').on('keydown', $scope.$lift(function (event) {
+	keypress(event, form);
+      }));
 
       $scope.newNameChange(form);
     };

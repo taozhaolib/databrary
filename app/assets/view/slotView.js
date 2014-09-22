@@ -18,7 +18,12 @@ module.controller('slotView', [
       page.display.toolbarLinks.push({
 	type: 'yellow',
 	html: page.constants.message(editing ? 'slot.view' : 'slot.edit'),
-	url: editing ? slot.route : slot.editRoute(),
+	click: function(){
+	    //TODO - check/confirm for current uploads? if($scope.$flow.files[0] && !confirm.... ) return
+	    var index = $scope.tracks.indexOf($scope.current);
+	    var baseUrl = editing ? slot.route : slot.editRoute(); //could this ever NOT have a ?param already? if so should do stuff with $location instead of manual stirng manip 
+	    page.$location.url(baseUrl+'&current='+index);
+	}
       });
     
 
@@ -64,7 +69,7 @@ module.controller('slotView', [
 
     function seekOffset(o) {
       if (video && $scope.current && $scope.current.asset && $scope.current.asset.segment.contains(o))
-	video.currentTime = (o - $scope.current.asset.segment.base) / 1000;
+	video[0].currentTime = (o - $scope.current.asset.segment.base) / 1000;
       $scope.position = o;
     }
 
@@ -76,13 +81,13 @@ module.controller('slotView', [
 
     $scope.play = function () {
       if (video)
-	video.play();
+	video[0].play();
       $scope.playing = 1;
     };
 
     $scope.pause = function () {
       if (video)
-	video.pause();
+	video[0].pause();
       $scope.playing = 0;
     };
 
@@ -130,12 +135,12 @@ module.controller('slotView', [
 	  $scope.form.edit.$setDirty();
 	else
 	  $scope.form.edit.$setPristine();
-      }
-      delete $scope.replace;
 
-      $scope.playing = 0;
-      if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
-	$scope.position = $scope.current.asset.segment.l;
+	delete $scope.replace;
+	$scope.playing = 0;
+	if ($scope.current.asset && isFinite($scope.current.asset.segment.l))
+	  $scope.position = $scope.current.asset.segment.l;
+      }
     }
 
     Track.prototype.select = function (event) {
@@ -164,7 +169,9 @@ module.controller('slotView', [
 	};
 	this.data = {
 	  name: asset.name,
-	  classification: asset.classification+''
+	  classification: asset.classification+'',
+	  container: slot.container.id, /* required for position, which has the side-effect of restoring deleted/moved assets */
+	  position: asset.segment && isFinite(asset.segment.l) ? page.$filter('timecode')(asset.segment.l, true) : undefined
 	};
       };
 
@@ -179,7 +186,7 @@ module.controller('slotView', [
 	    body: page.constants.message('asset.remove.success', track.name),
 	  });
 	  if (track === $scope.current)
-	    selectTrack();
+	    selectTrack(); //set current track to blank, undefined
 	  $scope.tracks.remove(track);
 	}, function (res) {
 	  page.messages.addError({
@@ -292,22 +299,24 @@ module.controller('slotView', [
       playing: function () {
 	$scope.playing = 1;
       },
-      ratechange: function (event) {
-	console.log(event);
+      ratechange: function () {
+	$scope.playing = video[0].playbackRate;
       },
-      timeupdate: function (event) {
-	console.log(event);
+      timeupdate: function () {
+	if ($scope.current && $scope.current.asset)
+	  $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime;
       },
       ended: function () {
 	$scope.playing = 0;
 	/* look for something else to play? */
       },
     };
+    for (var ve in videoEvents)
+      videoEvents[ve] = $scope.$lift(videoEvents[ve]);
 
     this.deregisterVideo = function (v) {
       if (video !== v)
 	return;
-      console.log("no video");
       video = undefined;
       v.off(videoEvents);
     };
@@ -316,14 +325,12 @@ module.controller('slotView', [
       if (video)
 	this.deregisterVideo(video);
       video = v;
-      console.log(video);
       v.on(videoEvents);
     };
 
     $scope.range = new page.models.Segment(Infinity, -Infinity);
     updateRange(page.models.Segment.full);
 
-    $scope.current = undefined;
     $scope.tracks = slot.assets.map(function (asset) {
       return new Track(asset);
     });
@@ -334,8 +341,7 @@ module.controller('slotView', [
     $scope.playing = 0;
     $scope.position = $scope.leftTime;
     
-
-
+    $scope.current = $scope.tracks[page.$routeParams.current];
 
     /////// OLD
 

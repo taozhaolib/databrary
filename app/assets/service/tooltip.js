@@ -137,12 +137,10 @@ module.factory('tooltipService', [
           }, tooltip.delay);
         });
 
-        $doc.on(events[1], tooltip.$target, function () {
-          $rootScope.$apply(function () {
-            $timeout.cancel(timeout);
-            tooltip.hide();
-          });
-        });
+        $doc.on(events[1], tooltip.$target, $rootScope.$lift(function () {
+	  $timeout.cancel(timeout);
+	  tooltip.hide();
+	}));
       } else {
         $target.bind(events[0], function (event) {
           timeout = $timeout(function () {
@@ -150,12 +148,10 @@ module.factory('tooltipService', [
           }, tooltip.delay);
         });
 
-        $target.bind(events[1], function () {
-          $rootScope.$apply(function () {
-            $timeout.cancel(timeout);
-            tooltip.hide();
-          });
-        });
+        $target.bind(events[1], $rootScope.$lift(function () {
+	  $timeout.cancel(timeout);
+	  tooltip.hide();
+	}));
       }
 
       tooltip.hide();

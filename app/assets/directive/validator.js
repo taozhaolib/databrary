@@ -19,19 +19,15 @@ module.directive('validator', [
       validator.clientErrors = [];
       validator.clientTips = [];
 
-      var on = function () {
-        $scope.$apply(function () {
-          validator.focus = true;
-        });
-      };
+      var on = $scope.$lift(function () {
+	validator.focus = true;
+      });
 
-      var off = function () {
-        $scope.$apply(function () {
-          if (!validator.$element.is(":focus")) {
-            validator.focus = false;
-          }
-        });
-      };
+      var off = $scope.$lift(function () {
+	if (!validator.$element.is(":focus")) {
+	  validator.focus = false;
+	}
+      });
 
       validator.$element
         .focus(on)

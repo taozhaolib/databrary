@@ -26,7 +26,7 @@
       <validator name="file" label="'material.file' | message">
 	<div ng-if="material.file">
 	  <span ng-bind="material.file.name"></span>
-	  <upload-progress progress-value="material.progress"></upload-progress>
+	  <upload-progress progress-value="material.progress" display-completing="true"></upload-progress>
 	</div>
 
 	<div ng-if="material.replace" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>
@@ -45,7 +45,7 @@
 
       </validator>
 
-      <validator name="classification" label="'material.classification' | message">
+      <validator name="classification" label="'asset.classification' | message">
         <select name="classification" ng-model="material.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
       </validator>
 
