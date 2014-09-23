@@ -1,4 +1,0 @@
-<div>
-  <div ng-hide="focus" ng-click="focus = true" style="border-width: 2px; border-style: solid; width: 150px"><span>{{value.short}}</span></div>
-  <select ng-options="c.long for c in choices" ng-model="value" ng-show="focus" ng-blur="focus = false" ng-change="focus = false"></select>
-</div>

@@ -83,8 +83,8 @@ module.provider('routerService', [
     var routes = {};
 
     routes.index = makeRoute(controllers.Site.start, [], {
-      controller: 'homeView',
-      templateUrl: 'homeView.html',
+      controller: 'site/view',
+      templateUrl: 'site/view.html',
       resolve: {
         investigators: [
           'pageService', function (page) {
@@ -117,32 +117,32 @@ module.provider('routerService', [
     //
 
     routes.login = makeRoute(controllers.LoginHtml.view, [], {
-      controller: 'loginView',
-      templateUrl: 'loginView.html',
+      controller: 'party/login',
+      templateUrl: 'party/login.html',
       reloadOnSearch: false
     });
 
     //
 
     routes.register = makeRoute(controllers.LoginHtml.registration, [], {
-      controller: 'registerView',
-      templateUrl: 'registerView.html',
+      controller: 'party/register',
+      templateUrl: 'party/register.html',
       reloadOnSearch: false
     });
 
     //
 
     routes.password = makeRoute(controllers.TokenHtml.getPassword, [], {
-      controller: 'resetView',
-      templateUrl: 'resetView.html',
+      controller: 'party/reset',
+      templateUrl: 'party/reset.html',
       reloadOnSearch: false
     });
 
     //
 
     routes.helpFormats = makeRoute(controllers.AssetHtml.formats, [], {
-      controller: 'helpFormatsView',
-      templateUrl: 'helpFormatsView.html',
+      controller: 'asset/formats',
+      templateUrl: 'asset/formats.html',
       reloadOnSearch: false,
     });
 
@@ -177,8 +177,8 @@ module.provider('routerService', [
     //
 
     routes.search = makeRoute(controllers.VolumeHtml.search, [], {
-      controller: 'searchView',
-      templateUrl: 'searchView.html',
+      controller: 'site/search',
+      templateUrl: 'site/search.html',
       resolve: {
         volumes: [
           'pageService', function (page) {
@@ -191,8 +191,8 @@ module.provider('routerService', [
     //
 
     var partyView = {
-      controller: 'partyView',
-      templateUrl: 'partyView.html',
+      controller: 'party/view',
+      templateUrl: 'party/view.html',
       resolve: {
         party: [
           'pageService', function (page) {
@@ -213,8 +213,8 @@ module.provider('routerService', [
     //
 
     routes.partyEdit = makeRoute(controllers.PartyHtml.edit, ['id'], {
-      controller: 'partyEditView',
-      templateUrl: 'partyEditView.html',
+      controller: 'party/edit',
+      templateUrl: 'party/edit.html',
       resolve: {
         party: [
           'pageService', function (page) {
@@ -228,8 +228,8 @@ module.provider('routerService', [
     //
 
     var volumeEdit = {
-      controller: 'volumeEditView',
-      templateUrl: 'volumeEditView.html',
+      controller: 'volume/edit',
+      templateUrl: 'volume/edit.html',
       resolve: {
         volume: [
           'pageService', function (page) {
@@ -256,8 +256,8 @@ module.provider('routerService', [
     //
 
     routes.volume = makeRoute(controllers.VolumeHtml.view, ['id'], {
-      controller: 'volumeView',
-      templateUrl: 'volumeView.html',
+      controller: 'volume/view',
+      templateUrl: 'volume/view.html',
       resolve: {
         volume: [
           'pageService', function (page) {
@@ -272,8 +272,8 @@ module.provider('routerService', [
     //
 
     function slotRoute(edit) { return {
-      controller: 'slotView',
-      templateUrl: 'slotView.html',
+      controller: 'slot/view',
+      templateUrl: 'slot/view.html',
       resolve: {
         slot: [
           'pageService', function (page) {

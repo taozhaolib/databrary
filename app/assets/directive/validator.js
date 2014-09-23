@@ -168,7 +168,7 @@ module.directive('validator', [
       restrict: 'E',
       scope: true,
       transclude: true,
-      templateUrl: 'validator.html',
+      templateUrl: 'directive/validator.html',
       require: '^form',
       link: {
         pre: pre,

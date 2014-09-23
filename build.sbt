@@ -79,10 +79,6 @@ JsTaskKeys.jsOptions in (Assets, StylusKeys.stylus) ~= { (s : String) =>
 
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
-AngularTemplatesKeys.naming := { f =>
-  new File(f).getName
-}
-
 AngularTemplatesKeys.outputHtml := None
 
 includeFilter in uglify := new SimpleFileFilter({ f =>
