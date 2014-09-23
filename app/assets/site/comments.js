@@ -12,13 +12,13 @@ module.controller('site/comments', [
 
     $scope.refreshPanel = function () {
       switch (page.$route.current.controller) {
-        case 'volumeView':
+        case 'volume/view':
           $scope.comments = $scope.volume.comments;
 
           $scope.enabled = page.models.Login.isLoggedIn() || !$.isEmptyObject($scope.comments);
           break;
 
-        case 'partyView':
+        case 'party/view':
           $scope.comments = $scope.party.comments;
 
           $scope.enabled = !$.isEmptyObject($scope.comments);
@@ -30,7 +30,7 @@ module.controller('site/comments', [
 
     $scope.pullComments = function () {
       switch (page.$route.current.controller) {
-        case 'volumeView':
+        case 'volume/view':
 	  $scope.volume.get(['comments']).then(
 	    $scope.refreshPanel,
 	    function (res) {
@@ -48,7 +48,7 @@ module.controller('site/comments', [
 
     $scope.commentParty = function (comment) {
       switch (page.$route.current.controller) {
-        case 'partyView':
+        case 'party/view':
           return $scope.party;
 
         default:
@@ -57,7 +57,7 @@ module.controller('site/comments', [
     };
 
     $scope.commentMeta = function (comment) {
-      var isParty = page.$route.current.controller === 'partyView' && !$scope.volume;
+      var isParty = page.$route.current.controller === 'party/view' && !$scope.volume;
       var isTop = comment.container.top;
 
       var meta = '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
@@ -92,7 +92,7 @@ module.controller('site/comments', [
 
     $scope.getReply = function (comment) {
       return page.models.Login.isLoggedIn() &&
-        page.$route.current.controller != 'partyView' &&
+        page.$route.current.controller != 'party/view' &&
         replyTo == comment;
     };
 
@@ -117,7 +117,7 @@ module.controller('site/comments', [
     $scope.getCommentClasses = function (comment) {
       var classes = [];
 
-      if (page.$route.current.controller != 'partyView') {
+      if (page.$route.current.controller != 'party/view') {
         if (!comment.parent) {
           comment.parent = 0;
         }
