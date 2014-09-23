@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('site/view', [
+module.controller('site/home', [
   '$scope', 'investigators', 'users', 'volume', 'pageService',
   function ($scope, investigators, users, volume, page) {
     page.display.title = page.constants.message('page.title.home');

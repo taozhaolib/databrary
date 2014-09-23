@@ -11,8 +11,8 @@ angular.forEach(keys, function (key, name) {
   keys[directive] = [
     '$parse',
     function ($parse) { return {
-      compile: function ($element, $attr) {
-	var action = $parse($attr[directive]);
+      compile: function ($element, $attrs) {
+	var action = $parse($attrs[directive]);
 	return function ($scope, $element) {
 	  $element.on('keypress', function (event) {
 	    if (

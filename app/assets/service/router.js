@@ -83,8 +83,8 @@ module.provider('routerService', [
     var routes = {};
 
     routes.index = makeRoute(controllers.Site.start, [], {
-      controller: 'site/view',
-      templateUrl: 'site/view.html',
+      controller: 'site/home',
+      templateUrl: 'site/home.html',
       resolve: {
         investigators: [
           'pageService', function (page) {
