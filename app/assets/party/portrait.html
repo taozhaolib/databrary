@@ -1,7 +1,9 @@
 <aside bindonce class="portrait ng-cloak">
-  <figure class="figure-avatar" bo-href="party.route" bo-class="{inst: party.institution}">
-    <figmedia><img bo-src="party.avatarRoute(56)"></figmedia>
-  </figure>
+  <a bo-href="party.route">
+    <figure class="figure-avatar" bo-class="{inst: party.institution}">
+      <img bo-src="party.avatarRoute()">
+    </figure>
+  </a>
 
   <div class="portrait-info">
     <a class="portrait-name" bo-href="party.route" bo-text="party.name"></a>

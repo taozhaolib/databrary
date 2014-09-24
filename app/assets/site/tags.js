@@ -21,14 +21,14 @@ module.controller('site/tags', [
     $scope.target = undefined;
 
     $scope.refreshPanel = function () {
-      switch (page.$route.current.$$route.controller) {
-        case 'volumeView':
+      switch (page.$route.current.controller) {
+        case 'volume/view':
           $scope.prepareTags($scope.volume.tags);
           $scope.target = $scope.volume.top;
           $scope.enabled = $scope.tags.length > 0 || page.models.Login.isLoggedIn();
           break;
 
-        case 'partyView':
+        case 'party/view':
           $scope.prepareTags($scope.party.tags);
           $scope.enabled = $scope.tags.length > 0;
           break;
@@ -54,8 +54,8 @@ module.controller('site/tags', [
     };
 
     $scope.retrieveTags = function () {
-      switch (page.$route.current.$$route.controller) {
-        case 'volumeView':
+      switch (page.$route.current.controller) {
+        case 'volume/view':
 	  $scope.volume.get(['tags']).then(
 	    $scope.refreshPanel,
 	    function (res) {

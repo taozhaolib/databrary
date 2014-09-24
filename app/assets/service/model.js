@@ -137,6 +137,8 @@ module.factory('modelService', [
 	partyMakeSubArray(this.parents);
       if ('children' in init)
 	partyMakeSubArray(this.children);
+      if ('comments' in init)
+	commentMakeArray(null, this.comments);
     };
 
     function partyPeek(id) {
@@ -458,7 +460,7 @@ module.factory('modelService', [
       return router.volumeEdit([this.id], params);
     };
 
-    Volume.prototype.thumbRoute = function(size) {
+    Volume.prototype.thumbRoute = function (size) {
       return router.volumeThumb([this.id, size]);
     };
 
@@ -941,7 +943,7 @@ module.factory('modelService', [
 
     function commentMakeArray(volume, l) {
       if (l) for (var i = 0; i < l.length; i ++)
-	l[i] = new Comment(volume, l[i]);
+	l[i] = new Comment(volume || volumeMake(l[i].container.volume), l[i]);
       return l;
     }
 
