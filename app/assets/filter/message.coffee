@@ -1,5 +1,5 @@
 'use strict';
 
 module.filter('message', [
-  'constants', (constants) -> constants.message
+  'constantService', (constants) -> constants.message
 ]);
