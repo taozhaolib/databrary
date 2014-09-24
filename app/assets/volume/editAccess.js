@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('volumeEditAccessForm', [
-  'pageService', function (page) {
+  'pageService', '$q',
+  function (page, $q) {
     var link = function ($scope) {
       var volume = $scope.volume;
       var form = $scope.volumeEditAccessForm;
@@ -42,7 +43,7 @@ module.directive('volumeEditAccessForm', [
 
       form.saveGlobal = function () {
 	form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
-        page.$q.all(page.constants.accessGlobal.parties.map(function (party, i) {
+        $q.all(page.constants.accessGlobal.parties.map(function (party, i) {
           var p = form.global[i];
 	  form.volume.accessSave(party, {
             individual: p,

@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('volumeEditOverviewForm', [
-  'pageService', function (page) {
+  'pageService', '$routeParams',
+  function (page, $routeParams) {
     var link = function ($scope) {
       var volume = $scope.volume;
       var form = $scope.volumeEditOverviewForm;
@@ -41,7 +42,7 @@ module.directive('volumeEditOverviewForm', [
 
 	(volume ?
           volume.save(form.data) :
-          page.models.Volume.create(form.data, page.$routeParams.owner))
+          page.models.Volume.create(form.data, $routeParams.owner))
 	  .then(function (vol) {
 	    form.validator.server({});
 

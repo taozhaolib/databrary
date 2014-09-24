@@ -24,9 +24,8 @@ module.directive('figure', [
           var $inner = $element.find('.figmedia-inner');
           var $img = $element.find('img');
 
-          if (!$img) {
-            return page.$log.info('No <img> found in figure.', $element);
-          }
+          if (!$img)
+	    return;
 
           var resizeFn = function () {
             var figW = $element[0].clientWidth;

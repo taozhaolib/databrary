@@ -9,13 +9,10 @@ module.factory('constantService', [
 
     //
 
-    var invertArray = function (data) {
-      var r = {};
-      angular.forEach(data, function (x, id) {
-        r[x] = id;
-      });
-      return r;
-    };
+    function invertArray(data) {
+      for (var i = 0; i < data.length; i ++)
+	data[data[i]] = i;
+    }
 
     var invertBy = function (data, field) {
       var r = {};
@@ -26,15 +23,15 @@ module.factory('constantService', [
       return r;
     };
 
-    constants.permissionName = invertArray(constants.permission);
-    constants.classificationName = invertArray(constants.classification);
-    constants.consentName = invertArray(constants.consent);
+    invertArray(constants.permission);
+    invertArray(constants.classification);
+    invertArray(constants.consent);
     constants.categoryName = invertBy(constants.category, "name");
     constants.metricName = invertBy(constants.metric, "name");
 
     /* convenient aliases: */
-    constants.permissionName.CONTRIBUTE = constants.permissionName.EDIT;
-    constants.permissionName.SUPER = constants.permission.length;
+    constants.permission.CONTRIBUTE = constants.permission.EDIT;
+    constants.permission.SUPER = constants.permission.length;
 
     /* backwards compatibility: */
     angular.forEach(constants.party, function (party, name) {
@@ -53,8 +50,8 @@ module.factory('constantService', [
     });
 
     constants.accessGlobal = [
-      [constants.permissionName.NONE, constants.permissionName.NONE],
-      [constants.permissionName.PUBLIC, constants.permissionName.SHARED]
+      [constants.permission.NONE, constants.permission.NONE],
+      [constants.permission.PUBLIC, constants.permission.SHARED]
     ];
     constants.accessGlobal.parties = [
       constants.party.NOBODY,

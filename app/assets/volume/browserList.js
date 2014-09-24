@@ -75,7 +75,7 @@ module.directive('browserList', [
       };
 
       $scope.getMeasures = function (data) {
-        var ident = page.constants.category[data.object.category].ident.concat(page.metric.description.id);
+        var ident = page.constants.category[data.object.category].ident.concat(page.constants.metric.description.id);
 
         var measures = [];
         angular.forEach(data.object.measures, function (datum, metric) {

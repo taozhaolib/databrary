@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('ngForm', [
-  'pageService', function (page) {
+  'pageService', '$animate',
+  function (page, $animate) {
     var pre = function ($scope, $element, $attrs) {
       var name = $attrs.name || $attrs.ngForm;
       var form = name && $scope.$eval(name);
@@ -18,8 +19,8 @@ module.directive('ngForm', [
 	    return control.$pristine;
 	  })) {
 	  /* effectively call form.$setPristine, without the controls. */
-	  page.$animate.removeClass($element, 'ng-dirty');
-	  page.$animate.addClass($element, 'ng-pristine');
+	  $animate.removeClass($element, 'ng-dirty');
+	  $animate.addClass($element, 'ng-pristine');
 	  form.$dirty = false;
 	  form.$pristine = true;
 	}

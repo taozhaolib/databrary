@@ -25,7 +25,7 @@ module.controller('party/network', [
                   message: page.messages.add({
                     type: 'yellow',
                     closeable: true,
-                    body: page.$compile('<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '">Manage</a>.</span>')($scope)
+                    body: '<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '">Manage</a>.</span>'
                   })
                 };
               }

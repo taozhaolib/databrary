@@ -310,7 +310,7 @@ module.factory('modelService', [
     };
 
     Login.isAuthorized = function () {
-      return Login.isLoggedIn() && Login.checkAccess(constants.permissionName.PUBLIC);
+      return Login.isLoggedIn() && Login.checkAccess(constants.permission.PUBLIC);
     };
 
     angular.forEach({

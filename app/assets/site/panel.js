@@ -31,7 +31,8 @@ module.directive('panel', [
         $element.find('[panel-body]').append($clone);
       });
 
-      page.panels.add($scope);
+      if ($scope.refreshPanel)
+	$scope.refreshPanel();
     };
 
     return {

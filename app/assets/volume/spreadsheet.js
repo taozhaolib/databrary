@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('spreadsheet', [
-  'pageService', function (page) {
+  'pageService', '$compile', '$templateCache',
+  function (page, $compile, $templateCache) {
     var MAXLEN = 16; // maximum number of records per category per slot
     function maybeInt(s) {
       var i = parseInt(s);
@@ -81,7 +82,7 @@ module.directive('spreadsheet', [
       id: 0,
       name: 'record',
       not: 'No record',
-      template: [page.metric.ident.id]
+      template: [page.constants.metricName.ident.id]
     };
     Object.freeze(noCategory);
 
@@ -673,7 +674,7 @@ module.directive('spreadsheet', [
 	var editScope = $scope.$new(true);
 	editScope.page = page;
 	var editInput = editScope.input = {};
-	var editCellTemplate = page.$compile(page.$templateCache.get('volume/spreadsheetEditCell.html'));
+	var editCellTemplate = $compile($templateCache.get('volume/spreadsheetEditCell.html'));
 	var editCell;
 
 	function unedit(event) {

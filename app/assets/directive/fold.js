@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('fold', [
-  'pageService', function (page) {
+  'pageService', 'storageService',
+  function (page, storage) {
     var foldableClass = 'foldable',
       folderClass = 'folder',
       foldClass = 'fold',
@@ -20,7 +21,7 @@ module.directive('fold', [
 	else
 	  $element.removeClass(foldedClass);
         if (!forget)
-          page.storage.set('folding-' + id, folded ? '1' : '');
+          storage.set('folding-' + id, folded ? '1' : '');
       }
 
       $scope.toggleFold = function (state) {
@@ -31,7 +32,7 @@ module.directive('fold', [
       $element.find(folderAttr).addClass(folderClass);
       $element.find(foldAttr).addClass(foldClass);
 
-      setFold(page.storage.get('folding-' + id));
+      setFold(storage.get('folding-' + id));
     };
 
     return {
