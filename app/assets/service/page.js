@@ -3,7 +3,6 @@
 module.factory('pageService', [
   '$injector', function ($injector) {
     var page = {
-      analytics: $injector.get('analyticService'),
       auth: $injector.get('authService'),
       browser: $injector.get('browserService'),
       constants: $injector.get('constantService'),
@@ -12,42 +11,25 @@ module.factory('pageService', [
       messages: $injector.get('messageService'),
       models: $injector.get('modelService'),
       assets: $injector.get('assetService'),
-      panels: $injector.get('panelService'),
       router: $injector.get('routerService'),
-      storage: $injector.get('storageService'),
       tooltips: $injector.get('tooltipService'),
     };
 
     //
 
-    page.permission = page.constants.permissionName;
-    page.classification = page.constants.classificationName;
-    page.consent = page.constants.consentName;
-    page.category = page.constants.categoryName;
-    page.metric = page.constants.metricName;
+    page.permission = page.constants.permission;
+    page.classification = page.constants.classification;
 
     //
 
     [
-      '$anchorScroll',
-      '$animate',
-      '$cacheFactory',
-      '$compile',
-      '$document',
       '$filter',
-      '$http',
-      '$injector',
-      '$interpolate',
-      '$interval',
       '$location',
-      '$log',
       '$parse',
       '$q',
       '$rootScope',
       '$route',
-      '$routeParams',
       '$sce',
-      '$templateCache',
       '$timeout',
       '$window'
     ].forEach(function (dependency) {
@@ -56,8 +38,6 @@ module.factory('pageService', [
 
     //
 
-    page.$b = $('body');
-    page.$m = $('main');
     page.$w = $(page.$window);
 
     //

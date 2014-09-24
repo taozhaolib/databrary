@@ -8,14 +8,14 @@ import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parentId : Option[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
+final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parents : Seq[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
   def whoId = who.id
 
   override def json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
     Some('time -> time),
     Some('text -> text),
-    parentId.map('parent -> _)
+    if (parents.nonEmpty) Some('parents -> parents) else None
   ) ++ slotJson
 }
 
@@ -26,15 +26,14 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
     , segment
     , SelectColumn[Timestamp]("time")
     , SelectColumn[String]("text")
-    , SelectColumn[Option[Id]]("parent")
-    ).map { (id, segment, time, text, parent) =>
+    , SelectColumn[IndexedSeq[Id]]("thread")
+    ).map { (id, segment, time, text, thread) =>
       (context : ContextSlot) => (who : Account) =>
-	new Comment(id, who, segment, context, time, text, parent)
-    }
-  private val threads = columns from "comment_thread AS comment";
+	new Comment(id, who, segment, context, time, text, thread.tail)
+    } from "comment_thread AS comment"
 
   private def row(who : Selector[Account], container : Selector[Container]) =
-    columnsSlot(threads, container, false)
+    columnsSlot(columns, container, false)
     .join(who, "comment.who = account.id")
     .map(tupleApply)
   private def rowContainer(container : Selector[Container]) =
@@ -65,6 +64,6 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Comment] =
     INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent), "id, time")
     .single(SQLCols[Id, Timestamp].map { (id, time) =>
-      new Comment(id, site.account, slot.segment, slot.context, time, text, parent)
+      new Comment(id, site.account, slot.segment, slot.context, time, text, parent.toSeq)
     })
 }

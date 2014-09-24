@@ -491,7 +491,8 @@ CREATE TABLE "comment" (
 	"segment" segment NOT NULL,
 	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL,
-	"parent" integer References "comment"
+	"parent" integer References "comment",
+	Check ("parent" < "id")
 ) INHERITS ("slot");
 CREATE INDEX "comment_slot_idx" ON "comment" ("container", "segment");
 CREATE INDEX ON "comment" ("who");

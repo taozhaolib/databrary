@@ -1,20 +1,18 @@
 'use strict';
 
 module.directive('clickElsewhere', [
-  'pageService', function (page) {
-    var link = function ($scope, $element, $attrs) {
-      $element.bind('click', function ($event) {
-        $event.stopPropagation();
-      });
-
-      page.$document.bind('click', function () {
-        $scope.$apply($attrs.clickElsewhere);
-      });
-    };
-
-    return {
-      restrict: 'A',
-      link: link
-    };
-  }
+  '$parse', '$document',
+  function ($parse, $document) { return {
+    compile: function ($element, $attrs) {
+      var action = $parse($attrs.clickElsewhere);
+      return function ($scope, $element) {
+	$document.on('click', function (event) {
+	  if (!$.contains($element[0], event.target))
+	    $scope.$apply(function () {
+	      action($scope, {$event:event});
+	    });
+	});
+      };
+    }
+  }; }
 ]);

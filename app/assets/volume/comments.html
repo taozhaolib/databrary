@@ -1,0 +1,21 @@
+<panel ng-controller="volume/comments" id="panel-comments" panel-title="{{'comments.title' | message}}" fold>
+  <comment-reply-form bo-if="canPost" ng-if="!replyTo"></comment-reply-form>
+
+  <article bindonce ng-repeat="comment in comments" class="panel-comments-comment" bo-class="commentClass(comment)">
+    <div class="row">
+      <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
+        <footer class="panel-comments-meta" ng-init="party = comment.who">
+          <portrait extra="commentMeta(comment)"></portrait>
+        </footer>
+
+        <div class="panel-comments-body" ng-bind-html="comment.text | format"></div>
+
+        <div class="panel-comments-body" bo-if="canPost" ng-if="replyTo !== comment">
+          <button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
+        </div>
+      </div>
+    </div>
+
+    <comment-reply-form bo-if="canPost" ng-if="replyTo === comment" class="depth-1"></comment-reply-form>
+  </article>
+</panel>

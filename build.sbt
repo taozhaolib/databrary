@@ -63,6 +63,8 @@ JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 pipelineStages in Assets := Seq(uglify)
 
+CoffeeScriptKeys.bare := true
+
 StylusKeys.useNib in Assets := true
 
 includeFilter in (Assets, StylusKeys.stylus) := "app.styl"
@@ -79,14 +81,12 @@ JsTaskKeys.jsOptions in (Assets, StylusKeys.stylus) ~= { (s : String) =>
 
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
-AngularTemplatesKeys.naming := { f =>
-  new File(f).getName
-}
-
 AngularTemplatesKeys.outputHtml := None
 
 includeFilter in uglify := new SimpleFileFilter({ f =>
-  f.getPath.startsWith((sourceDirectory in Assets).value.getPath) && f.getName.endsWith(".js")
+  f.getName.endsWith(".js") &&
+    (f.getPath.startsWith((sourceDirectory in Assets).value.getPath) ||
+     f.getPath.startsWith((resourceManaged in (Assets, CoffeeScriptKeys.coffeescript)).value.getPath))
 })
 
 UglifyKeys.uglifyOps := { js =>

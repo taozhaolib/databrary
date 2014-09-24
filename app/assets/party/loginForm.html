@@ -1,0 +1,24 @@
+<ng-form name="loginForm" bindonce>
+  <div ng-switch="loginForm.method">
+    <div ng-switch-default>
+      <validator name="email" label="'email' | message">
+	<input id="loginEmail" name="email" type="email" ng-model="loginForm.data.email" required>
+      </validator>
+
+      <validator name="password" label="'password' | message">
+	<input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required key-enter="loginForm.submit()">
+      </validator>
+    </div>
+
+    <div ng-switch-when="openid">
+      <input id="loginOpenid" type="text" ng-model="loginForm.data.openid" bo-attr bo-attr-placeholder="'openid' | message" required key-enter="loginForm.submit()">
+    </div>
+  </div>
+
+  <button id="loginSubmit" type="submit" class="green" ng-click="loginForm.submit()" ng-disabled="loginForm.$pristine || loginForm.$invalid" bo-text="'login.login' | message"></button>
+
+  <a ng-click="loginForm.switchMethod('openid')" ng-hide="true || loginForm.method === 'openid'" bo-text="'login.method.openid' | message"></a>
+  <a ng-click="loginForm.switchMethod('databrary')" ng-hide="loginForm.method === 'databrary'" bo-text="'login.method.password' | message"></a>
+
+  <a bo-href="page.router.password()" bo-text="'login.forgot' | message"></a>
+</ng-form>
