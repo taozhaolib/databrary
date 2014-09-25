@@ -1,8 +1,7 @@
 'use strict';
 
 module.directive('figure', [
-  'pageService',
-  function (page) { return {
+  function () { return {
     restrict: 'E',
     priority: 100,
     transclude: true,

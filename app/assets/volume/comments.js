@@ -1,8 +1,8 @@
 'use strict';
 
 module.controller('volume/comments', [
-  '$scope', 'pageService', '$sanitize',
-  function ($scope, page, $sanitize) {
+  '$scope', 'pageService',
+  function ($scope, page) {
     $scope.canPost = page.models.Login.isAuthorized();
 
     $scope.refreshPanel = function () {
