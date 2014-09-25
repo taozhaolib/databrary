@@ -102,6 +102,7 @@ object SiteApi extends SiteController {
     , VolumeHtml.add
     , VolumeHtml.edit
     , VolumeController.thumb
+    , VolumeController.zip
     , VolumeApi.get
     , VolumeApi.query
     , VolumeApi.update
@@ -114,6 +115,7 @@ object SiteApi extends SiteController {
     , VolumeApi.fundingDelete
     , SlotHtml.view
     , SlotHtml.edit
+    , SlotController.zip
     , SlotApi.get
     , SlotApi.update
     , SlotApi.create

@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('modelService', [
-  '$q', '$cacheFactory', 'routerService', 'constantService', 'Segment',
-  function ($q, $cacheFactory, router, constants, Segment) {
+  '$q', '$cacheFactory', '$play', 'routerService', 'constantService', 'Segment',
+  function ($q, $cacheFactory, $play, router, constants, Segment) {
 
     ///////////////////////////////// Model: common base class and utils
 
@@ -284,7 +284,7 @@ module.factory('modelService', [
       return (Login.user = Party.poke(new Login(l)));
     }
 
-    loginPoke(window.$play.user);
+    loginPoke($play.user);
 
     function loginRes(res) {
       var l = res.data;
@@ -426,7 +426,7 @@ module.factory('modelService', [
     Volume.create = function (data, owner) {
       return router.http(router.controllers.VolumeApi.create, owner, data)
 	.then(function (res) {
-	  if (owner && (owner = partyPeek(owner)))
+	  if ((owner = (owner === undefined ? Login.user : partyPeek(owner))))
 	    owner.clear('volumes');
 	  return volumeMake(res.data);
 	});
@@ -462,6 +462,10 @@ module.factory('modelService', [
 
     Volume.prototype.thumbRoute = function (size) {
       return router.volumeThumb([this.id, size]);
+    };
+
+    Volume.prototype.zipRoute = function () {
+      return router.volumeZip([this.id]);
     };
 
     Volume.prototype.accessSearch = function (param) {
@@ -691,6 +695,10 @@ module.factory('modelService', [
 
     Slot.prototype.editRoute = function () {
       return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
+    };
+
+    Slot.prototype.zipRoute = function () {
+      return router.slotZip([this.volume.id, this.container.id, this.segment.format()]);
     };
 
     ///////////////////////////////// Record

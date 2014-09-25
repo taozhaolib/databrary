@@ -3,6 +3,8 @@
   <span ng-if="editable"> | </span>
   <a ng-if="editable && !editing" ng-click="refresh(true)">edit</a>
   <a ng-if="editable && editing" ng-click="refresh(false)">view</a>
+  <span> | </span>
+  <a ng-href="volume.zipRoute()" target="_self">all.zip</a>
   <table id="spreadsheet-table">
     <colgroup>
       <col/>

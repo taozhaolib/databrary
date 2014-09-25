@@ -1,5 +1,4 @@
 'use strict';
-/* jslint eqnull:true */
 
 module.provider('routerService', [
   '$routeProvider', 'routeData',
@@ -157,13 +156,14 @@ module.provider('routerService', [
       },
       resolve: {
         token: [
-          'pageService', function (page) {
-            if (page.$window.$play.object && page.$window.$play.object.auth)
-              page.$q.successful(page.$window.$play.object);
+          'pageService', '$play',
+          function (page, $play) {
+            if ($play.object && $play.object.auth)
+              page.$q.successful($play.object);
             else
 	      return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
 		.then(function (res) {
-                  page.$window.$play.object = res;
+                  $play.object = res;
                   return res;
                 }, function () {
                   page.$location.url('/');
@@ -299,6 +299,8 @@ module.provider('routerService', [
     routes.slotAsset = makeRoute(controllers.SlotAssetHtml.view, ['sid', 'segment', 'id']);
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
+    routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
+    routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
     routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);

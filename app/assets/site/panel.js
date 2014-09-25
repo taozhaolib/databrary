@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('panel', [
-  'pageService', function (page) {
+  function () {
     var link = function ($scope, $element, $attrs, ctrl, transclude) {
       if (angular.isDefined($attrs.id)) {
         $scope.id = $attrs.id;
