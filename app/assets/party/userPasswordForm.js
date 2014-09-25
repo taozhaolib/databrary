@@ -1,7 +1,8 @@
 'use strict';
 
 module.directive('userPasswordForm', [
-  'pageService', function (page) {
+  'pageService', '$play',
+  function (page, $play) {
     var link = function ($scope) {
       var form = $scope.userPasswordForm;
       var token;
@@ -60,7 +61,7 @@ module.directive('userPasswordForm', [
               body: page.constants.message('reset.save.success', form.data.email)
             });
 
-            page.$window.$play.object = null;
+            $play.object = null;
 
             if (angular.isFunction(form.saveSuccessFn)) {
               form.saveSuccessFn();
@@ -68,7 +69,7 @@ module.directive('userPasswordForm', [
           }, function (res) {
             form.validator.server(res);
 
-            page.$window.$play.object = null;
+            $play.object = null;
           });
       };
 

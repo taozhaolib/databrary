@@ -157,13 +157,14 @@ module.provider('routerService', [
       },
       resolve: {
         token: [
-          'pageService', function (page) {
-            if (page.$window.$play.object && page.$window.$play.object.auth)
-              page.$q.successful(page.$window.$play.object);
+          'pageService', '$play',
+          function (page, $play) {
+            if ($play.object && $play.object.auth)
+              page.$q.successful($play.object);
             else
 	      return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
 		.then(function (res) {
-                  page.$window.$play.object = res;
+                  $play.object = res;
                   return res;
                 }, function () {
                   page.$location.url('/');

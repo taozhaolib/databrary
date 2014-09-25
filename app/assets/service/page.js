@@ -31,14 +31,13 @@ module.factory('pageService', [
       '$route',
       '$sce',
       '$timeout',
-      '$window'
     ].forEach(function (dependency) {
       page[dependency] = $injector.get(dependency);
     });
 
     //
 
-    page.$w = $(page.$window);
+    page.$w = $($injector.get('$window'));
 
     //
 

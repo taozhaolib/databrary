@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('modelService', [
-  '$q', '$cacheFactory', 'routerService', 'constantService', 'Segment',
-  function ($q, $cacheFactory, router, constants, Segment) {
+  '$q', '$cacheFactory', '$play', 'routerService', 'constantService', 'Segment',
+  function ($q, $cacheFactory, $play, router, constants, Segment) {
 
     ///////////////////////////////// Model: common base class and utils
 
@@ -284,7 +284,7 @@ module.factory('modelService', [
       return (Login.user = Party.poke(new Login(l)));
     }
 
-    loginPoke(window.$play.user);
+    loginPoke($play.user);
 
     function loginRes(res) {
       var l = res.data;

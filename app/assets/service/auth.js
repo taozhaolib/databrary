@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('authService', [
-  '$location', '$route', 'messageService', 'constantService', 'modelService', 'playService',
-  function ($location, $route, messages, constants, models, play) {
+  '$location', '$route', 'messageService', 'constantService', 'modelService', '$play',
+  function ($location, $route, messages, constants, models, $play) {
     var auth = {};
 
     //
@@ -30,7 +30,7 @@ module.factory('authService', [
     //
 
     auth.hasToken = function () {
-      return play.object && play.object.auth;
+      return $play.object && $play.object.auth;
     };
 
     auth.getToken = function () {
@@ -38,11 +38,11 @@ module.factory('authService', [
         return;
       }
 
-      return play.object;
+      return $play.object;
     };
 
     auth.isPasswordPending = function () {
-      return auth.hasToken() && !play.object.reset;
+      return auth.hasToken() && !$play.object.reset;
     };
 
     //
