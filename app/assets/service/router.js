@@ -299,6 +299,8 @@ module.provider('routerService', [
     routes.slotAsset = makeRoute(controllers.SlotAssetHtml.view, ['sid', 'segment', 'id']);
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
+    routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
+    routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
     routes.assetThumb = makeRoute(controllers.SlotAssetController.thumb, ['sid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.SlotAssetController.download, ['sid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);

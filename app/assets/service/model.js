@@ -464,6 +464,10 @@ module.factory('modelService', [
       return router.volumeThumb([this.id, size]);
     };
 
+    Volume.prototype.zipRoute = function () {
+      return router.volumeZip([this.id]);
+    };
+
     Volume.prototype.accessSearch = function (param) {
       return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
 	.then(function (res) {
@@ -691,6 +695,10 @@ module.factory('modelService', [
 
     Slot.prototype.editRoute = function () {
       return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
+    };
+
+    Slot.prototype.zipRoute = function () {
+      return router.slotZip([this.volume.id, this.container.id, this.segment.format()]);
     };
 
     ///////////////////////////////// Record

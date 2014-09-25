@@ -9,6 +9,7 @@
           <a class="view-link" bo-href="volume.route" bo-text="volume.alias || volume.name"></a>
           <h1 class="view-title smaller with-link" bo-text="slot.displayName"></h1>
 	  <h2 bo-if="slot.date" bo-text="slot.date"></h2>
+	  <a bo-href="slot.zipRoute()" target="_self">all.zip</a>
         </hgroup>
 
 	<section class="slot-player">
@@ -57,7 +58,7 @@
 
 	    <div class="player-main-float" bo-if="!editing" ng-if="current">
 	      <h1 class="player-main-info-name">
-		<span class="filename" ng-bind="current.displayName"></span>
+		<span class="filename" ng-bind="current.name"></span>
 	      </h1>
 	    </div>
 	  </div>
