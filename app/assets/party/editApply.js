@@ -8,7 +8,7 @@ module.directive('partyEditApplyForm', [
 
       form.data = party.parents.slice();
 
-      page.events.listen($scope, 'authApplyForm-init', function (event, applyForm) {
+      $scope.$on('authApplyForm-init', function (event, applyForm) {
         applyForm.successFn = function () {
           form.messages.add({
             body: page.constants.message('auth.apply.save.success'),
@@ -26,6 +26,8 @@ module.directive('partyEditApplyForm', [
 
           form.data.remove(auth);
         };
+
+        event.stopPropagation();
       });
 
       var preSelect;
@@ -33,7 +35,7 @@ module.directive('partyEditApplyForm', [
 	preSelect = party;
       };
 
-      page.events.listen($scope, 'authSearchForm-init', function (event, searchForm) {
+      $scope.$on('authSearchForm-init', function (event, searchForm) {
         if (searchForm.principal === 'child')
           return;
 
@@ -61,7 +63,7 @@ module.directive('partyEditApplyForm', [
       form.scrollFn = page.display.makeFloatScrollFn($('.peap-float'), $('.peap-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
 
-      page.events.talk('partyEditApplyForm-init', form);
+      $scope.$emit('partyEditApplyForm-init', form);
     };
 
     return {

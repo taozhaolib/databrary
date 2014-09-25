@@ -61,7 +61,7 @@ module.controller('party/network', [
 
     $scope.grant = function () {
       page.$location.url(page.models.Login.user.editRoute('grant'));
-      var remove = page.events.listen(page.$rootScope, 'partyEditGrantForm-init', function (event, form) {
+      var remove = page.$rootScope.$on('partyEditGrantForm-init', function (event, form) {
 	form.preSelect($scope.party);
         remove();
       });
@@ -69,7 +69,7 @@ module.controller('party/network', [
 
     $scope.apply = function () {
       page.$location.url(page.models.Login.user.editRoute('apply'));
-      var remove = page.events.listen(page.$rootScope, 'partyEditApplyForm-init', function (event, form) {
+      var remove = page.$rootScope.$on('partyEditApplyForm-init', function (event, form) {
 	form.preSelect($scope.party);
         remove();
       });

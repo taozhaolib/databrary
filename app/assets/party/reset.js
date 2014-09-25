@@ -6,7 +6,7 @@ module.controller('party/reset', [
 
     //
 
-    page.events.listen($scope, 'userPasswordForm-init', function (event, form) {
+    $scope.$on('userPasswordForm-init', function (event, form) {
       form.saveSuccessFn = form.resetSuccessFn = function () {
         page.$location.url(page.router.index());
       };

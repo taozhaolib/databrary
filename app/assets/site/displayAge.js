@@ -10,10 +10,7 @@ module.directive('displayAge', [
       };
 
       formatAge();
-
-      page.events.listen($scope, 'displayService-toggleAge', function () {
-        formatAge();
-      });
+      $scope.$on('displayService-toggleAge', formatAge);
     };
 
     return {

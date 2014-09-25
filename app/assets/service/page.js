@@ -7,7 +7,6 @@ module.factory('pageService', [
       browser: $injector.get('browserService'),
       constants: $injector.get('constantService'),
       display: $injector.get('displayService'),
-      events: $injector.get('eventService'),
       messages: $injector.get('messageService'),
       models: $injector.get('modelService'),
       router: $injector.get('routerService'),

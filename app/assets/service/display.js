@@ -1,8 +1,8 @@
 'use strict';
 
 module.factory('displayService', [
-  '$rootScope', 'storageService', 'eventService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
-  function ($rootScope, storage, events, $filter, messages, constants, $timeout, $window) {
+  '$rootScope', 'storageService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
+  function ($rootScope, storage, $filter, messages, constants, $timeout, $window) {
     var display = {};
 
     //
@@ -31,7 +31,7 @@ module.factory('displayService', [
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
-      events.talk('displayService-error', error);
+      $rootScope.$broadcast('displayService-error', error);
     });
 
     //
@@ -75,7 +75,7 @@ module.factory('displayService', [
 
     display.toggleAge = function () {
       ageKey = ageKeys[(ageKeys.indexOf(ageKey) + 1) % ageKeys.length];
-      events.talk('displayService-toggleAge', ageKey);
+      $rootScope.$broadcast('displayService-toggleAge', ageKey);
       storage.set('displayAge', ageKey);
     };
 

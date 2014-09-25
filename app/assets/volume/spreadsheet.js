@@ -397,7 +397,7 @@ module.directive('spreadsheet', [
 	  }
 	}
 
-	page.events.listen($scope, 'displayService-toggleAge', regenerateAges);
+	$scope.$on('displayService-toggleAge', regenerateAges);
 
 	/* Generate all rows. */
 	function generate() {

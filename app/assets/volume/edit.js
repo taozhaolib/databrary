@@ -1,7 +1,7 @@
 'use strict';
 
 module.controller('volume/edit', [
-  '$scope', 'volume', 'pageService', 'storeService',
+  '$scope', 'volume', 'pageService', 'Store',
   function ($scope, volume, page, Store) {
     $scope.flowOptions = Store.flowOptions;
     $scope.volume = volume;

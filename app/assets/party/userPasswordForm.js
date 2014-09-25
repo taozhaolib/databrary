@@ -102,7 +102,7 @@ module.directive('userPasswordForm', [
 
       //
 
-      page.events.talk('userPasswordForm-init', form, $scope);
+      $scope.$emit('userPasswordForm-init', form);
     };
 
     //

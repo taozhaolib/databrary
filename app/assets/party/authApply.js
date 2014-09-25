@@ -72,7 +72,7 @@ module.directive('authApplyForm', [
 
       //
 
-      page.events.talk('authApplyForm-init', form, $scope);
+      $scope.$emit('authApplyForm-init', form);
     };
 
     //

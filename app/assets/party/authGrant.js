@@ -95,7 +95,7 @@ module.directive('authGrantForm', [
 
       //
 
-      page.events.talk('authGrantForm-init', form, $scope);
+      $scope.$emit('authGrantForm-init', form);
     };
 
     //

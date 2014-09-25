@@ -59,7 +59,7 @@ module.directive('commentReplyForm', [
 
       //
 
-      page.events.talk('commentReplyForm-init', form, $scope);
+      $scope.$emit('commentReplyForm-init', form);
     };
 
     //

@@ -88,7 +88,7 @@ module.directive('authSearchForm', [
 
       //
 
-      page.events.talk('authSearchForm-init', form);
+      $scope.$emit('authSearchForm-init', form);
     };
 
     //

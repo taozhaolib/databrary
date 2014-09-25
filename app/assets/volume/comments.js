@@ -46,7 +46,7 @@ module.controller('volume/comments', [
 
     //
 
-    page.events.listen($scope, 'commentReplyForm-init', function (event, form) {
+    $scope.$on('commentReplyForm-init', function (event, form) {
       form.successFn = $scope.pullComments;
       form.cancelFn = $scope.setReply;
       form.target = $scope.replyTo;

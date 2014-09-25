@@ -2,8 +2,8 @@
 /* jslint eqnull:true */
 
 module.controller('slot/view', [
-  '$scope', 'slot', 'edit', 'pageService', 'storeService',
-  function ($scope, slot, editing, page, Store) {
+  '$scope', 'slot', 'edit', 'pageService', 'Store', 'Segment',
+  function ($scope, slot, editing, page, Store, Segment) {
     page.display.title = slot.displayName;
     $scope.flowOptions = Store.flowOptions;
     $scope.slot = slot;
@@ -250,10 +250,31 @@ module.controller('slot/view', [
       v.on(videoEvents);
     };
 
+    function sortRecords() {
+      slot.records.forEach(function (r) {
+        if (!r.record)
+          r.record = slot.volume.records[r.id];
+      });
+      slot.records.sort(function (a, b) {
+        return a.record.category - b.record.category || a.id - b.id;
+      });
+      var t = [];
+      slot.records.forEach(function (r) {
+        var s = r.segment = Segment.make(r.segment);
+        updateRange(s);
+        var overlaps = function(r) {
+          return s.overlaps(r.segment);
+        };
+        for (var i = 0; i < t.length; i ++)
+          if (!t.some(overlaps))
+            break;
+      });
+    }
+
     $scope.current = undefined;
 
     $scope.range = new page.models.Segment(Infinity, -Infinity);
-    updateRange(page.models.Segment.full);
+    updateRange(page.models.Segment.full); // implicitly initialize from slot.segment
 
     $scope.tracks = slot.assets.map(function (asset) {
       return new Track(asset);
@@ -262,12 +283,16 @@ module.controller('slot/view', [
       $scope.tracks.push(new Track());
     sortTracks();
 
+    sortRecords();
+
     $scope.playing = 0;
-    $scope.position = $scope.leftTime;
+    $scope.position = undefined;
+    
+
     
     /////// OLD
 
-    var sortRecords = function () {
+    var sortRecordsOld = function () {
       $scope.records = {};
       $scope.noteOptions = {
 	comments: 'comments',
@@ -283,6 +308,6 @@ module.controller('slot/view', [
       });
     };
 
-    sortRecords();
+    sortRecordsOld();
   }
 ]);

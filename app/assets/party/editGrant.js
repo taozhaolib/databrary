@@ -17,13 +17,15 @@ module.directive('partyEditGrantForm', [
         });
       };
 
-      page.events.listen($scope, 'authGrantForm-init', function (event, grantForm) {
+      $scope.$on('authGrantForm-init', function (event, grantForm) {
         subforms.push(grantForm);
 
         grantForm.denySuccessFn = function (auth) {
           form.data.remove(auth);
           subforms.remove(grantForm);
         };
+
+        event.stopPropagation();
       });
 
       var preSelect;
@@ -31,7 +33,7 @@ module.directive('partyEditGrantForm', [
 	preSelect = party;
       };
 
-      page.events.listen($scope, 'authSearchForm-init', function (event, searchForm) {
+      $scope.$on('authSearchForm-init', function (event, searchForm) {
         if (searchForm.principal !== 'child')
           return;
 
@@ -60,12 +62,14 @@ module.directive('partyEditGrantForm', [
 	if (preSelect)
 	  searchForm.selectFn(preSelect);
 	preSelect = null;
+
+        event.stopPropagation();
       });
 
       form.scrollFn = page.display.makeFloatScrollFn($('.peg-float'), $('.peg-float-floater'), 24*2.5);
       page.$w.scroll(form.scrollFn);
 
-      page.events.talk('partyEditGrantForm-init', form, $scope);
+      $scope.$emit('partyEditGrantForm-init', form);
     };
 
     return {

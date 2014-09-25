@@ -1,7 +1,7 @@
 'use strict';
 
 module.directive('volumeEditMaterialsForm', [
-  'pageService', 'storeService',
+  'pageService', 'Store',
   function (page, Store) {
     var link = function ($scope) {
       var volume = $scope.volume;
