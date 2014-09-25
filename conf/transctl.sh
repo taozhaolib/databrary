@@ -4,6 +4,7 @@
 # It calls tools/transcode on transcode.host, which must be in the path.
 
 cmd=`dirname $0`/transcode
+chmod +x "$cmd"
 
 if [[ ! -f $cmd ]] ; then
 	echo "$cmd: not found" >&2
@@ -33,7 +34,7 @@ if [[ -n $host ]] ; then
 	hcmd=`basename "$cmd"`
 	if [[ -n $version ]] ; then
 		hcmd=$hcmd-$version
-		rsync "$cmd" "$host:$hcmd"
+		rsync -p "$cmd" "$host:$hcmd"
 	fi
 	cmd=./$hcmd
 fi
