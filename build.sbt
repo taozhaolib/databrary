@@ -63,7 +63,6 @@ JsEngineKeys.engineType := JsEngineKeys.EngineType.Node
 
 pipelineStages in Assets := Seq(uglify)
 
-CoffeeScriptKeys.bare := true
 
 StylusKeys.useNib in Assets := true
 
@@ -79,15 +78,23 @@ JsTaskKeys.jsOptions in (Assets, StylusKeys.stylus) ~= { (s : String) =>
   ).toString
 }
 
+
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
 AngularTemplatesKeys.outputHtml := None
 
-includeFilter in uglify := new SimpleFileFilter({ f =>
+
+CoffeeScriptKeys.bare := true
+
+JsTaskKeys.sourceDependencies in JshintKeys.jshint += CoffeeScriptKeys.coffeescript
+
+WebKeys.jsFilter in Assets := new SimpleFileFilter({ f =>
   f.getName.endsWith(".js") &&
     (f.getPath.startsWith((sourceDirectory in Assets).value.getPath) ||
      f.getPath.startsWith((resourceManaged in (Assets, CoffeeScriptKeys.coffeescript)).value.getPath))
 })
+
+includeFilter in (Assets, uglify) := (WebKeys.jsFilter in Assets).value
 
 UglifyKeys.uglifyOps := { js =>
   // we assume that app.js is first alphabetically

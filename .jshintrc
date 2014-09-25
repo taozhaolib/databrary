@@ -4,5 +4,7 @@
 "globalstrict": true,
 "smarttabs": true,
 "browser": true,
-"devel": true
+"devel": true,
+"eqnull": true,
+"boss": true
 }
