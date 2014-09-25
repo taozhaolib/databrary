@@ -10,7 +10,6 @@ module.factory('pageService', [
       events: $injector.get('eventService'),
       messages: $injector.get('messageService'),
       models: $injector.get('modelService'),
-      assets: $injector.get('assetService'),
       router: $injector.get('routerService'),
       tooltips: $injector.get('tooltipService'),
     };

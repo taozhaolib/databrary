@@ -2,9 +2,10 @@
 /* jslint eqnull:true */
 
 module.controller('slot/view', [
-  '$scope', 'slot', 'edit', 'pageService',
-  function ($scope, slot, editing, page) {
+  '$scope', 'slot', 'edit', 'pageService', 'storeService',
+  function ($scope, slot, editing, page, Store) {
     page.display.title = slot.displayName;
+    $scope.flowOptions = Store.flowOptions;
     $scope.slot = slot;
     $scope.volume = slot.volume;
     $scope.editing = editing;
@@ -104,23 +105,17 @@ module.controller('slot/view', [
       });
     }
 
-    /* There is a lot of unfortunate duplication between here and volumeEditMaterialsForm,
-     * but this should be considered authoritative. */
-
     function Track(asset) {
-      if (asset)
-	this.setAsset(asset);
-      else
-	this.fillData();
+      Store.call(this, slot, asset);
     }
+    Track.prototype = Object.create(Store.prototype);
+    Track.prototype.constructor = Track;
 
     Track.prototype.setAsset = function (asset) {
-      this.asset = asset;
+      Store.prototype.setAsset.call(this, asset);
       updateRange(asset.segment);
       if (targetAsset == asset.id)
 	this.select();
-      if (editing)
-	this.fillData();
     };
 
     function selectTrack(track) {
@@ -151,124 +146,54 @@ module.controller('slot/view', [
 	$scope.seekPosition(event.clientX);
     };
 
-    Object.defineProperty(Track.prototype, 'name', {
-      get: function () {
-	if (!(this.file || this.asset))
-	  return page.constants.message('asset.add');
-	return this.file && this.file.file.name || this.asset && this.asset.name || page.constants.message('file');
-      }
-    });
-
     Track.prototype.positionStyle = function () {
       return this.asset && $scope.positionStyle(this.asset.segment);
     };
 
     if (editing) {
-      Track.prototype.fillData = function () {
-	var asset = this.asset || {
-	  classification: page.classification.RESTRICTED
-	};
-	this.data = {
-	  name: asset.name,
-	  classification: asset.classification+'',
-	  container: slot.container.id, /* required for position, which has the side-effect of restoring deleted/moved assets */
-	  position: asset.segment && isFinite(asset.segment.l) ? page.$filter('timecode')(asset.segment.l, true) : undefined
-	};
+      var removed = function(track) {
+        if (track.asset || track.file)
+          return;
+        if (track === $scope.current)
+          selectTrack(undefined);
+        $scope.tracks.remove(track);
       };
 
       Track.prototype.remove = function () {
-	var track = this;
-	if (!confirm(page.constants.message('asset.remove.confirm')))
-	  return;
-	track.asset.remove().then(function() {
-	  page.messages.add({
-	    type: 'green',
-	    countdown: 3000,
-	    body: page.constants.message('asset.remove.success', track.name),
-	  });
-	  if (track === $scope.current)
-	    selectTrack(); //set current track to blank, undefined
-	  $scope.tracks.remove(track);
-	}, function (res) {
-	  page.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.remove.error', track.name),
-	    report: res,
-	  });
-	});
+        var r = Store.prototype.remove.call(this);
+        if (!(r && r.then))
+          removed(this);
+        else {
+          var track = this;
+          r.then(function (done) {
+            if (done)
+              removed(track);
+          });
+        }
       };
 
       Track.prototype.save = function () {
-	var track = this;
-	var act;
-	if (track.file) {
-	  track.data.upload = track.file.uniqueIdentifier;
-	  act = track.asset ? track.asset.replace(track.data) : slot.createAsset(track.data);
-	} else
-	  act = track.asset.save(track.data);
-
-	act.then(function (asset) {
-	  if (asset instanceof page.models.Asset) {
-	    track.asset.asset = asset;
-	    asset = track.asset;
-	  }
-	  track.setAsset(asset);
-
-	  page.messages.add({
-	    type: 'green',
-	    countdown: 3000,
-	    body: page.constants.message('asset.' + (track.file ? 'upload' : 'update') + '.success', track.name) +
-	      (track.file && asset.format.transcodable ? ' ' + page.constants.message('asset.upload.transcoding') : ''), 
-	  });
-
-	  if (track.file) {
-	    if (!('creation' in track.asset.asset))
-	      track.asset.asset.creation = {date: Date.now(), name: track.file.file.name}; 
-	    track.file.cancel();
-	    delete track.file;
-	    delete track.progress;
-	  }
-	  delete track.dirty;
-	  if (track === $scope.current)
-	    $scope.form.edit.$setPristine();
-	  sortTracks();
-	}, function (error) {
-	  page.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.update.error', track.name),
-	    report: error,
-	  });
-	  if (track.file) {
-	    track.file.cancel();
-	    delete track.file;
-	    delete track.progress;
-	    delete track.data.upload;
-	  }
-	});
+        var track = this;
+        Store.prototype.save.call(this).then(function (done) {
+          if (!done)
+            return;
+          delete track.dirty;
+          if (track === $scope.current)
+            $scope.form.edit.$setPristine();
+          sortTracks();
+        });
       };
 
       Track.prototype.upload = function (file) {
-	var track = this;
-	track.file = file;
-	track.progress = 0;
-	file.track = track;
+        var track = this;
 	delete $scope.replace;
-
-	page.assets.assetStart(file).then(function () {
-	  file.resume();
+        Store.prototype.upload.call(this, file).then(function (done) {
+          if (!done)
+            return;
+          // add a new blank track
 	  if (!track.asset)
 	    $scope.tracks.push(new Track());
-	},
-	function (error) {
-	  page.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.upload.rejected', track.name), 
-	    report: error,
-	  });
-	  file.cancel();
-	  delete track.file;
-	  delete track.progress;
-	});
+        });
       };
 
       Track.prototype.replace = function () {
@@ -284,14 +209,8 @@ module.controller('slot/view', [
 	$scope.current.upload(file);
     };
 
-    $scope.fileSuccess = function (file) {
-      file.track.progress = 100;
-      file.track.save();
-    };
-
-    $scope.fileProgress = function (file) {
-      file.track.progress = file.progress();
-    };
+    $scope.fileSuccess = Store.fileSuccess;
+    $scope.fileProgress = Store.fileProgress;
 
     var videoEvents = {
       pause: function () {

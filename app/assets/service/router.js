@@ -1,5 +1,4 @@
 'use strict';
-/* jslint eqnull:true */
 
 module.provider('routerService', [
   '$routeProvider', 'routeData',

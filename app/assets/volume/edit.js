@@ -1,8 +1,9 @@
 'use strict';
 
 module.controller('volume/edit', [
-  '$scope', 'volume', 'pageService',
-  function ($scope, volume, page) {
+  '$scope', 'volume', 'pageService', 'storeService',
+  function ($scope, volume, page, Store) {
+    $scope.flowOptions = Store.flowOptions;
     $scope.volume = volume;
     page.display.title = volume ? volume.title : page.constants.message('page.title.volume');
 

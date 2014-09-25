@@ -1,76 +1,44 @@
 'use strict';
 
 module.directive('volumeEditMaterialsForm', [
-  'pageService', function (page) {
+  'pageService', 'storeService',
+  function (page, Store) {
     var link = function ($scope) {
       var volume = $scope.volume;
       var slot = volume.top;
       var form = $scope.volumeEditMaterialsForm;
 
-      /* There is a lot of unfortunate duplication between here and slotView. */
-      function materialData(asset) {
-	return {
-	  name: asset.asset.name,
-	  classification: asset.asset.classification+'',
-	  excerptOn: asset.excerpt !== undefined,
-	  excerpt: (asset.excerpt || 0)+''
-	};
+      function Material(asset) {
+        Store.call(this, slot, asset);
       }
+      Material.prototype = Object.create(Store.prototype);
+      Material.prototype.constructor = Material;
 
       form.materials = slot.assets.map(function (asset) {
 	asset.asset.get(['creation']);
-	return {
-	  asset: asset,
-	  data: materialData(asset)
-	};
+        return new Material(asset);
       });
-
-      function materialName(material) {
-	return material.file && material.file.file.name || material.asset && material.asset.name || page.constants.message('file');
-      }
 
       form.fileAdded = function (file, event) {
 	var material = angular.element(event.target).scope().material;
 
 	if (material)
 	  delete material.replace;
-	else {
-	  material = {
-	    data: {
-	      classification: page.classification.RESTRICTED+'',
-	    },
-	  };
-	}
-	material.file = file;
-	material.progress = 0;
-	file.material = material;
+	else
+	  material = new Material();
 
-	page.assets.assetStart(file).then(function () {
-	  file.resume();
-	  if(!material.asset){
+        material.upload(file).then(function (done) {
+          if (!done)
+            return;
+	  if (!material.asset) {
 	    form.materials.push(material);
 	    page.display.scrollTo('fieldset.vem-repeat:last');
 	  }
-	}, function (res) {
-	  form.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.upload.rejected', materialName(material)), 
-	    report: res,
-	  });
-	  file.cancel();
-	  delete material.file;
-	  delete material.progress;
 	});
       };
 
-      form.fileSuccess = function (file) {
-	file.material.progress = 100;
-	form.save(file.material);
-      };
-
-      form.fileProgress = function (file) {
-        file.material.progress = file.progress();
-      };
+      form.fileSuccess = Store.fileSuccess;
+      form.fileProgress = Store.fileProgress;
 
       form.excerptOptions = function (material) {
 	var l = {};
@@ -83,50 +51,10 @@ module.directive('volumeEditMaterialsForm', [
       form.save = function (material) {
 	if (!material.data.excerptOn)
 	  material.data.excerpt = '';
-
-	var act;
-	if (material.file) {
-	  material.data.upload = material.file.uniqueIdentifier;
-	  act = material.asset ? material.asset.replace(material.data) : slot.createAsset(material.data);
-	} else
-	  act = material.asset.save(material.data);
-
-	act.then(function (asset) {
-	  if (asset instanceof page.models.SlotAsset)
-	    material.asset = asset;
-	  else
-	    material.asset.asset = asset;
-	  material.data = materialData(material.asset);
-
-	  material.form.messages.add({
-	    type: 'green',
-	    countdown: 3000,
-	    body: page.constants.message('asset.' + (material.file ? 'upload' : 'update') + '.success', materialName(material)) +
-	      (material.file && asset.format.transcodable ? ' ' + page.constants.message('asset.upload.trancoding') : ''),
-	  });
-
-	  if (material.file) {
-	    if (!('creation' in material.asset.asset))
-	      material.asset.asset.creation = {date: Date.now(), name: material.file.file.name}; 
-	    material.file.cancel();
-	    delete material.file;
-	    delete material.progress;
-	  }
-
-	  material.form.$setPristine();
-	}, function (res) {
-	  material.form.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.update.error', materialName(material)),
-	    report: res,
-	  });
-	  if (material.file) {
-	    material.file.cancel();
-	    delete material.file;
-	    delete material.progress;
-	    delete material.data.upload;
-	  }
-	});
+        material.save().then(function (done) {
+          if (done)
+            material.form.$setPristine();
+        });
       };
 
       form.saveAll = function () {
@@ -141,34 +69,26 @@ module.directive('volumeEditMaterialsForm', [
 	material.form.$setDirty();
       };
 
+      function removed(material) {
+        if (material.asset || material.file)
+          return;
+        form.materials.remove(material);
+      }
+
       form.remove = function (material) {
 	if (material.replace) {
 	  delete material.replace;
 	  return;
 	}
-	if (material.file) {
-	  material.file.cancel();
-	  delete material.file;
-	  if (!material.asset)
-	    form.materials.remove(material);
-	  return;
-	}
 
-	material.asset.remove().then(function () {
-	  form.messages.add({
-	    type: 'green',
-	    countdown: 3000,
-	    body: page.constants.message('asset.remove.success', material.asset.name || page.constants.message('file')),
-	  });
-
-	  form.materials.remove(material);
-	}, function (res) {
-	  material.form.messages.addError({
-	    type: 'red',
-	    body: page.constants.message('asset.remove.error', material.asset.name || page.constants.message('file')),
-	    report: res,
-	  });
-	});
+        var r = material.remove();
+        if (!(r && r.then))
+          removed(material);
+        else
+          r.then(function (done) {
+            if (done)
+              removed(material);
+          });
       };
 
       form.scrollFn = page.display.makeFloatScrollFn($('.vem-float'), $('.vem-float-floater'), 24*1.5);

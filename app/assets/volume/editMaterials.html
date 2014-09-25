@@ -1,4 +1,4 @@
-<ng-form name="volumeEditMaterialsForm" bindonce flow-init="page.assets.flowOptions"
+<ng-form name="volumeEditMaterialsForm" bindonce flow-init="flowOptions"
     flow-file-added="volumeEditMaterialsForm.fileAdded($file, $event)"
     flow-file-success="volumeEditMaterialsForm.fileSuccess($file)"
     flow-file-progress="volumeEditMaterialsForm.fileProgress($file)">
@@ -46,7 +46,7 @@
       </validator>
 
       <validator name="classification" label="'asset.classification' | message">
-        <select name="classification" ng-model="material.data.classification" ng-options="i as 'classification.'+c | message for (i, c) in page.constants.classification"></select>
+        <select name="classification" ng-model="material.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
       </validator>
 
       <input type="checkbox" name="excerptOn" ng-model="material.data.excerptOn">&nbsp;
