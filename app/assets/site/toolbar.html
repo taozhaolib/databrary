@@ -1,7 +1,7 @@
 <section id="toolbar" class="toolbar cf" bindonce>
   <div class="wrap">
     <div class="row">
-      <div class="title cf col-desktop-7 col-tablet-5 col-mobile-4">
+      <div class="title cf col-desktop-7 col-tablet-5" ng-class="{'col-mobile-4': page.models.Login.isLoggedIn(), 'col-mobile-2': !page.models.Login.isLoggedIn()}">
         <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='site/home'">
 	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
         </h1>
@@ -18,7 +18,7 @@
         </nav>
       </div>
 
-      <div class="toolbar-user col-desktop-8 col-tablet-4 col-mobile-2">
+      <div class="toolbar-user col-desktop-8 col-tablet-4" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}">
         <div class="toolbar-search"><search-form></search-form></div>
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a bo-href="page.router.login()" bo-text="'toolbar.login' | message"></a>
@@ -71,7 +71,7 @@
           </div>
 
           <div class="user-icon">
-            <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-hover-avatar">
+            <img bo-src="page.models.Login.user.avatarRoute(96)" class="toolbar-hover-avatar">
           </div>
         </div>
       </section>
