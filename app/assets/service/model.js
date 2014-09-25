@@ -426,7 +426,7 @@ module.factory('modelService', [
     Volume.create = function (data, owner) {
       return router.http(router.controllers.VolumeApi.create, owner, data)
 	.then(function (res) {
-	  if (owner && (owner = partyPeek(owner)))
+	  if ((owner = (owner === undefined ? Login.user : partyPeek(owner))))
 	    owner.clear('volumes');
 	  return volumeMake(res.data);
 	});

@@ -82,13 +82,15 @@ module.controller('slot/view', [
     $scope.play = function () {
       if (video)
 	video[0].play();
-      $scope.playing = 1;
+      else
+        $scope.playing = 1;
     };
 
     $scope.pause = function () {
       if (video)
 	video[0].pause();
-      $scope.playing = 0;
+      else
+        $scope.playing = 0;
     };
 
     function sortTracks() {
