@@ -7,14 +7,14 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 // Use the Play sbt plugin for Play projects
 addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.3.4")
 
+addSbtPlugin("org.databrary" % "sbt-angular-templates" % "0.1")
+
 addSbtPlugin("com.typesafe.sbt" % "sbt-stylus" % "1.0.1")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
-
-addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.1")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-coffeescript" % "1.0.0")
 
-addSbtPlugin("org.databrary" % "sbt-angular-templates" % "0.1")
+addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.1")
+
+addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
 
 lazy val root = (project in file("."))
