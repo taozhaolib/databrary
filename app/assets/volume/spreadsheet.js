@@ -86,7 +86,7 @@ module.directive('spreadsheet', [
     Object.freeze(noCategory);
 
     function getCategory(c) {
-      return c ? page.constants.category[c] : noCategory;
+      return c != 0 ? page.constants.category[c] : noCategory; // jshint ignore:line
     }
 
     var pseudoMetrics = {
@@ -190,7 +190,7 @@ module.directive('spreadsheet', [
 
 	  for (var ri = 0; ri < slot.records.length; ri ++) {
 	    var record = volume.records[slot.records[ri].id];
-	    var c = record.category || noCategory.id;
+	    var c = record.category || 0;
 
 	    // populate depends:
 	    if (record.id in depends) {
@@ -487,7 +487,7 @@ module.directive('spreadsheet', [
 	function saveMeasure(cell, info, v) {
 	  cell.classList.add('saving');
 	  return info.record.measureSet(info.metric.id, v).then(function (rec) {
-	    var rcm = records[rec.category][info.metric.id];
+	    var rcm = records[rec.category || 0][info.metric.id];
 	    angular.forEach(depends[info.r], function (n, i) {
 	      arr(rcm, n)[i] = v;
 	      /* TODO age may have changed... not clear how to update. */
@@ -511,7 +511,7 @@ module.directive('spreadsheet', [
 	  else if (record)
 	    act = info.slot.addRecord(record);
 	  else
-	    act = info.slot.newRecord(info.c);
+	    act = info.slot.newRecord(info.c || '');
 
 	  return act.then(function (record) {
 	    var r, m, rcm;
@@ -757,7 +757,7 @@ module.directive('spreadsheet', [
 		if (!(ci in records))
 		  editScope.options[ci] = c.name;
 	      });
-	      editScope.options[noCategory.id] = 'other';
+	      editScope.options[0] = 'other';
 	      break;
 	    default:
 	      return;
