@@ -20,11 +20,10 @@ module.directive('accessGrantForm', [
           p == page.permission.ADMIN;
       };
 
-      form.canChange = function () {
-        return form.data.individual !== page.permission.ADMIN || (access.party.id !== page.models.Login.user.id && volume.access && volume.access.filter(function (access) {
+      form.canChange = 
+        form.data.individual !== page.permission.ADMIN || (access.party.id !== page.models.Login.user.id && volume.access && volume.access.filter(function (access) {
           return access.individual === page.permission.ADMIN;
         }).length >= 2);
-      };
 
       //
 
