@@ -93,6 +93,7 @@ module.directive('spreadsheet', [
       id: {
 	id: 'id',
 	name: 'id',
+        display: ' ',
 	type: 'number',
 	classification: page.classification.PUBLIC
       },
@@ -228,19 +229,16 @@ module.directive('spreadsheet', [
 	      category.template.forEach(function (m) {
 		arr(records[c], m);
 	      });
-	    var metrics = Object.keys(records[c]).filter(function (m) {
-	      // filter out 'id' and long metrics (e.g., Description)
-	      return m !== 'id';
-	    }).map(maybeInt);
-	    if (metrics.length)
-	      metrics.sort(byType);
-	    else // add id if there's nothing else
-	      metrics = ['id'];
+	    var metrics = Object.keys(records[c]).map(maybeInt).sort(byType);
+            metrics.pop(); // remove 'id' (necessarily last)
+	    if (editing || !metrics.length)
+	      metrics.unshift('id');
+            metrics = metrics.map(getMetric);
 	    var si = metricCols.length;
 	    metricCols.push.apply(metricCols, metrics.map(function (m) {
 	      return {
 		category: category,
-		metric: getMetric(m)
+		metric: m
 	      };
 	    }));
 	    var l = metrics.length;
@@ -276,26 +274,21 @@ module.directive('spreadsheet', [
 
 	/* Add or replace the text contents of cell c for measure/type m with value v */
 	function generateText(c, m, v, assumed) {
-	  if (assumed)
-	    c.classList.remove('assumed');
-	  if (v === undefined)
-	  {
-	    if (assumed) {
-	      v = assumed;
-	      c.classList.add('assumed');
-	    } else
-	      v = '';
-	  }
-	  else if (m === 'age')
-	    v = page.display.formatAge(v);
-	  else if (m === 'consent') {
-	    if (v in page.constants.consent) {
-	      var cn = page.constants.consent[v];
-	      c.className = cn + ' consent icon hint-consent-' + cn;
-	      v = '';
-	    }
-	  }
-	  setCell(c, document.createTextNode(v));
+          if (m === 'consent') {
+            var cn = page.constants.consent[v || 0];
+            c.className = cn + ' consent icon hint-consent-' + cn;
+            v = '';
+          } else if (v === undefined) {
+            c.classList.add('blank');
+            v = assumed || '';
+	  } else {
+            c.classList.remove('blank');
+            if (m === 'id')
+              v = "\u2022";
+            else if (m === 'age')
+              v = page.display.formatAge(v);
+          }
+	  return setCell(c, document.createTextNode(v));
 	}
 
 	/* Add a td element to tr r with value c and id i */
@@ -310,12 +303,17 @@ module.directive('spreadsheet', [
 	  return td;
 	}
 
-	function generateAdd(r, i, c, l) {
+	function generateBlank(r, i, c, l, edit) {
+          if (!l)
+            return;
 	  var td = r.appendChild(document.createElement('td'));
 	  td.setAttribute("colspan", l);
-	  td.appendChild(document.createTextNode("add " + c.name));
-	  td.id = 'ss-add_' + i + '_' + c.id;
-	  td.className = 'add';
+          if (edit) {
+            td.appendChild(document.createTextNode("add " + c.name));
+            td.id = 'ss-add_' + i + '_' + c.id;
+            td.className = 'add';
+          } else
+            td.className = 'null';
 	}
 
 	/* Add all the record/measure tds to row i for count n */
@@ -324,18 +322,13 @@ module.directive('spreadsheet', [
 	  for (var mi = 0; mi < metricCols.length; mi ++) {
 	    var col = metricCols[mi];
 	    var c = col.category.id;
-	    var m = col.metric.id;
 	    var t = count[c] || 0;
-	    var v;
-	    if (edit && n === t) {
-	      if (col.first)
-		generateAdd(row, i, col.category, col.first);
-	      continue;
-	    }
-	    if (n >= t)
-	      v = null;
-	    else
-	      v = records[c][m][n] && records[c][m][n][i];
+	    if (n >= t) {
+              generateBlank(row, i, col.category, col.first, edit && n === t);
+              continue;
+            }
+	    var m = col.metric.id;
+            var v = records[c][m][n] && records[c][m][n][i];
 	    var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
 	    if (v !== null) {
 	      var ri = 'ss-rec_' + records[c].id[n][i];
@@ -486,7 +479,7 @@ module.directive('spreadsheet', [
 	  data[info.t] = v === undefined ? '' : v;
 	  cell.classList.add('saving');
 	  return info.slot.save(data).then(function () {
-	    generateText(cell, info.t, v);
+	    generateText(cell, info.t, info.slot[info.t]);
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
 	}
@@ -697,6 +690,7 @@ module.directive('spreadsheet', [
 	editScope.unedit = unedit;
 
 	function edit(cell, info, alt) {
+          var m;
 	  fillInfo(info);
 	  if (info.slot && info.slot.id === volume.top.id)
 	    return;
@@ -711,14 +705,15 @@ module.directive('spreadsheet', [
 	      break;
 	    case 'consent':
 	      editScope.type = 'consent';
-	      editInput.value = info.slot.consent + '';
+	      editInput.value = (info.slot.consent || 0) + '';
 	      break;
-	    case 'rec': if (!info.col.first || alt) {
-	      var m = info.metric.id;
+	    case 'rec': if ((m = info.metric.id) !== 'id' || alt) {
 	      /* we need a real metric here: */
 	      if (typeof m !== 'number')
 		return;
 	      editInput.value = volume.records[info.r].measures[m];
+              if (editInput.value === undefined)
+                editInput.value = '';
 	      if (info.metric.options) {
 		editScope.type = 'select';
 		editScope.options = [''].concat(info.metric.options);

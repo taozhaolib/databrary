@@ -14,6 +14,7 @@ error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
 error.date=
+error.conflict=The requested change conflicts with a previously set value.
 citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format is not supported.
 file.size.invalid=File size must be greater than 0.

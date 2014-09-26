@@ -26,8 +26,11 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       for {
 	_ <- cast[SlotController.ContainerEditForm](form).foreachAsync((form : SlotController.ContainerEditForm) =>
 	  request.obj.container.change(name = form.name.get, date = form.date.get))
-	_ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c))
-      } yield (result(request.obj))
+	_ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c).map(r =>
+	    if (!r) form.consent.withError("error.conflict")._throw))
+	/* refresh consent: */
+	s <- Slot.get(i, segment)
+      } yield (result(s.get))
     }
 
   def create(v : models.Volume.Id) =

@@ -34,7 +34,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   private[models] def *(seg : Segment) : Slot =
     if (seg @> segment) this else Slot.make(segment * seg, context)
 
-  /** Update the given values in the database and this object in-place. */
+  /** Update the given values in the database. */
   final def setConsent(consent : Consent.Value) : Future[Boolean] = {
     if (consent == Consent.NONE)
       Audit.remove("slot_consent", slotSql).execute

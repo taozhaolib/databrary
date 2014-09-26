@@ -18,7 +18,7 @@
     border-bottom 0
 
   td
-    border 1px solid pale
+    border 1px solid dark
     padding 3px
     line-height 1
     display table-cell
@@ -28,10 +28,11 @@
     text-overflow ellipsis
 
   td.null
-    background-color pale
+    background-color gray
 
-  td.assumed
+  td.blank
     color gray
+    background-color pale
 
   td.more
     &:before
@@ -46,8 +47,7 @@
     // TODO
     text-align center
     font-style italic
-    background-color pale
-    color gray
+    background-color gray
 
   td.saving
     &:before
@@ -75,7 +75,7 @@
     whitespace normal
 
     td
-      overflow auto
+      overflow visible
       text-overflow clip
 
 #spreadsheet-head-groups
