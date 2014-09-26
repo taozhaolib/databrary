@@ -5,6 +5,10 @@
 "smarttabs": true,
 "browser": true,
 "devel": true,
+
 "eqnull": true,
-"boss": true
+"boss": true,
+"validthis": true,
+"newcap": false,
+"shadow": true
 }

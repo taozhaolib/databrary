@@ -272,8 +272,8 @@ module.provider('routerService', [
     //
 
     function slotRoute(edit) { return {
-      controller: 'slot/view',
-      templateUrl: 'slot/view.html',
+      controller: 'volume/slot',
+      templateUrl: 'volume/slot.html',
       resolve: {
         slot: [
           'pageService', function (page) {
