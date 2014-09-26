@@ -111,13 +111,13 @@ module.directive('spreadsheet', [
     }
 
     var controller = [
-      '$scope', function ($scope) {
+      '$scope', '$attrs',
+      function ($scope, $attrs) {
 
 	var volume = $scope.volume;
 	$scope.page = page;
 
-	$scope.editable = volume.checkPermission(page.permission.EDIT);
-	var editing = $scope.editing = false;
+	var editing = $scope.editing = $attrs.edit !== undefined;
 
 	function getSlot(slot) {
 	  if ('records' in slot)
@@ -841,12 +841,9 @@ module.directive('spreadsheet', [
 
 	///////////////////////////////// main
 
-	$scope.refresh = function(e) {
+	$scope.refresh = function() {
 	  unedit();
 	  collapse();
-	  if (e === undefined)
-	    e = editing;
-	  $scope.editing = editing = e;
 	  populate();
 	};
 

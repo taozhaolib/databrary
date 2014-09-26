@@ -4,7 +4,6 @@ module.factory('pageService', [
   '$injector', function ($injector) {
     var page = {
       auth: $injector.get('authService'),
-      browser: $injector.get('browserService'),
       constants: $injector.get('constantService'),
       display: $injector.get('displayService'),
       messages: $injector.get('messageService'),

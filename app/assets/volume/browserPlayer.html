@@ -1,6 +1,6 @@
 <section class="browser-player">
-  <section ng-if="page.browser.player.played" class="browser-player-frame">
-    <div ng-repeat="played in [page.browser.player.played]" bindonce>
+  <section ng-if="browser.player.played" class="browser-player-frame">
+    <div ng-repeat="played in [browser.player.played]" bindonce>
       <header>
         <a href="" ng-click="setItemPlayer(undefined)" class="icon line close tool" target="_self" tooltip="'player.close' | message"></a>
         <a ng-href="{{played.object.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip="'player.download' | message"></a>

@@ -101,6 +101,7 @@ object SiteApi extends SiteController {
     , VolumeHtml.view
     , VolumeHtml.add
     , VolumeHtml.edit
+    , VolumeHtml.spreadsheet
     , VolumeController.thumb
     , VolumeController.zip
     , VolumeApi.get

@@ -1,10 +1,10 @@
 <aside bindonce class="browser-list cf">
   <browser-player ng-if="data.player"></browser-player>
 
-  <ul ng-if="page.browser.getItemExpand(data) || page.browser.data == data" class="browser-list-children cf">
-    <li ng-if="!data.items[0] && (data.group != 'session' || !page.browser.loading)" bo-text="'browser.group.empty' | message"></li>
+  <ul ng-if="browser.getItemExpand(data) || browser.data == data" class="browser-list-children cf">
+    <li ng-if="!data.items[0] && (data.group != 'session' || !browser.loading)" bo-text="'browser.group.empty' | message"></li>
 
-    <li ng-if="!data.items[0] && (data.group == 'session' && page.browser.loading)" bo-text="'browser.group.loading' | message"></li>
+    <li ng-if="!data.items[0] && (data.group == 'session' && browser.loading)" bo-text="'browser.group.loading' | message"></li>
 
     <li ng-repeat="data in data.items | limitTo:data.limit" ng-class="itemClasses(data)" id="{{data.id}}">
       <ng-include src="getInclude()"></ng-include>
