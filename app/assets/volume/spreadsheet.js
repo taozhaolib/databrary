@@ -766,6 +766,10 @@ module.directive('spreadsheet', [
 	    cell.insertBefore(editCell = e[0], cell.firstChild);
 	    cell.classList.add('editing');
 	  });
+          e.on('click', function ($event) {
+            /* prevent other ng-click handlers from taking over */
+            $event.stopPropagation();
+          });
 
 	  page.tooltips.clear();
 	  page.$timeout(function () {
