@@ -4,7 +4,7 @@
     <span bo-if="volume.checkPermission(page.permission.EDIT)">
       | <a bo-href="page.router.volumeSpreadsheet(volume.id)">edit</a>
     </span>
-    | <a ng-href="volume.zipRoute()" target="_self">all.zip</a>
+    | <a bo-href="volume.zipRoute()" target="_self">all.zip</a>
   </span>
   <table id="spreadsheet-table">
     <colgroup>
