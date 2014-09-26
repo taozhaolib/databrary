@@ -324,17 +324,16 @@ module.provider('routerService', [
     //
 
     $routeProvider.otherwise({
-      redirectTo: '/search'
+      redirectTo: '/'
     });
 
     this.$get = [
-      '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',
-      function ($location, $http, $cacheFactory, constants, analytics) {
-	var router = {
+      '$rootScope', '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',
+      function ($rootScope, $location, $http, $cacheFactory, constants, analytics) {
+	var router = angular.extend({
 	  controllers: controllers,
-	  prevUrl: '/',
-	};
-	angular.extend(router, routes);
+          prev: '/'
+        }, routes);
 
 	/* Simple wrapper to $http(route(...)).
 	 * Non-object arguments (or an initial array) are passed to route.
@@ -392,10 +391,17 @@ module.provider('routerService', [
 	  return constants.url + url;
 	};
 
-	router.volumeCreate = function (owner) {
-	  router.prevUrl = $location.path();
-	  return routes.volumeCreate([owner]);
-	};
+        var prev;
+        $rootScope.$on('$locationChangeStart', function (event, to, from) {
+          prev = from;
+        });
+        $rootScope.$on('$routeChangeStart', function () {
+          router.prev = prev;
+        });
+
+        router.back = function () {
+          $location.$$parse(router.prev);
+        };
 
 	return router;
       }
