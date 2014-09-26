@@ -13,54 +13,71 @@
         </hgroup>
 
 	<section class="slot-player">
-	  <div class="player-main" ng-if="current">
+	  <div class="player-main" ng-repeat="track in [track]" ng-if="track">
 	    <div class="player-main-info">
-	      <nav class="player-main-info-actions" ng-if="current.asset">
-		<img ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
-		<span class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
-		<a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-		<a bo-if="editing" ng-click="current.replace()" class="player-main-info-link icon">R</a>
-		<a bo-if="editing" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+	      <nav class="player-main-info-actions" bo-if="track.asset">
+		<img bo-if="!editing" bo-src="track.asset.icon" hint="format-{{track.asset.format.extension}}" class="player-main-info-file-icon">
+		<span bo-if="!editing" class="classification icon" bo-class="page.constants.classification[track.asset.classification]" hint="classification-{{page.constants.classification[track.asset.classification]}}"></span>
+		<a bo-href="track.asset.downloadRoute(false)" target="_self" bo-if="track.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+		<a bo-if="editing" ng-click="track.replace()" class="player-main-info-link icon">R</a>
+		<a bo-if="editing" ng-click="track.remove()" class="player-main-info-link icon trash line"></a>
 	      </nav>
 
-	      <div bo-if="!editing" ng-if="current.asset">
+	      <div bo-if="!editing && track.asset">
 		<dl class="player-main-info-list cf">
-		  <dt ng-if="!current.asset.segment.full">Position</dt>
+		  <dt bo-if="!track.asset.segment.full">Position</dt>
 		  <dd>
-		    <span ng-if="!current.asset.segment.full">{{current.asset.segment.l | timecode}} &ndash; {{current.asset.segment.u | timecode}}</span>
-		    <span ng-if="current.asset.duration"> ({{current.asset.duration | timecode}})</span>
+		    <span bo-if="!track.asset.segment.full"><span bo-text="track.asset.segment.l | timecode"></span> &ndash; <span bo-text="track.asset.segment.u | timecode"></span></span>
+		    <span bo-if="track.asset.duration"> (<span bo-text="track.asset.duration | timecode"></span>)</span>
 		  </dd>
 		</dl>
 	      </div>
 
 	      <ng-form bo-if="editing" name="form.edit">
 		<validator name="classification" label="'asset.classification' | message">
-		  <select name="classification" ng-model="current.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
+		  <select name="classification" ng-model="track.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
 		</validator>
 
 		<validator name="name" label="'material.name' | message">
-		  <input type="text" name="name" ng-model="current.data.name">
+		  <input type="text" name="name" ng-model="track.data.name">
 		</validator>
 
 		<validator name="position" label="'asset.position' | message">
-		  <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
+		  <input type="text" name="position" ng-model="track.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
 		</validator>
 
-		<button ng-if="current.asset" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+		<button ng-if="track.asset" class="green" ng-click="track.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
 	      </ng-form>
 	    </div>
 
 	    <div class="player-main-viewport" viewer-aspect="9/16">
-	      <asset-display ng-repeat="current in [current]" asset="current.asset" ng-if="current.asset && !replace"></asset-display>
-	      <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
+	      <asset-display asset="track.asset" ng-if="track.asset && !replace"></asset-display>
+	      <div bo-if="editing" ng-if="!track.file && (!track.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
 	      </div>
 	    </div>
 
-	    <div class="player-main-float" bo-if="!editing" ng-if="current">
+	    <div class="player-main-float" bo-if="!editing">
 	      <h1 class="player-main-info-name">
-		<span class="filename" ng-bind="current.name"></span>
+		<span class="filename" bo-text="track.name"></span>
 	      </h1>
 	    </div>
+	  </div>
+
+	  <div class="player-main" ng-repeat="record in [record]" ng-if="record">
+	    <div class="player-main-info">
+	      <nav class="player-main-info-actions">
+		<a bo-if="editing" ng-click="removeRecord(record)" class="player-main-info-link icon trash line"></a>
+	      </nav>
+
+	      <div bo-if="!editing">
+		<h1 class="player-main-info-name" bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></h1>
+		<dl class="comma cf">
+		  <dt ng-repeat-start="(metric, measure) in record.record.measures track by metric" ng-bind="page.constants.metric[metric].name"></dt>
+		  <dd ng-repeat-end ng-bind="measure"></dd>
+		  <dt bo-if="record.age">age</dt>
+		  <dd bo-if="record.age"><display-age value="record.age"></display-age></dd>
+		</dl>
+	      </div>
 	  </div>
 	</section>
 
@@ -89,29 +106,27 @@
 	      <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
 	      <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
 	    </div>
+	  </div>
 
-	    <div class="slot-annotations">
-	      <div class="slot-note-display">
-		<div class="slot-note" ng-repeat="note in notes.list" bo-text="volume.records[note.record.id].displayName" bo-style="notes.noteStyle(note)"></div>
-	      </div>
-
-	      <div class="slot-note-head">
-		<div class="slot-note-mode" ng-bind="page.constants.category[noteMode].name || noteMode"></div>
+	  <div class="slot-annotations">
+	    <div class="slot-record-track" ng-repeat="rs in records">
+	      <div class="slot-track" ng-class="{'slot-track-positioned': !rs[0].segment.full}">
+		<div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-recrod-select': r === record}" ng-style="positionStyle(r.segment)" ng-click="selectRecord(r)"></div>
 	      </div>
 	    </div>
 	  </div>
 
 	  <div class="slot-timeline-tracks">
-	    <div ng-repeat="track in tracks" class="slot-timeline-track" ng-click="track.select($event)" ng-class="{select: current === track, dirty: track.dirty}" >
-	      <div class="slot-track" ng-class="{'slot-track-positioned': track.asset && !track.asset.segment.full, 'slot-track-select': current === track}">
+	    <div ng-repeat="t in tracks" class="slot-timeline-track" ng-click="t.select($event)" ng-class="{select: track === t, dirty: t.dirty}" >
+	      <div class="slot-track" ng-class="{'slot-track-positioned': t.asset && !t.asset.segment.full, 'slot-track-select': track === t}">
 		<div class="slot-track-asset-info">
-		  <img class="slot-track-asset-thumb" ng-if="track.asset" bo-src="track.asset.thumbRoute(24)">
-		  <div class="slot-track-asset-info-name">{{track.name}}</div>
+		  <img class="slot-track-asset-thumb" ng-if="t.asset" bo-src="t.asset.thumbRoute(24)">
+		  <div class="slot-track-asset-info-name" ng-bind="t.name"></div>
 		</div>
-		<div class="slot-track-asset" ng-if="track.asset && !track.asset.segment.full" bo-style="track.positionStyle()">
+		<div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="t.positionStyle()">
 		</div>
-		<div ng-if="track.file">
-		  <upload-progress progress-value="track.progress"></upload-progress>
+		<div ng-if="t.file">
+		  <upload-progress progress-value="t.progress"></upload-progress>
 		</div>
 	      </div>
 	    </div>

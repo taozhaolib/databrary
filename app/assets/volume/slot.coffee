@@ -11,7 +11,10 @@ module.controller('volume/slot', [
     $scope.mode = if editing then 'edit' else 'view'
     $scope.form = {}
 
-    video = undefined
+    searchLocation = (url) ->
+      url
+        .search('asset', $scope.track?.asset?.id)
+        .search('record', $scope.record?.id)
 
     if editing || slot.checkPermission(page.permission.EDIT)
       url = if editing then slot.route else slot.editRoute()
@@ -19,8 +22,7 @@ module.controller('volume/slot', [
         type: 'yellow'
         html: page.constants.message(if editing then 'slot.view' else 'slot.edit')
         url: url
-        click: ->
-          page.$location.url(url).search('asset', $scope.current?.asset?.id)
+        click: -> searchLocation(page.$location.url(url))
 
 
     updateRange = (segment) ->
@@ -46,8 +48,6 @@ module.controller('volume/slot', [
     $scope.positionStyle = (p) ->
       styles = {}
       return styles unless p?
-      l = undefined
-      r = undefined
       if p instanceof page.models.Segment
         l = offsetPosition(p.l)
         r = offsetPosition(p.u)
@@ -60,8 +60,8 @@ module.controller('volume/slot', [
       styles
 
     seekOffset = (o) ->
-      if video && $scope.current?.asset?.segment.contains(o)
-        video[0].currentTime = (o - $scope.current.asset.segment.base) / 1000
+      if video && $scope.track?.asset?.segment.contains(o)
+        video[0].currentTime = (o - $scope.track.asset.segment.base) / 1000
       $scope.position = o
 
     $scope.seekPosition = (pos) ->
@@ -92,28 +92,35 @@ module.controller('volume/slot', [
           !a.asset - !b.asset || !a.file - !b.file
 
     targetAsset = page.$location.search().asset
+    targetRecord = page.$location.search().record
+
+    select = (track, record) ->
+      $scope.track.dirty = $scope.form.edit.$dirty if $scope.track && $scope.form.edit
+
+      $scope.track = track
+      $scope.record = record
+      searchLocation(page.$location)
+      targetAsset = undefined
+      targetRecord = undefined
+
+      $scope.playing = 0
+      delete $scope.replace
+      if track
+        if isFinite(track.asset?.segment.l)
+          $scope.position = track.asset.segment.l
+        if $scope.form.edit
+          if $scope.track.dirty
+            $scope.form.edit.$setDirty()
+          else
+            $scope.form.edit.$setPristine()
+      if record
+        if isFinite(record.segment.l)
+          $scope.position = track.asset.segment.l
 
     removed = (track) ->
       return if track.asset || track.file
-      selectTrack() if track == $scope.current
+      select() if track == $scope.track
       $scope.tracks.remove(track)
-
-    selectTrack = (track) ->
-      $scope.current.dirty = $scope.form.edit.$dirty if $scope.current && $scope.form.edit
-
-      $scope.current = track
-      page.$location.search 'asset', track?.asset?.id
-      targetAsset = undefined
-      return unless track
-      $scope.playing = 0
-      if isFinite(track.asset?.segment.l)
-        $scope.position = track.asset.segment.l
-      if $scope.form.edit
-        if $scope.current.dirty
-          $scope.form.edit.$setDirty()
-        else
-          $scope.form.edit.$setPristine()
-      delete $scope.replace
 
     class Track extends Store
       constructor: (asset) ->
@@ -123,10 +130,10 @@ module.controller('volume/slot', [
         super asset
         return unless asset
         updateRange(asset.segment)
-        @select() if `targetAsset == asset.id`
+        @select() if `asset.id == targetAsset`
 
       select: (event) ->
-        return selectTrack this unless $scope.current == this
+        return select this unless $scope.track == this
         $scope.seekPosition event.clientX if event
 
       positionStyle: ->
@@ -142,7 +149,7 @@ module.controller('volume/slot', [
         super().then (done) =>
           return unless done
           delete @dirty
-          $scope.form.edit.$setPristine() if this == $scope.current
+          $scope.form.edit.$setPristine() if this == $scope.track
           sortTracks()
 
       upload: (file) ->
@@ -157,7 +164,7 @@ module.controller('volume/slot', [
 
     $scope.fileAdded = (file) ->
       return unless editing
-      $scope.current?.upload(file)
+      $scope.track?.upload(file)
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
@@ -170,8 +177,8 @@ module.controller('volume/slot', [
       ratechange: ->
         $scope.playing = video[0].playbackRate
       timeupdate: ->
-        if $scope.current?.asset
-          $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime
+        if $scope.track?.asset
+          $scope.position = $scope.track.asset.segment.base + 1000*video[0].currentTime
       ended: ->
         $scope.playing = 0
         # look for something else to play?
@@ -189,7 +196,9 @@ module.controller('volume/slot', [
       video = v
       v.on(videoEvents)
 
-    sortRecords = ->
+    $scope.selectRecord = (record) -> select(undefined, record)
+
+    fillRecords = ->
       for r in slot.records when !r.record
         r.record = slot.volume.records[r.id]
       slot.records.sort (a, b) ->
@@ -198,26 +207,32 @@ module.controller('volume/slot', [
       t = []
       overlaps = (r) -> s.overlaps(r.segment)
       for r in slot.records
-        s = r.segment = Segment.make(r.segment)
-        updateRange(s)
+        updateRange s = r.segment = Segment.make(r.segment)
         for o, i in t
           break unless o.some(overlaps)
-      t
-
-    $scope.current = undefined
+        t[i] = [] unless i of t
+        t[i].push(r)
+        $scope.selectRecord(r) if `r.id == targetRecord`
+      $scope.records = t
 
     $scope.range = new page.models.Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
     updateRange(page.models.Segment.full)
 
+    $scope.track = undefined
+
     $scope.tracks = (new Track(asset) for asset in slot.assets)
     $scope.tracks.push(new Track()) if editing
     sortTracks()
 
-    sortRecords()
+    $scope.record = undefined
+
+    fillRecords()
 
     $scope.playing = 0
     $scope.position = undefined
+
+    video = undefined
 
     return
 ])
