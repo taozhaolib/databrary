@@ -262,7 +262,21 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers', 'categories']);
+	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers']);
+          }
+        ]
+      },
+      reloadOnSearch: false,
+    });
+
+    routes.volumeSpreadsheet = makeRoute(controllers.VolumeHtml.spreadsheet, ['id'], {
+      controller: 'volume/spreadsheet',
+      templateUrl: 'volume/editSpreadsheet.html',
+      resolve: {
+        volume: [
+          'pageService', function (page) {
+            return page.models.Volume.get(page.$route.current.params.id,
+	      ['top', 'records', 'containers']);
           }
         ]
       },

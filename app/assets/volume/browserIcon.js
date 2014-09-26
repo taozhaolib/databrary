@@ -1,11 +1,12 @@
 'use strict';
 
 module.directive('browserIcon', [
-  'pageService', function (page) {
+  'pageService', 'browserService',
+  function (page, browser) {
     var link = function ($scope) {
       $scope.toggleExpand = function (data) {
         if (data.group !== 'session')
-          $scope.data = page.browser.setItemExpand($scope.data);
+          $scope.data = browser.setItemExpand($scope.data);
       };
 
       $scope.iconLink = function (data) {
@@ -16,7 +17,7 @@ module.directive('browserIcon', [
       $scope.expanderClasses = function (data) {
         var classes = [];
 
-        if (page.browser.canExpand(data)) {
+        if (browser.canExpand(data)) {
           classes.push('enabled');
         }
 

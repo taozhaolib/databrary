@@ -1,9 +1,11 @@
 'use strict';
 
 module.directive('browserList', [
-  'pageService', function (page) {
+  'pageService', 'browserService',
+  function (page, browser) {
     var link = function ($scope) {
-      $scope.data = $scope.data || page.browser.data;
+      $scope.browser = browser;
+      $scope.data = $scope.data || browser.data;
 
       $scope.getInclude = function () {
         if (!$scope.data.items[0]) {
@@ -39,7 +41,7 @@ module.directive('browserList', [
 
       $scope.setItemPlayer = function (data) {
         if (!data || data.checkPermission(page.permission.READ)) {
-          page.browser.setItemPlayer(data);
+          browser.setItemPlayer(data);
         }
         else if (data) {
           page.messages.add({

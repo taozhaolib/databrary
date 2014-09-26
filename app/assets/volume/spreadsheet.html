@@ -1,15 +1,16 @@
-<div id="spreadsheet">
+<div id="spreadsheet" bindonce>
   <a ng-click="refresh()">refresh</a>
-  <span ng-if="editable"> | </span>
-  <a ng-if="editable && !editing" ng-click="refresh(true)">edit</a>
-  <a ng-if="editable && editing" ng-click="refresh(false)">view</a>
-  <span> | </span>
-  <a ng-href="volume.zipRoute()" target="_self">all.zip</a>
+  <span bo-if="!editing">
+    <span bo-if="volume.checkPermission(page.permission.EDIT)">
+      | <a bo-href="page.router.volumeSpreadsheet(volume.id)">edit</a>
+    </span>
+    | <a ng-href="volume.zipRoute()" target="_self">all.zip</a>
+  </span>
   <table id="spreadsheet-table">
     <colgroup>
-      <col/>
-      <col/>
-      <col/>
+      <col class="name"/>
+      <col class="date"/>
+      <col class="consent"/>
     </colgroup>
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics"/>
@@ -26,7 +27,7 @@
 
 	<th ng-repeat="col in metricCols track by $index" id="ss-metric_{{$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.name"></th>
       </tr>
-      <tr ng-if="editing">
+      <tr bo-if="editing">
 	<td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>
       </tr>
     </thead>
@@ -35,7 +36,7 @@
     <tbody id="ss" ng-click="click($event)">
     </tbody>
     <tfoot>
-      <tr ng-if="editing">
+      <tr bo-if="editing">
 	<td id='ss-new' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, false)">add session</td>
       </tr>
     </tfoot>

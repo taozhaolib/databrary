@@ -1,19 +1,20 @@
 'use strict';
 
 module.directive('browserGroup', [
-  'pageService', function (page) {
+  'pageService', 'browserService',
+  function (page, browser) {
     var link = function ($scope) {
       $scope.groupClasses = function (group) {
         var classes = [];
 
-        if (page.browser.options[group].active) {
+        if (browser.options[group].active) {
           classes.push('on');
         }
         else {
           classes.push('off');
         }
 
-        if (page.browser.isLastGroup(group)) {
+        if (browser.isLastGroup(group)) {
           classes.push('last');
         }
 
@@ -24,9 +25,9 @@ module.directive('browserGroup', [
         var classes = [];
 
         classes.push('on');
-        classes.push(page.browser.isRecordGroupToggle(group) ? 'expanded' : '');
+        classes.push(browser.isRecordGroupToggle(group) ? 'expanded' : '');
 
-        if ($last && !page.browser.canAddRecordGroup()) {
+        if ($last && !browser.canAddRecordGroup()) {
           classes.push('last');
         }
 
