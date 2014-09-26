@@ -3,7 +3,6 @@
 module.directive('spreadsheet', [
   'pageService', '$compile', '$templateCache',
   function (page, $compile, $templateCache) {
-    var MAXLEN = 16; // maximum number of records per category per slot
     function maybeInt(s) {
       var i = parseInt(s);
       return isNaN(i) ? s : i;
@@ -295,8 +294,7 @@ module.directive('spreadsheet', [
 	      c.className = cn + ' consent icon hint-consent-' + cn;
 	      v = '';
 	    }
-	  } else if (typeof v === 'string' && v.length >= MAXLEN)
-	    v = v.substr(0, MAXLEN) + '...';
+	  }
 	  setCell(c, document.createTextNode(v));
 	}
 
@@ -574,6 +572,7 @@ module.directive('spreadsheet', [
 	  var i = expanded;
 	  expanded = undefined;
 	  var row = rows[i];
+          row.classList.remove('expand');
 	  var el;
 	  var p = row.parentNode; // tbody(i)
 	  if (!((el = row.nextSibling) && el.data === i))
@@ -595,6 +594,7 @@ module.directive('spreadsheet', [
 	    return;
 	  collapse();
 	  expanded = i;
+          row.classList.add('expand');
 
 	  var max = 0;
 	  for (var c in counts[i])
@@ -610,6 +610,7 @@ module.directive('spreadsheet', [
 	  var p = tbody(i);
 	  for (var n = 1; n < max; n ++) {
 	    el = p.insertBefore(document.createElement('tr'), next);
+            el.className = 'expand';
 	    el.data = i;
 	    generateRecords(el, i, n, edit);
 	  }

@@ -5,6 +5,9 @@
   whitespace nowrap
   margin-bottom 0
 
+  col.consent
+    width 32px
+
   th
     line-height 1
     position relative
@@ -20,6 +23,9 @@
     line-height 1
     display table-cell
     position relative
+    max-width 8em
+    overflow hidden
+    text-overflow ellipsis
 
   td.null
     background-color pale
@@ -65,8 +71,12 @@
     display inline-block
     size 16px
 
-  td.consent
-    width 20px
+  tr.expand
+    whitespace normal
+
+    td
+      overflow auto
+      text-overflow clip
 
 #spreadsheet-head-groups
   th

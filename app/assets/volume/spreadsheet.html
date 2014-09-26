@@ -8,9 +8,9 @@
   </span>
   <table id="spreadsheet-table">
     <colgroup>
-      <col/>
-      <col/>
-      <col/>
+      <col class="name"/>
+      <col class="date"/>
+      <col class="consent"/>
     </colgroup>
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics"/>
