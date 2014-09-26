@@ -12,96 +12,9 @@
 	  <a bo-href="slot.zipRoute()" target="_self">all.zip</a>
         </hgroup>
 
-	<section class="slot-player">
-	  <div class="player-main" ng-repeat="track in [track]" ng-if="track">
-	    <div class="player-main-info">
-	      <nav class="player-main-info-actions" bo-if="track.asset">
-		<img bo-if="!editing" bo-src="track.asset.icon" hint="format-{{track.asset.format.extension}}" class="player-main-info-file-icon">
-		<span bo-if="!editing" class="classification icon" bo-class="page.constants.classification[track.asset.classification]" hint="classification-{{page.constants.classification[track.asset.classification]}}"></span>
-		<a bo-href="track.asset.downloadRoute(false)" target="_self" bo-if="track.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-		<a bo-if="editing" ng-click="track.replace()" class="player-main-info-link icon">R</a>
-		<a bo-if="editing" ng-click="track.remove()" class="player-main-info-link icon trash line"></a>
-	      </nav>
-
-	      <div bo-if="!editing && track.asset">
-		<dl class="player-main-info-list cf">
-		  <dt bo-if="!track.asset.segment.full">Position</dt>
-		  <dd>
-		    <span bo-if="!track.asset.segment.full"><span bo-text="track.asset.segment.l | timecode"></span> &ndash; <span bo-text="track.asset.segment.u | timecode"></span></span>
-		    <span bo-if="track.asset.duration"> (<span bo-text="track.asset.duration | timecode"></span>)</span>
-		  </dd>
-		</dl>
-	      </div>
-
-	      <ng-form bo-if="editing" name="form.edit">
-		<validator name="classification" label="'asset.classification' | message">
-		  <select name="classification" ng-model="track.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
-		</validator>
-
-		<validator name="name" label="'material.name' | message">
-		  <input type="text" name="name" ng-model="track.data.name">
-		</validator>
-
-		<validator name="position" label="'asset.position' | message">
-		  <input type="text" name="position" ng-model="track.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
-		</validator>
-
-		<button ng-if="track.asset" class="green" ng-click="track.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
-	      </ng-form>
-	    </div>
-
-	    <div class="player-main-viewport" viewer-aspect="9/16">
-	      <asset-display asset="track.asset" ng-if="track.asset && !replace"></asset-display>
-	      <div bo-if="editing" ng-if="!track.file && (!track.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
-	      </div>
-	    </div>
-
-	    <div class="player-main-float" bo-if="!editing">
-	      <h1 class="player-main-info-name">
-		<span class="filename" bo-text="track.name"></span>
-	      </h1>
-	    </div>
-	  </div>
-
-	  <div class="player-main" ng-repeat="record in [record]" ng-if="record">
-	    <div class="player-main-info">
-	      <nav class="player-main-info-actions">
-		<a bo-if="editing" ng-click="removeRecord(record)" class="player-main-info-link icon trash line"></a>
-	      </nav>
-
-	      <div bo-if="!editing">
-		<h1 class="player-main-info-name" bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></h1>
-		<dl class="comma cf">
-		  <dt ng-repeat-start="(metric, measure) in record.record.measures track by metric" ng-bind="page.constants.metric[metric].name"></dt>
-		  <dd ng-repeat-end ng-bind="measure"></dd>
-		  <dt bo-if="record.age">age</dt>
-		  <dd bo-if="record.age"><display-age value="record.age"></display-age></dd>
-		</dl>
-	      </div>
-	  </div>
-	</section>
-
-	<section class="slot-toolbar cf">
-	  <div class="slot-toolbar-left">
-	    <div class="slot-toolbar-group slot-toolbar-group-player">
-	      <div class="slot-toolbar-button icon play" ng-click="play()"></div>
-	      <div class="slot-toolbar-button icon pause" ng-click="pause()"></div>
-	      <div class="slot-toolbar-time" ng-bind="position | timecode"></div>
-	    </div>
-
-	    <div class="slot-toolbar-sep"></div>
-
-	  </div>
-
-	  <div class="slot-toolbar-right">
-	    <div class="slot-toolbar-group slot-toolbar-group-right slot-toolbar-group-display">
-	      <select class="slot-toolbar-select" ng-options="key as val for (key, val) in noteOptions" ng-model="noteMode"></select>
-	    </div>
-	  </div>
-	</section>
-
 	<section id="slot-timeline" class="slot-timeline">
 	  <div class="slot-timeline-temporal" ng-if="!range.empty">
+            <div class="slot-timeline-time" ng-bind="position | timecode"></div>
 	    <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
 	      <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
 	      <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
@@ -136,6 +49,73 @@
 	    <div class="slot-timeline-now" ng-if="position !== undefined" ng-style="positionStyle(position)"></div>
 	  </div>
 	</section>
+
+        <section class="slot-player">
+          <div class="player-main" ng-repeat="track in [track]" ng-if="track">
+            <div class="player-main-info">
+              <h1 class="player-main-info-name" bo-if="!editing">
+                <span class="filename" bo-text="track.name"></span>
+              </h1>
+              <nav class="player-main-info-actions" bo-if="track.asset">
+                <img bo-if="!editing" bo-src="track.asset.icon" hint="format-{{track.asset.format.extension}}" class="player-main-info-file-icon">
+                <span bo-if="!editing" class="classification icon" bo-class="page.constants.classification[track.asset.classification]" hint="classification-{{page.constants.classification[track.asset.classification]}}"></span>
+                <a bo-href="track.asset.downloadRoute(false)" target="_self" bo-if="track.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+                <a bo-if="editing" ng-click="track.replace()" class="player-main-info-link icon">R</a>
+                <a bo-if="editing" ng-click="track.remove()" class="player-main-info-link icon trash line"></a>
+              </nav>
+
+              <div bo-if="!editing && track.asset">
+                <dl class="player-main-info-list cf">
+                  <dt bo-if="!track.asset.segment.full">Position</dt>
+                  <dd>
+                    <span bo-if="!track.asset.segment.full"><span bo-text="track.asset.segment.l | timecode"></span> &ndash; <span bo-text="track.asset.segment.u | timecode"></span></span>
+                    <span bo-if="track.asset.duration"> (<span bo-text="track.asset.duration | timecode"></span>)</span>
+                  </dd>
+                </dl>
+              </div>
+
+              <ng-form bo-if="editing" name="form.edit">
+                <validator name="classification" label="'asset.classification' | message">
+                  <select name="classification" ng-model="track.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
+                </validator>
+
+                <validator name="name" label="'material.name' | message">
+                  <input type="text" name="name" ng-model="track.data.name">
+                </validator>
+
+                <validator name="position" label="'asset.position' | message">
+                  <input type="text" name="position" ng-model="track.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
+                </validator>
+
+                <button ng-if="track.asset" class="green" ng-click="track.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+              </ng-form>
+            </div>
+
+            <div class="player-main-viewport">
+              <asset-display asset="track.asset" ng-if="track.asset && !replace"></asset-display>
+              <div bo-if="editing" ng-if="!track.file && (!track.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
+              </div>
+            </div>
+          </div>
+
+          <div class="player-main" ng-repeat="record in [record]" ng-if="record">
+            <div class="player-main-info">
+              <nav class="player-main-info-actions">
+                <a bo-if="editing" ng-click="removeRecord(record)" class="player-main-info-link icon trash line"></a>
+              </nav>
+
+              <div bo-if="!editing">
+                <h1 class="player-main-info-name" bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></h1>
+                <dl class="comma cf">
+                  <dt ng-repeat-start="(metric, measure) in record.record.measures track by metric" ng-bind="page.constants.metric[metric].name"></dt>
+                  <dd ng-repeat-end ng-bind="measure"></dd>
+                  <dt bo-if="record.age">age</dt>
+                  <dd bo-if="record.age"><display-age value="record.age"></display-age></dd>
+                </dl>
+              </div>
+          </div>
+        </section>
+
       </div>
     </div>
   </div>
