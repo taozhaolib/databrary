@@ -128,4 +128,11 @@ object SlotApi extends SlotController with ApiController {
   def get(v : models.Volume.Id, c : models.Container.Id, segment : Segment) = Action(c, segment).async { request =>
     request.obj.slotJson(request.apiOptions).map(Ok(_))
   }
+
+  def remove(i : Container.Id) =
+    SiteAction.andThen(RequestObject.check(Container.get(i)(_), Permission.EDIT)).async { implicit request =>
+      request.obj.remove.map { r =>
+	if (r) NoContent else Conflict(request.obj.json)
+      }
+    }
 }

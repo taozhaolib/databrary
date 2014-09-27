@@ -599,6 +599,20 @@ module.factory('modelService', [
       }
     });
 
+    Container.prototype.remove = function () {
+      var c = this;
+      return router.http(router.controllers.SlotApi.remove, this.id)
+        .then(function () {
+          return true;
+        }, function (res) {
+          if (res.status == 409) {
+            c.update(res.data);
+            return false;
+          }
+          return $q.reject(res);
+        });
+    };
+
     function containerPrepare(volume, id) {
       if (volume.containers && id in volume.containers)
 	return volume.containers[id];
