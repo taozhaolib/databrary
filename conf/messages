@@ -29,6 +29,7 @@ tag.invalid=Invalid tag name (must be 3-32 letters)
 tag.invalid.long=<dl><dt>Tag Name</dt><dd>Must be between 3 and 32 characters.</dd><dd>Only letters, spaces, and dashes (-) allowed.</dd></dl>
 url.invalid=Invalid URL
 file.notfound=File not found
+csrf.failed=Form validation failed. Please reload and try again.
 
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
@@ -111,8 +112,6 @@ toolbar.profile=view profile
 toolbar.contact=Send us your comments, questions, and suggestions.
 
 # --- Login page
-page.title.login=Login
-
 login.title=Login
 login.title.sub=Enter Databrary
 login.login=Login
@@ -132,8 +131,6 @@ login.email.error=This email address is invalid.
 login.password.help=Enter your password.
 
 # --- Reset page
-page.title.reset=Password Reset
-
 reset.title=Password Reset
 reset.request=Reset
 reset.save=Save
@@ -145,15 +142,7 @@ reset.email.help=Enter the email address you used to register.
 reset.once.help=Enter a secure password.
 reset.again.help=Enter the same password again.
 
-# --- HTML page attributes
-page.title.home=Welcome
-page.title.register=Register
-page.title.search=Search
-page.title.error=Error
-
 # --- Formats
-page.title.help.formats=Supported File Formats
-
 help.title=Help
 help.formats.title=Supported File Formats
 help.formats.body=This is the list of file formats which we currently accept.  Note that all video formats will be automatically transcoded to mp4 format.  If you have files in other formats you wish to share, just <a href="mailto:feedback@databrary.org">contact us</a> so that we can add appropriate handling.
@@ -235,7 +224,6 @@ auth.grant.expires.help=Select a date within the next two years.
 auth.grant.expires.error=The date selected is not within the next two years.
 
 # --- Party edit
-page.title.party.edit=Edit Profile
 party.edit=edit profile
 party.view=view profile
 
@@ -399,7 +387,6 @@ object.tip.slot=Sessions group files and data collected at the same time.
 object.tip.asset=Files can potentially contain a lot of valuable data.
 
 # Volume page
-page.title.volume=Study
 volume=Volume
 dataset=Dataset
 study=Study

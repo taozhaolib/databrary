@@ -73,7 +73,7 @@
                         @widget.tag.inputPassword(form.auth(), 'class -> "mini toolbar-static-input password")
                         <button type="submit" class="link toolbar-superuser off">SU</button>
                       }
-                    }
+                    }(request)
                   }
                 }
               }
@@ -82,7 +82,7 @@
 
               @widget.tag.form(LoginController.LogoutForm) {
                 <button type="submit" class="link">@Messages("toolbar.logout")</button>
-              }
+              }(request)
             }
 
             case _ => {

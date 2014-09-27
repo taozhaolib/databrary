@@ -94,6 +94,21 @@ abstract class StructForm(val _action : Call) {
     }
   }
 
+  protected def _csrf(implicit request : RequestHeader) : Option[String] =
+    Some(play.api.libs.Crypto.sign(request.session.toString + _action.toString))
+  val csrf = Field(Mappings.raw)
+  final def csrfField(implicit request : RequestHeader) =
+    csrf().copy(value = _csrf)
+  private[this] def csrfCheck(implicit request : Request[AnyContent]) {
+    if (request.headers.get("X-Requested-With").isDefined ||
+      !(request.method.equals("GET") || (request.method.equals("POST") && 
+	request.contentType.exists(t =>
+	    t.equals("application/x-www-form-urlencoded") || t.equals("text/plain") || t.equals("multipart/form-data")))) || 
+      csrf.get.equals(_csrf))
+      return
+    csrf.withError("csrf.failed")
+  }
+    
   private[this] def getValMembers : Iterator[Member[_]] =
     getClass.getMethods.toIterator
       .filter(f => f.getModifiers == java.lang.reflect.Modifier.PUBLIC && f.getName()(0).isLower && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))
@@ -183,7 +198,7 @@ abstract class StructForm(val _action : Call) {
   }
   def withGlobalError(message : String, args : Any*) : self.type =
     withError(FormError("", message, args))
-    
+
   private[this] def bindFiles(implicit request : Request[AnyContent]) : self.type = {
     val d = request.body.asMultipartFormData
       .getOrElse(MultipartFormData[Files.TemporaryFile](Map.empty, Nil, Nil, Nil))
@@ -193,11 +208,16 @@ abstract class StructForm(val _action : Call) {
   def _bind(implicit request : Request[AnyContent]) : self.type = {
     apply().bindFromRequest
     bindFiles
+    csrfCheck
     self
   }
   def _enctype : String =
     if (_files.nonEmpty) "multipart/form-data"
     else "application/x-www-form-urlencoded"
+}
+
+trait NoCsrfForm extends StructForm {
+  override protected def _csrf(implicit request : RequestHeader) : Option[String] = None
 }
 
 abstract class FormView(action : Call) extends StructForm(action) {

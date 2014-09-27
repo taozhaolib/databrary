@@ -19,7 +19,7 @@ private[controllers] sealed class TokenController extends SiteController {
       if (!token.valid) {
         token.remove
         macros.async(Gone)
-      } else if (!auth.equals(token.auth)) {
+      } else if (!token.checkAuth(auth)) {
         throw ForbiddenException
       } else if (token.password)
 	if (request.isApi)
@@ -36,7 +36,7 @@ private[controllers] sealed class TokenController extends SiteController {
   def password(a : models.Account.Id) = SiteAction.async { implicit request =>
     val form = new TokenController.PasswordForm(a)._bind
     models.LoginToken.get(form.token.get).flatMap(_
-      .filter(t => t.valid && form.auth.get.equals(t.auth) && t.password && t.accountId === a)
+      .filter(t => t.valid && t.checkAuth(form.auth.get) && t.password && t.accountId === a)
       .fold[Future[Result]](ForbiddenException.result) { token =>
 	form.checkPassword(token.account)
 	form.orThrow

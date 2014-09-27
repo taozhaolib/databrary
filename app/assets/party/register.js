@@ -3,7 +3,7 @@
 module.controller('party/register', [
   '$scope', 'pageService', function ($scope, page) {
     $scope.page = page;
-    page.display.title = page.constants.message('page.title.register');
+    page.display.title = page.constants.message('register.title');
 
     $scope.auth = {};
 

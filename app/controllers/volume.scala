@@ -94,7 +94,8 @@ object VolumeController extends VolumeController {
   final class SearchForm(implicit request : SiteRequest[_])
     extends HtmlForm[SearchForm](
       routes.VolumeHtml.search,
-      views.html.volume.search(Nil, _)) {
+      views.html.volume.search(Nil, _))
+    with NoCsrfForm {
     val query = Field(Mappings.maybeText)
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }

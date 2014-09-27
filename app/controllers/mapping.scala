@@ -6,6 +6,10 @@ import play.api.data.validation._
 import macros._
 
 object Mappings {
+  val raw = of[Option[String]](new format.Formatter[Option[String]] {
+    def bind(key: String, data: Map[String, String]) = Right(data.get(key))
+    def unbind(key: String, value: Option[String]) = value.fold(Map.empty[String, String])(v => Map(key -> v))
+  })
   def option[A](map : Mapping[A]) : OptionMapping[A] = OptionMapping[A](map)
   def some[A](map : Mapping[A], default : A = "") : Mapping[Option[A]] =
     map.transform[Option[A]](Some(_), _.getOrElse(default))

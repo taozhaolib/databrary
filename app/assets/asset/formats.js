@@ -2,7 +2,7 @@
 
 module.controller('asset/formats', [
   '$scope', 'pageService', function ($scope, page) {
-    page.display.title = page.constants.message('page.title.help.formats');
+    page.display.title = page.constants.message('help.formats.title');
 
     $scope.groups = {};
     angular.forEach(page.constants.format, function (format) {

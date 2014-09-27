@@ -5,7 +5,7 @@ module.controller('volume/edit', [
   function ($scope, volume, page, Store) {
     $scope.flowOptions = Store.flowOptions;
     $scope.volume = volume;
-    page.display.title = volume ? volume.title : page.constants.message('page.title.volume');
+    page.display.title = volume ? volume.title : page.constants.message('volume.edit.create');
 
     page.display.toolbarLinks.push({
       type: 'yellow',

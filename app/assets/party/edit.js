@@ -3,7 +3,7 @@
 module.controller('party/edit', [
   '$scope', 'party', 'pageService', function ($scope, party, page) {
     $scope.party = party;
-    page.display.title = page.constants.message('page.title.party.edit');
+    page.display.title = page.constants.message('party.edit');
 
     page.display.toolbarLinks.push({
       type: 'yellow',

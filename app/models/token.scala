@@ -2,21 +2,38 @@ package models
 
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import play.api.libs.Crypto
 import macros._
 import dbrary._
 import site._
 
-sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow {
+trait TokenAuth {
+  def token : String
+  def auth() : String = {
+    val t = System.currentTimeMillis.toHexString
+    Crypto.sign(token + t) + t
+  }
+  def checkAuth(a : String) : Boolean = {
+    val (s, t) = a.splitAt(TokenAuth.length)
+    Crypto.constantTimeEquals(s, Crypto.sign(token + t))
+  }
+}
+
+object TokenAuth {
+  private final val length = Crypto.sign("").length
+}
+
+sealed abstract class Token protected (val id : Token.Id, val expires : Timestamp) extends TableRow with TokenAuth {
   private[models] def sqlKey = SQLTerms('token -> id)
+  def token = id
   def valid = expires.toDateTime.isAfterNow
-  def auth = play.api.libs.Crypto.sign(id)
   def redeemURL = controllers.routes.TokenHtml.token(id, auth)
   def remove : Future[Boolean]
 }
 
 object Token extends Table[Token]("token") {
   type Id = String
-  private final val length = 64
+  final val length = 32
 
   private[models] def clean() : Future[Boolean] =
     for {
@@ -41,10 +58,10 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   protected def row : Selector[T]
 
   def delete(token : String) : Future[Boolean] =
-    DELETE('token -> token).execute
+    DELETE('token -> token.take(Token.length)).execute
 
   def get(token : String) : Future[Option[T]] =
-    row.SELECT("WHERE token = ?").apply(token).singleOpt
+    row.SELECT("WHERE token = ?").apply(token.take(Token.length)).singleOpt
 
   private def insert[A](f : Token.Id => Future[A]) : Future[A] = {
     /*@scala.annotation.tailrec*/ def loop : Future[A] =

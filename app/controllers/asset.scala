@@ -9,6 +9,7 @@ import          i18n.Messages
 import          libs.Files.TemporaryFile
 import          libs.iteratee.{Iteratee,Enumerator}
 import          libs.concurrent.Execution.Implicits.defaultContext
+import          libs.Crypto
 import java.io.RandomAccessFile
 import macros._
 import macros.async._
@@ -382,8 +383,10 @@ object AssetApi extends AssetController with ApiController {
   }
 
   class TranscodedForm(id : Transcode.Id) extends {
-      val auth = play.api.libs.Crypto.sign(id.toString)
-    } with StructForm(routes.AssetApi.transcoded(id, auth)) {
+      val token = new TokenAuth {
+	val token = id.toString
+      }
+    } with StructForm(routes.AssetApi.transcoded(id, token.auth())) {
     val pid = Field(Forms.number)
     val res = Field(Forms.number)
     val sha1 = Field(Mappings.hash(store.SHA1, store.Hex))
@@ -394,7 +397,7 @@ object AssetApi extends AssetController with ApiController {
   def transcoded(i : models.Transcode.Id, auth : String) =
     play.api.mvc.Action { implicit request =>
       val form = new TranscodedForm(i)._bind
-      if (!auth.equals(form.auth) || form.hasErrors)
+      if (!form.token.checkAuth(auth) || form.hasErrors)
 	BadRequest("")
       else {
 	store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)

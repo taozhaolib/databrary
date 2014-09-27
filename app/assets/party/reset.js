@@ -2,7 +2,7 @@
 
 module.controller('party/reset', [
   '$scope', 'pageService', function ($scope, page) {
-    page.display.title = page.constants.message('page.title.reset');
+    page.display.title = page.constants.message('reset.title');
 
     //
 
