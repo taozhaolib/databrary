@@ -167,7 +167,7 @@ DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                 
 GET     /api/volume/$volumeId<[0-9]+>/slot/$containerId<[0-9]+>                                   controllers.SlotApi.get(volumeId : models.Volume.Id, containerId : models.Container.Id, segment : dbrary.Segment)
 POST    /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.update(containerId : models.Container.Id, segment : dbrary.Segment)
 POST    /api/volume/$volumeId<[0-9]+>/slot                                                        controllers.SlotApi.create(volumeId : models.Volume.Id)
-#                                                                                                 TODO: DELETE /api/slot/containerId<[0-9]+>
+DELETE  /api/slot/$containerId<[0-9]+>                                                            controllers.SlotApi.remove(containerId : models.Container.Id)
 
 # ----- RECORD ----- #
 # QUERY     ?volume=ID;category=ID                                                                TODO: container=ID;asset=ID

@@ -346,7 +346,7 @@ COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal
 SELECT audit.CREATE_TABLE ('slot');
 
 CREATE TABLE "slot_consent" (
-	"container" integer NOT NULL References "container",
+	"container" integer NOT NULL References "container" ON DELETE CASCADE,
 	"segment" segment NOT NULL,
 	"consent" consent NOT NULL,
 	Primary Key ("container", "segment"),

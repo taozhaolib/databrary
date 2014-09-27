@@ -120,6 +120,7 @@ object SiteApi extends SiteController {
     , SlotApi.get
     , SlotApi.update
     , SlotApi.create
+    , SlotApi.remove
     , AssetHtml.formats
     , AssetHtml.view
     , AssetHtml.edit
@@ -215,6 +216,6 @@ object SiteApi extends SiteController {
 
   def void =
     SiteAction { implicit request =>
-      Ok("")
+      NoContent
     }
 }
