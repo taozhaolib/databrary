@@ -51,15 +51,9 @@ module.factory('authService', [
       models.Login.superuserOn({
 	  auth: form.auth
         }).then(function () {
-          messages.add({
-            body: constants.message('superuser.on.success'),
-            type: 'green',
-            countdown: 2000
-          });
 	  $route.reload();
         }, function (res) {
           messages.addError({
-            body: constants.message('superuser.on.error'),
             report: res,
           });
         });
@@ -67,15 +61,9 @@ module.factory('authService', [
 
     var disableSU = function () {
       models.Login.superuserOff().then(function () {
-        messages.add({
-          body: constants.message('superuser.off.success'),
-          type: 'green',
-          countdown: 2000
-        });
 	$route.reload();
       }, function (res) {
         messages.addError({
-          body: constants.message('superuser.off.error'),
           report: res,
         });
       });

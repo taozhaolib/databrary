@@ -101,7 +101,6 @@ file=file
 account=Account
 password=Password
 link=link
-me=Me
 
 toolbar.login=login
 toolbar.logout=logout
@@ -133,10 +132,8 @@ login.password.help=Enter your password.
 # --- Reset page
 reset.title=Password Reset
 reset.request=Reset
-reset.save=Save
 reset.request.success=Password reset email sent to {0}. Please follow the instructions in that message.
 reset.save.success=Your password has been reset.
-reset.request.error=Password reset unsuccessful.
 
 reset.email.help=Enter the email address you used to register.
 reset.once.help=Enter a secure password.
@@ -167,7 +164,6 @@ password.match=Passwords do not match.
 password.check=Insecure password: {0}
 openid=OpenID
 orcid=ORCiD
-fullname=Full Name
 avatar=avatar
 affiliation=Affiliation
 
@@ -175,11 +171,6 @@ password.advice=Your Databrary password is used to protect many sensitive resour
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
-
-superuser.on.success=Superuser mode activated!
-superuser.on.error=Could not activate superuser mode!
-superuser.off.success=Superuser mode deactivated!
-superuser.off.error=Could not deactivate superuser mode!
 
 welcome.title=Welcome
 welcome.featured=Featured Dataset
@@ -190,7 +181,6 @@ party.overview.title=Overview
 party.contact.title=Contact
 
 network.title=Authorizations
-network.authquery.error=Could not retrieve your authorizing agents and affiliates.
 
 network.apply.local=Manage and apply for authorization
 network.apply.foreign=Grant authorization to {0}

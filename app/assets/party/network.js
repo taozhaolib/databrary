@@ -15,30 +15,24 @@ module.controller('party/network', [
     });
 
     var getPartyAuth = function () {
-      $scope.party.get(['parents', 'children']).then(function () {
-	if ($scope.party.checkPermission(page.permission.ADMIN))
-          angular.forEach($scope.party.children, function (party) {
-            if (!party.member && !party.site) {
-              if (!actionMessages[party.id]) {
-                actionMessages[party.id] = {
-                  party: party,
-                  message: page.messages.add({
-                    type: 'yellow',
-                    closeable: true,
-                    body: '<span>' + page.constants.message('auth.pending.notice', party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '">Manage</a>.</span>'
-                  })
-                };
-              }
-              else {
-                actionMessages[party.id].party = party;
-              }
-            }
-          });
-      }, function (res) {
-	page.messages.addError({
-	  body: page.constants.message('network.authquery.error'),
-	  report: res,
-	});
+      if (!$scope.party.checkPermission(page.permission.ADMIN))
+        return;
+      angular.forEach($scope.party.children, function (party) {
+        if (!party.member && !party.site) {
+          if (!actionMessages[party.id]) {
+            actionMessages[party.id] = {
+              party: party,
+              message: page.messages.add({
+                type: 'yellow',
+                closeable: true,
+                body: page.$sce.trustAsHtml('<span>' + page.constants.message('auth.pending.notice', {sce:page.$sce.HTML}, party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '">Manage</a>.</span>')
+              })
+            };
+          }
+          else {
+            actionMessages[party.id].party = party;
+          }
+        }
       });
     };
 
