@@ -1,4 +1,4 @@
-<div id="spreadsheet" bindonce>
+<div id="spreadsheet" bindonce bo-class="{edit: editing, view: !editing}">
   <a ng-click="refresh()">refresh</a>
   <span bo-if="!editing">
     <span bo-if="volume.checkPermission(page.permission.EDIT)">

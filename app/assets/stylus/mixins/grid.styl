@@ -10,6 +10,10 @@ grid(keyword, spread, column, gutter)
   .col
     grid-col spread, column, gutter
 
+  .grid-outside
+    left (100%-(10000/(100 - unit(gutter,""))))
+    right (100%-(10000/(100 - unit(gutter,""))))
+
   grid-make keyword, spread, column, gutter
 
 // helper
