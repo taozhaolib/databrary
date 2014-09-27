@@ -16,7 +16,7 @@
 
         <section id="slot-timeline" class="slot-timeline">
           <div class="slot-timeline-temporal" ng-if="!range.empty">
-            <div class="slot-timeline-time" ng-bind="position | timecode"></div>
+            <span class="slot-timeline-time" ng-if="position!=undefined" ng-bind="position | timecode"></span>
             <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
               <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
@@ -107,7 +107,10 @@
               </nav>
 
               <div bo-if="!editing">
-                <h1 class="player-main-info-name" bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></h1>
+                <h1 class="player-main-info-name">
+                  <span bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></span>
+
+                </h1>
                 <dl class="cf">
                   <dt ng-repeat-start="(metric, measure) in record.record.measures track by metric" ng-bind="page.constants.metric[metric].name"></dt>
                   <dd ng-repeat-end ng-bind="measure"></dd>
