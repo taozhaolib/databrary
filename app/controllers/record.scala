@@ -24,12 +24,12 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
   protected final val categoryMapping : Mapping[RecordCategory] =
     Forms.of[RecordCategory.Id]
       .transform[Option[RecordCategory]](RecordCategory.get(_), _.get.id)
-      .verifying(Messages("measure.unknown"), _.isDefined)
+      .verifying(Messages("error.invalid"), _.isDefined)
       .transform(_.get, Some(_))
   protected final val metricMapping : Mapping[Metric[_]] =
     Forms.of[Metric.Id]
       .transform[Option[Metric[_]]](Metric.get(_), _.get.id)
-      .verifying(Messages("measure.unknown"), _.isDefined)
+      .verifying(Messages("error.invalid"), _.isDefined)
       .transform(_.get, Some(_))
 
   private[this] def editResult(record : Record)(implicit request : SiteRequest[_]) : Result =
@@ -51,7 +51,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       form.datum.get.fold(
 	request.obj.removeMeasure(metric))(d =>
 	request.obj.setMeasure(new Measure(metric, d)).map {
-	  case false => form.datum.withError("measure.bad")._throw
+	  case false => form.datum.withError("error.invalid")._throw
 	  case true => true
 	})
       .map(_ => editResult(request.obj))

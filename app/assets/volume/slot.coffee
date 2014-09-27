@@ -115,7 +115,7 @@ module.controller('volume/slot', [
             $scope.form.edit.$setPristine()
       if record
         if isFinite(record.segment.l)
-          $scope.position = track.asset.segment.l
+          $scope.position = record.segment.l
 
     removed = (track) ->
       return if track.asset || track.file

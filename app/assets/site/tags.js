@@ -82,6 +82,7 @@ module.controller('site/tags', [
 
 	var directions = {'-1': 'down', 0: 'null', 1: 'up'};
         createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
+        page.tooltips.clear(); // hack for broken tooltips
       }, function (res) {
         page.messages.addError({
           body: page.constants.message('tags.vote.error', {sce: page.$sce.HTML}, tag.id),

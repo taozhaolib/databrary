@@ -4,7 +4,7 @@
     <span bo-if="volume.checkPermission(page.permission.EDIT)">
       | <a bo-href="page.router.volumeSpreadsheet(volume.id)">edit</a>
     </span>
-    | <a ng-href="volume.zipRoute()" target="_self">all.zip</a>
+    | <a bo-href="volume.zipRoute()" target="_self">all.zip</a>
   </span>
   <table id="spreadsheet-table">
     <colgroup>
@@ -13,7 +13,7 @@
       <col class="consent"/>
     </colgroup>
     <colgroup ng-repeat="col in recordCols track by col.category.id">
-      <col ng-repeat="metric in col.metrics"/>
+      <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
     </colgroup>
     <thead>
       <tr id="spreadsheet-head-groups">
@@ -25,7 +25,7 @@
 	<th id="ss-date" ng-click="clickSlot('date')">test date</th>
 	<th id="ss-consent" class="last" ng-click="clickSlot('consent')"></th>
 
-	<th ng-repeat="col in metricCols track by $index" id="ss-metric_{{$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.name"></th>
+	<th ng-repeat="col in metricCols" id="ss-metric_{{$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.display || col.metric.name"></th>
       </tr>
       <tr bo-if="editing">
 	<td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>

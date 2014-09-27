@@ -19,12 +19,7 @@ module.directive('loginForm', [
 	page.models.Login.login(form.data).then(function () {
 	  form.validator.server({});
 
-	  if (page.auth.next) {
-	    page.$location.path(page.auth.next);
-	    page.auth.next = undefined;
-	  } else {
-	    page.$location.path('/');
-	  }
+          page.router.back();
 	}, function (res) {
 	  form.validator.server(res, true);
 	});

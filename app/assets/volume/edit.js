@@ -10,7 +10,7 @@ module.controller('volume/edit', [
     page.display.toolbarLinks.push({
       type: 'yellow',
       html: page.constants.message('volume.edit.' + (volume ? 'exit' : 'cancel')),
-      url: volume ? volume.route : page.router.prevUrl
+      url: volume ? volume.route : page.router.prev
     });
 
     $scope.registerStep = function (step) {

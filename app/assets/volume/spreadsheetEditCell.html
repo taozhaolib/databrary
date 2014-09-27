@@ -4,7 +4,7 @@
   <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" ng-blur="unedit($event)"/>
   <input ng-switch-when="number" name="edit" type="number" ng-model="input.value" ng-blur="unedit($event)"/>
   <select ng-switch-when="select" name="edit" ng-model="input.value" ng-options="o for o in options"/>
-  <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="id as name for (id, name) in page.constants.consent"/>
+  <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="page.constants.consent[c]+'' as c for c in page.constants.consent"/>
   <select ng-switch-when="record" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
   <select ng-switch-when="metric" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
   <select ng-switch-when="category" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
