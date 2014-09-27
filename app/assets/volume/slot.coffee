@@ -215,6 +215,14 @@ module.controller('volume/slot', [
         $scope.selectRecord(r) if `r.id == targetRecord`
       $scope.records = t
 
+    $scope.recordMetrics = (r) ->
+      ident = page.constants.category[r.record.category]?.ident || [page.constants.metricName.ident.id]
+      metrics = []
+      for m of r.record.measures
+        m = +m
+        metrics.push(m) unless m in ident
+      metrics.sort (a, b) -> a - b
+
     $scope.range = new page.models.Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
     updateRange(page.models.Segment.full)
