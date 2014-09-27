@@ -108,12 +108,12 @@
 
               <div bo-if="!editing">
                 <h1 class="player-main-info-name">
-                  <span bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name"></span>
-
+                  <span bo-if="record.record.category" bo-text="page.constants.category[record.record.category].name + ': '"></span>
+                  <span bo-text="record.record.displayName"></span>
                 </h1>
                 <dl class="cf">
-                  <dt ng-repeat-start="(metric, measure) in record.record.measures track by metric" ng-bind="page.constants.metric[metric].name"></dt>
-                  <dd ng-repeat-end ng-bind="measure"></dd>
+                  <dt ng-repeat-start="metric in recordMetrics(record)" ng-bind="page.constants.metric[metric].name"></dt>
+                  <dd ng-repeat-end ng-bind="record.record.measures[metric]"></dd>
                   <dt bo-if="record.age">age</dt>
                   <dd bo-if="record.age"><display-age value="record.age"></display-age></dd>
                 </dl>
