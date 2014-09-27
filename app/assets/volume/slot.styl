@@ -14,7 +14,6 @@
       opacity 1
 
 .player-main-viewport
-  background-color black
   .asset-display
     video
       @media screen and (min-width: 520px)
@@ -35,6 +34,17 @@
   border-bottom 1px solid pale
   padding-bottom b4
   margin-bottom b4
+
+  dt 
+    text-transform capitalize
+    float left
+    clear left
+    margin-right f8
+    &:after
+      content ':'
+
+  dd
+    display inline-block
 
 .player-main-info-actions
   margin-top b8
@@ -57,7 +67,7 @@
     position relative
     top b12
 
-  dt
+  > dt
     float left
     clear left
     width 150px
@@ -65,7 +75,7 @@
     &:after
       content ':'
 
-  dd
+  > dd
     float left
     margin-left b6
 
