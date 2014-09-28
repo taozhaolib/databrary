@@ -354,9 +354,20 @@ module.directive('spreadsheet', [
 	    row.className = 'top';
 
 	  cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
-	  cell = cell.insertBefore(document.createElement('a'), cell.firstChild);
-	  cell.setAttribute('href', slot.route);
-	  cell.classList.add('link', 'icon');
+          var a;
+          if (editing && !top) {
+            a = cell.insertBefore(document.createElement('a'), cell.firstChild);
+            a.className = 'trash icon';
+            $(a).on('click', function (event) {
+              $scope.$apply(function () {
+                removeSlot(cell, i, slot);
+              });
+              event.stopPropagation();
+            });
+          }
+	  a = cell.insertBefore(document.createElement('a'), cell.firstChild);
+	  a.setAttribute('href', slot.route);
+	  a.className = "play icon";
 
 	  generateCell(row, 'date', slot.date, 'ss-date_' + i);
 	  generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
@@ -483,6 +494,30 @@ module.directive('spreadsheet', [
 	    cell.classList.remove('saving');
 	  }, saveError.bind(null, cell));
 	}
+
+        function removeSlot(cell, i, slot) {
+          /* assuming we have a container */
+	  cell.classList.add('saving');
+          return slot.remove().then(function (done) {
+            cell.classList.remove('saving');
+            if (!done)
+              return page.messages.addError({
+                body: page.constants.message('slot.remove.notempty')
+              });
+            unedit();
+            collapse();
+	    rows[i].parentNode.removeChild(rows[i]);
+            count --;
+            slots.splice(i, 1);
+            counts.splice(i, 1);
+            rows.splice(i, 1);
+            order.remove(i);
+            order = order.map(function (j) {
+              return j - (j > i);
+            });
+            populate();
+          }, saveError.bind(null, cell));
+        }
 
 	function saveMeasure(cell, info, v) {
 	  cell.classList.add('saving');
