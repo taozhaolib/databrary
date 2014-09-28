@@ -199,14 +199,15 @@ module.controller('volume/slot', [
     $scope.selectRecord = (record) -> select(undefined, record)
 
     fillRecords = ->
-      for r in slot.records when !r.record
+      records = slot.records
+      for r in records when !r.record
         r.record = slot.volume.records[r.id]
-      slot.records.sort (a, b) ->
+      records.sort (a, b) ->
         a.record.category - b.record.category || a.id - b.id
 
       t = []
       overlaps = (r) -> s.overlaps(r.segment)
-      for r in slot.records
+      for r in records
         updateRange s = r.segment = Segment.make(r.segment)
         for o, i in t
           break unless o.some(overlaps)

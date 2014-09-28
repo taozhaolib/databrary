@@ -663,13 +663,22 @@ module.factory('modelService', [
 	});
     };
 
+    function recordAdd(slot, record) {
+      var r = {
+        id: record.id,
+        segment: slot.segment
+      };
+      if ('records' in slot)
+        slot.records.push(r);
+      if (slot.container !== slot && 'records' in slot.container)
+        slot.container.records.push(r);
+    }
+
     Slot.prototype.addRecord = function (r) {
       var s = this;
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
 	.then(function (res) {
-	  if ('records' in s)
-	    /* not quite right with segments */
-	    s.records.push(r);
+          recordAdd(s, r);
 	  return r.update(res.data);
 	});
     };
@@ -684,8 +693,7 @@ module.factory('modelService', [
 	  var r = new Record(v, res.data);
 	  if ('records' in v)
 	    v.records[r.id] = r;
-	  if ('records' in s)
-	    s.records.push(r);
+          recordAdd(s, r);
 	  return r;
 	});
     };
@@ -740,17 +748,17 @@ module.factory('modelService', [
     delegate(Record, 'volume',
 	'permission');
 
-    function peekRecord(volume, record) {
-      if (record instanceof Record)
-	return record;
-      if (volume.records && record in volume.records)
-	return volume.records[record];
+    function recordMake(volume, init) {
+      if (volume.records && init.id in volume.records)
+	return volume.records[init.id].update(init);
+      return new Record(volume, init);
     }
 
     Volume.prototype.getRecord = function (record) {
-      var r = peekRecord(this, record);
-      if (r)
-	return $q.successful(r);
+      if (record instanceof Record)
+	return $q.successful(record);
+      if (this.records && record in this.records)
+	return $q.successful(this.records[record]);
       var v = this;
       return router.http(router.controllers.RecordApi.get, record)
 	.then(function (res) {
@@ -880,6 +888,12 @@ module.factory('modelService', [
     Object.defineProperty(SlotAsset.prototype, 'displayName', {
       get: function () {
 	return this.name || this.format.name;
+      }
+    });
+
+    Object.defineProperty(SlotAsset.prototype, 'route', {
+      get: function () {
+	return router.slot([this.volume.id, this.container.id, this.segment.format()], {asset:this.id});
       }
     });
 

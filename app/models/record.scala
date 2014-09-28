@@ -187,7 +187,7 @@ object Record extends TableId[Record]("record") {
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the list of all records that apply to the given slot. */
-  private[models] def getSlotAll(slot : Slot) : Future[Seq[(Segment,Record)]] =
+  private[models] def getSlotList(slot : Slot) : Future[Seq[(Segment,Record)]] =
     SlotRecord.columns
     .join(rowVolume(slot.volume), "slot_record.record = record.id")
     .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment")

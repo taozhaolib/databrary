@@ -25,7 +25,7 @@ module.controller('volume/excerpts', [
 
     $scope.jumpLink = function (excerpt) {
       /* maybe should be excerpt.inContext().route or something? */
-      return excerpt.container.route;
+      return excerpt.route;
     };
   }
 ]);

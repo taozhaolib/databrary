@@ -295,7 +295,7 @@ module.provider('routerService', [
 	      ['records', 'containers'])
 	      .then(function (volume) {
 		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-		  ['assets', 'tags', 'comments']);
+		  ['assets', 'records', 'tags', 'comments']);
 	      });
 	  },
         ],
