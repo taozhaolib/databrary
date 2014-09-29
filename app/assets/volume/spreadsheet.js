@@ -643,7 +643,8 @@ module.directive('spreadsheet', [
 	    generateRecords(el, i, n, edit);
 	  }
 
-	  for (el = row.firstChild; !el.id.startsWith("ss-rec_"); el = el.nextSibling)
+          var i = 3;
+	  for (el = row.firstChild; i > 0; el = el.nextSibling, i--)
 	    el.setAttribute("rowspan", max);
 	}
 
