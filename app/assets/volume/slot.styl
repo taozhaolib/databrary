@@ -4,7 +4,7 @@
 .player-main
   width 100%
   background white
-  padding b4
+  padding b2
   box-shadow box-shadow-def
   text-align center
   position relative
@@ -14,6 +14,8 @@
       opacity 1
 
 .player-main-viewport
+  border-top 1px solid pale
+  padding-top b3
   .asset-display
     video
       @media screen and (min-width: 520px)
@@ -31,7 +33,7 @@
 
 .player-main-info
   text-align left
-  border-bottom 1px solid pale
+  //border-bottom 1px solid pale
   padding-bottom b4
   margin-bottom b4
 
@@ -57,6 +59,8 @@
 .player-main-info-name
   font-line 1
   text-transform capitalize
+  padding-bottom f2
+  padding-top f2
 
 .player-main-info-list
   margin-bottom 0
@@ -148,7 +152,7 @@
   position relative
   width 100%
   padding-width b6
-  box-shadow box-shadow-def
+  box-shadow 0 b8 b8 -b8 black
   height 2
   cursor default
 
@@ -170,7 +174,7 @@
   background rgba(255, 255, 255, .75)
 
 .slot-timeline-track
-  border-bottom 1px solid pale
+  border-top 1px solid pale
   padding b6
   width 100%
 
@@ -263,8 +267,12 @@
   height 1000
   position absolute
   border 1px solid yellow53
+  border-radius b8
   font-size f34
   float left
   white-space nowrap
   overflow hidden
+  text-overflow ellipsis
   min-width b8
+  padding-left b8
+  padding-right b8
