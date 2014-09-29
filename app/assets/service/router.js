@@ -400,7 +400,10 @@ module.provider('routerService', [
         });
 
         router.back = function () {
-          $location.$$parse(router.prev);
+          if (router.prev === $location.absUrl())
+            $location.url('/');
+          else
+            $location.$$parse(router.prev);
         };
 
 	return router;
