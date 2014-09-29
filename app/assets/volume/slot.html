@@ -11,7 +11,8 @@
             <span bo-text="slot.displayName"></span>
             <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
           </h3>
-          <a bo-href="slot.zipRoute()" target="_self">Download all</a>
+          <a bo-href="slot.zipRoute()" target="_self" bo-text="'timeline.download-data' | message"></a>
+
         </hgroup>
 
         <section id="slot-timeline" class="slot-timeline">
