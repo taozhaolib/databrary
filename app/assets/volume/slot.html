@@ -27,7 +27,7 @@
           <div class="slot-annotations">
             <div class="slot-record-track" ng-repeat="rs in records">
               <div class="slot-track" ng-class="{'slot-track-positioned': !rs[0].segment.full}">
-                <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-recrod-select': r === record}" ng-style="positionStyle(r.segment)" ng-click="selectRecord(r)"></div>
+                <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-record-select': r === record}" ng-style="positionStyle(r.segment)" ng-click="selectRecord(r)"></div>
               </div>
             </div>
           </div>
