@@ -113,6 +113,8 @@
                   <span bo-text="record.record.displayName"></span>
                 </h1>
                 <dl class="cf">
+                  <dt bo-if="!record.segment.full">Position</dt>
+                  <dd bo-if="!record.segment.full"><span bo-text="record.segment.l | timecode"></span> &ndash; <span bo-text="record.segment.u | timecode"></span></dd>
                   <dt ng-repeat-start="metric in recordMetrics(record)" ng-bind="page.constants.metric[metric].name"></dt>
                   <dd ng-repeat-end ng-bind="record.record.measures[metric]"></dd>
                   <dt bo-if="record.age">age</dt>

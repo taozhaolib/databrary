@@ -1,7 +1,8 @@
 'use strict';
 
 module.factory('Segment', [
-  function () {
+  'constantService',
+  function (constants) {
     function Segment(l, u) {
       if (arguments.length >= 2) {
 	this.l = l;
@@ -48,14 +49,14 @@ module.factory('Segment', [
 	(x instanceof Segment && x.full) ||
 	x === ',' || x === '-'; // handle strings just as an optimization
     };
-    Segment.full = new Segment(undefined);
+    Segment.full = constants.deepFreeze(new Segment(undefined));
 
     Segment.isEmpty = function (x) {
       return x === null ||
 	(x instanceof Segment && x.empty) ||
 	x === '';
     };
-    Segment.empty = new Segment(null);
+    Segment.empty = constants.deepFreeze(new Segment(null));
 
     function base(x) {
       if (x instanceof Segment)
