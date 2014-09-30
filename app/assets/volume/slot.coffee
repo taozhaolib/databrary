@@ -210,7 +210,7 @@ module.controller('volume/slot', [
       for r in records
         updateRange s = r.segment = Segment.make(r.segment)
         for o, i in t
-          break unless o.some(overlaps)
+          break unless o[0].record.category != r.record.category || o.some(overlaps)
         t[i] = [] unless i of t
         t[i].push(r)
         $scope.selectRecord(r) if `r.id == targetRecord`
