@@ -720,7 +720,7 @@ module.directive('spreadsheet', [
 	  cell.classList.remove('editing');
 	  page.tooltips.clear();
 
-	  if (event && event.type === 'change')
+	  if (event && (event.type === 'change' || event.type === 'keypress'))
 	    save(cell, editScope.type, editInput.value);
 	}
 	editScope.unedit = unedit;
@@ -811,7 +811,9 @@ module.directive('spreadsheet', [
 	  page.$timeout(function () {
 	    var input = e.children('[name=edit]');
 	    input.focus();
-	    input.one('change', $scope.$lift(unedit));
+            /* chrome produces spurious change events on date fields, so we rely on key-enter instead. */
+            if (editScope.type !== 'date')
+              input.one('change', $scope.$lift(unedit));
 	  });
 	}
 
