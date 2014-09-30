@@ -11,13 +11,12 @@
             <span bo-text="slot.displayName"></span>
             <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
           </h3>
-          <a bo-href="slot.zipRoute()" target="_self" bo-text="'timeline.download-data' | message"></a>
-
+          <a bo-href="slot.zipRoute()" target="_self" bo-text="'download.zip' | message"></a>
         </hgroup>
 
         <section id="slot-timeline" class="slot-timeline">
           <div class="slot-timeline-temporal" ng-if="!range.empty">
-            <span class="slot-timeline-time" ng-if="position!=undefined" ng-bind="position | timecode"></span>
+            <span class="slot-timeline-time" ng-bind="position | timecode"></span>
             <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
               <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
@@ -26,7 +25,7 @@
 
           <div>
             <div class="slot-consent-track">
-              <div class="slot-track" ng-class="{'slot-track-positioned': !consents[0].segment.full}">
+              <div class="slot-track">
                 <div class="slot-consent" ng-repeat="c in consents" ng-class="consentClasses(c)" ng-style="positionStyle(c.segment)" ng-click="selectConsent(c)"></div>
               </div>
             </div>
@@ -34,7 +33,7 @@
 
           <div class="slot-annotations">
             <div class="slot-record-track" ng-repeat="rs in records">
-              <div class="slot-track" ng-class="{'slot-track-positioned': !rs[0].segment.full}">
+              <div class="slot-track">
                 <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-record-select': r === record}" ng-style="positionStyle(r.segment)" ng-click="selectRecord(r)"></div>
               </div>
             </div>

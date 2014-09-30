@@ -50,13 +50,21 @@ module.controller('volume/slot', [
       return styles unless p?
       if p instanceof page.models.Segment
         l = offsetPosition(p.l)
+        if l < 0
+          styles.left = '0px'
+          styles['border-left'] = '0px'
+        else if l <= 1
+          styles.left = 100*l + '%'
         r = offsetPosition(p.u)
+        if r > 1
+          styles.right = '0px'
+          styles['border-right'] = '0px'
+        else if r >= 0
+          styles.right = 100 - 100*r + '%'
       else
-        l = offsetPosition(p)
-      if l >= 0 && l <= 1
-        styles.left = 100*l + '%'
-      if r >= 0 && r <= 1
-        styles.right = 100 - 100*r + '%'
+        p = offsetPosition(p)
+        if p >= 0 && p <= 1
+          styles.left = 100*p + '%'
       styles
 
     seekOffset = (o) ->

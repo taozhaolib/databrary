@@ -652,12 +652,11 @@ wizard.volume-edit-access.instructions=Specify with whom you want to share the d
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
+download.zip=Download all included data as zip
+
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
-spreadsheet.download-all=Download this dataset
 
 # --- Timeline
 slot.edit=Edit session
 slot.view=View session
-timeline.download-data=Download this session
-
