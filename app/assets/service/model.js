@@ -624,7 +624,7 @@ module.factory('modelService', [
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
-      return containerPrepare(this, container).getSlot(segment, options);
+      return containerPrepare(this, parseInt(container)).getSlot(segment, options);
     };
 
     Container.prototype.getSlot = function (segment, options) {
@@ -747,12 +747,6 @@ module.factory('modelService', [
 
     delegate(Record, 'volume',
 	'permission');
-
-    function recordMake(volume, init) {
-      if (volume.records && init.id in volume.records)
-	return volume.records[init.id].update(init);
-      return new Record(volume, init);
-    }
 
     Volume.prototype.getRecord = function (record) {
       if (record instanceof Record)

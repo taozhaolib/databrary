@@ -292,10 +292,10 @@ module.provider('routerService', [
         slot: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.vid,
-	      ['records', 'containers'])
+	      ['records'])
 	      .then(function (volume) {
 		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-		  ['assets', 'records', 'tags', 'comments']);
+		  ['consents', 'records', 'assets' /*, 'tags', 'comments'*/]);
 	      });
 	  },
         ],

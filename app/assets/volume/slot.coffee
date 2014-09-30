@@ -94,11 +94,16 @@ module.controller('volume/slot', [
     targetAsset = page.$location.search().asset
     targetRecord = page.$location.search().record
 
-    select = (track, record) ->
+    selectRange = (range) ->
+      if isFinite(range.l)
+        seekOffset(range.l)
+
+    select = (track, record, consent) ->
       $scope.track.dirty = $scope.form.edit.$dirty if $scope.track && $scope.form.edit
 
       $scope.track = track
       $scope.record = record
+      $scope.consent = consent
       searchLocation(page.$location)
       targetAsset = undefined
       targetRecord = undefined
@@ -106,16 +111,16 @@ module.controller('volume/slot', [
       $scope.playing = 0
       delete $scope.replace
       if track
-        if isFinite(track.asset?.segment.l)
-          $scope.position = track.asset.segment.l
+        selectRange(track.asset?.segment)
         if $scope.form.edit
           if $scope.track.dirty
             $scope.form.edit.$setDirty()
           else
             $scope.form.edit.$setPristine()
       if record
-        if isFinite(record.segment.l)
-          $scope.position = record.segment.l
+        selectRange(record.segment)
+      if consent
+        selectRange(consent.segment)
 
     removed = (track) ->
       return if track.asset || track.file
@@ -224,19 +229,35 @@ module.controller('volume/slot', [
         metrics.push(m) unless m in ident
       metrics.sort (a, b) -> a - b
 
+    $scope.selectConsent = (consent) -> select(undefined, undefined, consent)
+
+    fillConsents = ->
+      if Array.isArray(consents = slot.consents)
+        for c in consents
+          c.segment = Segment.make(c.segment)
+      else
+        consents = [
+          segment: Segment.full
+          consent: consents || 0
+        ]
+      $scope.consents = consents
+
+    $scope.consentClasses = (c) ->
+      cn = page.constants.consent[c.consent]
+      cls = ['consent', 'icon', cn, 'hint-consent-' + cn]
+      cls.push('slot-consent-select') if $scope.consent == c
+      cls
+
     $scope.range = new page.models.Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
     updateRange(page.models.Segment.full)
-
-    $scope.track = undefined
 
     $scope.tracks = (new Track(asset) for asset in slot.assets)
     $scope.tracks.push(new Track()) if editing
     sortTracks()
 
-    $scope.record = undefined
-
     fillRecords()
+    fillConsents()
 
     $scope.playing = 0
     $scope.position = undefined

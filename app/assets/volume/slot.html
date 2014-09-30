@@ -24,6 +24,14 @@
             </div>
           </div>
 
+          <div>
+            <div class="slot-consent-track">
+              <div class="slot-track" ng-class="{'slot-track-positioned': !consents[0].segment.full}">
+                <div class="slot-consent" ng-repeat="c in consents" ng-class="consentClasses(c)" ng-style="positionStyle(c.segment)" ng-click="selectConsent(c)"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="slot-annotations">
             <div class="slot-record-track" ng-repeat="rs in records">
               <div class="slot-track" ng-class="{'slot-track-positioned': !rs[0].segment.full}">
