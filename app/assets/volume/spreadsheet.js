@@ -7,7 +7,12 @@ module.directive('spreadsheet', [
       var i = parseInt(s);
       return isNaN(i) ? s : i;
     }
-    function byNumber(a,b) { return a-b; }
+    function byNumber(a,b) {
+      return a-b;
+    }
+    function byId(a,b) {
+      return a.id-b.id;
+    }
     function byType(a,b) {
       var ta = typeof a;
       var tb = typeof b;
@@ -779,21 +784,23 @@ module.directive('spreadsheet', [
 	    case 'category':
 	      editScope.type = 'metric';
 	      editInput.value = undefined;
-	      editScope.options = {};
+	      editScope.options = [];
 	      angular.forEach(page.constants.metric, function (m, mi) {
 		if (!(mi in records[info.c]))
-		  editScope.options[mi] = m.name;
+		  editScope.options.push(m);
 	      });
+              editScope.options.sort(byId);
 	      break;
 	    case 'head':
 	      editScope.type = 'category';
 	      editInput.value = undefined;
-	      editScope.options = {};
+	      editScope.options = [];
 	      angular.forEach(page.constants.category, function (c, ci) {
 		if (!(ci in records))
-		  editScope.options[ci] = c.name;
+		  editScope.options.push(c);
 	      });
-	      editScope.options[0] = 'other';
+              editScope.options.sort(byId);
+	      editScope.options.push(noCategory);
 	      break;
 	    default:
 	      return;

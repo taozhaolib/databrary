@@ -6,6 +6,6 @@
   <select ng-switch-when="select" name="edit" ng-model="input.value" ng-options="o for o in options"/>
   <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="page.constants.consent[c]+'' as c for c in page.constants.consent"/>
   <select ng-switch-when="record" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
-  <select ng-switch-when="metric" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
-  <select ng-switch-when="category" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options"/>
+  <select ng-switch-when="metric" name="edit" ng-model="input.value" ng-options="m.id as m.name for m in options track by m.id"/>
+  <select ng-switch-when="category" name="edit" ng-model="input.value" ng-options="c.id as c.name for c in options track by c.id"/>
 </div>
