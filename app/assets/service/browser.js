@@ -443,8 +443,8 @@ module.factory('browserService', [
         return browserService.options.session;
       else
         return browserService.options.record.categories.filter(function (c) {
-	  return c.id === group;
-	}).shift();
+          return c.id === group;
+        }).shift();
     };
 
     var getLevelByGroup = function (group) {

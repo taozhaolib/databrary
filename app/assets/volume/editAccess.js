@@ -10,26 +10,26 @@ module.directive('volumeEditAccessForm', [
       form.global = page.constants.accessGlobal[0].slice();
       form.data = [];
       volume.access.forEach(function (access) {
-	var i = page.constants.accessGlobal.parties.indexOf(access.party.id);
-	if (i >= 0)
-	  form.global[i] = access.children;
-	else
-	  form.data.push(access);
+        var i = page.constants.accessGlobal.parties.indexOf(access.party.id);
+        if (i >= 0)
+          form.global[i] = access.children;
+        else
+          form.data.push(access);
       });
 
       form.globalVal = page.constants.accessGlobal.findIndex(function (preset) {
-	return preset.every(function (p, i) {
-	  return form.global[i] === p;
-	});
+        return preset.every(function (p, i) {
+          return form.global[i] === p;
+        });
       });
       if (form.globalVal === -1)
-	form.globalVal = undefined;
+        form.globalVal = undefined;
 
       var globalForm = $scope.accessGlobalForm;
       var subforms = [];
 
       $scope.permissionName = function (p) {
-	return page.constants.permission[p];
+        return page.constants.permission[p];
       };
 
       form.saveAll = function () {
@@ -37,15 +37,15 @@ module.directive('volumeEditAccessForm', [
           if (subform.$dirty)
             subform.save(false);
         });
-	if (globalForm.$dirty)
-	  form.saveGlobal();
+        if (globalForm.$dirty)
+          form.saveGlobal();
       };
 
       form.saveGlobal = function () {
-	form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
+        form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
         $q.all(page.constants.accessGlobal.parties.map(function (party, i) {
           var p = form.global[i];
-	  form.volume.accessSave(party, {
+          form.volume.accessSave(party, {
             individual: p,
             children: p,
           });
@@ -73,14 +73,14 @@ module.directive('volumeEditAccessForm', [
       });
 
       $scope.selectFn = function (found) {
-	form.data.push({
-	  new: true,
-	  party: found,
-	  individual: 0,
-	  children: 0,
-	});
-	//warning: next line is template dependent! if classnames change this will no longer work
-	page.display.scrollTo('fieldset .access-grant:last');
+        form.data.push({
+          new: true,
+          party: found,
+          individual: 0,
+          children: 0,
+        });
+        //warning: next line is template dependent! if classnames change this will no longer work
+        page.display.scrollTo('fieldset .access-grant:last');
       };
 
       form.scrollFn = page.display.makeFloatScrollFn($('.vea-float'), $('.vea-float-floater'), 24*2.5);

@@ -19,13 +19,13 @@ module.factory('messageService', [
 
       /* suppress duplicate messages */
       if (this.body in byBody)
-	return;
+        return;
 
       Message.list[this.id] = this;
       byBody[this.body] = this;
 
       if (this.countdown)
-	countdown(this);
+        countdown(this);
     }
 
     Message.list = {};
@@ -39,7 +39,7 @@ module.factory('messageService', [
     function countdownClear(message) {
       if (message.countdownTimer) {
         $timeout.cancel(message.countdownTimer);
-	message.countdownTimer = undefined;
+        message.countdownTimer = undefined;
       }
     }
 
@@ -76,10 +76,10 @@ module.factory('messageService', [
         body += ' ' + constants.message('error.suffix');
       } else if (angular.isString(message.errors)) {
         message.fn = function () {
-	  var doc = document.open('text/html', 'replace');
-	  doc.write(message.errors);
-	  doc.close();
-	};
+          var doc = document.open('text/html', 'replace');
+          doc.write(message.errors);
+          doc.close();
+        };
         body += ' ' + constants.message('error.view');
       } else if (angular.isObject(message.errors)) {
         var moreBody = '';
@@ -92,17 +92,17 @@ module.factory('messageService', [
           });
         }
 
-	var refreshMsg = false;
+        var refreshMsg = false;
         if (message.status) {
           messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;
-	  refreshMsg = message.status == 409;
+          refreshMsg = message.status == 409;
         }
 
         if (messageBody) {
           body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
-	  if(refreshMsg){
-	      body += "<br>" + constants.message('app.reload');
-	  }
+          if(refreshMsg){
+              body += "<br>" + constants.message('app.reload');
+          }
         }
       }
 

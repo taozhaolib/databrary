@@ -46,7 +46,7 @@ object Citation {
     .withHeaders(("Accept", typ))
     .get.map { r =>
       if (r.status == 200 && r.header("Content-Type").equals(Some(Maybe(typ.indexOf(';')).fold(typ)(typ.substring(0, _)))))
-	Some(r)
+        Some(r)
       else None
     }
 
@@ -55,9 +55,9 @@ object Citation {
     .flatMap(_.flatMap(_.json.asOpt[json.JsObject] /* XXX: json parse error? */)
       .filter(_.\("DOI").asOpt[String].exists(_.nonEmpty)).mapAsync { j =>
       crossref(hdl, bibliographyType + ";style=" + style).map(
-	_.fold(j)(b => j + ("head" -> json.JsString(new String(
-	  /* empirically this is UTF-8, but does not say so: */
-	  b.body.getBytes(com.ning.http.util.AsyncHttpProviderUtils.DEFAULT_CHARSET)).trim))))
+        _.fold(j)(b => j + ("head" -> json.JsString(new String(
+          /* empirically this is UTF-8, but does not say so: */
+          b.body.getBytes(com.ning.http.util.AsyncHttpProviderUtils.DEFAULT_CHARSET)).trim))))
     })
 
   private def getURLJson(url : java.net.URL, style : String = "apa") : Future[Option[json.JsObject]] =
@@ -73,11 +73,11 @@ object Citation {
   def get(url : java.net.URL) : Future[Option[Citation]] =
     getURLJson(url).map(_.map { j =>
       new Citation(
-	head = (j \ "head").asOpt[String].getOrElse(""),
-	title = (j \ "title").asOpt[String],
-	url = Some(url),
-	authors = (j \ "author").asOpt[IndexedSeq[json.JsObject]].map(_.map(name)),
-	year = (j \ "issued" \ "date-parts")(0)(0).asOpt[Short])
+        head = (j \ "head").asOpt[String].getOrElse(""),
+        title = (j \ "title").asOpt[String],
+        url = Some(url),
+        authors = (j \ "author").asOpt[IndexedSeq[json.JsObject]].map(_.map(name)),
+        year = (j \ "issued" \ "date-parts")(0)(0).asOpt[Short])
     })
 }
 

@@ -21,9 +21,9 @@
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.site">
                 <div class="permission-auth-heading" bo-text="'auth.site' | message:'their'"></div>
                 <div class="permission-auth-site">
-		  <strong bo-text="'auth.site.'+page.constants.permission[parent.site]+'.title' | message"></strong>:
-		  {{'auth.site.'+page.constants.permission[parent.site] | message:'their'}}
-		</div>
+                  <strong bo-text="'auth.site.'+page.constants.permission[parent.site]+'.title' | message"></strong>:
+                  {{'auth.site.'+page.constants.permission[parent.site] | message:'their'}}
+                </div>
               </div>
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.site">
                 &nbsp;
@@ -32,8 +32,8 @@
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="parent.member">
                 <div class="permission-auth-heading" bo-text="'auth.member' | message:'their'"></div>
                 <div class="permission-auth-member"></div>
-		  <strong bo-text="'auth.member.'+page.constants.permission[parent.member]+'.title' | message"></strong>:
-		  {{'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
+                  <strong bo-text="'auth.member.'+page.constants.permission[parent.member]+'.title' | message"></strong>:
+                  {{'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
               </div>
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!parent.member">
                 &nbsp;
@@ -46,7 +46,7 @@
               </div>
               <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5" bo-if="!(parent.member || parent.site)">
                 <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
-	      </div>
+              </div>
             </div>
           </div>
         </div>
@@ -81,9 +81,9 @@
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="child.site">
                 <div class="permission-auth-heading" bo-text="'auth.site' | possessive:party"></div>
                 <div class="permission-auth-site">
-		  <strong bo-text="'auth.site.'+page.constants.permission[child.site]+'.title' | message"></strong>:
-		  {{'auth.site.'+page.constants.permission[child.site] | possessive:party}}
-		</div>
+                  <strong bo-text="'auth.site.'+page.constants.permission[child.site]+'.title' | message"></strong>:
+                  {{'auth.site.'+page.constants.permission[child.site] | possessive:party}}
+                </div>
               </div>
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!child.site">
                 &nbsp;
@@ -92,9 +92,9 @@
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="child.member">
                 <div class="permission-auth-heading" bo-text="'auth.member' | possessive:party"></div>
                 <div class="permission-auth-member">
-		  <strong bo-text="'auth.member.'+page.constants.permission[child.member]+'.title' | message"></strong>:
-		  {{'auth.member.'+page.constants.permission[child.member] | possessive:party}}
-		</div>
+                  <strong bo-text="'auth.member.'+page.constants.permission[child.member]+'.title' | message"></strong>:
+                  {{'auth.member.'+page.constants.permission[child.member] | possessive:party}}
+                </div>
               </div>
               <div class="col-desktop-4 col-laptop-4 col-tablet-3 col-mobile-5" bo-if="!child.member">
                 &nbsp;
@@ -107,7 +107,7 @@
               </div>
               <div class="col-desktop-6 col-laptop-3 col-tablet-2 col-mobile-5" bo-if="!(child.member || child.site)">
                 <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
-	      </div>
+              </div>
             </div>
           </div>
         </div>

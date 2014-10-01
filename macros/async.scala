@@ -42,7 +42,7 @@ object async {
     /** Evaluate each of the futures, serially. */
     def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
       l.foldLeft[Future[Any]](void) { (r, a) =>
-	r.flatMap(_ => f(a))
+        r.flatMap(_ => f(a))
       }.map(_ => r)
     }
   }
@@ -80,11 +80,11 @@ object async {
     def mapValuesAsync[B, R](f : A => Future[B])(implicit bf : generic.CanBuildFrom[Map[K, A], (K, B), R], context : ExecutionContext) : Future[R] = {
       val b = bf()
       def madd(x : AnyRef) : Future[Any] = x match {
-	case f : Future[Any] => f
-	case (k : K, a : A) => f(a).map(v => b.+=((k, v)))
+        case f : Future[Any] => f
+        case (k : K, a : A) => f(a).map(v => b.+=((k, v)))
       }
       madd(m.fold[AnyRef](void) { (l, r) =>
-	madd(l).flatMap(_ => madd(r))
+        madd(l).flatMap(_ => madd(r))
       }).map(_ => b.result)
     }
   }

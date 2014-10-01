@@ -160,7 +160,7 @@ object Curated extends Ingest {
       pos <- listHead(option(offset), "offset")
       classification <- listHead(classification, "classification")
       path <- listHead(trimmed.map { p =>
-	val f = Stage.file(p)
+        val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }, "file path")
@@ -170,7 +170,7 @@ object Curated extends Ingest {
       pos <- listHead(guard(name.isDefined, option(offset)), "offset")
       classification <- listHead(guard(name.isDefined, classification), "classification")
       path <- listHead(guard(name.isDefined, trimmed.map { p =>
-	val f = Stage.file(p)
+        val f = Stage.file(p)
         if (!f.isFile) fail("file not found: " + p)
         f
       }), "file path")

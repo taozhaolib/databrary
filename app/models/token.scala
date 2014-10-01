@@ -138,7 +138,7 @@ object SessionToken extends TokenTable[SessionToken]("session") {
   private val columns = tokenColumns
     .map { (token, expires) =>
       (account : Account, access : Access) =>
-	new SessionToken(token, expires, account, access)
+        new SessionToken(token, expires, account, access)
     }
   protected val row = columns
     .join(Account.row, "session.account = account.id")

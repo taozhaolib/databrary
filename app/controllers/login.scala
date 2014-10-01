@@ -32,20 +32,20 @@ private[controllers] sealed class LoginController extends SiteController {
     val form = new LoginController.LoginForm()._bind
     form.email.get.flatMapAsync(Account.getEmail _).flatMap { acct =>
       def bad =
-	acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
-	  form.withGlobalError("login.bad").Bad
-	}
+        acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
+          form.withGlobalError("login.bad").Bad
+        }
       if (form.password.get.nonEmpty) {
-	acct.mapAsync(_.recentAttempts).flatMap { attempts =>
-	  if (attempts.exists(_ > 4))
-	    form.withGlobalError("login.throttled").Bad
-	  else
-	    acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
-	}
+        acct.mapAsync(_.recentAttempts).flatMap { attempts =>
+          if (attempts.exists(_ > 4))
+            form.withGlobalError("login.throttled").Bad
+          else
+            acct.filter(a => !a.password.isEmpty && BCrypt.checkpw(form.password.get, a.password)).fold(bad)(login)
+        }
       } else form.openid.get.fold(bad) { openid =>
-	OpenID.redirectURL(openid.toString, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(Play.isProd), realm = Some("http://" + request.host))
-	  .map(Redirect(_))
-	  .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
+        OpenID.redirectURL(openid.toString, routes.LoginHtml.openID(form.email.get.getOrElse("")).absoluteURL(Play.isProd), realm = Some("http://" + request.host))
+          .map(Redirect(_))
+          .recover { case e : OpenIDError => InternalServerError(LoginHtml.viewLogin(e.toString)) }
       }
     }
   }
@@ -85,15 +85,15 @@ private[controllers] sealed class LoginController extends SiteController {
     SiteAction.async { implicit request =>
       val form = new LoginController.RegistrationForm()._bind
       for {
-	e <- Account.getEmail(form.email.get)
-	a <- e getOrElseAsync {
-	  Party.create(
-	    name = form.name.get,
-	    affiliation = form.affiliation.get)
-	  .flatMap(Account.create(_, email = form.email.get))
-	}
-	_ <- controllers.TokenController.newPassword(Right(a), "register")
-	_ = Mail.investigator(a.party)
+        e <- Account.getEmail(form.email.get)
+        a <- e getOrElseAsync {
+          Party.create(
+            name = form.name.get,
+            affiliation = form.affiliation.get)
+          .flatMap(Account.create(_, email = form.email.get))
+        }
+        _ <- controllers.TokenController.newPassword(Right(a), "register")
+        _ = Mail.investigator(a.party)
       } yield (Ok(Messages("register.sent.instructions", a.email)))
     }
 }
@@ -149,8 +149,8 @@ object LoginController extends LoginController {
       else Forms.optional(passwordBaseMapping)
     protected def passwordInputMapping : Mapping[Option[String]] =
       Forms.tuple(
-	"once" -> passwordOnceMapping,
-	"again" -> passwordOnceMapping
+        "once" -> passwordOnceMapping,
+        "again" -> passwordOnceMapping
       ).verifying("password.match", pa => pa._1 == pa._2)
       .transform[Option[String]](_._1, p => (p, p))
     protected final def passwordMapping : Mapping[Option[String]] =
@@ -163,9 +163,9 @@ object LoginController extends LoginController {
       password.get.map(BCrypt.hashpw(_, BCrypt.gensalt))
     def checkPassword(account : Account) {
       password.get.flatMap(
-	media.Passwd.check(_, account.email, account.party.name))
+        media.Passwd.check(_, account.email, account.party.name))
       .foreach { e =>
-	password.withError("password.check", e)
+        password.withError("password.check", e)
       }
     }
   }
@@ -199,7 +199,7 @@ object LoginHtml extends LoginController with HtmlController {
       info <- OpenID.verifiedId
       acct <- Account.getOpenid(info.id, em)
       r <- acct.fold {
-	new LoginForm()._fill(em, url.parse(info.id)).openid.withError("login.openID.notFound").Bad
+        new LoginForm()._fill(em, url.parse(info.id)).openid.withError("login.openID.notFound").Bad
       } (login)
     } yield (r))
     .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
@@ -208,13 +208,13 @@ object LoginHtml extends LoginController with HtmlController {
   def registration =
     SiteAction.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
-	async(Found((
-	  if (request.access.site == Permission.NONE)
-	    routes.PartyHtml.profile
-	  else
-	    routes.Site.start).url))
+        async(Found((
+          if (request.access.site == Permission.NONE)
+            routes.PartyHtml.profile
+          else
+            routes.Site.start).url))
       else
-	new RegistrationForm().Ok
+        new RegistrationForm().Ok
     }
 }
 

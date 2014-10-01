@@ -197,11 +197,11 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
       "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
       "revisions" -> (opt => Asset.getRevisions(this).map(JsonArray.map(_.json))),
       "creation" -> (opt => if (checkPermission(Permission.EDIT))
-	creation.map { case (date, name) => JsonObject.flatten(
-	  date.map('date -> _),
-	  name.map('name -> _))
-	  .js
-	}
+        creation.map { case (date, name) => JsonObject.flatten(
+          date.map('date -> _),
+          name.map('name -> _))
+          .js
+        }
       else async(JsNull))
     )
 }
@@ -279,7 +279,7 @@ object Asset extends TableId[Asset]("asset") {
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
-	.single(SQLCols[Id])
+        .single(SQLCols[Id])
     } yield {
       val a = new Asset(id, volume, format, classification, name, sha1)
       store.FileAsset.store(a, file)
@@ -292,7 +292,7 @@ object Asset extends TableId[Asset]("asset") {
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
-	.single(SQLCols[Id])
+        .single(SQLCols[Id])
     } yield {
       val a = new TimeseriesAsset(id, volume, format, classification, duration, name, sha1)
       store.FileAsset.store(a, file)

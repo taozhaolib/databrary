@@ -29,7 +29,7 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
     , SelectColumn[IndexedSeq[Id]]("thread")
     ).map { (id, segment, time, text, thread) =>
       (context : ContextSlot) => (who : Account) =>
-	new Comment(id, who, segment, context, time, text, thread.tail)
+        new Comment(id, who, segment, context, time, text, thread.tail)
     } from "comment_thread AS comment"
 
   private def row(who : Selector[Account], container : Selector[Container]) =

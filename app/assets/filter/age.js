@@ -12,7 +12,7 @@ module.filter('age', [
       }
 
       if (days >= LIMIT) 
-	return "90+ yrs";
+        return "90+ yrs";
 
       switch (outputFormat) {
         case 'years':
@@ -25,10 +25,10 @@ module.filter('age', [
           return days.toFixed() + ' days';
 
         default:
-	  var months = days / MONTH;
+          var months = days / MONTH;
           if (months < 3)
             return days.toFixed() + ' days';
-	  else if (months < 37)
+          else if (months < 37)
             return months.toFixed(1) + ' mos';
           else
             return (days/YEAR).toFixed(1) + ' yrs';

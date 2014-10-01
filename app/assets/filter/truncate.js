@@ -9,14 +9,14 @@ module.filter('truncate', [
 
       max = parseInt(max);
       if (isNaN(max))
-	max = 10;
+        max = 10;
 
       if (text.length <= max)
-	return text;
+        return text;
       
       var p = text.lastIndexOf(' ', max);
       if (p <= max/2)
-	p = max;
+        p = max;
       return text.substr(0, p) + '...';
     };
   }

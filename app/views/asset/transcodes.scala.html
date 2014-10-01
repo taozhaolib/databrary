@@ -27,30 +27,30 @@
       <td>@display(t.owner)</td>
       <td>@display(t.orig)</td>
       <td>
-	@if(t.fake) {
-	  @widget.tag.inputText(form.start(), args = 'size -> 9)
-	  &ndash;
-	  @widget.tag.inputText(form.end(), args = 'size -> 9)
-	} else {
-	  @display(t.segment)
-	}
+        @if(t.fake) {
+          @widget.tag.inputText(form.start(), args = 'size -> 9)
+          &ndash;
+          @widget.tag.inputText(form.end(), args = 'size -> 9)
+        } else {
+          @display(t.segment)
+        }
       </td>
       <td>@t.options.mkString(" ")</td>
       <td>@t.process</td>
       <td><pre>@t.log</pre></td>
       <td>
-	@widget.formErrors(form)
-	@if(t.process) {
-	  <button name='stop' value='true'>stop</button>
-	} else {
-	  <button type='submit'>
-	    @if(t.fake) {
-	      start
-	    } else {
-	      restart
-	    }
-	  </button>
-	}
+        @widget.formErrors(form)
+        @if(t.process) {
+          <button name='stop' value='true'>stop</button>
+        } else {
+          <button type='submit'>
+            @if(t.fake) {
+              start
+            } else {
+              restart
+            }
+          </button>
+        }
       </td>
     </tr>
     }

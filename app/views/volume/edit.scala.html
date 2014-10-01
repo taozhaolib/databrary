@@ -11,19 +11,19 @@
             @widget.tag.textarea(form.body(), 'placeholder -> "Description", '_class -> "")
 
             <fieldset class="citations">
-		<h3>Citation</h3>
-		@widget.tag.inputText(form.citation()("head"), ('placeholder, "Citation"))
-		@widget.tag.inputText(form.citation()("url"), ('placeholder, "DOI or URL"))
+                <h3>Citation</h3>
+                @widget.tag.inputText(form.citation()("head"), ('placeholder, "Citation"))
+                @widget.tag.inputText(form.citation()("url"), ('placeholder, "DOI or URL"))
                 <div class="repeater">
                     @widget.tag.repeat(form.citation()("author")) { f =>
                         @widget.tag.inputText(f, 'placeholder -> "Author")
                     }
                 </div>
-		@widget.tag.inputText(form.citation()("year"), ('placeholder, "Year"))
+                @widget.tag.inputText(form.citation()("year"), ('placeholder, "Year"))
             </fieldset>
 
             @widget.formErrors(form)
             <button type="submit" class="button">@form.actionName</button>
         }
-	<a href="@request.obj.pageURL">@Messages("cancel")</a>
+        <a href="@request.obj.pageURL">@Messages("cancel")</a>
 }

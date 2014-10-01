@@ -115,14 +115,14 @@ module.factory('tooltipService', [
 
     function target(tooltip) {
       if (!(tooltip.id in Tooltip.list))
-	return;
+        return;
 
       removeEvents(tooltip);
 
       var $target = tooltip.$target;
 
       if (!tooltip.live && $target.length === 0)
-	return tooltip.remove();
+        return tooltip.remove();
 
       var events = getTargetEvents(tooltip);
 
@@ -130,17 +130,17 @@ module.factory('tooltipService', [
 
       if (tooltip.live) {
         $doc.on(events[0], tooltip.$target, function (event) {
-	  var target = $(event.target);
+          var target = $(event.target);
           timeout = $timeout(function () {
-	    if (target.is(tooltip.$target)) // may have changed
-	      tooltip.show(event);
+            if (target.is(tooltip.$target)) // may have changed
+              tooltip.show(event);
           }, tooltip.delay);
         });
 
         $doc.on(events[1], tooltip.$target, $rootScope.$lift(function () {
-	  $timeout.cancel(timeout);
-	  tooltip.hide();
-	}));
+          $timeout.cancel(timeout);
+          tooltip.hide();
+        }));
       } else {
         $target.bind(events[0], function (event) {
           timeout = $timeout(function () {
@@ -149,9 +149,9 @@ module.factory('tooltipService', [
         });
 
         $target.bind(events[1], $rootScope.$lift(function () {
-	  $timeout.cancel(timeout);
-	  tooltip.hide();
-	}));
+          $timeout.cancel(timeout);
+          tooltip.hide();
+        }));
       }
 
       tooltip.hide();
@@ -164,9 +164,9 @@ module.factory('tooltipService', [
     $rootScope.$watch(function () {
       angular.forEach(Tooltip.list, function (tooltip) {
         if (!angular.isString(tooltip.$target) &&
-	  (document.contains ? !document.contains(tooltip.$target[0]) :
-	   tooltip.$target.closest(document.documentElement).length === 0)) {
-	  tooltip.remove();
+          (document.contains ? !document.contains(tooltip.$target[0]) :
+           tooltip.$target.closest(document.documentElement).length === 0)) {
+          tooltip.remove();
         }
       });
     });

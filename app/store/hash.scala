@@ -12,10 +12,10 @@ sealed abstract class Encoding(name : String) {
   object formatter extends Formatter[Array[Byte]] {
     def bind(key : String, data : Map[String, String]) =
       data.get(key).fold[Either[Seq[FormError],Array[Byte]]](
-	Left(Seq(FormError(key, "error.required", Nil)))) { s =>
-	scala.util.control.Exception.catching(classOf[RuntimeException])
-	.either(decode(s))
-	.left.map(e => Seq(FormError(key, e.getMessage, Nil)))
+        Left(Seq(FormError(key, "error.required", Nil)))) { s =>
+        scala.util.control.Exception.catching(classOf[RuntimeException])
+        .either(decode(s))
+        .left.map(e => Seq(FormError(key, e.getMessage, Nil)))
       }
     def unbind(key : String, value : Array[Byte]) =
       Map(key -> new String(apply(value)))

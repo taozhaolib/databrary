@@ -15,42 +15,42 @@ module.directive('volumeEditMaterialsForm', [
       Material.prototype.constructor = Material;
 
       form.materials = slot.assets.map(function (asset) {
-	asset.asset.get(['creation']);
+        asset.asset.get(['creation']);
         return new Material(asset);
       });
 
       form.fileAdded = function (file, event) {
-	var material = angular.element(event.target).scope().material;
+        var material = angular.element(event.target).scope().material;
 
-	if (material)
-	  delete material.replace;
-	else
-	  material = new Material();
+        if (material)
+          delete material.replace;
+        else
+          material = new Material();
 
         material.upload(file).then(function (done) {
           if (!done)
             return;
-	  if (!material.asset) {
-	    form.materials.push(material);
-	    page.display.scrollTo('fieldset.vem-repeat:last');
-	  }
-	});
+          if (!material.asset) {
+            form.materials.push(material);
+            page.display.scrollTo('fieldset.vem-repeat:last');
+          }
+        });
       };
 
       form.fileSuccess = Store.fileSuccess;
       form.fileProgress = Store.fileProgress;
 
       form.excerptOptions = function (material) {
-	var l = {};
-	for (var i = page.constants.classification.length-1; i > material.data.classification; i --)
-	  l[i] = page.constants.classification[i];
-	l[0] = page.constants.classification[0];
+        var l = {};
+        for (var i = page.constants.classification.length-1; i > material.data.classification; i --)
+          l[i] = page.constants.classification[i];
+        l[0] = page.constants.classification[0];
         return l;
       };
 
       form.save = function (material) {
-	if (!material.data.excerptOn)
-	  material.data.excerpt = '';
+        if (!material.data.excerptOn)
+          material.data.excerpt = '';
         material.save().then(function (done) {
           if (done)
             material.form.$setPristine();
@@ -58,15 +58,15 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.saveAll = function () {
-	form.materials.forEach(function (material) {
-	  if (material.form.$dirty)
-	    form.save(material);
+        form.materials.forEach(function (material) {
+          if (material.form.$dirty)
+            form.save(material);
         });
       };
 
       form.replace = function (material) {
-	material.replace = true;
-	material.form.$setDirty();
+        material.replace = true;
+        material.form.$setDirty();
       };
 
       function removed(material) {
@@ -76,10 +76,10 @@ module.directive('volumeEditMaterialsForm', [
       }
 
       form.remove = function (material) {
-	if (material.replace) {
-	  delete material.replace;
-	  return;
-	}
+        if (material.replace) {
+          delete material.replace;
+          return;
+        }
 
         var r = material.remove();
         if (!(r && r.then))

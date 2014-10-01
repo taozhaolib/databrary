@@ -60,9 +60,9 @@ trait HasPermission extends PerSite {
       if (p >= Permission.READ)
         p
       else if (p >= Permission.read(classification, consent))
-	Permission.READ
+        Permission.READ
       else
-	Permission.NONE
+        Permission.NONE
     }
   }
 }
@@ -100,14 +100,14 @@ object Classification extends PGEnum("classification") {
       Some(PRIVATE)
     else if (p >= Permission.SHARED)
       if (c >= Consent.SHARED)
-	Some(RESTRICTED)
+        Some(RESTRICTED)
       else
-	Some(SHARED)
+        Some(SHARED)
     else if (p >= Permission.PUBLIC)
       if (c >= Consent.PUBLIC)
-	Some(RESTRICTED)
+        Some(RESTRICTED)
       else
-	Some(SHARED)
+        Some(SHARED)
     else
       None
 }

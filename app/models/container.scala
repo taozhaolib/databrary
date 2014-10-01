@@ -37,11 +37,11 @@ final class Container protected (override val id : Container.Id, override val vo
   def remove : Future[Boolean] =
     (if (top) volume.top else async(null)).flatMap { stop =>
       if (top && ===(stop))
-	async(false)
+        async(false)
       else Audit.remove("container", sqlKey).execute
-	.recover {
-	  case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("update or delete on table \"container\" violates foreign key constraint ") => false
-	}
+        .recover {
+          case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("update or delete on table \"container\" violates foreign key constraint ") => false
+        }
     }
 
   override lazy val json : JsonRecord = JsonRecord.flatten(id,

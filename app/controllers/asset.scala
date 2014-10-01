@@ -27,11 +27,11 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   private def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
       container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-	form.container.withError("object.invalid", "container")._throw))
+        form.container.withError("object.invalid", "container")._throw))
       _ <- asset.change(name = form.name.get, classification = form.classification.get)
       sa <- container.mapAsync(asset.link(_, form.position.get))
       _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _).map(r =>
-	  if (!r) form.excerpt.withError("error.conflict")._throw))
+          if (!r) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
@@ -44,8 +44,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     Action(o, Permission.EDIT).async { implicit request =>
       val form = new AssetController.ChangeForm()._bind
       for {
-	_ <- checkSuperseded(form)
-	r <- set(request.obj, form)
+        _ <- checkSuperseded(form)
+        r <- set(request.obj, form)
       } yield (r)
     }
 
@@ -55,46 +55,46 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     val ifmt = form.format.get.filter(_ => adm).flatMap(AssetFormat.get(_))
     for {
       (file, ftype, fname) <- (form.file.get, form.upload.get, form.localfile.get) match {
-	case (Some(file), None, None) =>
-	  async((file.ref, file.contentType, Maybe(file.filename).opt))
-	case (None, Some(token), None) =>
-	  UploadToken.take(token)(request.asInstanceOf[AuthSite])
-	  .map(_.fold(form.upload.withError("file.notfound")._throw) { u =>
-	    (TemporaryFile(u.file), None, Some(u.filename))
-	  })
-	case (None, None, Some(localfile)) if adm =>
-	/* local file handling, for admin only: */
-	  val file = store.Stage.file(localfile)
-	val name = file.getName
-	if (!file.isFile)
-	    form.localfile.withError("file.notfound")._throw
-	  async((store.TemporaryFileLinkOrCopy(file), None, Some(name)))
-	case _ =>
-	  /* or, like, just conflicting options, whatever: */
-	  form.file.withError("error.required")._throw
+        case (Some(file), None, None) =>
+          async((file.ref, file.contentType, Maybe(file.filename).opt))
+        case (None, Some(token), None) =>
+          UploadToken.take(token)(request.asInstanceOf[AuthSite])
+          .map(_.fold(form.upload.withError("file.notfound")._throw) { u =>
+            (TemporaryFile(u.file), None, Some(u.filename))
+          })
+        case (None, None, Some(localfile)) if adm =>
+        /* local file handling, for admin only: */
+          val file = store.Stage.file(localfile)
+        val name = file.getName
+        if (!file.isFile)
+            form.localfile.withError("file.notfound")._throw
+          async((store.TemporaryFileLinkOrCopy(file), None, Some(name)))
+        case _ =>
+          /* or, like, just conflicting options, whatever: */
+          form.file.withError("error.required")._throw
       }
       _ <- when(file.file.length <= 0,
-	form.file.withError("file.size.invalid")._throw)
+        form.file.withError("file.size.invalid")._throw)
       fmt = ifmt
-	.orElse(ftype.flatMap(AssetFormat.getMimetype(_)))
-	.orElse(fname.flatMap(AssetFormat.getFilename(_)))
-	.getOrElse(form.format.withError("file.format.unknown")._throw)
+        .orElse(ftype.flatMap(AssetFormat.getMimetype(_)))
+        .orElse(fname.flatMap(AssetFormat.getFilename(_)))
+        .getOrElse(form.format.withError("file.format.unknown")._throw)
       name = fname.map(fmt.stripExtension)
       classification = form.classification.get.getOrElse(Classification(0))
       asset <- fmt match {
-	case fmt : TimeseriesFormat if adm && form.timeseries.get =>
-	  val probe = media.AV.probe(file.file)
-	  models.Asset.create(form.volume, fmt, classification, probe.duration, name, file)
-	case fmt =>
-	  if (fmt.isTranscodable) try {
-	    media.AV.probe(file.file)
-	  } catch { case e : media.AV.Error =>
-	    form.file.withError("file.invalid", e.getMessage)._throw
-	  }
-	  models.Asset.create(form.volume, fmt, classification, name, file)
+        case fmt : TimeseriesFormat if adm && form.timeseries.get =>
+          val probe = media.AV.probe(file.file)
+          models.Asset.create(form.volume, fmt, classification, probe.duration, name, file)
+        case fmt =>
+          if (fmt.isTranscodable) try {
+            media.AV.probe(file.file)
+          } catch { case e : media.AV.Error =>
+            form.file.withError("file.invalid", e.getMessage)._throw
+          }
+          models.Asset.create(form.volume, fmt, classification, name, file)
       }
       _ = if (asset.format.isTranscodable && !form.timeseries.get)
-	store.Transcode.start(asset)
+        store.Transcode.start(asset)
     } yield (asset)
   }
 
@@ -108,10 +108,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     Action(o, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.ReplaceForm()._bind
       for {
-	_ <- checkSuperseded(form)
-	asset <- create(form)
-	_ <- asset.supersede(request.obj)
-	r <- set(asset, form)
+        _ <- checkSuperseded(form)
+        asset <- create(form)
+        _ <- asset.supersede(request.obj)
+        r <- set(asset, form)
       } yield (r)
     }
 
@@ -213,9 +213,9 @@ object AssetController extends AssetController {
   private[controllers] def zipResult(zip : Enumerator[Array[Byte]], name : String) : Result =
     Result(
       header = ResponseHeader(OK, Map(
-	CONTENT_TYPE -> "application/zip",
-	CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".zip")),
-	CACHE_CONTROL -> "max-age=31556926, private")),
+        CONTENT_TYPE -> "application/zip",
+        CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".zip")),
+        CACHE_CONTROL -> "max-age=31556926, private")),
       body = zip)
 }
 
@@ -231,9 +231,9 @@ object AssetHtml extends AssetController with HtmlController {
   def edit(o : models.Asset.Id) =
     Action(o, Permission.EDIT).async { implicit request =>
       request.obj.slot.flatMap { sa =>
-	val form = new ChangeForm()
-	form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
-	form.Ok
+        val form = new ChangeForm()
+        form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
+        form.Ok
       }
     }
 
@@ -261,14 +261,14 @@ object AssetHtml extends AssetController with HtmlController {
   private def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
     Transcode.get(id).flatMap(_.orElseAsync(Asset.get(id).flatMap(_.mapAsync { a =>
       for {
-	revs <- Asset.getRevisions(a)
-	o = if (revs.nonEmpty) revs.minBy(_._id) else a
-	s <- a.slot.flatMap(_.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
-	  for {
-	    l <- s.segment.lowerBound
-	    u <- s.segment.upperBound
-	  } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
-	})))
+        revs <- Asset.getRevisions(a)
+        o = if (revs.nonEmpty) revs.minBy(_._id) else a
+        s <- a.slot.flatMap(_.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
+          for {
+            l <- s.segment.lowerBound
+            u <- s.segment.upperBound
+          } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
+        })))
       } yield (Transcode(o, s.getOrElse(Segment.full)))
     })))
 
@@ -284,13 +284,13 @@ object AssetHtml extends AssetController with HtmlController {
   def transcode(id : Asset.Id) =
     SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
       getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
-	val form = new TranscodeForm(t)._bind
-	if (t.fake)
-	  store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).map(Some(_))
-	else if (form.stop.get)
-	  store.Transcode.stop(t.id)
-	else
-	  store.Transcode.restart(t.id)
+        val form = new TranscodeForm(t)._bind
+        if (t.fake)
+          store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).map(Some(_))
+        else if (form.stop.get)
+          store.Transcode.stop(t.id)
+        else
+          store.Transcode.restart(t.id)
       }).map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
 
@@ -314,17 +314,17 @@ object AssetApi extends AssetController with ApiController {
     SiteAction.access(Permission.PUBLIC).async { implicit request =>
       val form = new StartForm()._bind
       if (AssetFormat.getFilename(form.filename.get).isEmpty)
-	form.filename.withError("file.format.unknown")._throw
+        form.filename.withError("file.format.unknown")._throw
       for {
-	u <- UploadToken.create(form.filename.get)(request.asInstanceOf[AuthSite])
+        u <- UploadToken.create(form.filename.get)(request.asInstanceOf[AuthSite])
       } yield {
-	val f = new RandomAccessFile(u.file, "rw")
-	try {
-	  f.setLength(form.size.get)
-	} finally {
-	  f.close
-	}
-	Ok(u.id)
+        val f = new RandomAccessFile(u.file, "rw")
+        try {
+          f.setLength(form.size.get)
+        } finally {
+          f.close
+        }
+        Ok(u.id)
       }
     }
 
@@ -342,7 +342,7 @@ object AssetApi extends AssetController with ApiController {
     .map(_.filter(_.filename == form.flowFilename.get).fold(notfound) { u =>
       val f = new RandomAccessFile(u.file, if (write) "rw" else "r")
       if (f.length != form.flowTotalSize.get)
-	form.flowTotalSize.withError("size mismatch")._throw
+        form.flowTotalSize.withError("size mismatch")._throw
       f.seek(form.flowChunkSize.get * (form.flowChunkNumber.get-1))
       run(f, form.flowChunkSize.get)
     })
@@ -351,15 +351,15 @@ object AssetApi extends AssetController with ApiController {
   def uploadChunk = DeferredAction.site(SiteAction.auth) { implicit request =>
     Iteratee.flatten {
       uploadChunkPrepare(Iteratee.ignore[Array[Byte]].map[Result](_ => NotFound), true) { (f, z) =>
-	Iteratee.foreach[Array[Byte]](f.write(_))
-	.map[Result] { _ =>
-	  f.close
-	  Ok
-	}
-	.recover[Result] { case e : Throwable =>
-	  f.close
-	  throw e
-	}
+        Iteratee.foreach[Array[Byte]](f.write(_))
+        .map[Result] { _ =>
+          f.close
+          Ok
+        }
+        .recover[Result] { case e : Throwable =>
+          f.close
+          throw e
+        }
       }
     }
   }
@@ -370,13 +370,13 @@ object AssetApi extends AssetController with ApiController {
   def uploadChunkTest = SiteAction.auth.async { implicit request =>
     uploadChunkPrepare[Result](NotFound, false) { (f, z) =>
       @scala.annotation.tailrec def test(z : Int) : Result = {
-	if (z == 0)
-	  return NoContent
-	val x = new Array[Byte](z)
-	val r = f.read(x)
-	if (x.take(r).exists(_ != 0))
-	  return Ok
-	test(z-r)
+        if (z == 0)
+          return NoContent
+        val x = new Array[Byte](z)
+        val r = f.read(x)
+        if (x.take(r).exists(_ != 0))
+          return Ok
+        test(z-r)
       }
       test(z)
     }
@@ -384,7 +384,7 @@ object AssetApi extends AssetController with ApiController {
 
   class TranscodedForm(id : Transcode.Id) extends {
       val token = new TokenAuth {
-	val token = id.toString
+        val token = id.toString
       }
     } with StructForm(routes.AssetApi.transcoded(id, token.auth())) {
     val pid = Field(Forms.number)
@@ -398,10 +398,10 @@ object AssetApi extends AssetController with ApiController {
     play.api.mvc.Action { implicit request =>
       val form = new TranscodedForm(i)._bind
       if (!form.token.checkAuth(auth) || form.hasErrors)
-	BadRequest("")
+        BadRequest("")
       else {
-	store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
-	Ok("")
+        store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
+        Ok("")
       }
     }
 }

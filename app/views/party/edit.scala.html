@@ -15,7 +15,7 @@
                 @widget.tag.inputText(form.affiliation(), ('placeholder, "Affiliation"))
                 @widget.tag.inputText(form.url(), ('placeholder, "URL"))
 
-		@cast[PartyController.AccountEditForm](form).map { form =>
+                @cast[PartyController.AccountEditForm](form).map { form =>
                     @widget.tag.inputPassword(form.auth(), ('placeholder, "Current Password"))
                     @widget.tag.inputText(form.email(), ('placeholder, "Email"))
                     @widget.tag.inputPassword(form.password()("once"), ('placeholder, "New Password"))
@@ -23,15 +23,15 @@
                     @widget.tag.inputText(form.openid(), ('placeholder, "OpenID"))
                 }
 
-		@cast[PartyController.EditForm](form).map { form =>
-		    @widget.tag.inputFile(form.avatar())
-		}
+                @cast[PartyController.EditForm](form).map { form =>
+                    @widget.tag.inputFile(form.avatar())
+                }
 
-		@widget.formErrors(form)
-		<button type='submit' class="button">@form.actionName</button>
+                @widget.formErrors(form)
+                <button type='submit' class="button">@form.actionName</button>
             }
-	    @party.map { party =>
-		<a href="@party.pageURL">@Messages("cancel")</a>
-	    }
+            @party.map { party =>
+                <a href="@party.pageURL">@Messages("cancel")</a>
+            }
 }
 }

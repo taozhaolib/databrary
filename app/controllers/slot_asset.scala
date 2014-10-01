@@ -21,14 +21,14 @@ object SlotAssetController extends SlotAssetController {
     val a = request.obj
     val s = a match {
       case ts : SlotTimeseries =>
-	val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
-	if (off < Offset.ZERO || off > ts.duration)
-	  throw NotFoundException
-	ts.sample(off)
+        val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
+        if (off < Offset.ZERO || off > ts.duration)
+          throw NotFoundException
+        ts.sample(off)
       case a =>
-	if (!offset.fold(_ => true, _ == Offset.ZERO))
-	  throw NotFoundException
-	a
+        if (!offset.fold(_ => true, _ == Offset.ZERO))
+          throw NotFoundException
+        a
     }
     if (s.format.isImage)
       AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
@@ -39,8 +39,8 @@ object SlotAssetController extends SlotAssetController {
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.READ).async { implicit request =>
       (if (inline) macros.async(None) else for {
-	_ <- request.obj.auditDownload
-	name <- request.obj.fileName
+        _ <- request.obj.auditDownload
+        name <- request.obj.fileName
       } yield (Some(name)))
       .flatMap(AssetController.assetResult(request.obj, None, _))
     }

@@ -32,7 +32,7 @@ module.directive('accessSearchForm', [
         } else if (sentSearch) {
           recentSearch = form.nameVal;
         } else {
-	  volume.accessSearch({
+          volume.accessSearch({
             name: form.nameVal
           }).then(function (data) {
             form.found = data;
@@ -48,7 +48,7 @@ module.directive('accessSearchForm', [
         form.nameVal = '';
         form.search();
 
-	$scope.selectFn(found);
+        $scope.selectFn(found);
         form.$setPristine();
       };
 

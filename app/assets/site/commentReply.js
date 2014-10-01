@@ -15,7 +15,7 @@ module.directive('commentReplyForm', [
       form.successFn = undefined;
 
       form.save = function () {
-	(form.target || $scope.volume.top).postComment(form.data)
+        (form.target || $scope.volume.top).postComment(form.data)
           .then(function () {
             form.validator.server({});
 

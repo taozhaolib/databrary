@@ -10,17 +10,17 @@ module.directive('authApplyForm', [
       form.data = {};
 
       if (auth.new)
-	form.$setDirty();
+        form.$setDirty();
 
       //
 
       var saveAuth = function () {
-	party.authorizeApply(auth.party.id, form.data).then(function () {
+        party.authorizeApply(auth.party.id, form.data).then(function () {
           form.validator.server({});
           form.$setPristine();
           delete auth.new;
 
-	  form.successFn();
+          form.successFn();
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
@@ -28,10 +28,10 @@ module.directive('authApplyForm', [
       };
 
       var saveQuery = function () {
-	party.authorizeSearch(true, angular.extend({
+        party.authorizeSearch(true, angular.extend({
           notfound: true,
           name: auth.query
-	}, form.data)).then(function () {
+        }, form.data)).then(function () {
           form.validator.server({});
           form.$setPristine();
           delete auth.new;
@@ -42,7 +42,7 @@ module.directive('authApplyForm', [
             body: page.constants.message('auth.request.notfound.success')
           });
 
-	  form.successFn();
+          form.successFn();
         }, function (res) {
           form.validator.server(res);
           page.display.scrollTo(form.$element);
@@ -52,14 +52,14 @@ module.directive('authApplyForm', [
       form.save = function () {
         if (auth.party)
           saveAuth();
-	else
+        else
           saveQuery();
       };
 
       //
 
       form.cancel = function () {
-	form.cancelFn(auth);
+        form.cancelFn(auth);
       };
 
       //

@@ -21,7 +21,7 @@ module.directive('authSearchForm', [
             tips: page.constants.message('auth.search.' + (principal || 'placeholder') + '.help')
           }
         }, true);
-	form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
+        form.placeholderText = $attrs.placeholderText || page.constants.message('auth.search.' + (form.principal ? form.principal : 'placeholder'));
       });
 
       //
@@ -62,7 +62,7 @@ module.directive('authSearchForm', [
         form.nameVal = '';
         form.search();
 
-	form.selectFn(found);
+        form.selectFn(found);
         form.$setPristine();
       };
 
@@ -74,7 +74,7 @@ module.directive('authSearchForm', [
         form.nameVal = '';
         form.search();
 
-	form.notFoundFn(query, form);
+        form.notFoundFn(query, form);
         form.$setPristine();
       };
 

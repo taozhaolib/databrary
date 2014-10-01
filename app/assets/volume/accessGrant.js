@@ -8,15 +8,15 @@ module.directive('accessGrantForm', [
       var form = $scope.accessGrantForm;
 
       form.data = {
-	individual: access.individual,
-	extend: access.children === access.individual
+        individual: access.individual,
+        extend: access.children === access.individual
       };
       if (access.new)
-	form.$setDirty();
+        form.$setDirty();
 
       form.canGrantAccess = function (p) {
         return p == page.permission.READ ||
-	  p == page.permission.EDIT ||
+          p == page.permission.EDIT ||
           p == page.permission.ADMIN;
       };
 
@@ -30,14 +30,14 @@ module.directive('accessGrantForm', [
       form.save = function () {
         form.data.children = form.data.extend ? form.data.individual : 0;
 
-	volume.accessSave(access.party.id, form.data).then(function () {
+        volume.accessSave(access.party.id, form.data).then(function () {
           form.messages.add({
             body: page.constants.message('access.grant.save.success'),
             type: 'green',
             countdown: 3000,
           });
 
-	  delete access.new;
+          delete access.new;
           form.$setPristine();
         }, function (res) {
           form.messages.addError({
@@ -50,11 +50,11 @@ module.directive('accessGrantForm', [
       };
 
       form.remove = function () {
-	if (access.new) {
-	  form.removeSuccessFn(access);
-	  return;
-	}
-	volume.accessDelete(access.party.id).then(function () {
+        if (access.new) {
+          form.removeSuccessFn(access);
+          return;
+        }
+        volume.accessDelete(access.party.id).then(function () {
           form.messages.add({
             body: page.constants.message('access.grant.remove.success'),
             type: 'green',
@@ -62,7 +62,7 @@ module.directive('accessGrantForm', [
           });
 
           form.$setPristine();
-	  form.removeSuccessFn(access);
+          form.removeSuccessFn(access);
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.grant.remove.error'),

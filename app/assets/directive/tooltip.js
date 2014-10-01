@@ -6,11 +6,11 @@ module.directive('tooltip', [
       var tooltip = {};
 
       if ('tooltipId' in $attrs)
-	tooltip.id = $attrs.tooltipId;
+        tooltip.id = $attrs.tooltipId;
       if ('tooltipClass' in $attrs)
-	tooltip.cls = $attrs.tooltipClass;
+        tooltip.cls = $attrs.tooltipClass;
       if ('tooltipType' in $attrs)
-	tooltip.type = $attrs.tooltipType;
+        tooltip.type = $attrs.tooltipType;
       tooltip.message = $scope.$eval($attrs.tooltip);
       tooltip.$target = $element;
 

@@ -7,17 +7,17 @@
 @template.action(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
 @widget.panel.raw("search", "panel_search")(""){
     <div class="search-form search-form-search col">
-	@widget.tag.form(form) {
-	    @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
-	    @widget.formErrors(form)
-	}
+        @widget.tag.form(form) {
+            @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
+            @widget.formErrors(form)
+        }
     </div>
     <div class="volume-list">
       <ul class="flat">
         @list.map { case (volume, access) =>
-	  <li>
+          <li>
             @widget.frame.compactVolume(volume, access)
-	  </li>
+          </li>
         }
       </ul>
     </div>

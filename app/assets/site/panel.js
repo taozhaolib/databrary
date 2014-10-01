@@ -32,7 +32,7 @@ module.directive('panel', [
       });
 
       if ($scope.refreshPanel)
-	$scope.refreshPanel();
+        $scope.refreshPanel();
     };
 
     return {

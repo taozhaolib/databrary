@@ -55,22 +55,22 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val party = request.obj.party
     for {
       _ <- party.change(
-	name = form.name.get,
-	orcid = form.orcid.get,
-	affiliation = form.affiliation.get,
-	url = form.url.get
+        name = form.name.get,
+        orcid = form.orcid.get,
+        affiliation = form.affiliation.get,
+        url = form.url.get
       )
       _ <- form.accountForm foreachAsync { form =>
-	form.checkPassword(form.account)
-	form.orThrow.account.change(
-	  email = form.email.get,
-	  password = form.cryptPassword,
-	  openid = form.openid.get)
+        form.checkPassword(form.account)
+        form.orThrow.account.change(
+          email = form.email.get,
+          password = form.cryptPassword,
+          openid = form.openid.get)
       }
       _ <- form.avatar.get foreachAsync { file : form.FilePart =>
-	val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
-	  form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
-	request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
+        val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
+          form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
+        request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
       }
     } yield (result(request.obj))
   }
@@ -79,15 +79,15 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = createForm(acct)._bind
     for {
       p <- Party.create(
-	name = form.name.get.get,
-	orcid = form.orcid.get.flatten,
-	affiliation = form.affiliation.get.flatten,
-	url = form.url.get.flatten)
+        name = form.name.get.get,
+        orcid = form.orcid.get.flatten,
+        affiliation = form.affiliation.get.flatten,
+        url = form.url.get.flatten)
       a <- cast[PartyController.AccountCreateForm](form).mapAsync(form =>
-	Account.create(p,
-	  email = form.email.get.get,
-	  password = form.cryptPassword,
-	  openid = form.openid.get.flatten)
+        Account.create(p,
+          email = form.email.get.get,
+          password = form.cryptPassword,
+          openid = form.openid.get.flatten)
       )
       s <- p.perSite
     } yield (result(s))
@@ -96,23 +96,23 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
     AdminAction(id).async { implicit request =>
       models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
-	val form = new PartyController.AuthorizeChildForm(child)._bind
-	if (form.delete.get)
-	  models.Authorize.delete(childId, id)
-	    .map(_ => result(request.obj))
-	else for {
-	  c <- Authorize.get(child, request.obj.party)
-	  _ <- Authorize.set(childId, id,
-	    form.site.get,
-	    form.member.get,
-	    form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
-	  _ <- Authorize.Info.set(childId, id, form.info.get)
-	  _ <- async.when(Play.isProd && form.site.get > Permission.PUBLIC && !c.exists(_.site > Permission.PUBLIC),
-	    Mail.send(
-	      to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
-	      subject = Messages("mail.authorized.subject"),
-	      body = Messages("mail.authorized.body", request.obj.party.name)))
-	} yield (result(request.obj))
+        val form = new PartyController.AuthorizeChildForm(child)._bind
+        if (form.delete.get)
+          models.Authorize.delete(childId, id)
+            .map(_ => result(request.obj))
+        else for {
+          c <- Authorize.get(child, request.obj.party)
+          _ <- Authorize.set(childId, id,
+            form.site.get,
+            form.member.get,
+            form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
+          _ <- Authorize.Info.set(childId, id, form.info.get)
+          _ <- async.when(Play.isProd && form.site.get > Permission.PUBLIC && !c.exists(_.site > Permission.PUBLIC),
+            Mail.send(
+              to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
+              subject = Messages("mail.authorized.subject"),
+              body = Messages("mail.authorized.body", request.obj.party.name)))
+        } yield (result(request.obj))
       })
     }
 
@@ -136,13 +136,13 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- Authorize.Info.set(id, parentId, form.info.get)
       dl <- delegates(parent)
       _ <- async.when(Play.isProd, Mail.send(
-	to = dl.map(_.email) :+ Mail.authorizeAddr,
-	subject = Messages("mail.authorize.subject"),
-	body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(Play.isProd),
-	  request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
-	  parent.name + form.info.get.fold("")(" (" + _ + ")"))
+        to = dl.map(_.email) :+ Mail.authorizeAddr,
+        subject = Messages("mail.authorize.subject"),
+        body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(Play.isProd),
+          request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
+          parent.name + form.info.get.fold("")(" (" + _ + ")"))
       ).recover {
-	case ServiceUnavailableException => ()
+        case ServiceUnavailableException => ()
       })
     } yield (result(request.obj))
     })
@@ -152,20 +152,20 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     AdminAction(id).async { implicit request =>
       val form = new PartyController.AuthorizeSearchForm(apply)._bind
       if (form.notfound.get)
-	for {
-	  _ <- Mail.send(
-	    to = Seq(Mail.authorizeAddr),
-	    subject = Messages("mail.authorize.subject"),
-	    body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(Play.isProd),
-	      request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
-	      form.name.get + form.info.get.fold("")(" (" + _ + ")")))
-	} yield (Ok("request sent"))
+        for {
+          _ <- Mail.send(
+            to = Seq(Mail.authorizeAddr),
+            subject = Messages("mail.authorize.subject"),
+            body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(Play.isProd),
+              request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
+              form.name.get + form.info.get.fold("")(" (" + _ + ")")))
+        } yield (Ok("request sent"))
       else for {
-	res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
+        res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
         r <- if (request.isApi) async(Ok(JsonArray.map[Party, JsonRecord](_.json)(res)))
-	  else PartyHtml.viewAdmin(form +: res.map(e =>
-	    (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
-	    .map(Ok(_))
+          else PartyHtml.viewAdmin(form +: res.map(e =>
+            (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
+            .map(Ok(_))
       } yield (r)
     }
 }
@@ -208,7 +208,7 @@ object PartyController extends PartyController {
   final class AccountEditForm(val account : Account)(implicit protected val request : Request[_] with AuthSite) extends EditForm with AccountForm with LoginController.AuthForm {
     def accountForm = if (_authorized) Some(this)
       else if (email.get.exists(!_.equals(account.email)) || password.get.nonEmpty || openid.get.exists(!_.equals(account.openid)))
-	Some(this.auth.withError("error.required"))
+        Some(this.auth.withError("error.required"))
       else None
     val email = Field(OptionMapping(Forms.email)).fill(Some(account.email))
     openid.fill(Some(account.openid))
@@ -263,10 +263,10 @@ object PartyController extends PartyController {
     private[this] val maxexp = (new Date).plus(maxExpiration)
     override val expires = Field(if (request.superuser) Forms.optional(Forms.jodaLocalDate)
       else Mappings.some(Forms.default(Forms.jodaLocalDate, maxexp)
-	.verifying(validation.Constraint[Date]("constraint.max", maxExpiration) { d =>
-	  if (d.isAfter(maxexp)) validation.Invalid(validation.ValidationError("error.max", maxExpiration))
-	  else validation.Valid
-	}), maxexp))
+        .verifying(validation.Constraint[Date]("constraint.max", maxExpiration) { d =>
+          if (d.isAfter(maxexp)) validation.Invalid(validation.ValidationError("error.max", maxExpiration))
+          else validation.Valid
+        }), maxexp))
     private[controllers] override def _fill(auth : Authorize) : this.type = {
       assert(request.obj === auth.parent)
       assert(child === auth.child)
@@ -320,7 +320,7 @@ object PartyHtml extends PartyController with HtmlController {
       forms = children
         .filterNot(t => change.contains(t.childId))
         .map(t => new AuthorizeChildForm(t.child)._fill(t)) ++
-	search.map(new AuthorizeSearchForm(_)) ++
+        search.map(new AuthorizeSearchForm(_)) ++
         authorizeForms
     } yield (views.html.party.authorize(parents, forms))
   }
@@ -356,17 +356,17 @@ object PartyHtml extends PartyController with HtmlController {
   def reissue(i : models.Account.Id) =
     SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
       request.obj.party.account.fold(ANotFound) { a =>
-	TokenHtml.newPassword(Right(a), "reissue").map { t =>
-	  Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
-	}
+        TokenHtml.newPassword(Right(a), "reissue").map { t =>
+          Ok(if (request.superuser) "sent: " + t.fold("none")(_.id) else "sent")
+        }
       }
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
     SiteAction.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
       request.obj.avatar.flatMap(_.fold(
-	async(Found("/public/images/avatar.png")))(
-	AssetController.assetResult(_, Some(size))))
+        async(Found("/public/images/avatar.png")))(
+        AssetController.assetResult(_, Some(size))))
     }
 
 }

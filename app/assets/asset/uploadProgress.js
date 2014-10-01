@@ -6,7 +6,7 @@ module.directive('uploadProgress', [
     return {
       restrict: 'E',
       scope: {
-	progressFloat: '=progressValue'
+        progressFloat: '=progressValue'
       },
       templateUrl: 'asset/uploadProgress.html',
       };

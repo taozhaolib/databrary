@@ -105,9 +105,9 @@ object Authorize extends Table[Authorize]("authorize") {
     def set(child : Party.Id, parent : Party.Id, info : Option[String]) : Future[Boolean] = {
       val id = SQLTerms('child -> child, 'parent -> parent)
       info.fold(DELETE(id)) { info =>
-	DBUtil.updateOrInsert(
-	  SQL("UPDATE", table, "SET info = ? WHERE", id.where)(_, _).apply(info +: id))(
-	  INSERT(id :+ ('info -> info))(_, _))
+        DBUtil.updateOrInsert(
+          SQL("UPDATE", table, "SET info = ? WHERE", id.where)(_, _).apply(info +: id))(
+          INSERT(id :+ ('info -> info))(_, _))
       }.execute
     }
   }

@@ -21,7 +21,7 @@ object ParseException {
   def adjPosition[T](line : Int = 0, column : Int = 0, context : String = "")(r : => T) : T =
     try { r } catch {
       case ParseException(m, l, c, w) =>
-	throw ParseException(m, l + line, c + column, Maybe.join(w, ":", context))
+        throw ParseException(m, l + line, c + column, Maybe.join(w, ":", context))
     }
 }
 
@@ -86,9 +86,9 @@ private[ingest] object Parse {
   private def dateFormat(fmt : time.format.DateTimeFormatter) : Parser[Date] = Parser { s =>
       val d = fmt.parseLocalDate(s)
       if (d.getYear < 100)
-	fail("year too small")
+        fail("year too small")
       else
-	d
+        d
     }.failingOn(classOf[IllegalArgumentException])
   val date : Parser[Date] = dateFormat(dateFormat1) | dateFormat(dateFormat2) | dateFormat(dateFormat3)
 

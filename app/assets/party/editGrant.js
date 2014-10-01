@@ -30,7 +30,7 @@ module.directive('partyEditGrantForm', [
 
       var preSelect;
       form.preSelect = function (party) {
-	preSelect = party;
+        preSelect = party;
       };
 
       $scope.$on('authSearchForm-init', function (event, searchForm) {
@@ -38,17 +38,17 @@ module.directive('partyEditGrantForm', [
           return;
 
         searchForm.selectFn = function (found) {
-	  var exp = new Date();
-	  exp.setFullYear(exp.getFullYear()+2);
-	  form.data.push({
-	    new: true,
-	    party: found,
-	    site: 0,
-	    member: 0,
-	    expires: exp.getTime()
-	  });
-	  //warning: next line is template dependent! if classnames change this will no longer work
-	  page.display.scrollTo('fieldset article.permission-auth.peg:last');
+          var exp = new Date();
+          exp.setFullYear(exp.getFullYear()+2);
+          form.data.push({
+            new: true,
+            party: found,
+            site: 0,
+            member: 0,
+            expires: exp.getTime()
+          });
+          //warning: next line is template dependent! if classnames change this will no longer work
+          page.display.scrollTo('fieldset article.permission-auth.peg:last');
         };
 
         searchForm.notFoundFn = function () {
@@ -59,9 +59,9 @@ module.directive('partyEditGrantForm', [
           });
         };
 
-	if (preSelect)
-	  searchForm.selectFn(preSelect);
-	preSelect = null;
+        if (preSelect)
+          searchForm.selectFn(preSelect);
+        preSelect = null;
 
         event.stopPropagation();
       });

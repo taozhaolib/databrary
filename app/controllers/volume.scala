@@ -31,8 +31,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       cite <- form.getCitation
       _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
-	alias = form.alias.get.map(Maybe(_).opt),
-	body = form.body.get)
+        alias = form.alias.get.map(Maybe(_).opt),
+        body = form.body.get)
       _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
   }
@@ -42,8 +42,8 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       cite <- form.getCitation
       vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
-	alias = form.alias.get.flatMap(Maybe(_).opt),
-	body = form.body.get.flatten)
+        alias = form.alias.get.flatMap(Maybe(_).opt),
+        body = form.body.get.flatten)
       _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
       _ <- cite.foreachAsync(vol.setCitation)
     } yield (result(vol))
@@ -53,7 +53,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     PartyController.Action(e, Some(Permission.CONTRIBUTE)) andThen
       new ActionFilter[PartyController.Request] {
         protected def filter[A](request : PartyController.Request[A]) =
-	  request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
+          request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
       }
 
   protected def accessForm(access : VolumeAccess)(implicit request : Request[_]) =
@@ -65,16 +65,16 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       via <- request.obj.adminAccessVia
       form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
       _ <- if (form.delete.get)
-	  VolumeAccess.set(request.obj, e)
-	else
-	  (if (!request.superuser && form.isRestricted)
-	    via.mapAsync(_.party.access.map(_.site))
-	  else async(Seq(Permission.ADMIN))).flatMap { viaa =>
-	    if (!viaa.exists(_ >= Permission.CONTRIBUTE))
-	      form.withGlobalError("access.grant.restricted", form.party.name)._throw
-	    else
-	      VolumeAccess.set(request.obj, e, individual = max(form.individual.get, form.children.get), children = form.children.get)
-	  }
+          VolumeAccess.set(request.obj, e)
+        else
+          (if (!request.superuser && form.isRestricted)
+            via.mapAsync(_.party.access.map(_.site))
+          else async(Seq(Permission.ADMIN))).flatMap { viaa =>
+            if (!viaa.exists(_ >= Permission.CONTRIBUTE))
+              form.withGlobalError("access.grant.restricted", form.party.name)._throw
+            else
+              VolumeAccess.set(request.obj, e, individual = max(form.individual.get, form.children.get), children = form.children.get)
+          }
     } yield (result(request.obj))
   }
 
@@ -82,10 +82,10 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     Action(id, Permission.ADMIN).async { implicit request =>
       val form = new VolumeController.AccessSearchForm()._bind
       for {
-	res <- models.Party.search(Some(form.name.get), volume = Some(request.obj))
-	r <- if (request.isApi) macros.async(Ok(JsonArray.map[Party, JsonRecord](_.json)(res)))
-	  else VolumeHtml.viewAdmin(accessSearchForm = Some(form), accessResults = res)
-	    .map(Ok(_))
+        res <- models.Party.search(Some(form.name.get), volume = Some(request.obj))
+        r <- if (request.isApi) macros.async(Ok(JsonArray.map[Party, JsonRecord](_.json)(res)))
+          else VolumeHtml.viewAdmin(accessSearchForm = Some(form), accessResults = res)
+            .map(Ok(_))
       } yield (r)
     }
 }
@@ -189,8 +189,8 @@ object VolumeController extends VolumeController {
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =
     Action(v).async { implicit request =>
       request.obj.thumb.flatMap(_.fold(
-	async(Found("/public/images/draft.png")))(
-	a => SlotAssetController.getFrame(Left(0.25f), size)(request.withObj(a))))
+        async(Found("/public/images/draft.png")))(
+        a => SlotAssetController.getFrame(Left(0.25f), size)(request.withObj(a))))
     }
 }
 
@@ -218,7 +218,7 @@ object VolumeHtml extends VolumeController with HtmlController {
     for {
       vl <- res
       vols <- vl.mapAsync(vol =>
-	vol.partyAccess(Permission.ADMIN).map(a => (vol, a.map(_.party))))
+        vol.partyAccess(Permission.ADMIN).map(a => (vol, a.map(_.party))))
     } yield (Ok(views.html.volume.search(vols, form)))
   }
 
@@ -248,7 +248,7 @@ object VolumeHtml extends VolumeController with HtmlController {
       forms = access
         .filterNot(a => change.contains(a.partyId))
         .map(accessForm(_)) ++
-	accessChangeForm
+        accessChangeForm
       results = accessResults.map(new AccessForm(_))
     } yield (views.html.volume.access(request.obj, forms, accessSearchForm.getOrElse(new AccessSearchForm), results))
   }
@@ -281,9 +281,9 @@ object VolumeApi extends VolumeController with ApiController {
   def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
     Action(volumeId, Permission.ADMIN).async { implicit request =>
       (if (!(partyId === request.identity.id))
-	VolumeAccess.set(request.obj, partyId)
+        VolumeAccess.set(request.obj, partyId)
       else macros.async(false)).map { _ =>
-	result(request.obj)
+        result(request.obj)
       }
     }
 
@@ -301,15 +301,15 @@ object VolumeApi extends VolumeController with ApiController {
     Action(volumeId, Permission.EDIT).async { implicit request =>
       val form = new FundingForm(funderId)._bind
       VolumeFunding.set(request.obj, funderId, Some(form.awards.get.toIndexedSeq)).map { r =>
-	if (r) result(request.obj)
-	else form.withGlobalError("funder.notfound", funderId)._throw
+        if (r) result(request.obj)
+        else form.withGlobalError("funder.notfound", funderId)._throw
       }
     }
 
   def fundingDelete(volumeId : Volume.Id, funderId : Funder.Id) =
     Action(volumeId, Permission.EDIT).async { implicit request =>
       VolumeFunding.set(request.obj, funderId, None).map { _ =>
-	result(request.obj)
+        result(request.obj)
       }
     }
 }

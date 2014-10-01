@@ -49,11 +49,11 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       val metric = Metric.get(metricId).getOrElse(throw NotFoundException)
       val form = new RecordController.MeasureForm(metric)._bind
       form.datum.get.fold(
-	request.obj.removeMeasure(metric))(d =>
-	request.obj.setMeasure(new Measure(metric, d)).map {
-	  case false => form.datum.withError("error.invalid")._throw
-	  case true => true
-	})
+        request.obj.removeMeasure(metric))(d =>
+        request.obj.setMeasure(new Measure(metric, d)).map {
+          case false => form.datum.withError("error.invalid")._throw
+          case true => true
+        })
       .map(_ => editResult(request.obj))
     }
 
@@ -66,12 +66,12 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
           _ <- r.addSlot(request.obj)
         } yield (editResult(r))
       } { r =>
-	for {
-	  mr <- models.Record.get(r)
-	  r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
-	    .getOrElse(form.record.withError("record.bad")._throw)
-	  _ <- r.addSlot(request.obj)
-	} yield (if (request.isApi) result(r) else SlotController.result(request.obj))
+        for {
+          mr <- models.Record.get(r)
+          r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
+            .getOrElse(form.record.withError("record.bad")._throw)
+          _ <- r.addSlot(request.obj)
+        } yield (if (request.isApi) result(r) else SlotController.result(request.obj))
       }
     }
 
@@ -131,7 +131,7 @@ object RecordHtml extends RecordController with HtmlController {
     views.html.record.edit(
       editForm.getOrElse(new EditForm),
       mf.map(m => measureForm.filter(_.metric === m.metric).getOrElse(m)) ++
-	measureForm.filterNot(m => mf.exists(_.metric === m.metric)),
+        measureForm.filterNot(m => mf.exists(_.metric === m.metric)),
       addForm.getOrElse(new MetricForm))
   }
 

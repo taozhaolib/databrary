@@ -32,14 +32,14 @@ object Stage extends StoreDir("store.stage") {
     case transcodedRegex(dir, base) => Some(({
       val t = new File(dir, base + ".")
       val l = t.getParentFile.listFiles(new java.io.FilenameFilter {
-	def accept(d : File, name : String) = name.startsWith(t.getName)
+        def accept(d : File, name : String) = name.startsWith(t.getName)
       })
       if (l == null || l.length != 1) None
       else Some(l.head)
     }, f))
     case _ =>
       val t = new File(new File(f.getParentFile, "transcoded"),
-	f.getName.replaceFirst("\\.[a-zA-Z0-9_]+$", "") + "-01.mp4")
+        f.getName.replaceFirst("\\.[a-zA-Z0-9_]+$", "") + "-01.mp4")
       if (t.isFile) Some((Some(f), t))
       else None
   }

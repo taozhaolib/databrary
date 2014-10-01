@@ -28,13 +28,13 @@ trait RangeType[A] extends Ordering[A] {
       val ye = y.isEmpty
       if (xe || ye) xe compare ye
       else {
-	val xb = x.lowerBound
-	val yb = y.lowerBound
-	(for { xb <- xb ; yb <- yb } yield {
-	  val c = t.compare(xb, yb)
-	  if (c == 0) y.lowerClosed compare x.lowerClosed
-	  else c
-	}).getOrElse(xb.isDefined compare yb.isDefined)
+        val xb = x.lowerBound
+        val yb = y.lowerBound
+        (for { xb <- xb ; yb <- yb } yield {
+          val c = t.compare(xb, yb)
+          if (c == 0) y.lowerClosed compare x.lowerClosed
+          else c
+        }).getOrElse(xb.isDefined compare yb.isDefined)
       }
     }
   }
@@ -44,13 +44,13 @@ trait RangeType[A] extends Ordering[A] {
       val ye = y.isEmpty
       if (xe || ye) ye compare xe
       else {
-	val xb = x.upperBound
-	val yb = y.upperBound
-	(for { xb <- xb ; yb <- yb } yield {
-	  val c = t.compare(xb, yb)
-	  if (c == 0) x.lowerClosed compare y.lowerClosed
-	  else c
-	}).getOrElse(xb.isEmpty compare yb.isEmpty)
+        val xb = x.upperBound
+        val yb = y.upperBound
+        (for { xb <- xb ; yb <- yb } yield {
+          val c = t.compare(xb, yb)
+          if (c == 0) x.lowerClosed compare y.lowerClosed
+          else c
+        }).getOrElse(xb.isEmpty compare yb.isEmpty)
       }
     }
   }
@@ -301,7 +301,7 @@ object Range {
         if (em) empty[T]
         else sn.fold {
           zip[Boolean, Boolean, Range[T]](lc, uc, apply[T](_, lb, ub, _))
-	  .getOrElse(apply[T](lb, ub))
+          .getOrElse(apply[T](lb, ub))
         } (singleton[T](_))
       ))
     }

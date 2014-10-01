@@ -24,12 +24,12 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     Action(i, segment, Permission.EDIT).async { implicit request =>
       val form = SlotController.editForm._bind
       for {
-	_ <- cast[SlotController.ContainerEditForm](form).foreachAsync((form : SlotController.ContainerEditForm) =>
-	  request.obj.container.change(name = form.name.get, date = form.date.get))
-	_ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c).map(r =>
-	    if (!r) form.consent.withError("error.conflict")._throw))
-	/* refresh consent: */
-	s <- Slot.get(i, segment)
+        _ <- cast[SlotController.ContainerEditForm](form).foreachAsync((form : SlotController.ContainerEditForm) =>
+          request.obj.container.change(name = form.name.get, date = form.date.get))
+        _ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c).map(r =>
+            if (!r) form.consent.withError("error.conflict")._throw))
+        /* refresh consent: */
+        s <- Slot.get(i, segment)
       } yield (result(s.get))
     }
 
@@ -37,8 +37,8 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     VolumeController.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new SlotController.ContainerCreateForm()._bind
       for {
-	cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten, top = form.top.get)
-	_ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c))
+        cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten, top = form.top.get)
+        _ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c))
       } yield (result(cont))
     }
 }
@@ -132,7 +132,7 @@ object SlotApi extends SlotController with ApiController {
   def remove(i : Container.Id) =
     SiteAction.andThen(RequestObject.check(Container.get(i)(_), Permission.EDIT)).async { implicit request =>
       request.obj.remove.map { r =>
-	if (r) NoContent else Conflict(request.obj.json)
+        if (r) NoContent else Conflict(request.obj.json)
       }
     }
 }

@@ -22,13 +22,13 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   /** Update the given values in the database and this object in-place. */
   def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] =
     Audit.change("volume", SQLTerms.flatten(
-	name.map('name -> _),
-	alias.map('alias -> _),
-	body.map('body -> _)),
+        name.map('name -> _),
+        alias.map('alias -> _),
+        body.map('body -> _)),
       sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
         name.foreach(name_ = _)
-	alias.foreach(alias_ = _)
+        alias.foreach(alias_ = _)
         body.foreach(body_ = _)
       }
 
@@ -146,7 +146,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       nme = store.truncate(alias.getOrElse(name))
     } yield {
       store.fileName(Seq("databrary" + id) ++
-	own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme : _*)
+        own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme : _*)
     }
   }
 
@@ -166,7 +166,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       if (_citation.peek.isDefined) options - "citation" else options,
       ("summary", opt => summary.map(_.json.js)),
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
-	.map(JsonArray.map(_.json - "volume"))),
+        .map(JsonArray.map(_.json - "volume"))),
       ("citation", opt => citation.map(_.fold[JsValue](JsNull)(_.json.js))),
       ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
@@ -174,13 +174,13 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
       ("records", opt => records().map(JsonArray.map(_.json - "volume"))),
       ("containers", opt => sessions.map(JsonArray.map { case (c, rs) =>
-	c.json - "volume" +
-	('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
-	  JsonRecord.flatten(rec.id
-	  , if (seg.isFull) None else Some('segment -> seg)
-	  , rec.age(c).map('age -> _)
-	  )
-	}(rs))
+        c.json - "volume" +
+        ('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
+          JsonRecord.flatten(rec.id
+          , if (seg.isFull) None else Some('segment -> seg)
+          , rec.age(c).map('age -> _)
+          )
+        }(rs))
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume").obj)),
@@ -192,7 +192,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
 object Volume extends TableId[Volume]("volume") {
   private object Permission extends Table[models.Permission.Value]("volume_permission") {
     private val columns = Columns(
-	SelectColumn[models.Permission.Value]("permission")
+        SelectColumn[models.Permission.Value]("permission")
       ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
     def row(implicit site : Site) =
       columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
@@ -210,7 +210,7 @@ object Volume extends TableId[Volume]("volume") {
     , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
     ).map { (id, name, alias, body, creation) =>
       (permission : models.Permission.Value, site : Site) =>
-	new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
+        new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
     columns.*(Permission.row).map { case (v, p) => v(p, site) }
@@ -263,13 +263,13 @@ object Volume extends TableId[Volume]("volume") {
       SlotConsent.row.from(
       """(SELECT id AS container, COALESCE(segment, '(,)'::segment) AS segment, consent
            FROM container LEFT JOIN slot_consent ON id = container
-	  WHERE volume = ?
-	UNION ALL
-	  SELECT s.container, COALESCE(c.segment, '(,)'::segment) * s.segment AS segment, c.consent
-	    FROM volume_inclusion s LEFT JOIN slot_consent c
-	      ON s.container = c.container AND s.segment && c.segment
-	   WHERE volume = ?
-	) AS """ + _)
+          WHERE volume = ?
+        UNION ALL
+          SELECT s.container, COALESCE(c.segment, '(,)'::segment) * s.segment AS segment, c.consent
+            FROM volume_inclusion s LEFT JOIN slot_consent c
+              ON s.container = c.container AND s.segment && c.segment
+           WHERE volume = ?
+        ) AS """ + _)
     private def baseVolume(vol : Volume) =
       base.pushArgs(SQLArgs(vol.id, vol.id))
     private def columnsVolume(vol : Volume) =
@@ -280,12 +280,12 @@ object Volume extends TableId[Volume]("volume") {
     private def row(vol : Volume) : Selector[Session] =
       columnsVolume(vol)
       .leftJoin(SlotRecord.columns
-	.join(Record.sessionRow(vol), "slot_record.record = record.id"),
-	"container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND (record.volume = container.volume OR record.volume = ?)")
+        .join(Record.sessionRow(vol), "slot_record.record = record.id"),
+        "container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND (record.volume = container.volume OR record.volume = ?)")
       .pushArgs(SQLArgs(vol.id))
       .map {
-	case (slot, None) => (slot, None)
-	case (slot, Some((seg, rec))) => (slot, Some((seg, rec(slot.consent))))
+        case (slot, None) => (slot, None)
+        case (slot, Some((seg, rec))) => (slot, Some((seg, rec(slot.consent))))
       }
 
     private[Volume] def get(vol : Volume) : Future[Seq[Session]] =
@@ -296,26 +296,26 @@ object Volume extends TableId[Volume]("volume") {
     type Group = (Container, Seq[(Segment, Record)])
     private[Volume] def group(l : Seq[Session]) : Seq[Group] = {
       if (l.isEmpty)
-	return Nil
+        return Nil
       val r = l.genericBuilder[Group]
       var c1 : Container = l.head._1.container
       val r1 = Seq.newBuilder[(Segment, Record)]
       val rc = Seq.newBuilder[Record]
       def next() {
-	c1._records.set(rc.result)
-	rc.clear
-	r += c1 -> r1.result
-	r1.clear
+        c1._records.set(rc.result)
+        rc.clear
+        r += c1 -> r1.result
+        r1.clear
       }
       for ((c, or) <- l) {
-	if (!(c1.id === c.containerId)) {
-	  next()
-	  c1 = c.container
-	}
-	or foreach { case (seg, rec) =>
-	  r1 += c.segment * seg -> rec
-	  rc += rec
-	}
+        if (!(c1.id === c.containerId)) {
+          next()
+          c1 = c.container
+        }
+        or foreach { case (seg, rec) =>
+          r1 += c.segment * seg -> rec
+          rc += rec
+        }
       }
       next()
       r.result

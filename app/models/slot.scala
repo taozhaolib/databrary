@@ -40,9 +40,9 @@ trait Slot extends TableRow with InVolume with SiteObject {
       Audit.remove("slot_consent", slotSql).execute
     else
       Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
-	.recover {
-	  case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
-	}
+        .recover {
+          case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
+        }
   }
 
   /** The permisison level granted to restricted data within this slot. */
@@ -123,19 +123,19 @@ trait Slot extends TableRow with InVolume with SiteObject {
     , "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container")))
     , "records" -> (opt => Record.getSlotList(this).map(
       JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
-	JsonRecord.flatten(rec.id
-	, if (seg.isFull) None else Some('segment -> seg)
-	, rec.age(this).map('age -> _))
+        JsonRecord.flatten(rec.id
+        , if (seg.isFull) None else Some('segment -> seg)
+        , rec.age(this).map('age -> _))
       }))
     , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     , "consents" -> (opt => consents.map {
-	case Seq() => JsNull
-	case Seq(c) if c.segment === segment => Json.toJson(c.consent)
-	case s => JsonArray(s.map { s => JsonObject(
-	  'segment -> s.segment,
-	  'consent -> s.consent)
-	})
+        case Seq() => JsNull
+        case Seq(c) if c.segment === segment => Json.toJson(c.consent)
+        case s => JsonArray(s.map { s => JsonObject(
+          'segment -> s.segment,
+          'consent -> s.consent)
+        })
       })
     )
 }
@@ -162,10 +162,10 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
   private[models] val row : Selector[Container => ContextSlot] = columns
     .map { (segment, consent) =>
       if (segment.isFull) { (container : Container) =>
-	container.consent_ = consent
-	container
+        container.consent_ = consent
+        container
       } else { (container : Container) =>
-	new SlotConsent(container, segment, consent)
+        new SlotConsent(container, segment, consent)
       }
     }
 
@@ -194,7 +194,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
       .join(container, table + ".container = container.id")
     if (consent) base
       .leftJoin(SlotConsent.row.fromAlias(table + "_consent"),
-	table + ".segment <@ " + table + "_consent.segment AND " + table + ".container = " + table + "_consent.container")
+        table + ".segment <@ " + table + "_consent.segment AND " + table + ".container = " + table + "_consent.container")
       .map { case ((a, container), consent) => a(makeContext(container, consent)) }
     else base
       .map(tupleApply)

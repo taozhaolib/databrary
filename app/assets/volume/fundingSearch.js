@@ -25,7 +25,7 @@ module.directive('fundingSearchForm', [
       };
 
       form.search = function (all) {
-	$scope.all = all;
+        $scope.all = all;
 
         if (!all && (!form.nameVal || form.nameVal.length < 3)) {
           form.found = [];
@@ -33,7 +33,7 @@ module.directive('fundingSearchForm', [
           recentSearch = form.nameVal;
         } else {
           sentSearch = page.models.funder(form.nameVal, all)
-	    .then(function (data) {
+            .then(function (data) {
               form.found = data;
               fin();
             }, fin);
@@ -46,7 +46,7 @@ module.directive('fundingSearchForm', [
         form.nameVal = '';
         form.search();
 
-	$scope.selectFn(found);
+        $scope.selectFn(found);
         form.$setPristine();
       };
 

@@ -20,10 +20,10 @@ object Adolph extends Ingest {
       p.map(b => f(_, b))
     def option[A,B](f : (A, B) => A, p : Parser[B], nullif : String = "") : ObjectParser[A] =
       Parser[A => A] { s =>
-	if (nullif != null && (s.isEmpty || s.equals(nullif)))
-	  identity[A]
-	else
-	  f(_, p(s))
+        if (nullif != null && (s.isEmpty || s.equals(nullif)))
+          identity[A]
+        else
+          f(_, p(s))
       }
   }
 
@@ -36,8 +36,8 @@ object Adolph extends Ingest {
   private def parseCells[A](a : A, ps : Seq[CellParser[A]]) : ListParser[A] =
     ListParser[A] { l =>
       ps.foldLeft((a, l)) { (al, p) =>
-	val (a, l) = al
-	p.map(_(a))(l)
+        val (a, l) = al
+        p.map(_(a))(l)
       }
     }
 
@@ -63,30 +63,30 @@ object Adolph extends Ingest {
     protected final def addMeasure(m : Measure[_]) : Map[Metric.Id,Measure[_]] = {
       val i = m.metricId
       if (measures.contains(i))
-	fail("duplicate measure for " + m.metric.name + " on " + this)
+        fail("duplicate measure for " + m.metric.name + " on " + this)
       measures.updated(i, m)
     }
     def withMeasure(m : Measure[_]) : Record
 
     def find(volume : Volume) : Future[Option[models.Record]] =
       for {
-	l <- Record.findMeasures(volume, Some(category), idents.toSeq : _*)
-	_ <- check(l.length <= 1,
-	  PopulateException("multiple matching records for " + this, volume))
-      }	yield (l.headOption)
+        l <- Record.findMeasures(volume, Some(category), idents.toSeq : _*)
+        _ <- check(l.length <= 1,
+          PopulateException("multiple matching records for " + this, volume))
+      } yield (l.headOption)
     def populate(volume : Volume, current : Option[models.Record] = None) : Future[models.Record] =
       for {
-	ro <- current orElseAsync find(volume)
-	r <- ro getOrElseAsync Record.create(volume, Some(category))
-	_ <- measures.values foreachAsync { m =>
-	  r.measures(m.metric).fold {
-	    r.setMeasure(m).flatMap(check(_, 
-	      PopulateException("failed to set measure for record " + this, r)))
-	  } { c =>
-	    check(c === m,
-	      PopulateException("inconsistent mesaures for record " + this + ": " + m + " <> " + c, r))
-	  }
-	}
+        ro <- current orElseAsync find(volume)
+        r <- ro getOrElseAsync Record.create(volume, Some(category))
+        _ <- measures.values foreachAsync { m =>
+          r.measures(m.metric).fold {
+            r.setMeasure(m).flatMap(check(_, 
+              PopulateException("failed to set measure for record " + this, r)))
+          } { c =>
+            check(c === m,
+              PopulateException("inconsistent mesaures for record " + this + ": " + m + " <> " + c, r))
+          }
+        }
       } yield (r)
   }
 
@@ -141,34 +141,34 @@ object Adolph extends Ingest {
     val parseSet = measure(measureParser(metricInfo, trimmed))
     private[Adolph] def parseHeader(name : String) : Parser[Participant => Participant] =
       name match {
-	case "SUBJECT ID" => parseId
-	case "DATASET" => parseSet
-	case "BIRTH DATE" => measure(dateMeasureParser(Metric.Birthdate), null)
-	case "BIRTH DATE (OPTIONAL)" => measure(dateMeasureParser(Metric.Birthdate))
-	case "GENDER" => measure(Gender.measureParse)
-	case "RACE" => measure(Race.measureParse)
-	case "RACE (AS-IS)" => measure(measureParser(Race.metric, trimmed))
-	case "ETHNICITY" => measure(Ethnicity.measureParse)
-	case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(metricDisability, trimmed), metricDisability.assumed.getOrElse(""))
-	case "LANGUAGE" => measure(measureParser(metricLanguage, trimmed))
-	case _ => fail("unknown header: " + name)
+        case "SUBJECT ID" => parseId
+        case "DATASET" => parseSet
+        case "BIRTH DATE" => measure(dateMeasureParser(Metric.Birthdate), null)
+        case "BIRTH DATE (OPTIONAL)" => measure(dateMeasureParser(Metric.Birthdate))
+        case "GENDER" => measure(Gender.measureParse)
+        case "RACE" => measure(Race.measureParse)
+        case "RACE (AS-IS)" => measure(measureParser(Race.metric, trimmed))
+        case "ETHNICITY" => measure(Ethnicity.measureParse)
+        case "TYPICAL DEVELOPMENT/DISABILITY" => measure(measureParser(metricDisability, trimmed), metricDisability.assumed.getOrElse(""))
+        case "LANGUAGE" => measure(measureParser(metricLanguage, trimmed))
+        case _ => fail("unknown header: " + name)
       }
     private def header : Parser[CellParser[Participant]] =
       Parser[CellParser[Participant]] {
-	case "" => blankCellParser
-	case s => new CellParser(s, parseHeader(s))
+        case "" => blankCellParser
+        case s => new CellParser(s, parseHeader(s))
       }
     private def parseData(l : List[List[String]]) : ParticipantMap = l.zipWithIndex match {
       case h :: l =>
-	val p = listAll(header).run(h)
-	val line = parseCells(empty, p)
-	l.foldLeft[ParticipantMap](Map.empty) { (m, l) =>
-	  val p = line.run(l)
-	  val i = p.key
-	  if (m.contains(i))
-	    throw ParseException("duplicate participant key: " + i, line = l._2)
-	  m.updated(i, p)
-	}
+        val p = listAll(header).run(h)
+        val line = parseCells(empty, p)
+        l.foldLeft[ParticipantMap](Map.empty) { (m, l) =>
+          val p = line.run(l)
+          val i = p.key
+          if (m.contains(i))
+            throw ParseException("duplicate participant key: " + i, line = l._2)
+          m.updated(i, p)
+        }
       case Nil => Map.empty
     }
     final def parseCSV(f : File) =
@@ -184,9 +184,9 @@ object Adolph extends Ingest {
   private object Exclusion extends Category("exclusion") {
     private object Reason extends MetricENUM("reason") {
       val DID_NOT_MEET_CRITERIA,
-	PROCEDURAL_EXPERIMENTER_ERROR,
-	FUSSY_TIRED_WITHDREW,
-	OUTLIER = Value
+        PROCEDURAL_EXPERIMENTER_ERROR,
+        FUSSY_TIRED_WITHDREW,
+        OUTLIER = Value
     }
 
     def parse : Parser[Exclusion] =
@@ -206,17 +206,17 @@ object Adolph extends Ingest {
     val info = {
       val file = Stage.file(path)
       if (!file.isFile)
-	fail("file not found: " + path)
+        fail("file not found: " + path)
       Stage.findTranscoded(file) match {
-	case Some((Some(origFile), file)) =>
-	  val probe = media.AV.probe(file)
-	  if (!probe.isVideo)
-	    fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
-	  ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
-	    ingest.Asset.fileInfo(origFile))
-	case None =>
-	  ingest.Asset.fileInfo(file)
-	case _ => fail("no original file: " + file)
+        case Some((Some(origFile), file)) =>
+          val probe = media.AV.probe(file)
+          if (!probe.isVideo)
+            fail("invalid file format for " + file + ": " + probe.format + " " + probe.streams.mkString(","))
+          ingest.Asset.TimeseriesInfo(file, AssetFormat.Video, probe.duration, 
+            ingest.Asset.fileInfo(origFile))
+        case None =>
+          ingest.Asset.fileInfo(file)
+        case _ => fail("no original file: " + file)
       }
     }
   }
@@ -227,15 +227,15 @@ object Adolph extends Ingest {
   private final case class Session(name : String = "", date : Option[Date] = None, consent : Option[Consent.Value] = None, assetPath : Option[File] = None, assetOffset : Offset = Offset.ZERO, assets : Seq[Asset] = Nil, records : Map[RecordCategory,Record] = Map.empty) {
     def withName(n : String) =
       if (name.nonEmpty && !name.equals(n))
-	fail("duplicate session name: " + n)
+        fail("duplicate session name: " + n)
       else copy(name = n)
     def withDate(d : Date) =
       if (!date.forall(_.equals(d)))
-	fail("duplicate session date: " + d)
+        fail("duplicate session date: " + d)
       else copy(date = Some(d))
     def withConsent(c : Consent.Value) =
       if (!consent.forall(_.equals(c)))
-	fail("duplicate session consent: " + c)
+        fail("duplicate session consent: " + c)
       else copy(consent = Some(c))
     def withParticipant(f : Participant => Participant) = {
       val i = Participant.category
@@ -245,8 +245,8 @@ object Adolph extends Ingest {
     def fillParticipant(pm : ParticipantMap) = {
       val i = Participant.category
       records.get(i).fold(fail("no participant")) { p =>
-	copy(records = records.updated(i,
-	  pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
+        copy(records = records.updated(i,
+          pm.getOrElse(p.asInstanceOf[Participant].key, fail("participant not found: " + p))))
       }
     }
     def withLocation(f : Record => Record) = {
@@ -257,7 +257,7 @@ object Adolph extends Ingest {
     def withRecord(r : Record) = {
       val i = r.category
       if (records.contains(i))
-	fail("duplicate session record: " + r)
+        fail("duplicate session record: " + r)
       copy(records = records.updated(i, r))
     }
     def withAssetPath(p : File) =
@@ -269,55 +269,55 @@ object Adolph extends Ingest {
 
     def populate(volume : Volume)(implicit request : controllers.SiteRequest[_]) : Future[Container] =
       for {
-	pr <- records(Participant.category).populate(volume)
-	ps <- pr.slots
-	ms = ps.filter(_.container.date.equals(date))
-	_ <- check(ms.length <= 1,
-	  PopulateException("multiple existing sessions for participant", pr))
-	c <- ms.headOption.fold {
-	  for {
-	    c <- Container.create(volume, name = Maybe(name).opt, date = date)
-	    _ <- consent.foreachAsync(c.setConsent(_))
-	    _ <- pr.addSlot(c)
-	  } yield (c)
-	} { s =>
-	  for {
-	    _ <- check(s.volume === volume,
-	      PopulateException("existing session for " + pr + " with different volume", s))
-	    _ <- check(s.isFull,
-	      PopulateException("existing session for " + pr + " not full container", s))
-	    c = s.container
-	    _ <- check(c.name.equals(Maybe(name).opt),
-	      PopulateException("existing session for " + pr + " with different name", s))
-	    _ <- check(c.date.equals(date),
-	      PopulateException("existing session for " + pr + " with different date", s))
-	    _ <- if (c.consent == Consent.NONE) consent.foreachAsync(c.setConsent(_))
-	      else check(consent.exists(c.consent == _),
-		PopulateException("existing session for " + pr + " with different consent", s))
-	  } yield (c)
-	}
-	_ <- assets foreachAsync { i =>
-	  for {
-	    a <- i.populate(volume)
-	    as <- a.slot
-	    _ <- as.fold[Future[Any]] {
-	      a.link(c, Some(i.offset), i.info.duration)
-	    } { as =>
-	      check(as.container === c,
-		PopulateException("existing asset in different container", as))
-	    }
-	  } yield (())
-	}
-	cr <- c.records.map(_.groupBy(_.category.map(_.id)))
-	_ <- (records - Participant.category).values foreachAsync { r =>
-	  val crs = cr.getOrElse(Some(r.category.id), Nil)
-	  for {
-	    _ <- check(crs.length <= 1,
-	      PopulateException("multiple existing records for category " + r.category, c))
-	    r <- r.populate(volume, crs.headOption)
-	    _ <- if (crs.isEmpty) r.addSlot(c) else async(false)
-	  } yield (())
-	}
+        pr <- records(Participant.category).populate(volume)
+        ps <- pr.slots
+        ms = ps.filter(_.container.date.equals(date))
+        _ <- check(ms.length <= 1,
+          PopulateException("multiple existing sessions for participant", pr))
+        c <- ms.headOption.fold {
+          for {
+            c <- Container.create(volume, name = Maybe(name).opt, date = date)
+            _ <- consent.foreachAsync(c.setConsent(_))
+            _ <- pr.addSlot(c)
+          } yield (c)
+        } { s =>
+          for {
+            _ <- check(s.volume === volume,
+              PopulateException("existing session for " + pr + " with different volume", s))
+            _ <- check(s.isFull,
+              PopulateException("existing session for " + pr + " not full container", s))
+            c = s.container
+            _ <- check(c.name.equals(Maybe(name).opt),
+              PopulateException("existing session for " + pr + " with different name", s))
+            _ <- check(c.date.equals(date),
+              PopulateException("existing session for " + pr + " with different date", s))
+            _ <- if (c.consent == Consent.NONE) consent.foreachAsync(c.setConsent(_))
+              else check(consent.exists(c.consent == _),
+                PopulateException("existing session for " + pr + " with different consent", s))
+          } yield (c)
+        }
+        _ <- assets foreachAsync { i =>
+          for {
+            a <- i.populate(volume)
+            as <- a.slot
+            _ <- as.fold[Future[Any]] {
+              a.link(c, Some(i.offset), i.info.duration)
+            } { as =>
+              check(as.container === c,
+                PopulateException("existing asset in different container", as))
+            }
+          } yield (())
+        }
+        cr <- c.records.map(_.groupBy(_.category.map(_.id)))
+        _ <- (records - Participant.category).values foreachAsync { r =>
+          val crs = cr.getOrElse(Some(r.category.id), Nil)
+          for {
+            _ <- check(crs.length <= 1,
+              PopulateException("multiple existing records for category " + r.category, c))
+            r <- r.populate(volume, crs.headOption)
+            _ <- if (crs.isEmpty) r.addSlot(c) else async(false)
+          } yield (())
+        }
       } yield (c)
   }
 
@@ -327,52 +327,52 @@ object Adolph extends Ingest {
       ObjectParser.map[Session, Participant => Participant](_.withParticipant(_), p)
     private def location[T](m : Parser[MeasureV[T]], nullif : String = "") =
       ObjectParser.option[Session, Record => Record](_.withLocation(_),
-	ObjectParser.map[Record, MeasureV[T]](_.withMeasure(_), m), nullif)
+        ObjectParser.map[Record, MeasureV[T]](_.withMeasure(_), m), nullif)
     private def record(c : RecordCategory, m : Parser[String], nullif : String = "") =
       ObjectParser.option[Session, Record](_.withRecord(_),
-	m.map(v => IdentRecord(c, measureMap(new MeasureV[String](Metric.Ident, v)))))
+        m.map(v => IdentRecord(c, measureMap(new MeasureV[String](Metric.Ident, v)))))
     private val fileRegex = """FILE(?: \(([a-zA-Z]*)\))?(?:: (.*))?""".r
     private def parseHeader(name : String) : Parser[Session => Session] =
       name match {
-	case "TEST DATE" => ObjectParser.map[Session, Date](_.withDate(_), date)
-	case "SESSION ID" => ObjectParser.option[Session, String](_.withName(_), trimmed)
-	case "RELEASE LEVEL" => ObjectParser.option[Session, Consent.Value](_.withConsent(_), consent)
-	case "PILOT" => ObjectParser.option[Session, Unit](
-	  (s, _) => s.withRecord(SingletonRecord(Pilot.category)),
-	  only("pilot"), "not pilot")
-	case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
-	case "PATH" => ObjectParser.map[Session, File](_.withAssetPath(_), file)
-	case "OFFSET" => ObjectParser.map[Session, Offset](_.withAssetOffset(_), offset)
-	case fileRegex(cls, name) =>
-	  val c = Option(cls).fold(Classification.IDENTIFIED)(classification(_))
-	  val n = Option(name).map(_.trim)
-	  val k = n.exists(_.equals("<name>"))
-	  Parser[Session => Session] { p => s =>
-	    if (p.isEmpty) s else {
-	      val f = s.assetPath.fold(new File(p))(new File(_, p))
-	      s.withAsset(Asset(if (k) f.getName.replaceFirst("\\.[a-zA-Z0-9]{1,4}$","") else n.getOrElse(""), f, c, s.assetOffset))
-	    }
-	  }
-	case "SETTING" => location(Setting.measureParse)
-	case "COUNTRY" => location(measureParser(metricCountry, trimmed), metricCountry.assumed.getOrElse(""))
-	case "STATE" => location(measureParser(metricState, trimmed))
-	case "CONDITION" => record(Condition.category, trimmed)
-	case "GROUP" => record(Group.category, trimmed)
-	case "STUDY LANGUAGE" => location(measureParser(metricLanguage, trimmed), metricLanguage.assumed.getOrElse(""))
-	case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
-	case _ => participant(Participants.parseHeader(name))
+        case "TEST DATE" => ObjectParser.map[Session, Date](_.withDate(_), date)
+        case "SESSION ID" => ObjectParser.option[Session, String](_.withName(_), trimmed)
+        case "RELEASE LEVEL" => ObjectParser.option[Session, Consent.Value](_.withConsent(_), consent)
+        case "PILOT" => ObjectParser.option[Session, Unit](
+          (s, _) => s.withRecord(SingletonRecord(Pilot.category)),
+          only("pilot"), "not pilot")
+        case "EXCLUSION" => ObjectParser.option[Session, Exclusion](_.withRecord(_), Exclusion.parse, "not excluded")
+        case "PATH" => ObjectParser.map[Session, File](_.withAssetPath(_), file)
+        case "OFFSET" => ObjectParser.map[Session, Offset](_.withAssetOffset(_), offset)
+        case fileRegex(cls, name) =>
+          val c = Option(cls).fold(Classification.IDENTIFIED)(classification(_))
+          val n = Option(name).map(_.trim)
+          val k = n.exists(_.equals("<name>"))
+          Parser[Session => Session] { p => s =>
+            if (p.isEmpty) s else {
+              val f = s.assetPath.fold(new File(p))(new File(_, p))
+              s.withAsset(Asset(if (k) f.getName.replaceFirst("\\.[a-zA-Z0-9]{1,4}$","") else n.getOrElse(""), f, c, s.assetOffset))
+            }
+          }
+        case "SETTING" => location(Setting.measureParse)
+        case "COUNTRY" => location(measureParser(metricCountry, trimmed), metricCountry.assumed.getOrElse(""))
+        case "STATE" => location(measureParser(metricState, trimmed))
+        case "CONDITION" => record(Condition.category, trimmed)
+        case "GROUP" => record(Group.category, trimmed)
+        case "STUDY LANGUAGE" => location(measureParser(metricLanguage, trimmed), metricLanguage.assumed.getOrElse(""))
+        case "PHOTO MEDIA RELEASE" => Parser(_ => identity _)
+        case _ => participant(Participants.parseHeader(name))
       }
     private def header : Parser[CellParser[Session]] =
       Parser[CellParser[Session]] {
-	case "" => blankCellParser
-	case s => new CellParser(s, parseHeader(s))
+        case "" => blankCellParser
+        case s => new CellParser(s, parseHeader(s))
       }
     private def parseData(l : List[List[String]], pm : Option[ParticipantMap]) : Seq[Session] = l.zipWithIndex match {
       case h :: l =>
-	val p = listAll(header).run(h)
-	val line = parseCells(empty, p)
-	val pline = pm.fold(line)(m => line.map(_.fillParticipant(m)))
-	l.map(pline.run)
+        val p = listAll(header).run(h)
+        val line = parseCells(empty, p)
+        val pline = pm.fold(line)(m => line.map(_.fillParticipant(m)))
+        l.map(pline.run)
       case Nil => Nil
     }
     final def parseCSV(f : File, p : Option[File]) : Future[Seq[Session]] =

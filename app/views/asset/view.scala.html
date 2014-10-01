@@ -9,35 +9,35 @@
         </ul>
 
         <ul class="actions">
-	        <li><a href="@asset.pageURL">view</a></li>
-	    @if(asset.checkPermission(Permission.EDIT) && asset.entire) {
-	        <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
-	    }
+                <li><a href="@asset.pageURL">view</a></li>
+            @if(asset.checkPermission(Permission.EDIT) && asset.entire) {
+                <li><a href="@controllers.routes.AssetHtml.edit(asset.assetId)">edit</a></li>
+            }
         </ul>
     </div>
 
     <h1 class="col panel_title">@display.formatTitle(asset.pageName)</h1>
 
     @widget.frame.raw("asset", "")("Metadata") {
-	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-	    <div class="metadata">
-		<dl class="flat">
-		    <dt>Classification</dt>
-		    <dd>@Classification.message(asset.classification)</dd>
+        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+            <div class="metadata">
+                <dl class="flat">
+                    <dt>Classification</dt>
+                    <dd>@Classification.message(asset.classification)</dd>
 
-		    <dt>Format</dt>
-		    <dd>@asset.format.name</dd>
+                    <dt>Format</dt>
+                    <dd>@asset.format.name</dd>
 
-		    <dt>Position</dt>
-		    <dd>@asset.relativeSegment</dd>
+                    <dt>Position</dt>
+                    <dd>@asset.relativeSegment</dd>
 
-		    @cast[SlotTimeseries](asset).map { ts =>
-			<dt>Duration</dt>
-			<dd>@ts.duration</dd>
-		    }
-		</dl>
-	    </div>
-	</div>
+                    @cast[SlotTimeseries](asset).map { ts =>
+                        <dt>Duration</dt>
+                        <dd>@ts.duration</dd>
+                    }
+                </dl>
+            </div>
+        </div>
     }
 }
 

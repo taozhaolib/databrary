@@ -11,7 +11,7 @@ module.factory('constantService', [
 
     function invertArray(data) {
       for (var i = 0; i < data.length; i ++)
-	data[data[i]] = i;
+        data[data[i]] = i;
     }
 
     var invertBy = function (data, field) {
@@ -37,7 +37,7 @@ module.factory('constantService', [
     angular.forEach(constants.party, function (party, name) {
       var uname = name.toUpperCase();
       if (angular.isObject(party) && name !== uname)
-	constants.party[uname] = party.id;
+        constants.party[uname] = party.id;
     });
 
     angular.forEach(constants.category, function (cat) {
@@ -69,15 +69,15 @@ module.factory('constantService', [
       var i = 1, l = arguments.length;
       var o;
       if (i < l && typeof arguments[i] === 'object')
-	o = arguments[i++];
+        o = arguments[i++];
       else
-	o = {};
+        o = {};
 
       var g = o.sce ? $sce.getTrusted.bind($sce, o.sce) : angular.identity;
       for (var n = 0; i < l; i++, n++)
         msg = msg.replace('{' + n + '}', g(arguments[i]), 'g');
       if (o.sce)
-	msg = $sce.trustAs(o.sce, msg);
+        msg = $sce.trustAs(o.sce, msg);
 
       return msg;
     };
@@ -85,11 +85,11 @@ module.factory('constantService', [
     function deepFreeze(o) {
       Object.freeze(o);
       for (var f in o)
-	if (o.hasOwnProperty(f)) {
-	  var v = o[f];
-	  if (v instanceof Object && !Object.isFrozen(v))
-	    deepFreeze(v);
-	}
+        if (o.hasOwnProperty(f)) {
+          var v = o[f];
+          if (v instanceof Object && !Object.isFrozen(v))
+            deepFreeze(v);
+        }
       return o;
     }
     constants.deepFreeze = deepFreeze;

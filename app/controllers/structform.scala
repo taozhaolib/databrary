@@ -37,7 +37,7 @@ abstract class StructForm(val _action : Call) {
     def fill(v : T) : Field[T] = {
       value = v
       if (name != null)
-	_data ++= unbind
+        _data ++= unbind
       this
     }
     private[this] lazy val mapping : Mapping[T] = map.withPrefix(name.ensuring(_ != null))
@@ -48,9 +48,9 @@ abstract class StructForm(val _action : Call) {
       if (value == null) Map.empty[String,String] else mapping.unbind(value)
     private[StructForm] def unbindAndValidate : (Map[String, String], Seq[FormError]) =
       if (value == null)
-	(Map.empty[String,String], Seq(FormError(name, "error.missing")))
+        (Map.empty[String,String], Seq(FormError(name, "error.missing")))
       else
-	mapping.unbindAndValidate(value)
+        mapping.unbindAndValidate(value)
   }
 
   protected def Const[T](x : T) : Field[T] =
@@ -68,12 +68,12 @@ abstract class StructForm(val _action : Call) {
       verifying("error.unknown", constraint)
     final def verifying(error : => String, constraint : FilePart => Boolean) : this.type = {
       verifying(Constraint { t : FilePart =>
-	if (constraint(t)) Valid else Invalid(Seq(ValidationError(error)))
+        if (constraint(t)) Valid else Invalid(Seq(ValidationError(error)))
       })
     }
     protected final def applyConstraints(f : FilePart) : Seq[FormError] =
       constraints.map(_(f)).collect {
-	case Invalid(errors) => errors.map(e => FormError(name, e.message, e.args))
+        case Invalid(errors) => errors.map(e => FormError(name, e.message, e.args))
       }.flatten
     def bind(body : FileData) : Seq[FormError]
   }
@@ -82,8 +82,8 @@ abstract class StructForm(val _action : Call) {
     def bind(body : FileData) =
       body.file(name)
       .fold(Seq(FormError(name, "error.required"))) { f =>
-	value = f
-	applyConstraints(f)
+        value = f
+        applyConstraints(f)
       }
   }
 
@@ -102,8 +102,8 @@ abstract class StructForm(val _action : Call) {
   private[this] def csrfCheck(implicit request : Request[AnyContent]) {
     if (request.headers.get("X-Requested-With").isDefined ||
       !(request.method.equals("GET") || (request.method.equals("POST") && 
-	request.contentType.exists(t =>
-	    t.equals("application/x-www-form-urlencoded") || t.equals("text/plain") || t.equals("multipart/form-data")))) || 
+        request.contentType.exists(t =>
+            t.equals("application/x-www-form-urlencoded") || t.equals("text/plain") || t.equals("multipart/form-data")))) || 
       csrf.get.equals(_csrf))
       return
     csrf.withError("csrf.failed")
@@ -113,15 +113,15 @@ abstract class StructForm(val _action : Call) {
     getClass.getMethods.toIterator
       .filter(f => f.getModifiers == java.lang.reflect.Modifier.PUBLIC && f.getName()(0).isLower && f.getParameterTypes.isEmpty && f.getTypeParameters.isEmpty && classOf[Member[_]].isAssignableFrom(f.getReturnType))
       .map { f =>
-	val field = f.invoke(self).asInstanceOf[Member[_]]
-	field.name = f.getName
-	field
+        val field = f.invoke(self).asInstanceOf[Member[_]]
+        field.name = f.getName
+        field
       }
   private[this] lazy val (_fields, _files) =
     partition(getValMembers.toSeq,
       PartialFunction[Member[_], Either[Field[_], FileMember[_]]] {
-	case f : Field[_] => Left(f)
-	case f : FileMember[_] => Right(f)
+        case f : Field[_] => Left(f)
+        case f : FileMember[_] => Right(f)
       }
     )
 
@@ -156,8 +156,8 @@ abstract class StructForm(val _action : Call) {
       _data.clear
       _data ++= data
       mapping.bind(data).fold(
-	errors => { _errors ++= errors ; new form(None) },
-	value => new form(Some(value))
+        errors => { _errors ++= errors ; new form(None) },
+        value => new form(Some(value))
       )
     }
     override def fill(value : self.type) : Form[self.type] = {

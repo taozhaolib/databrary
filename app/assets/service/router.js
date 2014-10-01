@@ -33,8 +33,8 @@ module.provider('routerService', [
             v = angular.toJson(v);
           }
 
-	  url += (q ? '&' : '?') + encodeUri(key) + '=' + encodeUri(v);
-	  q = true;
+          url += (q ? '&' : '?') + encodeUri(key) + '=' + encodeUri(v);
+          q = true;
         });
       });
 
@@ -45,26 +45,26 @@ module.provider('routerService', [
     function getRoute(route, argNames, data) {
       var args;
       if (!argNames)
-	argNames = [];
+        argNames = [];
       var ph = arguments.length < 3;
       if (ph)
-	args = argNames.map(function (a) { return ':' + a; });
+        args = argNames.map(function (a) { return ':' + a; });
       else if (data == null)
-	args = [];
+        args = [];
       else if (Array.isArray(data))
-	args = data;
+        args = data;
       else if (typeof data === 'object') {
-	args = argNames.map(function (k) {
-	  return k in data ? data[k] : null;
-	});
+        args = argNames.map(function (k) {
+          return k in data ? data[k] : null;
+        });
       } else
-	args = [data];
+        args = [data];
       var r = route.apply(null, args);
       if (ph) {
-	var q = r.url.indexOf('?');
-	if (q !== -1)
-	  r.url = r.url.substr(0, q);
-	r.url = r.url.replace(/%3A/gi, ':');
+        var q = r.url.indexOf('?');
+        if (q !== -1)
+          r.url = r.url.substr(0, q);
+        r.url = r.url.replace(/%3A/gi, ':');
       }
       return r;
     }
@@ -72,10 +72,10 @@ module.provider('routerService', [
     /* Add a route to $routeProvider and return a function to get a url given parameters. */
     function makeRoute(route, argNames, handler) {
       if (handler)
-	$routeProvider.when(getRoute(route, argNames).url, handler);
+        $routeProvider.when(getRoute(route, argNames).url, handler);
 
       return function (data, params) {
-	return urlParams(getRoute(route, argNames, data).url, params);
+        return urlParams(getRoute(route, argNames, data).url, params);
       };
     }
 
@@ -103,10 +103,10 @@ module.provider('routerService', [
         ],
         volume: [
           'pageService', function (page) {
-	    return page.models.Volume.get(9, ['access'])
-	      .catch(function() {
-		return {};
-	      });
+            return page.models.Volume.get(9, ['access'])
+              .catch(function() {
+                return {};
+              });
           }
         ]
       },
@@ -161,8 +161,8 @@ module.provider('routerService', [
             if ($play.object && $play.object.auth)
               page.$q.successful($play.object);
             else
-	      return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
-		.then(function (res) {
+              return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
+                .then(function (res) {
                   $play.object = res;
                   return res;
                 }, function () {
@@ -234,16 +234,16 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
             if (!('id' in page.$route.current.params))
-	      return undefined;
+              return undefined;
 
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['access', 'citation', 'top', 'funding'])
-	      .then(function (volume) {
-		return volume.top.getSlot(volume.top.segment, ['assets'])
-		  .then(function () {
-		    return volume;
-		  });
-	      });
+              ['access', 'citation', 'top', 'funding'])
+              .then(function (volume) {
+                return volume.top.getSlot(volume.top.segment, ['assets'])
+                  .then(function () {
+                    return volume;
+                  });
+              });
           }
         ],
       },
@@ -262,7 +262,7 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers']);
+              ['access', 'citation', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'summary', 'containers']);
           }
         ]
       },
@@ -276,7 +276,7 @@ module.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-	      ['top', 'records', 'containers']);
+              ['top', 'records', 'containers']);
           }
         ]
       },
@@ -292,16 +292,16 @@ module.provider('routerService', [
         slot: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.vid,
-	      ['records'])
-	      .then(function (volume) {
-		return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-		  ['consents', 'records', 'assets' /*, 'tags', 'comments'*/]);
-	      });
-	  },
+              ['records'])
+              .then(function (volume) {
+                return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
+                  ['consents', 'records', 'assets' /*, 'tags', 'comments'*/]);
+              });
+          },
         ],
-	edit: function () {
-	  return edit;
-	}
+        edit: function () {
+          return edit;
+        }
       },
       reloadOnSearch: false,
     }; }
@@ -330,66 +330,66 @@ module.provider('routerService', [
     this.$get = [
       '$rootScope', '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',
       function ($rootScope, $location, $http, $cacheFactory, constants, analytics) {
-	var router = angular.extend({
-	  controllers: controllers,
+        var router = angular.extend({
+          controllers: controllers,
           prev: '/'
         }, routes);
 
-	/* Simple wrapper to $http(route(...)).
-	 * Non-object arguments (or an initial array) are passed to route.
-	 * The next argument is passed as data (POST) or params.
-	 * An additional argument is passed as extra config to $http.
-	 */
-	router.http = function (route, args/*...*/) {
-	  var i;
-	  if (Array.isArray(args))
-	    i = 2;
-	  else {
-	    for (i = 1; i < arguments.length; i ++)
-	      if (angular.isObject(arguments[i]))
-		break;
-	    args = Array.prototype.slice.call(arguments, 1, i);
-	  }
-	  var r = route.apply(null, args);
-	  if (i < arguments.length) {
-	    if (r.method === 'POST' || r.method === 'PUT')
-	      r.data = arguments[i];
-	    else
-	      r.params = arguments[i];
-	    if (++i < arguments.length)
-	      angular.extend(r, arguments[i]);
-	  }
-	  if (r.data instanceof FormData) {
-	    if (!('transformRequest' in r))
-	      r.transformRequest = angular.identity;
-	    if (!('headers' in r))
-	      r.headers = {};
-	    // Not sure why we do this but it seems to be necessary:
-	    if (!('Content-Type' in r.headers))
-	      r.headers['Content-Type'] = undefined;
-	  }
-	  var cache;
-	  /* try to guess (conservatively) if this request is cached: */
-	  if (r.method === 'GET' || r.method === 'JSONP') {
-	    cache = r.cache || $http.defaults.cache && $cacheFactory('$http');
-	    if (cache && !r.params)
-	      cache = cache.get(r.url);
-	  }
-	  if (!cache) {
-	    var a = analytics.dump();
-	    if (a) {
-	      if (!('headers' in r))
-		r.headers = {Analytics: a};
-	      else
-		r.headers.Analytics = a;
-	    }
-	  }
-	  return $http(r);
-	};
+        /* Simple wrapper to $http(route(...)).
+         * Non-object arguments (or an initial array) are passed to route.
+         * The next argument is passed as data (POST) or params.
+         * An additional argument is passed as extra config to $http.
+         */
+        router.http = function (route, args/*...*/) {
+          var i;
+          if (Array.isArray(args))
+            i = 2;
+          else {
+            for (i = 1; i < arguments.length; i ++)
+              if (angular.isObject(arguments[i]))
+                break;
+            args = Array.prototype.slice.call(arguments, 1, i);
+          }
+          var r = route.apply(null, args);
+          if (i < arguments.length) {
+            if (r.method === 'POST' || r.method === 'PUT')
+              r.data = arguments[i];
+            else
+              r.params = arguments[i];
+            if (++i < arguments.length)
+              angular.extend(r, arguments[i]);
+          }
+          if (r.data instanceof FormData) {
+            if (!('transformRequest' in r))
+              r.transformRequest = angular.identity;
+            if (!('headers' in r))
+              r.headers = {};
+            // Not sure why we do this but it seems to be necessary:
+            if (!('Content-Type' in r.headers))
+              r.headers['Content-Type'] = undefined;
+          }
+          var cache;
+          /* try to guess (conservatively) if this request is cached: */
+          if (r.method === 'GET' || r.method === 'JSONP') {
+            cache = r.cache || $http.defaults.cache && $cacheFactory('$http');
+            if (cache && !r.params)
+              cache = cache.get(r.url);
+          }
+          if (!cache) {
+            var a = analytics.dump();
+            if (a) {
+              if (!('headers' in r))
+                r.headers = {Analytics: a};
+              else
+                r.headers.Analytics = a;
+            }
+          }
+          return $http(r);
+        };
 
-	router.permalink = function (url) {
-	  return constants.url + url;
-	};
+        router.permalink = function (url) {
+          return constants.url + url;
+        };
 
         var prev;
         $rootScope.$on('$locationChangeStart', function (event, to, from) {
@@ -406,7 +406,7 @@ module.provider('routerService', [
             $location.$$parse(router.prev);
         };
 
-	return router;
+        return router;
       }
     ];
   }

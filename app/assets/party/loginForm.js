@@ -12,17 +12,17 @@ module.directive('loginForm', [
       form.data = {};
 
       form.switchMethod = function (method) {
-	$scope.method = method;
+        $scope.method = method;
       };
 
       form.submit = function () {
-	page.models.Login.login(form.data).then(function () {
-	  form.validator.server({});
+        page.models.Login.login(form.data).then(function () {
+          form.validator.server({});
 
           page.router.back();
-	}, function (res) {
-	  form.validator.server(res, true);
-	});
+        }, function (res) {
+          form.validator.server(res, true);
+        });
       };
 
       form.validator.client({

@@ -12,19 +12,19 @@ angular.forEach(keys, function (key, name) {
     '$parse',
     function ($parse) { return {
       compile: function ($element, $attrs) {
-	var action = $parse($attrs[directive]);
-	return function ($scope, $element) {
-	  $element.on('keypress', function (event) {
-	    if (
-	      (event.key == name) ||
-	      (event.keyIdentifier == name) ||
-	      (event.keyCode == key) ||
-	      (event.which == key))
-	      $scope.$apply(function () {
-		action($scope, {$event:event});
-	      });
-	  });
-	};
+        var action = $parse($attrs[directive]);
+        return function ($scope, $element) {
+          $element.on('keypress', function (event) {
+            if (
+              (event.key == name) ||
+              (event.keyIdentifier == name) ||
+              (event.keyCode == key) ||
+              (event.which == key))
+              $scope.$apply(function () {
+                action($scope, {$event:event});
+              });
+          });
+        };
       }
     }; }
   ];

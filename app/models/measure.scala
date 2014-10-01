@@ -176,9 +176,9 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
       mid +: MeasureType.all.map(_.selectAll),
       "measure_all",
       new SQLLine[MeasureV[_]](1 + MeasureType.all.length, { l =>
-	val metric = Metric.get(mid.get(l.head)).get
-	val d = l(1+metric.dataType.id)
-	make(metric, metric.sqlType.get(d))
+        val metric = Metric.get(mid.get(l.head)).get
+        val d = l(1+metric.dataType.id)
+        make(metric, metric.sqlType.get(d))
       })
     )
   }
@@ -243,8 +243,8 @@ object Measures extends Table[Measures]("measures") {
   private implicit val sqlMeasure : SQLType[Measure[_]] =
     SQLType("measure", classOf[Measure[_]])(s =>
       for {
-	i <- Maybe(s.indexOf(':')).opt
-	id <- Metric.get(Metric.asId(s.substring(0,i).toInt))
+        i <- Maybe(s.indexOf(':')).opt
+        id <- Metric.get(Metric.asId(s.substring(0,i).toInt))
       } yield (new Measure(id, s.substring(i+1))),
       m => m.metricId.toString + ":" + m.datum)
 

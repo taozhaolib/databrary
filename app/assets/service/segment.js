@@ -5,64 +5,64 @@ module.factory('Segment', [
   function (constants) {
     function Segment(l, u) {
       if (arguments.length >= 2) {
-	this.l = l;
-	this.u = u;
+        this.l = l;
+        this.u = u;
       } else if (l === undefined) {
-	this.l = -Infinity;
-	this.u = Infinity;
+        this.l = -Infinity;
+        this.u = Infinity;
       } else if (Array.isArray(l)) {
-	this.l = typeof l[0] === 'number' ? l[0] : -Infinity;
-	this.u = typeof l[1] === 'number' ? l[1] : Infinity;
+        this.l = typeof l[0] === 'number' ? l[0] : -Infinity;
+        this.u = typeof l[1] === 'number' ? l[1] : Infinity;
       } else if (angular.isNumber(l)) {
-	this.l = l;
-	this.u = l+0.1; // this is floored out later
+        this.l = l;
+        this.u = l+0.1; // this is floored out later
       } else if (l === null) {
-	this.l = 0;
-	this.u = 0;
+        this.l = 0;
+        this.u = 0;
       } else if (l instanceof Object && 'l' in l && 'u' in l) {
-	this.l = l.l;
-	this.u = l.u;
+        this.l = l.l;
+        this.u = l.u;
       } else
-	throw new Error('invalid Segment construction');
+        throw new Error('invalid Segment construction');
     }
 
     Object.defineProperty(Segment.prototype, 'full', {
       get: function () {
-	return this.l === -Infinity && this.u === Infinity;
+        return this.l === -Infinity && this.u === Infinity;
       }
     });
 
     Object.defineProperty(Segment.prototype, 'empty', {
       get: function () {
-	return this.l >= this.u;
+        return this.l >= this.u;
       }
     });
 
     Object.defineProperty(Segment.prototype, 'base', {
       get: function () {
-	return isFinite(this.l) ? this.l : 0;
+        return isFinite(this.l) ? this.l : 0;
       }
     });
 
     Segment.isFull = function (x) {
       return x === undefined ||
-	(x instanceof Segment && x.full) ||
-	x === ',' || x === '-'; // handle strings just as an optimization
+        (x instanceof Segment && x.full) ||
+        x === ',' || x === '-'; // handle strings just as an optimization
     };
     Segment.full = constants.deepFreeze(new Segment(undefined));
 
     Segment.isEmpty = function (x) {
       return x === null ||
-	(x instanceof Segment && x.empty) ||
-	x === '';
+        (x instanceof Segment && x.empty) ||
+        x === '';
     };
     Segment.empty = constants.deepFreeze(new Segment(null));
 
     function base(x) {
       if (x instanceof Segment)
-	return x.base;
+        return x.base;
       else if (Array.isArray(x))
-	x = x[0];
+        x = x[0];
       return isFinite(x) ? x : 0;
     }
 
@@ -72,51 +72,51 @@ module.factory('Segment', [
 
     Segment.prototype.format = function () {
       if (this.full)
-	return '-';
+        return '-';
       if (this.empty)
-	return '';
+        return '';
       var l = Math.floor(this.l);
       var u = Math.floor(this.u);
       if (l === u)
-	return l.toString();
+        return l.toString();
       return (isFinite(l) ? l : '') +
-	',' + (isFinite(u) ? u : '');
+        ',' + (isFinite(u) ? u : '');
     };
     
     Segment.prototype.toString = Segment.prototype.format;
 
     Segment.prototype.equals = function (that) {
       if (Segment.isFull(that))
-	return this.full;
+        return this.full;
       if (Segment.isEmpty(that))
-	return this.empty;
+        return this.empty;
       if (typeof that === 'string')
-	return false;
+        return false;
       that = Segment.make(that);
       return this.l === that.l && this.u === that.u;
     };
 
     Segment.prototype.intersect = function (that) {
       if (this.empty || Segment.isFull(that))
-	return this;
+        return this;
       if (this.full || Segment.isEmpty(that))
-	return that;
+        return that;
       that = Segment.make(that);
       return new Segment(
-	  Math.max(this.l, that.l),
-	  Math.min(this.u, that.u));
+          Math.max(this.l, that.l),
+          Math.min(this.u, that.u));
     };
 
     /* If segments are disjoint, assume the excluded middle. */
     Segment.prototype.union = function (that) {
       if (this.empty || Segment.isFull(that))
-	return that;
+        return that;
       if (this.full || Segment.isEmpty(that))
-	return this;
+        return this;
       that = Segment.make(that);
       return new Segment(
-	  Math.min(this.l, that.l),
-	  Math.max(this.u, that.u));
+          Math.min(this.l, that.l),
+          Math.max(this.u, that.u));
     };
 
     Segment.prototype.overlaps = function (that) {
@@ -125,11 +125,11 @@ module.factory('Segment', [
 
     Segment.prototype.contains = function (that) {
       if (typeof that === 'number')
-	return that >= this.l && that < this.u;
+        return that >= this.l && that < this.u;
       if (Segment.isFull(that))
-	return this.full;
+        return this.full;
       if (Segment.isEmpty(that))
-	return !this.empty;
+        return !this.empty;
       that = Segment.make(that);
       return this.l <= that.l && this.u >= that.u;
     };
@@ -141,11 +141,11 @@ module.factory('Segment', [
 
     Segment.format = function (seg) {
       if (Segment.isFull(seg))
-	return '-';
+        return '-';
       if (Array.isArray(seg))
-	return seg[0] + ',' + seg[1];
+        return seg[0] + ',' + seg[1];
       if (Segment.isEmpty(seg))
-	return '';
+        return '';
       return seg.toString();
     };
 

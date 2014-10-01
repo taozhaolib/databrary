@@ -10,15 +10,15 @@
         </ul>
 
         <ul class="actions">
-	        <li><a href="@volume.pageURL">view</a></li>
-	    @if(volume.checkPermission(Permission.EDIT)) {
-	        <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
-	        <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
-	        <li><a href="@controllers.routes.SlotHtml.add(volume.id)">add session/folder</a></li>
-	    }
-	    @if(volume.checkPermission(Permission.ADMIN)) {
-	        <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
-	    }
+                <li><a href="@volume.pageURL">view</a></li>
+            @if(volume.checkPermission(Permission.EDIT)) {
+                <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
+                <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
+                <li><a href="@controllers.routes.SlotHtml.add(volume.id)">add session/folder</a></li>
+            }
+            @if(volume.checkPermission(Permission.ADMIN)) {
+                <li><a href="@controllers.routes.VolumeHtml.admin(volume.id)">access</a></li>
+            }
         </ul>
     </div>
 
@@ -30,9 +30,9 @@
     }
 
     @widget.frame.raw("people", "")(Messages("volume.contributors.title")) {
-	@access.takeWhile(_.individual >= Permission.ADMIN).map { a =>
-	    @widget.portrait.verticalSmall(a.party)
-	}
+        @access.takeWhile(_.individual >= Permission.ADMIN).map { a =>
+            @widget.portrait.verticalSmall(a.party)
+        }
     }
 
 @if(funding.nonEmpty) {
@@ -65,15 +65,15 @@
 }
 
     @widget.frame.raw("citation", "")(Messages("volume.link.title")) {
-	<div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
-	    <p>
-	    @access.takeWhile(_.individual >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
-	    @display.dateFmtY.print(volume.creation).
-	    @volume.name.
-	    <em>Databrary</em>.
-	    Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL" title="@volume.name on Databrary.org">@site.Site.url(volume.pageURL)</a>.
-	    </p>
-	</div>
+        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+            <p>
+            @access.takeWhile(_.individual >= Permission.ADMIN).map(a => display.citeName(a.party.name) + ", ")
+            @display.dateFmtY.print(volume.creation).
+            @volume.name.
+            <em>Databrary</em>.
+            Retrieved @display.dateFmtCite.print(new dbrary.Date) from <a href="@volume.pageURL" title="@volume.name on Databrary.org">@site.Site.url(volume.pageURL)</a>.
+            </p>
+        </div>
     }
 }
 
@@ -90,14 +90,14 @@
     }
 
     @groupBy(records, (r : Record) => r.category).map { case (cat, rl)  =>
-	@widget.panel.raw(cat.fold("")(_.name.toLowerCase), "")(title = Messages("browser.title") + cat.fold("")(" by " + _.name)){
-	    <div class="col">
-		<ul>
-		    @rl.map { r =>
-			<li>@display(r)</li>
-		    }
-		</ul>
-	    </div>
+        @widget.panel.raw(cat.fold("")(_.name.toLowerCase), "")(title = Messages("browser.title") + cat.fold("")(" by " + _.name)){
+            <div class="col">
+                <ul>
+                    @rl.map { r =>
+                        <li>@display(r)</li>
+                    }
+                </ul>
+            </div>
         }
     }
 

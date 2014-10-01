@@ -6,8 +6,8 @@ module.directive('fileModel', [
     restrict: 'A',
     controller: [function () {
       this.$setPristine = function () {
-	this.$dirty = false;
-	this.$pristine = true;
+        this.$dirty = false;
+        this.$pristine = true;
       };
       this.$setPristine();
     }],
@@ -18,21 +18,21 @@ module.directive('fileModel', [
 
       form.$addControl(file);
       $scope.$on('$destroy', function() {
-	form.$removeControl(file);
+        form.$removeControl(file);
       });
 
       $element.on('change', function () {
-	model.assign($scope, $element[0].files);
-	if (file.$pristine) {
-	  file.$dirty = true;
-	  file.$pristine = false;
-	  form.$setDirty();
-	}
+        model.assign($scope, $element[0].files);
+        if (file.$pristine) {
+          file.$dirty = true;
+          file.$pristine = false;
+          form.$setDirty();
+        }
       });
 
       $scope.$watch(model, function (val) {
-	if (!val)
-	  $element[0].value = '';
+        if (!val)
+          $element[0].value = '';
       });
     }
   }; }

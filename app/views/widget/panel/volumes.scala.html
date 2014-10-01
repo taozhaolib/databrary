@@ -8,26 +8,26 @@
         @if(owned.nonEmpty) {
             <div class="volume-list">
                 <h2>Investigator</h2>
-		<ul class="flat">
+                <ul class="flat">
                 @owned.map { volume =>
-		  <li>
+                  <li>
                     @widget.frame.compactVolume(volume, Nil)
-		  </li>
+                  </li>
                 }
-		</ul>
+                </ul>
             </div>
         }
 
         @if(edited.nonEmpty) {
             <div class="volume-list">
                 <h2>Contributor</h2>
-		<ul class="flat">
+                <ul class="flat">
                 @edited.map { volume =>
-		  <li>
+                  <li>
                     @widget.frame.compactVolume(volume, Nil)
-		  </li>
+                  </li>
                 }
-		</ul>
+                </ul>
             </div>
         }
     }

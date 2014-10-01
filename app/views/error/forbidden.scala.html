@@ -2,9 +2,9 @@
 
 @template.html5(Messages("error.forbidden.title")) {
     @widget.panel.error(Messages("error.forbidden.title")) {
-	@HtmlFormat.raw(Messages("error.forbidden.body"))
-	@if(request.user.isEmpty) {
-	    You might try <a href="@routes.LoginHtml.view">logging in</a>.
-	}
+        @HtmlFormat.raw(Messages("error.forbidden.body"))
+        @if(request.user.isEmpty) {
+            You might try <a href="@routes.LoginHtml.view">logging in</a>.
+        }
     }
 }

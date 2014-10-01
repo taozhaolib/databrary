@@ -8,7 +8,7 @@ module.directive('searchForm', [
     scope: true,
     link: function ($scope) {
       $scope.search = function () {
-	page.$location.path(page.router.search()).search($scope.search.data);
+        page.$location.path(page.router.search()).search($scope.search.data);
       };
       $scope.search.data = {};
     }

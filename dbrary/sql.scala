@@ -208,7 +208,7 @@ protected sealed abstract class SQLBuilder[+A] protected (val query : String)(im
     if (SQL.logger.isTraceEnabled) {
       val t0 = System.nanoTime
       r.onComplete { r =>
-	SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + query)
+        SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + query)
       }
     }
     r

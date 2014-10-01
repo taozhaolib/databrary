@@ -2,7 +2,7 @@
 
 @template.error(Messages("error.notfound.title")) {
     @widget.panel.error(Messages("error.notfound.title")) {
-	@HtmlFormat.raw(Messages("error.notfound.body"))
+        @HtmlFormat.raw(Messages("error.notfound.body"))
         <div>@request.path</div>
     }
 }(request)

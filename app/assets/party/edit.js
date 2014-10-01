@@ -21,11 +21,11 @@ module.controller('party/edit', [
 
     $scope.switchStep = function (step) {
       if (!leavingSoSoon())
-	return false;
+        return false;
 
       //to avoid bug where "float" elements fixed to top of page at lower scrolls are already at top
       if (step.form.scrollFn)
-	page.$timeout(step.form.scrollFn);
+        page.$timeout(step.form.scrollFn);
 
       return true;
     };
@@ -33,16 +33,16 @@ module.controller('party/edit', [
     var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
       if (url.contains(party.editRoute()))
-	return;
+        return;
       if (!leavingSoSoon())
-	return event.preventDefault();
+        return event.preventDefault();
       done();
     });
 
     $scope.$watch(function () {
       $scope.steps.forEach(function (step) {
-	step.complete = step.form.$pristine;
-	step.error = step.form.$invalid;
+        step.complete = step.form.$pristine;
+        step.error = step.form.$invalid;
       });
     });
   }

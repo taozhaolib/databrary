@@ -62,7 +62,7 @@ final class Record private (val id : Record.Id, val volume : Volume, private[thi
   /** Update the given values in the database and this object in-place. */
   def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] =
     Audit.change("record", SQLTerms.flatten(
-	category.map('category -> _.map(_.id))),
+        category.map('category -> _.map(_.id))),
       sqlKey)
       .execute.andThen { case scala.util.Success(true) =>
         category.foreach(category_ = _)
@@ -161,7 +161,7 @@ object Record extends TableId[Record]("record") {
   private[models] def sessionRow(vol : Volume) = columns
     .map { case (id, cat, meas) =>
       (consent : Consent.Value) =>
-	new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, meas)
+        new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, meas)
     }
   private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
     .~(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
@@ -212,7 +212,7 @@ object Record extends TableId[Record]("record") {
       val ma = "m_" + i.toString
       val mt = m.metric.measureType
       s.join(mt.select.column.fromAlias(ma),
-	"record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?")
+        "record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?")
       .pushArgs(SQLArgs(m.metric.id) :+ m.sqlArg)
       .map(_._1)
     }

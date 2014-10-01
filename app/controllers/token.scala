@@ -22,10 +22,10 @@ private[controllers] sealed class TokenController extends SiteController {
       } else if (!token.checkAuth(auth)) {
         throw ForbiddenException
       } else if (token.password)
-	if (request.isApi)
-	  macros.async(Ok(token.json))
-	else
-	  new TokenController.PasswordTokenForm(token).Ok
+        if (request.isApi)
+          macros.async(Ok(token.json))
+        else
+          new TokenController.PasswordTokenForm(token).Ok
       else {
         token.remove
         LoginController.login(token.account)
@@ -38,11 +38,11 @@ private[controllers] sealed class TokenController extends SiteController {
     models.LoginToken.get(form.token.get).flatMap(_
       .filter(t => t.valid && t.checkAuth(form.auth.get) && t.password && t.accountId === a)
       .fold[Future[Result]](ForbiddenException.result) { token =>
-	form.checkPassword(token.account)
-	form.orThrow
-	token.account.change(password = form.cryptPassword).flatMap { _ =>
-	  LoginController.login(token.account)
-	}
+        form.checkPassword(token.account)
+        form.orThrow
+        token.account.change(password = form.cryptPassword).flatMap { _ =>
+          LoginController.login(token.account)
+        }
       }
     )
   }
@@ -51,13 +51,13 @@ private[controllers] sealed class TokenController extends SiteController {
     for {
       token <- targ.right.toOption.mapAsync(LoginToken.create(_, true))
       _ <- Mail.send(
-	to = Seq(targ.fold(identity, _.email)),
-	subject = Messages("mail." + msg + ".subject"),
-	body = token.fold {
-	  Messages("mail." + msg + ".none")
-	} { token =>
-	  Messages("mail." + msg + ".body", token.redeemURL.absoluteURL(Play.isProd))
-	}
+        to = Seq(targ.fold(identity, _.email)),
+        subject = Messages("mail." + msg + ".subject"),
+        body = token.fold {
+          Messages("mail." + msg + ".none")
+        } { token =>
+          Messages("mail." + msg + ".body", token.redeemURL.absoluteURL(Play.isProd))
+        }
       )
     } yield (token)
 }
@@ -100,7 +100,7 @@ object TokenHtml extends TokenController with HtmlController {
     for {
       acct <- Account.getEmail(form.email.get)
       acct <- if (Play.isProd) acct.filterAsync(_.party.access.map(_.member < Permission.ADMIN))
-	else macros.async(acct)
+        else macros.async(acct)
       _ <- newPassword(acct.toRight(form.email.get))
     } yield (Ok("sent"))
   }

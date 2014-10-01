@@ -4,7 +4,7 @@ module.directive('messages', [
   'pageService', function (page) {
     var controller = ['$scope', function ($scope) {
       return ($scope.messages = {
-	list: page.messages.list
+        list: page.messages.list
       });
     }];
 

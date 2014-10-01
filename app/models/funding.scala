@@ -58,9 +58,9 @@ object Funder extends Table[Funder]("funder") {
   private def getJson(r : ws.WSRequestHolder) : Future[Option[json.JsValue]] =
     r.get.map { r =>
       if (r.status == 200 && r.header("Content-Type").exists(_.startsWith("application/json")))
-	Some(r.json)
+        Some(r.json)
       else
-	None
+        None
     }
 
   private def fundLabel(j : json.JsValue) : Option[String] =
@@ -68,18 +68,18 @@ object Funder extends Table[Funder]("funder") {
   private def fundrefId(id : Id) : Future[Option[Funder]] =
     getJson(fundRefId(id)).flatMap { r =>
       (for {
-	j <- r
-	doi <- (j \ "id").asOpt[String]
-	id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
-	name <- fundLabel(j \ "prefLabel")
+        j <- r
+        doi <- (j \ "id").asOpt[String]
+        id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
+        name <- fundLabel(j \ "prefLabel")
       } yield ((j, id, name))).mapAsync { case (j, id, name) =>
-	val alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
-	val country = (j \ "country" \ "resource").asOpt[String].flatMap {
-	  case geoNamesRes(r) if !r.equals(geoNamesUS) => Some(r)
-	  case _ => None
-	}
-	country.flatMapAsync(cid => getJson(geoNamesId(cid)).map(_.flatMap(_.\("name").asOpt[String])))
-	  .map(Funder(asId(id), name, alts, _))
+        val alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
+        val country = (j \ "country" \ "resource").asOpt[String].flatMap {
+          case geoNamesRes(r) if !r.equals(geoNamesUS) => Some(r)
+          case _ => None
+        }
+        country.flatMapAsync(cid => getJson(geoNamesId(cid)).map(_.flatMap(_.\("name").asOpt[String])))
+          .map(Funder(asId(id), name, alts, _))
       }
     }
 
@@ -90,16 +90,16 @@ object Funder extends Table[Funder]("funder") {
   def search(query : String, all : Boolean = false) : Future[Seq[Funder]] =
     if (all)
       getJson(fundRefSearch(query)).map(_
-	.flatMap(_.asOpt[json.JsArray])
-	.fold[Seq[Funder]](Nil)(_.value.flatMap { j =>
-	  for {
-	    ids <- (j \ "id").asOpt[String]
-	    id <- Maybe.toLong(ids)
-	    name <- (j \ "value").asOpt[String]
-	    alts = (j \ "other_names").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(_.asOpt[String]))
-	    country = (j \ "country").asOpt[String]
-	  } yield (Funder(asId(id), name, alts, country))
-	}))
+        .flatMap(_.asOpt[json.JsArray])
+        .fold[Seq[Funder]](Nil)(_.value.flatMap { j =>
+          for {
+            ids <- (j \ "id").asOpt[String]
+            id <- Maybe.toLong(ids)
+            name <- (j \ "value").asOpt[String]
+            alts = (j \ "other_names").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(_.asOpt[String]))
+            country = (j \ "country").asOpt[String]
+          } yield (Funder(asId(id), name, alts, country))
+        }))
     else
       row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
 }
@@ -129,10 +129,10 @@ object VolumeFunding extends Table[Funding]("volume_funding") {
     awards.fold(
       DELETE(ids).execute) { a =>
       Funder.get(funderId).flatMap(_.fold(async(false)) { _ =>
-	val args = ('awards -> a) +: ids
-	DBUtil.updateOrInsert(
-	  SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).apply(args))(
-	  INSERT(args)(_, _)).execute
+        val args = ('awards -> a) +: ids
+        DBUtil.updateOrInsert(
+          SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).apply(args))(
+          INSERT(args)(_, _)).execute
       })
     }
   }

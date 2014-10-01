@@ -63,9 +63,9 @@ object Transcode {
     implicitly[Site.DB].inTransaction { implicit siteDB =>
     models.Transcode.getJob(id).flatMap(_.mapAsync { tc =>
       tc.process.foreachAsync({ pid =>
-	tc.setStatus(Left("aborted")).map { _ =>
-	  ctl(tc.id, "-k", pid.toString)
-	}
+        tc.setStatus(Left("aborted")).map { _ =>
+          ctl(tc.id, "-k", pid.toString)
+        }
       }, tc)
     })
     }
@@ -80,14 +80,14 @@ object Transcode {
     models.Transcode.getJob(id).flatMap(_.filter(_.process.exists(_ == pid)).foreachAsync { tc =>
       logger.debug("result " + tc.id + ": " + log)
       (for {
-	_ <- tc.setStatus(Left(log))
-	_ = if (res != 0) scala.sys.error("exit " + res)
-	o = TemporaryFile(Upload.file(tc.id + ".mp4"))
-	_ = ctl(tc.id, "-c", o.file.getAbsolutePath)
-	r <- tc.complete(o, sha1)
+        _ <- tc.setStatus(Left(log))
+        _ = if (res != 0) scala.sys.error("exit " + res)
+        o = TemporaryFile(Upload.file(tc.id + ".mp4"))
+        _ = ctl(tc.id, "-c", o.file.getAbsolutePath)
+        r <- tc.complete(o, sha1)
       } yield(r)).recoverWith { case e : Throwable =>
-	logger.error("collecting " + id, e)
-	tc.setStatus(Left(e.getMessage))
+        logger.error("collecting " + id, e)
+        tc.setStatus(Left(e.getMessage))
       }
     })
     }

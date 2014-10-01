@@ -32,7 +32,7 @@ module.directive('partyEditApplyForm', [
 
       var preSelect;
       form.preSelect = function (party) {
-	preSelect = party;
+        preSelect = party;
       };
 
       $scope.$on('authSearchForm-init', function (event, searchForm) {
@@ -40,24 +40,24 @@ module.directive('partyEditApplyForm', [
           return;
 
         searchForm.selectFn = function (found) {
-	  form.data.push({
-	    new: true,
-	    party: found,
-	  });
-	  //warning: next line is template dependent! if classnames change this will no longer work
-	  page.display.scrollTo('fieldset article.permission-auth.pef:last');
+          form.data.push({
+            new: true,
+            party: found,
+          });
+          //warning: next line is template dependent! if classnames change this will no longer work
+          page.display.scrollTo('fieldset article.permission-auth.pef:last');
         };
 
         searchForm.notFoundFn = function (query) {
-	  form.data.push({
-	    new: true,
-	    query: query
-	  });
+          form.data.push({
+            new: true,
+            query: query
+          });
         };
 
-	if (preSelect)
-	  searchForm.selectFn(preSelect);
-	preSelect = null;
+        if (preSelect)
+          searchForm.selectFn(preSelect);
+        preSelect = null;
       });
 
       form.scrollFn = page.display.makeFloatScrollFn($('.peap-float'), $('.peap-float-floater'), 24*2.5);

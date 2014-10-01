@@ -8,12 +8,12 @@ module.factory('updateInterceptor', [
 
     return {
       response: function (res) {
-	var server;
+        var server;
         if (!warning && res.headers && (server = res.headers('server')) && !server.endsWith(version))
-	  warning = messages.add({
-	    type: 'yellow',
-	    body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
-	  });
+          warning = messages.add({
+            type: 'yellow',
+            body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
+          });
 
         return res;
       }

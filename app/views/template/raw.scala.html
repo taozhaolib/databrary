@@ -25,16 +25,16 @@
       <script src="@routes.Assets.at(js)"></script>
     }
   <script src="@routes.SiteApi.constantsJs"></script>
-	
+        
   <script>
     window.$play = {
       object: @format.raw(angular.get.toString),
       @request match {
-	case site : Site => {
-	  user: @format.raw(site.json.toString),
-	}
-	case _ => {
-	}
+        case site : Site => {
+          user: @format.raw(site.json.toString),
+        }
+        case _ => {
+        }
       }
     };
   </script>
@@ -97,14 +97,14 @@
   <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error">
     @if(js){
       <noscript>
-	      @body
+              @body
       </noscript>
     }else{
       @if(angular) {
-	<div>
-	  Our site works best with modern browsers (Firefox, Chrome, Safari, IE &ge;10, and others).
-	  You are viewing the simple version of our site: some functionality may not be available.
-	</div>
+        <div>
+          Our site works best with modern browsers (Firefox, Chrome, Safari, IE &ge;10, and others).
+          You are viewing the simple version of our site: some functionality may not be available.
+        </div>
       }
       @body
     }
@@ -152,7 +152,7 @@
         <div class="loading-text">[<span>loading</span>]</div>
       </div>
     </div>
-	
+        
     <script>
       document.getElementById('loading').style.display = 'block';
     </script>

@@ -56,7 +56,7 @@ object SiteException extends ActionFunction[SiteRequest.Base, SiteRequest.Base] 
     /* we have to catch immediate exceptions, too */
     async.catching(classOf[SiteException])(block(request))
       .recoverWith {
-	case e : SiteException => e.result(request)
+        case e : SiteException => e.result(request)
       }
 }
 
@@ -126,16 +126,16 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
       val site = SiteRequest[A](request, session)
       SiteApi.analytics(site).flatMap(_ =>
       SiteException.invokeBlock(site, 
-	if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
-	  session.foreachAsync(_.remove).map { _ =>
-	    LoginController.needed("login.expired")(request)
-	  }
-	} else block)
+        if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
+          session.foreachAsync(_.remove).map { _ =>
+            LoginController.needed("login.expired")(request)
+          }
+        } else block)
       .map { res =>
-	_root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
-	res.withHeaders(
-	  HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
-	  HeaderNames.SERVER -> _root_.site.Site.appVersion)
+        _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
+        res.withHeaders(
+          HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
+          HeaderNames.SERVER -> _root_.site.Site.appVersion)
       })
     }
   }

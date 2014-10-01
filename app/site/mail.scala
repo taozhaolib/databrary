@@ -30,21 +30,21 @@ object Mail {
       val hmac = javax.crypto.Mac.getInstance(fillinKey.getAlgorithm)
       hmac.init(fillinKey)
       Seq(
-	"id" -> party.id.toString,
-	"name" -> party.name,
-	"date" -> (new dbrary.Date).toString,
-	"mail" -> authorizeAddr)
-	.map { case (k, v) =>
-	  hmac.update(v.getBytes)
-	  (k, Seq(v))
-	} :+ ("auth" -> Seq(new String(store.Hex(hmac.doFinal))))
+        "id" -> party.id.toString,
+        "name" -> party.name,
+        "date" -> (new dbrary.Date).toString,
+        "mail" -> authorizeAddr)
+        .map { case (k, v) =>
+          hmac.update(v.getBytes)
+          (k, Seq(v))
+        } :+ ("auth" -> Seq(new String(store.Hex(hmac.doFinal))))
     }.flatMap { args =>
       val ws = play.api.libs.ws.WS.url("http://databrary.org/internal/investigator.cgi")
-	.post(args.toMap)
+        .post(args.toMap)
       ws.onComplete {
-	case scala.util.Success(r) if r.status == 200 => ()
-	case scala.util.Success(r) => play.api.Logger.error("investigator registration call failed: " + r.statusText + "\n" + r.body)
-	case scala.util.Failure(e) => play.api.Logger.error("investigator registration call failed", e)
+        case scala.util.Success(r) if r.status == 200 => ()
+        case scala.util.Success(r) => play.api.Logger.error("investigator registration call failed: " + r.statusText + "\n" + r.body)
+        case scala.util.Failure(e) => play.api.Logger.error("investigator registration call failed", e)
       }
       ws
     }

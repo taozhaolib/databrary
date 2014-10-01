@@ -9,7 +9,7 @@ module.filter('toArray', [
 
       var output = [];
       if (Array.isArray(input))
-	output = input;
+        output = input;
       else angular.forEach(input, function (item, key) {
         if (key != '$promise' && key != '$resolved') {
           item.key = key;

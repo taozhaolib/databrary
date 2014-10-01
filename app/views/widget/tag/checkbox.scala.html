@@ -16,9 +16,9 @@
 
 @input(field, map) { (id, name, value, htmlArgs) =>
         <div class="clicker" data-for="#@id">
-	    @defining(map.getOrElse('value, "true")) { boxValue =>
+            @defining(map.getOrElse('value, "true")) { boxValue =>
             <input type="checkbox" id="@id" name="@name" value="@boxValue" @(if(value == Some(boxValue)) "checked" else "") @toHtmlArgs(htmlArgs - 'value)>
-	    }
+            }
             <span>@map.get('_text)</span>
         </div>
 }

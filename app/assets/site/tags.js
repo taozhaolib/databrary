@@ -56,14 +56,14 @@ module.controller('site/tags', [
     $scope.retrieveTags = function () {
       switch (page.$route.current.controller) {
         case 'volume/view':
-	  $scope.volume.get(['tags']).then(
-	    $scope.refreshPanel,
-	    function (res) {
-	      page.messages.addError({
-		body: page.constants.message('tags.update.error'),
-		report: res,
-	      });
-	    });
+          $scope.volume.get(['tags']).then(
+            $scope.refreshPanel,
+            function (res) {
+              page.messages.addError({
+                body: page.constants.message('tags.update.error'),
+                report: res,
+              });
+            });
 
           break;
       }
@@ -80,7 +80,7 @@ module.controller('site/tags', [
           $scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
         }
 
-	var directions = {'-1': 'down', 0: 'null', 1: 'up'};
+        var directions = {'-1': 'down', 0: 'null', 1: 'up'};
         createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
         page.tooltips.clear(); // hack for broken tooltips
       }, function (res) {
@@ -167,7 +167,7 @@ module.controller('site/tags', [
       emptyAuto();
 
       $('#newName').on('keydown', $scope.$lift(function (event) {
-	keypress(event, form);
+        keypress(event, form);
       }));
 
       $scope.newNameChange(form);
@@ -187,10 +187,10 @@ module.controller('site/tags', [
     var updating = false;
     var updateAuto = function (form) {
       if (updating)
-	return;
+        return;
       updating = true;
       page.models.Tag.search(form.newNameVal)
-	.then(function (data) {
+        .then(function (data) {
           emptyAuto();
 
           if (form.newNameVal) {
@@ -198,15 +198,15 @@ module.controller('site/tags', [
           }
         }, function (errors, status) {
           page.messages.addError({
-	    body: page.constants.message('tags.auto.error', {sce: page.$sce.HTML}),
+            body: page.constants.message('tags.auto.error', {sce: page.$sce.HTML}),
             errors: errors,
             status: status
           });
 
           emptyAuto();
         }).finally(function () {
-	  updating = false;
-	});
+          updating = false;
+        });
     };
 
     var emptyAuto = function () {
@@ -234,7 +234,7 @@ module.controller('site/tags', [
           enabled: true,
           type: 'red',
           body: page.constants.message('tag.invalid.long', {sce: page.$sce.HTML})
-	};
+        };
 
         $scope.tagNewFormMessage = page.messages.add(message);
       }
@@ -243,7 +243,7 @@ module.controller('site/tags', [
     var disableNewNameError = function () {
       if ($scope.tagNewFormMessage) {
         $scope.tagNewFormMessage.remove();
-	$scope.tagNewFormMessage = undefined;
+        $scope.tagNewFormMessage = undefined;
       }
     };
   }

@@ -30,10 +30,10 @@
           </wizard-step>
 
           <wizard-step name="agreement">
-	    <div ng-bind-html="'wizard.register-agreement.agreement-contents' | message:{sce:page.$sce.HTML}"></div>
+            <div ng-bind-html="'wizard.register-agreement.agreement-contents' | message:{sce:page.$sce.HTML}"></div>
 
             <p><input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="registerForm.data.agreement">
-	      <label for="agreement-checkbox" class="option" ng-bind-html="'wizard.register-agreement.agree' | message:{sce:page.$sce.HTML}"></label>
+              <label for="agreement-checkbox" class="option" ng-bind-html="'wizard.register-agreement.agree' | message:{sce:page.$sce.HTML}"></label>
             </p>
 
             <button class="green" ng-click="proceed()" ng-disabled="!registerForm.data.agreement">{{'register.register' | message}}</button>
@@ -51,12 +51,12 @@
             <div class="radio-set">
               <div>
                 <input type="radio" ng-model="authSearchForm.principal" ng-value="'principal'">
-		<label class="option" ng-bind-html="'auth.register.principal' | message:{sce:page.$sce.HTML}"></label>
+                <label class="option" ng-bind-html="'auth.register.principal' | message:{sce:page.$sce.HTML}"></label>
               </div>
 
               <div>
                 <input type="radio" ng-model="authSearchForm.principal" ng-value="'affiliate'">
-		<label class="option" ng-bind-html="'auth.register.affiliate' | message:{sce:page.$sce.HTML}"></label>
+                <label class="option" ng-bind-html="'auth.register.affiliate' | message:{sce:page.$sce.HTML}"></label>
               </div>
             </div>
 
@@ -64,7 +64,7 @@
           </wizard-step>
 
           <wizard-step name="request">
-	    <auth-apply-form></auth-apply-form>
+            <auth-apply-form></auth-apply-form>
           </wizard-step>
 
           <wizard-step name="pending"></wizard-step>

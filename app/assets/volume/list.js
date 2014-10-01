@@ -12,7 +12,7 @@ module.directive('volumeList', [
       $scope.page = page;
 
       $scope.name = function (volume) {
-	return page.$location.path() === '/profile' && volume.alias || volume.name;
+        return page.$location.path() === '/profile' && volume.alias || volume.name;
       };
     }
   }; }

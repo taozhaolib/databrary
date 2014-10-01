@@ -37,7 +37,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     , SelectColumn[Permission.Value]("children")
     ).map { (individual, children) =>
       (volume : Volume) => (party : Party) =>
-	new VolumeAccess(volume, party, individual, children)
+        new VolumeAccess(volume, party, individual, children)
     }
   private def row(volume : Selector[Volume], party : Selector[Party]) = columns
     .join(volume, "volume_access.volume = volume.id").map(tupleApply)

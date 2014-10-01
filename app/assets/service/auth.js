@@ -10,7 +10,7 @@ module.factory('authService', [
     auth.logout = function () {
       models.Login.logout().then(function () {
         $location.url('/');
-	$route.reload();
+        $route.reload();
 
         messages.add({
           body: constants.message('logout.success'),
@@ -49,9 +49,9 @@ module.factory('authService', [
 
     var enableSU = function (form) {
       models.Login.superuserOn({
-	  auth: form.auth
+          auth: form.auth
         }).then(function () {
-	  $route.reload();
+          $route.reload();
         }, function (res) {
           messages.addError({
             report: res,
@@ -61,7 +61,7 @@ module.factory('authService', [
 
     var disableSU = function () {
       models.Login.superuserOff().then(function () {
-	$route.reload();
+        $route.reload();
       }, function (res) {
         messages.addError({
           report: res,

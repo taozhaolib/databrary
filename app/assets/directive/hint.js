@@ -8,8 +8,8 @@ module.directive('hint', [
       hints['permission-' + a] =
         page.constants.message('access.' + a, 'You');
       if ('access.edit.' + a + '.who' in page.constants.messages)
-	hints['access-edit-' + a] =
-	  page.constants.message('access.edit.' + a + '.who', 'You');
+        hints['access-edit-' + a] =
+          page.constants.message('access.edit.' + a + '.who', 'You');
     });
 
     angular.forEach(page.constants.consent, function (a) {

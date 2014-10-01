@@ -11,10 +11,10 @@ private[controllers] sealed class TagController extends SiteController {
     SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new TagController.SlotForm()._bind
       for {
-	r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])
+        r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])
       } yield {
-	if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
-	else Redirect(request.obj.pageURL)
+        if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
+        else Redirect(request.obj.pageURL)
       }
     }
 }

@@ -12,7 +12,7 @@ module.directive('assetDisplay', [
       $scope.asset = asset.inContext();
 
       if ($scope.asset !== asset)
-	$scope.clip = asset.segment.relativeTo($scope.asset.segment);
+        $scope.clip = asset.segment.relativeTo($scope.asset.segment);
     }
   }; }
 ]);

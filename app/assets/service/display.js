@@ -44,14 +44,14 @@ module.factory('displayService', [
 
     display.scrollTo = function (target) {
       $timeout(function () {
-	if (angular.isFunction(target))
-	  target = target();
-	if (angular.isString(target))
-	  target = $(target);
-	if (!angular.isNumber(target)) {
-	  if (!target.length) return;
-	  target = target.offset().top - 72;
-	}
+        if (angular.isFunction(target))
+          target = target();
+        if (angular.isString(target))
+          target = $(target);
+        if (!angular.isNumber(target)) {
+          if (!target.length) return;
+          target = target.offset().top - 72;
+        }
         $scroll.animate({
           scrollTop: target
         }, 500);
@@ -61,10 +61,10 @@ module.factory('displayService', [
     //will give error if $float or $floater are not elements with offset() available
     display.makeFloatScrollFn = function(float, floater, x) {
       return function () {
-	if (window.pageYOffset + x >= float.offset().top)
-	  floater.addClass('float');
-	else
-	  floater.removeClass('float');
+        if (window.pageYOffset + x >= float.offset().top)
+          floater.addClass('float');
+        else
+          floater.removeClass('float');
       };
     };
 
@@ -87,11 +87,11 @@ module.factory('displayService', [
 
     /* TODO: this should really use .canPlayType */
     if ($window.navigator.userAgent.toLowerCase().contains('firefox') &&
-	$window.navigator.platform.toLowerCase().contains('mac'))
+        $window.navigator.platform.toLowerCase().contains('mac'))
       messages.add({
-	type: 'yellow',
-	closeable: true,
-	body: constants.message('video.unsupported')
+        type: 'yellow',
+        closeable: true,
+        body: constants.message('video.unsupported')
       });
 
     //

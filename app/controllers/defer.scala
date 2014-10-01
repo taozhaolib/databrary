@@ -33,7 +33,7 @@ sealed class DeferredAction[R[_]](builder : ActionBuilder[R], block : R[AnyConte
     builder.invokeBlock[AnyContentAsEmpty.type](EmptyRequest(request), r => Future.successful(new DeferralResult(r)))
     .map {
       case dr : DeferralResult if dr.header.status == 0 =>
-	block(dr.request).map(_.withHeaders(dr.header.headers.toSeq : _*))
+        block(dr.request).map(_.withHeaders(dr.header.headers.toSeq : _*))
       case r => Iteratee.ignore.map(_ => r)
     }
   }
@@ -45,12 +45,12 @@ final class DeferredSiteAction[R[_] <: SiteRequest[_]](builder : ActionBuilder[R
     builder.invokeBlock[AnyContentAsEmpty.type](EmptyRequest(request), r => Future.successful(new DeferralResult(r)))
     .map {
       case dr : DeferralResult if dr.header.status == 0 =>
-	scala.util.control.Exception.handling(classOf[SiteException]).by(e =>
-	  Iteratee.ignore[Array[Byte]].mapM(_ => e.asInstanceOf[SiteException].result(dr.request)))(
-	  block(dr.request).map(_.withHeaders(dr.header.headers.toSeq : _*)))
-	.recoverM {
-	  case e : SiteException => e.result(dr.request)
-	}
+        scala.util.control.Exception.handling(classOf[SiteException]).by(e =>
+          Iteratee.ignore[Array[Byte]].mapM(_ => e.asInstanceOf[SiteException].result(dr.request)))(
+          block(dr.request).map(_.withHeaders(dr.header.headers.toSeq : _*)))
+        .recoverM {
+          case e : SiteException => e.result(dr.request)
+        }
       case r => Iteratee.ignore[Array[Byte]].map(_ => r)
     }
   }

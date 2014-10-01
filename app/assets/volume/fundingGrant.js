@@ -8,21 +8,21 @@ module.directive('fundingGrantForm', [
       var form = $scope.fundingGrantForm;
 
       form.data = {
-	awards: funding.awards && funding.awards.length ? funding.awards.slice(0) : ['']
+        awards: funding.awards && funding.awards.length ? funding.awards.slice(0) : ['']
       };
 
       if (funding.new)
-	form.$setDirty();
+        form.$setDirty();
 
       form.save = function () {
         form.data.awards = form.data.awards
-	  .map(function (grant) {
-	    return grant.trim();
-	  }).filter(function (grant) {
-	    return grant !== '';
-	  });
+          .map(function (grant) {
+            return grant.trim();
+          }).filter(function (grant) {
+            return grant !== '';
+          });
 
-	volume.fundingSave(funding.funder.id, form.data).then(function () {
+        volume.fundingSave(funding.funder.id, form.data).then(function () {
           form.messages.add({
             body: page.constants.message('funding.save.success'),
             type: 'green',
@@ -42,7 +42,7 @@ module.directive('fundingGrantForm', [
       };
 
       form.remove = function () {
-	volume.fundingDelete(funding.funder.id).then(function () {
+        volume.fundingDelete(funding.funder.id).then(function () {
           form.messages.add({
             body: page.constants.message('funding.remove.success'),
             type: 'green',
@@ -50,7 +50,7 @@ module.directive('fundingGrantForm', [
           });
 
           form.$setPristine();
-	  form.removeSuccessFn(funding);
+          form.removeSuccessFn(funding);
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('funding.remove.error'),
@@ -64,20 +64,20 @@ module.directive('fundingGrantForm', [
       //
 
       form.addAward = function () {
-	form.data.awards.push('');
+        form.data.awards.push('');
       };
 
       form.addAwardEnabled = function() {
-	return form.data.awards.every(function (grant) {
-	  return grant.trim() !== '';
-	});
+        return form.data.awards.every(function (grant) {
+          return grant.trim() !== '';
+        });
       };
 
       form.removeAward = function (i) {
-	form.data.awards.splice(i, 1);
+        form.data.awards.splice(i, 1);
         form.$setDirty();
-	if (!form.data.awards.length)
-	  form.remove();
+        if (!form.data.awards.length)
+          form.remove();
       };
 
       //

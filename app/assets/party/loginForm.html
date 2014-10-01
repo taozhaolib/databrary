@@ -2,11 +2,11 @@
   <div ng-switch="loginForm.method">
     <div ng-switch-default>
       <validator name="email" label="'email' | message">
-	<input id="loginEmail" name="email" type="email" ng-model="loginForm.data.email" required>
+        <input id="loginEmail" name="email" type="email" ng-model="loginForm.data.email" required>
       </validator>
 
       <validator name="password" label="'password' | message">
-	<input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required key-enter="loginForm.submit()">
+        <input id="loginPassword" name="password" type="password" ng-model="loginForm.data.password" required key-enter="loginForm.submit()">
       </validator>
     </div>
 

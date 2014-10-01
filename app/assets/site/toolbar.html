@@ -3,17 +3,17 @@
     <div class="row">
       <div class="title cf col-desktop-7 col-tablet-5" ng-class="{'col-mobile-4': page.models.Login.isLoggedIn(), 'col-mobile-2': !page.models.Login.isLoggedIn()}">
         <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='site/home'">
-	  <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
+          <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
         </h1>
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
             <li ng-repeat="link in page.display.toolbarLinks" bindonce>
               <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target" ng-click="link.click()">
-		<span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
+                <span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
                 <span class="text" bo-text="link.html"></span>
-	      </a>
-	    </li>
+              </a>
+            </li>
           </ul>
         </nav>
       </div>
@@ -49,13 +49,13 @@
                 <a bo-href="page.router.register()" class="toolbar-user-link" bo-text="'toolbar.reregister' | message"></a>
               </li>
               <li>
-		<a bo-href="page.router.profile()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
+                <a bo-href="page.router.profile()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
               </li>
               <li>
                 <a bo-href="page.router.volumeCreate()" bo-text="'volume.edit.create' | message | lowercase" ng-if="page.models.Login.isAuthorized()"></a>
               </li>
               <li><a href="" ng-click="page.auth.logout()" bo-text="'toolbar.logout' | message"></a>
-	      </li>
+              </li>
 
               <li ng-if="page.models.Login.user.superuser !== undefined" class="toolbar-password-form">
                 <ng-form name="superuserForm" ng-if="!page.models.Login.user.superuser" class="cf">

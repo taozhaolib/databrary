@@ -6,7 +6,7 @@ module.controller('volume/excerpts', [
     $scope.refreshPanel = function () {
       $scope.enabled = $scope.volume.excerpts && $scope.volume.excerpts.length > 0;
       if ($scope.enabled && !$scope.current)
-	$scope.current = $scope.volume.excerpts[0];
+        $scope.current = $scope.volume.excerpts[0];
     };
 
     //

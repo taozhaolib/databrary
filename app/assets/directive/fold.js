@@ -17,15 +17,15 @@ module.directive('fold', [
 
       function setFold(fold) {
         if ((folded = fold))
-	  $element.addClass(foldedClass);
-	else
-	  $element.removeClass(foldedClass);
+          $element.addClass(foldedClass);
+        else
+          $element.removeClass(foldedClass);
         if (!forget)
           storage.set('folding-' + id, folded ? '1' : '');
       }
 
       $scope.toggleFold = function (state) {
-	setFold(state === undefined ? !folded : state);
+        setFold(state === undefined ? !folded : state);
       };
 
       $element.addClass(foldableClass);

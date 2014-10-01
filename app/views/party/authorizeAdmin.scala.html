@@ -7,31 +7,31 @@
 @authorizeList(authorize : Seq[Authorize]) = {
     <table>
     <thead>
-	<tr>
-	    <th>Parent</th>
-	    <th>Child</th>
-	    <th>Info</th>
-	    <th>Site</th>
-	    <th>Member</th>
-	    <th>Expires</th>
-	</tr>
+        <tr>
+            <th>Parent</th>
+            <th>Child</th>
+            <th>Info</th>
+            <th>Site</th>
+            <th>Member</th>
+            <th>Expires</th>
+        </tr>
     </thead>
 
     <tbody>
-	@authorize.map { authorize =>
-	<tr>
-	    <td>@display(authorize.parent)</td>
-	    <td>@display(authorize.child)
-		@authorize.child.email.map { e =>
-		    <br/>&lt;@e&gt;
-		}
-	    </td>
-	    <td>@authorize.info</td>
-	    <td>@authorize.site</td>
-	    <td>@authorize.member</td>
-	    <td>@authorize.expires</td>
-	</tr>
-	}
+        @authorize.map { authorize =>
+        <tr>
+            <td>@display(authorize.parent)</td>
+            <td>@display(authorize.child)
+                @authorize.child.email.map { e =>
+                    <br/>&lt;@e&gt;
+                }
+            </td>
+            <td>@authorize.info</td>
+            <td>@authorize.site</td>
+            <td>@authorize.member</td>
+            <td>@authorize.expires</td>
+        </tr>
+        }
     </tbody>
     </table>
 }
@@ -40,14 +40,14 @@
     <h3>Parties</h3>
     <table>
     <thead>
-	<tr>
-	    <th>ID</th>
-	    <th>Auth</th>
-	    <th>Name</th>
-	    <th>Email</th>
-	    <th>Affiliation</th>
-	    <th>Pass</th>
-	</tr>
+        <tr>
+            <th>ID</th>
+            <th>Auth</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Affiliation</th>
+            <th>Pass</th>
+        </tr>
     </thead>
 
     <tbody>
@@ -84,35 +84,35 @@
 
     <table>
     <thead>
-	<tr>
-	    <th>Parent</th>
-	    <th>Child</th>
-	    <th>Info</th>
-	    <th>Site</th>
-	    <th>Member</th>
-	    <th>Expires</th>
-	    <th>Action</th>
-	</tr>
+        <tr>
+            <th>Parent</th>
+            <th>Child</th>
+            <th>Info</th>
+            <th>Site</th>
+            <th>Member</th>
+            <th>Expires</th>
+            <th>Action</th>
+        </tr>
     </thead>
 
     <tbody>
-	@pending.map { form =>
-	@widget.tag.form(form) {
-	<tr>
-	    <td>@display(form.authorize.parent)</td>
-	    <td>@display(form.authorize.child)</td>
-	    @widget.tag.inputText(form.info())
-	    @widget.enumSelect(form.site(), Permission)
-	    @widget.enumSelect(form.member(), Permission)
-	    @widget.tag.inputDate(form.expires())
-	    <td>
-		@widget.formErrors(form)
-		<button type='submit' class="button second">@{if(form.pending) "Authorize" else "Update"}</button>
-		<button class="button first" name='delete' value='true'>@{if(form.pending) "Deny" else "Revoke"}</button>
-	    </td>
-	</tr>
-	}
-	}
+        @pending.map { form =>
+        @widget.tag.form(form) {
+        <tr>
+            <td>@display(form.authorize.parent)</td>
+            <td>@display(form.authorize.child)</td>
+            @widget.tag.inputText(form.info())
+            @widget.enumSelect(form.site(), Permission)
+            @widget.enumSelect(form.member(), Permission)
+            @widget.tag.inputDate(form.expires())
+            <td>
+                @widget.formErrors(form)
+                <button type='submit' class="button second">@{if(form.pending) "Authorize" else "Update"}</button>
+                <button class="button first" name='delete' value='true'>@{if(form.pending) "Deny" else "Revoke"}</button>
+            </td>
+        </tr>
+        }
+        }
     </tbody>
     </table>
 

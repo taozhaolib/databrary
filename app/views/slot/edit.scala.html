@@ -6,15 +6,15 @@
 
 @template.form(Some(request.obj), form.formName, Some(request.obj.json.js)) {
             @widget.tag.form(form) {
-		@cast[SlotController.ContainerForm](form).map { form =>
+                @cast[SlotController.ContainerForm](form).map { form =>
                     @widget.tag.inputText(form.name(), 'placeholder -> "Name")
                     @widget.tag.inputDate(form.date(), 'placeholder -> "Date", 'class -> "half")
                 }
 
                 @widget.enumSelect(form.consent(), Consent)
 
-		@widget.formErrors(form)
-		<button type='submit' class="button">@form.actionName</button>
+                @widget.formErrors(form)
+                <button type='submit' class="button">@form.actionName</button>
             }
 
             @request.obj match {
@@ -27,9 +27,9 @@
                                 <tr>
                                     <th class="main">Record</th>
                                     <th class="meta">Category</th>
-				    @recordForm.map { _ =>
-				    <th class="meta">Action</th>
-				    }
+                                    @recordForm.map { _ =>
+                                    <th class="meta">Action</th>
+                                    }
                                 </tr>
                             </thead>
 
@@ -48,12 +48,12 @@
                                             <td class="meta">
                                                 <a href="@routes.RecordHtml.edit(record.id)" class="button">edit</a>
 
-					    @defining(new RecordHtml.RemoveForm(record, slot)) { form =>
+                                            @defining(new RecordHtml.RemoveForm(record, slot)) { form =>
                                             @widget.tag.form(form) {
-						@widget.formErrors(form)
+                                                @widget.formErrors(form)
                                                 <button type='submit' class="button first">remove</button>
                                             }
-					    }
+                                            }
                                             </td>
                                         </tr>
                                     }
@@ -68,16 +68,16 @@
                                 <tfoot>
                                     <tr>
                                     @widget.tag.form(form) {
-				    @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit implicitField =>
+                                    @defining(helper.FieldConstructor(widget.tag.tableFieldConstructor.f)) { implicit implicitField =>
 
-					@widget.tag.select(form.record(), selectList.map(r => (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)), ('_default, "Create new record..."), ('_colspan, 2))
+                                        @widget.tag.select(form.record(), selectList.map(r => (r.id.toString, r.category.fold("")(_.name + ':') + r.ident)), ('_default, "Create new record..."), ('_colspan, 2))
 
                                         <td>
-					    @widget.formErrors(form)
+                                            @widget.formErrors(form)
                                             <button type='submit' class="button third">add record</button>
                                         </td>
                                     }
-				    }
+                                    }
                                     </tr>
                                 </tfoot>
                             }
@@ -89,5 +89,5 @@
 
                 }
             }
-	<a href="@request.obj.pageURL">@Messages("cancel")</a>
+        <a href="@request.obj.pageURL">@Messages("cancel")</a>
 }

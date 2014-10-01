@@ -119,9 +119,9 @@ final case class EitherMapping[L,R](leftMapping : Mapping[L], rightMapping : Map
     val l = left.bind(data)
     val r = right.bind(data)
     l.fold(e => r.fold(er => Left(e ++ er),
-	r => Right(Right(r))),
+        r => Right(Right(r))),
       l => r.fold(_ => Right(Left(l)),
-	_ => Left(Seq(FormError(key, "error.both", Seq(left.key, right.key))))))
+        _ => Left(Seq(FormError(key, "error.both", Seq(left.key, right.key))))))
   }
   def unbind(value : Either[L,R]) =
     value.fold(left.unbind(_), right.unbind(_))

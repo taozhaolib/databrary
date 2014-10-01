@@ -8,18 +8,18 @@ module.directive('volumeEditOverviewForm', [
       var form = $scope.volumeEditOverviewForm;
 
       function init(volume) {
-	var citation = volume.citation || {};
-	form.data = {
-	  name: volume.name,
-	  alias: volume.alias,
-	  body: volume.body,
-	  citation: {
-	    head: citation.head,
-	    title: citation.title,
-	    url: citation.url,
-	    authors: citation.authors && citation.authors.length ? citation.authors.slice(0) : [''],
-	  }
-	};
+        var citation = volume.citation || {};
+        form.data = {
+          name: volume.name,
+          alias: volume.alias,
+          body: volume.body,
+          citation: {
+            head: citation.head,
+            title: citation.title,
+            url: citation.url,
+            authors: citation.authors && citation.authors.length ? citation.authors.slice(0) : [''],
+          }
+        };
       }
       init(volume || {});
 
@@ -34,32 +34,32 @@ module.directive('volumeEditOverviewForm', [
 
       form.save = function () {
         form.data.citation.authors = form.data.citation.authors
-	  .map(function (author) {
-	    return author.trim();
-	  }).filter(function (author) {
-	    return author !== '';
-	  });
+          .map(function (author) {
+            return author.trim();
+          }).filter(function (author) {
+            return author !== '';
+          });
 
-	(volume ?
+        (volume ?
           volume.save(form.data) :
           page.models.Volume.create(form.data, $routeParams.owner))
-	  .then(function (vol) {
-	    form.validator.server({});
+          .then(function (vol) {
+            form.validator.server({});
 
-	    form.messages.add({
-	      type: 'green',
-	      countdown: 3000,
-	      body: page.constants.message('volume.edit.overview.success'),
-	    });
+            form.messages.add({
+              type: 'green',
+              countdown: 3000,
+              body: page.constants.message('volume.edit.overview.success'),
+            });
 
-	    init(vol);
-	    form.$setPristine();
+            init(vol);
+            form.$setPristine();
 
-	    if (!volume)
-	      page.$location.url(vol.editRoute());
-	  }, function (res) {
-	    form.validator.server(res);
-	  });
+            if (!volume)
+              page.$location.url(vol.editRoute());
+          }, function (res) {
+            form.validator.server(res);
+          });
       };
 
       form.autoDOI = function () {
@@ -73,7 +73,7 @@ module.directive('volumeEditOverviewForm', [
           .then(function (res) {
             form.data.citation = res;
             form.data.name = res.title;
-	    delete res.title;
+            delete res.title;
 
             form.setAutomatic(false);
 
@@ -96,23 +96,23 @@ module.directive('volumeEditOverviewForm', [
       };
 
       form.addAuthorEnabled = function() {
-	return form.data.citation.authors.every(function (author) {
-	  return author.trim() !== '';
-	});
+        return form.data.citation.authors.every(function (author) {
+          return author.trim() !== '';
+        });
       };
 
       form.removeAuthor = function (i) {
-	form.data.citation.authors.splice(i, 1);
-	if (!form.data.citation.authors.length)
-	  form.data.citation.authors.push('');
+        form.data.citation.authors.splice(i, 1);
+        if (!form.data.citation.authors.length)
+          form.data.citation.authors.push('');
         form.$setDirty();
       };
 
       var validate = {};
       ['name', 'body', 'alias', 'citation.head', 'citation.url', 'citation.year'].forEach(function (f) {
-	validate[f] = {
-	  tips: page.constants.message('volume.edit.' + f + '.help')
-	};
+        validate[f] = {
+          tips: page.constants.message('volume.edit.' + f + '.help')
+        };
       });
       form.validator.client(validate, true);
       form.setAutomatic(!volume);

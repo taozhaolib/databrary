@@ -59,7 +59,7 @@
 
       <div frame id="frame-people" frame-title="{{'volume.contributors.title' | message}}" fold>
         <div class="row">
-	  <div ng-repeat="access in volume.access" ng-if="access.individual >= page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
+          <div ng-repeat="access in volume.access" ng-if="access.individual >= page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
             <portrait></portrait>
           </div>
         </div>

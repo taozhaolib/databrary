@@ -6,20 +6,20 @@ module.directive('tooltips', [
       var tooltips = {};
 
       tooltips.getTooltipClasses = function (tooltip) {
-	var classes = tooltip.cls.split(' ');
+        var classes = tooltip.cls.split(' ');
 
-	classes.push('tooltip');
-	classes.push('tooltip-' + tooltip.type);
+        classes.push('tooltip');
+        classes.push('tooltip-' + tooltip.type);
 
-	classes.push.apply(classes,
-	  tooltip.position.map(function (p) {
-	    return 'tooltip-' + p;
-	  }));
+        classes.push.apply(classes,
+          tooltip.position.map(function (p) {
+            return 'tooltip-' + p;
+          }));
 
-	if (tooltip.visible)
-	  classes.push('tooltip-visible');
+        if (tooltip.visible)
+          classes.push('tooltip-visible');
 
-	return classes;
+        return classes;
       };
 
       tooltips.list = page.tooltips.list;

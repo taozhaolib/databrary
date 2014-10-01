@@ -17,7 +17,7 @@
                             <div class="comment_meta row">
                                 <div class="comment_info col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6 col-cell">
                                     <div class="inner">
-					@Messages("comments.prompt")
+                                        @Messages("comments.prompt")
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@
 
                 <div class="col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-6">
                     <div class="comment_meta row">
-		    @if(!context.exists(_ @> c)) {
+                    @if(!context.exists(_ @> c)) {
                             @if(c.container.top) {
                                 <div class="comment_info comment_location col-desktop-5 col-laptop-5 col-tablet-5 col-mobile-5 col-cell">
                                     <div class="inner">

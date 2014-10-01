@@ -22,7 +22,7 @@ object url extends URLStreamHandlerFactory {
     override protected def parseURL(u : URL, spec : String, start : Int, limit : Int) {
       val doi = spec.substring(start, limit)
       if (!validDOI(doi))
-	throw new RuntimeException("Invalid DOI")
+        throw new RuntimeException("Invalid DOI")
       setURL(u, "doi", u.getHost, u.getPort, u.getAuthority, u.getUserInfo, doi, u.getQuery, u.getRef)
     }
   }

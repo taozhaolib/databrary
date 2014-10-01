@@ -7,9 +7,9 @@ module.directive('partyEditAccountForm', [
       var form = $scope.partyEditAccountForm;
 
       function init() {
-	form.data = {
-	  email: party.email,
-	};
+        form.data = {
+          email: party.email,
+        };
       }
       init();
 
@@ -18,7 +18,7 @@ module.directive('partyEditAccountForm', [
       });
 
       form.save = function () {
-	party.save(form.data).then(
+        party.save(form.data).then(
           function () {
             form.validator.server({});
 
@@ -28,7 +28,7 @@ module.directive('partyEditAccountForm', [
               body: page.constants.message('party.edit.profile.success'),
             });
 
-	    init();
+            init();
             form.$setPristine();
           }, function (res) {
             form.validator.server(res);
@@ -37,9 +37,9 @@ module.directive('partyEditAccountForm', [
 
       var validate = {};
       ['email', 'password', 'password.again', 'auth'].forEach(function (f) {
-	validate[f] = {
-	  tips: page.constants.message('party.edit.' + f + '.help')
-	};
+        validate[f] = {
+          tips: page.constants.message('party.edit.' + f + '.help')
+        };
       });
       validate.email.errors = page.constants.message('login.email.error');
       validate['password.again'].errors = page.constants.message('party.edit.password.again.error');

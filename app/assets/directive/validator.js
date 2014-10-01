@@ -20,13 +20,13 @@ module.directive('validator', [
       validator.clientTips = [];
 
       var on = $scope.$lift(function () {
-	validator.focus = true;
+        validator.focus = true;
       });
 
       var off = $scope.$lift(function () {
-	if (!validator.$element.is(":focus")) {
-	  validator.focus = false;
-	}
+        if (!validator.$element.is(":focus")) {
+          validator.focus = false;
+        }
       });
 
       validator.$element

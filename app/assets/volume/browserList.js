@@ -117,7 +117,7 @@ module.directive('browserList', [
 
       $scope.nameRecord = function (data) {
         var category = page.constants.category[data.object.category];
-	var name;
+        var name;
 
         if (data.object.id === 0) {
           name = category.not;

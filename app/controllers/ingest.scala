@@ -18,10 +18,10 @@ object IngestController extends SiteController with HtmlController {
   trait CSVForm extends StructForm {
     protected def CSV[T <: FileMember[_]](f : T = File()) : T = f
       .verifying(validation.Constraint[FilePart] { f : FilePart =>
-	val fmt = AssetFormat.getFilePart(f).map(_.mimetype).orElse(f.contentType)
-	if (!fmt.exists(_.equals("text/csv")))
-	  validation.Invalid(validation.ValidationError("file.format.unknown", fmt.getOrElse("unknown")))
-	else validation.Valid
+        val fmt = AssetFormat.getFilePart(f).map(_.mimetype).orElse(f.contentType)
+        if (!fmt.exists(_.equals("text/csv")))
+          validation.Invalid(validation.ValidationError("file.format.unknown", fmt.getOrElse("unknown")))
+        else validation.Valid
       })
   }
 
@@ -43,21 +43,21 @@ object IngestController extends SiteController with HtmlController {
     val form = new CuratedForm()._bind
     if (!form.run.get)
       Future(ingest.Curated.preview(form.file.get.ref.file))(site.context.process).map { r =>
-	Ok(views.html.ingest.curated(form, r))
+        Ok(views.html.ingest.curated(form, r))
       }.recover {
-	case e : IngestException =>
-	  BadRequest(views.html.ingest.curated(form, e.getMessage))
+        case e : IngestException =>
+          BadRequest(views.html.ingest.curated(form, e.getMessage))
       }
     else 
       ingest.Curated.populate(form.file.get.ref.file, volume).map { r =>
-	Ok(views.html.ingest.result(volume, (r._1 : Iterable[SiteObject]) ++ r._2))
+        Ok(views.html.ingest.result(volume, (r._1 : Iterable[SiteObject]) ++ r._2))
       }.recover {
-	case e : PopulateException =>
-	  Logger.error("curated ingest error", e)
-	  BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
-	case e : IngestException =>
-	  Logger.error("curated ingest error", e)
-	  BadRequest(views.html.ingest.curated(form, e.getMessage))
+        case e : PopulateException =>
+          Logger.error("curated ingest error", e)
+          BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
+        case e : IngestException =>
+          Logger.error("curated ingest error", e)
+          BadRequest(views.html.ingest.curated(form, e.getMessage))
       }
   }
 
@@ -80,21 +80,21 @@ object IngestController extends SiteController with HtmlController {
     val form = new AdolphForm()._bind
     if (!form.run.get)
       ingest.Adolph.parse(form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
-	Ok(views.html.ingest.adolph(form, r.toString + " records found"))
+        Ok(views.html.ingest.adolph(form, r.toString + " records found"))
       }.recover {
-	case e : IngestException =>
-	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
+        case e : IngestException =>
+          BadRequest(views.html.ingest.adolph(form, e.getMessage))
       }
     else 
       ingest.Adolph.process(volume, form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
-	Ok(views.html.ingest.result(volume, r))
+        Ok(views.html.ingest.result(volume, r))
       }.recover {
-	case e : PopulateException =>
-	  Logger.error("adolph ingest error", e)
-	  BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
-	case e : IngestException =>
-	  Logger.error("adolph ingest error", e)
-	  BadRequest(views.html.ingest.adolph(form, e.getMessage))
+        case e : PopulateException =>
+          Logger.error("adolph ingest error", e)
+          BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
+        case e : IngestException =>
+          Logger.error("adolph ingest error", e)
+          BadRequest(views.html.ingest.adolph(form, e.getMessage))
       }
   }
 

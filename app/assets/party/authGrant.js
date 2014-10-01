@@ -8,13 +8,13 @@ module.directive('authGrantForm', [
       var form = $scope.authGrantForm;
 
       form.data = {
-	site: auth.site,
-	member: auth.member,
-	expires: auth.expires,
+        site: auth.site,
+        member: auth.member,
+        expires: auth.expires,
       };
 
       if (auth.new)
-	form.$setDirty();
+        form.$setDirty();
 
       //
 
@@ -24,10 +24,10 @@ module.directive('authGrantForm', [
 
       $scope.canGrantSite = function (p) {
         return  p == page.permission.NONE ||
-	  p == page.permission.READ ||
+          p == page.permission.READ ||
           p > page.permission.READ &&
           page.models.Login.checkAccess(p + 1) ||
-	  page.models.Login.checkAccess(page.permission.ADMIN);
+          page.models.Login.checkAccess(page.permission.ADMIN);
       };
 
       $scope.canGrantMember = function (p) {
@@ -35,7 +35,7 @@ module.directive('authGrantForm', [
           p == page.permission.READ ||
           p == page.permission.EDIT ||
           p == page.permission.ADMIN ||
-	  page.models.Login.checkAccess(page.permission.ADMIN);
+          page.models.Login.checkAccess(page.permission.ADMIN);
       };
 
       //
@@ -46,7 +46,7 @@ module.directive('authGrantForm', [
         else
           form.data.expires = page.$filter('date')(form.data.expires, 'yyyy-MM-dd');
 
-	party.authorizeSave(auth.party.id, form.data).then(function () {
+        party.authorizeSave(auth.party.id, form.data).then(function () {
           form.validator.server({});
           form.messages.add({
             body: page.constants.message('auth.grant.save.success'),
@@ -54,7 +54,7 @@ module.directive('authGrantForm', [
             countdown: 3000,
           });
 
-	  delete auth.new;
+          delete auth.new;
           form.$setPristine();
         }, function (res) {
           form.validator.server(res);
@@ -66,22 +66,22 @@ module.directive('authGrantForm', [
 
       form.deny = function () {
         if (auth.new) {
-	  form.denySuccessFn(auth);
-	  return;
-	}
-	party.authorizeDelete(auth.party.id).then(function () {
-	  form.validator.server({});
-	  form.messages.add({
-	    body: page.constants.message('auth.grant.remove.success'),
-	    type: 'green',
-	    countdown: 3000,
-	  });
-	  form.$setPristine();
-	  form.denySuccessFn(auth);
-	}, function (res) {
-	  form.validator.server(res);
-	  page.display.scrollTo(form.$element);
-	});
+          form.denySuccessFn(auth);
+          return;
+        }
+        party.authorizeDelete(auth.party.id).then(function () {
+          form.validator.server({});
+          form.messages.add({
+            body: page.constants.message('auth.grant.remove.success'),
+            type: 'green',
+            countdown: 3000,
+          });
+          form.$setPristine();
+          form.denySuccessFn(auth);
+        }, function (res) {
+          form.validator.server(res);
+          page.display.scrollTo(form.$element);
+        });
       };
 
       //
