@@ -725,7 +725,7 @@ module.directive('spreadsheet', [
           cell.classList.remove('editing');
           page.tooltips.clear();
 
-          if (event && (event.type === 'change' || event.type === 'keypress'))
+          if (event)
             save(cell, editScope.type, editInput.value);
         }
         editScope.unedit = unedit;

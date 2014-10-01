@@ -4,7 +4,8 @@
 
 var keys = {
   Enter: 13,
-  Tab: 9
+  Tab: 9,
+  Escape: 27
 };
 angular.forEach(keys, function (key, name) {
   var directive = 'key' + name;
@@ -14,7 +15,7 @@ angular.forEach(keys, function (key, name) {
       compile: function ($element, $attrs) {
         var action = $parse($attrs[directive]);
         return function ($scope, $element) {
-          $element.on('keypress', function (event) {
+          $element.on('keydown', function (event) {
             if (
               (event.key == name) ||
               (event.keyIdentifier == name) ||
