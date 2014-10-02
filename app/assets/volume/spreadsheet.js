@@ -289,9 +289,10 @@ module.directive('spreadsheet', [
             v = assumed || '';
           } else {
             c.classList.remove('blank');
-            if (m === 'id')
-              v = "\u2022";
-            else if (m === 'age')
+            if (m === 'id') {
+              c.className = 'icon ' + (editing ? 'trash' : 'bullet');
+              v = '';
+            } else if (m === 'age')
               v = page.display.formatAge(v);
           }
           return setCell(c, document.createTextNode(v));
@@ -768,7 +769,12 @@ module.directive('spreadsheet', [
               editScope.type = 'consent';
               editInput.value = (info.slot.consent || 0) + '';
               break;
-            case 'rec': if (!info.col.first || alt) {
+            case 'rec':
+            if (info.metric.id === 'id') {
+              setRecord(cell, info, null);
+              return;
+            }
+            if (!info.col.first || alt) {
               m = info.metric.id;
               /* we need a real metric here: */
               if (typeof m !== 'number')
@@ -923,7 +929,7 @@ module.directive('spreadsheet', [
           if (editing)
             edit($event.target, {t:'category',c:col.category.id});
         };
-        $scope.clickMetric = function (col, $event) {
+        $scope.clickMetric = function (col) {
           sortByMetric(col.category.id, col.metric.id);
           col.sorted = !col.sorted;
         };
