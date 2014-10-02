@@ -879,7 +879,7 @@ module.directive('spreadsheet', [
               var c = cl[ci];
               if (c.startsWith('ss-rec_'))
                 selectStyles.insertRule('.' + c + '{background-color:' +
-                  (!c.contains('_', 7) ? '#ffff88' : '#88ff88') + 
+                  (!c.contains('_', 7) ? '#f3f1bf' : '#e8e47f') + 
                   ';\n}', selectStyles.cssRules.length);
             }
           }

@@ -20,7 +20,7 @@
   td
     border 1px solid dark
     padding 3px
-    line-height 1
+    height 1+f3
     display table-cell
     position relative
     max-width 8em
@@ -29,6 +29,9 @@
 
   td.consent
     min-width: 32px
+
+  td.icon
+      background-position center
 
   td.null
     background-color gray
@@ -75,6 +78,8 @@
     td
       overflow visible
       text-overflow clip
+      word-break break-all
+      word-break break-word
 
 #spreadsheet-head-groups
   th
