@@ -624,7 +624,6 @@ INSERT INTO "record_template" VALUES (-500, -540);
 INSERT INTO "record_template" VALUES (-300, -600);
 INSERT INTO "record_template" VALUES (-500, -900, true);
 INSERT INTO "record_template" VALUES (-200, -900, true);
-INSERT INTO "record_template" VALUES (-800, -900, true);
 INSERT INTO "record_template" VALUES (-400, -900, true);
 INSERT INTO "record_template" VALUES (-300, -900, true);
 INSERT INTO "record_template" VALUES (-700, -700, true);

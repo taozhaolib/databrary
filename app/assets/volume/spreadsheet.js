@@ -197,24 +197,24 @@ module.directive('spreadsheet', [
             var record = volume.records[slot.records[ri].id];
             var c = record.category || 0;
 
-            // populate depends:
+            /* populate depends: */
             if (record.id in depends) {
-              // skip duplicates:
+              /* skip duplicates: */
               if (i in depends[record.id])
                 continue;
             } else
               depends[record.id] = {};
 
-            // populate records:
+            /* populate records: */
             if (c in records)
               r = records[c];
             else
               r = records[c] = {id: []};
 
-            // determine Count:
+            /* determine Count: */
             n = inc(count, c);
 
-            // populate measures:
+            /* populate measures: */
             populateMeasure('id', record.id);
             if (!editing && 'age' in slot.records[ri])
               populateMeasure('age', slot.records[ri].age);
@@ -236,9 +236,10 @@ module.directive('spreadsheet', [
               });
             var metrics = Object.keys(records[c]).map(maybeInt).sort(byType);
             metrics.pop(); // remove 'id' (necessarily last)
-            if (editing || !metrics.length)
-              metrics.unshift('id');
             metrics = metrics.map(getMetric);
+            /* add back the 'id' column first if needed */
+            if (!metrics.length || (editing && !(metrics.length === 1 && metrics[0].options)))
+              metrics.unshift(pseudoMetrics.id);
             var si = metricCols.length;
             metricCols.push.apply(metricCols, metrics.map(function (m) {
               return {
@@ -524,34 +525,33 @@ module.directive('spreadsheet', [
           }, saveError.bind(null, cell));
         }
 
-        function saveMeasure(cell, info, v) {
+        function saveMeasure(cell, record, metric, v) {
           cell.classList.add('saving');
-          return info.record.measureSet(info.metric.id, v).then(function (rec) {
-            var rcm = records[rec.category || 0][info.metric.id];
-            angular.forEach(depends[info.r], function (n, i) {
+          return record.measureSet(metric.id, v).then(function (rec) {
+            var rcm = records[rec.category || 0][metric.id];
+            angular.forEach(depends[record.id], function (n, i) {
               arr(rcm, n)[i] = v;
               /* TODO age may have changed... not clear how to update. */
             });
 
-            var l = table.getElementsByClassName('ss-rec_' + info.r + '_' + info.metric.id);
+            var l = table.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id);
             for (var li = 0; li < l.length; li ++)
-              generateText(l[li], info.metric.id, v, info.metric.assumed);
+              generateText(l[li], metric.id, v, metric.assumed);
             cell.classList.remove('saving');
           }, saveError.bind(null, cell));
         }
 
         function setRecord(cell, info, record) {
           cell.classList.add('saving');
-          var act;
-          if (info.record)
-            act = info.slot.removeRecord(info.record)
-              .then(function () {
-                return record && info.slot.addRecord(record);
-              });
-          else if (record)
-            act = info.slot.addRecord(record);
-          else
-            act = info.slot.newRecord(info.c || '');
+          var add = function () {
+            if (record)
+              return info.slot.addRecord(record);
+            else if (record !== null)
+              return info.slot.newRecord(info.c || '');
+          };
+          var act = info.record ?
+            info.slot.removeRecord(info.record).then(add) :
+            add();
 
           return act.then(function (record) {
             var r, m, rcm;
@@ -568,8 +568,8 @@ module.directive('spreadsheet', [
                     delete rcm[info.n][info.i];
                 } else
                   arr(rcm, info.n)[info.i] = v;
-                /* TODO age? maybe server should send it? */
               }
+              /* TODO this may necessitate regenerating column headers */
             } else {
               var t = --counts[info.i][info.c];
               for (m in records[info.c]) {
@@ -591,6 +591,7 @@ module.directive('spreadsheet', [
             if (info.n === 0)
               generateRow(info.i);
             expand(info.i);
+            return record;
           }, saveError.bind(null, cell));
         }
 
@@ -668,14 +669,22 @@ module.directive('spreadsheet', [
               value = parseInt(value);
               break;
             case 'record':
+              var v;
               if (value === 'new')
                 setRecord(cell, info);
               else if (value === 'remove')
-                setRecord(cell, info);
-              else if (value !== undefined) {
-                var ri = parseInt(value);
-                if (ri !== info.r)
-                  setRecord(cell, info, volume.records[ri]);
+                setRecord(cell, info, null);
+              else if ((v = stripPrefix(value, 'add_'))) {
+                var u = v.indexOf('_');
+                var m = page.constants.metric[v.slice(0,u)];
+                v = v.slice(u+1);
+                setRecord(cell, info).then(function (r) {
+                  if (r)
+                    saveMeasure(cell, r, m, v);
+                });
+              } else if (!isNaN(v = parseInt(value))) {
+                if (v !== info.r)
+                  setRecord(cell, info, volume.records[v]);
                 else
                   edit(cell, info, true);
               }
@@ -702,7 +711,7 @@ module.directive('spreadsheet', [
             case 'consent':
               return saveSlot(cell, info, value);
             case 'rec':
-              return saveMeasure(cell, info, value);
+              return saveMeasure(cell, info.record, info.metric, value);
           }
         }
 
@@ -748,7 +757,8 @@ module.directive('spreadsheet', [
               editScope.type = 'consent';
               editInput.value = (info.slot.consent || 0) + '';
               break;
-            case 'rec': if ((m = info.metric.id) !== 'id' || alt) {
+            case 'rec': if (!info.col.first || alt) {
+              m = info.metric.id;
               /* we need a real metric here: */
               if (typeof m !== 'number')
                 return;
@@ -780,6 +790,31 @@ module.directive('spreadsheet', [
                 if ((r.category || 0) === c.id && (!(ri in depends && info.i in depends[ri]) || ri === editInput.value))
                   editScope.options[ri] = r.displayName;
               });
+              /* detect special cases: singleton or unitary records */
+              for (var mi in records[c.id]) {
+                var mm = page.constants.metric[mi];
+                if (!m)
+                  m = mm;
+                else if (mm) {
+                  m = null;
+                  break;
+                }
+              }
+              if (m === undefined && Object.keys(editScope.options).length > 2)
+                /* singleton: id only, existing record(s) */
+                delete editScope.options['new'];
+              else if (m && m.options) {
+                /* unitary: single metric with options */
+                delete editScope.options['new'];
+                m.options.forEach(function (o) {
+                  for (var ri in volume.records) {
+                    var r = volume.records[ri];
+                    if ((r.category || 0) === c.id && r.measures[m.id] === o)
+                      return;
+                  }
+                  editScope.options['add_'+m.id+'_'+o] = o;
+                });
+              }
               break;
             case 'category':
               editScope.type = 'metric';
