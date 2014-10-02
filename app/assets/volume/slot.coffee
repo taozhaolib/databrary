@@ -11,6 +11,8 @@ module.controller('volume/slot', [
     $scope.mode = if editing then 'edit' else 'view'
     $scope.form = {}
 
+    video = undefined
+
     searchLocation = (url) ->
       url
         .search('asset', $scope.track?.asset?.id)
@@ -269,8 +271,6 @@ module.controller('volume/slot', [
 
     $scope.playing = 0
     $scope.position = undefined
-
-    video = undefined
 
     return
 ])
