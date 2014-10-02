@@ -925,16 +925,7 @@ module.directive('spreadsheet', [
         };
         $scope.clickMetric = function (col, $event) {
           sortByMetric(col.category.id, col.metric.id);
-          //toggle appearance of sort arrows on clickMetric
-          var el = $event.target;
-          el.classList.remove("sortable");
-          if(el.classList.contains("sort-desc")){
-            el.classList.remove("sort-desc");
-            el.classList.add("sort-asc");
-          } else {
-            el.classList.toggle("sort-desc");
-          }
-          
+          col.sorted = !col.sorted;
         };
         $scope.clickNew = function ($event, top) {
           createSlot($event.target, top);
