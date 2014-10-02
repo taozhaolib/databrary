@@ -457,8 +457,19 @@ module.directive('spreadsheet', [
         }
 
         /* Sort by one of the container columns. */
-        function sortBySlot(f) {
+        function sortBySlot(f, $event) {
           sortBy(f, slots.map(function (s) { return s[f]; }));
+
+          //toggle appearance of sort arrows on clickMetric
+          var el = $event.target;
+          el.classList.remove("sortable");
+          if(el.classList.contains("sort-desc")){
+            el.classList.remove("sort-desc");
+            el.classList.add("sort-asc");
+          } else {
+            el.classList.toggle("sort-desc");
+          }
+
         }
 
         /* Sort by Category_id c's Metric_id m */
@@ -912,8 +923,18 @@ module.directive('spreadsheet', [
           if (editing)
             edit($event.target, {t:'category',c:col.category.id});
         };
-        $scope.clickMetric = function (col) {
+        $scope.clickMetric = function (col, $event) {
           sortByMetric(col.category.id, col.metric.id);
+          //toggle appearance of sort arrows on clickMetric
+          var el = $event.target;
+          el.classList.remove("sortable");
+          if(el.classList.contains("sort-desc")){
+            el.classList.remove("sort-desc");
+            el.classList.add("sort-asc");
+          } else {
+            el.classList.toggle("sort-desc");
+          }
+          
         };
         $scope.clickNew = function ($event, top) {
           createSlot($event.target, top);

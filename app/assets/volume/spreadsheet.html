@@ -21,11 +21,11 @@
         <th ng-repeat="col in recordCols track by col.category.id" id="ss-category_{{col.category.id}}" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory($event, col)"></th>
       </tr>
       <tr id="spreadsheet-head-metrics">
-        <th id="ss-name" class="first" ng-click="clickSlot('name')"/>
-        <th id="ss-date" ng-click="clickSlot('date')">test date</th>
-        <th id="ss-consent" class="last" ng-click="clickSlot('consent')"></th>
+        <th id="ss-name" class="first sort sortable" ng-click="clickSlot('name', $event)"/>
+        <th id="ss-date" class="sort sortable" ng-click="clickSlot('date', $event)">test date</th>
+        <th id="ss-consent" class="last sort sortable" ng-click="clickSlot('consent', $event)"></th>
 
-        <th ng-repeat="col in metricCols" id="ss-metric_{{$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th ng-repeat="col in metricCols" id="ss-metric_{{$index}}" class="sort sortable" ng-click="clickMetric(col, $event)" ng-class="{'first': col.first, 'last': col.last}" ng-bind="col.metric.display || col.metric.name"></th>
       </tr>
       <tr bo-if="editing">
         <td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>
