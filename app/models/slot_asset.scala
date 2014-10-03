@@ -30,7 +30,7 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
     implicit val site = asset.site
     val key = SQLTerms('asset -> asset.id, 'segment -> segment)
     classification.fold {
-      Audit.remove("excerpt", key).execute
+      Audit.remove("excerpt", key).execute.map(_ => true)
     } { classification =>
       Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key).execute
         .recover {

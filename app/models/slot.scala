@@ -37,7 +37,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** Update the given values in the database. */
   final def setConsent(consent : Consent.Value) : Future[Boolean] = {
     if (consent == Consent.NONE)
-      Audit.remove("slot_consent", slotSql).execute
+      Audit.remove("slot_consent", slotSql).execute.map(_ => true)
     else
       Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
         .recover {
