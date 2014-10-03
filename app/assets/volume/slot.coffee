@@ -56,14 +56,16 @@ module.controller('volume/slot', [
         if l < 0
           styles.left = '0px'
           styles['border-left'] = '0px'
-          styles['border-radius'] = '0px'
+          styles['border-top-left-radius'] = '0px'
+          styles['border-bottom-left-radius'] = '0px'
         else if l <= 1
           styles.left = 100*l + '%'
         r = offsetPosition(p.u)
         if r > 1
           styles.right = '0px'
           styles['border-right'] = '0px'
-          styles['border-radius'] = '0px'
+          styles['border-top-right-radius'] = '0px'
+          styles['border-bottom-right-radius'] = '0px'
         else if r >= 0
           styles.right = 100 - 100*r + '%'
       else
