@@ -187,7 +187,7 @@ module.controller('volume/slot', [
 
     $scope.fileAdded = (file) ->
       return unless editing
-      $scope.track?.upload(file)
+      $scope.current?.upload(file)
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
@@ -200,8 +200,8 @@ module.controller('volume/slot', [
       ratechange: ->
         $scope.playing = video[0].playbackRate
       timeupdate: ->
-        if $scope.track?.asset
-          $scope.position = $scope.track.asset.segment.base + 1000*video[0].currentTime
+        if $scope.current?.asset
+          $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime
       ended: ->
         $scope.playing = 0
         # look for something else to play?
