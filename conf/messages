@@ -82,7 +82,7 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 # Generic UI
 databrary=Databrary
 
-navigation.confirmation=Do you want to abandon all unsaved changes?
+navigation.confirmation=Are you sure you want to leave without saving?
 
 save=Save
 save.all=Save All
