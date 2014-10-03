@@ -386,7 +386,7 @@ object AssetApi extends AssetController with ApiController {
       val token = new TokenAuth {
         val token = id.toString
       }
-    } with StructForm(routes.AssetApi.transcoded(id, token.auth())) {
+    } with StructForm(routes.AssetApi.transcoded(id, token.auth())) with NoCsrfForm {
     val pid = Field(Forms.number)
     val res = Field(Forms.number)
     val sha1 = Field(Mappings.hash(store.SHA1, store.Hex))
@@ -398,7 +398,7 @@ object AssetApi extends AssetController with ApiController {
     play.api.mvc.Action { implicit request =>
       val form = new TranscodedForm(i)._bind
       if (!form.token.checkAuth(auth) || form.hasErrors)
-        BadRequest("")
+        BadRequest("error")
       else {
         store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
         Ok("")

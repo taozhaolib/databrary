@@ -17,7 +17,7 @@ module.controller('volume/slot', [
       url
         .search('asset', undefined)
         .search('record', undefined)
-        .search($scope.current.type, $scope.current.id)
+        .search($scope.current?.type || '', $scope.current?.id)
 
     if editing || slot.checkPermission(page.permission.EDIT)
       url = if editing then slot.route else slot.editRoute()
