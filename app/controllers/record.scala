@@ -9,6 +9,7 @@ import          mvc._
 import          data._
 import play.api.i18n.Messages
 import play.api.libs.json
+import macros._
 import macros.async._
 import site._
 import dbrary._
@@ -41,6 +42,15 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       val form = new RecordController.EditForm()._bind
       for {
         _ <- request.obj.change(category = form.category.get)
+        _ <- form.measures.get.foreachAsync { case (m, value) =>
+          val metric = Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw)
+          value.fold(
+            request.obj.removeMeasure(metric))(d =>
+            request.obj.setMeasure(new Measure(metric, d)).map {
+              case false => form.measures.withKeyError(m, "error.invalid")._throw
+              case true => true
+            })
+        }
       } yield (editResult(request.obj))
     }
 
@@ -90,6 +100,7 @@ object RecordController extends RecordController {
       routes.RecordHtml.update(request.obj.id),
       f => RecordHtml.viewEdit(editForm = Some(f))) {
     val category = Field(OptionMapping(Forms.optional(categoryMapping))).fill(Some(request.obj.category))
+    val measures = Field(KeyedMapping(Mappings.maybeText)).fill(Map.empty)
   }
 
   final class SelectForm(implicit request : SlotHtml.Request[_])

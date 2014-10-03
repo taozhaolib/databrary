@@ -132,3 +132,32 @@ final case class EitherMapping[L,R](leftMapping : Mapping[L], rightMapping : Map
   def verifying(addConstraints : Constraint[Either[L,R]]*) : Mapping[Either[L,R]] =
     copy(constraints = constraints ++ addConstraints)
 }
+
+final case class KeyedMapping[T](wrapped : Mapping[T], val key : String = "", val constraints : Seq[Constraint[Map[String, T]]] = Nil) extends Mapping[Map[String, T]] {
+  private val keyDot = if (key.nonEmpty) key + "." else ""
+  override val format = wrapped.format
+  val mappings = wrapped.mappings
+  def bind(data : Map[String, String]) : Either[Seq[FormError], Map[String, T]] = {
+    val Field = ("^(" + java.util.regex.Pattern.quote(keyDot) + "([^.\\[]*))").r
+    val r = data.keys.collect { case Field(k, f) => (f, k) }.toMap
+      .mapValues(k => wrapped.withPrefix(k).bind(data))
+    val err = r.values.collect { case Left(e) => e }
+    if (err.nonEmpty)
+      Left(err.toSeq.flatten)
+    else
+      applyConstraints(r.mapValues(_.right.get))
+  }
+  def unbind(value : Map[String, T]) =
+    value.foldLeft(Map.empty[String, String]) { case (r, (f, v)) =>
+      r ++ wrapped.withPrefix(keyDot + f).unbind(v)
+    }
+  def unbindAndValidate(value : Map[String, T]) =
+    value.foldLeft((Map.empty[String, String], collectErrors(value))) { case ((r, e), (f, v)) =>
+      val (wr, we) = wrapped.withPrefix(keyDot + f).unbindAndValidate(v)
+      (r ++ wr, e ++ we)
+    }
+  def withPrefix(prefix : String) =
+    addPrefix(prefix).fold(this)(k => this.copy(key = k))
+  def verifying(addConstraints : Constraint[Map[String, T]]*) : Mapping[Map[String, T]] =
+    copy(constraints = constraints ++ addConstraints)
+}

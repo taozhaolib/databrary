@@ -228,9 +228,12 @@ module.controller('volume/slot', [
           @[f] = r[f]
         updateRange @segment
         if editing
-          @data = angular.extend({}, @record.measures)
+          @fillData()
 
       type: 'record'
+
+      fillData: ->
+        @data = angular.extend({}, @record.measures)
 
       Object.defineProperty @prototype, 'id',
         get: -> @record.id
@@ -254,6 +257,17 @@ module.controller('volume/slot', [
           m = +m
           metrics.push(m) unless m in ident
         metrics.sort (a, b) -> a - b
+
+      addOptions: ->
+        metric for m, metric of page.constants.metric when !(m of @data)
+
+      add: ->
+        @data[@data.add] = ''
+        delete @data.add
+
+      save: ->
+        @record.save({measures:@data}).then () =>
+          @fillData()
 
     class Consent
       constructor: (c) ->

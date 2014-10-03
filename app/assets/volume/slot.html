@@ -106,9 +106,22 @@
                 </div>
 
                 <div ng-switch-when="record">
+                  <dl class="cf">
+                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.name"></dt>
+                    <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
+                      <select ng-switch-when="select" name="{{m}}" ng-model="current.data[m]" ng-options="o for o in metric.options"/>
+                      <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>
+                      <textarea ng-switch-when="long" name="m" ng-model="current.data[m]"/>
+                      <input ng-switch-when="date" type="date" name="{{m}}" ng-model="current.data[m]"/>
+                      <input ng-switch-when="number" type="number" name="{{m}}" ng-model="current.data[m]"/>
+                    </dd>
+                    <dt>
+                      <select name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions() | orderBy:'id'" ng-change="current.add()"/>
+                    </dt>
+                  </dl>
                 </div>
 
-                <button ng-if="current.asset" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+                <button ng-if="current.asset || current.record" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
               </ng-form>
             </div>
 
