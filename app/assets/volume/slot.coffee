@@ -1,8 +1,8 @@
 'use strict'
 
 module.controller('volume/slot', [
-  '$scope', 'slot', 'edit', 'pageService', 'Store', 'Segment',
-  ($scope, slot, editing, page, Store, Segment) ->
+  '$scope', 'slot', 'edit', 'pageService', 'Store',
+  ($scope, slot, editing, page, Store) ->
     page.display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -15,15 +15,16 @@ module.controller('volume/slot', [
 
     searchLocation = (url) ->
       url
-        .search('asset', $scope.track?.asset?.id)
-        .search('record', $scope.record?.id)
+        .search('asset', undefined)
+        .search('record', undefined)
+        .search($scope.current.type, $scope.current.id)
 
     if editing || slot.checkPermission(page.permission.EDIT)
       url = if editing then slot.route else slot.editRoute()
       page.display.toolbarLinks.push
         type: 'yellow'
         html: page.constants.message(if editing then 'slot.view' else 'slot.edit')
-        url: url
+        #url: url
         click: -> searchLocation(page.$location.url(url))
 
 
@@ -72,8 +73,8 @@ module.controller('volume/slot', [
       styles
 
     seekOffset = (o) ->
-      if video && $scope.track?.asset?.segment.contains(o)
-        video[0].currentTime = (o - $scope.track.asset.segment.base) / 1000
+      if video && $scope.current?.asset?.segment.contains(o)
+        video[0].currentTime = (o - $scope.current.asset.segment.base) / 1000
       $scope.position = o
 
     $scope.seekPosition = (pos) ->
@@ -107,41 +108,41 @@ module.controller('volume/slot', [
     targetRecord = page.$location.search().record
 
     selectRange = (range) ->
-      if isFinite(range.l)
+      if range && isFinite(range.l) && !range.contains($scope.position)
         seekOffset(range.l)
 
-    select = (track, record, consent) ->
-      $scope.track.dirty = $scope.form.edit.$dirty if $scope.track && $scope.form.edit
+    select = (c, event) ->
+      if $scope.current == c
+        $scope.seekPosition event.clientX if event
+        return
 
-      $scope.track = track
-      $scope.record = record
-      $scope.consent = consent
+      $scope.current.dirty = $scope.form.edit.$dirty if $scope.current && $scope.form.edit
+
+      $scope.current = c
       searchLocation(page.$location)
       targetAsset = undefined
       targetRecord = undefined
 
       $scope.playing = 0
       delete $scope.replace
-      if track
-        selectRange(track.asset?.segment)
-        if $scope.form.edit
-          if $scope.track.dirty
-            $scope.form.edit.$setDirty()
-          else
-            $scope.form.edit.$setPristine()
-      if record
-        selectRange(record.segment)
-      if consent
-        selectRange(consent.segment)
+      return unless c
+      selectRange(c.segment)
+      if $scope.form.edit
+        if c.dirty
+          $scope.form.edit.$setDirty()
+        else
+          $scope.form.edit.$setPristine()
 
     removed = (track) ->
       return if track.asset || track.file
-      select() if track == $scope.track
+      select() if track == $scope.current
       $scope.tracks.remove(track)
 
     class Track extends Store
       constructor: (asset) ->
         super slot, asset
+
+      type: 'asset'
 
       setAsset: (asset) ->
         super asset
@@ -149,9 +150,14 @@ module.controller('volume/slot', [
         updateRange(asset.segment)
         @select() if `asset.id == targetAsset`
 
+      Object.defineProperty @prototype, 'segment',
+        get: -> @asset?.segment
+
+      Object.defineProperty @prototype, 'id',
+        get: -> @asset?.id
+
       select: (event) ->
-        return select this unless $scope.track == this
-        $scope.seekPosition event.clientX if event
+        select this, event
 
       positionStyle: ->
         $scope.positionStyle @asset?.segment
@@ -166,7 +172,7 @@ module.controller('volume/slot', [
         super().then (done) =>
           return unless done
           delete @dirty
-          $scope.form.edit.$setPristine() if this == $scope.track
+          $scope.form.edit.$setPristine() if this == $scope.current
           sortTracks()
 
       upload: (file) ->
@@ -181,7 +187,7 @@ module.controller('volume/slot', [
 
     $scope.fileAdded = (file) ->
       return unless editing
-      $scope.track?.upload(file)
+      $scope.current?.upload(file)
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
@@ -194,8 +200,8 @@ module.controller('volume/slot', [
       ratechange: ->
         $scope.playing = video[0].playbackRate
       timeupdate: ->
-        if $scope.track?.asset
-          $scope.position = $scope.track.asset.segment.base + 1000*video[0].currentTime
+        if $scope.current?.asset
+          $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime
       ended: ->
         $scope.playing = 0
         # look for something else to play?
@@ -211,54 +217,63 @@ module.controller('volume/slot', [
     @registerVideo = (v) ->
       this.deregisterVideo video if video
       video = v
+      seekOffset($scope.position)
       v.on(videoEvents)
 
-    $scope.selectRecord = (record) -> select(undefined, record)
+    class Record
+      constructor: (r) ->
+        @record = slot.volume.records[r.id]
+        @segment = page.models.Segment.make(r.segment)
+        for f in ['age'] when f of r
+          @[f] = r[f]
+        updateRange @segment
+        if editing
+          @data = angular.extend({}, @record.measures)
 
-    fillRecords = ->
-      records = slot.records
-      for r in records when !r.record
-        r.record = slot.volume.records[r.id]
-      records.sort (a, b) ->
-        a.record.category - b.record.category || a.id - b.id
+      type: 'record'
 
-      t = []
-      overlaps = (r) -> s.overlaps(r.segment)
-      for r in records
-        updateRange s = r.segment = Segment.make(r.segment)
-        for o, i in t
-          break unless o[0].record.category != r.record.category || o.some(overlaps)
-        t[i] = [] unless i of t
-        t[i].push(r)
-        $scope.selectRecord(r) if `r.id == targetRecord`
-      $scope.records = t
+      Object.defineProperty @prototype, 'id',
+        get: -> @record.id
 
-    $scope.recordMetrics = (r) ->
-      ident = page.constants.category[r.record.category]?.ident || [page.constants.metricName.ident.id]
-      metrics = []
-      for m of r.record.measures
-        m = +m
-        metrics.push(m) unless m in ident
-      metrics.sort (a, b) -> a - b
+      remove: ->
+        select() if $scope.current == this
+        slot.removeRecord(@record).then =>
+          for t in $scope.records
+            if t.remove(this)
+              if !t.length
+                $scope.records.remove(t)
+              break
 
-    $scope.selectConsent = (consent) -> select(undefined, undefined, consent)
+      select: (event) ->
+        select this, event
 
-    fillConsents = ->
-      if Array.isArray(consents = slot.consents)
-        for c in consents
-          c.segment = Segment.make(c.segment)
-      else
-        consents = [
-          segment: Segment.full
-          consent: consents || 0
-        ]
-      $scope.consents = consents
+      metrics: ->
+        ident = page.constants.category[@record.category]?.ident || [page.constants.metricName.ident.id]
+        metrics = []
+        for m of @record.measures
+          m = +m
+          metrics.push(m) unless m in ident
+        metrics.sort (a, b) -> a - b
 
-    $scope.consentClasses = (c) ->
-      cn = page.constants.consent[c.consent]
-      cls = ['consent', 'icon', cn, 'hint-consent-' + cn]
-      cls.push('slot-consent-select') if $scope.consent == c
-      cls
+    class Consent
+      constructor: (c) ->
+        if c && typeof c == 'object'
+          @consent = c.consent || 0
+          @segment = page.models.Segment.make(c.segment)
+        else
+          @consent = c || 0
+          @segment = page.models.Segment.full
+
+      type: 'consent'
+
+      select: (event) ->
+        select this, event
+
+      classes: ->
+        cn = page.constants.consent[@consent]
+        cls = [cn, 'hint-consent-' + cn]
+        cls.push('slot-consent-select') if $scope.current == this
+        cls
 
     $scope.range = new page.models.Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
@@ -268,11 +283,29 @@ module.controller('volume/slot', [
     $scope.tracks.push(new Track()) if editing
     sortTracks()
 
-    fillRecords()
-    fillConsents()
+    $scope.records = (->
+      records = slot.records.map((r) -> new Record(r))
+      records.sort (a, b) ->
+        a.record.category - b.record.category || a.record.id - b.record.id
+
+      t = []
+      overlaps = (r) -> s.overlaps(r.segment)
+      for r in records
+        s = r.segment
+        for o, i in t
+          break unless o[0].record.category != r.record.category || o.some(overlaps)
+        t[i] = [] unless i of t
+        t[i].push(r)
+        r.select() if `r.id == targetRecord`
+      t
+    )()
+
+    $scope.consents =
+      if Array.isArray(consents = slot.consents)
+        consents.map((c) -> new Consent(c))
+      else
+        [new Consent(consents)]
 
     $scope.playing = 0
     $scope.position = undefined
-
-    return
 ])

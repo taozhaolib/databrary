@@ -177,7 +177,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def isSuperseded : Future[Boolean] =
-    SQL("SELECT asset FROM asset_revision WHERE orig = ?").apply(id).execute
+    SQL("SELECT id FROM asset_revision JOIN asset ON asset = id WHERE orig = ?").apply(id).execute
   def supersede(old : Asset) : Future[Boolean] =
     SQL("SELECT asset_supersede(?, ?)").apply(old.id, id).execute
 
