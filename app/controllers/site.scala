@@ -157,9 +157,11 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
   }
 
   case class Access[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.site >= access)
+  case class RootMember[R[_] <: SiteRequest[_]](access : Permission.Value) extends AccessCheck[R](_.member >= access)
   case class RootAccess[R[_] <: SiteRequest[_]](permission : Permission.Value = Permission.ADMIN) extends AccessCheck[R](_.permission >= permission)
 
   def access(access : Permission.Value) = auth andThen Access[SiteRequest.Auth](access)
+  def rootMember(permission : Permission.Value = Permission.ADMIN) = auth andThen RootMember[SiteRequest.Auth](permission)
   def rootAccess(permission : Permission.Value = Permission.ADMIN) = auth andThen RootAccess[SiteRequest.Auth](permission)
 }
 

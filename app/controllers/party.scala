@@ -337,7 +337,7 @@ object PartyHtml extends PartyController with HtmlController {
     viewAdmin().map(Ok(_))
   }
 
-  def authorizeAdmin = SiteAction.rootAccess().async { implicit request =>
+  def authorizeAdmin = SiteAction.rootMember().async { implicit request =>
     for {
       all <- Authorize.getAll
       (rest, pend) = all.partition(_.authorized)
