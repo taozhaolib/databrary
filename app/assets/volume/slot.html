@@ -45,11 +45,9 @@
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="t.asset" bo-src="t.asset.thumbRoute(24)">
                   <div class="slot-track-asset-info-name" ng-bind="t.name"></div>
+                  <upload-progress class="upload-progress-info" ng-if="t.file" progress-value="t.progress"></upload-progress>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="t.positionStyle()">
-                </div>
-                <div ng-if="t.file">
-                  <upload-progress progress-value="t.progress"></upload-progress>
                 </div>
               </div>
             </div>
@@ -127,8 +125,9 @@
 
             <div class="player-main-viewport" ng-if="current.type === 'asset'">
               <asset-display asset="current.asset" ng-if="current.asset && !replace"></asset-display>
-              <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
-
+              <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
+                <span class="icon line add"></span>
+                <span class="vem-float-dropzone-message" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message"></span>
               </div>
             </div>
           </div>
