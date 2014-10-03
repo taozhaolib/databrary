@@ -1,5 +1,5 @@
 <ng-form name="accessGrantForm" bindonce>
-  <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+  <div class="col-desktop-1 col-tablet-1 col-mobile-1">
     <figure class="figure-avatar" bo-class="{inst: access.party.institution}">
       <img bo-src="access.party.avatarRoute()">
     </figure>
@@ -10,7 +10,7 @@
       <div class="permission-heading">
         <a bo-href="access.party.route" class="permission-auth-username" bo-text="access.party.name"></a>
         <span class="permission-auth-email" bo-if="access.party.email" bo-text="access.party.email"></span>
-        <button ng-if="accessGrantForm.canChange" class="red mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+        <button ng-if="accessGrantForm.canChange" class="red mini access-grant-remove" ng-click="accessGrantForm.remove(this)" class="col-desktop-1 col-tablet-1 col-mobile-1">
           <span class="icon line vem-trash trash"></span>
         </button>
       </div>
