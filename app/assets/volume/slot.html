@@ -103,7 +103,7 @@
 
             <div class="player-main-viewport">
               <asset-display asset="track.asset" ng-if="track.asset && !replace"></asset-display>
-              <div bo-if="editing" ng-if="!track.file && (!track.asset || replace)" flow-drop flow-btn class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
+              <div bo-if="editing" ng-if="!track.file && (!track.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message">
               </div>
             </div>
           </div>
