@@ -510,7 +510,7 @@ funding.search.repeat={0} has already been added.
 funding.search.name.help=Start typing the name of the desired funding agency.
 
 search.title=Search
-search.prompt=Start your search...
+search.prompt=Search datasets
 search.error=Could not complete your search.
 search.deep.info=You are in deep search mode. Press enter to submit new request, or click [X] to return to filter mode.
 
