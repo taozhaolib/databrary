@@ -461,14 +461,15 @@ module.directive('spreadsheet', [
         function sortBySlot(f, $event) {
           sortBy(f, slots.map(function (s) { return s[f]; }));
 
-          //toggle appearance of sort arrows on clickMetric
+          //toggle appearance of sort arrows on clickSlot
           var el = $event.target;
           el.classList.remove("sortable");
-          if(el.classList.contains("sort-desc")){
+          if(el.classList.contains("sort-asc")){
+            el.classList.remove("sort-asc");
+            el.classList.add("sort-desc");
+          } else {
             el.classList.remove("sort-desc");
             el.classList.add("sort-asc");
-          } else {
-            el.classList.toggle("sort-desc");
           }
 
         }

@@ -25,7 +25,7 @@
         <th id="ss-date" class="sort sortable" ng-click="clickSlot('date', $event)">test date</th>
         <th id="ss-consent" class="last sort sortable" ng-click="clickSlot('consent', $event)"></th>
 
-        <th ng-repeat="col in metricCols" id="ss-metric_{{$index}}" class="sort" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sortable': col.sorted === undefined, 'sort-desc': col.sorted, 'sort-asc': col.sorted === false}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th ng-repeat="col in metricCols" id="ss-metric_{{$index}}" class="sort" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sortable': col.sorted === undefined, 'sort-asc': col.sorted, 'sort-desc': col.sorted === false}" ng-bind="col.metric.display || col.metric.name"></th>
       </tr>
       <tr bo-if="editing">
         <td id='ss-newtop' colspan='{{3+metricCols.length}}' class='add' ng-click="clickNew($event, true)">add container</td>
