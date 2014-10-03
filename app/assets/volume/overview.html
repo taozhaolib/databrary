@@ -11,7 +11,7 @@
       </hgroup>
     </div>
 
-    <div class="col-desktop-9 col-laptop-8 col-tablet-6 col-mobile-6">
+    <div class="col-desktop-9 col-tablet-6 col-mobile-6">
       <div>
         <div ng-if="volume.citation" frame id="frame-citation" frame-title="{{'volume.citation.title' | message}}" fold>
           <p class="panel-overview-volume-citation">
@@ -48,7 +48,7 @@
       </div>
     </div>
 
-    <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
+    <div class="col-desktop-6 col-tablet-3 col-mobile-6">
       <img class="panel-overview-volume-thumb" ng-src="{{volume.thumbRoute()}}">
 
       <div ng-if="volume.citation.authors" frame id="frame-authors" frame-title="{{'volume.authors.title' | message}}" fold>
@@ -82,7 +82,7 @@
 
       <div frame id="frame-reuse" frame-title="{{'volume.reuse.title' | message}}" fold ng-if="volume.consumers.length || volume.providers.length">
         <div class="row">
-          <div class="col-desktop-6 col-laptop-4 col-tablet-3 col-mobile-6">
+          <div class="col-desktop-6 col-tablet-3 col-mobile-6">
             <div bo-if="volume.consumers.length">
               <div bo-text="'volume.reuse.provides' | message"></div>
 

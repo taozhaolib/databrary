@@ -1,29 +1,29 @@
 <ng-form name="partyEditGrantForm" bindonce>
   <fieldset class="clean peg-float">
     <div class="peg-float-floater row">
-      <auth-search-form principal="child" placeholder-text="{{'auth.search.grant.legend' | message}}" class="col-desktop-8 col-laptop-6 col-tablet-3 col-mobile-2"></auth-search-form>
-      <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="partyEditGrantForm.$pristine" class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1"></button>
-      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="partyEditGrantForm.$pristine"class=" col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1"></button>
+      <auth-search-form principal="child" placeholder-text="{{'auth.search.grant.legend' | message}}" class="col-desktop-8 col-tablet-3 col-mobile-2"></auth-search-form>
+      <button ng-click="partyEditGrantForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="partyEditGrantForm.$pristine" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
+      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" bo-text="'revert' | message" ng-disabled="partyEditGrantForm.$pristine"class=" col-desktop-1 col-tablet-1 col-mobile-1"></button>
     </div>
   </fieldset>
   <fieldset ng-if="partyEditGrantForm.data.length > 0">
     <legend bo-text="'auth.grant.legend' | message"></legend>
     <article ng-repeat="auth in partyEditGrantForm.data track by auth.party.id" class="permission-auth cf peg">
       <div class="row">
-        <div class="col-desktop-1 col-laptop-1 col-tablet-1 col-mobile-1">
+        <div class="col-desktop-1 col-tablet-1 col-mobile-1">
           <figure class="figure-avatar" bo-class="{inst: auth.party.institution}">
             <img bo-src="auth.party.avatarRoute()">
           </figure>
         </div>
 
-        <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+        <div class="col-desktop-11 col-tablet-5 col-mobile-4">
           <div class="row">
-            <div class="permission-heading col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+            <div class="permission-heading col-desktop-11 col-tablet-5 col-mobile-4">
               <a bo-href="auth.party.route" class="permission-auth-username" bo-text="auth.party.name"></a>
               <span class="permission-auth-email" bo-if="auth.party.email" bo-text="auth.party.email"></span>
             </div>
 
-            <div class="col-desktop-11 col-laptop-8 col-tablet-5 col-mobile-4">
+            <div class="col-desktop-11 col-tablet-5 col-mobile-4">
               <auth-grant-form></auth-grant-form>
             </div>
           </div>
