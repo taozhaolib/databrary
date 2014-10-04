@@ -1,0 +1,6 @@
+{
+"name": "databrary",
+"dependencies": {
+  "purescript-angular": "git://github.com/purescript-contrib/purescript-angular.git"
+}
+}

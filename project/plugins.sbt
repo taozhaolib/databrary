@@ -19,4 +19,13 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-jshint" % "1.0.2")
 
 addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
 
+
+// resolvers += Resolver.url("bintray-eamelink-sbt-plugins", url("http://dl.bintray.com/eamelink/sbt-plugins"))(Resolver.ivyStylePatterns)
+
+// addSbtPlugin("net.eamelink.sbt" % "sbt-purescript" % "0.5.0-SNAPSHOT")
+
+val sbtPurescript = uri("git://github.com/eamelink/sbt-purescript")
+
+
 lazy val root = (project in file("."))
+  .dependsOn(sbtPurescript)

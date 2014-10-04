@@ -89,6 +89,23 @@ CoffeeScriptKeys.bare := true
 
 JsTaskKeys.sourceDependencies in JshintKeys.jshint += CoffeeScriptKeys.coffeescript
 
+resourceGenerators in Assets <+= (streams, baseDirectory in Assets) map { (str, top) =>
+  val bower = top / "target/web/bower"
+  if (!bower.exists) {
+    val cmd = "bower install -p"
+    str.log.info(cmd)
+    if (cmd.! != 0)
+      throw new MessageOnlyException("bower error")
+  }
+  Seq(bower)
+}
+
+sourceDirectories in (Assets, PureScriptKeys.purescript) ++= (baseDirectory.value / "target/web/bower" * AllPassFilter / "src").get
+
+PureScriptKeys.pscOptions in Assets := Seq("--module", "Main", "--main", "Main")
+
+PureScriptKeys.output in Assets := (resourceManaged in (Assets, PureScriptKeys.purescript)).value / "purs.js"
+
 WebKeys.jsFilter in Assets := new SimpleFileFilter({ f =>
   f.getName.endsWith(".js") &&
     (f.getPath.startsWith((sourceDirectory in Assets).value.getPath) ||
