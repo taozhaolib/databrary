@@ -40,6 +40,7 @@ module.controller('volume/slot', [
         $scope.range.u = segment.u
 
     offsetPosition = (offset) ->
+      return offset unless isFinite offset
       (offset - $scope.range.base) / ($scope.range.u - $scope.range.l)
 
     positionOffset = (position) ->
