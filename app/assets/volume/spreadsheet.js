@@ -238,13 +238,14 @@ module.directive('spreadsheet', [
             metrics.pop(); // remove 'id' (necessarily last)
             metrics = metrics.map(getMetric);
             /* add back the 'id' column first if needed */
-            if (!metrics.length || (editing && !(metrics.length === 1 && metrics[0].options)))
+            if (!metrics.length || editing && !(metrics.length === 1 && metrics[0].options))
               metrics.unshift(pseudoMetrics.id);
             var si = metricCols.length;
             metricCols.push.apply(metricCols, metrics.map(function (m) {
               return {
                 category: category,
-                metric: m
+                metric: m,
+                sorted: m === pseudoMetrics.id && metrics.length > 1 ? null : undefined
               };
             }));
             var l = metrics.length;
@@ -931,8 +932,10 @@ module.directive('spreadsheet', [
             edit($event.target, {t:'category',c:col.category.id});
         };
         $scope.clickMetric = function (col) {
-          sortByMetric(col.category.id, col.metric.id);
-          col.sorted = !col.sorted;
+          if (col.sorted !== null) {
+            sortByMetric(col.category.id, col.metric.id);
+            col.sorted = !col.sorted;
+          }
         };
         $scope.clickNew = function ($event, top) {
           createSlot($event.target, top);
