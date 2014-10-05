@@ -49,8 +49,6 @@ module.directive('volumeEditMaterialsForm', [
       };
 
       form.save = function (material) {
-        if (!material.data.excerptOn)
-          material.data.excerpt = '';
         material.save().then(function (done) {
           if (done)
             material.form.$setPristine();

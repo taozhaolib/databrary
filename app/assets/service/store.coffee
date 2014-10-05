@@ -20,7 +20,7 @@ module.factory('Store', [
           container: @slot.id # required for position, which has the side-effect of restoring deleted/moved assets
           position: if isFinite(@asset.segment.l) then $filter('timecode')(@asset.segment.l, true)
           excerptOn: @asset.excerpt?
-          excerpt: (@asset.excerpt ? 0)+''
+          excerpt: (@asset.excerpt ? '')+''
         else
           classification: constants.classification.RESTRICTED+''
 
@@ -51,6 +51,7 @@ module.factory('Store', [
         )
 
     save: ->
+      @data.excerpt = '' if 'excerpt' in @data && !@data.excerptOn
       (if @file
         @data.upload = @file.uniqueIdentifier
         if @asset then @asset.replace(@data) else @slot.createAsset(@data)
