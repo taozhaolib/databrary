@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('tooltipService', [
+app.factory('tooltipService', [
   '$rootScope', '$timeout', function ($rootScope, $timeout) {
 
     var $doc = $(document);

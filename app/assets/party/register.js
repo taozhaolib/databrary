@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('party/register', [
+app.controller('party/register', [
   '$scope', 'pageService', function ($scope, page) {
     $scope.page = page;
     page.display.title = page.constants.message('register.title');

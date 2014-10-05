@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('truncate', [
+app.filter('truncate', [
   function () {
     return function (text, max) {
       if (!text) {

@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('volume/excerpts', [
+app.controller('volume/excerpts', [
   '$scope',
   function ($scope) {
     $scope.refreshPanel = function () {

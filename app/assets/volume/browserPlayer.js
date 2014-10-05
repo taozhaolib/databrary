@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('browserPlayer', [
+app.directive('browserPlayer', [
   function () {
     var link = function ($scope) {
       $scope.getAssetClasses = function (asset) {

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('wizardStep', [
+app.directive('wizardStep', [
   'pageService', function (page) {
     return {
       restrict: 'E',

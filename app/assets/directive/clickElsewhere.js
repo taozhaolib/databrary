@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('clickElsewhere', [
+app.directive('clickElsewhere', [
   '$parse', '$document',
   function ($parse, $document) { return {
     compile: function ($element, $attrs) {

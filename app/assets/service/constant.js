@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('constantService', [
+app.factory('constantService', [
   '$log', '$sce', 'constantData', function ($log, $sce, constants) {
     
     constants.regex = {

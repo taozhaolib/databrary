@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('uploadProgress', [
+app.directive('uploadProgress', [
   function () {
 
     return {

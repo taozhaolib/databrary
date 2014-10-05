@@ -1,6 +1,6 @@
 'use strict'
 
-module.directive('errors', [
+app.directive('errors', [
   'pageService',
   (page) ->
     restrict: 'E'

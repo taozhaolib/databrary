@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('updateInterceptor', [
+app.factory('updateInterceptor', [
   '$rootScope', 'constantService', 'messageService', '$sce',
   function ($rootScope, constants, messages, $sce) {
     var version = '/' + constants.version;
@@ -21,7 +21,7 @@ module.factory('updateInterceptor', [
   }
 ]);
 
-module.config([
+app.config([
   '$httpProvider', function ($httpProvider) {
     $httpProvider.interceptors.push('updateInterceptor');
   }

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('searchForm', [
+app.directive('searchForm', [
   'pageService',
   function (page) { return {
     restrict: 'E',

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('panel', [
+app.directive('panel', [
   function () {
     var link = function ($scope, $element, $attrs, ctrl, transclude) {
       if (angular.isDefined($attrs.id)) {

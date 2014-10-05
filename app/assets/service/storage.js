@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('storageService', [
+app.factory('storageService', [
   '$window', function ($window) {
     return {
       set: function (k, v, persist) {

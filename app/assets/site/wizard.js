@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('wizard', [
+app.directive('wizard', [
   'pageService',
   function (page) {
     return {

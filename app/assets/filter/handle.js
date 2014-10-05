@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('handle', [
+app.filter('handle', [
   function () {
     var urlTypes = {
       doi: {

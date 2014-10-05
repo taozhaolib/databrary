@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('age', [
+app.filter('age', [
   function () {
     var YEAR = 365.24219;
     var MONTH = YEAR/12;

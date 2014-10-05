@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('spreadsheet', [
+app.directive('spreadsheet', [
   'pageService', '$compile', '$templateCache',
   function (page, $compile, $templateCache) {
     function maybeInt(s) {

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('fundingGrantForm', [
+app.directive('fundingGrantForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var volume = $scope.volume;

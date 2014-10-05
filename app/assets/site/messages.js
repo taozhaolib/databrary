@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('messages', [
+app.directive('messages', [
   'pageService', function (page) {
     var controller = ['$scope', function ($scope) {
       return ($scope.messages = {

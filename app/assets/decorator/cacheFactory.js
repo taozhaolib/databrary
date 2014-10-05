@@ -1,6 +1,6 @@
 'use strict';
 
-module.config([
+app.config([
   '$provide', function ($provide) {
     $provide.decorator('$cacheFactory', [
       '$delegate', function ($delegate) {

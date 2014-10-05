@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('hint', [
+app.directive('hint', [
   'pageService', function (page) {
     var hints = {};
 

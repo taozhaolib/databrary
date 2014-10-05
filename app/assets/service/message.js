@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('messageService', [
+app.factory('messageService', [
   '$timeout', '$sanitize', '$sce', 'constantService',
   function ($timeout, $sanitize, $sce, constants) {
 

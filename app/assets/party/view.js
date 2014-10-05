@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('party/view', [
+app.controller('party/view', [
   '$scope', 'party', 'pageService', function ($scope, party, page) {
     $scope.party = party;
     $scope.volumes = party.volumes.map(function (va) {

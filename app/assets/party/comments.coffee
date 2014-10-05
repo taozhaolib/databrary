@@ -1,6 +1,6 @@
 'use strict'
 
-module.controller('party/comments', [
+app.controller('party/comments', [
   '$scope',
   ($scope) ->
     $scope.refreshPanel = ->

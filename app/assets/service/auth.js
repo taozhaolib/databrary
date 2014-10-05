@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('authService', [
+app.factory('authService', [
   '$location', '$route', 'messageService', 'constantService', 'modelService', '$play',
   function ($location, $route, messages, constants, models, $play) {
     var auth = {};

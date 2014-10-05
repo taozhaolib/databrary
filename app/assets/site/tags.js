@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('site/tags', [
+app.controller('site/tags', [
   '$scope', 'pageService', function ($scope, page) {
     var DEFAULT_MESSAGE = {
       type: 'green',

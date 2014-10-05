@@ -1,6 +1,6 @@
 'use strict'
 
-module.controller('volume/slot', [
+app.controller('volume/slot', [
   '$scope', 'slot', 'edit', 'pageService', 'Store',
   ($scope, slot, editing, page, Store) ->
     page.display.title = slot.displayName

@@ -1,6 +1,6 @@
 'use strict'
 
-module.factory('$play', [
+app.factory('$play', [
   '$window',
   ($window) -> $window.$play
 ])

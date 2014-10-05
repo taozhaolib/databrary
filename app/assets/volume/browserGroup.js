@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('browserGroup', [
+app.directive('browserGroup', [
   'pageService', 'browserService',
   function (page, browser) {
     var link = function ($scope) {

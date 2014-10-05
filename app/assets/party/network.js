@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('party/network', [
+app.controller('party/network', [
   '$scope', 'pageService', function ($scope, page) {
     $scope.refreshPanel = getPartyAuth;
 

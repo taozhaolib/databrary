@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('sessionMark', [
+app.directive('sessionMark', [
   'pageService', function (page) {
     var types = {
       exclusion: 'purple',

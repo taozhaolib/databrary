@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('broadcast', [
+app.directive('broadcast', [
   function () {
     return {
       restrict: 'A',

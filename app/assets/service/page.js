@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('pageService', [
+app.factory('pageService', [
   '$injector', function ($injector) {
     var page = {
       auth: $injector.get('authService'),

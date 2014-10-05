@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('assetDisplay', [
+app.directive('assetDisplay', [
   function () { return {
     restrict: 'E',
     templateUrl: 'asset/display.html',

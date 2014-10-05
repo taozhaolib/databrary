@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('volumeList', [
+app.directive('volumeList', [
   'pageService',
   function (page) { return {
     restrict: 'E',

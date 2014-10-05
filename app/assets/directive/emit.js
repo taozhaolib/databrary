@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('emit', [
+app.directive('emit', [
   function () {
     return {
       restrict: 'A',

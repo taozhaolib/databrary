@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('volumeEditAccessForm', [
+app.directive('volumeEditAccessForm', [
   'pageService', '$q',
   function (page, $q) {
     var link = function ($scope) {

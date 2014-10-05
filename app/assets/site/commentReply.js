@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('commentReplyForm', [
+app.directive('commentReplyForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.commentReplyForm;

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('dateModel', [
+app.directive('dateModel', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs, ngModel) {
       if (!ngModel) {

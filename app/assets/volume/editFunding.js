@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('volumeEditFundingForm', [
+app.directive('volumeEditFundingForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var volume = $scope.volume;

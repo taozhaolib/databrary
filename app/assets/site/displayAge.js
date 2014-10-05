@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('displayAge', [
+app.directive('displayAge', [
   'pageService', function (page) {
     var link = function ($scope) {
       $scope.change = page.display.toggleAge;

@@ -79,6 +79,8 @@ JsTaskKeys.jsOptions in (Assets, StylusKeys.stylus) ~= { (s : String) =>
 }
 
 
+AngularTemplatesKeys.module := "app"
+
 AngularTemplatesKeys.compressRemoveIntertagSpaces := true
 
 AngularTemplatesKeys.outputHtml := None

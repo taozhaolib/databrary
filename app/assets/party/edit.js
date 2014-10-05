@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('party/edit', [
+app.controller('party/edit', [
   '$scope', 'party', 'pageService', function ($scope, party, page) {
     $scope.party = party;
     page.display.title = page.constants.message('party.edit');

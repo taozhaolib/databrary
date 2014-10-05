@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('browserIcon', [
+app.directive('browserIcon', [
   'pageService', 'browserService',
   function (page, browser) {
     var link = function ($scope) {

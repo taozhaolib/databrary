@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('browserList', [
+app.directive('browserList', [
   'pageService', 'browserService',
   function (page, browser) {
     var link = function ($scope) {

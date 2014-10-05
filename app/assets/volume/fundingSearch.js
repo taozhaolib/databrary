@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('fundingSearchForm', [
+app.directive('fundingSearchForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var form = $scope.fundingSearchForm;

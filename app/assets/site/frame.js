@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('frame', [
+app.directive('frame', [
   function () {
     var compile = function ($element, $attrs, transclude) {
       return function ($scope, $element, $attrs) {

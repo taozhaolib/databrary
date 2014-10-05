@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('volumeEditMaterialsForm', [
+app.directive('volumeEditMaterialsForm', [
   'pageService', 'Store',
   function (page, Store) {
     var link = function ($scope) {

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('authGrantForm', [
+app.directive('authGrantForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var party = $scope.party;

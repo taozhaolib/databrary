@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('loginForm', [
+app.directive('loginForm', [
   'pageService',
   function (page) { return {
     restrict: 'E',

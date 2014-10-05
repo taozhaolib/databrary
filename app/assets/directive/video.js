@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('video', [
+app.directive('video', [
   'pageService',
   function (page) { return {
     restrict: 'E',

@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('volume/browser', [
+app.controller('volume/browser', [
   '$scope',
   function ($scope) {
     $scope.refreshPanel = function () {

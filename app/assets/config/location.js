@@ -1,6 +1,6 @@
 'use strict';
 
-module.config([
+app.config([
   '$locationProvider', function ($locationProvider) {
     $locationProvider.html5Mode(true);
   }

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('tooltips', [
+app.directive('tooltips', [
   'pageService', function (page) {
     var controller = [function () {
       var tooltips = {};

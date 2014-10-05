@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('timecode', [
+app.filter('timecode', [
   function () {
     var pad = function (s, n, d) {
       var p;

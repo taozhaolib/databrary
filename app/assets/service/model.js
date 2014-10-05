@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('modelService', [
+app.factory('modelService', [
   '$q', '$cacheFactory', '$play', 'routerService', 'constantService', 'Segment',
   function ($q, $cacheFactory, $play, router, constants, Segment) {
 

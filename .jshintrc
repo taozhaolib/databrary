@@ -1,5 +1,5 @@
 {
-"predef": ["angular","module","$"],
+"predef": ["angular","app","$"],
 "strict": true,
 "globalstrict": true,
 "smarttabs": true,

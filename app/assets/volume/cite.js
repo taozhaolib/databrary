@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('citeVolume', [
+app.directive('citeVolume', [
   'pageService', function (page) {
     var link = function ($scope) {
       var authors = '';

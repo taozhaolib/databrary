@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('toArray', [
+app.filter('toArray', [
   'pageService', function (page) {
     return function (input, expression, reverse) {
       if (!angular.isObject(input)) {

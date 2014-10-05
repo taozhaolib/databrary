@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('volume/comments', [
+app.controller('volume/comments', [
   '$scope', 'pageService',
   function ($scope, page) {
     $scope.canPost = page.models.Login.isAuthorized();

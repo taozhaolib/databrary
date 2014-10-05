@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('expose', [
+app.directive('expose', [
   function () {
     return {
       restrict: 'A',

@@ -31,6 +31,6 @@ angular.forEach(keys, function (key, name) {
   ];
 });
 
-module.directive(keys);
+app.directive(keys);
 
 })();

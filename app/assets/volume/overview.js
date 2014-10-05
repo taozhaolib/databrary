@@ -1,6 +1,6 @@
 'use strict';
 
-module.controller('volume/overview', [
+app.controller('volume/overview', [
   '$scope', 'pageService', function ($scope, page) {
     $scope.refreshPanel = function () {
       $scope.enabled = angular.isObject($scope.volume);

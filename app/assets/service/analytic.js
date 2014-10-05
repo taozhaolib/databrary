@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('analyticService', [
+app.factory('analyticService', [
   '$rootScope', '$location',
   function ($rootScope, $location) {
     var analytics = {};

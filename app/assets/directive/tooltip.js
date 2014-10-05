@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('tooltip', [
+app.directive('tooltip', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
       var tooltip = {};

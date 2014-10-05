@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('toolbar', [
+app.directive('toolbar', [
   'pageService', function (page) {
     return {
       restrict: 'A',

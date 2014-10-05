@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('validator', [
+app.directive('validator', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
       $scope.validator = {};

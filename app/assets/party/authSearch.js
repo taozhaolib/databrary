@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('authSearchForm', [
+app.directive('authSearchForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
       var party = $scope.party || page.models.Login.user;

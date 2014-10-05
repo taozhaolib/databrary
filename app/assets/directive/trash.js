@@ -1,7 +1,7 @@
 'use strict';
 //to be paired with directive trashable. 'outside' is a shared parent scope
 
-module.directive('trash', [
+app.directive('trash', [
   function () {
     var link = function ($scope, $el, $attr) {
       var indicatorOn = $attr.indicatorOn || "trash can open";

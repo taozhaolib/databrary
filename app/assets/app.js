@@ -1,7 +1,7 @@
-/* globals -module */
+/* globals -app */
 'use strict';
 
-var module = angular.module('databraryModule', [
+var app = angular.module('databraryModule', [
   'ngRoute',
   'pasvaz.bindonce',
   'flow'

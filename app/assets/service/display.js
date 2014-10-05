@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('displayService', [
+app.factory('displayService', [
   '$rootScope', 'storageService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
   function ($rootScope, storage, $filter, messages, constants, $timeout, $window) {
     var display = {};

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('fileModel', [
+app.directive('fileModel', [
   'pageService',
   function (page) { return {
     restrict: 'A',

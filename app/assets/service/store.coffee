@@ -1,6 +1,6 @@
 'use strict'
 
-module.factory('Store', [
+app.factory('Store', [
   'constantService', 'routerService', '$filter', 'messageService', 'modelService',
   (constants, router, $filter, messages, models) -> class Store
     constructor: (@slot, asset) ->

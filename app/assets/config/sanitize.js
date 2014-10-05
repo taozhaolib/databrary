@@ -1,7 +1,7 @@
 'use strict';
 
 /* This is a temporary patch to deal with SCE until it can be done properly. */
-module.factory('$sanitize', [
+app.factory('$sanitize', [
   function () {
     var ent = Object.freeze({
       "&": "&amp;",

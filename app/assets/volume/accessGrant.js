@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('accessGrantForm', [
+app.directive('accessGrantForm', [
   'pageService', function (page) {
     var link = function ($scope) {
       var volume = $scope.volume;

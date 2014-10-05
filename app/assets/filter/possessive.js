@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('possessive', [
+app.filter('possessive', [
   'pageService', function (page) {
     return function (key, party, name) {
       var replace;

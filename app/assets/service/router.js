@@ -1,6 +1,6 @@
 'use strict';
 
-module.provider('routerService', [
+app.provider('routerService', [
   '$routeProvider', 'routeData',
   function ($routeProvider, controllers) {
     function encodeUri(val) {

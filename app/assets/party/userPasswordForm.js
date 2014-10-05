@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('userPasswordForm', [
+app.directive('userPasswordForm', [
   'pageService', '$play',
   function (page, $play) {
     var link = function ($scope) {

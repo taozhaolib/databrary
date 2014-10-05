@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('ngForm', [
+app.directive('ngForm', [
   'pageService', '$animate',
   function (page, $animate) {
     var pre = function ($scope, $element, $attrs) {

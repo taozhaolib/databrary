@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('figure', [
+app.directive('figure', [
   function () { return {
     restrict: 'E',
     priority: 100,

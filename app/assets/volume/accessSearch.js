@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('accessSearchForm', [
+app.directive('accessSearchForm', [
   'pageService', function (page) {
     var link = function ($scope, $element, $attrs) {
       var volume = $scope.volume;

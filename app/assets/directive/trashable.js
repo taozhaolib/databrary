@@ -1,7 +1,7 @@
 'use strict';
 //to be paired with directive trash. 'outside' is a shared parent scope
 
-module.directive('trashable', [
+app.directive('trashable', [
   function () {
     var link = function ($scope, $el) {
 

@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('portrait', [
+app.directive('portrait', [
   'pageService', function (page) {
     return {
       restrict: 'E',

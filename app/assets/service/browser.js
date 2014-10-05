@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('browserService', [
+app.factory('browserService', [
   'constantService',
   'displayService',
   function (constants, display) {

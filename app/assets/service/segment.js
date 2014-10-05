@@ -1,6 +1,6 @@
 'use strict';
 
-module.factory('Segment', [
+app.factory('Segment', [
   'constantService',
   function (constants) {
     function Segment(l, u) {

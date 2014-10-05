@@ -1,6 +1,6 @@
 'use strict';
 
-module.config([
+app.config([
   '$provide', function ($provide) {
     $provide.decorator('$rootScope', [
       '$delegate', function ($rootScope) {

@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('escape', [
+app.filter('escape', [
   '$sce', '$sanitize',
   function ($sce, $sanitize) {
     return function (input) {

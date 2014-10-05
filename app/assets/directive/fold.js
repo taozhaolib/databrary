@@ -1,6 +1,6 @@
 'use strict';
 
-module.directive('fold', [
+app.directive('fold', [
   'pageService', 'storageService',
   function (page, storage) {
     var foldableClass = 'foldable',

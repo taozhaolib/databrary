@@ -1,6 +1,6 @@
 'use strict';
 
-module.filter('format', [
+app.filter('format', [
   '$sce', '$sanitize',
   function ($sce, $sanitize) {
     return function (input) {

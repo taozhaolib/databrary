@@ -1,6 +1,6 @@
 'use strict'
 
-module.controller('volume/spreadsheet', [
+app.controller('volume/spreadsheet', [
   '$scope', 'volume', 'pageService',
   ($scope, volume, page) ->
     $scope.volume = volume
