@@ -180,8 +180,9 @@ welcome.users=Registered Users
 party.overview.title=Overview
 party.contact.title=Contact
 
-network.title=Authorizations
+volumes.title=Studies
 
+network.title=Authorizations
 network.apply.local=Manage and apply for authorization
 network.apply.foreign=Grant authorization to {0}
 network.grant.local=Manage and grant authorizations
@@ -401,8 +402,12 @@ volume.alias=Internal short name (only shown to editors)
 volume.body=Description
 study.body=Abstract
 
-browser.title=Data
+sessions.title=Data
 session=Session
+
+materials.title=Materials
+materials=Materials
+materials.empty=There are no files here.
 
 not.pilot=Not pilot
 not.exclusion=Included
@@ -417,9 +422,6 @@ excerpts.jump=Jump to the session from which this excerpt originates.
 player.title=Player
 player.download=Download this file.
 player.close=Close the media player.
-
-materials=Materials
-materials.empty=There are no files here.
 
 citations.title=Citations
 citations.study.title=Corresponding Publication

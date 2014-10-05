@@ -57,10 +57,11 @@ app.directive('spreadsheet', [
     }
 
     function parseInfo(id) {
-      var info = {};
+      if (id === undefined)
+        return;
       var s = id.split('_');
-      if ((info.t = stripPrefix(s[0], 'ss-')) === undefined ||
-          s.length > 1 && isNaN(info.i = parseInt(s[1])))
+      var info = { t: s[0] };
+      if (s.length > 1 && isNaN(info.i = parseInt(s[1])))
         return;
       switch (info.t) {
         case 'rec':
@@ -116,13 +117,15 @@ app.directive('spreadsheet', [
     }
 
     var controller = [
-      '$scope', '$attrs',
-      function ($scope, $attrs) {
+      '$scope', '$element', '$attrs',
+      function ($scope, $element, $attrs) {
 
         var volume = $scope.volume;
         $scope.page = page;
 
         var editing = $scope.editing = $attrs.edit !== undefined;
+        var top = $scope.top = 'top' in $attrs;
+        var id = $scope.id = $attrs.id || (top ? 'sst' : 'ss');
 
         function getSlot(slot) {
           if ('records' in slot)
@@ -150,7 +153,8 @@ app.directive('spreadsheet', [
 
         var slots = []; // [Row] = Slot
         angular.forEach(volume.containers, function (s) {
-          slots.push(/*getSlot*/(s));
+          if (top !== !s.top) // jshint ignore:line
+            slots.push(/*getSlot*/(s));
         });
 
         var count = slots.length;
@@ -164,7 +168,7 @@ app.directive('spreadsheet', [
 
         var rows = new Array(count); // [Row] :: DOM Element tr
 
-        var table = document.getElementById('spreadsheet-table');
+        var tbody = $element[0].getElementsByClassName("spreadsheet-tbody")[0];
 
         /* may be called after parseInfo to fill out complete information */
         function fillInfo(info) {
@@ -318,7 +322,7 @@ app.directive('spreadsheet', [
           td.setAttribute("colspan", l);
           if (edit) {
             td.appendChild(document.createTextNode("add " + c.name));
-            td.id = 'ss-add_' + i + '_' + c.id;
+            td.id = id + '-add_' + i + '_' + c.id;
             td.className = 'add';
           } else
             td.className = 'null';
@@ -337,9 +341,9 @@ app.directive('spreadsheet', [
             }
             var m = col.metric.id;
             var v = records[c][m][n] && records[c][m][n][i];
-            var cell = generateCell(row, m, v, 'ss-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
+            var cell = generateCell(row, m, v, id + '-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
             if (v !== null) {
-              var ri = 'ss-rec_' + records[c].id[n][i];
+              var ri = id + '-rec_' + records[c].id[n][i];
               cell.classList.add(ri, ri + '_' + m);
             }
             if (col.first && n === 0 && t > 1)
@@ -350,20 +354,20 @@ app.directive('spreadsheet', [
         /* Fill out rows[i]. */
         function generateRow(i) {
           var slot = slots[i];
-          var top = editing && slot.id === volume.top.id;
+          var stop = editing && slot.id === volume.top.id;
           var row = document.createElement('tr');
           if (rows[i] && rows[i].parentNode)
             rows[i].parentNode.replaceChild(row, rows[i]);
           rows[i] = row;
           var cell;
-          row.id = 'ss_' + i;
+          row.id = id + '_' + i;
           row.data = i;
-          if (top)
+          if (stop)
             row.className = 'top';
 
-          cell = generateCell(row, 'name', slot.name, 'ss-name_' + i);
+          cell = generateCell(row, 'name', slot.name, id + '-name_' + i);
           var a;
-          if (editing && !top) {
+          if (editing && !stop) {
             a = cell.insertBefore(document.createElement('a'), cell.firstChild);
             a.className = 'trash icon';
             $(a).on('click', function (event) {
@@ -377,9 +381,10 @@ app.directive('spreadsheet', [
           a.setAttribute('href', slot.route);
           a.className = "play icon";
 
-          generateCell(row, 'date', slot.date, 'ss-date_' + i);
-          generateCell(row, 'consent', slot.consent, 'ss-consent_' + i);
-          generateRecords(row, i, 0, editing && !top);
+          if (!slot.top)
+            generateCell(row, 'date', slot.date, id + '-date_' + i);
+          generateCell(row, 'consent', slot.consent, id + '-consent_' + i);
+          generateRecords(row, i, 0, editing && !stop);
         }
 
         /* Update all age displays. */
@@ -394,14 +399,14 @@ app.directive('spreadsheet', [
             for (var i = 0; i < count; i ++) {
               if (counts[i][c] && r)
                 generateText(
-                  document.getElementById('ss-rec_' + i + post),
+                  document.getElementById(id + '-rec_' + i + post),
                   'age', r[i]);
             }
             if (expanded !== undefined)
               r = records[c][m.metric.id];
               for (var n = 0; n < counts[expanded][c]; n ++) {
                 if (n in r) generateText(
-                    document.getElementById('ss-rec_' + expanded + '_' + n + '_' + mi),
+                    document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi),
                     'age', r[n][expanded]);
               }
           }
@@ -418,19 +423,12 @@ app.directive('spreadsheet', [
 
         ///////////////////////////////// Place DOM elements
         
-        var tbody_main = document.getElementById('ss');
-        var tbody_top = document.getElementById('ss-top');
-
-        function tbody(i) {
-          return slots[i].top ? tbody_top : tbody_main;
-        }
-
         /* Place all rows into spreadsheet. */
         function fill() {
           collapse();
           for (var o = 0; o < count; o ++) {
             var i = order[o];
-            tbody(i).appendChild(rows[i]);
+            tbody.appendChild(rows[i]);
           }
         }
 
@@ -491,7 +489,7 @@ app.directive('spreadsheet', [
           });
         }
 
-        function createSlot(cell, top) {
+        function createSlot(cell) {
           cell.classList.add('saving');
           volume.createContainer({top:top}).then(function (slot) {
             if (!('records' in slot))
@@ -500,7 +498,7 @@ app.directive('spreadsheet', [
             order.push(i);
             populateSlot(i);
             generateRow(i);
-            tbody(i).appendChild(rows[i]);
+            tbody.appendChild(rows[i]);
             cell.classList.remove('saving');
           }, saveError.bind(null, cell));
         }
@@ -521,8 +519,10 @@ app.directive('spreadsheet', [
           return slot.remove().then(function (done) {
             cell.classList.remove('saving');
             if (!done)
-              return page.messages.addError({
-                body: page.constants.message('slot.remove.notempty')
+              return page.messages.add({
+                body: page.constants.message('slot.remove.notempty'),
+                type: 'red',
+                countdown: 5000
               });
             unedit();
             collapse();
@@ -548,7 +548,7 @@ app.directive('spreadsheet', [
               /* TODO age may have changed... not clear how to update. */
             });
 
-            var l = table.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id);
+            var l = tbody.getElementsByClassName(id + '-rec_' + record.id + '_' + metric.id);
             for (var li = 0; li < l.length; li ++)
               generateText(l[li], metric.id, v, metric.assumed);
             cell.classList.remove('saving');
@@ -622,11 +622,10 @@ app.directive('spreadsheet', [
           var row = rows[i];
           row.classList.remove('expand');
           var el;
-          var p = row.parentNode; // tbody(i)
           if (!((el = row.nextSibling) && el.data === i))
             return false;
           do {
-            p.removeChild(el);
+            tbody.removeChild(el);
           } while ((el = row.nextSibling) && el.data === i);
 
           for (el = row.firstChild; el && !el.id.startsWith("ss-rec_"); el = el.nextSibling)
@@ -655,21 +654,20 @@ app.directive('spreadsheet', [
             return;
           var next = row.nextSibling;
           var el;
-          var p = tbody(i);
           for (var n = 1; n < max; n ++) {
-            el = p.insertBefore(document.createElement('tr'), next);
+            el = tbody.insertBefore(document.createElement('tr'), next);
             el.className = 'expand';
             el.data = i;
             generateRecords(el, i, n, edit);
           }
 
-          var i = 3;
+          var i = 2+!top;
           for (el = row.firstChild; i > 0; el = el.nextSibling, i--)
             el.setAttribute("rowspan", max);
         }
 
         function save(cell, type, value) {
-          var info = fillInfo(parseInfo(cell.id));
+          var info = fillInfo(parseInfo(stripPrefix(cell.id, id+'-')));
           if (value === '')
             value = undefined;
           else switch (type) {
@@ -911,7 +909,7 @@ app.directive('spreadsheet', [
           var el = event.target;
           if (el.tagName !== 'TD')
             return;
-          var info = parseInfo(el.id);
+          var info = parseInfo(stripPrefix(el.id, id+'-'));
           if (!info)
             return;
 
@@ -920,12 +918,15 @@ app.directive('spreadsheet', [
             page.display.toggleAge();
         };
 
-        $scope.clickSession = function ($event) {
-          unselect();
-          if (editing)
-            edit($event.target, {t:'head'});
+        $scope.clickSlot = function ($event, t) {
+          if (t)
+            sortBySlot(t, $event);
+          else {
+            unselect();
+            if (editing)
+              edit($event.target, {t:'head'});
+          }
         };
-        $scope.clickSlot = sortBySlot;
         $scope.clickCategory = function ($event, col) {
           unselect();
           if (editing)
@@ -937,8 +938,8 @@ app.directive('spreadsheet', [
             col.sorted = !col.sorted;
           }
         };
-        $scope.clickNew = function ($event, top) {
-          createSlot($event.target, top);
+        $scope.clickNew = function ($event) {
+          createSlot($event.target);
         };
 
         ///////////////////////////////// main
