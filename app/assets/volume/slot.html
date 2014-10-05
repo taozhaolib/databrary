@@ -66,7 +66,7 @@
                 <span bo-if="current.record.category" bo-text="page.constants.category[current.record.category].name + ': '"></span>
                 <span bo-if="current.record" bo-text="current.record.displayName"></span>
               </h1>
-              <nav class="player-main-info-actions" bo-if="current.asset">
+              <nav class="player-main-info-actions" ng-if="current.asset">
                 <img bo-if="!editing" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
                 <span bo-if="!editing" class="classification icon" bo-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
                 <a bo-href="current.asset.downloadRoute(false)" target="_self" bo-if="current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
