@@ -124,7 +124,7 @@
             </div>
 
             <div class="player-main-viewport" bo-if="current.type === 'asset'">
-              <asset-display asset="current.asset" ng-if="current.asset && !replace"></asset-display>
+              <asset-display bo-if="!editing && current.asset" asset="current.asset"></asset-display>
               <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message"></span>
