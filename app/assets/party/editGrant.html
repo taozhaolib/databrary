@@ -16,11 +16,12 @@
           </figure>
         </div>
 
-        <div class="col-desktop-11 col-tablet-5 col-mobile-4">
+        <div>
           <div class="row">
-            <div class="permission-heading col-desktop-11 col-tablet-5 col-mobile-4">
+            <div class="permission-heading">
               <a bo-href="auth.party.route" class="permission-auth-username" bo-text="auth.party.name"></a>
               <span class="permission-auth-email" bo-if="auth.party.email" bo-text="auth.party.email"></span>
+              <button ng-click="authGrantForm.deny()" class="red mini"><span class="icon line vem-trash trash"></span></button>
             </div>
 
             <div class="col-desktop-11 col-tablet-5 col-mobile-4">
