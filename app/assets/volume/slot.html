@@ -119,7 +119,7 @@
                   </dl>
                 </div>
 
-                <button ng-if="current.asset || current.record" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+                <button ng-if="current.asset || current.record" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
               </ng-form>
             </div>
 

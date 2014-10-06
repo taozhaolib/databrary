@@ -114,12 +114,17 @@ app.controller('volume/slot', [
       if range && isFinite(range.l) && !range.contains($scope.position)
         seekOffset(range.l)
 
+    confirmDirty = ->
+      not (editing && $scope.current && $scope.form.edit &&
+        ($scope.current.dirty = $scope.form.edit.$dirty)) or
+          confirm(page.constants.message('navigation.confirmation'))
+
     select = (c, event) ->
       if $scope.current == c
         $scope.seekPosition event.clientX if event
         return
 
-      $scope.current.dirty = $scope.form.edit.$dirty if $scope.current && $scope.form.edit
+      return unless confirmDirty()
 
       $scope.current = c
       searchLocation(page.$location)
@@ -130,11 +135,6 @@ app.controller('volume/slot', [
       delete $scope.replace
       return unless c
       selectRange(c.segment)
-      if $scope.form.edit
-        if c.dirty
-          $scope.form.edit.$setDirty()
-        else
-          $scope.form.edit.$setPristine()
 
     removed = (track) ->
       return if track.asset || track.file
@@ -274,6 +274,8 @@ app.controller('volume/slot', [
       save: ->
         @record.save({measures:@data}).then () =>
           @fillData()
+          delete @dirty
+          $scope.form.edit.$setPristine() if this == $scope.current
 
     class Consent
       constructor: (c) ->
@@ -328,4 +330,9 @@ app.controller('volume/slot', [
 
     $scope.playing = 0
     $scope.position = undefined
+
+    done = page.$rootScope.$on '$locationChangeStart', (event, url) ->
+      return if url.contains(slot.editRoute())
+      return event.preventDefault() unless confirmDirty()
+      done()
 ])
