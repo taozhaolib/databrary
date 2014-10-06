@@ -407,7 +407,7 @@ session=Session
 
 materials.title=Materials
 materials=Materials
-materials.empty=There are no files here.
+materials.top=Top-level materials
 
 not.pilot=Not pilot
 not.exclusion=Included
