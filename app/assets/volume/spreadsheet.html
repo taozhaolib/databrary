@@ -2,7 +2,7 @@
   <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
     <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#'+id">edit</a>
   </span>
-  <h3 class="view-title smaller" bo-if="editing">
+  <h3 class="view-title smaller" bo-if="editing" bo-id="id">
     <span bo-text="top? 'materials':'session'"></span>
   </h3>
   <span bo-if="editing">
@@ -30,7 +30,7 @@
         <th ng-repeat="col in metricCols" bo-id="id+'-metric_'+$index" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sorted !== null, 'sortable': col.sorted === undefined, 'sort-asc': col.sorted, 'sort-desc': col.sorted === false}" ng-bind="col.metric.display || col.metric.name"></th>
       </tr>
     </thead>
-    <tbody class="spreadsheet-tbody" bo-id="id" ng-click="click($event)">
+    <tbody class="spreadsheet-tbody" ng-click="click($event)">
     </tbody>
     <tfoot>
       <tr bo-if="editing">
