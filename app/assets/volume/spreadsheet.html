@@ -2,7 +2,9 @@
   <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
     <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#'+id">edit</a>
   </span>
-  
+  <h3 class="view-title smaller" bo-if="editing">
+    <span bo-text="top? 'materials':'session'"></span>
+  </h3>
   <span bo-if="editing">
     <a ng-click="refresh()">refresh</a>
   </span>
