@@ -354,7 +354,7 @@ app.directive('spreadsheet', [
         /* Fill out rows[i]. */
         function generateRow(i) {
           var slot = slots[i];
-          var stop = editing && slot.id === volume.top.id;
+          var stop = slot.id === volume.top.id;
           var row = document.createElement('tr');
           if (rows[i] && rows[i].parentNode)
             rows[i].parentNode.replaceChild(row, rows[i]);
@@ -362,10 +362,13 @@ app.directive('spreadsheet', [
           var cell;
           row.id = id + '_' + i;
           row.data = i;
-          if (stop)
+          if (editing && stop)
             row.className = 'top';
 
-          cell = generateCell(row, 'name', slot.name, id + '-name_' + i);
+          var name = slot.name;
+          if (stop && !name)
+            name = page.constants.message('materials.top');
+          cell = generateCell(row, 'name', name, id + '-name_' + i);
           var a;
           if (editing && !stop) {
             a = cell.insertBefore(document.createElement('a'), cell.firstChild);
