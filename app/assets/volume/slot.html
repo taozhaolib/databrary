@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <a class="view-link" bo-href="volume.route" bo-text="volume.alias || volume.name"></a>
+          <a class="view-link" bo-href="editing ? page.router.volumeSpreadsheet(volume.id) : volume.route" bo-text="volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
             <span bo-text="slot.displayName"></span>
             <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
@@ -90,16 +90,16 @@
 
               <ng-form bo-if="editing" name="form.edit" bo-switch="current.type">
                 <div bo-switch-when="asset">
+                  <validator name="name" label="'asset.name' | message">
+                    <input type="text" name="name" ng-model="current.data.name" bo-attr bo-attr-placeholder="'asset.name.placeholder' | message">
+                  </validator>
+
                   <validator name="classification" label="'asset.classification' | message">
                     <select name="classification" ng-model="current.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
                   </validator>
 
-                  <validator name="name" label="'material.name' | message">
-                    <input type="text" name="name" ng-model="current.data.name">
-                  </validator>
-
                   <validator name="position" label="'asset.position' | message">
-                    <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/">
+                    <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" bo-attr bo-attr-placeholder="'asset.position.placeholder' | message">
                   </validator>
                 </div>
 
@@ -127,7 +127,7 @@
               <asset-display bo-if="!editing && current.asset" asset="current.asset"></asset-display>
               <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
-                <span class="vem-float-dropzone-message" bo-text="'material.add-drop' + (replace ? '.replace' : '') | message"></span>
+                <span class="vem-float-dropzone-message" bo-text="'asset.add-drop' + (replace ? '.replace' : '') | message"></span>
               </div>
             </div>
           </div>

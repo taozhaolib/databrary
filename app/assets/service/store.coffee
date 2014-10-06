@@ -20,7 +20,7 @@ app.factory('Store', [
           container: @slot.id # required for position, which has the side-effect of restoring deleted/moved assets
           position: if isFinite(@asset.segment.l) then $filter('timecode')(@asset.segment.l, true)
           excerptOn: @asset.excerpt?
-          excerpt: (@asset.excerpt ? '')+''
+          excerpt: (@asset.excerpt || 0)+''
         else
           classification: constants.classification.RESTRICTED+''
 

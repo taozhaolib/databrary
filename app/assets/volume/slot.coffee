@@ -182,6 +182,9 @@ app.controller('volume/slot', [
         delete $scope.replace
         super(file).then (done) =>
           return unless done
+          ### jshint ignore:start ###
+          @data.name ||= file.file.name
+          ### jshint ignore:end ###
           # add a new blank track
           $scope.tracks.push(new Track()) unless @asset
 
