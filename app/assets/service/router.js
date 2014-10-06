@@ -269,7 +269,7 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.volumeSpreadsheet = makeRoute(controllers.VolumeHtml.spreadsheet, ['id', 'top'], {
+    routes.volumeSpreadsheet = makeRoute(controllers.VolumeHtml.spreadsheet, ['id'], {
       controller: 'volume/spreadsheet',
       templateUrl: 'volume/editSpreadsheet.html',
       resolve: {

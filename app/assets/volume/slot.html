@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <a class="view-link" bo-href="volume.route" bo-text="volume.alias || volume.name"></a>
+          <a class="view-link" bo-href="editing ? page.router.volumeSpreadsheet(volume.id) : volume.route" bo-text="volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
             <span bo-text="slot.displayName"></span>
             <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
