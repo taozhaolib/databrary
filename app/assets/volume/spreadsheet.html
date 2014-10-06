@@ -17,10 +17,14 @@
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
     </colgroup>
+    <colgroup bo-if="editing">
+      <col class="add">
+    </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
         <th bo-attr bo-attr-colspan="2+!top" bo-id="id+'-head'" ng-click="clickSlot($event)" bo-text="top ? 'materials' : 'session' | message"></th>
         <th ng-repeat="col in recordCols track by col.category.id" bo-id="id+'-category_'+col.category.id" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory($event, col)"></th>
+        <th bo-if="editing" bo-id="id+'-add'" class="add" ng-click="clickAdd($event)">+</th>
       </tr>
       <tr class="spreadsheet-head-metrics">
         <th bo-id="id+'-name'" class="first sort sortable" ng-click="clickSlot($event, 'name')"/>
@@ -28,6 +32,7 @@
         <th bo-id="id+'-consent'" class="last sort sortable" ng-click="clickSlot($event, 'consent')"></th>
 
         <th ng-repeat="col in metricCols" bo-id="id+'-metric_'+$index" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sorted !== null, 'sortable': col.sorted === undefined, 'sort-asc': col.sorted, 'sort-desc': col.sorted === false}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th bo-if="editing" class="first last"></th>
       </tr>
     </thead>
     <tbody class="spreadsheet-tbody" bo-id="id" ng-click="click($event)">
