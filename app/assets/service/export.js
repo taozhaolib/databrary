@@ -1,16 +1,13 @@
 'use strict';
 
 app.service('exportService',
-            ['$http',
-            function($http){
+            [function($http){
                 
                 var dataExport = {};
 
                 dataExport.downloadCSV = function(volume){
                 
-                    var apiResource = '../api/volume/' + volume + '?records&containers';
-
-                    $http.get(apiResource).success(function(data){
+                    volume.get(['records', 'containers']).then(function(data){
                         createCSV(data);       
                     
                     });
@@ -22,6 +19,10 @@ app.service('exportService',
                 var header = '';
                 var body = '';
                 var payload = '';
+
+                var array = typeof data !== 'object' ? JSON.parse(data) : data;
+
+                console.log(array);
 
                 for(var key in data){
                     if(typeof(data[key] !== 'object')){

@@ -5,7 +5,7 @@
 <div class="spreadsheet-options">  
   <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
     <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#goto-'+id">edit</a> | 
-    <a ng-click="page.dataExport.downloadCSV(volume.id)">export data</a>
+    <a ng-click="page.dataExport.downloadCSV(volume)">export data</a>
   </span>
   <span bo-if="editing">
     <a ng-click="refresh()">refresh</a>
