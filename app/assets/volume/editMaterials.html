@@ -37,7 +37,7 @@
         <input ng-if="material.asset && !material.replace" type="text" name="filename" ng-value="material.asset.asset.creation.name + ' ' + page.$filter('date')(material.asset.asset.creation.date, 'medium')" disabled outside="volumeEditMaterialsForm">
         <div class="file-button-set">
           <button ng-if="material.asset && !material.replace" ng-click="volumeEditMaterialsForm.replace(material)" bo-text="'replace' | message" class="blue mini"></button>        
-          <button class="red mini" ng-click="volumeEditMaterialsForm.remove(material)" class="col-desktop-1 col-tablet-1 col-mobile-1"><span class="icon line vem-trash trash"></span></button>
+          <button class="red mini" ng-disabled="material.pending" ng-click="volumeEditMaterialsForm.remove(material)" class="col-desktop-1 col-tablet-1 col-mobile-1"><span class="icon line vem-trash trash"></span></button>
         </div>
 
       </validator>

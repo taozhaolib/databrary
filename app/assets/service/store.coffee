@@ -30,11 +30,12 @@ app.factory('Store', [
         @file && @file.file.name || @asset && @asset.name || constants.message('file')
 
     remove: ->
+      return if @pending # sorry
       return unless confirm constants.message 'asset.remove.confirm'
       if @file
         @file.cancel()
         delete @file
-        return
+        return true
       @asset.remove().then(=>
           messages.add
             type: 'green'
@@ -51,6 +52,8 @@ app.factory('Store', [
         )
 
     save: ->
+      return if @pending # sorry
+      @pending = 1
       @data.excerpt = '' if 'excerpt' of @data && !@data.excerptOn
       (if @file
         @data.upload = @file.uniqueIdentifier
@@ -58,6 +61,7 @@ app.factory('Store', [
       else
         @asset.save(@data)
       ).then((asset) =>
+          delete @pending
           if asset instanceof models.Asset
             @asset.asset = asset
             asset = @asset
@@ -77,6 +81,7 @@ app.factory('Store', [
             delete @progress
           true
         , (res) =>
+          delete @pending
           messages.addError
             type: 'red'
             body: constants.message('asset.update.error', @name)

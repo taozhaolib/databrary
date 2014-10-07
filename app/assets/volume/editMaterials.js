@@ -49,6 +49,10 @@ app.directive('volumeEditMaterialsForm', [
       };
 
       form.save = function (material) {
+        if (material.form.$pristine)
+          return;
+        if (material.file) /* upload in progress */
+          return material.form.$setPristine();
         material.save().then(function (done) {
           if (done)
             material.form.$setPristine();
@@ -56,10 +60,7 @@ app.directive('volumeEditMaterialsForm', [
       };
 
       form.saveAll = function () {
-        form.materials.forEach(function (material) {
-          if (material.form.$dirty)
-            form.save(material);
-        });
+        form.materials.forEach(form.save);
       };
 
       form.replace = function (material) {

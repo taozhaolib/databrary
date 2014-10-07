@@ -328,8 +328,9 @@ app.controller('volume/slot', [
     $scope.playing = 0
     $scope.position = undefined
 
-    done = page.$rootScope.$on '$locationChangeStart', (event, url) ->
-      return if url.contains(slot.editRoute())
-      return event.preventDefault() unless confirmDirty()
-      done()
+    if editing
+      done = page.$rootScope.$on '$locationChangeStart', (event, url) ->
+        return if url.contains(slot.editRoute())
+        return event.preventDefault() unless confirmDirty()
+        done()
 ])
