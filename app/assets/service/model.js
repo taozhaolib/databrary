@@ -648,6 +648,10 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.SlotApi.update, this.container.id, this.segment.format(), data)
         .then(function (res) {
+          if ('consent' in data) {
+            s.clear('consents');
+            s.container.clear('consents');
+          }
           return s.update(res.data);
         });
     };

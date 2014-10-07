@@ -274,11 +274,11 @@ app.controller('volume/slot', [
 
     class Consent
       constructor: (c) ->
-        if c && typeof c == 'object'
-          @consent = c.consent || 0
+        if typeof c == 'object'
+          @consent = c.consent
           @segment = page.models.Segment.make(c.segment)
         else
-          @consent = c || 0
+          @consent = c
           @segment = page.models.Segment.full
 
       type: 'consent'
@@ -320,8 +320,10 @@ app.controller('volume/slot', [
     $scope.consents =
       if Array.isArray(consents = slot.consents)
         consents.map((c) -> new Consent(c))
-      else
+      else if (consents)
         [new Consent(consents)]
+      else
+        []
 
     $scope.playing = 0
     $scope.position = undefined
