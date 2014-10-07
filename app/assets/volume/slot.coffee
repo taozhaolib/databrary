@@ -132,7 +132,6 @@ app.controller('volume/slot', [
       targetRecord = undefined
 
       $scope.playing = 0
-      delete $scope.replace
       return unless c
       selectRange(c.segment)
 
@@ -179,7 +178,6 @@ app.controller('volume/slot', [
           sortTracks()
 
       upload: (file) ->
-        delete $scope.replace
         super(file).then (done) =>
           return unless done
           ### jshint ignore:start ###
@@ -187,9 +185,6 @@ app.controller('volume/slot', [
           ### jshint ignore:end ###
           # add a new blank track
           $scope.tracks.push(new Track()) unless @asset
-
-      replace: ->
-        $scope.replace = !$scope.replace
 
     $scope.fileAdded = (file) ->
       return unless editing

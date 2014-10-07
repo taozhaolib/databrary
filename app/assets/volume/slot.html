@@ -66,12 +66,11 @@
                 <span bo-if="current.record.category" bo-text="page.constants.category[current.record.category].name + ': '"></span>
                 <span bo-if="current.record" bo-text="current.record.displayName"></span>
               </h1>
-              <nav class="player-main-info-actions" ng-if="current.asset">
-                <img bo-if="!editing" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
-                <span bo-if="!editing" class="classification icon" bo-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
-                <a bo-href="current.asset.downloadRoute(false)" target="_self" bo-if="current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-                <a bo-if="editing" ng-click="current.replace()" class="player-main-info-link icon">R</a>
-                <a bo-if="editing" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+              <nav class="player-main-info-actions">
+                <img bo-if="!editing" ng-if="current.asset" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+                <span bo-if="!editing" ng-if="current.asset" class="classification icon" bo-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
+                <a bo-href="current.asset.downloadRoute(false)" target="_self" ng-if="current.asset && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+                <a bo-if="editing" ng-if="current.asset || current.file" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
               </nav>
 
               <div bo-if="!editing">
@@ -125,9 +124,9 @@
 
             <div class="player-main-viewport" bo-if="current.type === 'asset'">
               <asset-display bo-if="!editing && current.asset" asset="current.asset"></asset-display>
-              <div bo-if="editing" ng-if="!current.file && (!current.asset || replace)" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
+              <div bo-if="editing" ng-if="!current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
-                <span class="vem-float-dropzone-message" bo-text="'asset.add-drop' + (replace ? '.replace' : '') | message"></span>
+                <span class="vem-float-dropzone-message" bo-text="'asset.add-drop' + (current.asset ? '.replace' : '') | message"></span>
               </div>
             </div>
           </div>
