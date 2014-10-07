@@ -83,9 +83,9 @@ object FileAsset extends StoreDir("store.master") {
 }
 
 private[store] object Segment extends StoreDir("store.cache") {
-  protected def file(id : models.Asset.Id, ext : String) : File = {
-    val i = id._id
-    new File(new File(baseDir, (i & 0xff).formatted("%02x")), (i >> 8).formatted("%06x") + ext)
+  protected def file(asset : models.Asset, ext : String) : File = {
+    val i = asset.sha1
+    new File(new File(baseDir, i.head.formatted("%02x")), new String(Hex(i.tail)) + ext)
   }
 
   /* Cache filenames use millisecond resolution */
@@ -114,7 +114,7 @@ private[store] object Segment extends StoreDir("store.cache") {
     } }
 
   private def frame(asset : models.Asset, offset : Option[Offset], size : Option[Int] = None, cache : Boolean = true) : Future[StreamEnumerator] = {
-    val f = file(asset.id, offset.fold("")(_.millis.formatted(":%d")) + size.fold("")(_.formatted("@%d")))
+    val f = file(asset, offset.fold("")(_.millis.formatted(":%d")) + size.fold("")(_.formatted("@%d")))
     if (cache && cacheEnabled)
       generate(f, (f : File) => media.AV.frame(FileAsset.file(asset), offset, size.fold(-1)(_.toInt), f), cache)
     else Future {
@@ -123,7 +123,7 @@ private[store] object Segment extends StoreDir("store.cache") {
   }
 
   private def segment(asset : models.Asset, section : Section, cache : Boolean = true) : Future[StreamEnumerator] = {
-    val f = file(asset.id, ":%d-%d".format(section.lower.millis.toLong, section.upper.millis.toLong))
+    val f = file(asset, ":%d-%d".format(section.lower.millis.toLong, section.upper.millis.toLong))
     generate(f, (f : File) => media.AV.segment(FileAsset.file(asset), section, f), cache)
   }
 
