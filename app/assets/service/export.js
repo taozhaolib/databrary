@@ -22,7 +22,9 @@ app.service('exportService', [function(){
                     var headers = [
                         'id',
                         'date', 
-                        'records'
+                        'records',
+                        'category',
+                        'measure'
                     ];
 
                     var header = headers.join(',');
@@ -38,15 +40,18 @@ app.service('exportService', [function(){
                     
                     for(var k in containers){
 
-                        var contID;
-                        
+
                         for(var j in containers[k].records){
                            
-                            contID = containers[k].records[j].id;
+                           var recID = containers[k].records[j].id;
+                           var recCat = records[recID].category;
 
-                            body += containers[k].id + 
-                                 ',' + containers[k].date + 
-                                 ',' + contID + '\n';
+
+                               body += containers[k].id + ',' + 
+                                       containers[k].date + ',' + 
+                                       recID + ',' + 
+                                       recCat + Object.keys(records[recID].measures) + '\n';
+
                         }
 
                     }
