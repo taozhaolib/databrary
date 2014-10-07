@@ -70,7 +70,7 @@
                 <img bo-if="!editing" ng-if="current.asset" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
                 <span bo-if="!editing" ng-if="current.asset" class="classification icon" bo-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
                 <a bo-href="current.asset.downloadRoute(false)" target="_self" ng-if="current.asset && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-                <a bo-if="editing" ng-if="current.asset || current.file" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+                <a bo-if="editing" ng-if="(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
               </nav>
 
               <div bo-if="!editing">
@@ -118,7 +118,7 @@
                   </dl>
                 </div>
 
-                <button ng-if="current.asset || current.record" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid"></button>
+                <button ng-if="current.asset || current.record" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </ng-form>
             </div>
 
