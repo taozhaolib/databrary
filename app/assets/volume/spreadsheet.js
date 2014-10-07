@@ -382,7 +382,7 @@ app.directive('spreadsheet', [
           }
           a = cell.insertBefore(document.createElement('a'), cell.firstChild);
           a.setAttribute('href', editing ? slot.editRoute() : slot.route);
-          a.className = "play icon";
+          a.className = "go icon";
 
           if (!slot.top)
             generateCell(row, 'date', slot.date, id + '-date_' + i);

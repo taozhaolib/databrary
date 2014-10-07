@@ -25,7 +25,7 @@
     <div class="panel-excerpts-list col-desktop-8 col-tablet-4 col-mobile-6">
       <div class="row">
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts" bindonce>
-          <div class="panel-excerpts-binder" bo-class="{video:excerpt.format.type==='video','panel-excerpts-list-current':excerpt===current}">
+          <div class="panel-excerpts-binder" ng-class="{video:excerpt.format.type==='video','panel-excerpts-list-current':excerpt===current}">
             <div class="panel-excerpts-actions">
                      <a bo-href="jumpLink(excerpt)" class="icon line jump tool" target="_self" tooltip="'excerpts.jump' | message"></a>
             </div>
