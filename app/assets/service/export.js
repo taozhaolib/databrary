@@ -1,7 +1,6 @@
 'use strict';
 
-app.service('exportService',
-            [function($http){
+app.service('exportService', [function(){
                 
                 var dataExport = {};
 
@@ -16,27 +15,47 @@ app.service('exportService',
 
                 function createCSV(data){
 
-                var header = '';
-                var body = '';
-                var payload = '';
+                    
+                    var body = '';
+                    var payload = '';
 
-                var array = typeof data !== 'object' ? JSON.parse(data) : data;
+                    var headers = [
+                        'id',
+                        'date', 
+                        'records'
+                    ];
 
-                console.log(array);
+                    var header = headers.join(',');
 
-                for(var key in data){
-                    if(typeof(data[key] !== 'object')){
-                        header += '"' + key + '"' + ',';
-                        body += '"' + data[key] + '"' + ',';
+                    var array = typeof data !== 'object' ? JSON.parse(data) : data;
+
+
+                    var containers = array.containers;
+                    var records = array.records;
+
+                    console.log(array.containers);
+                    console.log(array.records);
+                    
+                    for(var k in containers){
+
+                        var contID;
+                        
+                        for(var j in containers[k].records){
+                           
+                            contID = containers[k].records[j].id;
+
+                            body += containers[k].id + 
+                                 ',' + containers[k].date + 
+                                 ',' + contID + '\n';
+                        }
 
                     }
 
-                }
 
-                payload = header + '\n' + body;              
+                    payload = header + '\n' + body;              
+                        
+                    createPayload(payload);
                     
-                createPayload(payload);
-                
                 }
 
                 function createPayload(payload){
