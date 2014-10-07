@@ -51,7 +51,7 @@ app.factory('Store', [
         )
 
     save: ->
-      @data.excerpt = '' if 'excerpt' in @data && !@data.excerptOn
+      @data.excerpt = '' if 'excerpt' of @data && !@data.excerptOn
       (if @file
         @data.upload = @file.uniqueIdentifier
         if @asset then @asset.replace(@data) else @slot.createAsset(@data)
