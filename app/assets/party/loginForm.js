@@ -25,15 +25,7 @@ app.directive('loginForm', [
         });
       };
 
-      form.validator.client({
-        email: {
-          tips: page.constants.message('login.email.help'),
-          errors: page.constants.message('login.email.error'),
-        },
-        password: {
-          tips: page.constants.message('login.password.help'),
-        },
-      }, true);
+      form.validator.client({}, true);
 
       page.$timeout(function(){angular.element('#loginEmail').focus();},300);
     }
