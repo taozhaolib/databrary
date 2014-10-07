@@ -10,6 +10,7 @@ app.factory('pageService', [
       models: $injector.get('modelService'),
       router: $injector.get('routerService'),
       tooltips: $injector.get('tooltipService'),
+      dataExport: $injector.get('exportService')
     };
 
     //
