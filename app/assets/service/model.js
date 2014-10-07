@@ -603,7 +603,7 @@ app.factory('modelService', [
       var c = this;
       return router.http(router.controllers.SlotApi.remove, this.id)
         .then(function () {
-          if ('contaiers' in c.volume)
+          if ('containers' in c.volume)
             delete c.volume.containers[c.id];
           return true;
         }, function (res) {
