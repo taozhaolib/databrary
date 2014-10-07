@@ -23,8 +23,6 @@ app.service('exportService',
                 var body = '';
                 var payload = '';
 
-                var filename = 'download.csv';
-
                 for(var key in data){
                     if(typeof(data[key] !== 'object')){
                         header += '"' + key + '"' + ',';
@@ -33,25 +31,27 @@ app.service('exportService',
                     }
 
                 }
+
+                payload = header + '\n' + body;              
                     
-                payload = header + '\n' + body;
+                createPayload(payload);
+                
+                }
 
-                var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
+                function createPayload(payload){
 
-                var link = document.createElement('a');
-                link.href = uri;
+                    var filename = 'download.csv';
+                    var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
 
-                link.style = "visibility:hidden";
-                link.download = filename;
+                    var link = document.createElement('a');
+                    link.href = uri;
 
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+                    link.style = "visibility:hidden";
+                    link.download = filename;
 
-
-
-                        
-                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 }
                 
             
