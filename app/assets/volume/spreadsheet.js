@@ -924,11 +924,12 @@ app.directive('spreadsheet', [
         $scope.clickSlot = function ($event, t) {
           if (t)
             sortBySlot(t, $event);
-          else {
+          else
             unselect();
-            if (editing)
-              edit($event.target, {t:'head'});
-          }
+        };
+        $scope.clickAdd = function ($event) {
+          unselect();
+          edit($event.target, {t:'head'});
         };
         $scope.clickCategory = function ($event, col) {
           unselect();
