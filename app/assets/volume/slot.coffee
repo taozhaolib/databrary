@@ -124,7 +124,7 @@ app.controller('volume/slot', [
         $scope.seekPosition event.clientX if event
         return
 
-      return unless confirmDirty()
+      return if c && !confirmDirty()
 
       $scope.current = c
       searchLocation(page.$location)
