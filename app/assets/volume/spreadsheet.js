@@ -888,6 +888,8 @@ app.directive('spreadsheet', [
           unedit();
         }
 
+        $scope.$on('$destroy', unselect);
+
         function select(cell, info) {
           unselect();
 
