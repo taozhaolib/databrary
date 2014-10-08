@@ -7,6 +7,7 @@ app.service('exportService', ['constantService', function(constants){
 
                 var dataExport = {};
 
+
                 dataExport.downloadCSV = function(volume){
                 
                     volume.get(['records', 'containers']).then(function(data){
@@ -40,7 +41,6 @@ app.service('exportService', ['constantService', function(constants){
                     var moreHeaders = makeHeadersText(getHeaderCodes(records).sort().reverse());
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
-
 
                     console.log(containers);
                     console.log(records);
@@ -108,6 +108,8 @@ app.service('exportService', ['constantService', function(constants){
 
                     //console.log("That took: " + timeto + " seconds");
                 }
+
+                /*--------------object manipulation functions-----------------*/
 
                 function getHeaderCodes(recObj){
                     
