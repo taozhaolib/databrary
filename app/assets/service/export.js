@@ -1,6 +1,6 @@
 'use strict';
 
-app.service('exportService', [function(){
+app.service('exportService', ['constantService', function(constants){
                 
                 //for timing
                 //var seconds = new Date().getTime() / 1000;
@@ -18,7 +18,8 @@ app.service('exportService', [function(){
 
                 function createCSV(data){
 
-                    
+                    console.log(constants.category);
+                    console.log(constants.metric);
                     var body = '';
                     var payload = '';
                     
@@ -51,7 +52,6 @@ app.service('exportService', [function(){
                                
                                var recID = containers[k].records[j].id;
                                var recCode = records[recID].category;
-                               var recText = makeRecordText(recCode);
                                var metricCodes = Object.keys(records[recID].measures);
                                var metricText = makeMeasureText(metricCodes);
                                var metricVals = [];
@@ -74,8 +74,7 @@ app.service('exportService', [function(){
                                
                                    body += containers[k].id + ',' + 
                                            containers[k].date + ',' + 
-                                           recID + ',' + 
-                                           recText + ',' + metricText + "," + metricVals + '\n';
+                                           recID + ',' + metricText + "," + metricVals + '\n';
 
                             }
                       }
@@ -125,71 +124,21 @@ app.service('exportService', [function(){
 
                 }
 
-                function makeRecordText(code){
-
-                    //TODO probably delete this as we will not need for final output
-
-                   var recordCodes = {
-                       '-500': 'participant',
-                       '-200': 'group', 
-                       '-800': 'pilot',
-                       '-700': 'exclusion',
-                       '-400': 'condition',
-                       '-300': 'task',
-                       '-100': 'context'
-                   };
-
-                    return recordCodes[code];
-
-                }
-
                 function makeHeadersText(arr){
 
-                    //TODO probably delete this as we will not need for final output
-
-                   var recordCodes = {
-                       '-500': 'participant',
-                       '-200': 'group', 
-                       '-800': 'pilot',
-                       '-700': 'exclusion',
-                       '-400': 'condition',
-                       '-300': 'task',
-                       '-100': 'context'
-                   };
-
                     return arr.map(function(code){
-                       return recordCodes[code];
+                       return constants.category[code].name;
                     });
 
                 }
 
                 function makeMeasureText(arr){
-                  
-
-                   var metricCodes = {
-                        '-900':'ident',
-                        '-590':'birthdate', //restricted
-                        '-550':'race',
-                        '-540':'ethnicity',
-                        '-580':'gender',
-                        '-140':'state',
-                        '-90' :'info',
-                        '-600':'description',
-                        '-700':'reason',
-                        '-180':'setting',
-                        '-650':'summary',
-                        '1': 'gestational age',
-                        '-520':'disability', //restricted
-                        '-510':'language',
-                        '-150':'country'
-
-                    };
                    
-                   return arr.map(function(code){
+                    return arr.map(function(code){
                     
-                    return metricCodes[code];
+                       return constants.metric[code].name;
                            
-                   }); 
+                    }); 
                 } 
                 
                return dataExport;
