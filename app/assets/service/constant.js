@@ -41,7 +41,8 @@ app.factory('constantService', [
     });
 
     angular.forEach(constants.category, function (cat) {
-      cat.not = constants.messages['not.' + cat.name] || 'No ' + cat.name;
+      var m = 'not.' + cat.name;
+      cat.not = m in constants.messages ? constants.messages[m] : 'No ' + cat.name;
     });
 
     angular.forEach(constants.format, function (fmt) {

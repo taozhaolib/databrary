@@ -406,7 +406,7 @@ materials.title=Materials
 materials=Materials
 materials.top=Top-level materials
 
-not.pilot=Not pilot
+not.pilot=
 not.exclusion=Included
 not.participant=No participants
 not.condition=No conditions

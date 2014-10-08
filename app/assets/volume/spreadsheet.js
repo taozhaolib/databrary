@@ -315,17 +315,20 @@ app.directive('spreadsheet', [
           return td;
         }
 
-        function generateBlank(r, i, c, l, edit) {
+        function generateBlank(r, i, c, l, n, t, edit) {
           if (!l)
             return;
           var td = r.appendChild(document.createElement('td'));
           td.setAttribute("colspan", l);
-          if (edit) {
+          if (edit && n === t) {
             td.appendChild(document.createTextNode("add " + c.name));
             td.id = id + '-add_' + i + '_' + c.id;
             td.className = 'add';
-          } else
+          } else {
+            if (n === 0)
+              td.appendChild(document.createTextNode(c.not));
             td.className = 'null';
+          }
         }
 
         /* Add all the record/measure tds to row i for count n */
@@ -336,7 +339,7 @@ app.directive('spreadsheet', [
             var c = col.category.id;
             var t = count[c] || 0;
             if (n >= t) {
-              generateBlank(row, i, col.category, col.first, edit && n === t);
+              generateBlank(row, i, col.category, col.first, n, t, edit);
               continue;
             }
             var m = col.metric.id;
