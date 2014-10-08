@@ -1,0 +1,3 @@
+<div>
+  <select class="classification" ng-repeat="(i, l) in classifications" name="{{name+'.'+l}}" ng-hide="value < i" ng-model="selects[i]" ng-options="o+'' as 'classification.'+l+'.'+o | message for o in [false, true]" ng-change="update()"></select>
+</div>

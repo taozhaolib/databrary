@@ -365,6 +365,13 @@ classification.excerpt.RESTRICTED=Restricted: shared with appropriate participan
 classification.excerpt.SHARED=Shared: shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Public: available to anybody for unrestricted use.
 
+classification.RESTRICTED.false=Private: never share this file; only available to collaborators.
+classification.RESTRICTED.true=Shared: file may be shared on Databrary under certain circumstances.
+classification.SHARED.false=Identifying: file contains identifiable data such as faces, voices, or dates.
+classification.SHARED.true=Non-identifying: file contains only de-identified or non-data.
+classification.PUBLIC.false=Databrary: file may be shared with authorized Databrary users for educational or research purposes.
+classification.PUBLIC.true=Public: file may be made available to anybody for unrestricted use.
+
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
 # objects

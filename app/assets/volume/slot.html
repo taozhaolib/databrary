@@ -94,7 +94,7 @@
                   </validator>
 
                   <validator name="classification" label="'asset.classification' | message">
-                    <select name="classification" ng-model="current.data.classification" ng-options="page.constants.classification[c]+'' as 'classification.'+c | message for c in page.constants.classification"></select>
+                    <classification-select name="classification" ng-model="current.data.classification"></classification-select>
                   </validator>
 
                   <validator name="position" label="'asset.position' | message">
