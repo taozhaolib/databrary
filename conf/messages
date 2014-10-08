@@ -423,10 +423,6 @@ excerpts.title=Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
 
-player.title=Player
-player.download=Download this file.
-player.close=Close the media player.
-
 citations.title=Citations
 citations.study.title=Corresponding Publication
 citations.study.body=If this study corresponds to or represents a specific research product, such as by providing supplemental materials, you may enter a citation to it here.
@@ -645,7 +641,7 @@ wizard.volume-edit-access.instructions=Specify with whom you want to share the d
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
-download.zip=Download all included data as zip
+download.zip=Download all files as zip
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
