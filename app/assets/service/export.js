@@ -38,6 +38,7 @@ app.service('exportService', ['constantService', function(constants){
                         'record id',
                     ];
 
+
                     var moreHeaders = makeHeadersText(getHeaderCodes(records).sort().reverse());
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
@@ -56,25 +57,26 @@ app.service('exportService', ['constantService', function(constants){
                                var metricText = makeMeasureText(metricCodes); //TODO remove this, only a placeholder
                                var metricVals = [];
 
-                               
 
-                                   for(var m=0; m < metricCodes.length; m++){
-                                        
-                                        try{
-                                            if(recCode !== -300){ //TODO: Cannot use this in production, temporarily limits tasks out re: vol. 8 
-                                                metricVals.push(records[recID].measures[metricCodes[m]]);  //This causes Chrome to crash on vol. 8 (so many tasks)                  
-                                            }    
-                                        } catch(e) {
+                              //IDEA here need to dip into the record array of measures and check each one compared to the list of available ones. go down the line and assign a val or an empty block where necessary                               
+                              //need a constant object of header codes to go with the headers
+                               for(var m=0; m < metricCodes.length; m++){
+                                    
+                                    try{
+                                        if(recCode !== -300){ //TODO: Cannot use this in production, temporarily limits tasks out re: vol. 8 
+                                            metricVals.push(records[recID].measures[metricCodes[m]]);  //This causes Chrome to crash on vol. 8 (so many tasks)                  
+                                        }    
+                                    } catch(e) {
 
-                                          console.log(e);
+                                      console.log(e);
 
-                                        }
-                                   }
+                                    }
+                               }
                                
                                
-                                   body += containers[k].id + ',' + 
-                                           containers[k].date + ',' + 
-                                           recID + ',' + metricText + "," + metricVals + '\n';
+                               body += containers[k].id + ',' + 
+                                       containers[k].date + ',' + 
+                                       recID + ',' + metricText + "," + metricVals + '\n';
 
                             }
                       }
@@ -129,6 +131,7 @@ app.service('exportService', ['constantService', function(constants){
                 function makeHeadersText(arr){
                     
                     var output = [];
+
                     arr.forEach(function(item){
 
                       var colPrefix = constants.category[item].name;
@@ -151,9 +154,14 @@ app.service('exportService', ['constantService', function(constants){
 
                     });
 
-                    console.log(output);
+                    
                     return output;
 
+
+                }
+
+                function makeHeaderCodes(arr){
+                    /* make an array of all the record and metric combinations */
 
                 }
 
