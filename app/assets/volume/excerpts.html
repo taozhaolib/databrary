@@ -25,24 +25,23 @@
     <div class="panel-excerpts-list col-desktop-8 col-tablet-4 col-mobile-6">
       <div class="row">
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts" bindonce>
-          <div class="panel-excerpts-binder" ng-class="{video:excerpt.format.type==='video','panel-excerpts-list-current':excerpt===current}">
+          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
             <div class="panel-excerpts-actions">
               <a bo-href="jumpLink(excerpt)" class="icon line jump tool" target="_self" tooltip="'excerpts.jump' | message"></a>
             </div>
-
-            <div bo-if="hasThumbnail(excerpt)" ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
-              <figure fill>
-                <img bo-src="excerpt.thumbRoute(109)" bo-if="showThumbnail(excerpt)">
-              </figure>
-
-              <div class="panel-excerpts-video-overlay"></div>
-            </div>
-
-            <div bo-if="!hasThumbnail(excerpt)" ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
-              <figure>
-                <span bo-text="excerpt.asset.name"></span>
-                <img class="panel-excerpt-filetype-thumb" bo-src="excerpt.icon">
-              </figure>
+            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
+              <div bo-if="hasThumbnail(excerpt)">
+                <figure fill>
+                  <img bo-src="excerpt.thumbRoute(109)">
+                </figure>
+              </div>
+              <div bo-if="!hasThumbnail(excerpt)">
+                <figure>
+                  <span bo-text="excerpt.asset.name"></span>
+                  <img class="panel-excerpt-filetype-thumb" bo-src="excerpt.icon">
+                </figure>
+              </div>
+              <div bo-class="{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
             </div>
           </div>
         </div>

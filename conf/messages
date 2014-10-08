@@ -632,6 +632,7 @@ asset.remove.confirm=Are you sure you want to remove this file?
 asset.add=Add a new file...
 
 asset.display.unavailable=Preview unavailable
+asset.display.nopermission=Only available to authorized users
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.

@@ -881,7 +881,7 @@ app.factory('modelService', [
     }
 
     delegate(SlotAsset, 'asset',
-        'id', 'format', 'classification', 'name', 'duration');
+        'id', 'format', 'classification', 'name');
 
     Object.defineProperty(SlotAsset.prototype, 'displayName', {
       get: function () {

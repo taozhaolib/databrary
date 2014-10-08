@@ -1,16 +1,20 @@
-<div class="asset-display" bindonce="asset.id" bo-switch="asset.format.type">
+<div class="asset-display" bindonce="asset.id" bo-switch="readable ? asset.format.type : 'noperm'">
+  <div class="no-preview" bo-switch-when="noperm">
+    <span bo-text="'asset.display.nopermission' | message"></span>
+  </div>
+
   <div bo-switch-when="image">
     <img bo-src="asset.downloadRoute(true)">
   </div>
 
   <div bo-switch-when="video">
-    <div bo-if="!asset.duration" bo-text="'asset.untranscoded' | message"></div>
+    <div bo-if="!asset.asset.duration" bo-text="'asset.untranscoded' | message"></div>
     <video controls preload="metadata" seek="clip">
       <source bo-src="asset.downloadRoute(true)" bo-attr bo-attr-type="asset.format.mimetype">
     </video>
   </div>
 
   <div class="no-preview" bo-switch-default>
-      <span bo-text="'asset.display.unavailable' | message"></span>
+    <span bo-text="'asset.display.unavailable' | message"></span>
   </div>
 </div>

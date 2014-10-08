@@ -187,8 +187,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
   /** Retrieve the list of all readable excerpts. */
   private[models] def getExcerpts(volume : Volume) : Future[Seq[SlotAsset]] =
     excerpts(volume)
-    .SELECT("WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)")
-    .apply(volume.permission).list
+    .SELECT().apply().list
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getThumb(volume : Volume) : Future[Option[SlotAsset]] =

@@ -1,8 +1,8 @@
 'use strict';
 
 app.controller('volume/excerpts', [
-  '$scope',
-  function ($scope) {
+  '$scope', 'constantService',
+  function ($scope, constants) {
     $scope.refreshPanel = function () {
       $scope.enabled = $scope.volume.excerpts && $scope.volume.excerpts.length > 0;
       if ($scope.enabled && !$scope.current)
@@ -16,11 +16,7 @@ app.controller('volume/excerpts', [
     };
 
     $scope.hasThumbnail = function (asset) {
-      return asset.format.type === 'image' || asset.format.type === 'video';
-    };
-
-    $scope.showThumbnail = function (asset) {
-      return asset.format.type === 'image' || asset.asset.duration;
+      return asset.checkPermission(constants.permission.READ) && (asset.format.type === 'image' || asset.format.type === 'video' && asset.asset.duration);
     };
 
     $scope.jumpLink = function (excerpt) {

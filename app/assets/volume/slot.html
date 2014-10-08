@@ -43,7 +43,7 @@
             <div ng-repeat="t in tracks" class="slot-timeline-track" ng-click="t.select($event)" ng-class="{select: t === current, dirty: t.dirty}" >
               <div class="slot-track" ng-class="{'slot-track-positioned': t.asset && !t.asset.segment.full, 'slot-track-select': t === current}">
                 <div class="slot-track-asset-info">
-                  <img class="slot-track-asset-thumb" ng-if="t.asset" bo-src="t.asset.thumbRoute(24)">
+                  <img class="slot-track-asset-thumb" ng-if="t.asset && t.asset.checkPermission(page.constants.permission.READ)" bo-src="t.asset.thumbRoute(24)">
                   <div class="slot-track-asset-info-name" ng-bind="t.name"></div>
                   <upload-progress class="upload-progress-info" ng-if="t.file" progress-value="t.progress"></upload-progress>
                 </div>
