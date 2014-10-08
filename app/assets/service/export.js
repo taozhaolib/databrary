@@ -2,6 +2,9 @@
 
 app.service('exportService', [function(){
                 
+                //for timing
+                //var seconds = new Date().getTime() / 1000;
+
                 var dataExport = {};
 
                 dataExport.downloadCSV = function(volume){
@@ -28,6 +31,8 @@ app.service('exportService', [function(){
                         'measure'
                     ];
 
+
+
                     var header = headers.join(',');
 
                     var array = typeof data !== 'object' ? JSON.parse(data) : data;
@@ -41,27 +46,39 @@ app.service('exportService', [function(){
                     
                     for(var k in containers){
 
+                        if(containers[k].top !== true){ //exclude materials for now
+                            for(var j in containers[k].records){
+                               
+                               var recID = containers[k].records[j].id;
+                               var recCode = records[recID].category;
+                               var recText = makeRecordText(recCode);
+                               var metricCodes = Object.keys(records[recID].measures);
+                               var metricText = makeMeasureText(metricCodes);
+                               var metricVals = [];
 
-                        for(var j in containers[k].records){
-                           
-                           var recID = containers[k].records[j].id;
-                           var recCat = makeRecordText(records[recID].category);
-                           var metricCodes = Object.keys(records[recID].measures);
-                           var metric = makeMeasureText(metricCodes);
-                           var metricVals = [];
-                           for(var m=0; m < metricCodes.length; m++){
-                                //console.log(metric[m]);
-                                metricVals.push(records[recID].measures[metricCodes[m]]);                     
+                               
 
-                           }
-                           
-                           
-                               body += containers[k].id + ',' + 
-                                       containers[k].date + ',' + 
-                                       recID + ',' + 
-                                       recCat + ',' + metric + "," + metricVals + '\n';
+                                   for(var m=0; m < metricCodes.length; m++){
+                                        
+                                        try{
+                                            if(recCode !== -300){ //temporarily limit tasks out
+                                                metricVals.push(records[recID].measures[metricCodes[m]]);  //This causes Chrome to crash on vol. 8 (so many tasks)                  
+                                            }    
+                                        } catch(e) {
 
-                        }
+                                          console.log(e);
+
+                                        }
+                                   }
+                               
+                               
+                                   body += containers[k].id + ',' + 
+                                           containers[k].date + ',' + 
+                                           recID + ',' + 
+                                           recText + ',' + metricText + "," + metricVals + '\n';
+
+                            }
+                      }
 
                     }
 
@@ -86,6 +103,11 @@ app.service('exportService', [function(){
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
+
+                    //var timenow = new Date().getTime() / 1000;
+                    //var timeto = (timenow - seconds);
+
+                    //console.log("That took: " + timeto + " seconds");
                 }
 
                function makeRecordText(code){
