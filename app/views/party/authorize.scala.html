@@ -49,9 +49,6 @@
                     @form.targetParty.email.map { e =>
                         <br/>&lt;@e&gt;
                     }
-                    @form.info.get.map { info =>
-                        OSP: @info
-                    }
                 </td>
                 }
                 }
@@ -65,7 +62,7 @@
                     @widget.tag.inputDate(form.expires(), 'placeholder -> Messages("auth.expiration"), 'class -> "half")
                 }
                 case _ => {
-                    @widget.tag.inputText(form.info(), 'placeholder -> Messages("auth.info.prompt"), '_colspan -> 3)
+                    <td colspan="3"></td>
                 }
                 }
 

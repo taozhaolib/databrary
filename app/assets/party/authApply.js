@@ -64,11 +64,7 @@ app.directive('authApplyForm', [
 
       //
 
-      form.validator.client({
-        info: {
-          tips: page.constants.message('auth.request.info.help'),
-        },
-      }, true);
+      form.validator.client({}, true);
 
       //
 

@@ -26,7 +26,7 @@ sealed class Authorization (val child : Party, val parent : Party, val site : Pe
   * @param member the specific permissions granted on behalf of the parent to the child, such that the child has rights to perform actions up to this permission as the parent (not inherited)
   * @param expires the time at which this authorization stops, or never if None
   */
-final class Authorize protected (child : Party, parent : Party, site : Permission.Value, member : Permission.Value, val expires : Option[Timestamp], val info : Option[String]) extends Authorization(child, parent, site, member) {
+final class Authorize protected (child : Party, parent : Party, site : Permission.Value, member : Permission.Value, val expires : Option[Timestamp]) extends Authorization(child, parent, site, member) {
   /** Determine if this authorization is currently in effect.
     * @return true if expires is unset or in the future */
   def valid = expires.forall(_.toDateTime.isAfterNow)
@@ -36,8 +36,7 @@ final class Authorize protected (child : Party, parent : Party, site : Permissio
   def json = JsonObject.flatten(
     Some('site -> site),
     Some('member -> member),
-    expires.map('expires -> _),
-    info.map('info -> _)
+    expires.map('expires -> _)
   )
 }
 
@@ -46,9 +45,9 @@ object Authorize extends Table[Authorize]("authorize") {
       SelectColumn[Permission.Value]("site")
     , SelectColumn[Permission.Value]("member")
     , SelectColumn[Option[Timestamp]]("expires")
-    ).~?(Info.columns)
-    .map { case ((site, member, expires), info) =>
-      (child : Party, parent : Party) => new Authorize(child, parent, site, member, expires, info)
+    )
+    .map { (site, member, expires) =>
+      (child : Party, parent : Party) => new Authorize(child, parent, site, member, expires)
     }
 
   private[this] val condition = "AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
@@ -97,20 +96,6 @@ object Authorize extends Table[Authorize]("authorize") {
     */
   def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
     Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
-
-  object Info extends Table[String]("authorize_info") {
-    private[Authorize] val columns = Columns(
-      SelectColumn[String]("info")
-    )
-    def set(child : Party.Id, parent : Party.Id, info : Option[String]) : Future[Boolean] = {
-      val id = SQLTerms('child -> child, 'parent -> parent)
-      info.fold(DELETE(id)) { info =>
-        DBUtil.updateOrInsert(
-          SQL("UPDATE", table, "SET info = ? WHERE", id.where)(_, _).apply(info +: id))(
-          INSERT(id :+ ('info -> info))(_, _))
-      }.execute
-    }
-  }
 }
 
 object Authorization extends Table[Authorization]("authorize_view") {

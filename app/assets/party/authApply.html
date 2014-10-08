@@ -1,14 +1,12 @@
 <ng-form name="authApplyForm" class="auth-apply-form" bindonce>
+  <div ng-if="auth.party" class="col-desktop-1 col-tablet-1 col-mobile-1">
+    <figure class="figure-avatar" ng-class="{inst: auth.party.institution}">
+      <img ng-src="{{auth.party.avatarRoute()}}">
+    </figure>
+  </div>
+
   <fieldset class="clean" ng-if="auth.party">
     <legend ng-bind="'auth.request.title' | message:auth.party.name"></legend>
-
-    <div ng-if="auth.party.institution">
-      <div bo-text="'auth.info.prompt' | message"></div>
-
-      <validator name="info" label="'auth.request.info.title' | message">
-        <textarea id="field-guess" name="info" ng-model="authApplyForm.data.info"></textarea>
-      </validator>
-    </div>
   </fieldset>
 
   <fieldset class="clean" ng-if="!auth.party">
@@ -16,7 +14,7 @@
 
     <div bo-html="'auth.request.notfound.instructions' | message"></div>
 
-    <validator name="info" label="'auth.request.info.title' | message">
+    <validator name="info" label="'auth.request.notfound.info' | message">
       <textarea id="field-info" name="info" ng-model="authApplyForm.data.info"></textarea>
     </validator>
   </fieldset>

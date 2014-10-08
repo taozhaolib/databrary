@@ -106,7 +106,6 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
             form.site.get,
             form.member.get,
             form.expires.get.map(_.toLocalDateTime(new org.joda.time.LocalTime(12, 0))))
-          _ <- Authorize.Info.set(childId, id, form.info.get)
           _ <- async.when(Play.isProd && form.site.get > Permission.PUBLIC && !c.exists(_.site > Permission.PUBLIC),
             Mail.send(
               to = child.account.map(_.email).toSeq :+ Mail.authorizeAddr,
@@ -133,14 +132,13 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = new PartyController.AuthorizeApplyForm(parent)._bind
     for {
       _ <- Authorize.apply(id, parentId)
-      _ <- Authorize.Info.set(id, parentId, form.info.get)
       dl <- delegates(parent)
       _ <- async.when(Play.isProd, Mail.send(
         to = dl.map(_.email) :+ Mail.authorizeAddr,
         subject = Messages("mail.authorize.subject"),
         body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(Play.isProd),
           request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
-          parent.name + form.info.get.fold("")(" (" + _ + ")"))
+          parent.name)
       ).recover {
         case ServiceUnavailableException => ()
       })
@@ -164,7 +162,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
         res <- models.Party.search(Some(form.name.get), authorize = Some(request.obj.party), institution = form.institution.get)
         r <- if (request.isApi) async(Ok(JsonArray.map[Party, JsonRecord](_.json)(res)))
           else PartyHtml.viewAdmin(form +: res.map(e =>
-            (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e)).copyFrom(form)))
+            (if (apply) new PartyController.AuthorizeApplyForm(e) else new PartyController.AuthorizeChildForm(e))))
             .map(Ok(_))
       } yield (r)
     }
@@ -223,13 +221,7 @@ object PartyController extends PartyController {
   final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {
     val email = Field(Mappings.some(Forms.email))
   }
-  sealed trait AuthorizeBaseForm extends StructForm {
-    val info = Field(Forms.optional(Forms.nonEmptyText)).fill(None)
-    def copyFrom(f : AuthorizeForm) : this.type = {
-      info.fill(f.info.get)
-      this
-    }
-  }
+  sealed trait AuthorizeBaseForm extends StructForm
 
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
     val site = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
@@ -241,7 +233,6 @@ object PartyController extends PartyController {
       site.fill(auth.site)
       member.fill(auth.member)
       expires.fill(auth.expires.map(_.toLocalDate))
-      info.fill(auth.info)
       this
     }
   }
@@ -284,6 +275,7 @@ object PartyController extends PartyController {
     val name = Field(Mappings.nonEmptyText)
     val institution = Field(OptionMapping(Forms.boolean)).fill(None)
     val notfound = Field(Forms.boolean).fill(false)
+    val info = Field(Mappings.maybeText)
   }
   final class AuthorizeAdminForm(val authorize : Authorize)(implicit request : SiteRequest[_])
     extends StructForm(routes.PartyHtml.authorizeChange(authorize.parentId, authorize.childId))

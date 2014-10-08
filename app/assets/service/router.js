@@ -149,10 +149,10 @@ app.provider('routerService', [
 
     makeRoute(controllers.TokenHtml.token, ['id'], {
       controller: (function () {
-        return window.$play.object && window.$play.object.reset ? 'resetView' : 'registerView';
+        return window.$play.object && window.$play.object.reset ? 'party/reset' : 'party/register';
       }()),
       templateUrl: function () {
-        return window.$play.object && window.$play.object.reset ? 'resetView.html' : 'registerView.html';
+        return window.$play.object && window.$play.object.reset ? 'party/reset.html' : 'party/register.html';
       },
       resolve: {
         token: [
