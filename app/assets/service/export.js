@@ -18,18 +18,8 @@ app.service('exportService', [function(){
                     
                     var body = '';
                     var payload = '';
-                    var recordCodes = {
-                        '-500': 'participant',
-                        '-200': 'group', 
-                        '-800': 'pilot',
-                        '-700': 'exclusion',
-                        '-400': 'condition',
-                        '-300': 'task',
-                        '-100': 'context'
-                    };
-
                     
-
+                    //TODO: Headers should grab from the list of available headers and place them sorted by code
                     var headers = [
                         'id',
                         'date', 
@@ -55,13 +45,21 @@ app.service('exportService', [function(){
                         for(var j in containers[k].records){
                            
                            var recID = containers[k].records[j].id;
-                           var recCat = records[recID].category;
-                           var measures = makeMeasureText(Object.keys(records[recID].measures));
-                           alert(Object.keys(records[recID].measures));
+                           var recCat = makeRecordText(records[recID].category);
+                           var metricCodes = Object.keys(records[recID].measures);
+                           var metric = makeMeasureText(metricCodes);
+                           var metricVals = [];
+                           for(var m=0; m < metricCodes.length; m++){
+                                //console.log(metric[m]);
+                                metricVals.push(records[recID].measures[metricCodes[m]]);                     
+
+                           }
+                           
+                           
                                body += containers[k].id + ',' + 
                                        containers[k].date + ',' + 
                                        recID + ',' + 
-                                       recordCodes[recCat] + ',' + measures + '\n';
+                                       recCat + ',' + metric + "," + metricVals + '\n';
 
                         }
 
@@ -90,7 +88,25 @@ app.service('exportService', [function(){
                     document.body.removeChild(link);
                 }
 
+               function makeRecordText(code){
+
+                   var recordCodes = {
+                       '-500': 'participant',
+                       '-200': 'group', 
+                       '-800': 'pilot',
+                       '-700': 'exclusion',
+                       '-400': 'condition',
+                       '-300': 'task',
+                       '-100': 'context'
+                   };
+
+                    return recordCodes[code];
+
+               }
+
                function makeMeasureText(arr){
+                  
+
                    var metricCodes = {
                         '-900':'ident',
                         '-590':'birthdate', //restricted
@@ -110,7 +126,8 @@ app.service('exportService', [function(){
 
                     };
                    
-                   arr.map(function(code){
+                   return arr.map(function(code){
+                    
                     return metricCodes[code];
                            
                    }); 
