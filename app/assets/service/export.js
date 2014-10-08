@@ -18,11 +18,22 @@ app.service('exportService', [function(){
                     
                     var body = '';
                     var payload = '';
+                    var recordCodes = {
+                        '-500': 'participant',
+                        '-200': 'group', 
+                        '-800': 'pilot',
+                        '-700': 'exclusion',
+                        '-400': 'condition',
+                        '-300': 'task',
+                        '-100': 'context'
+                    };
+
+                    
 
                     var headers = [
                         'id',
                         'date', 
-                        'records',
+                        'record_id',
                         'category',
                         'measure'
                     ];
@@ -45,12 +56,12 @@ app.service('exportService', [function(){
                            
                            var recID = containers[k].records[j].id;
                            var recCat = records[recID].category;
-
-
+                           var measures = makeMeasureText(Object.keys(records[recID].measures));
+                           alert(Object.keys(records[recID].measures));
                                body += containers[k].id + ',' + 
                                        containers[k].date + ',' + 
                                        recID + ',' + 
-                                       recCat + Object.keys(records[recID].measures) + '\n';
+                                       recordCodes[recCat] + ',' + measures + '\n';
 
                         }
 
@@ -78,8 +89,33 @@ app.service('exportService', [function(){
                     link.click();
                     document.body.removeChild(link);
                 }
+
+               function makeMeasureText(arr){
+                   var metricCodes = {
+                        '-900':'ident',
+                        '-590':'birthdate', //restricted
+                        '-550':'race',
+                        '-540':'ethnicity',
+                        '-580':'gender',
+                        '-140':'state',
+                        '-90' :'info',
+                        '-600':'description',
+                        '-700':'reason',
+                        '-180':'setting',
+                        '-650':'summary',
+                        '1': 'gestational age',
+                        '-520':'disability', //restricted
+                        '-510':'language',
+                        '-150':'country'
+
+                    };
+                   
+                   arr.map(function(code){
+                    return metricCodes[code];
+                           
+                   }); 
+               } 
                 
-            
                return dataExport;
             }
 
