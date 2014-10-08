@@ -22,18 +22,7 @@ app.service('exportService', [function(){
                     var body = '';
                     var payload = '';
                     
-                    //TODO: Headers should grab from the list of available headers and place them sorted by code
-                    var headers = [
-                        'id',
-                        'date', 
-                        'record_id',
-                        'category',
-                        'measure'
-                    ];
-
-
-
-                    var header = headers.join(',');
+                    
 
                     var array = typeof data !== 'object' ? JSON.parse(data) : data;
 
@@ -41,8 +30,19 @@ app.service('exportService', [function(){
                     var containers = array.containers;
                     var records = array.records;
 
-                    console.log(array.containers);
-                    console.log(array.records);
+                    var baseHeaders = [
+                        'session id',
+                        'session date', 
+                        'record id',
+                    ];
+
+                    var moreHeaders = makeHeadersText(getHeaderCodes(records).sort().reverse());
+
+                    var header = baseHeaders.concat(moreHeaders).join(',');
+
+
+                    console.log(containers);
+                    console.log(records);
                     
                     for(var k in containers){
 
@@ -110,7 +110,24 @@ app.service('exportService', [function(){
                     //console.log("That took: " + timeto + " seconds");
                 }
 
-               function makeRecordText(code){
+                function getHeaderCodes(recObj){
+                    
+                    var headers = [];
+                    for(var k in recObj){
+
+                        if(headers.indexOf(recObj[k].category) === -1){
+
+                            headers.push(recObj[k].category);
+                        }
+                    }
+
+                    return headers;
+
+                }
+
+                function makeRecordText(code){
+
+                    //TODO probably delete this as we will not need for final output
 
                    var recordCodes = {
                        '-500': 'participant',
@@ -124,9 +141,29 @@ app.service('exportService', [function(){
 
                     return recordCodes[code];
 
-               }
+                }
 
-               function makeMeasureText(arr){
+                function makeHeadersText(arr){
+
+                    //TODO probably delete this as we will not need for final output
+
+                   var recordCodes = {
+                       '-500': 'participant',
+                       '-200': 'group', 
+                       '-800': 'pilot',
+                       '-700': 'exclusion',
+                       '-400': 'condition',
+                       '-300': 'task',
+                       '-100': 'context'
+                   };
+
+                    return arr.map(function(code){
+                       return recordCodes[code];
+                    });
+
+                }
+
+                function makeMeasureText(arr){
                   
 
                    var metricCodes = {
@@ -153,7 +190,7 @@ app.service('exportService', [function(){
                     return metricCodes[code];
                            
                    }); 
-               } 
+                } 
                 
                return dataExport;
             }
