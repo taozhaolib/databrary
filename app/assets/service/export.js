@@ -53,7 +53,7 @@ app.service('exportService', ['constantService', function(constants){
                                var recID = containers[k].records[j].id;
                                var recCode = records[recID].category;
                                var metricCodes = Object.keys(records[recID].measures);
-                               var metricText = makeMeasureText(metricCodes);
+                               var metricText = makeMeasureText(metricCodes); //TODO remove this, only a placeholder
                                var metricVals = [];
 
                                
@@ -61,7 +61,7 @@ app.service('exportService', ['constantService', function(constants){
                                    for(var m=0; m < metricCodes.length; m++){
                                         
                                         try{
-                                            if(recCode !== -300){ //temporarily limit tasks out
+                                            if(recCode !== -300){ //TODO: Cannot use this in production, temporarily limits tasks out re: vol. 8 
                                                 metricVals.push(records[recID].measures[metricCodes[m]]);  //This causes Chrome to crash on vol. 8 (so many tasks)                  
                                             }    
                                         } catch(e) {
@@ -125,19 +125,40 @@ app.service('exportService', ['constantService', function(constants){
                 }
 
                 function makeHeadersText(arr){
+                    
+                    var output = [];
+                    arr.forEach(function(item){
 
-                    return arr.map(function(code){
-                       return constants.category[code].name;
+                      var colPrefix = constants.category[item].name;
+                      var childArr = []; 
+
+                      for(var i=0; i<constants.category[item].template.length; i++){
+                        childArr.push(constants.category[item].template[i]);
+
+                      }
+
+                      childArr = childArr.sort().reverse();
+                      
+                      
+                      childArr.forEach(function(child){
+                         var colSuffix = constants.metric[child].name;
+
+                         output.push(colPrefix + ' ' + colSuffix);
+
+                      });
+
                     });
+
+                    console.log(output);
+                    return output;
+
 
                 }
 
                 function makeMeasureText(arr){
                    
-                    return arr.map(function(code){
-                    
+                    return arr.map(function(code){ 
                        return constants.metric[code].name;
-                           
                     }); 
                 } 
                 
