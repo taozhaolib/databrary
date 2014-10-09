@@ -4,14 +4,15 @@ module Segment (
   ) where
 
 import Data.Function
-import Angular.DI (Dependency)
+import Angular.DI (Dependency, Service)
 
 foreign import data Segments :: *
 
 newtype Segment = Segment { l :: Number, u :: Number }
 
-instance serviceSegment :: Dependency Segments where
+instance dependencySegment :: Dependency Segments where
   name = "Segment"
+instance serviceSegment :: Service Segments
 
 foreign import newSegmentFn
   "function newSegment(Segment, l, u) {\
