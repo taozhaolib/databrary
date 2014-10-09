@@ -37,8 +37,8 @@
               </div>
               <div bo-if="!hasThumbnail(excerpt)">
                 <figure>
-                  <span bo-text="excerpt.asset.name"></span>
                   <img class="panel-excerpt-filetype-thumb" bo-src="excerpt.icon">
+                  <span bo-text="excerpt.asset.name"></span>
                 </figure>
               </div>
               <div bo-class="{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
