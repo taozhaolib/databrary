@@ -47,7 +47,7 @@ app.service('exportService', ['constantService', function(constants){
                     console.log(containers);
                     console.log(records);
                     
-                    /* create CSV body data */
+                    /*create CSV body data*/
                     var body = createExportBody(containers, records, headerIndex, metricIndex);
                     
 
@@ -82,27 +82,26 @@ app.service('exportService', ['constantService', function(constants){
                                
                                var recordMetricIndex = getIndex(records[recID].measures);
 
-                               for(var v = 0; v < recordMetricIndex.length; v++){
-                                  for(var z=0; z < headerIndex.length; z++){
-                                    switch(recCode.toString()){
-                                      case "-800":
-                                        ssRow.push('Yes');
-                                        break;
-                                      case headerIndex[z]:
-                                        
+                               var cursor = 0;
 
-                                          ssRow.push(records[recID].measures[recordMetricIndex[v]]);
-                                        
-                                        
-                                        break;
-                                      default:
-                                        ssRow.push('');
-                                  }
+                               while(cursor < headerIndex.length){
+                                if(recCode.toString() === headerIndex[cursor]){
+                                  for(var v = 0; v < recordMetricIndex.length; v++){
+
+                                    ssRow.push(records[recID].measures[recordMetricIndex[v]]);
 
 
                                   }
+                                  cursor ++;
 
 
+                                } else {
+                                  ssRow.push('');
+                                  cursor++;
+
+                                }
+
+                                
                                }
      
                             }
