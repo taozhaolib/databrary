@@ -46,6 +46,8 @@ app.service('exportService', ['constantService', function(constants){
 
                     console.log(containers);
                     console.log(records);
+
+                    tableObject(containers, records);
                     
                     /*create CSV body data*/
                     var body = createExportBody(containers, records, headerIndex, metricIndex);
@@ -194,14 +196,35 @@ app.service('exportService', ['constantService', function(constants){
                     if(item === idx[x]){
 
                       answer = true;
-                      return answer;
 
                     } else {
-                      answer = false;
-                      return answer;
+                      continue;
                     }
 
                   }
+                  return answer;
+
+                }
+
+                function tableObject(containers, records){
+                    var headerRep = {};
+
+                    for(var c in containers){
+                       
+                      for(var r in containers[c].records){
+                        console.log(containers[c].records[r].id);
+                        var cat = containers[c].records[r].category;
+
+                        headerRep[cat] = {};
+
+                        for(var m in )
+
+
+                      }
+
+
+                    }
+
 
                 }
                 
