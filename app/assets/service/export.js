@@ -67,19 +67,19 @@ app.service('exportService', ['constantService', function(constants){
                                var recordMetricIndex = getIndex(records[recID].measures);
 
                                for(var z=0; z < headerIndex.length; z++){
-                                  console.log(recCode);
-                                  console.log(headerIndex[z]);
+                                  //console.log(recCode);
+                                  //console.log(headerIndex[z]);
 
                                   if(recCode == headerIndex[z]){
                                     
                                     for(var m in records[recID].measures){
-                                      console.log(m);
+                                      console.log(containers[k].id);
                                       for(var y=0; y < metricIndex.length; y++){
                                         if(m == metricIndex[y]){
                                           colVals.push(records[recID].measures[m]);
                                         } else {
 
-                                          colVals.push('');
+                                          //colVals.push('');
                                         }
 
                                       }
@@ -105,7 +105,7 @@ app.service('exportService', ['constantService', function(constants){
 
                                }
                                
-                              /* this */
+                              /* this 
                                var metricCodes = Object.keys(records[recID].measures);
                                var metricText = makeMeasureText(metricCodes); //TODO remove this, only a placeholder
                                var metricVals = [];
@@ -123,11 +123,11 @@ app.service('exportService', ['constantService', function(constants){
 
                                     }
                                }
-                               /*endthis*/
+                               endthis*/
                                
                                body += containers[k].id + ',' + 
                                        containers[k].date + ',' + 
-                                       recID + ',' + recCode + ',' + metricText + "," + metricVals + '\n';
+                                       recID + ',' + recCode /*+ ',' + metricText + "," + metricVals*/ + '\n';
 
                             }
                       }
