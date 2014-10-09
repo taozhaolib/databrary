@@ -24,7 +24,6 @@ app.service('exportService', ['constantService', function(constants){
                     var body = '';
                     var payload = '';
                     
-                    
 
                     var array = typeof data !== 'object' ? JSON.parse(data) : data;
 
@@ -39,8 +38,15 @@ app.service('exportService', ['constantService', function(constants){
                         'category'
                     ];
 
+                    var headerIndex = getIndex(constants.category);
+                    var metricIndex = getIndex(constants.metric);
 
-                    var moreHeaders = makeHeadersText(getHeaderCodes(records).sort().reverse());
+                    var lonliestNumber = metricIndex.shift();
+
+                    console.log("Header Index = " + headerIndex);
+                    console.log("Metric Index = " + metricIndex);
+
+                    var moreHeaders = makeHeadersText(headerIndex);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -51,16 +57,60 @@ app.service('exportService', ['constantService', function(constants){
 
                         if(containers[k].top !== true){ //exclude materials for now
                             for(var j in containers[k].records){
+                               alert(containers[k].records[j].id);
                                
                                var recID = containers[k].records[j].id;
                                var recCode = records[recID].category;
+
+                               var colVals = [];
+                               
+                               var recordMetricIndex = getIndex(records[recID].measures);
+
+                               for(var z=0; z < headerIndex.length; z++){
+                                  console.log(recCode);
+                                  console.log(headerIndex[z]);
+
+                                  if(recCode == headerIndex[z]){
+                                    
+                                    for(var m in records[recID].measures){
+                                      console.log(m);
+                                      for(var y=0; y < metricIndex.length; y++){
+                                        if(m == metricIndex[y]){
+                                          colVals.push(records[recID].measures[m]);
+                                        } else {
+
+                                          colVals.push('');
+                                        }
+
+                                      }
+                                    }
+
+
+                                  } else {
+                                    colVals.push('');
+
+
+                                  }
+
+                               }
+
+                               //colVals, at this point, should be the same length as moreHeaders.
+                               if(colVals.length === moreHeaders.length){
+                                console.log("good job, all values in");
+                                console.log(colVals);
+
+                               } else {
+                                console.log("uh, oh, not all values in");
+                                console.log(colVals);
+
+                               }
+                               
+                              /* this */
                                var metricCodes = Object.keys(records[recID].measures);
                                var metricText = makeMeasureText(metricCodes); //TODO remove this, only a placeholder
                                var metricVals = [];
 
 
-                              //IDEA here need to dip into the record array of measures and check each one compared to the list of available ones. go down the line and assign a val or an empty block where necessary                               
-                              //need a constant object of header codes to go with the headers
                                for(var m=0; m < metricCodes.length; m++){
                                     
                                     try{
@@ -73,7 +123,7 @@ app.service('exportService', ['constantService', function(constants){
 
                                     }
                                }
-                               
+                               /*endthis*/
                                
                                body += containers[k].id + ',' + 
                                        containers[k].date + ',' + 
@@ -114,18 +164,17 @@ app.service('exportService', ['constantService', function(constants){
 
                 /*--------------object manipulation functions-----------------*/
 
-                function getHeaderCodes(recObj){
-                    
-                    var headers = [];
-                    for(var k in recObj){
 
-                        if(headers.indexOf(recObj[k].category) === -1){
-
-                            headers.push(recObj[k].category);
-                        }
+                function getIndex(recObj){
+                  var index = [];
+                  for(var k in recObj){
+                    if(index.indexOf(k) === -1){
+                      index.push(k);
                     }
 
-                    return headers;
+                  }
+
+                  return index.sort().reverse();
 
                 }
 
@@ -158,11 +207,6 @@ app.service('exportService', ['constantService', function(constants){
                     
                     return output;
 
-
-                }
-
-                function makeHeaderCodes(arr){
-                    /* make an array of all the record and metric combinations */
 
                 }
 
