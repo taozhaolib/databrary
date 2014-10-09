@@ -82,6 +82,9 @@ app.service('exportService', ['constantService', function(constants){
                                
                                var recordMetricIndex = getIndex(records[recID].measures);
 
+                               console.log(records[recID]);
+
+                               /*
                                var cursor = 0;
 
                                while(cursor < headerIndex.length){
@@ -102,7 +105,7 @@ app.service('exportService', ['constantService', function(constants){
                                 }
 
                                 
-                               }
+                               } */
      
                             }
 
@@ -190,6 +193,16 @@ app.service('exportService', ['constantService', function(constants){
                        return constants.metric[code].name;
                     }); 
                 } 
+
+                function checkIndex(item, hIndex, mIndex){
+
+                  var answer = hIndex.forEach(function(item){
+                    
+                    
+
+                  });
+
+                }
                 
                return dataExport;
             }
