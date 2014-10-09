@@ -85,17 +85,18 @@ app.service('exportService', ['constantService', function(constants){
                                if(checkIndex(records[recID].category.toString(), headerIndex) === true){
 
                                  for(var v in records[recID].measures){
+
                                    if(checkIndex(v.toString(), metricIndex) === true){
                                      ssRow.push(records[recID].measures[v]);
 
                                    } else {
-                                     ssRow.push("no potato2");
+                                     ssRow.push('---');
                                    }
 
                                  }
                                } else {
 
-                                ssRow.push('no potato');
+                                ssRow.push('--');
                                }
      
                             }
@@ -193,25 +194,14 @@ app.service('exportService', ['constantService', function(constants){
                     if(item === idx[x]){
 
                       answer = true;
-                      break; 
+                      return answer;
 
                     } else {
-
-
+                      answer = false;
+                      return answer;
                     }
 
                   }
-
-                  /*
-                  idx.forEach(function(elem){
-
-                    console.log('And i am: ' + typeof(elem));
-                    answer = item === elem ? true : false;
-
-                  });
-                  */
-
-                  return answer;
 
                 }
                 
