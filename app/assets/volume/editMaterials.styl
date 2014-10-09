@@ -1,24 +1,20 @@
-// styles
+ // styles
 
 .vem-float
   height 2
   margin-bottom 1
+  width 100%
 
 .vem-float-floater
-  height 2
-  padding-height b3
-  width 100%
-  background-color white
   transition box-shadow trans-time trans-ease
 
-  &.float
-    position fixed
-    top b1 * 1.5
-    z-index 10
-    box-shadow 0 0 b3 white
+.vem-float-floater:not(.float)
+  height 2
+  padding-top b3
+  width 100%
 
 .vem-float-progress
-    background-color white
+  background-color white
 
 .vem-float-dropzone
   border-radius b1
@@ -34,6 +30,11 @@
   overflow hidden 
   white-space nowrap
   text-overflow ellipsis
+  width 80%
+  @media screen and (max-width:grid-tablet-width)
+    width 65%
+  @media screen and (max-width:584px)
+    width 30%
 
   &.over-zone
     background-color green51

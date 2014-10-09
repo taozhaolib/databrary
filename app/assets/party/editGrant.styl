@@ -2,18 +2,12 @@
   height 2
   margin-bottom 1
 
-.peg-float-floater
+.peg-float-floater:not(.float)
   height 2
   padding-height b3
   width 100%
   background-color white
   transition box-shadow trans-time trans-ease
-
-  &.float
-    position fixed
-    top b1 * 2.5
-    z-index 10
-    box-shadow 0 0 b3 white
 
 .permission-auth
   .permission-heading
