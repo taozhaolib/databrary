@@ -46,7 +46,7 @@ app.directive('partyEditAccountForm', [
       form.validator.client(validate, true);
 
       form.scrollFn = page.display.makeFloatScrollFn($('.peac-float'), $('.peac-float-floater'), 24*1.5);
-      page.$w.scroll($scope.scrollFn);
+      page.$w.scroll(form.scrollFn);
     };
 
     return {
