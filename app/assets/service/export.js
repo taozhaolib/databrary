@@ -36,6 +36,7 @@ app.service('exportService', ['constantService', function(constants){
                         'session id',
                         'session date', 
                         'record id',
+                        'category'
                     ];
 
 
@@ -76,7 +77,7 @@ app.service('exportService', ['constantService', function(constants){
                                
                                body += containers[k].id + ',' + 
                                        containers[k].date + ',' + 
-                                       recID + ',' + metricText + "," + metricVals + '\n';
+                                       recID + ',' + recCode + ',' + metricText + "," + metricVals + '\n';
 
                             }
                       }
