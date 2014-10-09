@@ -936,10 +936,10 @@ app.directive('spreadsheet', [
           unselect();
           edit($event.target, {t:'head'});
         };
-        $scope.clickCategory = function ($event, col) {
+        $scope.clickCategoryAdd = function ($event, col) {
           unselect();
           if (editing)
-            edit($event.target, {t:'category',c:col.category.id});
+            edit($event.target.parentNode, {t:'category',c:col.category.id});
         };
         $scope.clickMetric = function (col) {
           if (col.sorted !== null) {
