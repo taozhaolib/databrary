@@ -21,7 +21,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     console.log(constants.category);
                     console.log(constants.metric);
-                    var body = '';
+                    
                     var payload = '';
                     
 
@@ -33,18 +33,12 @@ app.service('exportService', ['constantService', function(constants){
 
                     var baseHeaders = [
                         'session id',
-                        'session date', 
-                        'record id',
-                        'category'
+                        'session date'
                     ];
 
                     var headerIndex = getIndex(constants.category);
                     var metricIndex = getIndex(constants.metric);
-
                     var lonliestNumber = metricIndex.shift();
-
-                    console.log("Header Index = " + headerIndex);
-                    console.log("Metric Index = " + metricIndex);
 
                     var moreHeaders = makeHeadersText(headerIndex);
 
@@ -53,92 +47,73 @@ app.service('exportService', ['constantService', function(constants){
                     console.log(containers);
                     console.log(records);
                     
-                    for(var k in containers){
-
-                        if(containers[k].top !== true){ //exclude materials for now
-                            for(var j in containers[k].records){
-                               alert(containers[k].records[j].id);
-                               
-                               var recID = containers[k].records[j].id;
-                               var recCode = records[recID].category;
-
-                               var colVals = [];
-                               
-                               var recordMetricIndex = getIndex(records[recID].measures);
-
-                               for(var z=0; z < headerIndex.length; z++){
-                                  //console.log(recCode);
-                                  //console.log(headerIndex[z]);
-
-                                  if(recCode == headerIndex[z]){
-                                    
-                                    for(var m in records[recID].measures){
-                                      console.log(containers[k].id);
-                                      for(var y=0; y < metricIndex.length; y++){
-                                        if(m == metricIndex[y]){
-                                          colVals.push(records[recID].measures[m]);
-                                        } else {
-
-                                          //colVals.push('');
-                                        }
-
-                                      }
-                                    }
-
-
-                                  } else {
-                                    colVals.push('');
-
-
-                                  }
-
-                               }
-
-                               //colVals, at this point, should be the same length as moreHeaders.
-                               if(colVals.length === moreHeaders.length){
-                                console.log("good job, all values in");
-                                console.log(colVals);
-
-                               } else {
-                                console.log("uh, oh, not all values in");
-                                console.log(colVals);
-
-                               }
-                               
-                              /* this 
-                               var metricCodes = Object.keys(records[recID].measures);
-                               var metricText = makeMeasureText(metricCodes); //TODO remove this, only a placeholder
-                               var metricVals = [];
-
-
-                               for(var m=0; m < metricCodes.length; m++){
-                                    
-                                    try{
-                                        if(recCode !== -300){ //TODO: Cannot use this in production, temporarily limits tasks out re: vol. 8 
-                                            metricVals.push(records[recID].measures[metricCodes[m]]);  //This causes Chrome to crash on vol. 8 (so many tasks)                  
-                                        }    
-                                    } catch(e) {
-
-                                      console.log(e);
-
-                                    }
-                               }
-                               endthis*/
-                               
-                               body += containers[k].id + ',' + 
-                                       containers[k].date + ',' + 
-                                       recID + ',' + recCode /*+ ',' + metricText + "," + metricVals*/ + '\n';
-
-                            }
-                      }
-
-                    }
+                    /* create CSV body data */
+                    var body = createExportBody(containers, records, headerIndex, metricIndex);
+                    
 
 
                     payload = header + '\n' + body;              
                         
                     createPayload(payload);
                     
+                }
+
+                function createExportBody(containers, records, headerIndex, metricIndex){
+                    
+
+                  console.log("Header Index = " + headerIndex);
+                  console.log("Metric Index = " + metricIndex);
+
+                  var body = '';
+
+                  for(var k in containers){
+
+                        if(containers[k].top !== true && containers[k].records.length !== 0){ //exclude materials for now
+                            
+                            var ssRow = [];
+
+                            ssRow.push(containers[k].id);
+                            ssRow.push(containers[k].date);
+
+                            for(var j in containers[k].records){
+                               
+                               var recID = containers[k].records[j].id;
+                               var recCode = records[recID].category;
+                               
+                               var recordMetricIndex = getIndex(records[recID].measures);
+
+                               for(var v = 0; v < recordMetricIndex.length; v++){
+                                  for(var z=0; z < headerIndex.length; z++){
+                                    switch(recCode.toString()){
+                                      case "-800":
+                                        ssRow.push('Yes');
+                                        break;
+                                      case headerIndex[z]:
+                                        
+
+                                          ssRow.push(records[recID].measures[recordMetricIndex[v]]);
+                                        
+                                        
+                                        break;
+                                      default:
+                                        ssRow.push('');
+                                  }
+
+
+                                  }
+
+
+                               }
+     
+                            }
+
+                            body += ssRow.join(',') + '\n';
+                        }
+
+                        
+                    }
+                    return body;
+
                 }
 
                 function createPayload(payload){
