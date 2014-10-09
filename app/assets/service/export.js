@@ -82,30 +82,21 @@ app.service('exportService', ['constantService', function(constants){
                                
                                var recordMetricIndex = getIndex(records[recID].measures);
 
-                               console.log(records[recID]);
+                               if(checkIndex(records[recID].category.toString(), headerIndex) === true){
 
-                               /*
-                               var cursor = 0;
+                                 for(var v in records[recID].measures){
+                                   if(checkIndex(v.toString(), metricIndex) === true){
+                                     ssRow.push(records[recID].measures[v]);
 
-                               while(cursor < headerIndex.length){
-                                if(recCode.toString() === headerIndex[cursor]){
-                                  for(var v = 0; v < recordMetricIndex.length; v++){
+                                   } else {
+                                     ssRow.push("no potato2");
+                                   }
 
-                                    ssRow.push(records[recID].measures[recordMetricIndex[v]]);
+                                 }
+                               } else {
 
-
-                                  }
-                                  cursor ++;
-
-
-                                } else {
-                                  ssRow.push('');
-                                  cursor++;
-
-                                }
-
-                                
-                               } */
+                                ssRow.push('no potato');
+                               }
      
                             }
 
@@ -194,13 +185,33 @@ app.service('exportService', ['constantService', function(constants){
                     }); 
                 } 
 
-                function checkIndex(item, hIndex, mIndex){
+                function checkIndex(item, idx){
+                  var answer = false;
 
-                  var answer = hIndex.forEach(function(item){
+                  for(var x=0; x<idx.length; x++){
                     
-                    
+                    if(item === idx[x]){
+
+                      answer = true;
+                      break; 
+
+                    } else {
+
+
+                    }
+
+                  }
+
+                  /*
+                  idx.forEach(function(elem){
+
+                    console.log('And i am: ' + typeof(elem));
+                    answer = item === elem ? true : false;
 
                   });
+                  */
+
+                  return answer;
 
                 }
                 
