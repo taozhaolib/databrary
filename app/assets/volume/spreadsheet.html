@@ -23,7 +23,10 @@
     <thead>
       <tr class="spreadsheet-head-groups">
         <th bo-attr bo-attr-colspan="2+!top" bo-id="id+'-head'" ng-click="clickSlot($event)" bo-text="top ? 'materials' : 'session' | message"></th>
-        <th ng-repeat="col in recordCols track by col.category.id" bo-id="id+'-category_'+col.category.id" bo-class="{'add': editing}" colspan="{{col.metrics.length}}" ng-bind="col.category.name" ng-click="clickCategory($event, col)"></th>
+        <th ng-repeat="col in recordCols track by col.category.id" bo-id="id+'-category_'+col.category.id" colspan="{{col.metrics.length}}">
+          <span ng-bind="col.category.name"></span>
+          <span bo-if="editing" ng-click="clickCategory($event, col)" class="icon add addSessionInfo"></span>
+        </th>
         <th bo-if="editing" bo-id="id+'-add'" class="add" ng-click="clickAdd($event)"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
