@@ -28,7 +28,9 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     for {
       container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
         form.container.withError("object.invalid", "container")._throw))
-      _ <- asset.change(name = form.name.get, classification = form.classification.get)
+      _ <- asset.change(
+        name = form.name.get.map(_.map(asset.format.stripExtension)),
+        classification = form.classification.get)
       sa <- container.mapAsync(asset.link(_, form.position.get))
       _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _).map(r =>
           if (!r) form.excerpt.withError("error.conflict")._throw))
