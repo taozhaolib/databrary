@@ -25,10 +25,10 @@
               <th bo-text="'format.list.description' | message"></th>
             </tr>
 
-            <tr ng-repeat="format in group">
-              <td bo-text="format.format.extension" class="th-right"></td>
-              <td><img class="icon" bo-src="'/public/images/filetype/16px/' + format.format.extension + '.png'"></img></td>
-              <td bo-text="format.description"></td>
+            <tr ng-repeat="format in group track by format.id">
+              <td bo-text="format.extension" class="th-right"></td>
+              <td><img class="icon" bo-src="'/public/images/filetype/16px/' + format.extension + '.png'"></img></td>
+              <td bo-text="format.description || format.name"></td>
             </tr>
           </tbody>
         </table>

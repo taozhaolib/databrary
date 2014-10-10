@@ -38,6 +38,7 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     Some('mimetype -> mimetype),
     extension.map('extension -> _),
     Some('name -> name),
+    if (description.equals(name)) None else Some('description -> description),
     if (isTranscodable) Some('transcodable -> true) else None
   )
 }

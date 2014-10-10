@@ -6,17 +6,12 @@ app.controller('asset/formats', [
 
     $scope.groups = {};
     angular.forEach(page.constants.format, function (format) {
-      var general = format.mimetype.split('/').shift();
+      var general = format.type;
 
-      if (!$scope.groups.hasOwnProperty(general)) {
+      if (!(general in $scope.groups))
         $scope.groups[general] = [];
-      }
 
-      $scope.groups[general].push({
-        format: format,
-        description: format.name == 'Image' ? 'Joint Photographic Experts Group' :
-            format.name == 'Video' ? 'Moving Picture Expert Group-4' : format.name,
-      });
+      $scope.groups[general].push(format);
     });
   }
 ]);
