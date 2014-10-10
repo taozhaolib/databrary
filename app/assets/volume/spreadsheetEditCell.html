@@ -2,7 +2,7 @@
   <input ng-switch-when="text" name="edit" type="text" ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()"/>
   <textarea ng-switch-when="long" name="edit" ng-model="input.value" ng-blur="unedit($event)" key-escape="unedit()"/>
   <input ng-switch-when="date" name="edit" type="date" ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()"/>
-  <input ng-switch-when="number" name="edit" type="number" ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()"/>
+  <input ng-switch-when="number" name="edit" type="text" ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()"/>
   <select ng-switch-when="select" name="edit" ng-model="input.value" ng-options="o for o in options" key-escape="unedit()"/>
   <select ng-switch-when="consent" name="edit" ng-model="input.value" ng-options="page.constants.consent[c]+'' as c for c in page.constants.consent" key-escape="unedit()"/>
   <select ng-switch-when="record" name="edit" ng-model="input.value" ng-options="id as label for (id, label) in options" key-escape="unedit()"/>
