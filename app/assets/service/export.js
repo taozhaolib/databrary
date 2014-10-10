@@ -36,18 +36,22 @@ app.service('exportService', ['constantService', function(constants){
                         'session date'
                     ];
 
-                    var headerIndex = getIndex(constants.category);
-                    var metricIndex = getIndex(constants.metric);
-                    var lonliestNumber = metricIndex.shift();
+                    var headerIndex = getIndex(constants.category); //get rid of this
+                    var metricIndex = getIndex(constants.metric); //get rid of this
+                    var lonliestNumber = metricIndex.shift(); //get rid of this
 
-                    var moreHeaders = makeHeadersText(headerIndex);
+                    var headerIdx = makeHeaderIndex(records, constants.metric);
+
+                    console.log(sortHeaderIdx(headerIdx));
+
+                    var moreHeaders = makeHeadersText(headerIdx, constants.category, constants.metric);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
                     console.log(containers);
                     console.log(records);
 
-                    tableObject(containers, records);
+                  
                     
                     /*create CSV body data*/
                     var body = createExportBody(containers, records, headerIndex, metricIndex);
@@ -63,8 +67,8 @@ app.service('exportService', ['constantService', function(constants){
                 function createExportBody(containers, records, headerIndex, metricIndex){
                     
 
-                  console.log("Header Index = " + headerIndex);
-                  console.log("Metric Index = " + metricIndex);
+                  //console.log("Header Index = " + headerIndex);
+                  //console.log("Metric Index = " + metricIndex);
 
                   var body = '';
 
@@ -149,7 +153,13 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function makeHeadersText(arr){
+                function makeHeadersText(idxObj, categories, metrics){
+                  var output = [];
+
+
+                }
+
+                function makeHeadersText_DELETE(arr){
                     
                     var output = [];
 
@@ -181,12 +191,72 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function makeMeasureText(arr){
-                   
-                    return arr.map(function(code){ 
-                       return constants.metric[code].name;
-                    }); 
-                } 
+                function makeSomethingElse(recObj, metricIdx){
+                    var headerIdx = [];
+
+                    for(var key in recObj){
+
+                        var metrics = [];
+                        for(var i in recObj[key].measures){
+                          if(metrics.indexOf(recObj[key].measures.id) === -1)
+                            metrics.push(recObj[key].measures.id);
+                             
+                        }
+
+                        headerIdx.push({"category": recObj[key].category, "metric": metrics});
+
+                    }
+
+                    return headerIdx;
+
+
+                }
+
+                function makeHeaderIndex(recObj, metrics){
+                    var tableObj = {};
+
+                    for(var key in recObj){
+
+                      var cat = recObj[key].category;
+
+                      tableObj[cat] = {};
+
+                      for(var i in recObj[key].measures){
+
+                        tableObj[cat][i] = metrics[i].name;
+
+                      }
+                    }
+
+
+                    return tableObj;
+
+
+                }
+
+                function sortHeaderIdx(headerIdx){
+
+                  var newIdx = {};
+
+                  var catKeysSorted = Object.keys(headerIdx).sort().reverse();
+
+                  console.log(catKeysSorted);
+
+                  for(var v = 0; v < catKeysSorted.length; v++){
+
+
+                    //var metKeysSorted = Object.keys(headerIdx[v]).sort().reverse();
+
+                    //console.log(metKeysSorted);
+
+
+
+                    }
+
+                  return newIdx;
+
+                }
+
 
                 function checkIndex(item, idx){
                   var answer = false;
@@ -206,27 +276,7 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function tableObject(containers, records){
-                    var headerRep = {};
 
-                    for(var c in containers){
-                       
-                      for(var r in containers[c].records){
-                        console.log(containers[c].records[r].id);
-                        var cat = containers[c].records[r].category;
-
-                        headerRep[cat] = {};
-
-                        for(var m in )
-
-
-                      }
-
-
-                    }
-
-
-                }
                 
                return dataExport;
             }
