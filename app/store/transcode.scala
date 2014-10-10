@@ -16,10 +16,10 @@ object Transcode {
   private val logger = play.api.Logger("transcode")
   private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
   private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt).map { s =>
-    val f = new File(s)
-    f.mkdir
-    f
+    new File(s)
   }
+
+  def enabled = dir.exists(d => host.isDefined || d.isDirectory)
 
   private def procLogger(prefix : String) = {
     val pfx = if (prefix.nonEmpty) prefix + ": " else prefix

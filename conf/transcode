@@ -25,12 +25,12 @@ esac ; done
 shift $[OPTIND-1]
 args=("$@")
 
-if [[ -z $id || -z $kill && -z $url ]] ; then
+if [[ -z $id || -z $dir || -z $kill && -z $url ]] ; then
 	echo "$0: usage error: $*" >&2
 	exit 1
 fi
 
-cd $dir
+cd $dir || exit 1
 
 IN=$id
 OUT=$id.mp4

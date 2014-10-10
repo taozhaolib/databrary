@@ -95,7 +95,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           }
           models.Asset.create(form.volume, fmt, classification, name, file)
       }
-      _ = if (asset.format.isTranscodable && !form.timeseries.get)
+      _ = if (asset.format.isTranscodable && !form.timeseries.get && store.Transcode.enabled)
         store.Transcode.start(asset)
     } yield (asset)
   }
