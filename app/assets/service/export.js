@@ -70,88 +70,42 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].date);
 
 
-
                       for(var j in containers[k].records){ //get recID then leave
-
+                        
                         var recID = containers[k].records[j].id;
 
+                        if (records[recID].category === -800){
+                            ssRow.push('Pilot');
+                          } else {
+                            ssRow.push('');
+
+                          }
+
                         for(var y = 0; y < headerIndex.length; y++){
+
 
                           for(var z = 0; z < headerIndex[y].metrics.length; z++){
 
                             console.log(records[recID].measures[headerIndex[y].metrics[z]]);
 
                             ssRow.push(records[recID].measures[headerIndex[y].metrics[z]]);
-
+                            //if(records[recID].measures[headerIndex[y].metrics[z]] !== undefined){
+                            //  hIndex++;
+                            //  break;
+                            //}                           
                           }
                         }
 
                       }
 
-
-
-
-                      
-
-
                       body += ssRow.join(',') + '\n';
-                  }
-
-                  
+                  }   
                 }
                 return body;
               }
 
-                function createExportBody(containers, records, headerIndex, metricIndex){  //DELETE THIS
 
-
-                  var body = '';
-
-                  for(var k in containers){
-
-                        if(containers[k].top !== true && containers[k].records.length !== 0){ //exclude materials for now
-                            
-                            var ssRow = [];
-
-                            ssRow.push(containers[k].id);
-                            ssRow.push(containers[k].date);
-
-                            for(var j in containers[k].records){
-                               
-                               var recID = containers[k].records[j].id;
-                               var recCode = records[recID].category;
-                               
-                               var recordMetricIndex = getIndex(records[recID].measures);
-
-                               if(checkIndex(records[recID].category.toString(), headerIndex) === true){
-
-                                 for(var v in records[recID].measures){
-
-                                   if(checkIndex(v.toString(), metricIndex) === true){
-                                     ssRow.push(records[recID].measures[v]);
-
-                                   } else {
-                                     ssRow.push('---');
-                                   }
-
-                                 }
-                               } else {
-
-                                ssRow.push('--');
-                               }
-     
-                            }
-
-                            body += ssRow.join(',') + '\n';
-                        }
-
-                        
-                    }
-                    return body;
-
-                }
-
-                function createPayload(payload){
+              function createPayload(payload){
 
                     var filename = 'download.csv';
                     var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
@@ -260,27 +214,6 @@ app.service('exportService', ['constantService', function(constants){
                   return newIdx;
 
                 }
-
-
-                function checkIndex(item, idx){ //DELETE THIS
-                  var answer = false;
-
-                  for(var x=0; x<idx.length; x++){
-                    
-                    if(item === idx[x]){
-
-                      answer = true;
-
-                    } else {
-                      continue;
-                    }
-
-                  }
-                  return answer;
-
-                }
-
-
                 
                return dataExport;
             }
