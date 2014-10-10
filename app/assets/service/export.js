@@ -36,13 +36,10 @@ app.service('exportService', ['constantService', function(constants){
                         'session date'
                     ];
 
-                    var headerIndex = getIndex(constants.category); //get rid of this
-                    var metricIndex = getIndex(constants.metric); //get rid of this
-                    var lonliestNumber = metricIndex.shift(); //get rid of this
 
                     var headerIdx = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
 
-                    var moreHeaders = makeHeadersText(headerIdx, constants.category, constants.metric);
+                    var moreHeaders = makeHeadersText(headerIdx);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -51,8 +48,8 @@ app.service('exportService', ['constantService', function(constants){
 
                   
                     /*create CSV body data*/
-                    var body = createExportBody(containers, records, headerIndex, metricIndex); //change this
-                    
+                    var body = createCSVBody(containers, records, headerIdx);
+
 
                     payload = header + '\n' + body;              
                         
@@ -60,11 +57,36 @@ app.service('exportService', ['constantService', function(constants){
                     
                 }
 
-                function createExportBody(containers, records, headerIndex, metricIndex){
-                    
+                function createCSVBody(containers, records, headerIndex){
 
-                  //console.log("Header Index = " + headerIndex);
-                  //console.log("Metric Index = " + metricIndex);
+                  console.log(headerIndex);
+
+                  var body = '';
+
+                  for(var k in containers){
+                    if(containers[k].top !== true && containers[k].records.length !== 0){ //exclude materials for now
+
+                      var ssRow = [];
+
+                      ssRow.push(containers[k].id);
+                      ssRow.push(containers[k].date);
+
+                      for(var j = 0; j < headerIndex.length; j++){
+                        //??? is this the right path to go down?
+                      }
+                      
+
+
+                      body += ssRow.join(',') + '\n';
+                  }
+
+                  
+                }
+                return body;
+              }
+
+                function createExportBody(containers, records, headerIndex, metricIndex){  //DELETE THIS
+
 
                   var body = '';
 
@@ -136,7 +158,7 @@ app.service('exportService', ['constantService', function(constants){
                 /*--------------object manipulation functions-----------------*/
 
 
-                function getIndex(recObj){
+                function getIndex(recObj){ //DELETEME
                   var index = [];
                   for(var k in recObj){
                     if(index.indexOf(k) === -1){
@@ -149,43 +171,32 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function makeHeadersText(idxObj, categories, metrics){
+                function makeHeadersText(headerIndexArr){
+                  
                   var output = [];
 
+                  headerIndexArr.forEach(function(item){
 
-                }
+                    var catText = constants.category[item.category].name;
 
-                function makeHeadersText_DELETE(arr){
-                    
-                    var output = [];
+                    if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
+                      output.push(constants.category[item.category].name); 
+                    }
 
-                    arr.forEach(function(item){
+                    item.metrics.forEach(function(m){
+                      var metText = constants.metric[m].name;
 
-                      var colPrefix = constants.category[item].name;
-                      var childArr = []; 
-
-                      for(var i=0; i<constants.category[item].template.length; i++){
-                        childArr.push(constants.category[item].template[i]);
-
-                      }
-
-                      childArr = childArr.sort().reverse();
-                      
-                      
-                      childArr.forEach(function(child){
-                         var colSuffix = constants.metric[child].name;
-
-                         output.push(colPrefix + ' ' + colSuffix);
-
-                      });
-
+                      output.push(catText + ' ' + metText);
                     });
 
-                    
-                    return output;
 
+                  });
+
+
+                  return output;
 
                 }
+
 
                 function makeHeaderIndex(recObj, metrics){
                     var tableObj = {};
@@ -223,7 +234,6 @@ app.service('exportService', ['constantService', function(constants){
                     for(var m = 0; m < metKeysSorted.length; m++){
 
                       metricsArrSorted.push(metKeysSorted[m]);
-                    //  newIdx[catKeysSorted[v]][metKeysSorted[m]] = headerIdx[catKeysSorted[v]][metKeysSorted[m]].name; 
 
                     }
                      newIdx.push({"category": catKeysSorted[v], "metrics": metricsArrSorted});
@@ -235,7 +245,7 @@ app.service('exportService', ['constantService', function(constants){
                 }
 
 
-                function checkIndex(item, idx){
+                function checkIndex(item, idx){ //DELETE THIS
                   var answer = false;
 
                   for(var x=0; x<idx.length; x++){
