@@ -37,8 +37,11 @@ app.service('exportService', ['constantService', function(constants){
                     ];
 
                     var headerIdx = makeHeaderIndex(records, constants.metric);
-                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
+                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //not used
+                    var hRef = makeHeaderRef(headerRef);
                     var moreHeaders = makeHeadersText(headerRef);
+
+                    console.log(hRef);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -47,7 +50,7 @@ app.service('exportService', ['constantService', function(constants){
 
                   
                     /*create CSV body data*/
-                    var body = createCSVBody(containers, records, headerRef, headerIdx);
+                    var body = createCSVBody(containers, records, hRef, headerIdx);
 
 
                     payload = header + '\n' + body;              
@@ -60,9 +63,7 @@ app.service('exportService', ['constantService', function(constants){
 
                   console.log(headerReference);
                   
-
                   var headerCats = Object.keys(headerIndex);
-                  console.log(headerCats);
 
                   var body = '';
 
@@ -75,31 +76,25 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].date);
 
 
-                      for(var j in containers[k].records){
-                        
+                       for(var j in containers[k].records){
+                        var slot;
+                        var idx = 0;
                         var recID = containers[k].records[j].id;
-
-                        if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
-                          if(records[recID].category === -800){
-                              ssRow.push('Pilot');
-                            } else {
-                              ssRow.push('');
+                        for(var l = idx; l < headerReference.length; l++ ){
+                        
+                          if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
+                            if(records[recID].category === -800){
+                                ssRow.push('Pilot');
+                              } else {
+                                ssRow.push('');
 
                             }
                           }
-                        /* the badlands */
-                        for(var y = 0; y < headerReference.length; y++){
-                          console.log("this is hRef: " + y );
 
-                          for(var z = 0; z < headerReference[y].metrics.length; z++){
-                            console.log("this is metrics: " + z );
-
-                            ssRow.push(records[recID].measures[headerReference[y].metrics[z]]);
-                                            
-                          }
-                        }/* leaving the badlands*/
+                        } 
 
                       }
+
                     body += ssRow.join(',') + '\n';
                   }   
                 }
@@ -153,7 +148,7 @@ app.service('exportService', ['constantService', function(constants){
                     var catText = constants.category[item.category].name;
 
                     if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
-                      output.push(constants.category[item.category].name); 
+                      output.push(catText); 
                     }
 
                     item.metrics.forEach(function(m){
@@ -172,9 +167,27 @@ app.service('exportService', ['constantService', function(constants){
 
                 function makeHeaderRef(headerIndexArr){
 
-                    var output = [];
-                
-                
+                  var output = [];
+              
+                  headerIndexArr.forEach(function(item){
+
+                  var catID = constants.category[item.category].id;
+
+                  if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
+                    output.push({"category": catID, "metric": ''}); 
+                  }
+
+                  item.metrics.forEach(function(m){
+                    var metID = constants.metric[m].id;
+
+                    output.push({"category": catID, "metric": metID});
+                  });
+
+
+                  });
+
+
+                  return output;
                 
                 
                 }
