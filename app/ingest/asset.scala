@@ -27,7 +27,7 @@ trait Asset {
                 r <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
                 if r
               } yield (a)
-            case Asset.TranscodableFileInfo(_, fmt, _) =>
+            case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
               for {
                 a <- models.Asset.create(volume, fmt, classification, n, infile)
                 _ <- store.Transcode.start(a)

@@ -114,7 +114,7 @@
                       <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>
                       <textarea ng-switch-when="long" name="m" ng-model="current.data[m]"/>
                       <input ng-switch-when="date" type="date" name="{{m}}" ng-model="current.data[m]"/>
-                      <input ng-switch-when="number" type="number" name="{{m}}" ng-model="current.data[m]"/>
+                      <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data[m]"/>
                     </dd>
                     <dt>
                       <select name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions() | orderBy:'id'" ng-change="current.add()"/>
