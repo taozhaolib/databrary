@@ -47,7 +47,7 @@ final class Container protected (override val id : Container.Id, override val vo
   override lazy val json : JsonRecord = JsonRecord.flatten(id,
     Some('volume -> volumeId),
     if (top) Some('top -> top) else None,
-    getDate.map('date -> _.toString),
+    getDate.map(d => 'date -> org.joda.time.format.ISODateTimeFormat.date.print(d)),
     Maybe(consent).opt.map('consent -> _),
     name.map('name -> _)
   )
