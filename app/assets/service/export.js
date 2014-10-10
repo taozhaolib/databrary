@@ -75,23 +75,54 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].id);
                       ssRow.push(containers[k].date);
 
+                      for(var l = 0; l < headerReference.length; l++ ){
 
-                       for(var j in containers[k].records){
-                        var slot;
-                        var idx = 0;
-                        var recID = containers[k].records[j].id;
-                        for(var l = idx; l < headerReference.length; l++ ){
+                       var cellCat = headerReference[l].category;
+                       var cellMet = headerReference[l].metric; 
                         
-                          if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
-                            if(records[recID].category === -800){
-                                ssRow.push('Pilot');
-                              } else {
-                                ssRow.push('');
+                       //ssRow.push(cellCat + "|" + cellMet);
 
+                       for (var j in containers[k].records){
+
+                        var recID = containers[k].records[j].id;
+                        if(records[recID].category == cellCat){
+                           ssRow.push(cellCat);
+                        }
+                       }
+                       /*for(var j in containers[k].records){
+
+                        var recID = containers[k].records[j].id;
+                        
+                          
+                          
+                          //if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
+                            
+                          //  if(records[recID].category === -800){
+                          //      ssRow.push('Pilot');
+                          //    } else {
+                          //      ssRow.push('');
+
+                          //  }
+                          //}                  
+
+                          var recCat = records[recID].category;
+
+                          
+                          if(recCat === cellCat){
+                            for(var m in records[recID].measures){
+                              if(records[recID].measures[m] === cellMet){
+                               ssRow.push(records[recID].measures[cellMet]);
+                             } else {
+
+                              ssRow.push('');
+                             }
                             }
+                          } else {
+                            ssRow.push('');
                           }
 
-                        } 
+
+                        } */
 
                       }
 
@@ -139,31 +170,7 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function makeHeadersText(headerIndexArr){
-                  
-                  var output = [];
-
-                  headerIndexArr.forEach(function(item){
-
-                    var catText = constants.category[item.category].name;
-
-                    if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
-                      output.push(catText); 
-                    }
-
-                    item.metrics.forEach(function(m){
-                      var metText = constants.metric[m].name;
-
-                      output.push(catText + ' ' + metText);
-                    });
-
-
-                  });
-
-
-                  return output;
-
-                }
+               
 
                 function makeHeaderRef(headerIndexArr){
 
@@ -190,6 +197,32 @@ app.service('exportService', ['constantService', function(constants){
                   return output;
                 
                 
+                }
+
+                 function makeHeadersText(headerIndexArr){
+                  
+                  var output = [];
+
+                  headerIndexArr.forEach(function(item){
+
+                    var catText = constants.category[item.category].name;
+
+                    if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
+                      output.push(catText); 
+                    }
+
+                    item.metrics.forEach(function(m){
+                      var metText = constants.metric[m].name;
+
+                      output.push(catText + ' ' + metText);
+                    });
+
+
+                  });
+
+
+                  return output;
+
                 }
 
 
