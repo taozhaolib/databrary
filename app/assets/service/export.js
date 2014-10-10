@@ -36,9 +36,7 @@ app.service('exportService', ['constantService', function(constants){
                         'session date'
                     ];
 
-
                     var headerIdx = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
-
                     var moreHeaders = makeHeadersText(headerIdx);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
@@ -71,9 +69,28 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].id);
                       ssRow.push(containers[k].date);
 
-                      for(var j = 0; j < headerIndex.length; j++){
-                        //??? is this the right path to go down?
+
+
+                      for(var j in containers[k].records){ //get recID then leave
+
+                        var recID = containers[k].records[j].id;
+
+                        for(var y = 0; y < headerIndex.length; y++){
+
+                          for(var z = 0; z < headerIndex[y].metrics.length; z++){
+
+                            console.log(records[recID].measures[headerIndex[y].metrics[z]]);
+
+                            ssRow.push(records[recID].measures[headerIndex[y].metrics[z]]);
+
+                          }
+                        }
+
                       }
+
+
+
+
                       
 
 
