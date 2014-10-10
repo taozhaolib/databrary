@@ -27,7 +27,7 @@ app.factory('Store', [
     Object.defineProperty @prototype, 'name',
       get: ->
         return constants.message('asset.add') unless @file || @asset
-        @file && @file.file.name || @asset && @asset.name || constants.message('file')
+        @asset?.name ? @data.name ? @file?.file.name ? constants.message('file')
 
     remove: ->
       return if @pending # sorry
