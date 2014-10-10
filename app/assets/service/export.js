@@ -36,8 +36,9 @@ app.service('exportService', ['constantService', function(constants){
                         'session date'
                     ];
 
-                    var headerIdx = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
-                    var moreHeaders = makeHeadersText(headerIdx);
+                    var headerIdx = makeHeaderIndex(records, constants.metric);
+                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
+                    var moreHeaders = makeHeadersText(headerRef);
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -46,7 +47,7 @@ app.service('exportService', ['constantService', function(constants){
 
                   
                     /*create CSV body data*/
-                    var body = createCSVBody(containers, records, headerIdx);
+                    var body = createCSVBody(containers, records, headerRef, headerIdx);
 
 
                     payload = header + '\n' + body;              
@@ -55,9 +56,13 @@ app.service('exportService', ['constantService', function(constants){
                     
                 }
 
-                function createCSVBody(containers, records, headerIndex){
+                function createCSVBody(containers, records, headerReference, headerIndex){
 
-                  console.log(headerIndex);
+                  console.log(headerReference);
+                  
+
+                  var headerCats = Object.keys(headerIndex);
+                  console.log(headerCats);
 
                   var body = '';
 
@@ -70,35 +75,32 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].date);
 
 
-                      for(var j in containers[k].records){ //get recID then leave
+                      for(var j in containers[k].records){
                         
                         var recID = containers[k].records[j].id;
 
-                        if (records[recID].category === -800){
-                            ssRow.push('Pilot');
-                          } else {
-                            ssRow.push('');
+                        if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
+                          if(records[recID].category === -800){
+                              ssRow.push('Pilot');
+                            } else {
+                              ssRow.push('');
 
+                            }
                           }
+                        /* the badlands */
+                        for(var y = 0; y < headerReference.length; y++){
+                          console.log("this is hRef: " + y );
 
-                        for(var y = 0; y < headerIndex.length; y++){
+                          for(var z = 0; z < headerReference[y].metrics.length; z++){
+                            console.log("this is metrics: " + z );
 
-
-                          for(var z = 0; z < headerIndex[y].metrics.length; z++){
-
-                            console.log(records[recID].measures[headerIndex[y].metrics[z]]);
-
-                            ssRow.push(records[recID].measures[headerIndex[y].metrics[z]]);
-                            //if(records[recID].measures[headerIndex[y].metrics[z]] !== undefined){
-                            //  hIndex++;
-                            //  break;
-                            //}                           
+                            ssRow.push(records[recID].measures[headerReference[y].metrics[z]]);
+                                            
                           }
-                        }
+                        }/* leaving the badlands*/
 
                       }
-
-                      body += ssRow.join(',') + '\n';
+                    body += ssRow.join(',') + '\n';
                   }   
                 }
                 return body;
