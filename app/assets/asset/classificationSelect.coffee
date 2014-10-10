@@ -9,10 +9,9 @@ app.directive 'classificationSelect', [
       value: '=ngModel'
       name: '@'
     link: ($scope) ->
-      $scope.classifications = constants.classification.slice(1)
-      $scope.selects = (($scope.value > i)+'' for l, i in $scope.classifications)
+      $scope.classification = constants.classification.slice(0)
+      $scope.max = constants.classification.PUBLIC
+      $scope.check = ($scope.value <= i for l, i in constants.classification)
       $scope.update = () ->
-        for l, i in $scope.classifications
-          break if $scope.selects[i] == 'false'
-        $scope.value = i
+        $scope.value = $scope.check.indexOf(true)
 ]

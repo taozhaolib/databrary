@@ -1,3 +1,6 @@
-<div>
-  <select class="classification" ng-repeat="(i, l) in classifications" name="{{name+'.'+l}}" ng-hide="value < i" ng-model="selects[i]" ng-options="o+'' as 'classification.'+l+'.'+o | message for o in [false, true]" ng-change="update()"></select>
+<div bindonce>
+  <div ng-repeat="(i, l) in classification" ng-if="value >= i">
+    <input ng-if="i < max" type="checkbox" name="{{name+'.'+l}}" ng-model="check[i]" ng-change="update()">
+    <span ng-class="" bo-text="'classification.select.'+l | message"></span>
+  </div>
 </div>
