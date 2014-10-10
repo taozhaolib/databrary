@@ -11,8 +11,14 @@
             <span bo-text="slot.displayName"></span>
             <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
           </h3>
-          <a bo-href="slot.zipRoute()" target="_self" bo-text="'download.zip' | message"></a>
         </hgroup>
+
+        <div class="slot-download">
+          <a class="slot-download-link" bo-href="slot.zipRoute()" target="_self">
+            <span class="download" bo-text="'download.zip' | message"></span>
+            <span class="icon download"></span>
+          </a>
+        </div>
 
         <section id="slot-timeline" class="slot-timeline">
           <div class="slot-timeline-temporal" ng-if="!range.empty">
