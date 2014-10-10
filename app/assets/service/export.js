@@ -40,9 +40,7 @@ app.service('exportService', ['constantService', function(constants){
                     var metricIndex = getIndex(constants.metric); //get rid of this
                     var lonliestNumber = metricIndex.shift(); //get rid of this
 
-                    var headerIdx = makeHeaderIndex(records, constants.metric);
-
-                    console.log(sortHeaderIdx(headerIdx));
+                    var headerIdx = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
 
                     var moreHeaders = makeHeadersText(headerIdx, constants.category, constants.metric);
 
@@ -52,11 +50,9 @@ app.service('exportService', ['constantService', function(constants){
                     console.log(records);
 
                   
-                    
                     /*create CSV body data*/
-                    var body = createExportBody(containers, records, headerIndex, metricIndex);
+                    var body = createExportBody(containers, records, headerIndex, metricIndex); //change this
                     
-
 
                     payload = header + '\n' + body;              
                         
@@ -191,27 +187,6 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
-                function makeSomethingElse(recObj, metricIdx){
-                    var headerIdx = [];
-
-                    for(var key in recObj){
-
-                        var metrics = [];
-                        for(var i in recObj[key].measures){
-                          if(metrics.indexOf(recObj[key].measures.id) === -1)
-                            metrics.push(recObj[key].measures.id);
-                             
-                        }
-
-                        headerIdx.push({"category": recObj[key].category, "metric": metrics});
-
-                    }
-
-                    return headerIdx;
-
-
-                }
-
                 function makeHeaderIndex(recObj, metrics){
                     var tableObj = {};
 
@@ -236,22 +211,24 @@ app.service('exportService', ['constantService', function(constants){
 
                 function sortHeaderIdx(headerIdx){
 
-                  var newIdx = {};
+                  var newIdx = [];
 
                   var catKeysSorted = Object.keys(headerIdx).sort().reverse();
 
-                  console.log(catKeysSorted);
-
                   for(var v = 0; v < catKeysSorted.length; v++){
 
+                    var metKeysSorted = Object.keys(headerIdx[catKeysSorted[v]]).sort().reverse();
+                    var metricsArrSorted = [];
 
-                    //var metKeysSorted = Object.keys(headerIdx[v]).sort().reverse();
+                    for(var m = 0; m < metKeysSorted.length; m++){
 
-                    //console.log(metKeysSorted);
-
-
+                      metricsArrSorted.push(metKeysSorted[m]);
+                    //  newIdx[catKeysSorted[v]][metKeysSorted[m]] = headerIdx[catKeysSorted[v]][metKeysSorted[m]].name; 
 
                     }
+                     newIdx.push({"category": catKeysSorted[v], "metrics": metricsArrSorted});
+                  }
+
 
                   return newIdx;
 
