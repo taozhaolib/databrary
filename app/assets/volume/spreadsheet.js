@@ -387,13 +387,8 @@ app.directive('spreadsheet', [
           a.setAttribute('href', editing ? slot.editRoute() : slot.route);
           a.className = "go icon";
 
-          if (!slot.top) {
-            var thisDate = slot.date;
-            if (slot.date){
-              thisDate = slot.date.replace(/\uFFFD/g,"x");
-            }
-            generateCell(row, 'date', thisDate, id + '-date_' + i);
-          }
+          if (!slot.top)
+            generateCell(row, 'date', slot.date, id + '-date_' + i);
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i);
           generateRecords(row, i, 0, editing && !stop);
         }
