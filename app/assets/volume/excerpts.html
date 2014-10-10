@@ -31,12 +31,12 @@
             </div>
             <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
               <div bo-if="hasThumbnail(excerpt)">
-                <figure fill>
+                <figure fill class="something">
                   <img bo-src="excerpt.thumbRoute(109)">
                 </figure>
               </div>
               <div bo-if="!hasThumbnail(excerpt)">
-                <figure>
+                <figure class="something">
                   <img class="panel-excerpt-filetype-thumb" bo-src="excerpt.icon">
                   <span bo-text="excerpt.asset.name"></span>
                 </figure>
