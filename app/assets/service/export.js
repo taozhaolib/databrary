@@ -170,6 +170,15 @@ app.service('exportService', ['constantService', function(constants){
 
                 }
 
+                function makeHeaderRef(headerIndexArr){
+
+                    var output = [];
+                
+                
+                
+                
+                }
+
 
                 function makeHeaderIndex(recObj, metrics){
                     var tableObj = {};
