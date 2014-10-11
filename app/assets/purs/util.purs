@@ -20,4 +20,3 @@ foreign import mapRange
       \return r;\
     \};\
   \}" :: forall a . (Number -> a) -> Number -> [a]
-

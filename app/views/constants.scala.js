@@ -1,3 +1,3 @@
 @(constants : play.api.libs.json.JsValue, routes : JavaScript)
-app.constant('constantData',@format.raw(constants.toString));
+var constants=@format.raw(constants.toString);app.constant('constantData',constants);
 @routes;app.constant('routeData',Object.freeze(routes).controllers);

@@ -1,22 +1,21 @@
 module ClassificationSelect (directive) where
 
 import Data.Array (findIndex)
-
 import Angular.Scope (modifyScope)
-
 import Util
-import Constants (Constants(..))
+import Constants
 
-link const scope = do
+link scope = do
   modifyScope (\s -> return {
-    classifications: Data.Array.Unsafe.tail const.classification
-  , selects: mapRange (show <<< ((>) s.value)) (Data.Array.length const.classification)
+    classifications: constants.classification
+  , max: Constants.unsafePermission "PUBLIC"
+  , check: mapRange ((<=) s.value) (Data.Array.length constants.classification)
   , update: modifyScope (\sc -> return {
-      value: findIndex ((==) "false") sc.selects
+      value: findIndex id sc.selects
     }) scope
   }) scope
 
-directive (Constants const) = do
+directive = do
   returnEff {
     restrict: "E"
   , templateUrl: "asset/classificationSelect.html"
@@ -24,5 +23,5 @@ directive (Constants const) = do
       value: "=ngModel"
     , name: "@"
     }
-  , link: unsafeEff <<< link const
+  , link: unsafeEff <<< link
   }

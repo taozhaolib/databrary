@@ -1,16 +1,25 @@
 module Constants (
     Constants(..)
+  , constants
+  , permission
+  , unsafePermission
   ) where
 
-import Angular.DI (Dependency, Service)
+import Data.Maybe (Maybe(..))
+import Map
 
-newtype Constants = Constants {
+type Constants = {
     permission :: [String]
   , classification :: [String]
   , consent :: [String]
   }
 
-instance dependencyConstant :: Dependency Constants where
-  name = "constantService"
-instance serviceConstant :: Service Constants
+foreign import constants :: Constants
 
+permissionMap = invertArray constants.permission
+
+permission :: String -> Maybe Number
+permission = lookup permissionMap
+
+unsafePermission :: String -> Number
+unsafePermission = unsafeLookup permissionMap
