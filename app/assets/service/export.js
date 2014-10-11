@@ -75,34 +75,29 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].id);
                       ssRow.push(containers[k].date);
 
+
                       for(var l = 0; l < headerReference.length; l++ ){
 
                        var cellCat = headerReference[l].category;
                        var cellMet = headerReference[l].metric.toString(); 
                         
-                       //ssRow.push(cellCat + "|" + cellMet);
 
                        for (var j in containers[k].records){
 
                         var recID = containers[k].records[j].id;
-                        if(records[recID].category === cellCat){
-                          for(var m in records[recID].measures){
-                           console.log(typeof(cellMet));
-                           console.log(typeof(records[recID].measures[m]));
-                            if (records[recID].measures[m] == cellMet){
-                             ssRow.push(records[recID].measures[m]);
-                             break;
-                           } else {
-                               ssRow.push('');
-                               break;
-                            } continue;
-                         }
-                           
-                        } else {
-                            ssRow.push('');
-                            break;
-                        }
+                        var recMetrics = Object.keys(records[recID].measures).sort().reverse();
                         
+
+                        if(records[recID].category === cellCat){
+                         
+                            
+                             ssRow.push(records[recID].measures[cellMet]);
+                             break;
+
+                        } else {
+                            ssRow.push(cellCat +'|'+ cellMet + '|' + recID);
+                            break;
+                        }                     
                         
 
                        }
