@@ -65,10 +65,16 @@ app.directive('spreadsheet', [
         return;
       switch (info.t) {
         case 'rec':
-          info.n = parseInt(s[2]);
-          info.m = parseInt(s[3]);
+          if (3 in s) {
+            info.n = parseInt(s[2]);
+            info.m = parseInt(s[3]);
+          } else {
+            info.n = 0;
+            info.m = parseInt(s[2]);
+          }
           break;
         case 'add':
+        case 'more':
           info.c = parseInt(s[2]);
           break;
         case 'metric':
@@ -170,8 +176,8 @@ app.directive('spreadsheet', [
 
         var tbody = $element[0].getElementsByClassName("spreadsheet-tbody")[0];
 
-        /* may be called after parseInfo to fill out complete information */
-        function fillInfo(info) {
+        function parseId(el) {
+          var info = parseInfo(stripPrefix(el.id, id+'-'));
           if ('m' in info) {
             info.c = (info.category = (info.col = metricCols[info.m]).category).id;
             info.metric = info.col.metric;
@@ -256,7 +262,8 @@ app.directive('spreadsheet', [
             metricCols[si].first = metricCols[si+l-1].last = l;
             return {
               category: category,
-              metrics: metrics
+              metrics: metrics,
+              start: si
             };
           });
           $scope.metricCols = metricCols;
@@ -315,42 +322,46 @@ app.directive('spreadsheet', [
           return td;
         }
 
-        function generateBlank(r, i, c, l, n, t, edit) {
+        /* Add all the measure tds to row i for count n, record r */
+        function generateRecord(row, i, col, edit, n) {
+          var c = col.category.id;
+          var t = counts[i][c] || 0;
+          var l = col.metrics.length;
           if (!l)
             return;
-          var td = r.appendChild(document.createElement('td'));
-          td.setAttribute("colspan", l);
-          if (edit && n === t) {
-            td.appendChild(document.createTextNode("add " + c.name));
-            td.id = id + '-add_' + i + '_' + c.id;
-            td.className = 'add';
-          } else {
-            if (n === 0)
-              td.appendChild(document.createTextNode(c.not));
-            td.className = 'null';
-          }
-        }
-
-        /* Add all the record/measure tds to row i for count n */
-        function generateRecords(row, i, n, edit) {
-          var count = counts[i];
-          for (var mi = 0; mi < metricCols.length; mi ++) {
-            var col = metricCols[mi];
-            var c = col.category.id;
-            var t = count[c] || 0;
-            if (n >= t) {
-              generateBlank(row, i, col.category, col.first, n, t, edit);
-              continue;
+          if (n === undefined ? t !== 1 : n >= t) {
+            var td = row.appendChild(document.createElement('td'));
+            td.setAttribute("colspan", l);
+            if (n === undefined && t > 1) {
+              td.appendChild(document.createTextNode("multiple"));
+              td.className = 'more';
+              td.id = id + '-more_' + i + '_' + c;
+            } else if (edit && !n || n === t) {
+              td.appendChild(document.createTextNode("add " + col.category.name));
+              td.id = id + '-add_' + i + '_' + c;
+              td.className = 'add';
+            } else {
+              if (!n)
+                td.appendChild(document.createTextNode(col.category.not));
+              td.className = 'null';
             }
-            var m = col.metric.id;
-            var v = records[c][m][n] && records[c][m][n][i];
-            var cell = generateCell(row, m, v, id + '-rec_' + i + '_' + n + '_' + mi, col.metric.assumed);
+            return;
+          }
+          var r = records[c];
+          var ms = col.metrics;
+          var b = id + '-rec_' + i + '_';
+          if (n === undefined)
+            n = 0;
+          else
+            b += n + '_';
+          for (var mi = 0; mi < l; mi ++) {
+            var m = ms[mi].id;
+            var v = r[m][n] && r[m][n][i];
+            var cell = generateCell(row, m, v, b + (col.start+mi), ms[mi].assumed);
             if (v !== null) {
-              var ri = id + '-rec_' + records[c].id[n][i];
+              var ri = id + '-rec_' + r.id[n][i];
               cell.classList.add(ri, ri + '_' + m);
             }
-            if (col.first && n === 0 && t > 1)
-              cell.classList.add('more');
           }
         }
 
@@ -390,7 +401,8 @@ app.directive('spreadsheet', [
           if (!slot.top)
             generateCell(row, 'date', slot.date, id + '-date_' + i);
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i);
-          generateRecords(row, i, 0, editing && !stop);
+          for (var ci = 0; ci < recordCols.length; ci ++)
+            generateRecord(row, i, recordCols[ci], edit);
         }
 
         /* Update all age displays. */
@@ -400,21 +412,22 @@ app.directive('spreadsheet', [
             if (m.metric.id !== 'age')
               continue;
             var c = m.category.id;
-            var r = records[c][m.metric.id][0];
-            var post = '_0_' + mi;
-            for (var i = 0; i < count; i ++) {
-              if (counts[i][c] && r)
-                generateText(
-                  document.getElementById(id + '-rec_' + i + post),
-                  'age', r[i]);
-            }
-            if (expanded !== undefined)
-              r = records[c][m.metric.id];
+            var r = records[c][m.metric.id];
+            if (expandedCat === c)
               for (var n = 0; n < counts[expanded][c]; n ++) {
                 if (n in r) generateText(
                     document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi),
                     'age', r[n][expanded]);
               }
+            if (!(0 in r))
+              return;
+            r = r[0];
+            var post = '_' + mi;
+            for (var i = 0; i < count; i ++) {
+              if (counts[i][c] === 1) generateText(
+                document.getElementById(id + '-rec_' + i + post),
+                'age', r[i]);
+            }
           }
         }
 
@@ -608,23 +621,22 @@ app.directive('spreadsheet', [
 
             cell.classList.remove('saving');
             collapse();
-            if (info.n === 0)
-              generateRow(info.i);
-            expand(info.i);
+            generateRow(info.i);
+            expand(info);
             return record;
           }, saveError.bind(null, cell));
         }
 
         ///////////////////////////////// Interaction
         
-        var expanded;
+        var expanded, expandedCat;
 
         /* Collapse any expanded row. */
         function collapse() {
           if (expanded === undefined)
             return;
-          var i = expanded;
-          expanded = undefined;
+          var i = expanded, c = expandedCat;
+          expanded = expandedCat = undefined;
           var row = rows[i];
           row.classList.remove('expand');
           var el;
@@ -634,46 +646,52 @@ app.directive('spreadsheet', [
             tbody.removeChild(el);
           } while ((el = row.nextSibling) && el.data === i);
 
-          for (el = row.firstChild; el && !el.id.startsWith("ss-rec_"); el = el.nextSibling)
+          for (el = row.firstChild; el; el = el.nextSibling)
             el.removeAttribute("rowspan");
+
           return true;
         }
 
         /* Expand (or collapse) a row */
-        function expand(i) {
-          var row = rows[i];
-
-          if (expanded === i)
+        function expand(info) {
+          if (expanded === info.i && expandedCat === info.c) {
+            if (info.t === 'more')
+              collapse();
             return;
+          }
           collapse();
-          expanded = i;
+
+          expanded = info.i;
+          expandedCat = info.c;
+          var row = rows[expanded];
           row.classList.add('expand');
 
-          var max = 0;
-          for (var c in counts[i])
-            if (counts[i][c] > max)
-              max = counts[i][c];
-          var edit = editing && slots[i].id !== volume.top.id;
+          var max = counts[expanded][expandedCat];
+          var edit = editing && slots[expanded].id !== volume.top.id;
           if (edit)
             max ++;
           if (max <= 1)
             return;
+          var col = recordCols.find(function (col) {
+            return col.category.id === expandedCat;
+          });
           var next = row.nextSibling;
           var el;
-          for (var n = 1; n < max; n ++) {
+          var start = counts[expanded][expandedCat] === 1;
+          for (var n = +start; n < max; n ++) {
             el = tbody.insertBefore(document.createElement('tr'), next);
-            el.className = 'expand';
-            el.data = i;
-            generateRecords(el, i, n, edit);
+            el.data = expanded;
+            generateRecord(el, expanded, col, edit, n);
           }
 
-          var i = 2+!top;
-          for (el = row.firstChild; i > 0; el = el.nextSibling, i--)
-            el.setAttribute("rowspan", max);
+          max += !start;
+          for (el = row.firstChild; el; el = el.nextSibling)
+            if (parseId(el).c !== expandedCat)
+              el.setAttribute("rowspan", max);
         }
 
         function save(cell, type, value) {
-          var info = fillInfo(parseInfo(stripPrefix(cell.id, id+'-')));
+          var info = parseId(cell);
           if (value === '')
             value = undefined;
           else switch (type) {
@@ -759,7 +777,6 @@ app.directive('spreadsheet', [
 
         function edit(cell, info, alt) {
           var m;
-          fillInfo(info);
           if (info.slot && info.slot.id === volume.top.id)
             return;
           switch (info.t) {
@@ -896,7 +913,7 @@ app.directive('spreadsheet', [
         function select(cell, info) {
           unselect();
 
-          expand(info.i);
+          expand(info);
 
           if (info.t === 'rec') {
             var cl = cell.classList;
@@ -917,7 +934,7 @@ app.directive('spreadsheet', [
           var el = event.target;
           if (el.tagName !== 'TD')
             return;
-          var info = parseInfo(stripPrefix(el.id, id+'-'));
+          var info = parseId(el);
           if (!info)
             return;
 
