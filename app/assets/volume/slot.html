@@ -13,7 +13,7 @@
           </h3>
         </hgroup>
 
-        <div class="slot-download">
+        <div bo-if="!editing" class="slot-download" ng-show="tracks[0].asset">
           <a class="slot-download-link" bo-href="slot.zipRoute()" target="_self">
             <span class="download" bo-text="'download.zip' | message"></span>
             <span class="icon download"></span>
