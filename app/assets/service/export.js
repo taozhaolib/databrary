@@ -97,15 +97,22 @@ app.service('exportService', ['constantService', function(constants){
                         
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push("cellCat=" + cellCat + " recID="+recID + " category ="+ records[recID].category);
-                             //idx++; advances records too quick
+                            ssRow.push("");
                             break;
                             
 
                         } else {
-                            ssRow.push(records[recID].measures[cellMet]);
-                            idx++; //wo break and it doesnt move to next metric
-                            break;
+
+                            if(recMetrics.length > 1){
+                            
+                                ssRow.push(records[recID].measures[cellMet]);
+                                break;
+                            }else{         
+
+                                ssRow.push(records[recID].measures[cellMet]);
+                                idx++; //wo break and it doesnt move to next metric
+                                break;
+                            }
                             
                         }                  
                         
