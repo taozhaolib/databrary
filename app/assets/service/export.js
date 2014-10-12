@@ -74,67 +74,44 @@ app.service('exportService', ['constantService', function(constants){
 
                       ssRow.push(containers[k].id);
                       ssRow.push(containers[k].date);
+                      var recIdArr = [];
+                       for (var j in containers[k].records){
+                       
+                        recIdArr.push(containers[k].records[j].id);
+                       } 
 
-
+                       console.log(recIdArr);
+                       
+                      var idx = 0;
                       for(var l = 0; l < headerReference.length; l++ ){
 
                        var cellCat = headerReference[l].category;
                        var cellMet = headerReference[l].metric.toString(); 
                         
+                       
 
-                       for (var j in containers[k].records){
-
-                        var recID = containers[k].records[j].id;
+                       for (var j = idx; idx < recIdArr.length;){
+                                        
+                        var recID = recIdArr[j].toString();
                         var recMetrics = Object.keys(records[recID].measures).sort().reverse();
                         
-
-                        if(records[recID].category === cellCat){
-                         
+                        if(records[recID].category !== cellCat){
+                          console.log("HI I AM THE START OF THE LOOP!!"); 
                             
-                             ssRow.push(records[recID].measures[cellMet]);
+                             ssRow.push("cellCat=" + cellCat + " recID="+recID + " category ="+ records[recID].category);
+                             
                              break;
+                            
 
                         } else {
-                            ssRow.push(cellCat +'|'+ cellMet + '|' + recID);
+                            ssRow.push(records[recID].measures[cellMet]);
+                            idx++;
                             break;
-                        }                     
+                            
+                        }                  
                         
 
                        }
-                       /*for(var j in containers[k].records){
-
-                        var recID = containers[k].records[j].id;
-                        
-                          
-                          
-                          //if (headerCats.indexOf('-800') !== -1){ //not preferred to check for this one exactly.
-                            
-                          //  if(records[recID].category === -800){
-                          //      ssRow.push('Pilot');
-                          //    } else {
-                          //      ssRow.push('');
-
-                          //  }
-                          //}                  
-
-                          var recCat = records[recID].category;
-
-                          
-                          if(recCat === cellCat){
-                            for(var m in records[recID].measures){
-                              if(records[recID].measures[m] === cellMet){
-                               ssRow.push(records[recID].measures[cellMet]);
-                             } else {
-
-                              ssRow.push('');
-                             }
-                            }
-                          } else {
-                            ssRow.push('');
-                          }
-
-
-                        } */
 
                       }
 
