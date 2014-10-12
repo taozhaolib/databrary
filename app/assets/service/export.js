@@ -97,7 +97,7 @@ app.service('exportService', ['constantService', function(constants){
                         
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push("");
+                            ssRow.push(recID);
                             break;
                             
 
@@ -106,6 +106,7 @@ app.service('exportService', ['constantService', function(constants){
                             if(recMetrics.length > 1){
                             
                                 ssRow.push(records[recID].measures[cellMet]);
+                                idx++;
                                 break;
                             }else{         
 
