@@ -97,7 +97,7 @@ app.service('exportService', ['constantService', function(constants){
                         
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push(recID);
+                            ssRow.push('');
                             break;
                             
 
@@ -106,7 +106,10 @@ app.service('exportService', ['constantService', function(constants){
                             if(recMetrics.length > 1){
                             
                                 ssRow.push(records[recID].measures[cellMet]);
-                                idx++;
+                                if(cellMet === recMetrics[recMetrics.length-1]){
+                                    idx++;
+                                }
+                                //idx++ //with this, only first metric added, without it, record does not advance after adding all.
                                 break;
                             }else{         
 
@@ -115,10 +118,10 @@ app.service('exportService', ['constantService', function(constants){
                                 break;
                             }
                             
-                        }                  
+                        } //break;                  
                         
 
-                       }
+                       } 
 
                       }
 
