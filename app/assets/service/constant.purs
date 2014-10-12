@@ -2,11 +2,12 @@ module Constants (
     Constants(..)
   , constants
   , permission
-  , unsafePermission
+  , classification
   ) where
 
+import Data.StrMap (lookup)
 import Data.Maybe (Maybe(..))
-import Map
+import Util
 
 type Constants = {
     permission :: [String]
@@ -17,9 +18,10 @@ type Constants = {
 foreign import constants :: Constants
 
 permissionMap = invertArray constants.permission
+classificationMap = invertArray constants.classification
 
-permission :: String -> Maybe Number
-permission = lookup permissionMap
+permission :: String -> Number
+permission = unsafeLookup permissionMap
 
-unsafePermission :: String -> Number
-unsafePermission = unsafeLookup permissionMap
+classification :: String -> Number
+classification = unsafeLookup classificationMap
