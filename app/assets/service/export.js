@@ -96,16 +96,15 @@ app.service('exportService', ['constantService', function(constants){
                         var recMetrics = Object.keys(records[recID].measures).sort().reverse();
                         
                         if(records[recID].category !== cellCat){
-                          console.log("HI I AM THE START OF THE LOOP!!"); 
-                            
-                             ssRow.push("cellCat=" + cellCat + " recID="+recID + " category ="+ records[recID].category);
                              
-                             break;
+                            ssRow.push("cellCat=" + cellCat + " recID="+recID + " category ="+ records[recID].category);
+                             //idx++; advances records too quick
+                            break;
                             
 
                         } else {
                             ssRow.push(records[recID].measures[cellMet]);
-                            idx++;
+                            idx++; //wo break and it doesnt move to next metric
                             break;
                             
                         }                  
