@@ -39,14 +39,17 @@ app.service('exportService', ['constantService', function(constants){
                     var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx 
                     var colCoords = makeHeaderRef(headerRef); //object array that represents the headers as category,metric coords in order - [{cat:metric},...] 
                     
+                    console.log(headerIdx);
+                    console.log(headerRef);
+                    console.log(colCoords);
                     
                     var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
 
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
-                    //console.log(containers);
-                    //console.log(records);
+                    console.log(containers);
+                    console.log(records);
 
                   
                     /*create CSV body data*/
@@ -55,7 +58,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     payload = header + '\n' + body;              
                         
-                    createPayload(payload, volume);
+                    //createPayload(payload, volume); //just turn this off for testing and development when we don't want all the downloads.
                     
                 }
 
@@ -212,6 +215,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     for(var key in recObj){
 
+
                       var cat = recObj[key].category;
 
                       tableObj[cat] = {};
@@ -221,6 +225,7 @@ app.service('exportService', ['constantService', function(constants){
                         tableObj[cat][i] = metrics[i].name;
 
                       }
+                      console.log(tableObj);
                     }
 
 
