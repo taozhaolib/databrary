@@ -75,12 +75,16 @@ app.factory('messageService', [
       if (!message.errors) {
         body += ' ' + constants.message('error.suffix');
       } else if (angular.isString(message.errors)) {
+        var errors = message.errors;
         message.fn = function () {
-          var doc = document.open('text/html', 'replace');
-          doc.write(message.errors);
-          doc.close();
+          // escape angular
+          window.setTimeout(function() {
+            document.open('text/html', 'replace');
+            document.write(errors); // jshint ignore:line
+            document.close();
+          }, 0);
         };
-        body += ' ' + constants.message('error.view');
+        body += ' <a href="">' + constants.message('error.view') + '</a>';
       } else if (angular.isObject(message.errors)) {
         var moreBody = '';
         var messageBody = '';

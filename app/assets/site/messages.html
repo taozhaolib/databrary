@@ -4,7 +4,7 @@
       <div class="row">
         <div class="col">
           <div class="message-close" ng-if="message.closeable" ng-click="message.remove()"></div>
-          <div class="message-content" ng-bind-html="message.body"></div>
+          <div class="message-content" ng-bind-html="message.body" ng-click="message.fn()"></div>
         </div>
       </div>
     </div>
