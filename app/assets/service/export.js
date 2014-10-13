@@ -19,7 +19,7 @@ app.service('exportService', ['constantService', function(constants){
                 function createCSV(data, volume){
 
                     //console.log(constants.category);
-                    console.log(constants.metric);
+                    //console.log(constants.metric);
                     
                    
                     
@@ -37,16 +37,14 @@ app.service('exportService', ['constantService', function(constants){
 
                     
                     /*helper object and arrays*/
-                    var headerIdx = makeHeaderIndex(records, constants.metric); //object of unique categories and metrics - {cat:{metric#:metricName},...}
+                    var headerIncludes = makeHeaderIndex(records, constants.metric); //object of unique categories and metrics - {cat:{metric#:metricName},...}
                     var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx 
                     var colCoords = makeHeaderRef(headerRef); //object array that represents the headers as category,metric coords in order - [{cat:metric},...] 
                     
-                    console.log(headerIdx);
-                    console.log(headerRef);
-                    console.log(colCoords);
-                    
-                    var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
+                    var catCounts = getCategoryCounts(containers, records);
+                    console.log(catCounts);
 
+                    var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -55,12 +53,12 @@ app.service('exportService', ['constantService', function(constants){
 
                   
                     /*create CSV body data*/
-                    var body = createCSVBody(containers, records, colCoords, headerIdx);
+                    var body = createCSVBody(containers, records, colCoords, headerIncludes);
 
 
                     payload = header + '\n' + body;              
                         
-                    createPayload(payload, volume); //just turn this off for testing and development when we don't want all the downloads.
+                    //createPayload(payload, volume);
                     
                 }
 
@@ -231,7 +229,7 @@ app.service('exportService', ['constantService', function(constants){
                       }
                       
                     }
-                    console.log(tableObj);
+                    //console.log(tableObj);
                     return tableObj;
 
 
@@ -258,6 +256,61 @@ app.service('exportService', ['constantService', function(constants){
 
 
                   return newIdx;
+
+                }
+
+                function getCategoryCounts(contObj, recObj){
+                  /*count the categories per record and post the largest for each*/
+                  var maxCatCounts = {};
+
+                  for(var i in contObj){
+
+                    var container = contObj[i].id;
+
+                    if(!(container in maxCatCounts)){
+
+                      maxCatCounts[container] = {}; 
+
+                    }
+
+                    var recArr = [];
+                    for(var j in contObj[i].records){
+
+                      recArr.push(contObj[i].records[j].id);
+                      
+                    }
+
+                    if(recArr.length > 0){
+                      for(var k=0; k<recArr.length; k++){
+                        var category = recObj[recArr[k]].category;
+                        if( maxCatCounts[container][category] > 0){
+                          maxCatCounts[container][category] += 1;
+                        } else {
+                          maxCatCounts[container][category] = 1;
+                        }
+                      }
+                    }
+                  }
+                  
+                  /*for maxCatCounts, get the overall most categories */
+                  var topCats = {};
+
+                  for (var l in maxCatCounts){
+
+                    for(var m in maxCatCounts[l]){
+
+                      if(maxCatCounts[l][m] > topCats[m]){
+
+                        topCats[m] = maxCatCounts[l][m];
+
+                      } else {
+
+                        topCats[m] = maxCatCounts[l][m];
+                      } 
+
+                    }
+
+                  } return topCats;
 
                 }
                 
