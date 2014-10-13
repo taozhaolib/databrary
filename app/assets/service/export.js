@@ -98,7 +98,7 @@ app.service('exportService', ['constantService', function(constants){
                         
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push('');
+                            ssRow.push(cellCat + "  " + cellMet + " " + recID); //put stuff for dev, should only be blank otherwise
                             break;
                             
 
