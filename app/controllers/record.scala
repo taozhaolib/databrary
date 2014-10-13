@@ -39,7 +39,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
 
   private[this] def updateMeasure(record : Record, metric : Metric[_], datum : Option[String]) =
     datum.fold(
-      record.removeMeasure(metric))(
+      record.removeMeasure(metric).map(_ => true))(
       d => record.setMeasure(new Measure(metric, d)))
 
   def update(i : models.Record.Id) =
