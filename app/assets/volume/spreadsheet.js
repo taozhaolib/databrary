@@ -341,14 +341,18 @@ app.directive('spreadsheet', [
               td.id = id + '-more_' + i + '_' + c;
               for (n = 0; n < t; n ++)
                 td.classList.add(id + '-rec_' + r.id[n][i]);
-            } else if (edit && !n || n === t) {
-              td.appendChild(document.createTextNode("add " + col.category.name));
-              td.id = id + '-add_' + i + '_' + c;
-              td.className = 'add';
             } else {
-              if (!n)
-                td.appendChild(document.createTextNode(col.category.not));
               td.className = 'null';
+              if (!n || n === t) {
+                if (!n)
+                  td.appendChild(document.createTextNode(col.category.not));
+                else if (edit)
+                  td.appendChild(document.createTextNode("add " + col.category.name));
+                if (edit) {
+                  td.className = 'null add';
+                  td.id = id + '-add_' + i + '_' + c;
+                }
+              }
             }
             return;
           }
@@ -529,6 +533,8 @@ app.directive('spreadsheet', [
         function saveSlot(cell, info, v) {
           var data = {};
           data[info.t] = v === undefined ? '' : v;
+          if (info.slot[info.t] === data[info.t])
+            return;
           cell.classList.add('saving');
           return info.slot.save(data).then(function () {
             generateText(cell, info.t, info.slot[info.t]);
@@ -563,6 +569,8 @@ app.directive('spreadsheet', [
         }
 
         function saveMeasure(cell, record, metric, v) {
+          if (record.measures[metric.id] === v)
+            return;
           cell.classList.add('saving');
           return record.measureSet(metric.id, v).then(function (rec) {
             var rcm = records[rec.category || 0][metric.id];

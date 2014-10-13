@@ -46,7 +46,7 @@
     </tbody>
     <tfoot>
       <tr bo-if="editing">
-        <td bo-id="id+'-new'" colspan="{{3+metricCols.length}}" class="add" ng-click="clickNew($event)" bo-text="'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td bo-id="id+'-new'" colspan="{{2+!top+metricCols.length}}" class="add null" ng-click="clickNew($event)" bo-text="'add ' + (top ? 'materials' : 'session' | message)"</td>
       </tr>
     </tfoot>
   </table>
