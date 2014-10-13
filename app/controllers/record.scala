@@ -37,19 +37,21 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     if (request.isApi) result(record)
     else Redirect(routes.RecordHtml.edit(record.id))
 
+  private[this] def updateMeasure(record : Record, metric : Metric[_], datum : Option[String]) =
+    datum.fold(
+      record.removeMeasure(metric))(
+      d => record.setMeasure(new Measure(metric, d)))
+
   def update(i : models.Record.Id) =
     Action(i, Permission.EDIT).async { implicit request =>
       val form = new RecordController.EditForm()._bind
       for {
         _ <- request.obj.change(category = form.category.get)
         _ <- form.measures.get.foreachAsync { case (m, value) =>
-          val metric = Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw)
-          value.fold(
-            request.obj.removeMeasure(metric))(d =>
-            request.obj.setMeasure(new Measure(metric, d)).map {
-              case false => form.measures.withKeyError(m, "error.invalid")._throw
-              case true => true
-            })
+          updateMeasure(request.obj, Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw), value).map {
+            case false => form.measures.withKeyError(m, "error.invalid")._throw
+            case true => true
+          }
         }
       } yield (editResult(request.obj))
     }
@@ -58,13 +60,10 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     Action(recordId, Permission.EDIT).async { implicit request =>
       val metric = Metric.get(metricId).getOrElse(throw NotFoundException)
       val form = new RecordController.MeasureForm(metric)._bind
-      form.datum.get.fold(
-        request.obj.removeMeasure(metric))(d =>
-        request.obj.setMeasure(new Measure(metric, d)).map {
-          case false => form.datum.withError("error.invalid")._throw
-          case true => true
-        })
-      .map(_ => editResult(request.obj))
+      updateMeasure(request.obj, metric, form.datum.get).map {
+        case false => form.datum.withError("error.invalid")._throw
+        case true => editResult(request.obj)
+      }
     }
 
   def add(containerId : Container.Id, segment : Segment) =
