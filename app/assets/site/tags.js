@@ -196,11 +196,10 @@ app.controller('site/tags', [
           if (form.newNameVal) {
             $scope.autoList = data;
           }
-        }, function (errors, status) {
+        }, function (res) {
           page.messages.addError({
             body: page.constants.message('tags.auto.error', {sce: page.$sce.HTML}),
-            errors: errors,
-            status: status
+            report: res
           });
 
           emptyAuto();

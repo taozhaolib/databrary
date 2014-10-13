@@ -29,11 +29,10 @@ app.controller('party/register', [
             .then(function () {
               $scope.registerForm.sent = true;
               $scope.proceed();
-            }, function (errors, status) {
+            }, function (res) {
               page.messages.addError({
                 body: page.constants.message('error.generic'),
-                errors: errors,
-                status: status
+                report: res
               });
             });
         };
