@@ -19,14 +19,16 @@ app.service('exportService', ['constantService', function(constants){
                 function createCSV(data, volume){
 
                     //console.log(constants.category);
-                    //console.log(constants.metric);
+                    console.log(constants.metric);
                     
-                    var payload = '';
+                   
                     
-                    var array = typeof data !== 'object' ? JSON.parse(data) : data;
+                    var input = data;
 
-                    var containers = array.containers;
-                    var records = array.records;
+                    var payload = '';
+
+                    var containers = input.containers;
+                    var records = input.records;
 
                     var baseHeaders = [ //these are static, tied to the volume
                         'session id',
@@ -98,7 +100,7 @@ app.service('exportService', ['constantService', function(constants){
 
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push(cellCat + "  " + cellMet + " " + recID); //put stuff for dev, should only be blank otherwise
+                            ssRow.push(''); //put stuff for dev, should only be blank otherwise
                             break;
                             
 
@@ -140,7 +142,7 @@ app.service('exportService', ['constantService', function(constants){
                     var link = document.createElement('a');
                     link.href = uri;
 
-                    link.style = "visibility:hidden";
+                    //link.style = "visibility:hidden"; //check this on safari, throws assign on readonly error
                     link.download = filename;
 
                     document.body.appendChild(link);
@@ -210,25 +212,25 @@ app.service('exportService', ['constantService', function(constants){
                 }
 
 
-                function makeHeaderIndex(recObj, metrics){
+                function makeHeaderIndex(recObj, metrics){ 
 
                     var tableObj = {};
 
                     for(var key in recObj){
 
-
                       var cat = recObj[key].category;
 
-                      tableObj[cat] = {};
+                      if (!(cat in tableObj)){
+                        tableObj[cat] = {};
+                      }
 
                       for(var i in recObj[key].measures){
-
+                      
                         tableObj[cat][i] = metrics[i].name;
 
                       }
                       
                     }
-                    console.log("HJHHHHHERRER IT IS!!!!");
                     console.log(tableObj);
                     return tableObj;
 
