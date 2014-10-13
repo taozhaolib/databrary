@@ -29,7 +29,7 @@
         </span>
 
         <span ng-if="page.models.Login.isLoggedIn()">
-          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
+          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
             <span class="username hide-mobile" ng-bind="page.models.Login.user.name.split(' ').shift()"></span>
             <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-avatar"> </a>
         </span>
