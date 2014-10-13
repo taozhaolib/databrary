@@ -3,7 +3,7 @@
 app.service('exportService', ['constantService', function(constants){
                 
                 //for timing
-                //var seconds = new Date().getTime() / 1000;
+                var seconds = new Date().getTime() / 1000;
 
                 var dataExport = {};
 
@@ -24,24 +24,22 @@ app.service('exportService', ['constantService', function(constants){
                     
                     var payload = '';
                     
-
                     var array = typeof data !== 'object' ? JSON.parse(data) : data;
-
 
                     var containers = array.containers;
                     var records = array.records;
 
-                    var baseHeaders = [
+                    var baseHeaders = [ //these are static, tied to the volume
                         'session id',
                         'session date'
                     ];
 
                     var headerIdx = makeHeaderIndex(records, constants.metric);
-                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //not used
+                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
                     var hRef = makeHeaderRef(headerRef);
-                    var moreHeaders = makeHeadersText(headerRef);
 
-                    console.log(hRef);
+                    var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
+
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
@@ -61,7 +59,6 @@ app.service('exportService', ['constantService', function(constants){
 
                 function createCSVBody(containers, records, headerReference, headerIndex){
 
-                  console.log(headerReference);
                   
                   var headerCats = Object.keys(headerIndex);
 
@@ -80,7 +77,6 @@ app.service('exportService', ['constantService', function(constants){
                         recIdArr.push(containers[k].records[j].id);
                        } 
 
-                       console.log(recIdArr);
                        
                       var idx = 0;
                       for(var l = 0; l < headerReference.length; l++ ){
@@ -107,18 +103,18 @@ app.service('exportService', ['constantService', function(constants){
                             
                                 ssRow.push(records[recID].measures[cellMet]);
                                 if(cellMet === recMetrics[recMetrics.length-1]){
-                                    idx++;
+                                    idx++; //only advance if we are done with all the metrics in this record
                                 }
-                                //idx++ //with this, only first metric added, without it, record does not advance after adding all.
+                                
                                 break;
                             }else{         
 
                                 ssRow.push(records[recID].measures[cellMet]);
-                                idx++; //wo break and it doesnt move to next metric
+                                idx++; 
                                 break;
                             }
                             
-                        } //break;                  
+                        }                
                         
 
                        } 
@@ -147,29 +143,14 @@ app.service('exportService', ['constantService', function(constants){
                     link.click();
                     document.body.removeChild(link);
 
-                    //var timenow = new Date().getTime() / 1000;
-                    //var timeto = (timenow - seconds);
+                    var timenow = new Date().getTime() / 1000;
+                    var timeto = (timenow - seconds);
 
-                    //console.log("That took: " + timeto + " seconds");
+                    console.log("That took: " + timeto + " seconds");
                 }
 
                 /*--------------object manipulation functions-----------------*/
 
-
-                function getIndex(recObj){ //DELETEME
-                  var index = [];
-                  for(var k in recObj){
-                    if(index.indexOf(k) === -1){
-                      index.push(k);
-                    }
-
-                  }
-
-                  return index.sort().reverse();
-
-                }
-
-               
 
                 function makeHeaderRef(headerIndexArr){
 
