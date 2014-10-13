@@ -178,6 +178,8 @@ app.directive('spreadsheet', [
 
         function parseId(el) {
           var info = parseInfo(stripPrefix(el.id, id+'-'));
+          if (!info)
+            return info;
           if ('m' in info) {
             info.c = (info.category = (info.col = metricCols[info.m]).category).id;
             info.metric = info.col.metric;
@@ -402,7 +404,7 @@ app.directive('spreadsheet', [
             generateCell(row, 'date', slot.date, id + '-date_' + i);
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i);
           for (var ci = 0; ci < recordCols.length; ci ++)
-            generateRecord(row, i, recordCols[ci], edit);
+            generateRecord(row, i, recordCols[ci], editing && !stop);
         }
 
         /* Update all age displays. */
@@ -685,9 +687,11 @@ app.directive('spreadsheet', [
           }
 
           max += !start;
-          for (el = row.firstChild; el; el = el.nextSibling)
-            if (parseId(el).c !== expandedCat)
+          for (el = row.firstChild; el; el = el.nextSibling) {
+            var info = parseId(el);
+            if (!info || info.c !== expandedCat)
               el.setAttribute("rowspan", max);
+          }
         }
 
         function save(cell, type, value) {
