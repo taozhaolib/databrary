@@ -73,13 +73,12 @@ final class Record private (val id : Record.Id, val volume : Volume, private[thi
     Classification.read(volume.permission, consent).fold[MeasuresView](Measures.empty)(measures_.filter _)
 
   /** Add or change a measure on this record.
-    * This is not type safe so may generate SQL exceptions, and may invalidate measures on this object. */
+    * This is not type safe so may generate SQL exceptions. */
   def setMeasure[T](measure : Measure[T]) : Future[Boolean] =
     measure.set(this).andThen { case scala.util.Success(true) =>
       measures_.update(measure)
     }
-  /** Remove a measure from this record.
-    * This may invalidate measures on this object. */
+  /** Remove a measure from this record. */
   def removeMeasure(metric : Metric[_]) =
     Measure.remove(this, metric).andThen { case scala.util.Success(true) =>
       measures_.remove(metric)

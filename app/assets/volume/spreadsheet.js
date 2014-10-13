@@ -178,6 +178,8 @@ app.directive('spreadsheet', [
 
         function parseId(el) {
           var info = parseInfo(stripPrefix(el.id, id+'-'));
+          if (!info)
+            return info;
           if ('m' in info) {
             info.c = (info.category = (info.col = metricCols[info.m]).category).id;
             info.metric = info.col.metric;
@@ -329,6 +331,7 @@ app.directive('spreadsheet', [
           var l = col.metrics.length;
           if (!l)
             return;
+          var r = records[c];
           if (n === undefined ? t !== 1 : n >= t) {
             var td = row.appendChild(document.createElement('td'));
             td.setAttribute("colspan", l);
@@ -336,6 +339,8 @@ app.directive('spreadsheet', [
               td.appendChild(document.createTextNode("multiple"));
               td.className = 'more';
               td.id = id + '-more_' + i + '_' + c;
+              for (n = 0; n < t; n ++)
+                td.classList.add(id + '-rec_' + r.id[n][i]);
             } else if (edit && !n || n === t) {
               td.appendChild(document.createTextNode("add " + col.category.name));
               td.id = id + '-add_' + i + '_' + c;
@@ -347,7 +352,6 @@ app.directive('spreadsheet', [
             }
             return;
           }
-          var r = records[c];
           var ms = col.metrics;
           var b = id + '-rec_' + i + '_';
           if (n === undefined)
@@ -402,7 +406,7 @@ app.directive('spreadsheet', [
             generateCell(row, 'date', slot.date, id + '-date_' + i);
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i);
           for (var ci = 0; ci < recordCols.length; ci ++)
-            generateRecord(row, i, recordCols[ci], edit);
+            generateRecord(row, i, recordCols[ci], editing && !stop);
         }
 
         /* Update all age displays. */
@@ -686,9 +690,11 @@ app.directive('spreadsheet', [
           }
 
           max += !start;
-          for (el = row.firstChild; el; el = el.nextSibling)
-            if (parseId(el).c !== expandedCat)
+          for (el = row.firstChild; el; el = el.nextSibling) {
+            var info = parseId(el);
+            if (!info || info.c !== expandedCat)
               el.setAttribute("rowspan", max);
+          }
         }
 
         function save(cell, type, value) {

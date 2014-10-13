@@ -76,8 +76,8 @@ app.controller('volume/slot', [
       styles
 
     seekOffset = (o) ->
-      if video && $scope.current?.asset?.segment.contains(o)
-        video[0].currentTime = (o - $scope.current.asset.segment.base) / 1000
+      if video && $scope.current?.asset?.segment.contains(o) && isFinite($scope.current.asset.segment.l)
+        video[0].currentTime = (o - $scope.current.asset.segment.l) / 1000
       $scope.position = o
 
     $scope.seekPosition = (pos) ->
@@ -201,8 +201,8 @@ app.controller('volume/slot', [
       ratechange: ->
         $scope.playing = video[0].playbackRate
       timeupdate: ->
-        if $scope.current?.asset
-          $scope.position = $scope.current.asset.segment.base + 1000*video[0].currentTime
+        if $scope.current?.asset && isFinite($scope.current.asset.segment.l)
+          $scope.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
       ended: ->
         $scope.playing = 0
         # look for something else to play?
