@@ -3,7 +3,7 @@
     <input type="search" name="name" placeholder="{{authSearchForm.placeholderText}}" ng-model="authSearchForm.nameVal" ng-change="authSearchForm.search()">
   </validator>
 
-  <ul ng-if="authSearchForm.nameVal" class="flat auth-found-list">
+  <ul ng-if="!!authSearchForm.nameVal" class="flat auth-found-list">
     <li ng-repeat="found in authSearchForm.found">
       <a href="" class="auth-found" ng-click="authSearchForm.select(found)" bo-text="found.name"></a>
     </li>
