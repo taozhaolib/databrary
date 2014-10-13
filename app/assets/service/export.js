@@ -10,13 +10,13 @@ app.service('exportService', ['constantService', function(constants){
                 dataExport.downloadCSV = function(volume){
                 
                     volume.get(['records', 'containers']).then(function(data){
-                        createCSV(data);       
+                        createCSV(data, volume);       
                     
                     });
                 
                 };
 
-                function createCSV(data){
+                function createCSV(data, volume){
 
                     //console.log(constants.category);
                     //console.log(constants.metric);
@@ -55,7 +55,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     payload = header + '\n' + body;              
                         
-                    createPayload(payload);
+                    createPayload(payload, volume);
                     
                 }
 
@@ -128,9 +128,10 @@ app.service('exportService', ['constantService', function(constants){
               }
 
 
-              function createPayload(payload){
+              function createPayload(payload, volume){
 
-                    var filename = 'download.csv';
+                    var volTitle = volume.id + "-" + volume.name.split(' ').join('_');
+                    var filename = volTitle + '.csv';
                     var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
 
                     var link = document.createElement('a');
