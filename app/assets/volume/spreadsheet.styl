@@ -117,10 +117,6 @@
       word-break break-all
       word-break break-word
 
-    select
-      word-break normal
-      height 100%
-
 .spreadsheet-head-groups
   th
     text-transform lowercase
@@ -182,5 +178,12 @@
   left 0
   bottom 0
   width 100%
+  select
+    word-break normal
+    height 100%
   input[type="text"]
     height:100%
+  input[type='date']
+    height 100%
+  textarea
+    min-height 100%
