@@ -331,6 +331,7 @@ app.directive('spreadsheet', [
           var l = col.metrics.length;
           if (!l)
             return;
+          var r = records[c];
           if (n === undefined ? t !== 1 : n >= t) {
             var td = row.appendChild(document.createElement('td'));
             td.setAttribute("colspan", l);
@@ -338,6 +339,8 @@ app.directive('spreadsheet', [
               td.appendChild(document.createTextNode("multiple"));
               td.className = 'more';
               td.id = id + '-more_' + i + '_' + c;
+              for (n = 0; n < t; n ++)
+                td.classList.add(id + '-rec_' + r.id[n][i]);
             } else if (edit && !n || n === t) {
               td.appendChild(document.createTextNode("add " + col.category.name));
               td.id = id + '-add_' + i + '_' + c;
@@ -349,7 +352,6 @@ app.directive('spreadsheet', [
             }
             return;
           }
-          var r = records[c];
           var ms = col.metrics;
           var b = id + '-rec_' + i + '_';
           if (n === undefined)
