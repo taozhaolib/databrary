@@ -45,6 +45,8 @@ app.factory('constantService', [
       cat.not = m in constants.messages ? constants.messages[m] : 'No ' + cat.name;
     });
 
+    constants.metricName.ident.display = 'ID';
+
     angular.forEach(constants.format, function (fmt) {
       var m = fmt.mimetype;
       fmt.type = m.slice(0, m.indexOf('/'));

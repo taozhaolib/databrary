@@ -635,7 +635,7 @@ app.directive('spreadsheet', [
         function collapse() {
           if (expanded === undefined)
             return;
-          var i = expanded, c = expandedCat;
+          var i = expanded;
           expanded = expandedCat = undefined;
           var row = rows[i];
           row.classList.remove('expand');
