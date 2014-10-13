@@ -681,6 +681,7 @@ app.directive('spreadsheet', [
           for (var n = +start; n < max; n ++) {
             el = tbody.insertBefore(document.createElement('tr'), next);
             el.data = expanded;
+            el.className = 'expand';
             generateRecord(el, expanded, col, edit, n);
           }
 
@@ -922,7 +923,7 @@ app.directive('spreadsheet', [
               if (c.startsWith('ss-rec_'))
                 selectStyles.insertRule('.' + c + '{background-color:' +
                   (!c.contains('_', 7) ? '#f3f1bf' : '#e8e47f') + 
-                  ';\n}', selectStyles.cssRules.length);
+                  ';\n text-}', selectStyles.cssRules.length);
             }
           }
 

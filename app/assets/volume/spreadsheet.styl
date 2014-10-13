@@ -4,7 +4,7 @@
 .spreadsheet
   margin-bottom 2
   &.view
-    overflow-x scroll
+    //overflow-x auto
 
 .spreadsheet-table
   width auto
@@ -39,6 +39,8 @@
       float right
       clear right
       cursor pointer
+      &.add
+        height f1+f8
 
   td
     border 1px solid dark
@@ -52,7 +54,8 @@
 
 
   td.icon
-    background-position 50% 45%
+    background-position 50% 50%
+    height 18px
 
   td.consent
     min-width 32px
@@ -178,3 +181,5 @@
   left 0
   bottom 0
   width 100%
+  input[type="text"]
+    height:100%
