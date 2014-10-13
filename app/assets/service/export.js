@@ -2,8 +2,7 @@
 
 app.service('exportService', ['constantService', function(constants){
                 
-                //for timing
-                var seconds = new Date().getTime() / 1000;
+                var seconds = new Date().getTime() / 1000; //for timing the export
 
                 var dataExport = {};
 
@@ -19,8 +18,8 @@ app.service('exportService', ['constantService', function(constants){
 
                 function createCSV(data){
 
-                    console.log(constants.category);
-                    console.log(constants.metric);
+                    //console.log(constants.category);
+                    //console.log(constants.metric);
                     
                     var payload = '';
                     
@@ -34,21 +33,24 @@ app.service('exportService', ['constantService', function(constants){
                         'session date'
                     ];
 
-                    var headerIdx = makeHeaderIndex(records, constants.metric);
-                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric));
-                    var hRef = makeHeaderRef(headerRef);
-
+                    
+                    /*helper object and arrays*/
+                    var headerIdx = makeHeaderIndex(records, constants.metric); //object of unique categories and metrics - {cat:{metric#:metricName},...}
+                    var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx 
+                    var colCoords = makeHeaderRef(headerRef); //object array that represents the headers as category,metric coords in order - [{cat:metric},...] 
+                    
+                    
                     var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
 
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
-                    console.log(containers);
-                    console.log(records);
+                    //console.log(containers);
+                    //console.log(records);
 
                   
                     /*create CSV body data*/
-                    var body = createCSVBody(containers, records, hRef, headerIdx);
+                    var body = createCSVBody(containers, records, colCoords, headerIdx);
 
 
                     payload = header + '\n' + body;              
@@ -72,13 +74,13 @@ app.service('exportService', ['constantService', function(constants){
                       ssRow.push(containers[k].id);
                       ssRow.push(containers[k].date);
                       var recIdArr = [];
-                       for (var j in containers[k].records){
+                       for (var j in containers[k].records){ //get an array of the record IDs for each container in advance
                        
                         recIdArr.push(containers[k].records[j].id);
                        } 
 
                        
-                      var idx = 0;
+                      var idx = 0; //create and index for the record loop so we have more control over the loop logic
                       for(var l = 0; l < headerReference.length; l++ ){
 
                        var cellCat = headerReference[l].category;
@@ -112,11 +114,9 @@ app.service('exportService', ['constantService', function(constants){
                                 ssRow.push(records[recID].measures[cellMet]);
                                 idx++; 
                                 break;
-                            }
-                            
+                            }    
                         }                
                         
-
                        } 
 
                       }
@@ -146,10 +146,10 @@ app.service('exportService', ['constantService', function(constants){
                     var timenow = new Date().getTime() / 1000;
                     var timeto = (timenow - seconds);
 
-                    console.log("That took: " + timeto + " seconds");
+                    console.log("Export process took: " + timeto + " seconds");
                 }
 
-                /*--------------object manipulation functions-----------------*/
+                /*--------------functions for creating helper objects and arrays above-----------------*/
 
 
                 function makeHeaderRef(headerIndexArr){
