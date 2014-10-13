@@ -8,7 +8,7 @@
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
                 @assets.map { link =>
-                        <li class="panel_materials_item @link.classification" ng-click="selectAsset(@link.sourceId)" ng-class="{active: currentAsset == @link.sourceId}">
+                        <li class="panel_materials_item @link.classification">
                             <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
 
                         <span class="classification">@link.classification.toString.charAt(0)</span>
@@ -24,11 +24,11 @@
 
         <div class="panel_materials_display col">
             @if(assets.nonEmpty) {
-                <span ng-init="currentAsset = @assets.head.sourceId.toString"></span>
+                <span></span>
 
                 @assets.map { link =>
                     @if(link.checkPermission(Permission.READ)) {
-                        <div id="asset_@link.sourceId.toString" ng-show="currentAsset == @link.sourceId" class="panel_materials_frame">
+                        <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
                             <h2>
                                 @link.pageName.@link.format.extension <a href='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, false)' class="link">download</a>
                             </h2>

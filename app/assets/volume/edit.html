@@ -19,15 +19,15 @@
             <volume-edit-overview-form></volume-edit-overview-form>
           </wizard-step>
 
-          <wizard-step name="materials" ng-if="volume">
+          <wizard-step name="materials" ng-if="!!volume">
             <volume-edit-materials-form></volume-edit-materials-form>
           </wizard-step>
 
-          <wizard-step name="funding" ng-if="volume">
+          <wizard-step name="funding" ng-if="!!volume">
             <volume-edit-funding-form></volume-edit-funding-form>
           </wizard-step>
 
-          <wizard-step name="access" ng-if="volume" enabled="volume.checkPermission(page.permission.ADMIN)">
+          <wizard-step name="access" ng-if="!!volume" enabled="volume.checkPermission(page.permission.ADMIN)">
             <volume-edit-access-form></volume-edit-access-form>
           </wizard-step>
         </wizard>

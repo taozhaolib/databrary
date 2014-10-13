@@ -65,7 +65,7 @@
                   </button>
                 </ng-form>
 
-                <a ng-if="page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate SU</a>
+                <a ng-if="!!page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate SU</a>
               </li>
             </ul>
           </div>
