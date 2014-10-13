@@ -132,7 +132,7 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) {
     implicit val site = record.site
     Audit.changeOrAdd(metric.measureType.table, SQLTerms(sqlArg), SQLTerms('record -> record.id, 'metric -> metric.id))
       .execute.recover {
-        case e : db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("invalid input syntax for type") => false
+        case e : db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("invalid input syntax for type") || e.errorMessage.message.startsWith("date/time field value out of range") => false
       }
   }
   override def toString = "Measure(" + metric.name + ", " + datum + ")"
