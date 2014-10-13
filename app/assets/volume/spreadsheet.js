@@ -517,6 +517,7 @@ app.directive('spreadsheet', [
         }
 
         function createSlot(cell) {
+          cell.classList.remove('error');
           cell.classList.add('saving');
           volume.createContainer({top:top}).then(function (slot) {
             if (!('records' in slot))
@@ -535,6 +536,7 @@ app.directive('spreadsheet', [
           data[info.t] = v === undefined ? '' : v;
           if (info.slot[info.t] === data[info.t])
             return;
+          cell.classList.remove('error');
           cell.classList.add('saving');
           return info.slot.save(data).then(function () {
             generateText(cell, info.t, info.slot[info.t]);
@@ -544,6 +546,7 @@ app.directive('spreadsheet', [
 
         function removeSlot(cell, i, slot) {
           /* assuming we have a container */
+          cell.classList.remove('error');
           cell.classList.add('saving');
           return slot.remove().then(function (done) {
             cell.classList.remove('saving');
@@ -571,6 +574,7 @@ app.directive('spreadsheet', [
         function saveMeasure(cell, record, metric, v) {
           if (record.measures[metric.id] === v)
             return;
+          cell.classList.remove('error');
           cell.classList.add('saving');
           return record.measureSet(metric.id, v).then(function (rec) {
             var rcm = records[rec.category || 0][metric.id];
@@ -587,6 +591,7 @@ app.directive('spreadsheet', [
         }
 
         function setRecord(cell, info, record) {
+          cell.classList.remove('error');
           cell.classList.add('saving');
           var add = function () {
             if (record)

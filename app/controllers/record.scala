@@ -42,14 +42,22 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       record.removeMeasure(metric).map(_ => true))(
       d => record.setMeasure(new Measure(metric, d)))
 
+  private[this] def metricError(metric : Metric[_]) =
+    metric.measureType.dataType match {
+      case DataType.number => "error.number"
+      case DataType.date => "error.date"
+      case _ => "error.invalid"
+    }
+
   def update(i : models.Record.Id) =
     Action(i, Permission.EDIT).async { implicit request =>
       val form = new RecordController.EditForm()._bind
       for {
         _ <- request.obj.change(category = form.category.get)
         _ <- form.measures.get.foreachAsync { case (m, value) =>
-          updateMeasure(request.obj, Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw), value).map {
-            case false => form.measures.withKeyError(m, "error.invalid")._throw
+          val metric = Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw)
+          updateMeasure(request.obj, metric, value).map {
+            case false => form.measures.withKeyError(m, metricError(metric))._throw
             case true => true
           }
         }
@@ -61,7 +69,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       val metric = Metric.get(metricId).getOrElse(throw NotFoundException)
       val form = new RecordController.MeasureForm(metric)._bind
       updateMeasure(request.obj, metric, form.datum.get).map {
-        case false => form.datum.withError("error.invalid")._throw
+        case false => form.datum.withError(metricError(metric))._throw
         case true => editResult(request.obj)
       }
     }

@@ -13,6 +13,7 @@ error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
 error.offset=Position in seconds expected
 error.conflict=The requested change conflicts with a previously set value.
+error.date=Invalid date (please use YYYY-MM-DD).
 citation.invalid=Invalid citation: at least citation or DOI is required
 file.format.unknown=File format is not supported.
 file.size.invalid=File size must be greater than 0.
@@ -32,7 +33,7 @@ csrf.failed=Form validation failed. Please reload and try again.
 error.generic=Something''s gone terribly wrong.
 error.prefix=<strong>Error</strong>:
 error.suffix=Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
-error.view=<a href="" ng-click="message.fn()">View error</a>.
+error.view=View error.
 
 error.report=<a href="mailto:feedback@databrary.org?subject={0}&body={1}" target="_blank">Send report</a>.
 error.report.subject=[Error {0}] {1}
