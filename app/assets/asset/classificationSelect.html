@@ -1,5 +1,5 @@
 <div bindonce>
-  <div class="classification" ng-repeat="(i, l) in classification" ng-if="value >= i">
+  <div class="classification class-{{l}}" ng-repeat="(i, l) in classification" ng-if="value >= i">
     <input bo-if="i < max" type="checkbox" name="{{name+'.'+l}}" ng-model="check[i]" ng-change="update()">
     <span bo-class="{'reminder': i >= max}" bo-text="'classification.select.'+l | message"></span>
   </div>
