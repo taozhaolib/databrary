@@ -133,7 +133,9 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
         } else block)
       .map { res =>
         _root_.site.Site.accessLog.log(now, request, res, Some(site.identity.id.toString))
-        res.withHeaders(
+        (if (site.isApi && !res.header.headers.contains(HeaderNames.CACHE_CONTROL)) res.withHeaders(
+          HeaderNames.CACHE_CONTROL -> "no-cache") else res)
+        .withHeaders(
           HeaderNames.DATE -> HTTP.date(new Timestamp(now)),
           HeaderNames.SERVER -> _root_.site.Site.appVersion)
       })
