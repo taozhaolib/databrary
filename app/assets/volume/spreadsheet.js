@@ -368,7 +368,8 @@ app.directive('spreadsheet', [
             var cell = generateCell(row, m, v, b + (col.start+mi), ms[mi].assumed);
             if (v !== null) {
               var ri = id + '-rec_' + r.id[n][i];
-              cell.classList.add(ri, ri + '_' + m);
+              cell.classList.add(ri);
+              cell.classList.add(ri + '_' + m);
             }
           }
         }
