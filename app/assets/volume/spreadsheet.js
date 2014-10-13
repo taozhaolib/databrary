@@ -341,14 +341,18 @@ app.directive('spreadsheet', [
               td.id = id + '-more_' + i + '_' + c;
               for (n = 0; n < t; n ++)
                 td.classList.add(id + '-rec_' + r.id[n][i]);
-            } else if (edit && !n || n === t) {
-              td.appendChild(document.createTextNode("add " + col.category.name));
-              td.id = id + '-add_' + i + '_' + c;
-              td.className = 'add';
             } else {
-              if (!n)
-                td.appendChild(document.createTextNode(col.category.not));
               td.className = 'null';
+              if (!n || n === t) {
+                if (!n)
+                  td.appendChild(document.createTextNode(col.category.not));
+                else if (edit)
+                  td.appendChild(document.createTextNode("add " + col.category.name));
+                if (edit) {
+                  td.className = 'null add';
+                  td.id = id + '-add_' + i + '_' + c;
+                }
+              }
             }
             return;
           }
