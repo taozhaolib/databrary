@@ -58,7 +58,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     payload = header + '\n' + body;              
                         
-                    //createPayload(payload, volume); //just turn this off for testing and development when we don't want all the downloads.
+                    createPayload(payload, volume); //just turn this off for testing and development when we don't want all the downloads.
                     
                 }
 
@@ -95,7 +95,7 @@ app.service('exportService', ['constantService', function(constants){
                                         
                         var recID = recIdArr[j].toString();
                         var recMetrics = Object.keys(records[recID].measures).sort().reverse();
-                        
+
                         if(records[recID].category !== cellCat){
                              
                             ssRow.push(cellCat + "  " + cellMet + " " + recID); //put stuff for dev, should only be blank otherwise
@@ -211,6 +211,7 @@ app.service('exportService', ['constantService', function(constants){
 
 
                 function makeHeaderIndex(recObj, metrics){
+
                     var tableObj = {};
 
                     for(var key in recObj){
@@ -225,10 +226,10 @@ app.service('exportService', ['constantService', function(constants){
                         tableObj[cat][i] = metrics[i].name;
 
                       }
-                      console.log(tableObj);
+                      
                     }
-
-
+                    console.log("HJHHHHHERRER IT IS!!!!");
+                    console.log(tableObj);
                     return tableObj;
 
 
