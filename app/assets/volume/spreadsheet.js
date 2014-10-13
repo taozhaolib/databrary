@@ -533,6 +533,8 @@ app.directive('spreadsheet', [
         function saveSlot(cell, info, v) {
           var data = {};
           data[info.t] = v === undefined ? '' : v;
+          if (info.slot[info.t] === data[info.t])
+            return;
           cell.classList.add('saving');
           return info.slot.save(data).then(function () {
             generateText(cell, info.t, info.slot[info.t]);
@@ -567,6 +569,8 @@ app.directive('spreadsheet', [
         }
 
         function saveMeasure(cell, record, metric, v) {
+          if (record.measures[metric.id] === v)
+            return;
           cell.classList.add('saving');
           return record.measureSet(metric.id, v).then(function (rec) {
             var rcm = records[rec.category || 0][metric.id];
