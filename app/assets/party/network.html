@@ -1,6 +1,6 @@
 <panel ng-controller="party/network" id="panel-network" panel-title="{{'network.title' | message}}" fold bindonce>
   <div class="network-parents-region">
-    <h2>{{'auth.parents.title' | message}}</h2>
+    <h4 class="view-title smaller">{{'auth.parents.title' | message}}</h4>
 
     <article bo-id="'network-parent-'+parent.id" class="permission-auth cf" ng-repeat="parent in party.parents">
       <div class="row">
@@ -60,7 +60,7 @@
   </div>
 
   <div class="network-children-region">
-    <h2>{{'auth.children.title' | message}}</h2>
+    <h4 class="view-title smaller">{{'auth.children.title' | message}}</h4>
 
     <article bo-id="'network-child-'+child.id" class="permission-auth cf" ng-repeat="child in party.children">
       <div class="row">
