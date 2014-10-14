@@ -18,11 +18,6 @@ app.service('exportService', ['constantService', function(constants){
 
                 function createCSV(data, volume){
 
-                    //console.log(constants.category);
-                    //console.log(constants.metric);
-                    
-                   
-                    
                     var input = data;
 
                     var payload = '';
@@ -46,9 +41,6 @@ app.service('exportService', ['constantService', function(constants){
                     var moreHeaders = makeHeadersText(headerRef, catCounts); //turn header index into column names
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
-
-                    //console.log(containers);
-                    //console.log(records);
 
                   
                     /*create CSV body data*/
@@ -97,7 +89,7 @@ app.service('exportService', ['constantService', function(constants){
 
                         if(records[recID].category !== cellCat){
                              
-                            ssRow.push(''); //put stuff for dev, should only be blank otherwise
+                            ssRow.push('');
                             break;
                             
 
@@ -201,7 +193,12 @@ app.service('exportService', ['constantService', function(constants){
                       for(var m = 0; m < item.metrics.length; m++){
                         var metText = constants.metric[item.metrics[m]].name;
 
-                        output.push(catText + ' ' + metText + ' ' + (z + 1).toString());
+                        if(z>0){
+                          output.push(catText + ' ' + metText + ' ' + (z + 1).toString());
+                        } else {
+                          output.push(catText + ' ' + metText);
+                        }
+              
                       }
                     }
 
@@ -232,7 +229,6 @@ app.service('exportService', ['constantService', function(constants){
                       }
                       
                     }
-                    //console.log(tableObj);
                     return tableObj;
 
 
@@ -294,8 +290,6 @@ app.service('exportService', ['constantService', function(constants){
                       }
                     }
                   }
-
-                  //console.log(maxCatCounts);
                   
                   /*for maxCatCounts, get all categories into an array for each category */
                   var topCats = {};
