@@ -95,6 +95,7 @@ app.factory('Store', [
         )
 
     upload: (file) ->
+      return if @file
       file.pause()
       @file = file
       @progress = 0

@@ -12,6 +12,7 @@ app.controller('volume/slot', [
     $scope.form = {}
 
     video = undefined
+    blank = undefined
 
     searchLocation = (url) ->
       url
@@ -136,7 +137,7 @@ app.controller('volume/slot', [
       selectRange(c.segment)
 
     removed = (track) ->
-      return if track.asset || track.file
+      return if track.asset || track.file || track == blank
       select() if track == $scope.current
       $scope.tracks.remove(track)
 
@@ -178,17 +179,16 @@ app.controller('volume/slot', [
           sortTracks()
 
       upload: (file) ->
-        super(file).then (done) =>
+        super(file)?.then (done) =>
           return unless done
           ### jshint ignore:start ###
           @data.name ||= file.file.name
           ### jshint ignore:end ###
-          # add a new blank track
-          $scope.tracks.push(new Track()) unless @asset
+          $scope.tracks.push(blank = new Track()) if this == blank
 
     $scope.fileAdded = (file) ->
       return unless editing
-      $scope.current?.upload(file)
+      (!$scope.current?.file && $scope.current || blank).upload(file)
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
@@ -297,7 +297,7 @@ app.controller('volume/slot', [
     updateRange(page.models.Segment.full)
 
     $scope.tracks = (new Track(asset) for asset in slot.assets)
-    $scope.tracks.push(new Track()) if editing
+    $scope.tracks.push(blank = new Track()) if editing
     sortTracks()
 
     $scope.records = (->
