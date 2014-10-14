@@ -1,6 +1,6 @@
 <div class="volume-list">
-  <div ng-if="!volumes.length">
-    No matching data found.
+  <div ng-if="!volumes.length" class="volume-list-none">
+    <span ng-bind="'volume.search.none' | message"></span>
   </div>
   <ul class="flat">
     <li ng-repeat="volume in volumes" bindonce>
