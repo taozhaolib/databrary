@@ -65,8 +65,8 @@ app.service('exportService', ['constantService', function(constants){
 
                       var ssRow = [];
 
-                      ssRow.push(containers[k].id);
-                      ssRow.push(containers[k].date);
+                      ssRow.push('"'+containers[k].id+'"');
+                      ssRow.push('"'+containers[k].date+'"');
                       var recIdArr = [];
                        for (var j in containers[k].records){ //get an array of the record IDs for each container in advance
                        
@@ -94,10 +94,27 @@ app.service('exportService', ['constantService', function(constants){
                             
 
                         } else {
+                            
+                            var input;
+                            if(records[recID].measures[cellMet] !== undefined){
+                              input = records[recID].measures[cellMet];
+                            } else {
+
+                              input = '';
+
+                            }
+                            
+                            console.log(input);
+
+                            if(input.contains('"') || input.contains(',') || input.contains('\n')){
+
+                              input = '"'+input+'"'; //escape CSV formatting in cells
+                            }
+
 
                             if(recMetrics.length > 1){
                             
-                                ssRow.push(records[recID].measures[cellMet]);
+                                ssRow.push(input);
                                 if(cellMet === recMetrics[recMetrics.length-1]){
                                     idx++; //only advance if we are done with all the metrics in this record
                                 }
@@ -105,7 +122,7 @@ app.service('exportService', ['constantService', function(constants){
                                 break;
                             }else{         
 
-                                ssRow.push('"'+records[recID].measures[cellMet]+'"');
+                                ssRow.push(input);
                                 idx++; 
                                 break;
                             }    
@@ -146,6 +163,7 @@ app.service('exportService', ['constantService', function(constants){
 
                 /*--------------functions for creating helper objects and arrays above-----------------*/
 
+                String.prototype.contains = function(item){ return this.indexOf(item) !== -1;};
 
                 function makeHeaderCoords(headerIndexArr, categoryCountsObj){
 
