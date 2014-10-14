@@ -20,10 +20,7 @@ app.directive('accessGrantForm', [
           p == page.permission.ADMIN;
       };
 
-      form.canChange = 
-        form.data.individual !== page.permission.ADMIN || (access.party.id !== page.models.Login.user.id && volume.access && volume.access.filter(function (access) {
-          return access.individual === page.permission.ADMIN;
-        }).length >= 2);
+      form.canChange = access.party.id !== page.models.Login.user.id || page.models.Login.user.superuser;
 
       //
 
