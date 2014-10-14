@@ -291,26 +291,30 @@ app.service('exportService', ['constantService', function(constants){
                       }
                     }
                   }
+
+                  console.log(maxCatCounts);
                   
                   /*for maxCatCounts, get the overall most categories */
                   var topCats = {};
 
                   for (var l in maxCatCounts){
-
                     for(var m in maxCatCounts[l]){
-
-                      if(maxCatCounts[l][m] > topCats[m]){
-
-                        topCats[m] = maxCatCounts[l][m];
-
-                      } else {
-
-                        topCats[m] = maxCatCounts[l][m];
-                      } 
+                       var cat = m;   
+                       if(!(cat in topCats)){
+                            topCats[m] = [];    
+                       }
+                                        
+                       topCats[m].push(maxCatCounts[l][m]);
 
                     }
 
-                  } return topCats;
+                  }
+
+                  for(var n in topCats){
+                    topCats[n] = Math.max.apply(null, topCats[n]);
+                  }
+
+                  return topCats;
 
                 }
                 
