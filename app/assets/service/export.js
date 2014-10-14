@@ -37,19 +37,18 @@ app.service('exportService', ['constantService', function(constants){
 
                     
                     /*helper object and arrays*/
+                    var catCounts = getCategoryCounts(containers, records);
                     var headerIncludes = makeHeaderIndex(records, constants.metric); //object of unique categories and metrics - {cat:{metric#:metricName},...}
                     var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx 
-                    var colCoords = makeHeaderRef(headerRef); //object array that represents the headers as category,metric coords in order - [{cat:metric},...] 
-                    
-                    var catCounts = getCategoryCounts(containers, records);
-                    console.log(catCounts);
+                    var colCoords = makeHeaderCoords(headerRef, catCounts); //object array that represents the headers as category,metric coords in order - [{cat:metric},...] 
 
-                    var moreHeaders = makeHeadersText(headerRef); //turn header index into column names
+
+                    var moreHeaders = makeHeadersText(headerRef, catCounts); //turn header index into column names
 
                     var header = baseHeaders.concat(moreHeaders).join(',');
 
-                    console.log(containers);
-                    console.log(records);
+                    //console.log(containers);
+                    //console.log(records);
 
                   
                     /*create CSV body data*/
@@ -58,7 +57,7 @@ app.service('exportService', ['constantService', function(constants){
 
                     payload = header + '\n' + body;              
                         
-                    //createPayload(payload, volume);
+                    createPayload(payload, volume);
                     
                 }
 
@@ -156,23 +155,25 @@ app.service('exportService', ['constantService', function(constants){
                 /*--------------functions for creating helper objects and arrays above-----------------*/
 
 
-                function makeHeaderRef(headerIndexArr){
+                function makeHeaderCoords(headerIndexArr, categoryCountsObj){
 
                   var output = [];
               
                   headerIndexArr.forEach(function(item){
 
-                  var catID = constants.category[item.category].id;
+                    var catID = constants.category[item.category].id;
 
-                  if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
-                    output.push({"category": catID, "metric": ''}); 
-                  }
+                    for(var z = 0; z < categoryCountsObj[catID]; z++){
+                      if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
+                        output.push({"category": catID, "metric": ''}); 
+                      }
 
-                  item.metrics.forEach(function(m){
-                    var metID = constants.metric[m].id;
+                      for(var m = 0; m < item.metrics.length; m++){
+                        var metID = constants.metric[item.metrics[m]].id;
 
-                    output.push({"category": catID, "metric": metID});
-                  });
+                        output.push({"category": catID, "metric": metID});
+                      }
+                    }
 
 
                   });
@@ -183,24 +184,26 @@ app.service('exportService', ['constantService', function(constants){
                 
                 }
 
-                 function makeHeadersText(headerIndexArr){
+                 function makeHeadersText(headerIndexArr, categoryCountsObj){
                   
                   var output = [];
 
                   headerIndexArr.forEach(function(item){
 
+                    var catID = constants.category[item.category].id;
                     var catText = constants.category[item.category].name;
 
-                    if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
-                      output.push(catText); 
+                    for(var z = 0; z < categoryCountsObj[catID]; z++){
+                      if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
+                        output.push(catText); 
+                      }
+
+                      for(var m = 0; m < item.metrics.length; m++){
+                        var metText = constants.metric[item.metrics[m]].name;
+
+                        output.push(catText + ' ' + metText + ' ' + (z + 1).toString());
+                      }
                     }
-
-                    item.metrics.forEach(function(m){
-                      var metText = constants.metric[m].name;
-
-                      output.push(catText + ' ' + metText);
-                    });
-
 
                   });
 
@@ -292,9 +295,9 @@ app.service('exportService', ['constantService', function(constants){
                     }
                   }
 
-                  console.log(maxCatCounts);
+                  //console.log(maxCatCounts);
                   
-                  /*for maxCatCounts, get the overall most categories */
+                  /*for maxCatCounts, get all categories into an array for each category */
                   var topCats = {};
 
                   for (var l in maxCatCounts){
@@ -310,6 +313,7 @@ app.service('exportService', ['constantService', function(constants){
 
                   }
 
+                  /* get the max # of iterations for each category*/
                   for(var n in topCats){
                     topCats[n] = Math.max.apply(null, topCats[n]);
                   }
