@@ -103,11 +103,10 @@ app.service('exportService', ['constantService', function(constants){
                               input = '';
 
                             }
-                            
-                            console.log(input);
+
 
                             if(input.contains('"') || input.contains(',') || input.contains('\n')){
-
+                              input.split('"').join('""');
                               input = '"'+input+'"'; //escape CSV formatting in cells
                             }
 
