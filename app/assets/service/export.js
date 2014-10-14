@@ -105,7 +105,7 @@ app.service('exportService', ['constantService', function(constants){
                                 break;
                             }else{         
 
-                                ssRow.push(records[recID].measures[cellMet]);
+                                ssRow.push('"'+records[recID].measures[cellMet]+'"');
                                 idx++; 
                                 break;
                             }    
@@ -194,7 +194,7 @@ app.service('exportService', ['constantService', function(constants){
                         var metText = constants.metric[item.metrics[m]].name;
 
                         if(z>0){
-                          output.push(catText + ' ' + metText + ' ' + (z + 1).toString());
+                          output.push(catText + ' ' + (z + 1).toString() + ' ' + metText);
                         } else {
                           output.push(catText + ' ' + metText);
                         }
