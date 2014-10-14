@@ -367,7 +367,7 @@ classification.excerpt.PUBLIC=Public: available to anybody for unrestricted use.
 classification.select.PRIVATE=Never share this file: only available to collaborators.
 classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
 classification.select.SHARED=Only share this file with authorized Databrary users for educational or research purposes.
-classification.select.PUBLIC=This file will be available to anybody for unrestricted use.
+classification.select.PUBLIC=This file may be available to anybody for unrestricted use.
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
