@@ -11,16 +11,13 @@ app.service('exportService', [
 
     dataExport.downloadCSV = function(volume){
 
-      volume.get(['records', 'containers']).then(function(data){
-        createCSV(data, volume);
-
-      });
+      volume.get(['records', 'containers']).then(createCSV);
 
     };
 
-    function createCSV(data, volume){
+    function createCSV(volume){
 
-      var input = data;
+      var input = volume;
 
       var payload = '';
 
@@ -29,6 +26,7 @@ app.service('exportService', [
 
       var baseHeaders = [ //these are static, tied to the volume
         'session id',
+        'session name',
         'session date'
       ];
 
@@ -55,6 +53,18 @@ app.service('exportService', [
 
     }
 
+    function escapeCSV(input) {
+      if (input === undefined)
+        input = '';
+      else if (input.contains('"') || input.contains(',') || input.contains('\n'))
+        input = '"'+input.replace(/"/g, '""')+'"';
+      return input;
+    }
+
+    function byNumber(a,b) {
+      return a-b;
+    }
+
     function createCSVBody(containers, records, headerReference, headerIndex){
 
 
@@ -67,8 +77,9 @@ app.service('exportService', [
 
           var ssRow = [];
 
-          ssRow.push('"'+containers[k].id+'"');
-          ssRow.push('"'+containers[k].date+'"');
+          ssRow.push(containers[k].id);
+          ssRow.push(escapeCSV(containers[k].name));
+          ssRow.push(containers[k].date);
           var recIdArr = [];
           for (var j in containers[k].records){ //get an array of the record IDs for each container in advance
 
@@ -83,49 +94,22 @@ app.service('exportService', [
             var cellMet = headerReference[l].metric.toString();
 
 
-
-            for (var j = idx; idx < recIdArr.length;){
+            var j = idx;
+            if (j < recIdArr.length){
 
               var recID = recIdArr[j].toString();
-              var recMetrics = Object.keys(records[recID].measures).sort().reverse();
+              var recMetrics = Object.keys(records[recID].measures).sort(byNumber);
 
               if(records[recID].category !== cellCat){
 
                 ssRow.push('');
-                break;
-
 
               } else {
 
-                var input;
-                if(records[recID].measures[cellMet] !== undefined){
-                  input = records[recID].measures[cellMet];
-                } else {
+                ssRow.push(escapeCSV(records[recID].measures[cellMet]));
 
-                  input = '';
-
-                }
-
-
-                if(input.contains('"') || input.contains(',') || input.contains('\n')){
-                  input.split('"').join('""');
-                  input = '"'+input+'"'; //escape CSV formatting in cells
-                }
-
-
-                if(recMetrics.length > 1){
-
-                  ssRow.push(input);
-                  if(cellMet === recMetrics[recMetrics.length-1]){
-                    idx++; //only advance if we are done with all the metrics in this record
-                  }
-
-                  break;
-                }else{
-
-                  ssRow.push(input);
-                  idx++;
-                  break;
+                if(recMetrics.length <= 1 || cellMet === recMetrics[recMetrics.length-1]){
+                  idx++; //only advance if we are done with all the metrics in this record
                 }
               }
 
@@ -142,8 +126,7 @@ app.service('exportService', [
 
     function createPayload(payload, volume){
 
-      var volTitle = volume.id + "-" + volume.name.split(' ').join('_');
-      var filename = volTitle + '.csv';
+      var filename = volume.id + "-" + volume.name.replace(/[\0-,/?\\]+/g, '_') + '.csv';
       var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
 
       var link = document.createElement('a');
@@ -163,8 +146,6 @@ app.service('exportService', [
     }
 
     /*--------------functions for creating helper objects and arrays above-----------------*/
-
-    String.prototype.contains = function(item){ return this.indexOf(item) !== -1;};
 
     function makeHeaderCoords(headerIndexArr, categoryCountsObj){
 
@@ -257,18 +238,12 @@ app.service('exportService', [
 
       var newIdx = [];
 
-      var catKeysSorted = Object.keys(headerIdx).sort().reverse();
+      var catKeysSorted = Object.keys(headerIdx).sort(byNumber);
 
       for(var v = 0; v < catKeysSorted.length; v++){
 
-        var metKeysSorted = Object.keys(headerIdx[catKeysSorted[v]]).sort().reverse();
-        var metricsArrSorted = [];
+        var metricsArrSorted = Object.keys(headerIdx[catKeysSorted[v]]).sort(byNumber);
 
-        for(var m = 0; m < metKeysSorted.length; m++){
-
-          metricsArrSorted.push(metKeysSorted[m]);
-
-        }
         newIdx.push({"category": catKeysSorted[v], "metrics": metricsArrSorted});
       }
 
