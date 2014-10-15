@@ -37,7 +37,6 @@ app.service('exportService', [
       /*helper object and arrays*/
       var catCounts = getCategoryCounts(containers, records);
       var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx
-      console.log(headerRef);
       var colCoords = makeHeaderCoords(headerRef, catCounts); //object array that represents the headers as category,metric coords in order - [{cat:metric},...]
       console.log(colCoords);
 
@@ -94,13 +93,22 @@ app.service('exportService', [
             var cellCat = headerReference[l].category;
             var cellMet = headerReference[l].metric.toString();
 
-
             if (idx < recIdArr.length){
 
               var recID = recIdArr[idx].toString();
               var recMetrics = Object.keys(records[recID].measures).sort(byNumber);
 
-              if(records[recID].category !== cellCat){
+              var currRecCat;
+              if(records[recID].category){
+
+                currRecCat = records[recID].category;
+              } else {
+
+                currRecCat = 0;
+              }
+
+
+              if(currRecCat !== cellCat){
 
                 ssRow.push('');
 
@@ -162,8 +170,6 @@ app.service('exportService', [
       var output = [];
 
       headerIndexArr.forEach(function(item){
-
-        //console.log(typeof(item.category));
         
         var catID;
         
@@ -172,8 +178,6 @@ app.service('exportService', [
         } else {
            catID = 0;
         }
-
-        console.log(typeof(catID));
 
         for(var z = 0; z < categoryCountsObj[catID]; z++){
           if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
@@ -312,7 +316,14 @@ app.service('exportService', [
 
         if(recArr.length > 0){
           for(var k=0; k<recArr.length; k++){
-            var category = recObj[recArr[k]].category;
+            
+            var category;
+            if(recObj[recArr[k]].category){
+              category = recObj[recArr[k]].category; 
+            } else {
+              category = 0;
+            }
+            
             if( maxCatCounts[container][category] > 0){
               maxCatCounts[container][category] += 1;
             } else {
