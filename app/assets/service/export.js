@@ -4,8 +4,6 @@ app.service('exportService', [
   'constantService',
   function (constants) {
 
-    var seconds = new Date().getTime() / 1000; //for timing the export
-
     var dataExport = {};
 
 
@@ -64,6 +62,10 @@ app.service('exportService', [
       return a-b;
     }
 
+    function getId(x) {
+      return x.id;
+    }
+
     function createCSVBody(containers, records, headerReference){
 
       var body = '';
@@ -76,35 +78,22 @@ app.service('exportService', [
           ssRow.push(containers[k].id);
           ssRow.push(containers[k].name);
           ssRow.push(containers[k].date);
-          var recIdArr = [];
-          for (var j in containers[k].records){ //get an array of the record IDs for each container in advance
-
-            recIdArr.push(containers[k].records[j].id);
-          }
-
+          var recIdArr = containers[k].records.map(getId);
 
           var idx = 0; //create and index for the record loop so we have more control over the loop logic
           for(var l = 0; l < headerReference.length; l++ ){
 
             var cellCat = headerReference[l].category;
-            var cellMet = headerReference[l].metric.toString();
+            var cellMet = headerReference[l].metric;
 
             if (idx < recIdArr.length){
 
-              var recID = recIdArr[idx].toString();
+              var recID = recIdArr[idx];
               var recMetrics = Object.keys(records[recID].measures).sort(byNumber);
 
-              var currRecCat;
-              if(records[recID].category){
+              var currRecCat = records[recID].category || 0;
 
-                currRecCat = records[recID].category;
-              } else {
-
-                currRecCat = 0;
-              }
-
-
-              if(currRecCat !== cellCat){
+              if(currRecCat != cellCat){
 
                 ssRow.push('');
 
@@ -112,7 +101,7 @@ app.service('exportService', [
 
                 ssRow.push(records[recID].measures[cellMet]);
 
-                if(recMetrics.length <= 1 || cellMet === recMetrics[recMetrics.length-1]){
+                if(recMetrics.length <= 1 || cellMet == recMetrics[recMetrics.length-1]){
                   idx++; //only advance if we are done with all the metrics in this record
                 }
               }
@@ -150,13 +139,6 @@ app.service('exportService', [
         document.body.removeChild(link);
 
       }
-
-
-
-      var timenow = new Date().getTime() / 1000;
-      var timeto = (timenow - seconds);
-
-      console.log("Export process took: " + timeto + " seconds");
     }
 
     /*--------------functions for creating helper objects and arrays above-----------------*/
@@ -166,14 +148,8 @@ app.service('exportService', [
       var output = [];
 
       headerIndexArr.forEach(function(item){
-        
-        var catID;
-        
-        if(item.category!=="0"){
-           catID = constants.category[item.category].id;
-        } else {
-           catID = 0;
-        }
+
+        var catID = item.category;
 
         for(var z = 0; z < categoryCountsObj[catID]; z++){
           if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
@@ -249,11 +225,7 @@ app.service('exportService', [
 
       for(var key in recObj){
 
-        var cat; 
-        if(recObj[key].category){
-          cat = recObj[key].category;
-        } else { cat = 0; } 
-        
+        var cat = recObj[key].category || 0;
 
         if (!(cat in tableObj)){
           tableObj[cat] = {};
@@ -312,14 +284,9 @@ app.service('exportService', [
 
         if(recArr.length > 0){
           for(var k=0; k<recArr.length; k++){
-            
-            var category;
-            if(recObj[recArr[k]].category){
-              category = recObj[recArr[k]].category; 
-            } else {
-              category = 0;
-            }
-            
+
+            var category = recObj[recArr[k]].category || 0;
+
             if( maxCatCounts[container][category] > 0){
               maxCatCounts[container][category] += 1;
             } else {
