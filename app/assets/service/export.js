@@ -24,6 +24,9 @@ app.service('exportService', [
       var containers = input.containers;
       var records = input.records;
 
+      console.log(containers);
+      console.log(records);
+
       var baseHeaders = [ //these are static, tied to the volume
         'session id',
         'session name',
@@ -34,8 +37,9 @@ app.service('exportService', [
       /*helper object and arrays*/
       var catCounts = getCategoryCounts(containers, records);
       var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx
+      console.log(headerRef);
       var colCoords = makeHeaderCoords(headerRef, catCounts); //object array that represents the headers as category,metric coords in order - [{cat:metric},...]
-
+      console.log(colCoords);
 
       var moreHeaders = makeHeadersText(headerRef, catCounts); //turn header index into column names
 
@@ -159,7 +163,17 @@ app.service('exportService', [
 
       headerIndexArr.forEach(function(item){
 
-        var catID = constants.category[item.category].id;
+        //console.log(typeof(item.category));
+        
+        var catID;
+        
+        if(item.category!=="0"){
+           catID = constants.category[item.category].id;
+        } else {
+           catID = 0;
+        }
+
+        console.log(typeof(catID));
 
         for(var z = 0; z < categoryCountsObj[catID]; z++){
           if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
@@ -188,9 +202,20 @@ app.service('exportService', [
 
       headerIndexArr.forEach(function(item){
 
-        var cat = constants.category[item.category];
-        var catID = cat.id;
-        var catText = cat.name;
+
+        var cat;
+        var catID;
+        var catText;
+        if(item.category !== "0"){
+          cat = constants.category[item.category];
+          catID = cat.id;
+          catText = cat.name;
+        } else {
+          catID = 0;
+          catText = "record";
+
+        }
+
 
         for(var z = 0; z < categoryCountsObj[catID]; z++){
           if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
@@ -224,7 +249,11 @@ app.service('exportService', [
 
       for(var key in recObj){
 
-        var cat = recObj[key].category;
+        var cat; 
+        if(recObj[key].category){
+          cat = recObj[key].category;
+        } else { cat = 0; } 
+        
 
         if (!(cat in tableObj)){
           tableObj[cat] = {};
