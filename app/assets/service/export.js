@@ -33,7 +33,6 @@ app.service('exportService', [
 
       /*helper object and arrays*/
       var catCounts = getCategoryCounts(containers, records);
-      var headerIncludes = makeHeaderIndex(records, constants.metric); //object of unique categories and metrics - {cat:{metric#:metricName},...}
       var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx
       var colCoords = makeHeaderCoords(headerRef, catCounts); //object array that represents the headers as category,metric coords in order - [{cat:metric},...]
 
@@ -44,7 +43,7 @@ app.service('exportService', [
 
 
       /*create CSV body data*/
-      var body = createCSVBody(containers, records, colCoords, headerIncludes);
+      var body = createCSVBody(containers, records, colCoords);
 
 
       payload = header + '\n' + body;
@@ -65,10 +64,7 @@ app.service('exportService', [
       return a-b;
     }
 
-    function createCSVBody(containers, records, headerReference, headerIndex){
-
-
-      var headerCats = Object.keys(headerIndex);
+    function createCSVBody(containers, records, headerReference){
 
       var body = '';
 
