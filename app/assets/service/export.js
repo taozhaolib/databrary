@@ -54,8 +54,9 @@ app.service('exportService', [
 
     function escapeCSV(input) {
       if (input === undefined)
-        input = '';
-      else if (input.contains('"') || input.contains(',') || input.contains('\n'))
+        return '';
+      input = input.toString();
+      if (input.contains('"') || input.contains(',') || input.contains('\n'))
         input = '"'+input.replace(/"/g, '""')+'"';
       return input;
     }
@@ -69,12 +70,12 @@ app.service('exportService', [
       var body = '';
 
       for(var k in containers){
-        if(containers[k].top !== true && containers[k].records.length !== 0){ //exclude materials for now
+        if(!containers[k].top){ //exclude materials for now
 
           var ssRow = [];
 
           ssRow.push(containers[k].id);
-          ssRow.push(escapeCSV(containers[k].name));
+          ssRow.push(containers[k].name);
           ssRow.push(containers[k].date);
           var recIdArr = [];
           for (var j in containers[k].records){ //get an array of the record IDs for each container in advance
@@ -90,10 +91,9 @@ app.service('exportService', [
             var cellMet = headerReference[l].metric.toString();
 
 
-            var j = idx;
-            if (j < recIdArr.length){
+            if (idx < recIdArr.length){
 
-              var recID = recIdArr[j].toString();
+              var recID = recIdArr[idx].toString();
               var recMetrics = Object.keys(records[recID].measures).sort(byNumber);
 
               if(records[recID].category !== cellCat){
@@ -102,7 +102,7 @@ app.service('exportService', [
 
               } else {
 
-                ssRow.push(escapeCSV(records[recID].measures[cellMet]));
+                ssRow.push(records[recID].measures[cellMet]);
 
                 if(recMetrics.length <= 1 || cellMet === recMetrics[recMetrics.length-1]){
                   idx++; //only advance if we are done with all the metrics in this record
@@ -113,7 +113,7 @@ app.service('exportService', [
 
           }
 
-          body += ssRow.join(',') + '\n';
+          body += ssRow.map(escapeCSV).join(',') + '\n';
         }
       }
       return body;
@@ -188,8 +188,9 @@ app.service('exportService', [
 
       headerIndexArr.forEach(function(item){
 
-        var catID = constants.category[item.category].id;
-        var catText = constants.category[item.category].name;
+        var cat = constants.category[item.category];
+        var catID = cat.id;
+        var catText = cat.name;
 
         for(var z = 0; z < categoryCountsObj[catID]; z++){
           if(item.metrics.length < 1){ //this is not future proof, may want to visit the data model.
@@ -197,7 +198,8 @@ app.service('exportService', [
           }
 
           for(var m = 0; m < item.metrics.length; m++){
-            var metText = constants.metric[item.metrics[m]].name;
+            var met = constants.metric[item.metrics[m]];
+            var metText = met.display || met.name;
 
             if(z>0){
               output.push(catText + ' ' + (z + 1).toString() + ' ' + metText);

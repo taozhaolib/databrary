@@ -5,7 +5,10 @@
   <span bo-if="editing">
     <a ng-click="refresh()">refresh</a>
   </span>
-  <a bo-if="!editing && !top" ng-click="page.dataExport.downloadCSV(volume)"> | export data</a>
+  <span bo-if="!editing && !top && volume.checkPermission(page.permission.EDIT)">
+    |
+  </span>
+  <a bo-if="!editing && !top" href="" ng-click="page.dataExport.downloadCSV(volume)">export data</a>
 </div>
 
 <div class="spreadsheet" bindonce="id" bo-class="{'edit': editing, 'view': !editing}">
