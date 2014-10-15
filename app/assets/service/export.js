@@ -24,9 +24,6 @@ app.service('exportService', [
       var containers = input.containers;
       var records = input.records;
 
-      console.log(containers);
-      console.log(records);
-
       var baseHeaders = [ //these are static, tied to the volume
         'session id',
         'session name',
@@ -38,7 +35,6 @@ app.service('exportService', [
       var catCounts = getCategoryCounts(containers, records);
       var headerRef = sortHeaderIdx(makeHeaderIndex(records, constants.metric)); //sorted array version of headerIdx
       var colCoords = makeHeaderCoords(headerRef, catCounts); //object array that represents the headers as category,metric coords in order - [{cat:metric},...]
-      console.log(colCoords);
 
       var moreHeaders = makeHeadersText(headerRef, catCounts); //turn header index into column names
 
