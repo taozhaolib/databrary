@@ -6,6 +6,12 @@ app.directive('citeVolume', [
       var authors = '';
       var ai = 0;
       var access = $scope.volume.access[ai];
+
+      function initial(p) {
+        if (p)
+          authors += p.charAt(0) + '.';
+      }
+
       while (access) {
         var next = $scope.volume.access[++ai];
         if (next && (next.individual || 0) < page.permission.ADMIN)
@@ -22,9 +28,7 @@ app.directive('citeVolume', [
 
         if (parts.length) {
           authors += ', ';
-          do {
-            authors += parts.unshift().charAt(0) + '.';
-          } while (parts.length);
+          parts.forEach(initial);
         }
 
         access = next;
