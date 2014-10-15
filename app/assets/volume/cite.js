@@ -23,7 +23,7 @@ app.directive('citeVolume', [
         if (parts.length) {
           authors += ', ';
           do {
-            authors += parts.pop().charAt(0) + '.';
+            authors += parts.unshift().charAt(0) + '.';
           } while (parts.length);
         }
 
