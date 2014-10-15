@@ -129,15 +129,25 @@ app.service('exportService', [
       var filename = volume.id + "-" + volume.name.replace(/[\0-,/?\\]+/g, '_') + '.csv';
       var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
 
-      var link = document.createElement('a');
-      link.href = uri;
+      if(window.navigator.msSaveOrOpenBlob){
+        var data = [payload];
+        var blobObject = new Blob(data);
+        window.navigator.msSaveOrOpenBlob(blobObject, filename);
 
-      //link.style = "visibility:hidden"; //check this on safari, throws assign on readonly error
-      link.download = filename;
+      } else {
+        var link = document.createElement('a');
+        link.href = uri;
 
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+        //link.style = "visibility:hidden"; //check this on safari, throws assign on readonly error
+        link.download = filename;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+      }
+
+
 
       var timenow = new Date().getTime() / 1000;
       var timeto = (timenow - seconds);
