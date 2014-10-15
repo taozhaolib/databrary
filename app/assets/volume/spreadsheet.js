@@ -422,7 +422,7 @@ app.directive('spreadsheet', [
               continue;
             var c = m.category.id;
             var r = records[c][m.metric.id];
-            if (expandedCat === c)
+            if (expandedCat === c && counts[expanded][c] > 1)
               for (var n = 0; n < counts[expanded][c]; n ++) {
                 if (n in r) generateText(
                     document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi),
