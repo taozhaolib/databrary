@@ -1,7 +1,3 @@
-<h3 class="view-title smaller" bo-if="editing" bo-id="'goto-'+id">
-    <span bo-text="top? 'materials':'session'"></span>
-</h3>
-
 <div class="spreadsheet-options">  
   <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
     <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#goto-'+id">edit</a>

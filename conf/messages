@@ -567,11 +567,11 @@ volume.edit.title.sub=New Study
 volume.edit.success=Volume saved successfully.
 volume.edit.error=Unable to save volume.
 
-wizard.volume-edit-overview.name=Citation
-wizard.volume-edit-overview.description=Edit citation and description.
-wizard.volume-edit-overview.instructions=First, provide basic information about the published paper or resource which this study represents.  Then, visit the tabs on the left to provide more information and data.
+wizard.volume-edit-overview.name=Overview
+wizard.volume-edit-overview.description=Edit title, description, and citation.
+wizard.volume-edit-overview.instructions=First, provide basic information about this study.  Then, visit the tabs on the left to provide more information and data.
 
-volume.edit.autodoi.instructions=You can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. If you do not have a DOI, you can fill out the information manually.
+volume.edit.autodoi.instructions=Enter one of these two fields. If this study represents a published paper or resource, you can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website.
 volume.edit.autodoi=DOI or URL
 volume.edit.autodoi.placeholder=10.XXXX/XXXXXXXX
 volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Lookup".
@@ -600,7 +600,11 @@ volume.edit.overview.error=Unable to save volume.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=<p>Provide any files related to this study.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as exceprts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
+wizard.volume-edit-materials.instructions=<p>Provide any files related to this study.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as excerpts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
+
+wizard.volume-edit-data.name=Data
+wizard.volume-edit-data.description=Provide data from collected sessions.
+wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.  Click the <em>play</em> button on the left to upload files for each session.</p>
 
 asset.file=File
 asset.file.help=Select the file you wish to upload.

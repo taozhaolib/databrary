@@ -15,15 +15,15 @@
 
     <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-text="'volume.edit.autodoi.lookup' | message"></button>
     <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-text="'volume.edit.autodoi.donthave' | message"></button>
+
+    <validator name="name" label="'volume.name' | message">
+      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" bo-attr bo-attr-placeholder="'volume.edit.name.placeholder' | message">
+    </validator>
   </fieldset>
 
   <fieldset class="clean skinny" ng-show="!volumeEditOverviewForm.automatic">
     <validator name="citation.head" label="'citation.head' | message">
       <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" bo-attr bo-attr-placeholder="'volume.edit.citation.head.placeholder' | message">
-    </validator>
-
-    <validator name="name" label="'volume.name' | message">
-      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" bo-attr bo-attr-placeholder="'volume.edit.name.placeholder' | message">
     </validator>
 
     <label bo-text="'citation.authors' | message"></label>

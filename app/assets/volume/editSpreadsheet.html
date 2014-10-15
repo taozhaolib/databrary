@@ -3,9 +3,14 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <a class="view-link" bo-href="volume.route" bo-text="volume.alias || volume.name"></a>
+          <h1 class="view-context smaller" bo-text="'edit' | message"></h1>
+          <h2 class="view-title smaller" ng-bind="volume.alias || volume.name"></h2>
         </hgroup>
+
+        <h3 class="view-title smaller" id="goto-sst" bo-text="'materials.title' | message"></h3>
         <spreadsheet volume="volume" edit top></spreadsheet>
+
+        <h3 class="view-title smaller" id="goto-ss" bo-text="'sessions.title' | message"></h3>
         <spreadsheet volume="volume" edit></spreadsheet>
       </div>
     </div>
