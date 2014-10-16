@@ -1,5 +1,5 @@
 <ng-form name="fundingSearchForm" bindonce>
-  <validator class="auth-search" name="name">
+  <validator noclientval class="auth-search" name="name">
     <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()" placeholder="{{'funding.search.placeholder' | message}}">
   </validator>
 

@@ -22,7 +22,7 @@
       <div ng-transclude></div>
     </div>
 
-    <div class="validator-indicator" ng-class="validator.iconClasses()">
+    <div ng-if="!validator.noclientval" class="validator-indicator" ng-class="validator.iconClasses()">
       <img class="validator-invalid" src="/public/images/icon/invalid.png">
       <img class="validator-valid" src="/public/images/icon/valid.png">
     </div>
