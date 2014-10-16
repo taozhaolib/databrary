@@ -92,8 +92,8 @@
                   </dd>
                   <dt ng-if="!!current.asset" bo-text="'asset.format' | message"></dt>
                   <dd ng-if="!!current.asset" bo-text="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics()" bo-text="page.constants.metric[metric].name"></dt>
-                  <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric]"></dd>
+                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics()" bo-text="metric.name"></dt>
+                  <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric.id]"></dd>
                   <dt ng-if="!!current.age">age</dt>
                   <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
                 </dl>
@@ -125,7 +125,7 @@
                       <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data[m]"/>
                     </dd>
                     <dt>
-                      <select name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions() | orderBy:'id'" ng-change="current.add()"/>
+                      <select name="add" ng-model="current.add.data" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
                     </dt>
                   </dl>
                 </div>

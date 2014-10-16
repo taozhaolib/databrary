@@ -251,20 +251,26 @@ app.controller('volume/slot', [
       select: (event) ->
         select this, event
 
+      metrics = []
+      ### jshint ignore:start #### fixed in jshint 2.5.7
+      metrics = (metric for i, metric of page.constants.metric).sort((a, b) -> a.id - b.id)
+      ### jshint ignore:end ###
+      addMetric = {id:'',name:'Add new value...'}
+
       metrics: ->
         ident = page.constants.category[@record.category]?.ident || [page.constants.metricName.ident.id]
-        metrics = []
-        for m of @record.measures
-          m = +m
-          metrics.push(m) unless m in ident
-        metrics.sort (a, b) -> a - b
+        metrics.filter (m) -> !(m.id in ident)
 
       addOptions: ->
-        metric for m, metric of page.constants.metric when !(m of @data)
+        opts = metrics.filter (m) => !(m.id of @data)
+        opts.unshift addMetric
+        opts
 
       add: ->
-        @data[@data.add] = ''
-        delete @data.add
+        @data[@add.data] = '' if @add.data
+        @add.data = ''
+
+      @prototype.add.data = ''
 
       save: ->
         @record.save({measures:@data}).then () =>
