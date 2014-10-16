@@ -301,7 +301,7 @@ object Adolph extends Ingest {
             a <- i.populate(volume)
             as <- a.slot
             _ <- as.fold[Future[Any]] {
-              a.link(c, Some(i.offset), i.info.duration)
+              a.link(c, Segment(i.offset, i.offset + i.info.duration))
             } { as =>
               check(as.container === c,
                 PopulateException("existing asset in different container", as))

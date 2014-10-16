@@ -206,7 +206,7 @@ object Curated extends Ingest {
         a <- asset.populate(container.volume, info)
         s <- a.slot
         sa <- s.fold(
-          a.link(container, pos, info.duration)) { sa =>
+          a.link(container, pos.fold(Segment.full)(p => Segment(p, p + info.duration)))) { sa =>
           for {
             _ <- check(sa.slot.container === container,
               PopulateException("inconsistant container for previously ingested asset " + name))
