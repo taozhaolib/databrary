@@ -73,7 +73,7 @@
             <div class="player-main-info">
               <h1 class="player-main-info-name" bo-if="!editing">
                 <span class="filename" bo-if="current.asset" bo-text="current.name"></span>
-                <span bo-if="current.record.category" bo-text="page.constants.category[current.record.category].name + ': '"></span>
+                <span class="category" bo-if="current.record.category" bo-text="page.constants.category[current.record.category].name + ': '"></span>
                 <span bo-if="current.record" bo-text="current.record.displayName"></span>
               </h1>
               <nav class="player-main-info-actions">
