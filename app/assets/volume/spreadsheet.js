@@ -716,12 +716,6 @@ app.directive('spreadsheet', [
           if (value === '')
             value = undefined;
           else switch (type) {
-            case 'date':
-              value = page.$filter('date')(value, 'yyyy-MM-dd');
-              break;
-            case 'number':
-              value = parseFloat(value);
-              break;
             case 'consent':
               value = parseInt(value);
               break;
