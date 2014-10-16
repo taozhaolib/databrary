@@ -116,7 +116,7 @@
 
                 <div bo-switch-when="record">
                   <dl class="cf">
-                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.name"></dt>
+                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.name"></dt><br>
                     <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                       <select ng-switch-when="select" name="{{m}}" ng-model="current.data[m]" ng-options="o for o in metric.options"/>
                       <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>
