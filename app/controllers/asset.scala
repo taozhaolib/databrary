@@ -24,21 +24,37 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  private def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
+  private[this] def duration(asset : Asset) : Future[Offset] =
+    if (asset.isInstanceOf[TimeseriesAsset] || asset.duration > Offset.ZERO)
+      async(asset.duration)
+    else
+      asset.slot.map { sa =>
+        sa.flatMap(_.segment.zip((l, u) => u - l)) orElse {
+          if (asset.format.isTranscodable)
+            scala.util.control.Exception.catching(classOf[media.AV.Error]).opt(
+              media.AV.probe(store.FileAsset.file(asset)).duration)
+          else
+            None
+        } filter(_ > Offset.ZERO) getOrElse Offset.ZERO
+      }
+
+  private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
       container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
         form.container.withError("object.invalid", "container")._throw))
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
         classification = form.classification.get)
-      sa <- container.mapAsync(asset.link(_, form.position.get))
+      sa <- container.mapAsync { c =>
+        duration(asset).flatMap(asset.link(c, form.position.get, _))
+      }
       _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _).map(r =>
           if (!r) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
     } yield (sa.fold(result(asset))(SlotAssetController.result _))
 
-  private def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =
+  private[this] def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =
     request.obj.isSuperseded.map(when(_,
       throw form.withGlobalError("file.superseded")._exception(Results.Conflict)))
 

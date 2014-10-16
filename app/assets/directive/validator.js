@@ -12,7 +12,7 @@ app.directive('validator', [
       var validator = $scope.validator;
 
       validator.name = form[$attrs.name];
-      validator.noclientval = 'noclientval' in $attrs || undefined;
+      validator.noclientval = 'noclientval' in $attrs;
       validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
       validator.changed = false;
       validator.focus = false;
