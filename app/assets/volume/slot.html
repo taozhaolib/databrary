@@ -71,10 +71,10 @@
         <section class="slot-player" ng-repeat="current in [current]" ng-if="!!current">
           <div class="player-main">
             <div class="player-main-info">
-              <h1 class="player-main-info-name" bo-if="!editing">
-                <span class="filename" bo-if="current.asset" bo-text="current.name"></span>
-                <span class="category" bo-if="current.record.category" bo-text="page.constants.category[current.record.category].name + ': '"></span>
-                <span bo-if="current.record" bo-text="current.record.displayName"></span>
+              <h1 class="player-main-info-name">
+                <span class="filename" bo-if="!editing && current.asset" bo-text="current.name"></span>
+                <span class="category" bo-if="!editing && current.record" bo-text="current.record.displayName"></span>
+                <span class="category" bo-if="editing && current.record.category" bo-text="page.constants.category[current.record.category].name"></span>
               </h1>
               <nav class="player-main-info-actions">
                 <img bo-if="!editing" ng-if="!!current.asset" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
@@ -92,7 +92,7 @@
                   </dd>
                   <dt ng-if="!!current.asset" bo-text="'asset.format' | message"></dt>
                   <dd ng-if="!!current.asset" bo-text="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics()" bo-text="metric.name"></dt>
+                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" bo-text="metric.display || metric.name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric.id]"></dd>
                   <dt ng-if="!!current.age">age</dt>
                   <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
@@ -116,7 +116,7 @@
 
                 <div bo-switch-when="record">
                   <dl class="cf">
-                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.name"></dt><br>
+                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.display || metric.name"></dt><br>
                     <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                       <select ng-switch-when="select" name="{{m}}" ng-model="current.data[m]" ng-options="o for o in metric.options"/>
                       <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>

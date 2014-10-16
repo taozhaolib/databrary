@@ -789,7 +789,11 @@ app.factory('modelService', [
           if (idents[i] in this.measures)
             ident.push(this.measures[idents[i]]);
 
-        return ident.length ? ident.join(', ') : cat ? cat.name : '[' + this.id + ']';
+        ident = ident.length && ident.join(', ');
+        cat = cat && cat.name;
+        if (cat && ident)
+          return cat + ' ' + ident;
+        return cat || ident || '[' + this.id + ']';
       }
     });
 
