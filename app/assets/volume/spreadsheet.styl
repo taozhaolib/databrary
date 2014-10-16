@@ -47,7 +47,7 @@
     padding 3px
     height 1+f3
     display table-cell
-    position relative
+    //position relative
     max-width 8em
     overflow hidden
     text-overflow ellipsis
@@ -68,7 +68,10 @@
   td.null
     background-color gray
     font-size 0.8em 
-    text-align center    
+    text-align center
+
+  td.editing
+    position relative    
 
   td.blank
     color gray
@@ -77,6 +80,7 @@
     text-align center
     font-style italic
     font-size 0.8em
+    position relative
 
     &:before
       content ''
@@ -96,6 +100,7 @@
     color: #ffffff
 
   td.saving
+    position relative
     &:before
       content 'Saving...'
       font-style italic
