@@ -37,14 +37,15 @@
   padding-bottom b4
   margin-bottom b4
   position relative
-
+  dl 
+    display block
   dt 
-    text-transform capitalize
+    text-transform uppercase
+    font-size 0.8em
     float left
     clear left
     margin-right f3
-    &:after
-      content ':'
+    display block
 
 .player-main-info-actions
   position absolute
@@ -338,6 +339,13 @@
     position absolute
     right 0
     .download
-      margin-left b8 
+      margin-left b3 
 
-  
+.slot-player
+  dl > dd 
+    margin-left 0
+  select.add
+    margin-top b8
+  .validator
+    margin-bottom b8
+
