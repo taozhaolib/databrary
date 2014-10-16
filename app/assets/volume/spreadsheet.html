@@ -1,6 +1,6 @@
 <div class="spreadsheet-options">  
   <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
-    <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#goto-'+id">edit</a>
+    <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#goto-'+id">edit spreadsheet</a>
   </span>
   <span bo-if="editing">
     <a ng-click="refresh()">refresh</a>
