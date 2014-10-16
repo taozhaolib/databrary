@@ -336,7 +336,7 @@ app.directive('spreadsheet', [
             var td = row.appendChild(document.createElement('td'));
             td.setAttribute("colspan", l);
             if (n === undefined && t > 1) {
-              td.appendChild(document.createTextNode("multiple"));
+              td.appendChild(document.createTextNode(t + " " + col.category.name + "s"));
               td.className = 'more';
               td.id = id + '-more_' + i + '_' + c;
               for (n = 0; n < t; n ++)
