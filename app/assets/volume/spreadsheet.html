@@ -38,7 +38,7 @@
         <th bo-if="!top" bo-id="id+'-date'" class="sort sortable" ng-click="clickSlot($event, 'date')">test date</th>
         <th bo-id="id+'-consent'" class="last sort sortable" ng-click="clickSlot($event, 'consent')"></th>
 
-        <th ng-repeat="col in metricCols" bo-id="id+'-metric_'+$index" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-asc': currentSort === col && currentSortDirection, 'sort-desc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th ng-repeat="col in metricCols" bo-id="id+'-metric_'+$index" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-desc': currentSort === col && currentSortDirection, 'sort-asc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
         <th bo-if="editing" class="first last"></th>
       </tr>
     </thead>
