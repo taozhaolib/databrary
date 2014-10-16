@@ -90,6 +90,8 @@
                     <span bo-if="!current.segment.full"><span bo-text="current.segment.l | timecode"></span> &ndash; <span bo-text="current.segment.u | timecode"></span></span>
                     <span bo-if="current.asset.duration"> (<span bo-text="current.asset.duration | timecode"></span>)</span>
                   </dd>
+                  <dt ng-if="!!current.asset">File Format</dt>
+                  <dd ng-if="!!current.asset" bo-text="current.asset.format.extension"></dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics()" bo-text="page.constants.metric[metric].name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric]"></dd>
                   <dt ng-if="!!current.age">age</dt>
