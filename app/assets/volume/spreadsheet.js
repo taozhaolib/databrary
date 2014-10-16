@@ -257,7 +257,7 @@ app.directive('spreadsheet', [
               return {
                 category: category,
                 metric: m,
-                sorted: m === pseudoMetrics.id && metrics.length > 1 ? null : undefined
+                sortable: m !== pseudoMetrics.id || metrics.length === 1
               };
             }));
             var l = metrics.length;
@@ -471,15 +471,15 @@ app.directive('spreadsheet', [
           });
         }
 
-        var currentSort;
-
         /* Sort by values, called name. */
-        function sortBy(name, values) {
-          if (currentSort === name)
+        function sortBy(key, values) {
+          if ($scope.currentSort === key) {
+            $scope.currentSortDirection = !$scope.currentSortDirection;
             order.reverse();
-          else {
+          } else {
             sort(values);
-            currentSort = name;
+            $scope.currentSort = key;
+            $scope.currentSortDirection = false;
           }
           fill();
         }
@@ -502,8 +502,8 @@ app.directive('spreadsheet', [
         }
 
         /* Sort by Category_id c's Metric_id m */
-        function sortByMetric(c, m) {
-          sortBy(c + '_' + m, records[c][m][0]);
+        function sortByMetric(col) {
+          sortBy(col, records[col.category.id][col.metric.id][0]);
         }
 
         ///////////////////////////////// Backend saving
@@ -974,10 +974,8 @@ app.directive('spreadsheet', [
             edit($event.target.parentNode, {t:'category',c:col.category.id});
         };
         $scope.clickMetric = function (col) {
-          if (col.sorted !== null) {
-            sortByMetric(col.category.id, col.metric.id);
-            col.sorted = !col.sorted;
-          }
+          if (col.sortable)
+            sortByMetric(col);
         };
         $scope.clickNew = function ($event) {
           createSlot($event.target);
