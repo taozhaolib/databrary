@@ -73,7 +73,8 @@ object Funder extends Table[Funder]("funder") {
         id <- Maybe.toLong(doi.stripPrefix("http://dx.doi.org/" + fundRefDOI))
         name <- fundLabel(j \ "prefLabel")
       } yield ((j, id, name))).mapAsync { case (j, id, name) =>
-        val alts = (j \ "altLabel").asOpt[json.JsArray].fold[Seq[String]](Nil)(_.value.flatMap(fundLabel(_)))
+        val altj = j \ "altLabel"
+        val alts = altj.asOpt[json.JsArray].fold(Seq(altj))(_.value).flatMap(fundLabel(_))
         val country = (j \ "country" \ "resource").asOpt[String].flatMap {
           case geoNamesRes(r) if !r.equals(geoNamesUS) => Some(r)
           case _ => None
