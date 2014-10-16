@@ -617,6 +617,7 @@ asset.excerpt.checkbox-label=Highlight as excerpt
 asset.add-drop=Drop file here or click to upload a new file.
 asset.add-drop.replace=Drop file here or click to upload replacement file.
 asset.upload-progress=(in progress)
+asset.format=File format
 asset.position=Start time
 asset.position.placeholder=MM:SS
 asset.upload.rejected=File "{0}" was not accepted for upload.
