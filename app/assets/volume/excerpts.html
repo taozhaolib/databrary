@@ -5,7 +5,7 @@
         <div ng-repeat="current in [current]" bindonce>
           <header>
             <a bo-href="jumpLink(current)" class="icon line jump tool" target="_self" tooltip="'excerpts.jump' | message"></a>
-            <a bo-href="current.downloadRoute(false)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></a>
+            <a bo-if="current.checkPermission(page.constants.permission.READ)" bo-href="current.downloadRoute(false)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></a>
 
             <div class="classification icon line tool" bo-class="page.constants.classification[current.excerpt || current.asset.classification]" hint="classification-{{page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
 
