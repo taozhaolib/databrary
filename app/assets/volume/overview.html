@@ -15,7 +15,7 @@
       <div>
         <div ng-if="!!volume.citation" frame id="frame-citation" frame-title="{{'volume.citation.title' | message}}" fold>
           <p class="panel-overview-volume-citation">
-            <span bo-text="volume.citation.head"></span>&nbsp;<a bo-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank" bo-text="'link' | message"></a>
+            <span bo-text="volume.citation.head"></span>&nbsp;<a bo-if="volume.citation.url" bo-href="volume.citation.url | handle" ng-title="volume.citation.title" target="_blank" bo-text="'link' | message"></a>
           </p>
         </div>
 
