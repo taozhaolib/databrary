@@ -7,7 +7,9 @@ package object dbrary {
   type Date = time.LocalDate
   type Timestamp = time.LocalDateTime
 
-  time.DateTimeZone.setDefault(time.DateTimeZone.UTC)
+  def init() {
+    time.DateTimeZone.setDefault(time.DateTimeZone.UTC)
+  }
 
   import play.api.libs.json
   implicit val timestampJson : json.Format[Timestamp] = new json.Format[Timestamp] {
@@ -17,6 +19,4 @@ package object dbrary {
 
   implicit def urlFormatter : play.api.data.format.Formatter[java.net.URL] = url.formatter
   implicit def urlJson : json.Format[java.net.URL] = url.jsonFormat
-
-  def init() {}
 }

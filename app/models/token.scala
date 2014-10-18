@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext,Future}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Crypto
 import macros._
@@ -35,7 +35,7 @@ object Token extends Table[Token]("token") {
   type Id = String
   final val length = 32
 
-  private[models] def clean() : Future[Boolean] =
+  def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
     for {
       u <- UploadToken.clean
       r <- SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").apply().execute
@@ -172,7 +172,7 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
   protected def rowAccount(account : Account) = columns
     .map(_(account))
 
-  private[models] def clean() : Future[Boolean] =
+  private[models] def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
     SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING id")
       .apply().list(SQLCols[String])
       .map(_.map(store.Upload.file(_).delete).forall(identity))

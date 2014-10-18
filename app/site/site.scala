@@ -8,7 +8,7 @@ import models._
 import scala._
 
 object Site {
-  dbrary.init
+  dbrary.init()
 
   private val properties = new java.util.Properties
   Option(getClass.getResourceAsStream("/properties")).foreach(properties.load)
@@ -26,6 +26,8 @@ object Site {
   val url = Play.current.configuration.getString("site.url").getOrElse("")
   def url(call : Call) : String =
     url + call.url
+
+  periodic.start()
 }
 
 /** An effective authorization of identity by target. */
