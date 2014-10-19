@@ -85,13 +85,13 @@
 
               <div bo-if="!editing">
                 <dl class="player-main-info-list cf">
+                  <dt ng-if="!!current.asset" bo-text="'asset.format' | message"></dt>
+                  <dd ng-if="!!current.asset" bo-text="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                   <dt bo-if="!current.segment.full">Position</dt>
                   <dd>
                     <span bo-if="!current.segment.full"><span bo-text="current.segment.l | timecode"></span> &ndash; <span bo-text="current.segment.u | timecode"></span></span>
                     <span bo-if="current.asset.duration"> (<span bo-text="current.asset.duration | timecode"></span>)</span>
                   </dd>
-                  <dt ng-if="!!current.asset" bo-text="'asset.format' | message"></dt>
-                  <dd ng-if="!!current.asset" bo-text="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" bo-text="metric.display || metric.name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric.id]"></dd>
                   <dt ng-if="!!current.age">age</dt>
