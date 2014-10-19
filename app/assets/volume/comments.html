@@ -1,7 +1,7 @@
-<panel ng-controller="volume/comments" id="panel-comments" panel-title="{{'comments.title' | message}}" fold>
-  <comment-reply-form bo-if="canPost" ng-if="!replyTo"></comment-reply-form>
+<panel ng-controller="volume/comments" id="panel-comments" panel-title="comments.title" fold>
+  <comment-reply-form ng-if="::canPost" ng-show="!replyTo"></comment-reply-form>
 
-  <article bindonce ng-repeat="comment in comments" class="panel-comments-comment" bo-class="commentClass(comment)">
+  <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="::commentClass(comment)">
     <div class="row">
       <div class="col-desktop-6 col-tablet-6 col-mobile-6">
         <footer class="panel-comments-meta" ng-init="party = comment.who">
@@ -10,12 +10,12 @@
 
         <div class="panel-comments-body" ng-bind-html="comment.text | format"></div>
 
-        <div class="panel-comments-body" bo-if="canPost" ng-if="replyTo !== comment">
-          <button ng-click="setReply(comment)" class="mini">{{'comments.reply' | message}}</button>
+        <div class="panel-comments-body" ng-if="::canPost" ng-show="replyTo !== comment">
+          <button ng-click="setReply(comment)" class="mini" message="comments.reply"></button>
         </div>
       </div>
     </div>
 
-    <comment-reply-form bo-if="canPost" ng-if="replyTo === comment" class="depth-1"></comment-reply-form>
+    <comment-reply-form ng-if="::canPost" ng-show="replyTo === comment" class="depth-1"></comment-reply-form>
   </article>
 </panel>

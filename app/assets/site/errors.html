@@ -1,15 +1,15 @@
 <div id="errors" class="errors main" ng-if="page.display.error">
-  <article class="view error-view" bindonce>
+  <article class="view error-view">
     <div class="wrap">
       <div class="row">
         <hgroup class="col">
-          <h1 class="panel-context" bo-text="'error.title' | message"></h1>
+          <h1 class="panel-context" message="error.title"></h1>
 
-          <h2 class="panel-title with-context" bo-text="'error.'+ error.status | message"></h2>
+          <h2 class="panel-title with-context" message="error.{{error.status}}"></h2>
         </hgroup>
 
         <div class="col">
-          <div bo-html="'error.resolve' | message"></div>
+          <div message="error.resolve" message-html></div>
         </div>
       </div>
     </div>

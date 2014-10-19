@@ -1,15 +1,15 @@
-<ng-form name="fundingSearchForm" bindonce>
+<ng-form name="fundingSearchForm">
   <validator noclientval class="auth-search" name="name">
-    <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()" placeholder="{{'funding.search.placeholder' | message}}">
+    <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()" placeholder="{{::'funding.search.placeholder' | message}}">
   </validator>
 
   <ul ng-if="fundingSearchForm.nameVal" class="flat auth-found-list">
     <li ng-repeat="found in fundingSearchForm.found">
-      <a href="" class="auth-found" ng-click="fundingSearchForm.select(found)" bo-text="found.name"></a>
+      <a href="" class="auth-found" ng-click="fundingSearchForm.select(found)" ng-bind="::found.name"></a>
     </li>
 
     <li ng-if="!all">
-      <a href="" class="auth-found" ng-click="fundingSearchForm.notFound()" bo-text="'funding.search.more' | message"></a>
+      <a href="" class="auth-found" ng-click="fundingSearchForm.notFound()" message="funding.search.more"></a>
     </li>
   </ul>
 </ng-form>

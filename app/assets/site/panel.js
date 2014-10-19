@@ -1,7 +1,8 @@
 'use strict';
 
 app.directive('panel', [
-  function () {
+  'constantService',
+  function (constants) {
     var link = function ($scope, $element, $attrs, ctrl, transclude) {
       if (angular.isDefined($attrs.id)) {
         $scope.id = $attrs.id;
@@ -10,8 +11,8 @@ app.directive('panel', [
         $scope.id = '';
       }
 
-      $scope.title = $attrs.panelTitle || '';
-      $scope.top = (angular.isDefined($attrs.top) && $attrs.top != 'false') ? true : false;
+      $scope.title = constants.message($attrs.panelTitle);
+      $scope.top = 'top' in $attrs;
       $scope.enabled = true;
 
       //

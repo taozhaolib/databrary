@@ -1,53 +1,53 @@
-<ng-form name="volumeEditOverviewForm" bindonce>
+<ng-form name="volumeEditOverviewForm">
   <fieldset class="clean veo-float">
     <div class="veo-float-floater">
-      <button ng-click="volumeEditOverviewForm.save()" bo-text="'save' | message" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
-      <button ng-click="volumeEditOverviewForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+      <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
+      <button ng-click="volumeEditOverviewForm.resetAll()" message="revert" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
     </div>
   </fieldset>
 
   <fieldset>
-    <div bo-text="'volume.edit.autodoi.instructions' | message"></div>
+    <div message="volume.edit.autodoi.instructions"></div>
 
-    <validator name="citation.url" label="'volume.edit.autodoi' | message">
-      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" bo-attr bo-attr-placeholder="'volume.edit.autodoi.placeholder' | message">
+    <validator name="citation.url" label="volume.edit.autodoi">
+      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{::'volume.edit.autodoi.placeholder' | message}}">
     </validator>
 
-    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" bo-text="'volume.edit.autodoi.lookup' | message"></button>
-    <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" bo-text="'volume.edit.autodoi.donthave' | message"></button>
+    <button class="green" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" message="volume.edit.autodoi.lookup"></button>
+    <button class="yellow" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" message="volume.edit.autodoi.donthave"></button>
 
-    <validator name="name" label="'volume.name' | message">
-      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" bo-attr bo-attr-placeholder="'volume.edit.name.placeholder' | message">
+    <validator name="name" label="volume.name">
+      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}">
     </validator>
   </fieldset>
 
   <fieldset class="clean skinny" ng-show="!volumeEditOverviewForm.automatic">
-    <validator name="citation.head" label="'citation.head' | message">
-      <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" bo-attr bo-attr-placeholder="'volume.edit.citation.head.placeholder' | message">
+    <validator name="citation.head" label="citation.head">
+      <input type="text" name="citation.head" ng-model="volumeEditOverviewForm.data.citation.head" placeholder="{{::'volume.edit.citation.head.placeholder' | message}}">
     </validator>
 
-    <label bo-text="'citation.authors' | message"></label>
+    <label message="citation.authors"></label>
 
     <div ng-repeat="author in volumeEditOverviewForm.data.citation.authors track by $index">
       <validator name="citation.author" noclientval>
-        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.data.citation.authors[$index]" bo-attr bo-attr-placeholder="'volume.edit.citation.author.placeholder' | message">
-        <button ng-click="volumeEditOverviewForm.removeAuthor($index)" bo-text="'remove' | message" class="red mini pull"></button>
+        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.data.citation.authors[$index]" placeholder="{{::'volume.edit.citation.author.placeholder' | message}}">
+        <button ng-click="volumeEditOverviewForm.removeAuthor($index)" message="remove" class="red mini pull"></button>
       </validator>
     </div>
-    <button ng-click="volumeEditOverviewForm.addAuthor()" bo-text="'volume.edit.citation.author.add' | message" class="neutral mini add_f2" ng-disabled="!volumeEditOverviewForm.addAuthorEnabled()"></button>
+    <button ng-click="volumeEditOverviewForm.addAuthor()" message="volume.edit.citation.author.add" class="neutral mini add_f2" ng-disabled="!volumeEditOverviewForm.addAuthorEnabled()"></button>
 
-    <validator name="citation.year" label="'citation.year' | message">
-      <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" bo-attr bo-attr-placeholder="'volume.edit.citation.year.placeholder' | message">
+    <validator name="citation.year" label="citation.year">
+      <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" placeholder="{{::'volume.edit.citation.year.placeholder' | message}}">
     </validator>
   </fieldset>
 
   <fieldset class="clean">
-    <validator name="body" label="'study.body' | message" noclientval>
-      <textarea name="body" ng-model="volumeEditOverviewForm.data.body" bo-attr bo-attr-placeholder="'volume.edit.body.placeholder' | message"></textarea>
+    <validator name="body" label="study.body" noclientval>
+      <textarea name="body" ng-model="volumeEditOverviewForm.data.body" placeholder="{{::'volume.edit.body.placeholder' | message}}"></textarea>
     </validator>
 
-    <validator name="alias" label="'volume.alias' | message">
-      <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" bo-attr bo-attr-placeholder="'volume.edit.alias.placeholder' | message">
+    <validator name="alias" label="volume.alias">
+      <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{::'volume.edit.alias.placeholder' | message}}">
     </validator>
   </fieldset>
 

@@ -1,32 +1,32 @@
-<ng-form name="partyEditAccountForm" bindonce>
+<ng-form name="partyEditAccountForm">
   <fieldset class="clean peac-float">
     <div class="peac-float-floater">
-      <button ng-click="partyEditAccountForm.save()" bo-text="'save' | message" class="green" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$invalid"></button>
-      <button ng-click="partyEditAccountForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="partyEditAccountForm.$pristine"></button>
+      <button ng-click="partyEditAccountForm.save()" message="save" class="green" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$invalid"></button>
+      <button ng-click="partyEditAccountForm.resetAll()" message="revert" class="red" ng-disabled="partyEditAccountForm.$pristine"></button>
     </div>
   </fieldset>
 
   <fieldset>
-    <legend bo-text="'party.edit.account' | message"></legend>
-    <validator name="email" label="'party.edit.email.title' | message">
+    <legend message="party.edit.account"></legend>
+    <validator name="email" label="party.edit.email.title">
       <input type="email" name="email" ng-model="partyEditAccountForm.data.email">
     </validator>
 
-    <p bo-html="'password.advice' | message"></p>
+    <p message="password.advice" message-html></p>
 
-    <validator name="password" label="'party.edit.password.title' | message">
+    <validator name="password" label="party.edit.password.title">
       <input type="password" name="password" ng-model="partyEditAccountForm.data.password.once">
     </validator>
 
-    <validator name="password.again" label="'party.edit.password.again.title' | message">
+    <validator name="password.again" label="party.edit.password.again.title">
       <input type="password" name="password.again" ng-model="partyEditAccountForm.data.password.again">
     </validator>
   </fieldset>
 
   <fieldset>
-    <legend bo-text="'party.edit.confirm' | message"></legend>
+    <legend message="party.edit.confirm"></legend>
 
-    <validator name="auth" label="'party.edit.auth.title' | message">
+    <validator name="auth" label="party.edit.auth.title">
       <input type="password" name="auth" ng-model="partyEditAccountForm.data.auth" ng-required="partyEditAccountForm.$dirty" key-enter="partyEditAccountForm.save()">
     </validator>
   </fieldset>

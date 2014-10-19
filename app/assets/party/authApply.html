@@ -1,4 +1,4 @@
-<ng-form name="authApplyForm" class="permission-auth auth-apply-form" bindonce>
+<ng-form name="authApplyForm" class="permission-auth auth-apply-form">
   <div ng-if="!!auth.party" class="col-desktop-1 col-tablet-1 col-mobile-1">
     <figure class="figure-avatar" ng-class="{inst: auth.party.institution}">
       <img ng-src="{{auth.party.avatarRoute()}}">
@@ -10,17 +10,17 @@
   </fieldset>
 
   <fieldset class="clean" ng-if="!auth.party">
-    <legend bo-text="'auth.request.notfound.title' | message"></legend>
+    <legend message="auth.request.notfound.title"></legend>
 
-    <div bo-html="'auth.request.notfound.instructions' | message"></div>
+    <div message="auth.request.notfound.instructions" message-html></div>
 
-    <validator name="info" label="'auth.request.notfound.info' | message">
+    <validator name="info" label="auth.request.notfound.info">
       <textarea id="field-info" name="info" ng-model="authApplyForm.data.info"></textarea>
     </validator>
   </fieldset>
 
   <fieldset class="clean">
-    <button ng-click="authApplyForm.save()" class="green" bo-text="'auth.request' | message"></button>
-    <button ng-click="authApplyForm.cancel()" class="yellow" bo-text="'cancel' | message"></button>
+    <button ng-click="authApplyForm.save()" class="green" message="auth.request"></button>
+    <button ng-click="authApplyForm.cancel()" class="yellow" message="cancel"></button>
   </fieldset>
 </ng-form>

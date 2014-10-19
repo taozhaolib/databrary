@@ -1,48 +1,48 @@
-<ng-form name="partyEditApplyForm" bindonce>
+<ng-form name="partyEditApplyForm">
    <fieldset class="clean peap-float">
     <div class="peap-float-floater row">
-      <auth-search-form placeholder-text="{{'auth.search.apply.legend' | message}}" class="col-desktop-9 col-tablet-3 col-mobile-2"></auth-search-form>
+      <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-9 col-tablet-3 col-mobile-2"></auth-search-form>
     </div>
   </fieldset>
- <fieldset ng-if="partyEditApplyForm.data.length > 0">
-    <legend bo-text="'auth.apply.legend' | message"></legend>
+ <fieldset ng-show="partyEditApplyForm.data.length > 0">
+    <legend message="auth.apply.legend"></legend>
     <article ng-repeat="auth in partyEditApplyForm.data track by auth.party.id" class="permission-auth cf foot pef">
       <div ng-if="!auth.new" class="row">
         <div class="col-desktop-1 col-tablet-1 col-mobile-1">
-          <figure class="figure-avatar" bo-class="{inst: auth.party.institution}">
-            <img bo-src="auth.party.avatarRoute()">
+          <figure class="figure-avatar" ng-class="::{inst: auth.party.institution}">
+            <img ng-src="{{::auth.party.avatarRoute()}}">
           </figure>
         </div>
 
         <div class="col-desktop-11 col-tablet-5 col-mobile-4">
           <div class="permission-heading">
-            <a bo-href="auth.party.route" class="permission-auth-username" bo-text="auth.party.name"></a>
-            <span class="permission-auth-email" bo-if="auth.party.email" bo-text="auth.party.email"></span>
+            <a ng-href="{{::auth.party.route}}" class="permission-auth-username" ng-bind="::auth.party.name"></a>
+            <span class="permission-auth-email" ng-if="::!!auth.party.email" ng-bind="::auth.party.email"></span>
           </div>
 
-          <div bo-if="auth.site">
-            <div class="permission-auth-heading" bo-text="'auth.site' | message:'their'"></div>
+          <div ng-if="::auth.site">
+            <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
             <div class="permission-auth-site">
-              <strong ng-bind="'auth.site.'+page.constants.permission[auth.site]+'.title' | message"></strong>:
+              <strong message="auth.site.{{page.constants.permission[auth.site]}}.title"></strong>:
               {{'auth.site.'+page.constants.permission[auth.site] | possessive:party}}
             </div>
           </div>
 
-          <div bo-if="auth.member">
-            <div class="permission-auth-heading" bo-text="'auth.member' | message:'their'"></div>
+          <div ng-if="::auth.member">
+            <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
             <div class="permission-auth-member">
-              <strong ng-bind="'auth.member.'+page.constants.permission[auth.member]+'.title' | message"></strong>:
+              <strong message="auth.member.{{page.constants.permission[auth.member]}}.title'"></strong>:
               {{'auth.member.'+page.constants.permission[auth.member] | possessive:party}}
             </div>
           </div>
 
-          <div bo-if="auth.member || auth.site">
-            <div class="permission-auth-heading" bo-text="'auth.expiration' | message"></div>
-            <div bo-text="auth.expires | date:'longDate'"></div>
-            <div bo-if="!auth.expires" bo-text="'auth.expiration.none' | message"></div>
+          <div ng-if="::auth.member || auth.site">
+            <div class="permission-auth-heading" message="auth.expiration"></div>
+            <div ng-bind="::auth.expires | date:'longDate'"></div>
+            <div ng-if="::!auth.expires" message="auth.expiration.none"></div>
           </div>
-          <div bo-if="!(auth.member || auth.site)">
-            <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
+          <div ng-if="::!(auth.member || auth.site)">
+            <div class="permission-auth-heading" message="auth.pending"></div>
           </div>
         </div>
       </div>

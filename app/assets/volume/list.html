@@ -1,25 +1,25 @@
 <div class="volume-list">
   <div ng-if="!volumes.length" class="volume-list-none">
-    <span ng-bind="'volume.search.none' | message"></span>
+    <span message="volume.search.none"></span>
   </div>
   <ul class="flat">
-    <li ng-repeat="volume in volumes" bindonce>
-      <article class="volume-list-result cf" bo-class="{study: volume.citation, dataset: !volume.citation}">
+    <li ng-repeat="volume in volumes">
+      <article class="volume-list-result cf" ng-class="::{study: volume.citation, dataset: !volume.citation}">
         <h1>
-          <span class="icon" bo-class="{study: volume.citation, dataset: !volume.citation}" hint="object-{{volume.type}}"></span>
-          <a bo-href="volume.route" bo-text="name(volume)"></a>
+          <span class="icon" ng-class="::{study: volume.citation, dataset: !volume.citation}" hint="object-{{volume.type}}"></span>
+          <a ng-href="{{::volume.route}}" ng-bind="::name(volume)"></a>
         </h1>
 
-        <div class="volume-list-investigators" bo-if="volume.access && page.$location.path() !== '/profile'">
+        <div class="volume-list-investigators" ng-if="::volume.access && page.$location.path() !== '/profile'">
           <ul class="inline-block comma">
             <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
-              <a bo-href="access.party.route" bo-text="access.party.name"></a>
+              <a ng-href="{{::access.party.route}}" ng-bind="::access.party.name"></a>
             </li>
           </ul>
-          <span class="year" bo-if="volume.citation && volume.citation.year" bo-text="' (' + volume.citation.year + ')'"></span>
+          <span class="year" ng-if="::volume.citation && volume.citation.year" ng-bind="::' (' + volume.citation.year + ')'"></span>
         </div>
 
-        <div class="volume-list-body" bo-text="volume.body.replace('\n', ' ') | truncate:200" bo-if="page.$location.path() !== '/profile'"></div>
+        <div class="volume-list-body" ng-bind="::volume.body.replace('\n', ' ') | truncate:200" ng-if="::page.$location.path() !== '/profile'"></div>
       </article>
     </li>
   </ul>

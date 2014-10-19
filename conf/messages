@@ -401,7 +401,6 @@ volume.reuse.consumes=These data were originally collected as part of...
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
 volume.body=Description
-study.body=Abstract
 
 sessions.title=Data
 session=Session

@@ -1,10 +1,10 @@
 <div class="wizard-step">
   <div ng-show="active">
     <header class="wizard-step-header">
-      <h2>{{'wizard.'+id+'.name' | message}}</h2>
+      <h2 message="wizard.{{::id}}.name"></h2>
     </header>
 
-    <div class="wizard-step-instructions" ng-bind-html="'wizard.'+id+'.instructions' | message:{sce:page.$sce.HTML}"></div>
+    <div class="wizard-step-instructions" message="wizard.{{::id}}.instructions" message-html></div>
 
     <div ng-transclude></div>
   </div>

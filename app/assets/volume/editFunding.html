@@ -1,9 +1,9 @@
-<ng-form name="volumeEditFundingForm" bindonce>
+<ng-form name="volumeEditFundingForm">
   <fieldset class="clean vef-float">
     <div class="vef-float-floater row">
       <funding-search-form class="col-desktop-9 col-tablet-3 col-mobile-2"></funding-search-form>
-      <button ng-click="volumeEditFundingForm.saveAll()" class="green" bo-text="'save' | message" ng-disabled="volumeEditFundingForm.$pristine"></button>
-      <button ng-click="volumeEditFundingForm.resetAll()" class="neutral" bo-text="'revert' | message" ng-disabled="volumeEditFundingForm.$pristine"></button>
+      <button ng-click="volumeEditFundingForm.saveAll()" class="green" message="save" ng-disabled="volumeEditFundingForm.$pristine"></button>
+      <button ng-click="volumeEditFundingForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditFundingForm.$pristine"></button>
   </div>
   </fieldset>
 
