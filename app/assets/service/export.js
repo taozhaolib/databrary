@@ -66,6 +66,7 @@ app.service('exportService', [
       return x.id;
     }
 
+
     function createCSVBody(containers, records, headerReference){
 
       var body = '';
@@ -119,6 +120,8 @@ app.service('exportService', [
 
     function createPayload(payload, volume){
       var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
+      var isSafari = navigator.userAgent.toLowerCase().indexOf('webkit') > -1;
+
       var filename = volume.id + "-" + volume.name.replace(/[\0-,/?\\]+/g, '_') + '.csv';
       var link = document.createElement('a');
       
@@ -135,14 +138,25 @@ app.service('exportService', [
         link.click();
 
 
-      } else {
-        var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
+      } else if(isSafari){
+        
+        var uri = 'data:application/csv;content-disposition:attachment;filename=export.csv;charset=utf-8,' + encodeURI(payload);
         link.href = uri;
         link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
 
+      } else {
+
+
+        var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
+        link.href = uri;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
       }
     }
 
