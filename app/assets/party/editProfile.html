@@ -1,25 +1,25 @@
-<ng-form name="partyEditProfileForm" bindonce>
+<ng-form name="partyEditProfileForm">
   <fieldset class="clean pep-float">
     <div class="pep-float-floater">
-      <button ng-click="partyEditProfileForm.save()" bo-text="'save' | message" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
-      <button ng-click="partyEditProfileForm.resetAll()" bo-text="'revert' | message" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
+      <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
+      <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
     </div>
   </fieldset>
   <fieldset>
-    <legend bo-text="'party.edit.personal' | message"></legend>
-    <validator name="name" label="'party.edit.name.title' | message">
+    <legend message="party.edit.personal"></legend>
+    <validator name="name" label="party.edit.name.title">
       <input type="text" name="name" ng-model="partyEditProfileForm.data.name">
     </validator>
 
-    <validator name="affiliation" label="'party.edit.affiliation.title' | message">
+    <validator name="affiliation" label="party.edit.affiliation.title">
       <input type="text" name="affiliation" ng-model="partyEditProfileForm.data.affiliation">
     </validator>
 
-    <validator name="orcid" label="'party.edit.orcid.title' | message">
+    <validator name="orcid" label="party.edit.orcid.title">
       <input type="text" name="orcid" ng-model="partyEditProfileForm.data.orcid">
     </validator>
 
-    <validator name="url" label="'party.edit.url.title' | message">
+    <validator name="url" label="party.edit.url.title">
       <input type="url" name="url" ng-model="partyEditProfileForm.data.url">
     </validator>
 
@@ -31,7 +31,7 @@
       </div>
 
       <div class="col-desktop-11 col-tablet-5 col-mobile-3">
-        <validator name="avatar" label="'party.edit.avatar.title' | message">
+        <validator name="avatar" label="party.edit.avatar.title">
           <input type="file" name="avatar" file-model="partyEditProfileForm.data.avatar">
         </validator>
       </div>

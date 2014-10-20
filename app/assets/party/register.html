@@ -2,41 +2,39 @@
   <div class="wrap">
     <div class="row">
       <hgroup class="col">
-        <h1 class="view-context">{{'register.title' | message}}</h1>
+        <h1 class="view-context" message="register.title"></h1>
 
-        <h2 class="view-title">{{'register.title.sub' | message }}</h2>
+        <h2 class="view-title" message="register.title.sub"></h2>
       </hgroup>
 
       <div class="col">
         <wizard name="register">
           <wizard-step name="create">
             <ng-form name="registerForm">
-              <validator name="name" label="'register.name.prompt' | message">
-                <input id="field-name" name="name" type="text" ng-model="registerForm.data.name" ng-minlength="3" placeholder="{{'register.name.placeholder' | message}}" required>
+              <validator name="name" label="register.name.prompt">
+                <input id="field-name" name="name" type="text" ng-model="registerForm.data.name" ng-minlength="3" placeholder="{{::'register.name.placeholder' | message}}" required>
               </validator>
 
-              <validator name="email" label="'email' | message">
-                <input id="field-email" name="email" type="email" ng-model="registerForm.data.email" placeholder="{{'register.email.placeholder' | message}}" required>
+              <validator name="email" label="email">
+                <input id="field-email" name="email" type="email" ng-model="registerForm.data.email" placeholder="{{::'register.email.placeholder' | message}}" required>
               </validator>
 
-              <validator name="affiliation" label="'affiliation' | message">
-                <input id="field-affiliation" name="affiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{'register.affiliation.placeholder' | message}}" key-enter="proceed()">
+              <validator name="affiliation" label="affiliation">
+                <input id="field-affiliation" name="affiliation" type="text" ng-model="registerForm.data.affiliation" placeholder="{{::'register.affiliation.placeholder' | message}}" key-enter="proceed()">
               </validator>
 
-              <button class="green" type="submit" ng-disabled="registerForm.$pristine || registerForm.$invalid" ng-click="proceed()">
-                {{'register.continue' | message}}
-              </button>
+              <button class="green" type="submit" ng-disabled="registerForm.$pristine || registerForm.$invalid" ng-click="proceed()" message="register.continue"></button>
             </ng-form>
           </wizard-step>
 
           <wizard-step name="agreement">
-            <div ng-bind-html="'wizard.register-agreement.agreement-contents' | message:{sce:page.$sce.HTML}"></div>
+            <div message="wizard.register-agreement.agreement-contents" message-html></div>
 
             <p><input id="agreement-checkbox" name="agreementCheckbox" type="checkbox" ng-model="registerForm.data.agreement">
-              <label for="agreement-checkbox" class="option" ng-bind-html="'wizard.register-agreement.agree' | message:{sce:page.$sce.HTML}"></label>
+              <label for="agreement-checkbox" class="option" message="wizard.register-agreement.agree" message-html></label>
             </p>
 
-            <button class="green" ng-click="proceed()" ng-disabled="!registerForm.data.agreement">{{'register.register' | message}}</button>
+            <button class="green" ng-click="proceed()" ng-disabled="!registerForm.data.agreement" message="register.register"></button>
           </wizard-step>
 
           <wizard-step name="email">
@@ -51,12 +49,12 @@
             <div class="radio-set">
               <div>
                 <input type="radio" ng-model="authSearchForm.principal" ng-value="'principal'">
-                <label class="option" ng-bind-html="'auth.register.principal' | message:{sce:page.$sce.HTML}"></label>
+                <label class="option" message="auth.register.principal" message-html></label>
               </div>
 
               <div>
                 <input type="radio" ng-model="authSearchForm.principal" ng-value="'affiliate'">
-                <label class="option" ng-bind-html="'auth.register.affiliate' | message:{sce:page.$sce.HTML}"></label>
+                <label class="option" message="auth.register.affiliate" message-html></label>
               </div>
             </div>
 

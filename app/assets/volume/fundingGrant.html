@@ -1,19 +1,19 @@
-<ng-form name="fundingGrantForm" bindonce>
+<ng-form name="fundingGrantForm">
   <fieldset class="clean">
     <fieldset class="clean">
       <div class="agency-heading-no-hover">
-        <span bo-text="funding.funder.name"></span>
+        <span ng-bind="::funding.funder.name"></span>
       </div>
     </fieldset>
-    <label bo-text="'funding.awards' | message"></label>
+    <label message="funding.awards"></label>
 
     <div ng-repeat="award in fundingGrantForm.data.awards track by $index">
       <validator name="funding.awards[{{$index}}]">
-        <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{'funding.awards.placeholder' | message}}" key-enter="fundingGrantForm.save()">
-        <button ng-click="fundingGrantForm.removeAward($index)" bo-text="'remove' | message" class="red mini pull"></button>
+        <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{::'funding.awards.placeholder' | message}}" key-enter="fundingGrantForm.save()">
+        <button ng-click="fundingGrantForm.removeAward($index)" message="remove" class="red mini pull"></button>
       </validator>
     </div>
-    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.addAwardEnabled()"  bo-text="'funding.awards.add' | message" class="neutral mini add_f2"></button>
+    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.addAwardEnabled()"  message="funding.awards.add" class="neutral mini add_f2"></button>
   </fieldset>
 
 </ng-form>

@@ -1,14 +1,14 @@
-<aside bindonce class="portrait ng-cloak">
-  <a bo-href="party.route">
-    <figure class="figure-avatar" bo-class="{inst: party.institution}">
-      <img bo-src="party.avatarRoute()">
+<aside class="portrait ng-cloak">
+  <a ng-href="{{::party.route}}">
+    <figure class="figure-avatar" ng-class="::{inst: party.institution}">
+      <img ng-src="{{::party.avatarRoute()}}">
     </figure>
   </a>
 
   <div class="portrait-info">
-    <a class="portrait-name" bo-href="party.route" bo-text="party.name"></a>
-    <span class="portrait-extra" bo-if="portraitExtra" bo-html="portraitExtra"></span>
-    <span class="portrait-extra" bo-if="!portraitExtra" bo-text="party.affiliation"></span>
+    <a class="portrait-name" ng-href="{{::party.route}}" ng-bind="::party.name"></a>
+    <span class="portrait-extra" ng-if="portraitExtra" ng-bind-html="portraitExtra"></span>
+    <span class="portrait-extra" ng-if="!portraitExtra" ng-bind="::party.affiliation"></span>
   </div>
 </aside>
 

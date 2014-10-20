@@ -1,52 +1,52 @@
 <div class="spreadsheet-options">  
-  <span bo-if="!editing && volume.checkPermission(page.permission.EDIT)">
-    <a bo-href="page.router.volumeSpreadsheet(volume.id) + '#goto-'+id">edit spreadsheet</a>
+  <span ng-if="::!editing && volume.checkPermission(page.permission.EDIT)">
+    <a ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
   </span>
-  <span bo-if="editing">
+  <span ng-if="::editing">
     <a ng-click="refresh()">refresh</a>
   </span>
-  <span bo-if="!editing && !top && volume.checkPermission(page.permission.EDIT)">
+  <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
     |
   </span>
-  <a bo-if="!editing && !top" href="" ng-click="page.dataExport.downloadCSV(volume)">export data</a>
+  <a ng-if="::!editing && !top" href="" ng-click="page.dataExport.downloadCSV(volume)">export data</a>
 </div>
 
-<div class="spreadsheet" bindonce="id" bo-class="{'edit': editing, 'view': !editing}">
+<div class="spreadsheet" ng-class="::{'edit': editing, 'view': !editing}">
   <table class="spreadsheet-table">
     <colgroup>
       <col class="name"/>
-      <col bo-if="!top" class="date"/>
+      <col ng-if="::!top" class="date"/>
       <col class="consent"/>
     </colgroup>
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
     </colgroup>
-    <colgroup bo-if="editing">
+    <colgroup ng-if="::editing">
       <col class="add">
     </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
-        <th bo-attr bo-attr-colspan="2+!top" bo-id="id+'-head'" bo-class="top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" bo-text="top ? 'materials' : 'session' | message"></th>
-        <th ng-repeat="col in recordCols track by col.category.id" bo-id="id+'-category_'+col.category.id" colspan="{{col.metrics.length}}" bo-class="'col'+col.category.id">
+        <th colspan="{{::2+!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
+        <th ng-repeat="col in recordCols track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
           <span ng-bind="col.category.name"></span>
-          <span bo-if="editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo"></span>
+          <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo"></span>
         </th>
-        <th bo-if="editing" bo-id="id+'-add'" class="add" ng-click="clickAdd($event)"></th>
+        <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
-        <th bo-id="id+'-name'" class="first sort sortable" ng-click="clickSlot($event, 'name')"/>
-        <th bo-if="!top" bo-id="id+'-date'" class="sort sortable" ng-click="clickSlot($event, 'date')">test date</th>
-        <th bo-id="id+'-consent'" class="last sort sortable" ng-click="clickSlot($event, 'consent')"></th>
+        <th id="{{::id}}-name" class="first sort sortable" ng-click="clickSlot($event, 'name')"/>
+        <th ng-if="::!top" id="{{::id}}-date" class="sort sortable" ng-click="clickSlot($event, 'date')">test date</th>
+        <th id="{{::id}}-consent" class="last sort sortable" ng-click="clickSlot($event, 'consent')"></th>
 
-        <th ng-repeat="col in metricCols" bo-id="id+'-metric_'+$index" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-desc': currentSort === col && currentSortDirection, 'sort-asc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
-        <th bo-if="editing" class="first last"></th>
+        <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-desc': currentSort === col && currentSortDirection, 'sort-asc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th ng-if="::editing" class="first last"></th>
       </tr>
     </thead>
-    <tbody class="spreadsheet-tbody" bo-id="id" ng-click="click($event)">
+    <tbody class="spreadsheet-tbody" id="{{::id}}" ng-click="click($event)">
     </tbody>
     <tfoot>
-      <tr bo-if="editing">
-        <td bo-id="id+'-new'" colspan="{{2+!top+metricCols.length}}" class="add null" ng-click="clickNew($event)" bo-text="'add ' + (top ? 'materials' : 'session' | message)"</td>
+      <tr ng-if="::editing">
+        <td id="{{::id}}-new" colspan="{{2+!top+metricCols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
       </tr>
     </tfoot>
   </table>

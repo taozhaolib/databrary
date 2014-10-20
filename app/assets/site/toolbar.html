@@ -1,17 +1,17 @@
-<section id="toolbar" class="toolbar cf" bindonce>
+<section id="toolbar" class="toolbar cf">
   <div class="wrap">
     <div class="row">
       <div class="title cf col-desktop-7 col-tablet-5" ng-class="{'col-mobile-4': page.models.Login.isLoggedIn(), 'col-mobile-2': !page.models.Login.isLoggedIn()}">
-        <h1 class="toolbar-site" ng-if="page.$route.current.controller!=='site/home'">
-          <a bo-href="page.router.index()" title="Databrary: An Open Data Library"></a>
+        <h1 class="toolbar-site" ng-show="page.$route.current.controller!=='site/home'">
+          <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
         </h1>
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
-            <li ng-repeat="link in page.display.toolbarLinks" bindonce>
-              <a bo-href="link.url" class="button mini" bo-class="link.type" bo-attr bo-attr-target="link.target" ng-click="link.click()">
-                <span bo-if="link.icon" class="icon" bo-class="link.icon"></span>
-                <span class="text" bo-text="link.html"></span>
+            <li ng-repeat="link in page.display.toolbarLinks">
+              <a ng-href="{{::link.url}}" class="button mini" ng-class="::link.type" target="{{::link.target}}" ng-click="link.click()">
+                <span ng-if="::link.icon" class="icon" ng-class="::link.icon"></span>
+                <span class="text" ng-bind="::link.html"></span>
               </a>
             </li>
           </ul>
@@ -21,17 +21,17 @@
       <div class="toolbar-user col-desktop-8 col-tablet-4" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}">
         <div class="toolbar-search"><search-form></search-form></div>
         <span ng-if="!page.models.Login.isLoggedIn()">
-          <a bo-href="page.router.login()" bo-text="'toolbar.login' | message"></a>
+          <a ng-href="{{::page.router.login()}}" message="toolbar.login"></a>
 
           <span class="sep">|</span>
 
-          <a bo-href="page.router.register()" bo-text="'toolbar.register' | message"></a>
+          <a ng-href="{{::page.router.register()}}" message="toolbar.register"></a>
         </span>
 
         <span ng-if="page.models.Login.isLoggedIn()">
           <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
-            <span class="username hide-mobile" ng-bind="page.models.Login.user.name.split(' ').shift()"></span>
-            <img bo-src="page.models.Login.user.avatarRoute()" class="toolbar-avatar"> </a>
+            <span class="username hide-mobile" ng-bind="::page.models.Login.user.name.split(' ').shift()"></span>
+            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> </a>
         </span>
 
         <span class="sep">|</span>
@@ -44,34 +44,34 @@
         <div class="row">
           <div class="toolbar-user-menu">
             <ul class="flat">
-              <li><strong bo-text="page.models.Login.user.name"></strong></li>
-              <li ng-if="!page.models.Login.isAuthorized()">
-                <a bo-href="page.router.register()" class="toolbar-user-link" bo-text="'toolbar.reregister' | message"></a>
+              <li><strong ng-bind="::page.models.Login.user.name"></strong></li>
+              <li ng-if="::!page.models.Login.isAuthorized()">
+                <a ng-href="{{::page.router.register()}}" class="toolbar-user-link" message="toolbar.reregister"></a>
               </li>
               <li>
-                <a bo-href="page.router.profile()" class="toolbar-user-link" bo-text="'toolbar.profile' | message"></a>
+                <a ng-href="{{::page.router.profile()}}" class="toolbar-user-link" message="toolbar.profile"></a>
               </li>
               <li>
-                <a bo-href="page.router.volumeCreate()" bo-text="'volume.edit.create' | message | lowercase" ng-if="page.models.Login.isAuthorized()"></a>
+                <a ng-href="{{::page.router.volumeCreate()}}" message="volume.edit.create" ng-if="::page.models.Login.isAuthorized()"></a>
               </li>
-              <li><a href="" ng-click="page.auth.logout()" bo-text="'toolbar.logout' | message"></a>
+              <li><a href="" ng-click="page.auth.logout()" message="toolbar.logout"></a>
               </li>
 
-              <li ng-if="page.models.Login.user.superuser !== undefined" class="toolbar-password-form">
-                <ng-form name="superuserForm" ng-if="!page.models.Login.user.superuser" class="cf">
+              <li ng-if="::page.models.Login.user.superuser !== undefined" class="toolbar-password-form">
+                <ng-form name="superuserForm" ng-if="::!page.models.Login.user.superuser" class="cf">
                   <input type="password" class="mini password" ng-model="superuserForm.auth" placeholder="Password" key-enter="page.auth.toggleSU(superuserForm)">
                   <button type="submit" class="link toolbar-superuser off" ng-click="page.auth.toggleSU(superuserForm)">
                     activate SU
                   </button>
                 </ng-form>
 
-                <a ng-if="!!page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate SU</a>
+                <a ng-if="::page.models.Login.user.superuser" class="toolbar-superuser on" href="#" ng-click="page.auth.toggleSU()">deactivate SU</a>
               </li>
             </ul>
           </div>
 
           <div class="user-icon">
-            <img bo-src="page.models.Login.user.avatarRoute(96)" class="toolbar-hover-avatar">
+            <img ng-src="{{::page.models.Login.user.avatarRoute(96)}}" class="toolbar-hover-avatar">
           </div>
         </div>
       </section>

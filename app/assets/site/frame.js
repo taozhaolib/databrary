@@ -1,12 +1,13 @@
 'use strict';
 
 app.directive('frame', [
-  function () {
+  'constantService',
+  function (constants) {
     var compile = function ($element, $attrs, transclude) {
       return function ($scope, $element, $attrs) {
         var start = function () {
-          $scope.id = (angular.isDefined($attrs.id)) ? $attrs.id : '';
-          $scope.title = (angular.isDefined($attrs.frameTitle)) ? $attrs.frameTitle : '';
+          $scope.id = $attrs.id;
+          $scope.title = constants.message($attrs.frameTitle);
 
           transclude($scope, function ($clone) {
             $element.find('[frame-body]').append($clone);

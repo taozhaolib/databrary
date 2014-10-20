@@ -1,4 +1,4 @@
-<panel top id="panel-overview-party" panel-title="{{'party.overview.title' | message}}" bindonce>
+<panel top id="panel-overview-party" panel-title="party.overview.title">
   <div class="row">
     <div class="col-desktop-12 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
@@ -6,20 +6,20 @@
       </hgroup>
 
       <div>
-        <div frame id="frame-contact" frame-title="{{'party.contact.title' | message}}" fold>
+        <div frame id="frame-contact" frame-title="party.contact.title" fold>
           <div>
             <dl class="flat">
-              <dt bo-if="party.affiliation" bo-text="'affiliation' | message"/>
-              <dd bo-if="party.affiliation" bo-text="party.affiliation"></dd>
+              <dt ng-if="::party.affiliation" message="affiliation"/>
+              <dd ng-if="::party.affiliation" ng-bind="::party.affiliation"></dd>
 
-              <dt bo-if="party.email" bo-text="'email' | message"/>
-              <dd bo-if="party.email"><a bo-href="'mailto:'+party.email" bo-text="party.email"></a></dd>
+              <dt ng-if="::party.email" message="email"/>
+              <dd ng-if="::party.email"><a ng-href="mailto:{{::party.email}}" ng-bind="::party.email"></a></dd>
 
-              <dt bo-if="party.orcid" bo-text="'orcid' | message"/>
-              <dd bo-if="party.orcid"><a bo-href="'http://orcid.org/' + party.orcid" bo-text="party.orcid"></a></dd>
+              <dt ng-if="::party.orcid" message="orcid"/>
+              <dd ng-if="::party.orcid"><a ng-href="http://orcid.org/{{::party.orcid}}" ng-bind="::party.orcid"></a></dd>
 
-              <dt bo-if="party.url" bo-text="'party.view.url' | message"/>
-              <dd bo-if="party.url"><a bo-href="party.url" bo-text="party.url"></a></dd>
+              <dt ng-if="::party.url" message="party.view.url"/>
+              <dd ng-if="::party.url"><a ng-href="{{::party.url}}" ng-bind="::party.url"></a></dd>
             </dl>
           </div>
         </div>

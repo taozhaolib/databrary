@@ -10,7 +10,7 @@ app.directive('authGrantForm', [
       form.data = {
         site: auth.site,
         member: auth.member,
-        expires: auth.expires,
+        expires: auth.expires && page.$filter('date')(auth.expires, 'yyyy-MM-dd')
       };
 
       if (auth.new)
@@ -23,7 +23,7 @@ app.directive('authGrantForm', [
       };
 
       $scope.canGrantSite = function (p) {
-        return  p == page.permission.NONE ||
+        return p == page.permission.NONE ||
           p == page.permission.READ ||
           p > page.permission.READ &&
           page.models.Login.checkAccess(p + 1) ||
@@ -31,7 +31,7 @@ app.directive('authGrantForm', [
       };
 
       $scope.canGrantMember = function (p) {
-        return  p == page.permission.NONE ||
+        return p == page.permission.NONE ||
           p == page.permission.READ ||
           p == page.permission.EDIT ||
           p == page.permission.ADMIN ||
@@ -41,11 +41,6 @@ app.directive('authGrantForm', [
       //
 
       form.save = function () {
-        if (!form.data.expires)
-          delete form.data.expires;
-        else
-          form.data.expires = page.$filter('date')(form.data.expires, 'yyyy-MM-dd');
-
         party.authorizeSave(auth.party.id, form.data).then(function () {
           form.validator.server({});
           form.messages.add({
@@ -88,8 +83,7 @@ app.directive('authGrantForm', [
 
       form.validator.client({
         expires: {
-          tips: page.constants.message('auth.grant.expires.help'),
-          errors: page.constants.message('auth.grant.expires.error'),
+          tips: page.constants.message('auth.grant.expires.help')
         }
       }, true);
 

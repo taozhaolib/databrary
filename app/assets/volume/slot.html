@@ -1,4 +1,4 @@
-<article class="view slot-view" bindonce flow-init="flowOptions"
+<article class="view slot-view" flow-init="flowOptions"
     flow-file-added="fileAdded($file, $event)"
     flow-file-success="fileSuccess($file)"
     flow-file-progress="fileProgress($file)">
@@ -6,16 +6,16 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <a class="view-link" bo-href="editing ? page.router.volumeSpreadsheet(volume.id) : volume.route" bo-text="volume.alias || volume.name"></a>
+          <a class="view-link" ng-href="{{::editing ? page.router.volumeSpreadsheet(volume.id) : volume.route}}" ng-bind="::volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
-            <span bo-text="slot.displayName"></span>
-            <span bo-if="slot.date" bo-text=" ' (' + slot.date + ')'"></span>
+            <span ng-bind="::slot.displayName"></span>
+            <span ng-if="::slot.date" ng-bind="::' (' + slot.date + ')'"></span>
           </h3>
         </hgroup>
 
-        <div bo-if="!editing" class="slot-download" ng-show="!!tracks[0].asset">
-          <a class="slot-download-link" bo-href="slot.zipRoute()" target="_self">
-            <span class="download" bo-text="'download.zip' | message"></span>
+        <div ng-if="::!editing" class="slot-download" ng-show="!!tracks[0].asset">
+          <a class="slot-download-link" ng-href="{{::slot.zipRoute()}}" target="_self">
+            <span class="download" message="download.zip"></span>
             <span class="icon download"></span>
           </a>
         </div>
@@ -32,7 +32,7 @@
           <div>
             <div class="slot-consent-track">
               <div class="slot-track">
-                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" bo-style="positionStyle(c.segment)" ng-click="c.select($event)"></div>
+                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="::positionStyle(c.segment)" ng-click="c.select($event)"></div>
               </div>
             </div>
           </div>
@@ -50,7 +50,7 @@
               <div class="slot-track" ng-class="{'slot-track-positioned': !!t.asset && !t.asset.segment.full, 'slot-track-select': t === current}">
                 
                 <div class="slot-track-asset-info">
-                  <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" bo-src="t.asset.thumbRoute(24)">
+                  <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-bind="t.name" ng-class="{ 'uploading' : !!t.file }"></div>
 
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
@@ -72,56 +72,56 @@
           <div class="player-main">
             <div class="player-main-info">
               <h1 class="player-main-info-name">
-                <span class="filename" bo-if="!editing && current.asset" bo-text="current.name"></span>
-                <span class="category" bo-if="!editing && current.record" bo-text="current.record.displayName"></span>
-                <span class="category" bo-if="editing && current.record.category" bo-text="page.constants.category[current.record.category].name"></span>
+                <span class="filename" ng-if="::!editing && !!current.asset" ng-bind="::current.name"></span>
+                <span class="category" ng-if="::!editing && !!current.record" ng-bind="::current.record.displayName"></span>
+                <span class="category" ng-if="::editing && !!current.record.category" ng-bind="::page.constants.category[current.record.category].name"></span>
               </h1>
               <nav class="player-main-info-actions">
-                <img bo-if="!editing" ng-if="!!current.asset" bo-src="current.asset.icon" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
-                <span bo-if="!editing" ng-if="!!current.asset" class="classification icon" bo-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
-                <a bo-href="current.asset.downloadRoute(false)" target="_self" ng-if="!!current.asset && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-                <a bo-if="editing" ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+                <img ng-if="!editing && !!current.asset" ng-src="{{::current.asset.icon}}" hint="format-{{::current.asset.format.extension}}" class="player-main-info-file-icon">
+                <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="::page.constants.classification[current.asset.classification]" hint="classification-{{::page.constants.classification[current.asset.classification]}}"></span>
+                <a ng-href="{{::current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
+                <a ng-if="editing && !!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
               </nav>
 
-              <div bo-if="!editing">
+              <div ng-if="!editing">
                 <dl class="player-main-info-list cf">
-                  <dt ng-if="!!current.asset" bo-text="'asset.format' | message"></dt>
-                  <dd ng-if="!!current.asset" bo-text="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                  <dt bo-if="!current.segment.full">Position</dt>
+                  <dt ng-if="!!current.asset" message="asset.format"></dt>
+                  <dd ng-if="!!current.asset" ng-bind="::(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
+                  <dt ng-if="!current.segment.full">Position</dt>
                   <dd>
-                    <span bo-if="!current.segment.full"><span bo-text="current.segment.l | timecode"></span> &ndash; <span bo-text="current.segment.u | timecode"></span></span>
-                    <span bo-if="current.asset.duration"> (<span bo-text="current.asset.duration | timecode"></span>)</span>
+                    <span ng-if="!current.segment.full"><span ng-bind="::current.segment.l | timecode"></span> &ndash; <span ng-bind="::current.segment.u | timecode"></span></span>
+                    <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode"></span>)</span>
                   </dd>
-                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" bo-text="metric.display || metric.name"></dt>
-                  <dd ng-if="!!current.record" ng-repeat-end bo-text="current.record.measures[metric.id]"></dd>
+                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
+                  <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
                   <dt ng-if="!!current.age">age</dt>
                   <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
                 </dl>
               </div>
 
-              <ng-form bo-if="editing" name="form.edit" bo-switch="current.type">
-                <div bo-switch-when="asset">
-                  <validator name="name" label="'asset.name' | message">
-                    <input type="text" name="name" ng-model="current.data.name" bo-attr bo-attr-placeholder="'asset.name.placeholder' | message">
+              <ng-form ng-if="::editing" name="form.edit" ng-switch="::current.type">
+                <div ng-switch-when="asset">
+                  <validator name="name" label="asset.name">
+                    <input type="text" name="name" ng-model="current.data.name" placeholder="{{::'asset.name.placeholder' | message}}">
                   </validator>
 
-                  <validator name="classification" label="'asset.classification' | message">
+                  <validator name="classification" label="asset.classification">
                     <classification-select name="classification" ng-model="current.data.classification"></classification-select>
                   </validator>
 
-                  <validator name="position" label="'asset.position' | message">
-                    <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" bo-attr bo-attr-placeholder="'asset.position.placeholder' | message">
+                  <validator name="position" label="asset.position">
+                    <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'asset.position.placeholder' | message}}">
                   </validator>
                 </div>
 
-                <div bo-switch-when="record">
+                <div ng-switch-when="record">
                   <dl class="cf">
                     <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.display || metric.name"></dt><br>
                     <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                       <select ng-switch-when="select" name="{{m}}" ng-model="current.data[m]" ng-options="o for o in metric.options"/>
                       <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>
                       <textarea ng-switch-when="long" name="m" ng-model="current.data[m]"/>
-                      <input ng-switch-when="date" type="date" name="{{m}}" ng-model="current.data[m]"/>
+                      <input ng-switch-when="date" input-date name="{{m}}" ng-model="current.data[m]" placeholder="YYYY-MM-DD"/>
                       <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data[m]"/>
                     </dd>
                     <dt>
@@ -130,15 +130,15 @@
                   </dl>
                 </div>
 
-                <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" bo-text="'save' | message" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
+                <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </ng-form>
             </div>
 
-            <div class="player-main-viewport" bo-if="current.type === 'asset'">
-              <asset-display bo-if="!editing && current.asset" asset="current.asset"></asset-display>
-              <div bo-if="editing" ng-if="!current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
+            <div class="player-main-viewport" ng-if="::current.type === 'asset'">
+              <asset-display ng-if="::!editing && current.asset" asset="current.asset"></asset-display>
+              <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
-                <span class="vem-float-dropzone-message" bo-text="'asset.add-drop' + (current.asset ? '.replace' : '') | message"></span>
+                <span class="vem-float-dropzone-message" message="asset.add-drop{{::current.asset ? '.replace' : ''}}"></span>
               </div>
             </div>
           </div>

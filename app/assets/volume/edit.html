@@ -1,13 +1,13 @@
-<article class="view volume-edit-view" bindonce>
+<article class="view volume-edit-view">
   <div class="wrap">
     <div class="row">
-      <hgroup class="col" bo-if="!volume">
-        <h1 class="view-context smaller" bo-text="'create' | message"></h1>
-        <h2 class="view-title smaller" bo-text="'volume.edit.title.sub' | message"></h2>
+      <hgroup class="col" ng-if="::!volume">
+        <h1 class="view-context smaller" message="create"></h1>
+        <h2 class="view-title smaller" message="volume.edit.title.sub"></h2>
       </hgroup>
 
-      <hgroup class="col" bo-if="volume">
-        <h1 class="view-context smaller" bo-text="'edit' | message"></h1>
+      <hgroup class="col" ng-if="::volume">
+        <h1 class="view-context smaller" message="edit"></h1>
         <h2 class="view-title smaller" ng-bind="volume.alias || volume.name"></h2>
       </hgroup>
 
@@ -17,19 +17,19 @@
             <volume-edit-overview-form></volume-edit-overview-form>
           </wizard-step>
 
-          <wizard-step name="materials" ng-if="!!volume">
+          <wizard-step name="materials" ng-if="::!!volume">
             <volume-edit-materials-form></volume-edit-materials-form>
           </wizard-step>
 
-          <wizard-step name="data" ng-if="!!volume">
+          <wizard-step name="data" ng-if="::!!volume">
             <spreadsheet volume="volume" edit></spreadsheet>
           </wizard-step>
 
-          <wizard-step name="funding" ng-if="!!volume">
+          <wizard-step name="funding" ng-if="::!!volume">
             <volume-edit-funding-form></volume-edit-funding-form>
           </wizard-step>
 
-          <wizard-step name="access" ng-if="!!volume" enabled="volume.checkPermission(page.permission.ADMIN)">
+          <wizard-step name="access" ng-if="::!!volume" enabled="volume.checkPermission(page.permission.ADMIN)">
             <volume-edit-access-form></volume-edit-access-form>
           </wizard-step>
         </wizard>

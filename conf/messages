@@ -211,7 +211,6 @@ auth.grant.save.success=Authorization saved successfully.
 auth.grant.remove.success=Authorization removed successfully.
 
 auth.grant.expires.help=Select a date within the next two years.
-auth.grant.expires.error=The date selected is not within the next two years.
 
 # --- Party edit
 party.edit=edit profile
@@ -401,7 +400,6 @@ volume.reuse.consumes=These data were originally collected as part of...
 volume.name=Title
 volume.alias=Internal short name (only shown to editors)
 volume.body=Description
-study.body=Abstract
 
 sessions.title=Data
 session=Session

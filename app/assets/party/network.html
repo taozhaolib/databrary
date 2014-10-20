@@ -1,51 +1,52 @@
-<panel ng-controller="party/network" id="panel-network" panel-title="{{'network.title' | message}}" fold bindonce>
+<panel ng-controller="party/network" id="panel-network" panel-title="network.title" fold>
   <div class="network-parents-region">
-    <h4 class="view-title smaller">{{'auth.parents.title' | message}}</h4>
+    <h4 class="view-title smaller" message="auth.parents.title"></h4>
 
-    <article bo-id="'network-parent-'+parent.id" class="permission-auth cf" ng-repeat="parent in party.parents">
+    <article id="network-parent-{{::parent.id}}" class="permission-auth cf" ng-repeat="parent in party.parents">
       <div class="row">
         <div class="network-avatar col-desktop-1 col-tablet-1 col-mobile-1">
-          <figure class="figure-avatar" fill bo-class="{inst: parent.party.institution}">
-            <img ng-src="{{parent.party.avatarRoute(54)}}">
+          <figure class="figure-avatar" fill ng-class="::{inst: parent.party.institution}">
+            <img ng-src="{{::parent.party.avatarRoute(54)}}">
           </figure>
         </div>
 
         <div class="col-desktop-14 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="permission-heading col-desktop-15 col-tablet-9 col-mobile-6">
-              <a bo-href="parent.party.route" class="permission-auth-username">{{parent.party.name}}</a>
-              <span class="permission-auth-email" bo-if="parent.party.email">{{parent.party.email}}</span>
+              <a ng-href="{{::parent.party.route}}" class="permission-auth-username">{{parent.party.name}}</a>
+              <span class="permission-auth-email" ng-if="::!!parent.party.email" ng-bind="::parent.party.email"></span>
             </div>
 
-            <div bo-if="isAdmin">
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" bo-if="parent.site">
-                <div class="permission-auth-heading" bo-text="'auth.site' | message:'their'"></div>
+            <div ng-if="::isAdmin">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.site">
+                <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
                 <div class="permission-auth-site">
-                  <strong bo-text="'auth.site.'+page.constants.permission[parent.site]+'.title' | message"></strong>:
-                  {{'auth.site.'+page.constants.permission[parent.site] | message:'their'}}
+                  <strong message="auth.site.{{::page.constants.permission[parent.site]}}.title"></strong>:
+                  {{::'auth.site.'+page.constants.permission[parent.site] | message:'their'}}
                 </div>
               </div>
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" bo-if="!parent.site">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.site">
                 &nbsp;
               </div>
 
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" bo-if="parent.member">
-                <div class="permission-auth-heading" bo-text="'auth.member' | message:'their'"></div>
-                <div class="permission-auth-member"></div>
-                  <strong bo-text="'auth.member.'+page.constants.permission[parent.member]+'.title' | message"></strong>:
-                  {{'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.member">
+                <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
+                <div class="permission-auth-member">
+                  <strong message="auth.member.{{::page.constants.permission[parent.member]}}.title"></strong>:
+                  {{::'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
+                </div>
               </div>
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" bo-if="!parent.member">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.member">
                 &nbsp;
               </div>
 
-              <div class="col-desktop-2 col-tablet-2 col-mobile-5" bo-if="parent.member || parent.site">
-                <div class="permission-auth-heading expiration" bo-text="'auth.expiration' | message"></div>
-                <div class="permission-auth-expiration" bo-html="parent.expires | date:'longDate'"></div>
-                <div class="permission-auth-expiration" bo-if="!parent.expires" bo-text="'auth.expiration.none' | message"></div>
+              <div class="col-desktop-2 col-tablet-2 col-mobile-5" ng-if="::parent.member || parent.site">
+                <div class="permission-auth-heading expiration" message="auth.expiration"></div>
+                <div class="permission-auth-expiration" ng-bind-html="::parent.expires | date:'longDate'"></div>
+                <div class="permission-auth-expiration" ng-if="::!parent.expires" message="auth.expiration.none"></div>
               </div>
-              <div class="col-desktop-2 col-tablet-2 col-mobile-5" bo-if="!(parent.member || parent.site)">
-                <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
+              <div class="col-desktop-2 col-tablet-2 col-mobile-5" ng-if="::!(parent.member || parent.site)">
+                <div class="permission-auth-heading" message="auth.pending"></div>
               </div>
             </div>
           </div>
@@ -54,59 +55,59 @@
     </article>
 
     <fieldset class="clean">
-      <button class="green" bo-if="isAdmin" ng-click="page.$location.url(party.editRoute('apply'))" bo-text="'network.apply.local' | message"></button>
-      <button class="green" bo-if="canGrant" ng-click="grant()" bo-text="'network.apply.foreign' | message:party.name"></button>
+      <button class="green" ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('apply'))" message="network.apply.local"></button>
+      <button class="green" ng-if="::canGrant" ng-click="grant()" ng-bind="::'network.apply.foreign' | message:party.name"></button>
     </fieldset>
   </div>
 
   <div class="network-children-region">
-    <h4 class="view-title smaller">{{'auth.children.title' | message}}</h4>
+    <h4 class="view-title smaller" message="auth.children.title"></h4>
 
-    <article bo-id="'network-child-'+child.id" class="permission-auth cf" ng-repeat="child in party.children">
+    <article id="network-child-{{::child.id}}" class="permission-auth cf" ng-repeat="child in party.children">
       <div class="row">
         <div class="col-desktop-1 col-tablet-1 col-mobile-1">
-          <figure class="figure-avatar" bo-class="{inst: child.party.institution}">
-            <img ng-src="{{child.party.avatarRoute(54)}}">
+          <figure class="figure-avatar" ng-class="::{inst: child.party.institution}">
+            <img ng-src="{{::child.party.avatarRoute(54)}}">
           </figure>
         </div>
 
         <div class="col-desktop-14 col-tablet-8 col-mobile-5">
           <div class="row">
             <div class="permission-heading col-desktop-14 col-tablet-8 col-mobile-5">
-              <a bo-href="child.party.route" class="permission-auth-username" bo-text="child.party.name"></a>
-              <span class="permission-auth-email" bo-if="child.party.email" bo-text="child.party.email"></span>
+              <a ng-href="{{::child.party.route}}" class="permission-auth-username" ng-bind="::child.party.name"></a>
+              <span class="permission-auth-email" ng-if="::!!child.party.email" ng-bind="::child.party.email"></span>
             </div>
 
-            <div bo-if="isAdmin">
-              <div class="col-desktop-4 col-tablet-3 col-mobile-5" bo-if="child.site">
-                <div class="permission-auth-heading" bo-text="'auth.site' | possessive:party"></div>
+            <div ng-if="::isAdmin">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::child.site">
+                <div class="permission-auth-heading" ng-bind="::'auth.site' | possessive:party"></div>
                 <div class="permission-auth-site">
-                  <strong bo-text="'auth.site.'+page.constants.permission[child.site]+'.title' | message"></strong>:
+                  <strong message="auth.site.{{::page.constants.permission[child.site]}}.title"></strong>:
                   {{'auth.site.'+page.constants.permission[child.site] | possessive:party}}
                 </div>
               </div>
-              <div class="col-desktop-4 col-tablet-3 col-mobile-5" bo-if="!child.site">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!child.site">
                 &nbsp;
               </div>
 
-              <div class="col-desktop-4 col-tablet-3 col-mobile-5" bo-if="child.member">
-                <div class="permission-auth-heading" bo-text="'auth.member' | possessive:party"></div>
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::child.member">
+                <div class="permission-auth-heading" ng-bind="::'auth.member' | possessive:party"></div>
                 <div class="permission-auth-member">
-                  <strong bo-text="'auth.member.'+page.constants.permission[child.member]+'.title' | message"></strong>:
+                  <strong message="auth.member.{{::page.constants.permission[child.member]}}.title"></strong>:
                   {{'auth.member.'+page.constants.permission[child.member] | possessive:party}}
                 </div>
               </div>
-              <div class="col-desktop-4 col-tablet-3 col-mobile-5" bo-if="!child.member">
+              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!child.member">
                 &nbsp;
               </div>
 
-              <div class="col-desktop-6 col-tablet-2 col-mobile-5" bo-if="child.member || child.site">
-                <div class="permission-auth-heading expiration" bo-text="'auth.expiration' | message"></div>
-                <div class="permission-auth-expiration" bo-html="child.expires | date:'longDate'"></div>
-                <div class="permission-auth-expiration" bo-if="!child.expires" bo-text="'auth.expiration.none' | message"></div>
+              <div class="col-desktop-2 col-tablet-2 col-mobile-5" ng-if="::child.member || child.site">
+                <div class="permission-auth-heading expiration" message="auth.expiration"></div>
+                <div class="permission-auth-expiration" ng-bind-html="::child.expires | date:'longDate'"></div>
+                <div class="permission-auth-expiration" ng-if="::!child.expires" message="auth.expiration.none"></div>
               </div>
-              <div class="col-desktop-6 col-tablet-2 col-mobile-5" bo-if="!(child.member || child.site)">
-                <div class="permission-auth-heading" bo-text="'auth.pending' | message"></div>
+              <div class="col-desktop-2 col-tablet-2 col-mobile-5" ng-if="::!(child.member || child.site)">
+                <div class="permission-auth-heading" message="auth.pending"></div>
               </div>
             </div>
           </div>
@@ -115,8 +116,8 @@
     </article>
 
     <fieldset class="clean">
-      <button class="green" bo-if="isAdmin" ng-click="page.$location.url(party.editRoute('grant'))" bo-text="'network.grant.local' | message"></button>
-      <button class="green" bo-if="canApply" ng-click="apply()" bo-text="'network.grant.foreign' | message:party.name"></button>
+      <button class="green" ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('grant'))" message="network.grant.local"></button>
+      <button class="green" ng-if="::canApply" ng-click="apply()" ng-bind="::'network.grant.foreign' | message:party.name"></button>
     </fieldset>
   </div>
 </panel>
