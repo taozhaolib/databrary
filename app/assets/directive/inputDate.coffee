@@ -3,6 +3,6 @@
 app.directive 'inputDate', [
   () ->
     restrict: 'A'
-    link: ($scope, $element, $attrs) ->
+    link: ($scope, $element) ->
       $element[0].type = 'date'
 ]
