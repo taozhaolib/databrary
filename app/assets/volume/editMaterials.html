@@ -29,7 +29,7 @@
           <upload-progress progress-value="material.progress"></upload-progress>
         </div>
 
-        <div ng-if="material.replace" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn>
+        <div ng-if="material.replace" class="vem-file-dropzone" ng-class="dropClasses" flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" flow-drop flow-btn id="material-drop-{{$index}}">
           <!--DO NOT USE ng-bind: problem with flow-btn/assignBrowse's child input-->
           {{::'asset.add-drop.replace' | message}}
         </div>

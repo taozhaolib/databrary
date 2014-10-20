@@ -20,11 +20,11 @@ app.directive('volumeEditMaterialsForm', [
       });
 
       form.fileAdded = function (file, event) {
-        var material = angular.element(event.target).scope().material;
-
-        if (material)
+        var material;
+        if (event.target.parentElement.id.startsWith('material-drop-')) {
+          material = form.materials[event.target.parentElement.id.substr(14)];
           delete material.replace;
-        else
+        } else
           material = new Material();
 
         material.upload(file).then(function (done) {
