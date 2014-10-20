@@ -20,9 +20,12 @@ app.directive('volumeEditMaterialsForm', [
       });
 
       form.fileAdded = function (file, event) {
+        var target = event.target;
+        if (target.tagName === 'INPUT')
+          target = target.parentElement;
         var material;
-        if (event.target.parentElement.id.startsWith('material-drop-')) {
-          material = form.materials[event.target.parentElement.id.substr(14)];
+        if (target.id.startsWith('material-drop-')) {
+          material = form.materials[target.id.substr(14)];
           delete material.replace;
         } else
           material = new Material();
