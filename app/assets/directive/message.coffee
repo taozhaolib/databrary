@@ -5,12 +5,18 @@ app.directive 'message', [
   (constants, $sce) ->
     restrict: 'A'
     compile: ($element, $attrs) ->
-      opts = {}
-      opts.sce = $sce.HTML if 'messageHtml' in $attrs
+      fill =
+        if 'messageHtml' of $attrs
+          ($element, $attrs) ->
+            $element.html($sce.getTrustedHtml(constants.message($attrs.message, {sce:$sce.HTML})))
+            undefined
+        else
+          ($element, $attrs) ->
+            $element[0].textContent = constants.message $attrs.message
+            undefined
       if $attrs.message.contains('{{')
         ($scope, $element, $attrs) ->
-          $element[0].textContent = constants.message $attrs.message, opts
+          fill($element, $attrs)
       else
-        $element[0].textContent = constants.message $attrs.message, opts
-        undefined
+        fill($element, $attrs)
 ]
