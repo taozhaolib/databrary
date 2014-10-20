@@ -12,7 +12,7 @@ app.directive('wizardStep', [
         $scope.page = page;
         $scope.name = $attrs.name;
         $scope.id = wizard.name + '-' + $scope.name;
-        $scope.$scope = $scope.$$nextSibling;
+        $scope.$scope = $scope.$$childHead;
 
         $scope.allow = $attrs.allow === undefined || $scope.$parent.$eval($attrs.allow);
         $scope.complete = $attrs.complete && $scope.$parent.$eval($attrs.complete);
