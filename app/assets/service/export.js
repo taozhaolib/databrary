@@ -118,22 +118,27 @@ app.service('exportService', [
 
 
     function createPayload(payload, volume){
-
+      var isChrome = navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
       var filename = volume.id + "-" + volume.name.replace(/[\0-,/?\\]+/g, '_') + '.csv';
-      var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
-
+      var link = document.createElement('a');
+      
       if(window.navigator.msSaveOrOpenBlob){
         var data = [payload];
-        var blobObject = new Blob(data);
+        var blobObject = new Blob(data, {type: 'text/csv'});
         window.navigator.msSaveOrOpenBlob(blobObject, filename);
 
-      } else {
-        var link = document.createElement('a');
-        link.href = uri;
-
-        //link.style = "visibility:hidden"; //check this on safari, throws assign on readonly error
+      } else if(isChrome){
+        var data = [payload];
+        var blobData = new Blob(data, {type: 'text/csv'});
+        link.href = window.URL.createObjectURL(blobData);
         link.download = filename;
+        link.click();
 
+
+      } else {
+        var uri = 'data:text/csv;charset=utf-8,' + encodeURI(payload);
+        link.href = uri;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
