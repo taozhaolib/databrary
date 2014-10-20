@@ -4,8 +4,8 @@ app.directive('validator', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
       $scope.validator = {};
-      $scope.validator.label = $attrs.label;
-      $scope.validator.prefix = $scope.validator.label ? '<strong>' + $scope.validator.label + ':</strong> ' : '';
+      $scope.validator.label = $attrs.label && page.constants.message($attrs.label);
+      $scope.validator.prefix = $scope.validator.label ? '<strong>' + page.$sce.getTrustedHtml($scope.validator.label) + ':</strong> ' : '';
     };
 
     var post = function ($scope, $element, $attrs, form) {
@@ -85,6 +85,10 @@ app.directive('validator', [
         }
       };
 
+      function addPrefix(msg) {
+        return page.$sce.trustAsHtml(validator.prefix + page.$sce.getTrustedHtml(msg));
+      }
+
       validator.server = function (data, replace) {
         if (replace !== false) {
           validator.changed = false;
@@ -111,7 +115,7 @@ app.directive('validator', [
         }
 
         angular.forEach(data, function (error) {
-          validator.serverErrors.push(validator.prefix + error);
+          validator.serverErrors.push(addPrefix(error));
         });
       };
 
@@ -141,13 +145,13 @@ app.directive('validator', [
 
         if (Array.isArray(data.errors)) {
           angular.forEach(data.errors, function (error) {
-            validator.clientErrors.push(validator.prefix + error);
+            validator.clientErrors.push(addPrefix(error));
           });
         }
 
         if (Array.isArray(data.tips)) {
           angular.forEach(data.tips, function (tip) {
-            validator.clientTips.push(validator.prefix + tip);
+            validator.clientTips.push(addPrefix(tip));
           });
         }
       };
