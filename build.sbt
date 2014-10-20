@@ -101,3 +101,5 @@ UglifyKeys.uglifyOps := { js =>
   // we assume that app.js is first alphabetically
   Seq((js.sortBy(_._2), "app.min.js"))
 }
+
+UglifyKeys.define := Some("DEBUG=false")

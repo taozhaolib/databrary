@@ -168,10 +168,10 @@ object SiteApi extends SiteController {
     val dirp = dir.getPath + "/"
     jsLibs.takeWhile(_.startsWith("lib/")).map { js =>
       if (js.endsWith(".min.js")) js.dropRight(7) + ".js" else js
-    } ++ IO.FileUtils.iterateFiles(dir,
+    } ++ ("debug.js" +: IO.FileUtils.iterateFiles(dir,
       and(suffixFileFilter(".js"), notFileFilter(suffixFileFilter(".min.js"))),
       notFileFilter(nameFileFilter("lib")))
-      .map(_.getPath.stripPrefix(dirp)).toSeq.sorted
+      .map(_.getPath.stripPrefix(dirp)).toSeq.sorted)
   }
 
   def jsDepends(implicit request : RequestHeader) =
