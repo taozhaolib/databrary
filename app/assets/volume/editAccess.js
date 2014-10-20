@@ -45,7 +45,7 @@ app.directive('volumeEditAccessForm', [
         form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
         $q.all(page.constants.accessGlobal.parties.map(function (party, i) {
           var p = form.global[i];
-          form.volume.accessSave(party, {
+          volume.accessSave(party, {
             individual: p,
             children: p,
           });
@@ -55,6 +55,7 @@ app.directive('volumeEditAccessForm', [
             type: 'green',
             countdown: 3000,
           });
+          form.$setPristine();
         }, function (res) {
           form.messages.addError({
             body: page.constants.message('access.global.save.error'),
