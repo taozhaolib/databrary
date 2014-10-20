@@ -173,7 +173,7 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
     .map(_(account))
 
   private[models] def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
-    SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING id")
+    SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING token")
       .apply().list(SQLCols[String])
       .map(_.map(store.Upload.file(_).delete).forall(identity))
 
