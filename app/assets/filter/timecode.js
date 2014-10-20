@@ -21,7 +21,7 @@ app.filter('timecode', [
       if (!showMilli)
         s |= 0;
       i = 0|i/60000;
-      s = (i%60) + ':' + pad(s.toString(), 2, '.');
+      s = (i%60) + ':' + pad(showMilli ? s.toFixed(3) : (s|0).toString(), 2, '.');
       i = 0|i/60;
       if (i) {
         s = (i%24) + ':' + pad(s, 2, ':');

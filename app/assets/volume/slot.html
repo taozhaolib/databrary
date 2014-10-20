@@ -22,7 +22,7 @@
 
         <section id="slot-timeline" class="slot-timeline">
           <div class="slot-timeline-temporal" ng-if="!range.empty">
-            <span class="slot-timeline-time" ng-bind="position | timecode"></span>
+            <span class="slot-timeline-time" ng-bind="position | timecode:true"></span>
             <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
               <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
@@ -89,8 +89,8 @@
                   <dd ng-if="!!current.asset" ng-bind="::(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                   <dt ng-if="!current.segment.full">Position</dt>
                   <dd>
-                    <span ng-if="!current.segment.full"><span ng-bind="::current.segment.l | timecode"></span> &ndash; <span ng-bind="::current.segment.u | timecode"></span></span>
-                    <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode"></span>)</span>
+                    <span ng-if="!current.segment.full"><span ng-bind="::current.segment.l | timecode:true"></span> &ndash; <span ng-bind="::current.segment.u | timecode:true"></span></span>
+                    <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode:true"></span>)</span>
                   </dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
