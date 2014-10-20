@@ -5,7 +5,9 @@ app.factory('$exceptionHandler', [
   function ($log, constants) {
     return constants.mode === 'Dev' ?
       function (exception, cause) {
-        exception.message += ' (caused by "' + cause + '")';
+        if (cause)
+          exception.message += ' (caused by "' + cause + '")';
+        $log.error.apply($log, arguments);
         throw exception;
       } : function () {
         $log.error.apply($log, arguments);
