@@ -4,7 +4,7 @@ app.directive('validator', [
   'pageService', function (page) {
     var pre = function ($scope, $element, $attrs) {
       $scope.validator = {};
-      $scope.validator.label = $attrs.label ? page.$parse($attrs.label)($scope) : undefined;
+      $scope.validator.label = $attrs.label;
       $scope.validator.prefix = $scope.validator.label ? '<strong>' + $scope.validator.label + ':</strong> ' : '';
     };
 
