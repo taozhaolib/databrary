@@ -25,7 +25,7 @@
 
   <fieldset class="clean">
     <validator name="expires" label="auth.expiration">
-      <input type="date" ng-model="authGrantForm.data.expires" name="expires" class="half" date-model date-min="now" date-max="2 years" key-enter="authGrantForm.save()">
+      <input input-date ng-model="authGrantForm.data.expires" name="expires" class="half" key-enter="authGrantForm.save()">
     </validator>
     
   </fieldset>
