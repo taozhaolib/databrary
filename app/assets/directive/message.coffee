@@ -4,7 +4,7 @@ app.directive 'message', [
   'constantService', '$sce',
   (constants, $sce) ->
     restrict: 'A'
-    compile: ($scope, $element, $attrs) ->
+    compile: ($element, $attrs) ->
       opts = {}
       opts.sce = $sce.HTML if 'messageHtml' in $attrs
       if $attrs.message.contains('{{')
