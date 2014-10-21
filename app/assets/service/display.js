@@ -16,11 +16,11 @@ app.factory('displayService', [
     $rootScope.$on('$routeChangeStart', function () {
       display.loading = true;
       display.error = false;
-      display.toolbarLinks = [];
     });
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
+      display.toolbarLinks = [];
     });
 
     //
@@ -31,6 +31,7 @@ app.factory('displayService', [
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
+      display.toolbarLinks = [];
       $rootScope.$broadcast('displayService-error', error);
     });
 
@@ -81,6 +82,12 @@ app.factory('displayService', [
 
     display.formatAge = function (value) {
       return $filter('age')(value, ageKey);
+    };
+
+    /*$routeChangeStart is always fires before $locationChangeStart*/ 
+    display.cancelRouteChange = function(event){
+      display.loading = false;
+      event.preventDefault();
     };
 
     //

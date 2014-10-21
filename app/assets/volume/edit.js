@@ -37,7 +37,7 @@ app.controller('volume/edit', [
       if (url.contains(volume ? volume.editRoute() : page.router.volumeCreate()))
         return;
       if (!leavingSoSoon())
-        return event.preventDefault();
+        return page.display.cancelRouteChange(event); 
       done();
     });
 

@@ -35,7 +35,7 @@ app.controller('party/edit', [
       if (url.contains(party.editRoute()))
         return;
       if (!leavingSoSoon())
-        return event.preventDefault();
+        return page.display.cancelRouteChange(event);
       done();
     });
 

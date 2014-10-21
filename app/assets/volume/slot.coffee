@@ -336,6 +336,6 @@ app.controller('volume/slot', [
     if editing
       done = page.$rootScope.$on '$locationChangeStart', (event, url) ->
         return if url.contains(slot.editRoute())
-        return event.preventDefault() unless confirmDirty()
+        return page.display.cancelRouteChange(event) unless confirmDirty()
         done()
 ])
