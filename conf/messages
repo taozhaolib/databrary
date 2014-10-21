@@ -3,7 +3,7 @@ app.update=The Databrary website has been updated.
 app.reload=Please save your work and <a href="" onclick="window.location.reload()">reload</a> your browser tab.
 
 # --- Formats
-format.offset=Position in seconds
+format.offset=Position in HH:MM:SS.sss
 format.orcid=ORCID iD
 format.boolean=
 format.url=URL or DOI
@@ -11,7 +11,7 @@ format.url=URL or DOI
 # --- Errors
 error.both=Only one of {0} and {1} may be specified
 error.missing=Field value has not been filled
-error.offset=Position in seconds expected
+error.offset=Invalid position (please use HH:MM:SS.sss)
 error.conflict=The requested change conflicts with a previously set value.
 error.date=Invalid date (please use YYYY-MM-DD).
 citation.invalid=Invalid citation: at least citation or DOI is required
