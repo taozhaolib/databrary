@@ -325,14 +325,14 @@ object AssetApi extends AssetController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  private class StartForm extends ApiForm(routes.AssetApi.uploadStart) {
+  private class StartForm(volumeId : Volume.Id) extends ApiForm(routes.AssetApi.uploadStart(volumeId)) {
     val filename = Field(Forms.text)
     val size = Field(Forms.longNumber(1))
   }
 
-  def uploadStart =
-    SiteAction.access(Permission.PUBLIC).async { implicit request =>
-      val form = new StartForm()._bind
+  def uploadStart(v : Volume.Id) =
+    VolumeApi.Action(v, Permission.EDIT).async { implicit request =>
+      val form = new StartForm(v)._bind
       if (AssetFormat.getFilename(form.filename.get).isEmpty)
         form.filename.withError("file.format.unknown")._throw
       for {

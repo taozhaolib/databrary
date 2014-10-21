@@ -101,7 +101,7 @@ app.factory('Store', [
       @progress = 0
       file.store = this
       
-      router.http(router.controllers.AssetApi.uploadStart,
+      router.http(router.controllers.AssetApi.uploadStart, @slot.volume.id,
           filename: file.name
           size: file.size
         ).then((res) =>

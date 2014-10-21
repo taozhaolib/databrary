@@ -184,10 +184,10 @@ DELETE  /api/slot/$containerId<[0-9]+>/record/$recordId<[0-9]+>                 
 # ----- ASSET ----- #
 # GET       ?slot;revisions
 GET     /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.get(assetId : models.Asset.Id)
-POST    /api/asset/start                                                                          controllers.AssetApi.uploadStart
+POST    /api/volume/$volumeId<[0-9]+>/asset/start                                                 controllers.AssetApi.uploadStart(volumeId : models.Volume.Id)
 POST    /api/asset/chunk                                                                          controllers.AssetApi.uploadChunk
 GET     /api/asset/chunk                                                                          controllers.AssetApi.uploadChunkTest
-POST    /api/asset                                                                                controllers.AssetApi.upload(volume : models.Volume.Id)
+POST    /api/volume/$volumeId<[0-9]+>/asset                                                       controllers.AssetApi.upload(volumeId : models.Volume.Id)
 POST    /api/asset/$assetId<[0-9]+>                                                               controllers.AssetApi.update(assetId : models.Asset.Id)
 POST    /api/asset/$assetId<[0-9]+>/replace                                                       controllers.AssetApi.replace(assetId : models.Asset.Id)
 DELETE  /api/asset/$aID<[0-9]+>                                                                   controllers.AssetApi.remove(aID : models.Asset.Id)
