@@ -27,7 +27,10 @@ object periodic {
   def start() {
     every(1.days, 7.hours) {
       logger.info("Running daily cleanup...")
-      models.Token.clean
+      for {
+        _ <- models.Token.clean
+        _ <- models.Volume.updateIndex
+      } yield (())
     }
   }
 }

@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext,Future}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsValue,JsObject,JsNull}
 import macros._
@@ -222,18 +222,18 @@ object Volume extends TableId[Volume]("volume") {
       .apply(i).singleOpt
 
   def search(query : Option[String], party : Option[Party.Id])(implicit site : Site) : Future[Seq[Volume]] =
-    /* XXX ts indexes! */
     row.SELECT(
       party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
+      query.fold("")(_ => "JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', ?) query"),
       "WHERE volume.id > 0 AND",
       party.fold("")(_ => "volume_access.party = ? AND volume_access.individual >= 'EDIT' AND"),
-      query.fold("")(_ => "to_tsvector(name || ' ' || coalesce(body, '')) @@ plainto_tsquery(?) AND"),
+      query.fold("")(_ => "ts @@ query AND"),
       condition,
       "ORDER BY",
-      query.fold("")(_ => "ts_rank(to_tsvector(name || ' ' || coalesce(body, '')), plainto_tsquery(?)),"),
+      query.fold("")(_ => "ts_rank(ts, query) DESC, "),
       party.fold("")(_ => "individual DESC,"),
       "volume.id")
-    .apply(party.fold(SQLArgs())(SQLArgs(_)) ++ query.fold(SQLArgs())(q => SQLArgs(q, q))).list
+    .apply(query.fold(SQLArgs())(SQLArgs(_)) ++ party.fold(SQLArgs())(SQLArgs(_))).list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
@@ -322,6 +322,8 @@ object Volume extends TableId[Volume]("volume") {
     }
   }
 
+  def updateIndex(implicit defaultContext : ExecutionContext) : Future[Boolean] =
+    SQL("SELECT volume_text_refresh()").apply().execute
 }
 
 trait InVolume extends HasPermission {
