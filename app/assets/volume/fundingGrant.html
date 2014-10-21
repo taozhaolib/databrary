@@ -8,7 +8,7 @@
     <label message="funding.awards"></label>
 
     <div ng-repeat="award in fundingGrantForm.data.awards track by $index">
-      <validator name="funding.awards[{{$index}}]">
+      <validator name="funding.awards[{{$index}}]" noclientval>
         <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{::'funding.awards.placeholder' | message}}" key-enter="fundingGrantForm.save()">
         <button ng-click="fundingGrantForm.removeAward($index)" message="remove" class="red mini pull"></button>
       </validator>
