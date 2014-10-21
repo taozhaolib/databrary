@@ -340,7 +340,7 @@ app.directive('spreadsheet', [
               td.className = 'more';
               td.id = id + '-more_' + i + '_' + c;
               for (n = 0; n < t; n ++)
-                td.classList.add(id + '-rec_' + r.id[n][i]);
+                td.classList.add('ss-rec_' + r.id[n][i]);
             } else {
               td.className = 'null';
               if (!n || n === t) {
@@ -367,7 +367,7 @@ app.directive('spreadsheet', [
             var v = r[m][n] && r[m][n][i];
             var cell = generateCell(row, m, v, b + (col.start+mi), ms[mi].assumed);
             if (v !== null) {
-              var ri = id + '-rec_' + r.id[n][i];
+              var ri = 'ss-rec_' + r.id[n][i];
               cell.classList.add(ri);
               cell.classList.add(ri + '_' + m);
             }
@@ -584,7 +584,7 @@ app.directive('spreadsheet', [
               /* TODO age may have changed... not clear how to update. */
             });
 
-            var l = tbody.getElementsByClassName(id + '-rec_' + record.id + '_' + metric.id);
+            var l = tbody.getElementsByClassName('ss-rec_' + record.id + '_' + metric.id);
             for (var li = 0; li < l.length; li ++)
               generateText(l[li], metric.id, v, metric.assumed);
             cell.classList.remove('saving');
