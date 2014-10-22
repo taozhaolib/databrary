@@ -46,13 +46,11 @@
                                         @Messages("asset.untranscoded")
                                     }
                                 }
-                                case ("text", "html") => {
-                                    <iframe src='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
-                                }
                                 case ("text", "plain") => {
                                     <iframe src='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
                                 }
                                 case _ => {
+                                    @Messages("asset.display.unavailable")
                                 }
                             }
                         </div>
