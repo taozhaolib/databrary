@@ -1,6 +1,6 @@
 <div>
-  <div class="classification class-{{::l}}" ng-repeat="(i, l) in ::classification" ng-show="value >= i">
+  <label class="option classification level-{{::i}}" ng-repeat="(i, l) in ::classification" ng-show="value >= i">
     <input ng-if="::i < max" type="checkbox" name="{{::name+'.'+l}}" ng-model="check[i]" ng-change="update()">
     <span ng-class="::{'reminder': i >= max}" message="classification.select.{{::l}}"></span>
-  </div>
+  </label>
 </div>
