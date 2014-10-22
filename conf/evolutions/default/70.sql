@@ -12,7 +12,8 @@ CREATE VIEW "volume_text" ("volume", "text") AS
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
 	UNION ALL SELECT volume, name FROM container WHERE name IS NOT NULL
 	UNION ALL SELECT volume, name FROM asset JOIN slot_asset ON asset.id = asset WHERE name IS NOT NULL
-	UNION ALL SELECT volume, datum FROM record JOIN measure_text ON record.id = record JOIN metric ON metric = metric.id WHERE metric.classification >= 'SHARED';
+	UNION ALL SELECT volume, datum FROM record JOIN measure_text ON record.id = record JOIN metric ON metric = metric.id WHERE metric.classification >= 'SHARED'
+	UNION ALL SELECT volume, tag.name FROM tag JOIN tag_use ON tag.id = tag JOIN container ON container = container.id WHERE up;
 COMMENT ON VIEW "volume_text" IS 'All (searchable) text data associated with a volume.';
 
 CREATE TABLE "volume_text_idx" (
