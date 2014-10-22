@@ -57,7 +57,7 @@ if [[ -n $hpc ]] ; then
 	rate=131072
 	sec=$[60+`stat -c %s "$IN"`/$rate]
 	echo "${args[*]}" > $id.args
-	exec qsub -q s48 -N "$id" -v "dir=$PWD,id=$id,url=$url" -l walltime=$sec "$PBS"
+	exec qsub -N "$id" -v "dir=$PWD,id=$id,url=$url" -l walltime=$sec "$PBS"
 elif [[ -n $PBS_JOBNAME ]] ; then
 	PID=${PBS_JOBID%%.*}
 	read -d '' -r -a args < $id.args
