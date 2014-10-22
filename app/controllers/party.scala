@@ -136,7 +136,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- async.when(Play.isProd, Mail.send(
         to = dl.map(_.email) :+ Mail.authorizeAddr,
         subject = Messages("mail.authorize.subject"),
-        body = Messages("mail.authorize.body", routes.PartyHtml.view(parentId).absoluteURL(Play.isProd),
+        body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId).absoluteURL(Play.isProd) + "?page=grant",
           request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
           parent.name)
       ).recover {
