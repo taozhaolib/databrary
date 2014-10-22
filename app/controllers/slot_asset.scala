@@ -33,7 +33,8 @@ object SlotAssetController extends SlotAssetController {
     if (s.format.isImage)
       AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
     else
-      async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png"))
+      async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png")
+        .withHeaders(CACHE_CONTROL -> "max-age=31556926"))
   }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
