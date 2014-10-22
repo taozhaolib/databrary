@@ -141,6 +141,9 @@ app.controller('volume/slot', [
       select() if track == $scope.current
       $scope.tracks.remove(track)
 
+    addBlank = () ->
+      $scope.tracks.push(blank = new Track())
+
     class Track extends Store
       constructor: (asset) ->
         super slot, asset
@@ -179,16 +182,17 @@ app.controller('volume/slot', [
           sortTracks()
 
       upload: (file) ->
-        super(file)?.then (done) =>
-          return unless done
+        addBlank() if this == blank
+        super(file).then (done) =>
+          return removed this unless done
           ### jshint ignore:start ###
           @data.name ||= file.file.name
           ### jshint ignore:end ###
-          $scope.tracks.push(blank = new Track()) if this == blank
+          return
 
     $scope.fileAdded = (file) ->
-      return unless editing
-      (!$scope.current?.file && $scope.current || blank).upload(file)
+      (!$scope.current?.file && $scope.current || blank).upload(file) if editing
+      return
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
@@ -302,7 +306,7 @@ app.controller('volume/slot', [
     updateRange(page.models.Segment.full)
 
     $scope.tracks = (new Track(asset) for asset in slot.assets)
-    $scope.tracks.push(blank = new Track()) if editing
+    addBlank() if editing
     sortTracks()
 
     $scope.records = (->
