@@ -2,20 +2,18 @@
 
 app.controller('party/network', [
   '$scope', 'pageService', function ($scope, page) {
-    $scope.refreshPanel = getPartyAuth;
-
-    //
-
     var actionMessages = {};
 
     $scope.$on('$destroy', function () {
       angular.forEach(actionMessages, function (bundle) {
-        page.messages.remove(bundle.message);
+        bundle.message.remove();
       });
     });
 
-    var getPartyAuth = function () {
-      if (!$scope.party.checkPermission(page.permission.ADMIN))
+    $scope.isAdmin = $scope.party.checkPermission(page.permission.ADMIN);
+
+    $scope.refreshPanel = function () {
+      if (!$scope.isAdmin)
         return;
       angular.forEach($scope.party.children, function (party) {
         if (!party.member && !party.site) {
@@ -37,8 +35,6 @@ app.controller('party/network', [
     };
 
     //
-
-    $scope.isAdmin = $scope.party.checkPermission(page.permission.ADMIN);
 
     var userExists = function (list) {
       var user = page.models.Login.user.id;
