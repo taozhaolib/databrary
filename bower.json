@@ -2,6 +2,6 @@
 "name": "databrary",
 "dependencies": {
   "purescript-angular": "git://github.com/purescript-contrib/purescript-angular.git",
-  "purescript-maps": "0.0.5"
+  "purescript-maps": "*"
 }
 }
