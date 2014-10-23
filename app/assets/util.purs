@@ -39,7 +39,6 @@ foreign import invertArray """
     var r = {};
     for (var i = 0; i < a.length; i ++)
       r[a[i]] = i;
-    console.log(r);
     return r;
   }""" :: [String] -> StrMap Number
 

@@ -16,18 +16,16 @@ type Locals =
   )
 
 -- link :: forall e . Scope Locals -> ReadWriteEff e Unit
-link scope = do
-  updateScope init scope
-  where 
-    update :: Object Locals -> Object Locals
-    update s = s { value = findIndex id s.check }
-    init :: Object Locals -> Object Locals
-    init s = s
-      { classification = constants.classification
-      , max = Constants.classification "PUBLIC"
-      , check = mapRange ((<=) s.value) (Data.Array.length constants.classification)
-      , update = updateScope update scope
-      }
+link scope = updateScope init scope where 
+  update :: Object Locals -> Object Locals
+  update s = s { value = findIndex id s.check }
+  init :: Object Locals -> Object Locals
+  init s = s
+    { classification = constants.classification
+    , max = Constants.classification "PUBLIC"
+    , check = mapRange ((<=) s.value) (Data.Array.length constants.classification)
+    , update = updateScope update scope
+    }
 
 directive = do
   returnE {
