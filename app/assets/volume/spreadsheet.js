@@ -207,6 +207,8 @@ app.directive('spreadsheet', [
 
           for (var ri = 0; ri < slot.records.length; ri ++) {
             var record = volume.records[slot.records[ri].id];
+            /* temporary workaround for half-built volume inclusions: */
+            if (!record) continue;
             var c = record.category || 0;
 
             /* populate depends: */
