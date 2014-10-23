@@ -72,7 +72,7 @@
                 case form : AuthorizeSearchForm => {
                     <input type='hidden' name='pending' value='true'/>
                     <button type='submit' class="button third">Search</button>
-                @if(form.name.get.nonEmpty) {
+                @if(form.name.get != null) {
                     <button type='submit' class="button first" name='notfound' value='true'>@Messages("auth.notfound")</button>
                 }
                 }
