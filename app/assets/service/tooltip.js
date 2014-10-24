@@ -1,9 +1,8 @@
 'use strict';
 
 app.factory('tooltipService', [
-  '$rootScope', '$timeout', function ($rootScope, $timeout) {
-
-    var $doc = $(document);
+  '$rootScope', '$timeout', '$document',
+  function ($rootScope, $timeout, $doc) {
 
     var padW = 20;
     var padH = 15;
@@ -65,18 +64,18 @@ app.factory('tooltipService', [
       var $e = $('#' + tooltip.id);
 
       if (center.left > center.right) {
-        tooltip.style.left = (locx + $(window).scrollLeft() - $e.outerWidth() + padW) + 'px';
+        tooltip.style.left = (locx + $w.scrollLeft() - $e.outerWidth() + padW) + 'px';
         tooltip.position.push('left');
       } else {
-        tooltip.style.left = (locx + $(window).scrollLeft() - padW) + 'px';
+        tooltip.style.left = (locx + $w.scrollLeft() - padW) + 'px';
         tooltip.position.push('right');
       }
 
       if (center.top > center.bottom) {
-        tooltip.style.top = (locy + $(window).scrollTop() - $e.outerHeight() - padH) + 'px';
+        tooltip.style.top = (locy + $w.scrollTop() - $e.outerHeight() - padH) + 'px';
         tooltip.position.push('top');
       } else {
-        tooltip.style.top = (locy + $(window).scrollTop() + padH) + 'px';
+        tooltip.style.top = (locy + $w.scrollTop() + padH) + 'px';
         tooltip.position.push('bottom');
       }
     }
@@ -129,15 +128,15 @@ app.factory('tooltipService', [
       var timeout;
 
       if (tooltip.live) {
-        $doc.on(events[0], tooltip.$target, function (event) {
+        $doc.on(events[0], $target, function (event) {
           var target = $(event.target);
           timeout = $timeout(function () {
-            if (target.is(tooltip.$target)) // may have changed
+            if (target.is($target)) // may have changed
               tooltip.show(event);
           }, tooltip.delay);
         });
 
-        $doc.on(events[1], tooltip.$target, $rootScope.$lift(function () {
+        $doc.on(events[1], $target, $rootScope.$lift(function () {
           $timeout.cancel(timeout);
           tooltip.hide();
         }));

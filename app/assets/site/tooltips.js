@@ -1,11 +1,10 @@
 'use strict';
 
 app.directive('tooltips', [
-  'pageService', function (page) {
-    var controller = [function () {
-      var tooltips = {};
-
-      tooltips.getTooltipClasses = function (tooltip) {
+  'pageService',
+  function (page) {
+    var link = function ($scope) {
+      $scope.getTooltipClasses = function (tooltip) {
         var classes = tooltip.cls.split(' ');
 
         classes.push('tooltip');
@@ -22,17 +21,14 @@ app.directive('tooltips', [
         return classes;
       };
 
-      tooltips.list = page.tooltips.list;
-
-      return tooltips;
-    }];
+      $scope.tooltips = page.tooltips.list;
+    };
 
     return {
       restrict: 'E',
-      replace: true,
+      scope: {},
       templateUrl: 'site/tooltips.html',
-      controller: controller,
-      controllerAs: 'tooltips',
+      link: link
     };
   }
 ]);
