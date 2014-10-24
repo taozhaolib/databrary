@@ -36,7 +36,7 @@
       <tr class="spreadsheet-head-metrics">
         <th id="{{::id}}-name" class="first sort sortable" ng-click="clickSlot($event, 'name')"/>
         <th ng-if="::!top" id="{{::id}}-date" class="sort sortable" ng-click="clickSlot($event, 'date')">test date</th>
-        <th id="{{::id}}-consent" class="last sort sortable" ng-click="clickSlot($event, 'consent')"></th>
+        <th id="{{::id}}-consent" class="last sort sortable" ng-click="clickSlot($event, 'consent')">release</th>
 
         <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-desc': currentSort === col && currentSortDirection, 'sort-asc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
         <th ng-if="::editing" class="first last"></th>
