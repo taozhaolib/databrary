@@ -4,14 +4,9 @@ app.factory('tooltipService', [
   '$rootScope', '$timeout', '$document',
   function ($rootScope, $timeout, $doc) {
 
-    var padW = 20;
-    var padH = 15;
-
     var defaults = {
-      cls: '',
+      cls: 'tooltip-blue',
       style: {},
-      type: 'blue',
-      visible: false,
       live: false,
       delay: 500,
     };
@@ -31,54 +26,6 @@ app.factory('tooltipService', [
       removeEvents(this);
       delete Tooltip.list[this.id];
     };
-
-    Tooltip.prototype.show = function (event) {
-      position(this, event.clientX, event.clientY);
-      this.visible = true;
-    };
-
-    Tooltip.prototype.hide = function () {
-      position(this);
-      this.visible = false;
-    };
-
-    function position(tooltip, locx, locy) {
-      tooltip.position = [];
-
-      if (arguments.length === 1)
-        return;
-
-      if (!locx)
-        locx = tooltip.$target.offset().left;
-      if (!locy)
-        locy = tooltip.$target.offset().top;
-
-      var $w = $(window);
-      var center = {
-        left: locx,
-        top: locy,
-        right: $w.width() - locx,
-        bottom: $w.height() - locy
-      };
-
-      var $e = $('#' + tooltip.id);
-
-      if (center.left > center.right) {
-        tooltip.style.left = (locx + $w.scrollLeft() - $e.outerWidth() + padW) + 'px';
-        tooltip.position.push('left');
-      } else {
-        tooltip.style.left = (locx + $w.scrollLeft() - padW) + 'px';
-        tooltip.position.push('right');
-      }
-
-      if (center.top > center.bottom) {
-        tooltip.style.top = (locy + $w.scrollTop() - $e.outerHeight() - padH) + 'px';
-        tooltip.position.push('top');
-      } else {
-        tooltip.style.top = (locy + $w.scrollTop() + padH) + 'px';
-        tooltip.position.push('bottom');
-      }
-    }
 
     var focusElements = ['INPUT', 'SELECT', 'TEXTAREA'];
     function getTargetEvents(tooltip) {
@@ -132,28 +79,28 @@ app.factory('tooltipService', [
           var target = $(event.target);
           timeout = $timeout(function () {
             if (target.is($target)) // may have changed
-              tooltip.show(event);
+              tooltip.target = event.target;
           }, tooltip.delay);
         });
 
         $doc.on(events[1], $target, $rootScope.$lift(function () {
+          tooltip.target = undefined;
           $timeout.cancel(timeout);
-          tooltip.hide();
         }));
       } else {
         $target.bind(events[0], function (event) {
           timeout = $timeout(function () {
-            tooltip.show(event);
+            tooltip.target = event.target;
           }, tooltip.delay);
         });
 
         $target.bind(events[1], $rootScope.$lift(function () {
+          tooltip.target = undefined;
           $timeout.cancel(timeout);
-          tooltip.hide();
         }));
       }
 
-      tooltip.hide();
+      tooltip.target = undefined;
 
       return tooltip;
     }
@@ -172,7 +119,7 @@ app.factory('tooltipService', [
 
     Tooltip.clear = function () {
       angular.forEach(Tooltip.list, function (tooltip) {
-        tooltip.hide();
+        tooltip.target = undefined;
       });
     };
 

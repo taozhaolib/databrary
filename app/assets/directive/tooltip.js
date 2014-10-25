@@ -9,8 +9,6 @@ app.directive('tooltip', [
         tooltip.id = $attrs.tooltipId;
       if ('tooltipClass' in $attrs)
         tooltip.cls = $attrs.tooltipClass;
-      if ('tooltipType' in $attrs)
-        tooltip.type = $attrs.tooltipType;
       tooltip.message = $scope.$eval($attrs.tooltip);
       tooltip.$target = $element;
 

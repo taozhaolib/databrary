@@ -1,5 +1,3 @@
 <div id="tooltips" class="tooltips">
-  <div ng-repeat="tooltip in tooltips" id="{{tooltip.id}}" ng-class="getTooltipClasses(tooltip)" ng-style="tooltip.style">
-    <div class="tooltip-content" ng-bind="tooltip.message"></div>
-  </div>
+  <tooltip ng-repeat="tooltip in tooltips track by tooltip.id" ng-if="tooltip.target"></tooltip>
 </div>
