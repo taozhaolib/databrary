@@ -1,7 +1,0 @@
-@(title : String = "There's been an error!")(body : Html)(request : RequestHeader)
-
-@template.raw(title) {
-    <article class="article article_error">
-        @body
-    </article>
-}(request)

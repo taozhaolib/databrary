@@ -1,6 +1,6 @@
 @(implicit request: SiteRequest[_])
 
-@template.html5(Messages("error.forbidden.title")) {
+@template(Messages("error.forbidden.title")) {
     @widget.panel.error(Messages("error.forbidden.title")) {
         @HtmlFormat.raw(Messages("error.forbidden.body"))
         @if(request.user.isEmpty) {

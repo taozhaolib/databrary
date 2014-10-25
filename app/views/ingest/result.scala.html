@@ -1,6 +1,7 @@
 @(vol : models.Volume, res : Iterable[SiteObject])(implicit request : SiteRequest[_])
 
-@template.action("Ingestion Result") {
+@template("Ingestion Result") {
+  <article class="view">
     @ingest.panel("Ingestion Results"){
         <div>
             <ul>
@@ -10,5 +11,6 @@
             </ul>
         </div>
     }
+  </article>
 }
 

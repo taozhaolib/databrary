@@ -1,5 +1,0 @@
-@(volume: Volume, caption: Html = Html(""), link: String = "", title: String = "", classes: String = "")(implicit request: SiteRequest[_])
-
-@widget.figure.raw("volume_"+volume.id, ("figure_volume "+classes).trim)(caption, link, title){
-    <div class="image" style="background-image: url('@routes.VolumeController.thumb(volume.id)')"></div>
-}

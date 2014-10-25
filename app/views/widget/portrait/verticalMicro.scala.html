@@ -1,5 +1,0 @@
-@(party: Party, classes: String = "")(implicit request: SiteRequest[_])
-
-<div class="portrait_micro_wrap">
-    @widget.portrait.raw(party, ("portrait_vertical portrait_micro "+classes).trim)(institutions = false, links = false)
-</div>

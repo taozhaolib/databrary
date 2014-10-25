@@ -1,8 +1,8 @@
 @(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
 
-@template.crud("Asset" + asset.asset.name.fold("")(": " + _)) {
-
-@widget.panel.raw("overview", "panel_asset")(){
+@template("Asset" + asset.asset.name.fold("")(": " + _)) {
+<article class="wrap">
+@widget.panel.raw("overview", "panel_asset"){
     <div class="col panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(asset).toHtml
@@ -18,8 +18,8 @@
 
     <h1 class="col panel_title">@display.formatTitle(asset.pageName)</h1>
 
-    @widget.frame.raw("asset", "")("Metadata") {
-        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+    @widget.frame.raw("asset", "", "Metadata") {
+        <div class="col-desktop-8 col-tablet-6 col-mobile-6">
             <div class="metadata">
                 <dl class="flat">
                     <dt>Classification</dt>
@@ -43,4 +43,5 @@
 
     @widget.panel.materials(Seq(asset))
     @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)
+</article>
 }

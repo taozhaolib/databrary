@@ -1,6 +1,7 @@
 @(formats : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
 
-@template.crud(Messages("help.formats.title"), angular = Some(play.api.libs.json.JsNull)) {
+@template(Messages("help.formats.title"), angular = Some(play.api.libs.json.JsNull)) {
+<article class="wrap">
   <div class="row">
     <h1 class="view-title">@Messages("help.formats.title")</h3>
     <p>@display.rawFormat(Messages("help.formats.body"))</p>
@@ -26,4 +27,5 @@
       </table>
     </div>
   </div>
+</article>
 }

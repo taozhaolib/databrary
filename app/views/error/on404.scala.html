@@ -1,8 +1,10 @@
 @(request: RequestHeader)
 
-@template.error(Messages("error.notfound.title")) {
+@template(Messages("error.notfound.title")) {
+  <article class="article article_error">
     @widget.panel.error(Messages("error.notfound.title")) {
         @HtmlFormat.raw(Messages("error.notfound.body"))
         <div>@request.path</div>
     }
+  </article>
 }(request)

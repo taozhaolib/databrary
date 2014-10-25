@@ -4,12 +4,12 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-    @widget.panel.raw("tags", "")(Messages("tags.title")){
-        <div class="panel_tags_list col-desktop-6 col-laptop-6 col-tablet-6 col-mobile-3">
+    @widget.panel.raw("tags", "", Messages("tags.title")){
+        <div class="panel_tags_list col-desktop-6 col-tablet-6 col-mobile-3">
                 <ol class="panel_tags_items row">
                 @if(tags.nonEmpty) {
                     @tags.map { tw =>
-                        <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-laptop-3 col-tablet-3 col-mobile-6">
+                        <li id="tag_@tw.tag.id" class="panel_tags_item col-desktop-3 col-tablet-3 col-mobile-6">
                         @widget.tag.form(form) {
 
                             @widget.tag.inputHidden(form.name.fill(Some(tw.tag.name))())
@@ -29,7 +29,7 @@
             </ol>
         </div>
 
-        <div id="tag_add" class="panel_tags_form col-desktop-6 col-laptop-6 col-tablet-3 col-mobile-6">
+        <div id="tag_add" class="panel_tags_form col-desktop-6 col-tablet-3 col-mobile-6">
             @widget.tag.form(form) {
                 @widget.tag.inputText(form.name.fill(None)(), 'placeholder -> "Add new tag")
                 @widget.formErrors(form)

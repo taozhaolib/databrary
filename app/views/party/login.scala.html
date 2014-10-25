@@ -4,7 +4,8 @@
     helper.FieldConstructor(widget.tag.minimalFieldConstructor.f)
 }
 
-@template.action(Messages("login.title"), angular = Some(play.api.libs.json.JsNull)) {
+@template(Messages("login.title"), angular = Some(play.api.libs.json.JsNull)) {
+  <article class="view">
     @widget.panel.form(Messages("login.title.sub"), Messages("login.title")) {
         <div>
             @widget.tag.form(form) {
@@ -18,4 +19,5 @@
             }
         </div>
     }
+  </article>
 }

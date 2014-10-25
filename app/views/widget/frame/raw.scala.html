@@ -1,4 +1,4 @@
-@(id: String, classes: String)(title: String = "")(body: Html)
+@(id: String, classes: String, title: String = "")(body: Html)
 
 <article id="frame-@id" class="frame col frame-@id @classes">
   @if(title.nonEmpty) {

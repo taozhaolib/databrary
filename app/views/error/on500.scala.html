@@ -1,9 +1,11 @@
 @(request : RequestHeader, throwable : Throwable)
 
-@template.error(Messages("error.internal.title")) {
+@template(Messages("error.internal.title")) {
+  <article class="article article_error">
     @widget.panel.error(Messages("error.internal.title")) {
         @HtmlFormat.raw(Messages("error.internal.body"))
         <div>Error code: @throwable.toString</div>
         <div>@throwable.getMessage</div>
     }
+  </article>
 }(request)

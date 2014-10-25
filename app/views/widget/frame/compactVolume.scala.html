@@ -1,6 +1,6 @@
 @(volume: Volume, access : Seq[Party])(implicit request : SiteRequest[_])
 
-@widget.frame.raw("volume", "volume-list-result cf")("") {
+@widget.frame.raw("volume", "volume-list-result cf", "") {
   <h1>@display(volume)</h1>
   <div class="volume-list-investigators">
     <strong>@Messages("volume.contributors.title"):</strong>

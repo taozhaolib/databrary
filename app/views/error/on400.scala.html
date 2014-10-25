@@ -1,9 +1,11 @@
 @(request: RequestHeader, error: String)
 
-@template.error(Messages("error.badrequest.title")) {
+@template(Messages("error.badrequest.title")) {
+  <article class="article article_error">
     @widget.panel.error(Messages("error.badrequest.title")) {
         @HtmlFormat.raw(Messages("error.badrequest.body"))
         <div>@error</div>
         <div>@request.path</div>
     }
+  </article>
 }(request)

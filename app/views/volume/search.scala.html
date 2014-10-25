@@ -4,8 +4,9 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.action(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
-@widget.panel.raw("search", "panel_search")(""){
+@template(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
+  <article class="view">
+  @widget.panel.raw("search", "panel_search"){
     <div class="search-form search-form-search col">
         @widget.tag.form(form) {
             @widget.tag.inputText(form.query(), 'placeholder -> Messages("search.prompt"))
@@ -21,5 +22,6 @@
         }
       </ul>
     </div>
-}
+  }
+  </article>
 }

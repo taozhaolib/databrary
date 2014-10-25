@@ -1,9 +1,9 @@
 @(slots : Seq[Slot])(implicit request : RecordHtml.Request[_])
 
 @defining(request.obj) { record =>
-@template.crud("Record: " + record.pageName) {
-
-@widget.panel.raw("overview", "panel_record")(){
+@template("Record: " + record.pageName) {
+<article class="wrap">
+@widget.panel.raw("overview", "panel_record"){
     <div class="col panel_overview_actions">
         <ul class="breadcrumbs">
         @Path(record).toHtml
@@ -20,8 +20,8 @@
 
     <h1 class="col panel_title">@display.formatTitle(record.pageName)</h1>
 
-    @widget.frame.raw("record", "")("Metadata") {
-        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+    @widget.frame.raw("record", "", "Metadata") {
+        <div class="col-desktop-8 col-tablet-6 col-mobile-6">
             <div class="metadata">
                 <dl class="flat">
                     @record.measures.list.map { m =>
@@ -34,7 +34,7 @@
     }
 }
 
-      @widget.panel.raw("sessions", "")(title = "Sessions"){
+      @widget.panel.raw("sessions", "", title = "Sessions"){
           <div class="col">
               <ul>
                   @slots.map { slot =>
@@ -45,4 +45,5 @@
       }
 
 }
+</article>
 }

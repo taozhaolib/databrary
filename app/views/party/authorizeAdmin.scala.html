@@ -34,7 +34,8 @@
     </table>
 }
 
-@template.action("Admin Authorizations") {
+@template("Admin Authorizations") {
+  <article class="view">
     <h3>Parties</h3>
     <table>
     <thead>
@@ -117,4 +118,5 @@
 
     <h3>Expried</h3>
     @authorizeList(expired)
+  </article>
 }

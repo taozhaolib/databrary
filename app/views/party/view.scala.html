@@ -2,9 +2,9 @@
 
 @defining(request.obj.party) { party =>
 @defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.individual >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
-@template.crud("Profile: " + request.obj.party.name, angular = Some(request.obj.json.js)) {
-
-@widget.panel.raw("overview", "panel_party")(Messages("network.title")){
+@template("Profile: " + request.obj.party.name, angular = Some(request.obj.json.js)) {
+<article class="wrap">
+@widget.panel.raw("overview", "panel_party", Messages("network.title")){
     <div class="col panel_overview_actions">
         <ul class="actions">
                 <li><a href="@request.obj.pageURL">view</a></li>
@@ -17,12 +17,14 @@
         </ul>
     </div>
 
-    @widget.figure.thumbParty(party, classes = "panel_overview_thumbnail")
+    @widget.figure("party_"+party.id, "figure_volume panel_overview_thumbnail"){
+        <div class="image" style="background-image: url('@display.avatar(party, 400)')"></div>
+    }
 
     <h1 class="col panel_title">@display.formatTitle(party.pageName)</h1>
 
-    @widget.frame.raw("contact", "")(Messages("party.contact.title")) {
-        <div class="col-desktop-8 col-laptop-8 col-tablet-6 col-mobile-6">
+    @widget.frame.raw("contact", "", Messages("party.contact.title")) {
+        <div class="col-desktop-8 col-tablet-6 col-mobile-6">
             <div class="metadata">
                 <dl class="flat">
                     @party.email.map { e =>
@@ -54,4 +56,5 @@
 
 }
 }
+</article>
 }

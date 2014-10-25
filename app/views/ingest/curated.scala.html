@@ -4,7 +4,8 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template.action("CSV Ingestion") {
+@template("CSV Ingestion") {
+  <article class="view">
     @ingest.panel("CSV Ingestion"){
         <div>
 
@@ -21,4 +22,5 @@
             @target.map(display(_))
         </div>
     }
+  </article>
 }
