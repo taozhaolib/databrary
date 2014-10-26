@@ -1,13 +1,19 @@
 module Constants (
     Constants(..)
   , constants
+  , Permission(..)
   , permission
+  , Classification(..)
   , classification
+  , Consent(..)
+  , consent
   ) where
 
-import Data.StrMap (lookup)
-import Data.Maybe (Maybe(..))
-import Util
+import Data.Array (elemIndex)
+
+newtype Permission = Permission Number
+newtype Classification = Classification Number
+newtype Consent = Consent Number
 
 type Constants = {
     permission :: [String]
@@ -17,11 +23,31 @@ type Constants = {
 
 foreign import constants :: Constants
 
-permissionMap = invertArray constants.permission
-classificationMap = invertArray constants.classification
+-- it would be nice to auto-generate these:
 
-permission :: String -> Number
-permission = unsafeLookup permissionMap
+permission =
+  { none:   p "NONE"
+  , public: p "PUBLIC"
+  , shared: p "SHARED"
+  , read:   p "READ"
+  , edit:   p "EDIT"
+  , admin:  p "ADMIN"
+  } where
+  p n = Permission $ elemIndex n constants.permission
 
-classification :: String -> Number
-classification = unsafeLookup classificationMap
+classification =
+  { private:    c "PRIVATE"
+  , restricted: c "RESTRICTED"
+  , shared:     c "SHARED"
+  , public:     c "PUBLIC"
+  } where
+  c n = Classification $ elemIndex n constants.classification
+
+consent =
+  { none:     c "NONE"
+  , private:  c "PRIVATE"
+  , shared:   c "SHARED"
+  , excerpts: c "EXCERPTS"
+  , public:   c "PUBLIC"
+  } where
+  c n = Consent $ elemIndex n constants.consent

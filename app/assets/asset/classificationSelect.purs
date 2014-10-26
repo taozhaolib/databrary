@@ -10,7 +10,7 @@ type Locals =
   ( value :: Number
   , name :: String
   , classification :: [String]
-  , max :: Number
+  , max :: Classification
   , check :: [Boolean]
   , update :: forall e . ReadWriteEff e Unit
   )
@@ -22,7 +22,7 @@ link scope = updateScope init scope where
   init :: Object Locals -> Object Locals
   init s = s
     { classification = constants.classification
-    , max = Constants.classification "PUBLIC"
+    , max = Constants.classification.public
     , check = mapRange ((<=) s.value) (Data.Array.length constants.classification)
     , update = updateScope update scope
     }
