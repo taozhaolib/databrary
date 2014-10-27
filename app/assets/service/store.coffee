@@ -1,8 +1,8 @@
 'use strict'
 
 app.factory('Store', [
-  'constantService', 'routerService', '$filter', 'messageService', 'modelService',
-  (constants, router, $filter, messages, models) -> class Store
+  '$sce', 'constantService', 'routerService', '$filter', 'messageService', 'modelService',
+  ($sce, constants, router, $filter, messages, models) -> class Store
     constructor: (@slot, asset) ->
       if asset
         @setAsset(asset)
@@ -111,7 +111,7 @@ app.factory('Store', [
         , (res) =>
           messages.addError
             type: 'red'
-            body: constants.message('asset.upload.rejected', @name)
+            body: constants.message('asset.upload.rejected', {sce:$sce.HTML}, @name)
             report: res
           file.cancel()
           delete @file

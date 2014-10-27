@@ -89,25 +89,18 @@ app.factory('messageService', [
         var moreBody = '';
         var messageBody = '';
 
-        if (angular.isObject(message.errors)) {
-          angular.forEach(message.errors, function (errorArray, field) {
-            moreBody += '<dl class="comma"><dt>' + (field || 'Reason') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
-            messageBody += (field || 'Reason') + ':\n' + errorArray.join('\n') + '\n\n';
-          });
-        }
+        if (message.statusText)
+          messageBody += 'Status:\n' + message.statusText + '\n\n';
 
-        var refreshMsg = false;
-        if (message.status) {
-          messageBody = 'Status:\n' + message.status + '\n\n' + messageBody;
-          refreshMsg = message.status == 409;
-        }
+        angular.forEach(message.errors, function (errorArray, field) {
+          moreBody += '<dl class="comma"><dt>' + (field || 'Reason') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
+          messageBody += (field || 'Reason') + ':\n' + errorArray.join('\n') + '\n\n';
+        });
 
-        if (messageBody) {
-          body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 'Unknown', message.url || 'Location unknown')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
-          if(refreshMsg){
-              body += "<br>" + constants.message('app.reload');
-          }
-        }
+        if (messageBody)
+          body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 0, message.url || '')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
+        if (message.status == 409)
+          body += "<br>" + constants.message('app.reload');
       }
 
       delete message.report;
