@@ -306,7 +306,7 @@ object Adolph extends Ingest {
               check(as.container === c,
                 PopulateException("existing asset in different container", as))
             }
-          } yield (())
+          } yield ()
         }
         cr <- c.records.map(_.groupBy(_.category.map(_.id)))
         _ <- (records - Participant.category).values foreachAsync { r =>
@@ -316,7 +316,7 @@ object Adolph extends Ingest {
               PopulateException("multiple existing records for category " + r.category, c))
             r <- r.populate(volume, crs.headOption)
             _ <- if (crs.isEmpty) r.addSlot(c) else async(false)
-          } yield (())
+          } yield ()
         }
       } yield (c)
   }

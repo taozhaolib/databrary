@@ -112,7 +112,7 @@ object VolumeController extends VolumeController {
     case _ => false
   }).transform[Option[Citation]]({
     case (None, None, Nil, None) => None
-    case (head, url, authors, year) => Some(Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
+    case (head, url, authors, year) => Some(new Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
   }, {
     case None => (None, None, Nil, None)
     case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))

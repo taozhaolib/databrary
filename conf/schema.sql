@@ -237,13 +237,24 @@ CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURN
 $$;
 COMMENT ON FUNCTION "volume_access_check" (integer, integer) IS 'Permission level the party has on the given volume, either directly, delegated, or inherited.';
 
+CREATE TABLE "volume_reference" (
+	"volume" integer NOT NULL References "volume",
+	"head" text NOT NULL,
+	"url" text NOT NULL,
+	Unique ("volume", "url")
+);
+COMMENT ON TABLE "volume_reference" IS 'Links from volumes to externals resources.';
+
+SELECT audit.CREATE_TABLE ('volume_reference');
+
 CREATE TABLE "volume_citation" (
 	"volume" integer NOT NULL Unique References "volume",
 	"head" text NOT NULL,
 	"url" text,
 	"authors" text[],
 	"year" smallint Check ("year" BETWEEN 1900 AND 2900)
-);
+) INHERITS ("volume_reference");
+ALTER TABLE "volume_citation" ALTER "url" DROP NOT NULL;
 COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
 
 SELECT audit.CREATE_TABLE ('volume_citation');

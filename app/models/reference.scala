@@ -9,8 +9,20 @@ import macros.async._
 import dbrary._
 import site._
 
+sealed abstract class ExternalLink(head : String, url : Option[URL]) {
+  def json = JsonObject.flatten(
+    Some('head -> head),
+    url.map('url -> _)
+  )
+}
+
+/** A reference to an external resource. */
+final class Reference(val head : String, val url : URL)
+  extends ExternalLink(head, Some(url))
+
 /** A citation or reference to a publication or other external resource. */
-final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val authors : Option[IndexedSeq[String]] = None, val year : Option[Short] = None) {
+final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val authors : Option[IndexedSeq[String]] = None, val year : Option[Short] = None)
+  extends ExternalLink(head, url) {
   def orElse(other : Citation) =
     new Citation(
       Maybe(head) orElse other.head,
@@ -25,10 +37,8 @@ final case class Citation(val head : String, val title : Option[String] = None, 
     else
       url.fold(async(this))(Citation.get(_).map(_.fold(this)(if (replace) _ orElse this else this orElse _)))
 
-  def json = JsonObject.flatten(
-    Some('head -> head),
+  override def json = super.json ++ JsonObject.flatten(
     Some('title -> title),
-    url.map('url -> _),
     authors.map('authors -> _),
     year.map('year -> _)
   )
@@ -81,6 +91,31 @@ object Citation {
     })
 }
 
+object VolumeReference extends Table[Reference]("volume_reference") {
+  private val columns = Columns(
+      SelectColumn[String]("head")
+    , SelectColumn[URL]("url")
+    ).map { (head, url) =>
+      new Reference(head = head, url = url)
+    }
+
+  private[models] def get(vol : Volume) : Future[Seq[Reference]] =
+    columns.from("ONLY " + _)
+    .SELECT("WHERE volume = ?")
+    .apply(vol.id).list
+
+  private[models] def set(vol : Volume, refs : Seq[Reference]) : Future[Unit] = {
+    implicit val site = vol.site
+    val i = SQLTerms('volume -> vol.id)
+    implicitly[Site.DB].inTransaction { implicit siteDB => for {
+      _ <- Audit.remove("ONLY " + table, i).execute
+      _ <- refs.foreachAsync { r =>
+        Audit.add(table, i ++ SQLTerms('head -> r.head, 'url -> r.url)).execute
+      }
+    } yield () }
+  }
+}
+
 object VolumeCitation extends Table[Citation]("volume_citation") {
   private val columns = Columns(
       SelectColumn[String]("head")
@@ -99,9 +134,9 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
   private[models] def set(vol : Volume, cite : Option[Citation]) : Future[Boolean] = {
     implicit val site = vol.site
     cite.fold {
-      Audit.remove("volume_citation", SQLTerms('volume -> vol.id))
+      Audit.remove(table, SQLTerms('volume -> vol.id))
     } { cite =>
-      Audit.changeOrAdd("volume_citation", SQLTerms('head -> cite.head, 'url -> cite.url, 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
+      Audit.changeOrAdd(table, SQLTerms('head -> cite.head, 'url -> cite.url, 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
     }.execute
   }
 }

@@ -30,7 +30,7 @@ object periodic {
       for {
         _ <- models.Token.clean
         _ <- models.Volume.updateIndex
-      } yield (())
+      } yield ()
     }
   }
 }
