@@ -3,7 +3,7 @@
     <div class="col">
       <hgroup class="panel-overview-volume-header">
         <div class="panel-overview-volume-header-fill grid-outside"></div>
-        <div ng-if="!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
+        <div ng-if="::!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
         <div class="panel-overview-volume-type">
           <span class="icon" ng-class="::volume.type" hint="object-{{volume.type}}"></span>&nbsp;<span message="{{::volume.type}}"></span>
         </div>
@@ -13,31 +13,39 @@
 
     <div class="col-desktop-9 col-tablet-6 col-mobile-6">
       <div>
-        <div ng-if="!!volume.citation" frame id="frame-citation" frame-title="volume.citation.title" fold>
+        <div ng-if="::!!volume.citation" frame id="frame-citation" frame-title="volume.citation.title" fold>
           <p class="panel-overview-volume-citation">
-            <span ng-bind="::volume.citation.head"></span>&nbsp;<a ng-if="::volume.citation.url" ng-href="{{::volume.citation.url | handle}}" ng-title="volume.citation.title" target="_blank" message="link"></a>
+            <span ng-bind="::volume.citation.head"></span>&nbsp;<a ng-if="::volume.citation.url" ng-href="{{::volume.citation.url | handle}}" ng-title="::volume.citation.title" target="_blank" message="link"></a>
           </p>
         </div>
 
         <div frame id="frame-metadata" frame-title="volume.body" fold>
-          <div class="description" ng-bind-html="volume.body | format"></div>
+          <div class="description" ng-bind-html="::volume.body | format"></div>
 
           <div class="metadata">
             <dl class="flat">
               <dt message="volume.creation.title"></dt>
               <dd>
-                <time datetime="{{volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>{{volume.creation |
-                  date:'MMMM yyyy'}}
+                <time datetime="{{::volume.creation | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
+                  {{::volume.creation | date:'MMMM yyyy'}}
                 </time>
               </dd>
 
-              <dt ng-if="!!volume.summary.sessions" message="volume.sessions.title"></dt>
-              <dd ng-if="!!volume.summary.sessions" ng-bind="::'volume.sessions' | message:volume.summary.sessions:volume.summary.shared"></dd>
+              <dt ng-if="::!!volume.summary.sessions" message="volume.sessions.title"></dt>
+              <dd ng-if="::!!volume.summary.sessions" ng-bind="::'volume.sessions' | message:volume.summary.sessions:volume.summary.shared"></dd>
 
-              <dt ng-if="volume.summary.agemean > 0" message="volume.ages.title"></dt>
-              <dd ng-if="volume.summary.agemean > 0">{{ageSummary(volume.summary)}}</dd>
+              <dt ng-if="::volume.summary.agemean > 0" message="volume.ages.title"></dt>
+              <dd ng-if="::volume.summary.agemean > 0">{{::ageSummary(volume.summary)}}</dd>
             </dl>
           </div>
+        </div>
+
+        <div ng-if="::!!volume.references" frame id="frame-references" frame-title="volume.references" fold>
+          <ul>
+            <li ng-repeat="reference in ::volume.references">
+              <a ng-href="{{::reference.url}}" ng-bind="::reference.head"></a>
+            </li>
+          </ul>
         </div>
 
         <div frame id="frame-link" frame-title="volume.link.title" fold>
@@ -52,17 +60,17 @@
     </div>
 
     <div class="col-desktop-6 col-tablet-3 col-mobile-6">
-      <img class="panel-overview-volume-thumb" ng-src="{{volume.thumbRoute()}}">
+      <img class="panel-overview-volume-thumb" ng-src="{{::volume.thumbRoute()}}">
 
-      <div ng-if="volume.citation.authors.length > 0" frame id="frame-authors" frame-title="volume.authors.title" fold>
+      <div ng-if="::volume.citation.authors.length > 0" frame id="frame-authors" frame-title="volume.authors.title" fold>
         <ul class="comma">
-          <li ng-repeat="author in volume.citation.authors">{{author}}</li>
+          <li ng-repeat="author in ::volume.citation.authors">{{::author}}</li>
         </ul>
       </div>
 
       <div frame id="frame-people" frame-title="volume.contributors.title" fold>
         <div class="row">
-          <div ng-repeat="access in volume.access" ng-if="access.individual >= page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
+          <div ng-repeat="access in ::volume.access" ng-if="::access.individual >= page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
             <portrait></portrait>
           </div>
         </div>
@@ -70,27 +78,27 @@
 
       <div frame id="frame-access" frame-title="volume.access.title" fold>
         <div class="row">
-          <div ng-repeat="access in volume.access" ng-if="access.individual < page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
+          <div ng-repeat="access in ::volume.access" ng-if="::access.individual < page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
             <portrait tooltip="'access.' + page.constants.permission[access.individual] | message:party.name"></portrait>
           </div>
         </div>
       </div>
 
       <div frame id="frame-funding" frame-title="volume.funding.title" fold>
-        <dl class="panel-overview-volume-funds" ng-repeat="funding in volume.funding">
+        <dl class="panel-overview-volume-funds" ng-repeat="funding in ::volume.funding">
           <dt ng-bind="::funding.funder.name"></dt>
-          <dd ng-repeat="award in funding.awards" ng-bind="::award"></dd>
+          <dd ng-repeat="award in ::funding.awards" ng-bind="::award"></dd>
         </dl>
       </div>
 
-      <div frame id="frame-reuse" frame-title="volume.reuse.title" fold ng-if="(volume.consumers.length || volume.providers.length) > 0">
+      <div frame id="frame-reuse" frame-title="volume.reuse.title" fold ng-if="::(volume.consumers.length || volume.providers.length) > 0">
         <div class="row">
           <div class="col-desktop-6 col-tablet-3 col-mobile-6">
             <div ng-if="::volume.consumers.length">
               <div message="volume.reuse.provides"></div>
 
               <ul class="panel-overview-volume-reuses">
-                <li ng-repeat="ext in volume.consumers">
+                <li ng-repeat="ext in ::volume.consumers">
                   <a ng-href="{{::ext.route}}"> <img src="/public/images/browser/icon-study.png">&nbsp;
                     <span ng-bind="::ext.name"></span>
                   </a>
@@ -102,7 +110,7 @@
               <div message="volume.reuse.consumes"></div>
 
               <ul class="panel-overview-volume-reuses">
-                <li ng-repeat="ext in volume.providers">
+                <li ng-repeat="ext in ::volume.providers">
                   <a ng-href="{{::ext.route}}"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
                     <span ng-bind="::ext.name"></span>
                   </a>

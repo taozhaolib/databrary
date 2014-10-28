@@ -424,6 +424,7 @@ citations.study.body=If this study corresponds to or represents a specific resea
 citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
+volume.references=References
 reference.head=Title or citation
 reference.url=URL or DOI
 
