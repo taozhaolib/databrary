@@ -7,36 +7,27 @@ app.directive('fundingSearchForm', [
 
       form.nameVal = '';
       form.found = [];
+      form.sent = false;
 
-      //
-
-      var recentSearch;
-      var sentSearch;
-
-      var fin = function (res) {
-        form.validator.server(res || {});
-
-        sentSearch = undefined;
-
-        if (recentSearch) {
-          recentSearch = undefined;
-          form.search();
-        }
-      };
-
+      var research;
       form.search = function (all) {
-        $scope.all = all;
-
-        if (!all && (!form.nameVal || form.nameVal.length < 3)) {
-          form.found = [];
-        } else if (sentSearch) {
-          recentSearch = form.nameVal;
-        } else {
-          sentSearch = page.models.funder(form.nameVal, all)
+        if (form.nameVal.length < 3)
+          return;
+        if (form.sent === undefined)
+          research = true;
+        else {
+          form.sent = undefined;
+          page.models.funder(form.nameVal, all)
             .then(function (data) {
+              form.validator.server({});
+              research = false;
+              form.sent = !!all;
               form.found = data;
-              fin();
-            }, fin);
+              if (research)
+                form.search();
+            }, function (res) {
+              form.validator.server(res);
+            });
         }
       };
 
