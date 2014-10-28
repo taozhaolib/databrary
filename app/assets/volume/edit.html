@@ -25,6 +25,10 @@
             <spreadsheet volume="volume" edit></spreadsheet>
           </wizard-step>
 
+          <wizard-step name="references" ng-if="::!!volume">
+            <volume-edit-references-form></volume-edit-references-form>
+          </wizard-step>
+
           <wizard-step name="funding" ng-if="::!!volume">
             <volume-edit-funding-form></volume-edit-funding-form>
           </wizard-step>

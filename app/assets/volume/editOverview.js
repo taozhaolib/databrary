@@ -49,7 +49,7 @@ app.directive('volumeEditOverviewForm', [
             form.messages.add({
               type: 'green',
               countdown: 3000,
-              body: page.constants.message('volume.edit.overview.success'),
+              body: page.constants.message('volume.edit.success'),
             });
 
             init(vol);

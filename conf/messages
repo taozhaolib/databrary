@@ -424,6 +424,9 @@ citations.study.body=If this study corresponds to or represents a specific resea
 citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
+reference.head=Title or citation
+reference.url=URL or DOI
+
 citation.head=Citation
 citation.year=Year
 citation.url=DOI or URL
@@ -592,9 +595,7 @@ volume.edit.body.help=Enter or paste the abstract of the associated paper or oth
 volume.edit.body.placeholder=
 volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
 volume.edit.alias.placeholder=
-
-volume.edit.overview.success=Volume saved successfully.
-volume.edit.overview.error=Unable to save volume.
+volume.edit.success=Volume saved successfully.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
@@ -632,6 +633,10 @@ asset.add=Add a new file...
 
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file
+
+wizard.volume-edit-references.name=References
+wizard.volume-edit-references.description=Add external links.
+wizard.volume-edit-references.instructions=List any external references related to this material, including additional citations and data repositories.
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.

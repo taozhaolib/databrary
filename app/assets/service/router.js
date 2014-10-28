@@ -237,7 +237,7 @@ app.provider('routerService', [
               return undefined;
 
             return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'top', 'funding', 'records', 'containers'])
+              ['access', 'references', 'citation', 'top', 'funding', 'records', 'containers'])
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])
                   .then(function () {

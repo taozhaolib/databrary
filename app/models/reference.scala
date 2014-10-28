@@ -99,12 +99,12 @@ object VolumeReference extends Table[Reference]("volume_reference") {
       new Reference(head = head, url = url)
     }
 
-  private[models] def get(vol : Volume) : Future[Seq[Reference]] =
+  def get(vol : Volume) : Future[Seq[Reference]] =
     columns.from("ONLY " + _)
     .SELECT("WHERE volume = ?")
     .apply(vol.id).list
 
-  private[models] def set(vol : Volume, refs : Seq[Reference]) : Future[Unit] = {
+  def set(vol : Volume, refs : Seq[Reference]) : Future[Unit] = {
     implicit val site = vol.site
     val i = SQLTerms('volume -> vol.id)
     implicitly[Site.DB].inTransaction { implicit siteDB => for {

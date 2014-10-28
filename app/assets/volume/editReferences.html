@@ -1,0 +1,17 @@
+<ng-form name="volumeEditReferencesForm">
+  <fieldset class="clean ver-float">
+    <div class="ver-float-floater row">
+      <button ng-click="volumeEditReferencesForm.save()" class="green" message="save" ng-disabled="volumeEditReferencesForm.$pristine"></button>
+      <button ng-click="volumeEditReferencesForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditReferencesForm.$pristine"></button>
+  </div>
+  </fieldset>
+
+  <fieldset class="clean skinny" ng-repeat="reference in volumeEditReferencesForm.data">
+    <validator name="references[{{$index}}].head" noclientval>
+      <input type="text" name="references[{{$index}}].head" ng-model="reference.head" placeholder="{{::'references.head' | message}}">
+    </validator>
+    <validator name="references[{{$index}}].url" noclientval>
+      <input type="url" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'references.url' | message}}" ng-change="volumeEditReferencesForm.change()">
+    </validator>
+  </fieldset>
+</ng-form>

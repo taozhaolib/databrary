@@ -25,15 +25,23 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
+  private[this] def setRefs(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
+    val refs = form.references.get
+    for {
+      _ <- when(refs.nonEmpty, VolumeReference.set(vol, refs.collect { case Some(x) => x }))
+      _ <- cite.foreachAsync(vol.setCitation)
+    } yield ()
+  }
+
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
-    val form = new VolumeController.EditForm(None)._bind
+    val form = new VolumeController.EditForm(Nil, None)._bind
     for {
       cite <- form.getCitation
       _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
         alias = form.alias.get.map(Maybe(_).opt),
         body = form.body.get)
-      _ <- cite.foreachAsync(vol.setCitation)
+      _ <- setRefs(vol, form, cite)
     } yield (result(vol))
   }
 
@@ -45,7 +53,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
         alias = form.alias.get.flatMap(Maybe(_).opt),
         body = form.body.get.flatten)
       _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
-      _ <- cite.foreachAsync(vol.setCitation)
+      _ <- setRefs(vol, form, cite)
     } yield (result(vol))
   }
 
@@ -100,23 +108,32 @@ object VolumeController extends VolumeController {
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
+  private val referenceMapping = Forms.tuple(
+      "head" -> Forms.nonEmptyText,
+      "url" -> Forms.of[URL]
+    ).transform[Reference]({
+      case (head, url) => new Reference(head, url)
+    }, {
+      ref => (ref.head, ref.url)
+    })
+
   private val citationMapping = Forms.tuple(
-    "head" -> Mappings.maybeText,
-    "url" -> Forms.optional(Forms.of[URL]),
-    "authors" -> Forms.seq(Forms.nonEmptyText),
-    "year" -> Forms.optional(Forms.number(1900, 2900))
-  ).verifying("citation.invalid", _ match {
-    case (None, None, Nil, None) => true
-    case (Some(_), _, _, _) => true
-    case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
-    case _ => false
-  }).transform[Option[Citation]]({
-    case (None, None, Nil, None) => None
-    case (head, url, authors, year) => Some(new Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
-  }, {
-    case None => (None, None, Nil, None)
-    case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
-  })
+      "head" -> Mappings.maybeText,
+      "url" -> Forms.optional(Forms.of[URL]),
+      "authors" -> Forms.seq(Forms.nonEmptyText),
+      "year" -> Forms.optional(Forms.number(1900, 2900))
+    ).verifying("citation.invalid", _ match {
+      case (None, None, Nil, None) => true
+      case (Some(_), _, _, _) => true
+      case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
+      case _ => false
+    }).transform[Option[Citation]]({
+      case (None, None, Nil, None) => None
+      case (head, url, authors, year) => Some(new Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
+    }, {
+      case None => (None, None, Nil, None)
+      case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
+    })
 
   trait VolumeForm extends FormView {
     def actionName : String
@@ -125,12 +142,13 @@ object VolumeController extends VolumeController {
     val name = Field(OptionMapping(Mappings.nonEmptyText))
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
     val body = Field(OptionMapping(Mappings.maybeText))
+    val references = Field(Forms.seq(Forms.optional(referenceMapping)))
     val citation = Field(OptionMapping(citationMapping))
     def getCitation : Future[Option[Option[Citation]]] =
       citation.get.mapAsync(_.mapAsync(_.copy(title = name.get).lookup(false)))
   }
 
-  final class EditForm(cite : Option[Citation])(implicit request : Request[_])
+  final class EditForm(refs : Seq[Reference], cite : Option[Citation])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
@@ -139,6 +157,7 @@ object VolumeController extends VolumeController {
     name.fill(Some(request.obj.name))
     alias.fill(Some(request.obj.alias.getOrElse("")))
     body.fill(Some(request.obj.body))
+    references.fill(refs.map(Some(_)))
     citation.fill(Some(cite))
   }
 
@@ -225,9 +244,12 @@ object VolumeHtml extends VolumeController with HtmlController {
   def search = SiteAction.async(viewSearch(_))
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
-    request.obj.citation
-    .map(new VolumeController.EditForm(_))
-    .flatMap(_.Ok)
+    for {
+      refs <- VolumeReference.get(request.obj)
+      cite <- request.obj.citation
+      form = new VolumeController.EditForm(refs, cite)
+      r <- form.Ok
+    } yield (r)
   }
 
   def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>
