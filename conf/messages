@@ -627,6 +627,7 @@ asset.upload.completing=Completing...
 
 asset.update.success=Updated "{0}" successfully.
 asset.update.error=Unable to update "{0}".
+asset.replace.success=Replaced "{0}" successfully.
 asset.remove.success=Removed "{0}" successfully.
 asset.remove.error=Unable to remove "{0}".
 asset.remove.confirm=Are you sure you want to remove this file?

@@ -62,6 +62,8 @@ app.factory('Store', [
         @asset.save(@data)
       ).then((asset) =>
           delete @pending
+
+          first = !@asset
           if asset instanceof models.Asset
             @asset.asset = asset
             asset = @asset
@@ -70,7 +72,7 @@ app.factory('Store', [
           messages.add
             type: 'green'
             countdown: 3000
-            body: constants.message('asset.' + (if @file then 'upload' else 'update') + '.success', @name) +
+            body: constants.message('asset.' + (if @file then (if first then 'upload' else 'replace') else 'update') + '.success', @name) +
               (if @file && asset.format.transcodable then ' ' + constants.message('asset.upload.transcoding') else '')
 
           if @file
