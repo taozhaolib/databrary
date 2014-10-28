@@ -28,14 +28,14 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   private[this] def setRefs(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
     val refs = form.references.get
     for {
-      _ <- when(refs.nonEmpty, VolumeReference.set(vol, refs.collect { case Some(x) => x }))
       _ <- cite.foreachAsync(vol.setCitation)
+      r <- if (refs.nonEmpty) VolumeReference.set(vol, refs.collect { case Some(x) => x }) else async(true)
     } yield ()
   }
 
   def update(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     val vol = request.obj
-    val form = new VolumeController.EditForm(Nil, None)._bind
+    val form = new VolumeController.EditForm(None, Nil)._bind
     for {
       cite <- form.getCitation
       _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
@@ -142,13 +142,13 @@ object VolumeController extends VolumeController {
     val name = Field(OptionMapping(Mappings.nonEmptyText))
     val alias = Field(OptionMapping(Forms.text(maxLength = 64)))
     val body = Field(OptionMapping(Mappings.maybeText))
-    val references = Field(Forms.seq(Forms.optional(referenceMapping)))
     val citation = Field(OptionMapping(citationMapping))
     def getCitation : Future[Option[Option[Citation]]] =
       citation.get.mapAsync(_.mapAsync(_.copy(title = name.get).lookup(false)))
+    val references = Field(Forms.seq(Forms.optional(referenceMapping)))
   }
 
-  final class EditForm(refs : Seq[Reference], cite : Option[Citation])(implicit request : Request[_])
+  final class EditForm(cite : Option[Citation], refs : Seq[Reference])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
@@ -157,8 +157,8 @@ object VolumeController extends VolumeController {
     name.fill(Some(request.obj.name))
     alias.fill(Some(request.obj.alias.getOrElse("")))
     body.fill(Some(request.obj.body))
-    references.fill(refs.map(Some(_)))
     citation.fill(Some(cite))
+    references.fill(refs.map(Some(_)))
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])
@@ -245,9 +245,9 @@ object VolumeHtml extends VolumeController with HtmlController {
 
   def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
     for {
-      refs <- VolumeReference.get(request.obj)
       cite <- request.obj.citation
-      form = new VolumeController.EditForm(refs, cite)
+      refs <- VolumeReference.get(request.obj)
+      form = new VolumeController.EditForm(cite, refs)
       r <- form.Ok
     } yield (r)
   }

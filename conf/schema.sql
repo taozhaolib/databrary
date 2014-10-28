@@ -253,7 +253,7 @@ CREATE TABLE "volume_citation" (
 	"url" text,
 	"authors" text[],
 	"year" smallint Check ("year" BETWEEN 1900 AND 2900)
-) INHERITS ("volume_reference");
+); -- INHERITS ("volume_reference");
 ALTER TABLE "volume_citation" ALTER "url" DROP NOT NULL;
 COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
 

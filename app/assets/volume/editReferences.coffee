@@ -23,10 +23,14 @@ app.directive 'volumeEditReferencesForm', [
           form.data.push
             head: ''
             url: ''
+        else if form.data.length == 1
+          # hack!
+          page.$timeout () ->
+            form.$setDirty()
 
       form.save = () ->
         volume.save({references: form.data}).then(() ->
-            form.validator.server({})
+            form.validator.server {}
 
             form.messages.add
               type: 'green'
@@ -35,7 +39,7 @@ app.directive 'volumeEditReferencesForm', [
 
             form.$setPristine()
           , (res) ->
-            form.validator.server(res)
+            form.validator.server res
           )
 
       form.scrollFn = page.display.makeFloatScrollFn($('.ver-float'), $('.ver-float-floater'), 24*2.5)

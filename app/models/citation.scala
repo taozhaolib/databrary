@@ -100,19 +100,22 @@ object VolumeReference extends Table[Reference]("volume_reference") {
     }
 
   def get(vol : Volume) : Future[Seq[Reference]] =
-    columns.from("ONLY " + _)
+    columns
     .SELECT("WHERE volume = ?")
     .apply(vol.id).list
 
-  def set(vol : Volume, refs : Seq[Reference]) : Future[Unit] = {
+  def set(vol : Volume, refs : Seq[Reference]) : Future[Boolean] = {
     implicit val site = vol.site
     val i = SQLTerms('volume -> vol.id)
     implicitly[Site.DB].inTransaction { implicit siteDB => for {
-      _ <- Audit.remove("ONLY " + table, i).execute
+      _ <- Audit.remove(table, i).execute
       _ <- refs.foreachAsync { r =>
         Audit.add(table, i ++ SQLTerms('head -> r.head, 'url -> r.url)).execute
       }
-    } yield () }
+    } yield (true) }
+    .recover {
+      case SQLDuplicateKeyException() => false
+    }
   }
 }
 
