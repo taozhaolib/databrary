@@ -1,7 +1,8 @@
 'use strict';
 
 app.controller('party/register', [
-  '$scope', 'pageService', function ($scope, page) {
+  '$scope', 'pageService', 'user',
+  function ($scope, page, user) {
     $scope.page = page;
     page.display.title = page.constants.message('register.title');
 
@@ -96,7 +97,7 @@ app.controller('party/register', [
     };
 
     function updateUserAuth() {
-      page.models.Login.user.get(['parents', 'children']).then(function () {
+      user.get(['parents']).then(function () {
         $scope.proceed();
       }, function (res) {
         page.messages.addError({
@@ -117,7 +118,7 @@ app.controller('party/register', [
             s.email = true;
         else
           s.password = !$scope.userPasswordForm.sent;
-      else if (!(page.models.Login.user.parents && page.models.Login.user.parents.length) && !$scope.authApplyForm.sent) {
+      else if (!(user.parents && user.parents.length) && !$scope.authApplyForm.sent) {
         s.agent = true;
         s.request = $scope.auth.party || $scope.auth.query;
       } else if (!page.models.Login.isAuthorized())

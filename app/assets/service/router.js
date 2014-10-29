@@ -126,6 +126,16 @@ app.provider('routerService', [
     routes.register = makeRoute(controllers.LoginHtml.registration, [], {
       controller: 'party/register',
       templateUrl: 'party/register.html',
+      resolve: {
+        user: [
+          'pageService', function (page) {
+            if (page.models.Login.isLoggedIn())
+              return page.models.Party.profile(['parents']);
+            else
+              return page.models.Login.user;
+          }
+        ],
+      },
       reloadOnSearch: false
     });
 
@@ -163,13 +173,17 @@ app.provider('routerService', [
             else
               return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
                 .then(function (res) {
-                  $play.object = res;
-                  return res;
+                  return $play.object = res;
                 }, function () {
                   page.$location.url('/');
                 });
           }
-        ]
+        ],
+        user: [
+          'pageService', function (page) {
+            return page.models.Login.user;
+          }
+        ],
       },
       reloadOnSearch: false
     });
