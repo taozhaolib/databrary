@@ -554,7 +554,7 @@ wizard.register-request.instructions=
 
 wizard.register-pending.name=Stay Tuned
 wizard.register-pending.description=Tips for exploring Databrary.
-wizard.register-pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.
+wizard.register-pending.instructions=Your request for authorization is now pending. Once your request for authorization is approved, you will be authorized to access the shared data in Databrary. In the meantime, you can learn more about how to share data by reading our <a href="http://databrary.org/user-guide.html" target="_blank">Databrary User Guide</a>.<br><br>You can also:<br><a href="/profile">View and complete your profile</a><br><a href="/search">Browse public datasets</a><br>
 
 # --- Volume edit
 
