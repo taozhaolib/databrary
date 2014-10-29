@@ -19,7 +19,7 @@ object SiteApi extends SiteController {
   private def parseBool(s : String) : Boolean =
     !s.equals("0") && !"false".startsWith(s.toLowerCase)
 
-  private val browserBlacklist = """^Mozilla/.* \(.*\<MSIE [0-9]\.[0-9]""".r.pattern
+  private val browserBlacklist = """^Mozilla/.* \(.*\<(MSIE [0-9]\.[0-9]|AppleWebKit/.* Version/[0-5]\..* Safari/)""".r.pattern
 
   def jsEnabled(implicit request : RequestHeader) : Boolean =
     request.getQueryString("js").fold(
