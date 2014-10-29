@@ -134,7 +134,7 @@ app.controller('party/register', [
       if (a)
         $scope.activateStep(a);
       else
-        alert('Your registration is complete.'); // and how did you get here?
+        page.$location.url('/');
     };
   }
 ]);
