@@ -103,15 +103,6 @@ final class Record private (val id : Record.Id, val volume : Volume, private[thi
   /** The set of slots to which this record applies. */
   lazy val slots : Future[Seq[Slot]] =
     SlotRecord.slots(this)
-  /** Attach this record to a slot. */
-  def addSlot(s : Slot) : Future[Boolean] =
-    SlotRecord.add(this, s)
-      .recover {
-        case SQLDuplicateKeyException() => false
-      }
-  /** Remove this record from a slot. */
-  def removeSlot(s : Slot) : Future[Boolean] =
-    SlotRecord.remove(this, s)
 
   def pageName = category.fold("")(_.name.capitalize + " ") + ident
   def pageParent = Some(volume)
@@ -132,11 +123,11 @@ final class Record private (val id : Record.Id, val volume : Volume, private[thi
     )
 }
 
-private[models] object SlotRecord extends SlotTable("slot_record") {
-  def row(record : Record) =
+object SlotRecord extends SlotTable("slot_record") {
+  private[models] def row(record : Record) =
     rowContainer(Container.columnsVolume(Volume.fixed(record.volume)))
 
-  def slots(record : Record) =
+  private[models] def slots(record : Record) =
     row(record)
     .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
     .apply(record.id, record.volumeId).list
@@ -144,10 +135,20 @@ private[models] object SlotRecord extends SlotTable("slot_record") {
   def add(record : Record, slot : Slot) = {
     implicit val site = record.site
     Audit.add(table, ('record -> record.id) +: slot.slotSql).execute
+    .recover {
+      case SQLDuplicateKeyException() => false
+    }
   }
-  def remove(record : Record, slot : Slot) = {
+  def move(record : Record, slot : Slot, segment : Segment) : Future[Boolean] = {
     implicit val site = record.site
-    Audit.remove(table, ('record -> record.id) +: slot.slotSql).execute
+    var key = ('record -> record.id) +: slot.slotSql
+    if (segment.isEmpty)
+      Audit.remove(table, key).execute
+    else
+      Audit.change(table, SQLTerms('segment -> segment), key).execute
+      .recover {
+        case SQLDuplicateKeyException() => false
+      }
   }
 }
 

@@ -80,25 +80,29 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       form.record.get.fold {
         for {
           r <- models.Record.create(request.obj.volume, form.category.get)
-          _ <- r.addSlot(request.obj)
+          _ <- SlotRecord.add(r, request.obj)
         } yield (editResult(r))
       } { r =>
         for {
           mr <- models.Record.get(r)
           r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
             .getOrElse(form.record.withError("record.bad")._throw)
-          _ <- r.addSlot(request.obj)
+          _ <- SlotRecord.add(r, request.obj)
         } yield (if (request.isApi) result(r) else SlotController.result(request.obj))
       }
     }
 
-  def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) = Action(recordId, Permission.EDIT).async { implicit request =>
-    for {
-      so <- Slot.get(containerId, segment)
-      s = so.getOrElse(throw NotFoundException)
-      _ <- request.obj.removeSlot(s)
-    } yield (SlotController.result(s))
-  }
+  def move(containerId : Container.Id, segment : Segment, recordId : Record.Id, dst : Segment = Segment.empty) =
+    Action(recordId, Permission.EDIT).async { implicit request =>
+      for {
+        so <- Slot.get(containerId, segment)
+        s = so.getOrElse(throw NotFoundException)
+        r <- SlotRecord.move(request.obj, s, dst)
+        _ = if (!r) throw NotFoundException
+      } yield (SlotController.result(s))
+    }
+  def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) =
+    move(containerId, segment, recordId)
 }
 
 object RecordController extends RecordController {
@@ -173,7 +177,7 @@ object RecordHtml extends RecordController with HtmlController {
     }
 
   final class RemoveForm(record : Record, slot : Slot)
-    extends StructForm(routes.RecordHtml.remove(slot.containerId, slot.segment, record.id))
+    extends StructForm(routes.RecordHtml.move(slot.containerId, slot.segment, record.id))
 }
 
 object RecordApi extends RecordController with ApiController {
