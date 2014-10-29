@@ -363,7 +363,7 @@ object AssetApi extends AssetController with ApiController {
       val f = new RandomAccessFile(u.file, if (write) "rw" else "r")
       if (f.length != form.flowTotalSize.get)
         form.flowTotalSize.withError("size mismatch")._throw
-      f.seek(form.flowChunkSize.get * (form.flowChunkNumber.get-1))
+      f.seek(form.flowChunkSize.get.toLong * (form.flowChunkNumber.get-1).toLong)
       run(f, form.flowChunkSize.get)
     })
   }
