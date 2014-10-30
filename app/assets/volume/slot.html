@@ -20,7 +20,12 @@
           </a>
         </div>
 
-        <section id="slot-timeline" class="slot-timeline">
+        <section id="slot-timeline" class="slot-timeline" ng-mousedown="mouseDown($event)">
+          <div class="slot-timeline-selection" ng-if="!selection.empty">
+            <div class="selection" ng-style="positionStyle(selection)">
+            </div>
+          </div>
+
           <div class="slot-timeline-temporal" ng-if="!range.empty">
             <span class="slot-timeline-time" ng-bind="position | timecode:true"></span>
             <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
@@ -32,7 +37,7 @@
           <div>
             <div class="slot-consent-track">
               <div class="slot-track">
-                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="::positionStyle(c.segment)" ng-click="c.select($event)"></div>
+                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-click="c.select($event)"></div>
               </div>
             </div>
           </div>

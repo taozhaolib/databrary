@@ -1,9 +1,9 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', 'slot', 'edit', 'pageService', 'Store',
-  ($scope, slot, editing, page, Store) ->
-    page.display.title = slot.displayName
+  '$scope', '$rootScope', '$location', 'constantService', 'displayService', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $rootScope, $location, constants, display, Segment, Store, slot, editing) ->
+    display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
     $scope.volume = slot.volume
@@ -20,13 +20,13 @@ app.controller('volume/slot', [
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
 
-    if editing || slot.checkPermission(page.permission.EDIT)
+    if editing || slot.checkPermission(constants.permission.EDIT)
       url = if editing then slot.route else slot.editRoute()
-      page.display.toolbarLinks.push
+      display.toolbarLinks.push
         type: 'yellow'
-        html: page.constants.message(if editing then 'slot.view' else 'slot.edit')
+        html: constants.message(if editing then 'slot.view' else 'slot.edit')
         #url: url
-        click: -> searchLocation(page.$location.url(url))
+        click: -> searchLocation($location.url(url))
 
 
     updateRange = (segment) ->
@@ -53,7 +53,7 @@ app.controller('volume/slot', [
     $scope.positionStyle = (p) ->
       styles = {}
       return styles unless p?
-      if p instanceof page.models.Segment
+      if p instanceof Segment
         l = offsetPosition(p.l)
         if l < 0
           styles.left = '0px'
@@ -84,18 +84,21 @@ app.controller('volume/slot', [
     $scope.seekPosition = (pos) ->
       if o = positionOffset(pos)
         seekOffset(o)
+      return
 
     $scope.play = ->
       if video
         video[0].play()
       else
         $scope.playing = 1
+      return
 
     $scope.pause = ->
       if video
         video[0].pause()
       else
         $scope.playing = 0
+      return
 
     sortTracks = ->
       return unless $scope.tracks
@@ -108,17 +111,19 @@ app.controller('volume/slot', [
         else
           !a.asset - !b.asset || !a.file - !b.file
 
-    targetAsset = page.$location.search().asset
-    targetRecord = page.$location.search().record
+    targetAsset = $location.search().asset
+    targetRecord = $location.search().record
 
     selectRange = (range) ->
+      $scope.selection = range
       if range && isFinite(range.l) && !range.contains($scope.position)
         seekOffset(range.l)
+      return
 
     confirmDirty = ->
       not (editing && $scope.current && $scope.form.edit &&
         ($scope.current.dirty = $scope.form.edit.$dirty)) or
-          confirm(page.constants.message('navigation.confirmation'))
+          confirm(constants.message('navigation.confirmation'))
 
     select = (c, event) ->
       if $scope.current == c
@@ -128,7 +133,7 @@ app.controller('volume/slot', [
       return if c && !confirmDirty()
 
       $scope.current = c
-      searchLocation(page.$location)
+      searchLocation($location)
       targetAsset = undefined
       targetRecord = undefined
 
@@ -173,6 +178,7 @@ app.controller('volume/slot', [
         return removed this unless r?.then
         r.then (done) =>
           removed this if done
+        return
 
       save: ->
         super().then (done) =>
@@ -180,6 +186,7 @@ app.controller('volume/slot', [
           delete @dirty
           $scope.form.edit.$setPristine() if this == $scope.current
           sortTracks()
+        return
 
       upload: (file) ->
         addBlank() if this == blank
@@ -189,6 +196,7 @@ app.controller('volume/slot', [
           @data.name ||= file.file.name
           ### jshint ignore:end ###
           return
+        return
 
     $scope.fileAdded = (file) ->
       (!$scope.current?.file && $scope.current || blank).upload(file) if editing
@@ -228,7 +236,7 @@ app.controller('volume/slot', [
     class Record
       constructor: (r) ->
         @record = slot.volume.records[r.id]
-        @segment = page.models.Segment.make(r.segment)
+        @segment = Segment.make(r.segment)
         for f in ['age'] when f of r
           @[f] = r[f]
         updateRange @segment
@@ -251,6 +259,7 @@ app.controller('volume/slot', [
               if !t.length
                 $scope.records.remove(t)
               break
+        return
 
       select: (event) ->
         select this, event
@@ -259,12 +268,12 @@ app.controller('volume/slot', [
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
       metrics: ->
-        ident = page.constants.category[@record.category]?.ident || [page.constants.metricName.ident.id]
-        (page.constants.metric[m] for m of @record.measures when !(+m in ident)).sort(byId)
+        ident = constants.category[@record.category]?.ident || [constants.metricName.ident.id]
+        (constants.metric[m] for m of @record.measures when !(+m in ident)).sort(byId)
 
       addMetric = {id:'',name:'Add new value...'}
       addOptions: ->
-        metrics = (metric for m, metric of page.constants.metric when !(m of @data)).sort(byId)
+        metrics = (metric for m, metric of constants.metric when !(m of @data)).sort(byId)
         metrics.unshift addMetric
         metrics
       ### jshint ignore:end ###
@@ -272,6 +281,7 @@ app.controller('volume/slot', [
       add: ->
         @data[@add.data] = '' if @add.data
         @add.data = ''
+        return
 
       @prototype.add.data = ''
 
@@ -280,15 +290,16 @@ app.controller('volume/slot', [
           @fillData()
           delete @dirty
           $scope.form.edit.$setPristine() if this == $scope.current
+        return
 
     class Consent
       constructor: (c) ->
         if typeof c == 'object'
           @consent = c.consent
-          @segment = page.models.Segment.make(c.segment)
+          @segment = Segment.make(c.segment)
         else
           @consent = c
-          @segment = page.models.Segment.full
+          @segment = Segment.full
 
       type: 'consent'
 
@@ -296,14 +307,28 @@ app.controller('volume/slot', [
         select this, event
 
       classes: ->
-        cn = page.constants.consent[@consent]
+        cn = constants.consent[@consent]
         cls = [cn, 'hint-consent-' + cn]
         cls.push('slot-consent-select') if $scope.current == this
         cls
 
-    $scope.range = new page.models.Segment(Infinity, -Infinity)
+    $scope.mouseDown = (down) ->
+      region = $(down.currentTarget)
+      start = positionOffset(down.clientX)
+      region.on 'mouseleave mouseup mousemove', start, $scope.$lift (up) ->
+        region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
+        end = positionOffset(up.clientX)
+        $scope.selection =
+          if start <= end
+            new Segment(start, end)
+          else
+            new Segment(end, start)
+      return
+
+    $scope.range = new Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
-    updateRange(page.models.Segment.full)
+    updateRange(Segment.full)
+    $scope.selection = Segment.empty
 
     $scope.tracks = (new Track(asset) for asset in slot.assets)
     addBlank() if editing
@@ -338,8 +363,8 @@ app.controller('volume/slot', [
     $scope.position = undefined
 
     if editing
-      done = page.$rootScope.$on '$locationChangeStart', (event, url) ->
+      done = $rootScope.$on '$locationChangeStart', (event, url) ->
         return if url.contains(slot.editRoute())
-        return page.display.cancelRouteChange(event) unless confirmDirty()
+        return display.cancelRouteChange(event) unless confirmDirty()
         done()
 ])
