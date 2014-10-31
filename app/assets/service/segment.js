@@ -38,6 +38,18 @@ app.factory('Segment', [
       }
     });
 
+    Object.defineProperty(Segment.prototype, 'lBounded', {
+      get: function () {
+        return isFinite(this.l);
+      }
+    });
+
+    Object.defineProperty(Segment.prototype, 'uBounded', {
+      get: function () {
+        return isFinite(this.u);
+      }
+    });
+
     Object.defineProperty(Segment.prototype, 'base', {
       get: function () {
         return isFinite(this.l) ? this.l : 0;
