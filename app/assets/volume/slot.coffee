@@ -114,23 +114,13 @@ app.controller('volume/slot', [
     targetAsset = $location.search().asset
     targetRecord = $location.search().record
 
-    selectRange = (range) ->
-      $scope.selection = range
-      if range && isFinite(range.l) && !range.contains($scope.position)
-        seekOffset(range.l)
-      return
-
     confirmDirty = ->
       not (editing && $scope.current && $scope.form.edit &&
         ($scope.current.dirty = $scope.form.edit.$dirty)) or
           confirm(constants.message('navigation.confirmation'))
 
-    select = (c, event) ->
-      if $scope.current == c
-        $scope.seekPosition event.clientX if event
-        return
-
-      return if c && !confirmDirty()
+    select = (c) ->
+      return false if c && !confirmDirty()
 
       $scope.current = c
       searchLocation($location)
@@ -138,8 +128,37 @@ app.controller('volume/slot', [
       targetRecord = undefined
 
       $scope.playing = 0
-      return unless c
-      selectRange(c.segment)
+      true
+
+    $scope.dblclick = (c) ->
+      range = c.segment
+      $scope.selection = range
+      if range && isFinite(range.l) && !range.contains($scope.position)
+        seekOffset(range.l)
+      return
+
+    $scope.mouse = (down, c) ->
+      if !c || $scope.current == c
+        $scope.seekPosition down.clientX
+      else
+        return unless select(c)
+
+      region = $(down.currentTarget)
+      startX = down.clientX
+      startPos = positionOffset(startX)
+      region.on 'mouseleave mouseup mousemove', $scope.$lift (up) ->
+        region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
+        endX = up.clientX
+        if startX != undefined
+          return if Math.abs(startX - endX) < 6
+          startX = undefined
+        endPos = positionOffset(endX)
+        $scope.selection =
+          if startPos <= endPos
+            new Segment(startPos, endPos)
+          else
+            new Segment(endPos, startPos)
+      return
 
     removed = (track) ->
       return if track.asset || track.file || track == blank
@@ -159,16 +178,13 @@ app.controller('volume/slot', [
         super asset
         return unless asset
         updateRange(asset.segment)
-        @select() if `asset.id == targetAsset`
+        select(this) if `asset.id == targetAsset`
 
       Object.defineProperty @prototype, 'segment',
         get: -> @asset?.segment
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
-
-      select: (event) ->
-        select this, event
 
       positionStyle: ->
         $scope.positionStyle @asset?.segment
@@ -261,9 +277,6 @@ app.controller('volume/slot', [
               break
         return
 
-      select: (event) ->
-        select this, event
-
       byId = (a, b) -> a.id - b.id
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
@@ -303,27 +316,11 @@ app.controller('volume/slot', [
 
       type: 'consent'
 
-      select: (event) ->
-        select this, event
-
       classes: ->
         cn = constants.consent[@consent]
         cls = [cn, 'hint-consent-' + cn]
         cls.push('slot-consent-select') if $scope.current == this
         cls
-
-    $scope.mouseDown = (down) ->
-      region = $(down.currentTarget)
-      start = positionOffset(down.clientX)
-      region.on 'mouseleave mouseup mousemove', start, $scope.$lift (up) ->
-        region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
-        end = positionOffset(up.clientX)
-        $scope.selection =
-          if start <= end
-            new Segment(start, end)
-          else
-            new Segment(end, start)
-      return
 
     $scope.range = new Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
@@ -347,7 +344,7 @@ app.controller('volume/slot', [
           break unless o[0].record.category != r.record.category || o.some(overlaps)
         t[i] = [] unless i of t
         t[i].push(r)
-        r.select() if `r.id == targetRecord`
+        select(r) if `r.id == targetRecord`
       t
     )()
 

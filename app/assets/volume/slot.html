@@ -20,7 +20,7 @@
           </a>
         </div>
 
-        <section id="slot-timeline" class="slot-timeline" ng-mousedown="mouseDown($event)">
+        <section id="slot-timeline" class="slot-timeline">
           <div class="slot-timeline-selection" ng-if="!selection.empty">
             <div class="selection" ng-style="positionStyle(selection)">
             </div>
@@ -28,7 +28,7 @@
 
           <div class="slot-timeline-temporal" ng-if="!range.empty">
             <span class="slot-timeline-time" ng-bind="position | timecode:true"></span>
-            <div class="slot-timeline-ruler" ng-click="seekPosition($event.clientX)">
+            <div class="slot-timeline-ruler" ng-mousedown="mouse($event)">
               <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
             </div>
@@ -37,7 +37,7 @@
           <div>
             <div class="slot-consent-track">
               <div class="slot-track">
-                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-click="c.select($event)"></div>
+                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-mousedown="mouse($event, c)" ng-dblclick="dblclick(c)"></div>
               </div>
             </div>
           </div>
@@ -45,25 +45,20 @@
           <div class="slot-annotations">
             <div class="slot-record-track" ng-repeat="rs in records">
               <div class="slot-track">
-                <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)" ng-click="r.select($event)"></div>
+                <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)" ng-mousedown="mouse($event, r)" ng-dblclick="dblclick(r)"></div>
               </div>
             </div>
           </div>
 
           <div class="slot-timeline-tracks">
-            <div ng-repeat="t in tracks" class="slot-timeline-track" ng-click="t.select($event)" ng-class="{select: t === current, dirty: t.dirty}" >
-              <div class="slot-track" ng-class="{'slot-track-positioned': !!t.asset && !t.asset.segment.full, 'slot-track-select': t === current}">
-                
+            <div ng-repeat="t in tracks" class="slot-timeline-track" ng-class="{select: t === current, dirty: t.dirty}">
+              <div class="slot-track" ng-class="{'slot-track-positioned': !!t.asset && !t.asset.segment.full, 'slot-track-select': t === current}" ng-mousedown="mouse($event, t)" ng-dblclick="dblclick(t)">
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-bind="t.name" ng-class="{ 'uploading' : !!t.file }"></div>
-
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
-
                 </div>
-
-                <div class="slot-track-asset" ng-if="!!t.asset && !t.asset.segment.full" ng-style="t.positionStyle()">
-                </div>
+                <div class="slot-track-asset" ng-if="!!t.asset && !t.asset.segment.full" ng-style="t.positionStyle()"></div>
               </div>
             </div>
           </div>
