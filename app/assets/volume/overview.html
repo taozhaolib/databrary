@@ -40,7 +40,7 @@
           </div>
         </div>
 
-        <div ng-if="::!!volume.references" frame id="frame-references" frame-title="volume.references" fold>
+        <div ng-if="::volume.references.length" frame id="frame-references" frame-title="volume.references" fold>
           <ul>
             <li ng-repeat="reference in ::volume.references">
               <a ng-href="{{::reference.url}}" ng-bind="::reference.head"></a>

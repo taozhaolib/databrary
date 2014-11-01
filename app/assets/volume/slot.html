@@ -89,7 +89,7 @@
                   <dd ng-if="!!current.asset" ng-bind="::(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                   <dt ng-if="!current.segment.full">Position</dt>
                   <dd>
-                    <span ng-if="!current.segment.full"><span ng-bind="::current.segment.l | timecode:true"></span> &ndash; <span ng-bind="::current.segment.u | timecode:true"></span></span>
+                    <span ng-if="!current.segment.full"><span ng-if="::current.segment.lBounded" ng-bind="::current.segment.l | timecode:true"></span> &ndash; <span ng-if="::current.segment.uBounded" ng-bind="::current.segment.u | timecode:true"></span></span>
                     <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode:true"></span>)</span>
                   </dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
