@@ -231,6 +231,9 @@ app.controller('volume/slot', [
       timeupdate: ->
         if $scope.current?.asset && isFinite($scope.current.asset.segment.l)
           $scope.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
+          if $scope.selection.uBounded && $scope.position >= $scope.selection.u
+            video[0].pause()
+            seekOffset($scope.selection.l) if $scope.selection.lBounded
       ended: ->
         $scope.playing = 0
         # look for something else to play?
