@@ -88,8 +88,8 @@ object Metric extends TableId[Metric[_]]("metric") {
     async.AWAIT {
       row.SELECT("ORDER BY id").apply().list
     }
-  private val byId : collection.immutable.Map[Metric.Id, Metric[_]] =
-    list.map(c => (c.id, c)).toMap
+  private val byId : TableIdMap[Metric[_]] =
+    TableIdMap(list : _*)
   private val byName : collection.immutable.Map[String, Metric[_]] =
     list.map(c => (c.name, c)).toMap
 

@@ -1,5 +1,6 @@
 package models
 
+import scala.collection.immutable.IntMap
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
@@ -50,3 +51,16 @@ private[models] abstract class Table[R] protected (private[models] val table : S
 }
 private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with ProvidesId[R]
 
+final class TableIdMap[R <: TableRowId[R]] protected (map : IntMap[R]) extends IntIdMap[R,R](map) {
+  override def iterator = map.valuesIterator.map(o => (o.id, o))
+  def +(r : R) : TableIdMap[R] = new TableIdMap[R](map + (r.id._id -> r))
+  override def empty = new TableIdMap[R](map.empty)
+  override def keysIterator = map.valuesIterator.map(_.id)
+}
+
+private[models] object TableIdMap {
+  def apply[R <: TableRowId[R]](elems : R*) : TableIdMap[R] =
+    new TableIdMap[R](IntMap.apply[R](elems.map(r => r.id._id -> r) : _*))
+  def empty[R <: TableRowId[R]] : TableIdMap[R] =
+    new TableIdMap[R](IntMap.empty[R])
+}

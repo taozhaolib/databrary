@@ -1,5 +1,6 @@
 package models
 
+import scala.collection.immutable.IntMap
 import play.api.data.format.{Formats,Formatter}
 import play.api.mvc.{PathBindable,QueryStringBindable}
 import play.api.libs.json
@@ -84,4 +85,14 @@ private[models] object LongId {
   implicit def jsonWrites[T] : json.Writes[LongId[T]] = new json.Writes[LongId[T]] {
     def writes(i : LongId[T]) = json.JsNumber(i._id)
   }
+}
+
+class IntIdMap[T,A] protected (map : IntMap[A]) extends Map[IntId[T], A] {
+  def get(i : IntId[T]) = map.get(i._id)
+  def iterator = map.iterator.map { case (i, v) => (IntId[T](i), v) }
+  override def +[B >: A](kv : (IntId[T], B)) : IntIdMap[T,B] = new IntIdMap[T,B](map + (kv._1._id -> kv._2))
+  override def -(i : IntId[T]) : IntIdMap[T,A] = new IntIdMap[T,A](map - i._id)
+  override def apply(i : IntId[T]) = map.apply(i._id)
+  override def keysIterator = map.keysIterator.map(IntId[T](_))
+  override def valuesIterator = map.valuesIterator
 }

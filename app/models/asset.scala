@@ -82,8 +82,8 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     Seq(Video, Image) ++ async.AWAIT {
       row.SELECT("WHERE id > 0 ORDER BY id").apply().list
     }
-  private val byId : scala.collection.immutable.Map[Id, AssetFormat] =
-    list.map(f => f.id -> f).toMap
+  private val byId : TableIdMap[AssetFormat] =
+    TableIdMap(list : _*)
 
   /** Lookup a format by its id. */
   def get(id : Id) : Option[AssetFormat] =
