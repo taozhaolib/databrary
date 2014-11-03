@@ -149,7 +149,7 @@ app.controller('volume/slot', [
       region.on 'mouseleave mouseup mousemove', $scope.$lift (up) ->
         region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
         if startTime != undefined
-          return if up.timeStamp - startTime < 250000
+          return if up.type != 'mousemove' || up.timeStamp - startTime < 250000
           startTime = undefined
         endPos = positionOffset(up.clientX)
         $scope.selection =
@@ -334,7 +334,7 @@ app.controller('volume/slot', [
       records.sort (a, b) ->
         a.record.category - b.record.category || a.record.id - b.record.id
       t = []
-      overlaps = (r) -> s.overlaps(r.segment)
+      overlaps = (rr) -> rr.record.id != r.record.id && s.overlaps(rr.segment)
       for r in records
         s = r.segment
         for o, i in t
