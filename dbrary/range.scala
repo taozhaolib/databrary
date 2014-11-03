@@ -352,7 +352,7 @@ object Range {
     override val format = bf.format
     private def basekeys(k : String) = new Binder.KeyNames(s => if (s.nonEmpty) k+"."+s else k)
     private[this] def bnd(key : String, pp : Map[String, String]) : Either[Seq[FormError], Option[T]] =
-      if (pp.keys.exists(p => p == key || p.startsWith(key + ".") || p.startsWith(key + "[")))
+      if (pp.keys.exists(p => (p == key || p.startsWith(key + ".") || p.startsWith(key + "[")) && pp.get(p).exists(_.nonEmpty)))
         bf.bind(key, pp).right.map(Some(_))
       else
         Right(None)

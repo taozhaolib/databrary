@@ -161,6 +161,12 @@ app.factory('Segment', [
       return seg.toString();
     };
 
+    Segment.data = function (seg) {
+      if (angular.isObject(seg) && !(seg instanceof Segment))
+        return seg;
+      return Segment.format(seg);
+    };
+
     return Segment;
   }
 ]);

@@ -268,16 +268,16 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           position:
-            l: if @segment.lBounded then $filter('timecode')(@segment.l, true)
-            u: if @segment.uBounded then $filter('timecode')(@segment.u, true)
+            lower: if @segment.lBounded then $filter('timecode')(@segment.l, true)
+            upper: if @segment.uBounded then $filter('timecode')(@segment.u, true)
 
       Object.defineProperty @prototype, 'id',
         get: -> @record.id
 
       remove: ->
-        select() if $scope.current == this
         slot.removeRecord(@record, @segment).then(=>
             records.remove(this)
+            select() if $scope.current == this
             placeRecords()
           , (res) =>
             messages.addError
@@ -312,9 +312,12 @@ app.controller('volume/slot', [
           saves.push @record.save({measures:@data.measures}).then () =>
             @form.measures.$setPristine()
         if @form.position.$dirty
-          saves.push slot.moveRecord(@record, @segment, (@data.position.l ? '') + '-' + (@data.position.u ? '')).then (s) =>
+          saves.push slot.moveRecord(@record, @segment, @data.position).then (s) =>
             @form.position.$setPristine()
             @segment = Segment.make(s.segment)
+            if @segment.empty
+              records.remove(this)
+              select() if this == $scope.current
             placeRecords()
         $q.all(saves).then(=>
             @fillData()
@@ -331,7 +334,6 @@ app.controller('volume/slot', [
     placeRecords = () ->
       records.sort (a, b) ->
         a.record.category - b.record.category || a.record.id - b.record.id
-
       t = []
       overlaps = (r) -> s.overlaps(r.segment)
       for r in records

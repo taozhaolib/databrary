@@ -683,7 +683,7 @@ app.factory('modelService', [
 
     Slot.prototype.addRecord = function (r) {
       var s = this;
-      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {dst: this.segment.format()})
+      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
         .then(function (res) {
           recordAdd(s, r);
           return r.update(res.data);
@@ -712,7 +712,7 @@ app.factory('modelService', [
           src = this.segment;
       }
       var s = this;
-      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.format(src), dst: Segment.format(dst)})
+      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.data(src), dst: Segment.data(dst)})
         .then(function (res) {
           s.clear('records');
           return res.data;

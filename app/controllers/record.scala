@@ -87,14 +87,14 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
           mr <- models.Record.get(r)
           r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
             .getOrElse(form.record.withError("record.bad")._throw)
-          _ <- SlotRecord.move(r, request.obj.container, request.obj.segment)
+          _ <- SlotRecord.move(r, request.obj.container, dst = request.obj.segment)
         } yield (if (request.isApi) result(r) else SlotController.result(request.obj))
       }
     }
 
   protected def move(containerId : Container.Id, src : Segment, dst : Segment)(implicit request : Request[_]) =
     for {
-      so <- Slot.get(containerId, if (dst.isEmpty) src else dst)
+      so <- Slot.get(containerId, dst)
       s = so.filter(_.volumeId === request.obj.volumeId).getOrElse(throw NotFoundException)
       r <- SlotRecord.move(request.obj, s.container, src, dst)
     } yield (SlotController.result(s))
@@ -207,8 +207,8 @@ object RecordApi extends RecordController with ApiController {
   final class MoveForm(containerId : Container.Id)(implicit request : Request[_])
     extends ApiForm(
       routes.RecordApi.move(request.obj.id, containerId)) {
-    val src = Field(Forms.default(Forms.of[Segment], Segment.empty))
-    val dst = Field(Forms.default(Forms.of[Segment], Segment.empty))
+    val src = Field(Forms.of[Segment])
+    val dst = Field(Forms.of[Segment])
   }
 
   def move(recordId : Record.Id, containerId : Container.Id) =
