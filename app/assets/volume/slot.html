@@ -42,7 +42,10 @@
 
           <div class="slot-annotations">
             <div class="slot-record-track slot-track" ng-repeat="rs in records">
-              <div class="slot-record" ng-repeat="r in rs" ng-bind="r.record.displayName" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)" ng-mousedown="mouse($event, r)" ng-dblclick="dblclick(r)"></div>
+              <div class="slot-record-background" ng-repeat="r in rs" ng-style="positionBackgroundStyle(rs, $index)" ng-mousedown="mouse($event, r)" ng-dblclick="dblclick(r)">
+                <span ng-bind="r.record.displayName"></span>
+                <div class="slot-record" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)"></div>
+              </div>
             </div>
           </div>
 
