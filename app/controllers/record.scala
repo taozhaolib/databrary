@@ -80,29 +80,24 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       form.record.get.fold {
         for {
           r <- models.Record.create(request.obj.volume, form.category.get)
-          _ <- SlotRecord.add(r, request.obj)
+          _ <- SlotRecord.move(r, request.obj.container, request.obj.segment)
         } yield (editResult(r))
       } { r =>
         for {
           mr <- models.Record.get(r)
           r = mr.filter(r => r.checkPermission(Permission.SHARED) && r.volumeId === request.obj.volumeId)
             .getOrElse(form.record.withError("record.bad")._throw)
-          _ <- SlotRecord.add(r, request.obj)
+          _ <- SlotRecord.move(r, request.obj.container, request.obj.segment)
         } yield (if (request.isApi) result(r) else SlotController.result(request.obj))
       }
     }
 
-  def move(containerId : Container.Id, segment : Segment, recordId : Record.Id, dst : Segment = Segment.empty) =
-    Action(recordId, Permission.EDIT).async { implicit request =>
-      for {
-        so <- Slot.get(containerId, segment)
-        s = so.getOrElse(throw NotFoundException)
-        r <- SlotRecord.move(request.obj, s, dst)
-        _ = if (!r) throw NotFoundException
-      } yield (SlotController.result(s))
-    }
-  def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) =
-    move(containerId, segment, recordId)
+  protected def move(containerId : Container.Id, src : Segment, dst : Segment)(implicit request : Request[_]) =
+    for {
+      so <- Slot.get(containerId, if (dst.isEmpty) src else dst)
+      s = so.filter(_.volumeId === request.obj.volumeId).getOrElse(throw NotFoundException)
+      r <- SlotRecord.move(request.obj, s.container, src, dst)
+    } yield (SlotController.result(s))
 }
 
 object RecordController extends RecordController {
@@ -176,8 +171,13 @@ object RecordHtml extends RecordController with HtmlController {
       Ok(viewEdit(measureForm = Some(form.measureForm)))
     }
 
+  def remove(containerId : Container.Id, segment : Segment, recordId : Record.Id) =
+    Action(recordId, Permission.EDIT).async { implicit request =>
+      super.move(containerId, segment, Segment.empty)
+    }
+
   final class RemoveForm(record : Record, slot : Slot)
-    extends StructForm(routes.RecordHtml.move(slot.containerId, slot.segment, record.id))
+    extends StructForm(routes.RecordHtml.remove(slot.containerId, slot.segment, record.id))
 }
 
 object RecordApi extends RecordController with ApiController {
@@ -202,5 +202,18 @@ object RecordApi extends RecordController with ApiController {
     VolumeController.Action(v, Permission.EDIT).async { implicit request =>
       val cat = catId.map(RecordCategory.get(_).getOrElse(throw NotFoundException))
       models.Record.create(request.obj, cat).map(result(_))
+    }
+
+  final class MoveForm(containerId : Container.Id)(implicit request : Request[_])
+    extends ApiForm(
+      routes.RecordApi.move(request.obj.id, containerId)) {
+    val src = Field(Forms.default(Forms.of[Segment], Segment.empty))
+    val dst = Field(Forms.default(Forms.of[Segment], Segment.empty))
+  }
+
+  def move(recordId : Record.Id, containerId : Container.Id) =
+    Action(recordId, Permission.EDIT).async { implicit request =>
+      val form = new MoveForm(containerId)._bind
+      super.move(containerId, form.src.get, form.dst.get)
     }
 }

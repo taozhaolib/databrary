@@ -80,7 +80,7 @@
                 <img ng-if="!editing && !!current.asset" ng-src="{{::current.asset.icon}}" hint="format-{{::current.asset.format.extension}}" class="player-main-info-file-icon">
                 <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="::page.constants.classification[current.asset.classification]" hint="classification-{{::page.constants.classification[current.asset.classification]}}"></span>
                 <a ng-href="{{::current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
-                <a ng-if="editing && !!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+                <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
               </nav>
 
               <div ng-if="!editing">
@@ -109,25 +109,34 @@
                     <classification-select name="classification" ng-model="current.data.classification"></classification-select>
                   </validator>
 
-                  <validator name="position" label="asset.position">
-                    <input type="text" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'asset.position.placeholder' | message}}">
+                  <validator name="position" label="position">
+                    <input class="position-input" type="text" size="10" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
                   </validator>
                 </div>
 
                 <div ng-switch-when="record">
+                  <ng-form name="current.form.measures">
                   <dl class="cf">
-                    <dt ng-repeat-start="(m, v) in current.data" ng-init="metric=page.constants.metric[m]" ng-bind="metric.display || metric.name"></dt><br>
+                    <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="metric.display || metric.name"></dt><br>
                     <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
-                      <select ng-switch-when="select" name="{{m}}" ng-model="current.data[m]" ng-options="o for o in metric.options"/>
-                      <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data[m]"/>
-                      <textarea ng-switch-when="long" name="m" ng-model="current.data[m]"/>
-                      <input ng-switch-when="date" input-date name="{{m}}" ng-model="current.data[m]" placeholder="YYYY-MM-DD"/>
-                      <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data[m]"/>
+                      <select ng-switch-when="select" name="{{m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
+                      <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data.measures[m]"/>
+                      <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
+                      <input ng-switch-when="date" input-date name="{{m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
+                      <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data.measures[m]"/>
                     </dd>
                     <dt>
-                      <select class="add" name="add" ng-model="current.add.data" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
+                      <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
                     </dt>
                   </dl>
+                  </ng-form>
+                  <ng-form name="current.form.position">
+                  <validator name="position" label="position">
+                    <input class="position-input" type="text" size="10" name="position-l" ng-model="current.data.position.l" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
+                    &ndash;
+                    <input class="position-input" type="text" size="10" name="position-u" ng-model="current.data.position.u" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
+                  </validator>
+                  </ng-form>
                 </div>
 
                 <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>

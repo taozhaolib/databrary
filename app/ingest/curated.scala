@@ -124,7 +124,7 @@ object Curated extends Ingest {
 
   private final case class SubjectSession(subjectKey : String, sessionKey : String) {
     def populate(record : Record, session : ModelSession)(implicit site : Site) =
-      SlotRecord.add(record, session.container).map(_ => ())
+      SlotRecord.move(record, session.container, dst = session.container.segment).map(_ => ())
   }
 
   private final case class Asset(name : String, position : Option[Offset], classification : Classification.Value, file : File) extends KeyedData with ingest.Asset {

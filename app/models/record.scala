@@ -132,23 +132,19 @@ object SlotRecord extends SlotTable("slot_record") {
     .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
     .apply(record.id, record.volumeId).list
 
-  def add(record : Record, slot : Slot) = {
+  def move(record : Record, container : Container, src : Segment = Segment.empty, dst : Segment = Segment.empty) : Future[Boolean] = {
     implicit val site = record.site
-    Audit.add(table, ('record -> record.id) +: slot.slotSql).execute
-    .recover {
+    var key = SQLTerms('record -> record.id, 'container -> container.id)
+    (if (src.isEmpty) {
+      if (dst.isEmpty) return async(false)
+      Audit.add(table, key :+ ('segment -> dst))
+    } else if (dst.isEmpty)
+      Audit.remove(table, key :+ ('segment -> src))
+    else
+      Audit.change(table, SQLTerms('segment -> dst), key :+ ('segment -> src)))
+    .execute.recover {
       case SQLDuplicateKeyException() => false
     }
-  }
-  def move(record : Record, slot : Slot, segment : Segment) : Future[Boolean] = {
-    implicit val site = record.site
-    var key = ('record -> record.id) +: slot.slotSql
-    if (segment.isEmpty)
-      Audit.remove(table, key).execute
-    else
-      Audit.change(table, SQLTerms('segment -> segment), key).execute
-      .recover {
-        case SQLDuplicateKeyException() => false
-      }
   }
 }
 

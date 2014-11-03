@@ -2,6 +2,9 @@ package dbrary
 
 import play.api.libs.json
 import play.api.mvc.QueryStringBindable
+import play.api.data.format.Formatter
+import play.api.data.format.Formats.booleanFormat
+import play.api.data.FormError
 import macros._
 
 trait RangeType[A] extends Ordering[A] {
@@ -230,99 +233,140 @@ object Range {
         json.JsArray(Seq(json.Json.toJson(o.lowerBound), json.Json.toJson(o.upperBound))))(
         json.Json.toJson(_))
     }
-  /** This never results in missing parameters: it defaults to FullRange. */
-  implicit def queryStringBindable[T : RangeType](implicit bb : QueryStringBindable[T]) : QueryStringBindable[Range[T]] = new QueryStringBindable[Range[T]] {
-    /* if using the default "range" name, promote parameters to the top level (messy!). */
-    private[this] def basekey(base : String) : String => String = base match {
-      case "range" => identity
-      case "segment" => {
-        case "lower" => "start"
-        case "upper" => "end"
-        case "singleton" => "offset"
-        case key => "segment." + key
-      }
-      case base => base + "." + _
+
+  private object Binder {
+    final class KeyNames(k : String => String) {
+      val key = k("")
+      val empty = k("empty")
+      val singleton = k("singleton")
+      val lower = k("lower")
+      val lowerClosed = k("lower.closed")
+      val upper = k("upper")
+      val upperClosed = k("upper.closed")
     }
-    private[this] def io[A](x : Option[Either[String, A]]) : Either.RightProjection[String, Option[A]] = Either.RightProjection(x match {
-      case None => Right(None)
-      case Some(Left(e)) => Left(e)
-      case Some(Right(v)) => Right(Some(v))
-    })
-    def bind(key : String, params : Map[String, Seq[String]]) : Option[Either[String, Range[T]]] = {
-      val keyname = basekey(key)
+
+    type Binder[T,E] = ((String, Map[String, String]) => Either[E, Option[T]])
+    def bind[T : RangeType,E](keys : KeyNames, params : Map[String, String], bnd : Binder[T,E], bool : Binder[Boolean,E]) : Either[E, Option[Range[T]]] = {
       /* first we take any single string like "[x,y)" apart into components. */
-      val pp = params ++ params.get(key).flatMap(_.headOption).fold[Iterable[(String, Seq[String])]](Nil) { rs =>
-        val p = Iterable.newBuilder[(String, Seq[String])]
-        def add(key : String, v : String) =
-          p += (keyname(key) -> Seq(v))
+      val pp = params ++ params.get(keys.key).fold[Iterable[(String, String)]](Nil) { rs =>
+        val p = Iterable.newBuilder[(String, String)]
         if (rs.equals("empty") || rs.isEmpty)
-          add("empty", "true")
+          p += keys.empty -> "true"
         else {
           var s = rs
           if (s.startsWith("[") || s.startsWith("(")) {
-            add("lower.closed", (s.head == '[').toString)
+            p += keys.lowerClosed -> (s.head == '[').toString
             s = s.tail
           }
           if (s.endsWith("]") || s.endsWith(")")) {
-            add("upper.closed", (s.last == ']').toString)
+            p += keys.upperClosed -> (s.last == ']').toString
             s = s.init
           }
           val i = Maybe(s.indexOf(',')) orElse s.indexOf('-')
           if (i < 0)
-            add("singleton", s)
+            p += keys.singleton -> s
           else {
             if (i > 0)
-              add("lower", s.substring(0, i))
+              p += keys.lower -> s.substring(0, i)
             if (i+1 < s.length)
-              add("upper", s.substring(i+1))
+              p += keys.upper -> s.substring(i+1)
           }
         }
         p.result
       }
       /* next we parse the components, either from the input parameters or parsed above. */
-      def bnd(key : String) : Either.RightProjection[String, Option[T]] =
-        io(bb.bind(keyname(key), pp))
-      def bool(key : String) : Either.RightProjection[String, Option[Boolean]] =
-        io(QueryStringBindable.bindableBoolean.bind(keyname(key), pp))
-      Some(for {
-        em <- bool("empty").map(_.getOrElse(false)).right
-        sn <- bnd("singleton")
-        lb <- bnd("lower")
-        ub <- bnd("upper")
-        lc <- bool("lower.closed")
-        uc <- bool("upper.closed")
-        _ <- Either.RightProjection(
-          if ((em && sn.isDefined)
-              || lc.isDefined != uc.isDefined
-              || ((em || sn.isDefined) && (lb.isDefined || ub.isDefined || lc.isDefined)))
-            Left("invalid combination of range parameters for " + key)
-          else Right(()))
-      } yield (
-        if (em) empty[T]
-        else sn.fold {
-          zip[Boolean, Boolean, Range[T]](lc, uc, apply[T](_, lb, ub, _))
-          .getOrElse(apply[T](lb, ub))
-        } (singleton[T](_))
-      ))
+      for {
+        em <- bool(keys.empty, pp).right.map(_.getOrElse(false)).right
+        sn <- bnd(keys.singleton, pp).right
+        lb <- bnd(keys.lower, pp).right
+        ub <- bnd(keys.upper, pp).right
+        lc <- bool(keys.lowerClosed, pp).right
+        uc <- bool(keys.upperClosed, pp).right
+      } yield {
+        if ((em && sn.isDefined)
+            || lc.isDefined != uc.isDefined
+            || ((em || sn.isDefined) && (lb.isDefined || ub.isDefined || lc.isDefined)))
+          None
+        else Some {
+          if (em) empty[T]
+          else sn.fold {
+            zip[Boolean, Boolean, Range[T]](lc, uc, apply[T](_, lb, ub, _))
+            .getOrElse(apply[T](lb, ub))
+          } (singleton[T](_))
+        }
+      }
     }
-    def unbind(key : String, range : Range[T]) : String = {
-      val keyname = basekey(key)
-      def bnd(key : String, x : T) =
-        bb.unbind(keyname(key), x)
-      def bool(key : String, x : Boolean) =
-        QueryStringBindable.bindableBoolean.unbind(keyname(key), x)
-      if (range.isEmpty) bool("empty", true)
+    type Unbinder[T, B] = ((String, T) => B)
+    def unbind[T : RangeType, B](keys : KeyNames, range : Range[T], bnd : Unbinder[T, B], bool : Unbinder[Boolean, B]) : Seq[B] = {
+      if (range.isEmpty) Seq(bool(keys.empty, true))
       else range.singleton.fold {
         val norm = range.normalize
         val isnorm = norm.isNormalized
-        Seq[Option[String]](
-          norm.lowerBound.map(bnd("lower", _)),
-          norm.upperBound.map(bnd("upper", _)),
-          if (isnorm) None else Some(bool("lower.closed", norm.lowerClosed)),
-          if (isnorm) None else Some(bool("upper.closed", norm.upperClosed))
-        ).flatten.mkString(";")
-      } (bb.unbind(keyname("singleton"), _))
+        Seq[Option[B]](
+          norm.lowerBound.map(bnd(keys.lower, _)),
+          norm.upperBound.map(bnd(keys.upper, _)),
+          if (isnorm) None else Some(bool(keys.lowerClosed, norm.lowerClosed)),
+          if (isnorm) None else Some(bool(keys.upperClosed, norm.upperClosed))
+        ).flatten
+      } (v => Seq(bnd(keys.singleton, v)))
     }
+  }
+
+  private[this] def io[E,A](x : Option[Either[E, A]]) : Either[E, Option[A]] = x match {
+    case None => Right(None)
+    case Some(Left(e)) => Left(e)
+    case Some(Right(v)) => Right(Some(v))
+  }
+  /** This never results in missing parameters: it defaults to FullRange. */
+  implicit def queryStringBindable[T : RangeType](implicit bb : QueryStringBindable[T]) : QueryStringBindable[Range[T]] = new QueryStringBindable[Range[T]] {
+    /* if using the default "range" name, promote parameters to the top level (messy!). */
+    private[this] def basekeys(base : String) = new Binder.KeyNames(base match {
+      case "range" => {
+        case "" => base
+        case key => key
+      }
+      case "segment" => {
+        case "lower" => "start"
+        case "upper" => "end"
+        case "singleton" => "offset"
+        case "" => "segment"
+        case key => "segment." + key
+      }
+      case base => {
+        case "" => base
+        case key => base + "." + key
+      }
+    })
+    private[this] def bnd(key : String, pp : Map[String, String]) : Either[String, Option[T]] =
+      io(bb.bind(key, pp.mapValues(Seq(_))))
+    private[this] def bool(key : String, pp : Map[String, String]) : Either[String, Option[Boolean]] =
+      io(implicitly[QueryStringBindable[Boolean]].bind(key, pp.mapValues(Seq(_))))
+    def bind(key : String, params : Map[String, Seq[String]]) : Option[Either[String, Range[T]]] =
+      Some(Binder.bind(basekeys(key), params.mapValues(_.head), bnd, bool)
+        .right.flatMap(_.toRight("invalid combination of range parameters for " + key)))
+    def unbind(key : String, range : Range[T]) : String =
+      Binder.unbind(basekeys(key), range, bb.unbind, QueryStringBindable.bindableBoolean.unbind).mkString(";")
+  }
+
+  implicit def formatter[T : RangeType](implicit bf : Formatter[T]) : Formatter[Range[T]] = new Formatter[Range[T]] {
+    override val format = bf.format
+    private def basekeys(k : String) = new Binder.KeyNames(s => if (s.nonEmpty) k+"."+s else k)
+    private[this] def bnd(key : String, pp : Map[String, String]) : Either[Seq[FormError], Option[T]] =
+      if (pp.keys.exists(p => p == key || p.startsWith(key + ".") || p.startsWith(key + "[")))
+        bf.bind(key, pp).right.map(Some(_))
+      else
+        Right(None)
+    private[this] def bool(key : String, pp : Map[String, String]) : Either[Seq[FormError], Option[Boolean]] =
+      if (pp.contains(key))
+        booleanFormat.bind(key, pp).right.map(Some(_))
+      else
+        Right(None)
+    def bind(key : String, data : Map[String, String]) : Either[Seq[FormError], Range[T]] =
+      Binder.bind(basekeys(key), data, bnd, bool)
+      .right.flatMap(_.toRight(Seq(FormError(key, "invalid combination of range parameters"))))
+    def unbind(key : String, value : Range[T]) : Map[String, String] =
+      Binder.unbind(basekeys(key), value, bf.unbind, booleanFormat.unbind)
+      .fold(Map.empty)(_ ++ _)
   }
 }
 

@@ -46,12 +46,13 @@ object Offset {
     else new Offset((1000.0*seconds).toLong)
 
   private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.0)(_ * _)
-  def fromString(s : String) : Offset =
+  def fromString(s : String) : Offset = Maybe.toLong(s).fold(
     ofSeconds(s.stripPrefix("-").split(':').reverseIterator.zipAll(multipliers.iterator, "", 0.0).map {
       case (_, 0) => throw new java.lang.NumberFormatException("For offset string: " + s)
       case ("", _) => 0.0
       case (s, m) => m*s.toDouble
-    }.sum * (if (s.startsWith("-")) -1.0 else 1.0))
+    }.sum * (if (s.startsWith("-")) -1.0 else 1.0)))(
+    new Offset(_))
 
   implicit val sqlType : SQLType[Offset] =
     SQLType.interval.transform[Offset]("interval", classOf[Offset])(
@@ -64,9 +65,8 @@ object Offset {
   implicit val queryStringBindable : QueryStringBindable[Offset] = new QueryStringBindable[Offset] {
     def bind(key : String, params : Map[String, Seq[String]]) : Option[Either[String, Offset]] =
       params.get(key).flatMap(_.headOption).map { s =>
-        Maybe.toLong(s).map(new Offset(_))
-          .orElse(Maybe.toNumber(fromString(s)))
-          .toRight("invalid offset parameter value for " + key)
+        Maybe.toNumber(fromString(s))
+        .toRight("invalid offset parameter value for " + key)
       }
     def unbind(key : String, offset : Offset) : String =
       QueryStringBindable.bindableLong.unbind(key, offset.millis)
@@ -78,7 +78,8 @@ object Offset {
   implicit val formatter : Formatter[Offset] = new Formatter[Offset] {
     override val format = Some(("format.offset", Nil))
     def bind(key: String, data: Map[String, String]) =
-      data.get(key).flatMap(s => Maybe.toNumber(fromString(s)))
+      data.get(key).flatMap(s => 
+        Maybe.toNumber(fromString(s)))
         .toRight(Seq(play.api.data.FormError(key, "error.offset", Nil)))
     def unbind(key: String, value: Offset) = Map(key -> value.toString)
   }

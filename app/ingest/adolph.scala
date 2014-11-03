@@ -278,7 +278,7 @@ object Adolph extends Ingest {
           for {
             c <- Container.create(volume, name = Maybe(name).opt, date = date)
             _ <- consent.foreachAsync(c.setConsent(_))
-            _ <- SlotRecord.add(pr, c)
+            _ <- SlotRecord.move(pr, c, dst = c.segment)
           } yield (c)
         } { s =>
           for {
@@ -315,7 +315,7 @@ object Adolph extends Ingest {
             _ <- check(crs.length <= 1,
               PopulateException("multiple existing records for category " + r.category, c))
             r <- r.populate(volume, crs.headOption)
-            _ <- if (crs.isEmpty) SlotRecord.add(r, c) else async(false)
+            _ <- if (crs.isEmpty) SlotRecord.move(r, c, dst = c.segment) else async(false)
           } yield ()
         }
       } yield (c)

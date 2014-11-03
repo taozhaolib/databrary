@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$rootScope', '$location', 'constantService', 'displayService', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $rootScope, $location, constants, display, Segment, Store, slot, editing) ->
+  '$scope', '$rootScope', '$location', '$q', '$filter', 'constantService', 'displayService', 'messageService', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $rootScope, $location, $q, $filter, constants, display, messages, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -265,19 +265,26 @@ app.controller('volume/slot', [
       type: 'record'
 
       fillData: ->
-        @data = angular.extend({}, @record.measures)
+        @data =
+          measures: angular.extend({}, @record.measures)
+          position:
+            l: if @segment.lBounded then $filter('timecode')(@segment.l, true)
+            u: if @segment.uBounded then $filter('timecode')(@segment.u, true)
 
       Object.defineProperty @prototype, 'id',
         get: -> @record.id
 
       remove: ->
         select() if $scope.current == this
-        slot.removeRecord(@record).then =>
-          for t in $scope.records
-            if t.remove(this)
-              if !t.length
-                $scope.records.remove(t)
-              break
+        slot.removeRecord(@record, @segment).then(=>
+            records.remove(this)
+            placeRecords()
+          , (res) =>
+            messages.addError
+              type: 'red'
+              body: 'Unable to remove'
+              report: res
+          )
         return
 
       byId = (a, b) -> a.id - b.id
@@ -289,24 +296,52 @@ app.controller('volume/slot', [
 
       addMetric = {id:'',name:'Add new value...'}
       addOptions: ->
-        metrics = (metric for m, metric of constants.metric when !(m of @data)).sort(byId)
+        metrics = (metric for m, metric of constants.metric when !(m of @data.measures)).sort(byId)
         metrics.unshift addMetric
         metrics
       ### jshint ignore:end ###
 
       add: ->
-        @data[@add.data] = '' if @add.data
-        @add.data = ''
+        @data.measures[@data.add] = '' if @data.add
+        @data.add = ''
         return
-
-      @prototype.add.data = ''
 
       save: ->
-        @record.save({measures:@data}).then () =>
-          @fillData()
-          delete @dirty
-          $scope.form.edit.$setPristine() if this == $scope.current
+        saves = []
+        if @form.measures.$dirty
+          saves.push @record.save({measures:@data.measures}).then () =>
+            @form.measures.$setPristine()
+        if @form.position.$dirty
+          saves.push slot.moveRecord(@record, @segment, (@data.position.l ? '') + '-' + (@data.position.u ? '')).then (s) =>
+            @form.position.$setPristine()
+            @segment = Segment.make(s.segment)
+            placeRecords()
+        $q.all(saves).then(=>
+            @fillData()
+            delete @dirty
+            $scope.form.edit.$setPristine() if this == $scope.current
+          , (res) =>
+            messages.addError
+              type: 'red'
+              body: 'Error saving'
+              report: res
+          )
         return
+
+    placeRecords = () ->
+      records.sort (a, b) ->
+        a.record.category - b.record.category || a.record.id - b.record.id
+
+      t = []
+      overlaps = (r) -> s.overlaps(r.segment)
+      for r in records
+        s = r.segment
+        for o, i in t
+          break unless o[0].record.category != r.record.category || o.some(overlaps)
+        t[i] = [] unless i of t
+        t[i].push(r)
+        select(r) if `r.id == targetRecord`
+      $scope.records = t
 
     class Consent
       constructor: (c) ->
@@ -334,22 +369,8 @@ app.controller('volume/slot', [
     addBlank() if editing
     sortTracks()
 
-    $scope.records = (->
-      records = slot.records.map((r) -> new Record(r))
-      records.sort (a, b) ->
-        a.record.category - b.record.category || a.record.id - b.record.id
-
-      t = []
-      overlaps = (r) -> s.overlaps(r.segment)
-      for r in records
-        s = r.segment
-        for o, i in t
-          break unless o[0].record.category != r.record.category || o.some(overlaps)
-        t[i] = [] unless i of t
-        t[i].push(r)
-        select(r) if `r.id == targetRecord`
-      t
-    )()
+    records = slot.records.map((r) -> new Record(r))
+    placeRecords()
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)

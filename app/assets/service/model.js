@@ -683,7 +683,7 @@ app.factory('modelService', [
 
     Slot.prototype.addRecord = function (r) {
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
+      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {dst: this.segment.format()})
         .then(function (res) {
           recordAdd(s, r);
           return r.update(res.data);
@@ -705,16 +705,17 @@ app.factory('modelService', [
         });
     };
 
-    Slot.prototype.removeRecord = function (r) {
+    Slot.prototype.removeRecord = Slot.prototype.moveRecord = function (r, src, dst) {
+      if (arguments.length < 3) {
+        dst = null;
+        if (src == null)
+          src = this.segment;
+      }
       var s = this;
-      return router.http(router.controllers.RecordApi.remove, this.container.id, this.segment.format(), r.id)
+      return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.format(src), dst: Segment.format(dst)})
         .then(function (res) {
-          s.update(res.data);
-          if ('records' in s)
-            /* not quite right with segments */
-            s.records = s.records.filter(function (sr) {
-              return sr.id !== r.id;
-            });
+          s.clear('records');
+          return res.data;
         });
     };
 
