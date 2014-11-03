@@ -144,15 +144,14 @@ app.controller('volume/slot', [
         return unless select(c)
 
       region = $(down.currentTarget)
-      startX = down.clientX
-      startPos = positionOffset(startX)
+      startTime = down.timeStamp
+      startPos = positionOffset(down.clientX)
       region.on 'mouseleave mouseup mousemove', $scope.$lift (up) ->
         region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
-        endX = up.clientX
-        if startX != undefined
-          return if Math.abs(startX - endX) < 6
-          startX = undefined
-        endPos = positionOffset(endX)
+        if startTime != undefined
+          return if up.timeStamp - startTime < 250000
+          startTime = undefined
+        endPos = positionOffset(up.clientX)
         $scope.selection =
           if startPos <= endPos
             new Segment(startPos, endPos)
