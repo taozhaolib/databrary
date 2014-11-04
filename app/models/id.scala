@@ -45,15 +45,17 @@ private[models] object IntId {
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _._id)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _._id)
   implicit def sqlType[T] : SQLType[IntId[T]] = SQLType.transform[Int,IntId[T]]("integer", classOf[IntId[T]])(i => Some(apply[T](i)), _._id)
-  implicit def formatter[T] : Formatter[IntId[T]] = new Formatter[IntId[T]] {
+  class formatter[T] extends Formatter[IntId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.intFormat.bind(key, data).right.map(apply _)
     def unbind(key : String, value : IntId[T]) =
       Formats.intFormat.unbind(key, value._id)
   }
-  implicit def jsonWrites[T] : json.Writes[IntId[T]] = new json.Writes[IntId[T]] {
+  implicit def formatter[T] : Formatter[IntId[T]] = new formatter[T]
+  class jsonWrites[T] extends json.Writes[IntId[T]] {
     def writes(i : IntId[T]) = json.JsNumber(i._id)
   }
+  implicit def jsonWrites[T] : json.Writes[IntId[T]] = new jsonWrites[T]
 }
 /** Any class (usually a singleton object) which provides an Id type. */
 private[models] trait ProvidesId[T] {
@@ -76,15 +78,17 @@ private[models] object LongId {
   implicit def pathBindable[T] : PathBindable[LongId[T]] = PathBindable.bindableLong.transform(apply[T] _, _._id)
   implicit def queryStringBindable[T] : QueryStringBindable[LongId[T]] = QueryStringBindable.bindableLong.transform(apply[T] _, _._id)
   implicit def sqlType[T] : SQLType[LongId[T]] = SQLType.transform[Long,LongId[T]]("bigint", classOf[LongId[T]])(i => Some(apply[T](i)), _._id)
-  implicit def formatter[T] : Formatter[LongId[T]] = new Formatter[LongId[T]] {
+  class formatter[T] extends Formatter[LongId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.longFormat.bind(key, data).right.map(apply _)
     def unbind(key : String, value : LongId[T]) =
       Formats.longFormat.unbind(key, value._id)
   }
-  implicit def jsonWrites[T] : json.Writes[LongId[T]] = new json.Writes[LongId[T]] {
+  implicit def formatter[T] : Formatter[LongId[T]] = new formatter[T]
+  class jsonWrites[T] extends json.Writes[LongId[T]] {
     def writes(i : LongId[T]) = json.JsNumber(i._id)
   }
+  implicit def jsonWrites[T] : json.Writes[LongId[T]] = new jsonWrites[T]
 }
 
 class IntIdMap[T,A] protected (map : IntMap[A]) extends Map[IntId[T], A] {
