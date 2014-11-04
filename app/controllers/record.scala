@@ -97,7 +97,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       so <- Slot.get(containerId, dst)
       s = so.filter(_.volumeId === request.obj.volumeId).getOrElse(throw NotFoundException)
       r <- SlotRecord.move(request.obj, s.container, src, dst)
-    } yield (SlotController.result(s))
+    } yield (if (r) SlotController.result(s) else result(request.obj))
 }
 
 object RecordController extends RecordController {

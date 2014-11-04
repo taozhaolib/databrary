@@ -41,7 +41,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     else
       Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
         .recover {
-          case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
+          case SQLException(e) if e.startsWith("conflicting key value violates exclusion constraint ") => false
         }
   }
 

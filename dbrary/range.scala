@@ -285,7 +285,8 @@ object Range {
       } yield {
         if ((em && sn.isDefined)
             || lc.isDefined != uc.isDefined
-            || ((em || sn.isDefined) && (lb.isDefined || ub.isDefined || lc.isDefined)))
+            || ((em || sn.isDefined) && (lb.isDefined || ub.isDefined || lc.isDefined))
+            || lb.exists(l => ub.exists(implicitly[RangeType[T]].gt(l, _))))
           None
         else Some {
           if (em) empty[T]

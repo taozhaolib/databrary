@@ -49,6 +49,11 @@ object SQLTerms {
   def flatten(terms : Option[SQLTerm[_]]*) = new SQLTerms(terms.flatten)
 }
 
+object SQLException {
+  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Option[String] =
+    return Some(e.errorMessage.message)
+}
+
 object SQLDuplicateKeyException {
   def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Boolean =
     e.errorMessage.message.startsWith("duplicate key value violates unique constraint ")

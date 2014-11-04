@@ -40,7 +40,7 @@ final class Container protected (override val id : Container.Id, override val vo
         async(false)
       else Audit.remove("container", sqlKey).execute
         .recover {
-          case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("update or delete on table \"container\" violates foreign key constraint ") => false
+          case SQLException(e) if e.startsWith("update or delete on table \"container\" violates foreign key constraint ") => false
         }
     }
 

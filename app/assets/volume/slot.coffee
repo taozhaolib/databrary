@@ -311,9 +311,10 @@ app.controller('volume/slot', [
           saves.push @record.save({measures:@data.measures}).then () =>
             @form.measures.$setPristine()
         if @form.position.$dirty
-          saves.push slot.moveRecord(@record, @segment, @data.position).then (s) =>
+          saves.push slot.moveRecord(@record, @segment, @data.position).then (r) =>
             @form.position.$setPristine()
-            @segment = Segment.make(s.segment)
+            return unless 'container' of r # nothing happened
+            @segment = Segment.make(r.segment)
             if @segment.empty
               records.remove(this)
               select() if this == $scope.current

@@ -34,7 +34,7 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
     } { classification =>
       Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key).execute
         .recover {
-          case e : com.github.mauricio.async.db.postgresql.exceptions.GenericDatabaseException if e.errorMessage.message.startsWith("conflicting key value violates exclusion constraint ") => false
+          case SQLException(e) if e.startsWith("conflicting key value violates exclusion constraint ") => false
         }
     }
   }
