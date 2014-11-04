@@ -43,10 +43,8 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   /** List of toplevel assets within this volume. */
   def excerpts = SlotAsset.getExcerpts(this)
 
-  /** List of records defined in this volume.
-    * @param category restrict to the specified category
-    * @return records sorted by category */
-  def records(category : Option[RecordCategory] = None) = Record.getVolume(this, category)
+  lazy val records = Record.getVolume(this)
+  // lazy val recordMap : Future[TableIdMap[Record]] = records.map(TableIdMap(_ : _*))
 
   /** Corresponding citation for this volume. */
   private val _citation : FutureVar[Option[Citation]] =
@@ -173,7 +171,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("categories", opt => recordCategories.map(JsonArray.map(_.id))),
-      ("records", opt => records().map(JsonArray.map(_.json - "volume"))),
+      ("records", opt => records.map(JsonArray.map(_.json - "volume"))),
       ("containers", opt => sessions.map(JsonArray.map { case (c, rs) =>
         c.json - "volume" +
         ('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>

@@ -109,7 +109,7 @@ object SlotHtml extends SlotController with HtmlController {
   private[controllers] def viewEdit(form : Option[EditForm] = None, recordForm : Option[RecordController.SelectForm] = None)(implicit request : Request[_]) =
     for {
       records <- request.obj.records
-      all <- request.obj.volume.records()
+      all <- request.obj.volume.records
       selectList = all diff records
     } yield (views.html.slot.edit(form getOrElse editForm, records, recordForm orElse Some(new RecordController.SelectForm), selectList))
 

@@ -223,7 +223,7 @@ object VolumeHtml extends VolumeController with HtmlController {
       access <- vol.partyAccess()
       top <- vol.top
       sessions <- vol.sessions
-      records <- vol.records()
+      records <- vol.records
       excerpts <- vol.excerpts
       citation <- vol.citation
       funding <- vol.funding

@@ -193,7 +193,7 @@ object RecordApi extends RecordController with ApiController {
     queryForm.bindFromRequest.fold(
       new ApiFormException(_).result,
       category =>
-        request.obj.records(category).map(l =>
+        Record.getVolume(request.obj, category).map(l =>
           Ok(JsonArray.map[Record,JsonRecord](_.json)(l)))
     )
   }

@@ -190,11 +190,10 @@ object Record extends TableId[Record]("record") {
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve all the categorized records associated with the given volume.
-    * @param category restrict to the specified category, or include all categories
-    * @return records sorted by category, ident */
-  private[models] def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
+    * @param category restrict to the specified category, or include all categories */
+  def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
     rowVolume(volume)
-    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "ORDER BY record.category")
+    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
     .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
 
   /** Retrieve the records in the given volume with a measure of the given value.
