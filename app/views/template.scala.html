@@ -20,6 +20,12 @@
   <link rel="stylesheet" href="@routes.Assets.at("app.min.css")">
   
   <!-- js -->
+  @defining("https://" + request.host + request.uri.replace("?js=0", "")){ canonicalUrl =>
+    <link rel="canonical" href="@canonicalUrl"> 
+  }
+
+    
+
   @if(js) {
     @SiteApi.jsDepends.map { js =>
       <script src="@routes.Assets.at(js)"></script>
