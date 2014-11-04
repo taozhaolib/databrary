@@ -2,7 +2,7 @@ package models
 
 import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import play.api.libs.json.{JsObject,JsNull,Json}
+import play.api.libs.json.{JsValue,JsObject,JsNull,Json}
 import macros._
 import dbrary._
 import site._
@@ -63,9 +63,20 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** List of asset that overlap with this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
 
-  private[models] val _records : FutureVar[Seq[Record]] = FutureVar[Seq[Record]](Record.getSlot(this))
+  private[models] val _records : FutureVar[Seq[(Segment, Record)]] =
+    FutureVar[Seq[(Segment, Record)]](Record.getSlot(this))
   /** The list of records that apply to this slot. */
-  final def records : Future[Seq[Record]] = _records.apply
+  final def records : Future[Seq[(Segment, Record)]] = _records.apply
+  private[models] final def _fullRecords : FutureVar[Seq[Record]] = {
+    val r = _records
+    if (r.peek.isDefined)
+      r.map(_.collect {
+        case (seg, rec) if seg @> segment => rec
+      })
+    else
+      FutureVar[Seq[Record]](Record.getSlotFull(this))
+  }
+  final def fullRecords : Future[Seq[Record]] = _fullRecords()
 
   /** The list of comments that apply to this slot. */
   final def comments = Comment.getSlot(this)
@@ -91,13 +102,13 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   /** A list of record identification strings that apply to this object.
     * This is probably not a permanent solution for naming, but it's a start. */
-  def idents : Future[Seq[String]] =
-    records.map(_.map(_.ident))
+  def _idents = _fullRecords.map(_.map(_.ident))
+  def idents : Future[Seq[String]] = _idents()
 
-  private[this] def _ident : Option[String] =
-    _records.peek.map(_.map(_.ident).mkString(" - "))
+  private[this] def _ident : FutureVar[String] =
+    _idents.map(_.mkString(" - "))
 
-  def pageName = container.name orElse _ident.flatMap(Maybe(_).opt) getOrElse {
+  def pageName = container.name orElse _ident.peek.flatMap(Maybe(_).opt) getOrElse {
     if (container.top)
       volume.name
     else
@@ -118,15 +129,18 @@ trait Slot extends TableRow with InVolume with SiteObject {
   )
   def json : JsonValue = slotJson
 
+  private[models] def _jsonRecords : FutureVar[JsValue] =
+    _records.map(JsonArray.map { case (seg, rec) =>
+      JsonRecord.flatten(rec.id
+      , if (seg.isFull) None else Some('segment -> seg)
+      , rec.age(this).map('age -> _))
+    })
+  private[models] def jsonRecords : Future[JsValue] = _jsonRecords()
+
   final def slotJson(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(slotJson.obj, options
     , "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container")))
-    , "records" -> (opt => Record.getSlotList(this).map(
-      JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
-        JsonRecord.flatten(rec.id
-        , if (seg.isFull) None else Some('segment -> seg)
-        , rec.age(this).map('age -> _))
-      }))
+    , "records" -> (opt => jsonRecords)
     , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     , "consents" -> (opt => consents.map {

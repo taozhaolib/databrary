@@ -36,6 +36,7 @@ protected sealed abstract trait SQLArgsView[+R] extends RepeatedView[SQLType, SQ
 
 object SQLArgs extends SQLArgsView[SQLArgs] {
   protected def result(args : SQLArg[_]*) : SQLArgs = new SQLArgs(args)
+  def opt[A : SQLType](o : Option[A]) : SQLArgs = new SQLArgs(o.map(SQLArg(_)).toSeq)
 }
 
 /** Exceptions that may occur during parsing query results, usually indicating type or arity mismatches. */

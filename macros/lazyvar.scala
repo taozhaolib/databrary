@@ -31,7 +31,7 @@ final class LazyOptionVar[T](init : => T) extends LazyVar[T](init) with OptionVa
   def get : T = value.get
   def set(v : T) = update(v)
   def map[A](f : T => A) : LazyOptionVar[A] = {
-    val v = new LazyOptionVar[A](f(init))
+    val v = new LazyOptionVar[A](f(apply()))
     v.value = value.map(f)
     v
   }
@@ -47,8 +47,8 @@ final class FutureVar[T](init : => Future[T]) extends LazyVar[Future[T]](init) w
   def get : T = value.get.value.get.get
   def set(v : T) = update(Future.successful(v))
   def map[A](f : T => A)(implicit ctx : ExecutionContext) : FutureVar[A] = {
-    val v = new FutureVar[A](init.map(f))
-    v.value = value.map(_.map(f))
+    val v = new FutureVar[A](apply().map(f))
+    v.value = value.map(x => x.value.fold(x.map(f))(v => async(v.map(f))))
     v
   }
 }

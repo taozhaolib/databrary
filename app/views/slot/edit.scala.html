@@ -1,4 +1,4 @@
-@(form : SlotController.SlotForm, records : Seq[Record], recordForm : Option[RecordController.SelectForm], selectList : Seq[Record] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
+@(form : SlotController.SlotForm, records : Seq[(dbrary.Segment,Record)], recordForm : Option[RecordController.SelectForm], selectList : Seq[Record] = Nil)(implicit request : RequestObject[SiteObject]#Site[_])
 
 @implicitField = @{
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
@@ -35,10 +35,10 @@
 
                             <tbody>
                                 @if(records.nonEmpty) {
-                                    @records.map { record =>
+                                    @records.map { case (seg, record) =>
                                         <tr>
                                             <td class="main">
-                                                @display(record)
+                                                @seg: @display(record)
                                             </td>
 
                                             <td class="meta">

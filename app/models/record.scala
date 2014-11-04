@@ -175,18 +175,17 @@ object Record extends TableId[Record]("record") {
     row.SELECT("WHERE record.id = ? AND", Volume.condition)
       .apply(id).singleOpt
 
-  /** Retrieve the list of all records that apply to the given slot. */
-  private[models] def getSlot(slot : Slot) : Future[Seq[Record]] =
+  /** Retrieve the list of all records that cover the given slot. */
+  private[models] def getSlotFull(slot : Slot) : Future[Seq[Record]] =
     rowVolume(slot.volume)
-    .SQL((sel, src) => unwords("SELECT DISTINCT ON (record.category, record.id)", sel,
-      "FROM", src, "JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST, record.id"))
+    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment @> ?::segment ORDER BY record.category NULLS LAST")
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve the list of all records that apply to the given slot. */
-  private[models] def getSlotList(slot : Slot) : Future[Seq[(Segment,Record)]] =
+  private[models] def getSlot(slot : Slot) : Future[Seq[(Segment,Record)]] =
     SlotRecord.columns
     .join(rowVolume(slot.volume), "slot_record.record = record.id")
-    .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment")
+    .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST")
     .apply(slot.containerId, slot.segment).list
 
   /** Retrieve all the categorized records associated with the given volume.

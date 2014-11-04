@@ -221,14 +221,14 @@ object VolumeHtml extends VolumeController with HtmlController {
     for {
       access <- vol.partyAccess()
       top <- vol.top
-      sessions <- vol.sessions
       records <- vol.records
+      containers <- vol.containers
       excerpts <- vol.excerpts
       citation <- vol.citation
       funding <- vol.funding
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(access, top, sessions.map(_._1), records, excerpts, citation, funding, comments, tags)))
+    } yield (Ok(views.html.volume.view(access, top, containers, records, excerpts, citation, funding, comments, tags)))
   }
 
   def viewSearch(implicit request : SiteRequest[AnyContent]) = {

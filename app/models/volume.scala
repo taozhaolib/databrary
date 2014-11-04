@@ -36,7 +36,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   def partyAccess(access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] = VolumeAccess.getParties(this, access)
 
   /** List of containers within this volume. */
-  def containers : Future[Seq[Container]] = Container.getVolume(this)
+  def containers : Future[Seq[Container]] = Volume.Containers.get(this)
   /** The master container corresponding to this volume, which serves as a proxy target for many annotations. */
   def top : Future[Container] = Container.getTop(this)
 
@@ -64,11 +64,6 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
   def thumb = SlotAsset.getThumb(this)
-
-  private[this] lazy val _sessions : Future[Seq[Volume.Session]] =
-    Volume.Session.get(this)
-
-  def sessions : Future[Seq[Volume.Session.Group]] = _sessions.map(Volume.Session.group)
 
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =
@@ -137,14 +132,8 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("records", opt => records.map(JsonArray.map(_.json - "volume"))),
-      ("containers", opt => sessions.map(JsonArray.map { case (c, rs) =>
-        c.json - "volume" +
-        ('records -> JsonArray.map[(Segment, Record), JsonRecord] { case (seg, rec) =>
-          JsonRecord.flatten(rec.id
-          , if (seg.isFull) None else Some('segment -> seg)
-          , rec.age(c).map('age -> _)
-          )
-        }(rs))
+      ("containers", opt => containers.map(JsonArray.map { c =>
+        c.json - "volume" ++ c._jsonRecords.peek.map[JsonField]('records -> _)
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume").obj)),
@@ -197,7 +186,7 @@ object Volume extends TableId[Volume]("volume") {
       query.fold("")(_ => "ts_rank(ts, query) DESC, "),
       party.fold("")(_ => "individual DESC,"),
       "volume.id")
-    .apply(query.fold(SQLArgs())(SQLArgs(_)) ++ party.fold(SQLArgs())(SQLArgs(_))).list
+    .apply(SQLArgs.opt(query) ++ party.map(SQLArg(_))).list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
@@ -211,65 +200,37 @@ object Volume extends TableId[Volume]("volume") {
   final def Core(implicit site : Site) : Volume =
     new Volume(CORE, "core", None, None, models.Permission.SHARED, defaultCreation)
 
-  type Session = (ContextSlot, Option[(Segment, Record)])
-
-  object Session {
-    private val base =
-      SlotConsent.row.from(
-      """(SELECT id AS container, COALESCE(segment, '(,)'::segment) AS segment, consent
-           FROM container LEFT JOIN slot_consent ON id = container
-          WHERE volume = ?
-        UNION ALL
-          SELECT s.container, COALESCE(c.segment, '(,)'::segment) * s.segment AS segment, c.consent
-            FROM volume_inclusion s LEFT JOIN slot_consent c
-              ON s.container = c.container AND s.segment && c.segment
-           WHERE volume = ?
-        ) AS """ + _)
-    private def baseVolume(vol : Volume) =
-      base.pushArgs(SQLArgs(vol.id, vol.id))
-    private def columnsVolume(vol : Volume) =
-      baseVolume(vol)
-      .join(Container.columns.map(_(vol)), "slot_consent.container = container.id")
-      .map(tupleApply)
-
-    private def row(vol : Volume) : Selector[Session] =
-      columnsVolume(vol)
-      .leftJoin(SlotRecord.columns
-        .join(Record.sessionRow(vol), "slot_record.record = record.id"),
-        "container.id = slot_record.container AND slot_consent.segment && slot_record.segment AND (record.volume = container.volume OR record.volume = ?)")
-      .pushArgs(SQLArgs(vol.id))
-      .map {
-        case (slot, None) => (slot, None)
-        case (slot, Some((seg, rec))) => (slot, Some((seg, rec(slot.consent))))
+  object Containers {
+    def get(vol : Volume) : Future[Seq[Container]] =
+      vol._records.peek.fold(Container.getVolume(vol)) { records =>
+        Container.rowVolume(vol).leftJoin(
+          SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record"),
+          "container.id = slot_record.container")
+        .SELECT(/* should be: "ORDER BY container.id"*/).apply().list
+        .map(fill(records, _))
       }
 
-    private[Volume] def get(vol : Volume) : Future[Seq[Session]] =
-      row(vol)
-      .SELECT("ORDER BY container.top DESC, container.id, record.category NULLS LAST, record.id")
-      .apply().list
-
-    type Group = (Container, Seq[(Segment, Record)])
-    private[Volume] def group(l : Seq[Session]) : Seq[Group] = {
+    private def fill(records : Seq[Record], l : Seq[(Container, Option[(Segment, Record.Id)])]) : Seq[Container] = {
       if (l.isEmpty)
         return Nil
-      val r = l.genericBuilder[Group]
-      var c1 : Container = l.head._1.container
-      val r1 = Seq.newBuilder[(Segment, Record)]
-      val rc = Seq.newBuilder[Record]
+      val rm = TableIdMap(records : _*)
+      val r = l.genericBuilder[Container]
+      var cc : Container = l.head._1
+      val cr = Seq.newBuilder[(Segment, Record)]
       def next() {
-        c1._records.set(rc.result)
-        rc.clear
-        r += c1 -> r1.result
-        r1.clear
+        cc._records.set(cr.result)
+        cr.clear
+        r += cc
       }
       for ((c, or) <- l) {
-        if (!(c1.id === c.containerId)) {
+        if (!(cc.id === c.id)) {
           next()
-          c1 = c.container
+          cc = c
         }
-        or foreach { case (seg, rec) =>
-          r1 += c.segment * seg -> rec
-          rc += rec
+        or foreach { case (seg, r) =>
+          rm.get(r) foreach { rec =>
+            cr += seg -> rec
+          }
         }
       }
       next()

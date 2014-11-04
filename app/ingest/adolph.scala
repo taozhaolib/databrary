@@ -308,7 +308,7 @@ object Adolph extends Ingest {
             }
           } yield ()
         }
-        cr <- c.records.map(_.groupBy(_.category.map(_.id)))
+        cr <- c.fullRecords.map(_.groupBy(_.categoryId))
         _ <- (records - Participant.category).values foreachAsync { r =>
           val crs = cr.getOrElse(Some(r.category.id), Nil)
           for {
