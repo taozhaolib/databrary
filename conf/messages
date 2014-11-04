@@ -389,7 +389,6 @@ volume.creation.title=Shared on
 volume.sessions.title=Sessions
 volume.sessions={0} sessions ({1} shared)
 volume.ages.title=Ages
-volume.ages={0} (M = {1})
 volume.citation.title=Original Work
 volume.link.title=How to Cite
 volume.access.title=Shared with

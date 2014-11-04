@@ -219,7 +219,6 @@ object VolumeHtml extends VolumeController with HtmlController {
   def view(i : models.Volume.Id) = Action(i).async { implicit request =>
     val vol = request.obj
     for {
-      summary <- vol.summary
       access <- vol.partyAccess()
       top <- vol.top
       sessions <- vol.sessions
@@ -229,7 +228,7 @@ object VolumeHtml extends VolumeController with HtmlController {
       funding <- vol.funding
       comments <- vol.comments
       tags <- vol.tags
-    } yield (Ok(views.html.volume.view(summary, access, top, sessions.map(_._1), records, excerpts, citation, funding, comments, tags)))
+    } yield (Ok(views.html.volume.view(access, top, sessions.map(_._1), records, excerpts, citation, funding, comments, tags)))
   }
 
   def viewSearch(implicit request : SiteRequest[AnyContent]) = {

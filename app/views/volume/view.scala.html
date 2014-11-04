@@ -1,4 +1,4 @@
-@(summary : Volume.Summary, access : Seq[VolumeAccess], top : Container, sessions : Seq[Slot], records : Seq[Record], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
+@(access : Seq[VolumeAccess], top : Container, sessions : Seq[Slot], records : Seq[Record], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
 @template("Volume: " + volume.name, angular = Some(request.obj.json.js)) {
@@ -57,12 +57,6 @@
             <dl class="flat">
                 <dt>@Messages("volume.creation.title")</dt>
                 <dd><time datetime="@volume.creation" pubdate>@display.dateFmtYM.print(volume.creation)</time></dd>
-
-                <dt>@Messages("volume.sessions.title")</dt>
-                <dd>@Messages("volume.sessions", summary.sessions, summary.shared)</dd>
-
-                <dt>@Messages("volume.ages.title")</dt>
-                <dd>@Messages("volume.ages", display.agerange(summary.agerange), display.age(summary.agemean))</dd>
             </dl>
         </div>
     </div>

@@ -73,36 +73,6 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   private[this] def recordCategories : Future[Seq[RecordCategory]] =
     RecordCategory.getVolume(this)
 
-  /** Basic summary information on this volume.
-    * For now this only includes session (cross participant) information. */
-  lazy val summary : Future[Volume.Summary] = _sessions.map { sess =>
-    var sessions, shared, ages = 0
-    var agemin, agemax = Age(0)
-    var agesum = 0
-    sess.foreach {
-      case (s, Some((_, r))) if r.category.exists(_ === RecordCategory.Participant) =>
-        sessions = sessions + 1
-        if (s.consent >= Consent.SHARED) shared = shared + 1
-        s.container.date.flatMap(r.age(_)).foreach { a =>
-          if (ages == 0) {
-            agemin = a
-            agemax = a
-          } else {
-            agemin = agemin.min(a)
-            agemax = agemax.max(a)
-          }
-          ages = ages + 1
-          agesum = agesum + a.days
-        }
-      case _ => ()
-    }
-    Volume.Summary(
-      sessions = sessions,
-      shared = shared,
-      agerange = Range(agemin, agemax),
-      agemean = Age(if (ages == 0) 0 else agesum / ages))
-  }
-
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =
     Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
@@ -162,7 +132,6 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
     JsonOptions(json,
       /* this could be generalized for all fields in json when there's overlap: */
       if (_citation.peek.isDefined) options - "citation" else options,
-      ("summary", opt => summary.map(_.json.js)),
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
         .map(JsonArray.map(_.json - "volume"))),
       ("citation", opt => citation.map(_.fold[JsValue](JsNull)(_.json.js))),
@@ -245,15 +214,6 @@ object Volume extends TableId[Volume]("volume") {
     * We ignore any access rules here and grant everyone DOWNLOAD. */
   final def Core(implicit site : Site) : Volume =
     new Volume(CORE, "core", None, None, models.Permission.SHARED, defaultCreation)
-
-  case class Summary(sessions : Int, shared : Int, agerange : Range[Age], agemean : Age) {
-    lazy val json = JsonObject(
-      'sessions -> sessions,
-      'shared -> shared,
-      'agerange -> agerange,
-      'agemean -> agemean
-    )
-  }
 
   type Session = (ContextSlot, Option[(Segment, Record)])
 

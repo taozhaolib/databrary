@@ -31,11 +31,18 @@
                 </time>
               </dd>
 
-              <dt ng-if="::!!volume.summary.sessions" message="volume.sessions.title"></dt>
-              <dd ng-if="::!!volume.summary.sessions" ng-bind="::'volume.sessions' | message:volume.summary.sessions:volume.summary.shared"></dd>
+              <dt ng-if="::volume.summary.sessions" message="volume.sessions.title"></dt>
+              <dd ng-if="::volume.summary.sessions" ng-bind="::'volume.sessions' | message:volume.summary.sessions:volume.summary.shared"></dd>
 
-              <dt ng-if="::volume.summary.agemean > 0" message="volume.ages.title"></dt>
-              <dd ng-if="::volume.summary.agemean > 0">{{::ageSummary(volume.summary)}}</dd>
+              <dt ng-if="::volume.summary.agemean" message="volume.ages.title"></dt>
+              <dd ng-if="::volume.summary.agemean">
+                <display-age value="::volume.summary.agemin"></display-age>
+                <span ng-if="::volume.summary.agemin < volume.summary.agemax">
+                  &ndash;
+                  <display-age value="::volume.summary.agemax"></display-age>
+                  (<em>M</em> = <display-age value="::volume.summary.agemean"></display-age>)
+                </span>
+              </dd>
             </dl>
           </div>
         </div>
