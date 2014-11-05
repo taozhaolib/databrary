@@ -61,13 +61,13 @@ object Transcode {
 
   def stop(id : models.Transcode.Id) : Future[Option[models.Transcode]] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.getJob(id).flatMap(_.mapAsync { tc =>
+    models.Transcode.getJob(id).mapAsync { tc =>
       tc.process.foreachAsync({ pid =>
         tc.setStatus(Left("aborted")).map { _ =>
           ctl(tc.id, "-k", pid.toString)
         }
       }, tc)
-    })
+    }
     }
 
   def restart(id : models.Transcode.Id)(implicit request : controllers.SiteRequest[_]) : Future[Option[models.Transcode]] =

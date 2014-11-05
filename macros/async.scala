@@ -33,13 +33,13 @@ object async {
   def when(guard : Boolean, f : => Future[Unit]) : Future[Unit] =
     if (guard) f else void
 
-  implicit class Async[A](a : A) {
+  implicit sealed class Async[A](a : A) {
     def async : Future[A] = successful(a)
   }
 
   private def ss[A](a : A) : Future[Option[A]] = successful(Some(a))
 
-  implicit class AsyncTraversableOnce[A](l : TraversableOnce[A]) extends Async[TraversableOnce[A]](l) {
+  implicit sealed class AsyncTraversableOnce[A](l : TraversableOnce[A]) extends Async[TraversableOnce[A]](l) {
     /** Evaluate each of the futures, serially. */
     def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
       l.foldLeft[Future[Any]](void) { (r, a) =>
@@ -47,8 +47,13 @@ object async {
       }.map(_ => r)
     }
   }
+  implicit sealed class FutureTraversableOnce[A](l : Future[TraversableOnce[A]]) {
+    /** Evaluate each of the futures, serially. */
+    def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] =
+      l.flatMap(_.foreachAsync[R](f, r))
+  }
 
-  implicit class AsyncOption[A](o : Option[A]) extends AsyncTraversableOnce[A](o) {
+  implicit final class AsyncOption[A](o : Option[A]) extends AsyncTraversableOnce[A](o) {
     /** Unwrap and map an Option into a Future Option. */
     def flatMapAsync[B](f : A => Future[Option[B]]) : Future[Option[B]] =
       o.fold[Future[Option[B]]](successful(None))(f(_))
@@ -62,8 +67,22 @@ object async {
     def filterAsync(f : A => Future[Boolean])(implicit context : ExecutionContext) : Future[Option[A]] =
       flatMapAsync[A](a => f(a).map { case false => None ; case true => Some(a) })
   }
+  implicit final class FutureOption[A](o : Future[Option[A]]) {
+    def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] =
+      o.flatMap(_.foreachAsync[R](f, r))
+    def flatMapAsync[B](f : A => Future[Option[B]])(implicit context : ExecutionContext) : Future[Option[B]] =
+      o.flatMap(_.flatMapAsync[B](f))
+    def mapAsync[B](f : A => Future[B])(implicit context : ExecutionContext) : Future[Option[B]] =
+      o.flatMap(_.mapAsync[B](f))
+    def orElseAsync[B >: A](b : => Future[Option[B]])(implicit context : ExecutionContext) : Future[Option[B]] =
+      o.flatMap(_.orElseAsync[B](b))
+    def getOrElseAsync[B >: A](b : => Future[B])(implicit context : ExecutionContext) : Future[B] =
+      o.flatMap(_.getOrElseAsync[B](b))
+    def filterAsync(f : A => Future[Boolean])(implicit context : ExecutionContext) : Future[Option[A]] =
+      o.flatMap(_.filterAsync(f))
+  }
 
-  implicit class AsyncSeq[A](l : Seq[A]) extends AsyncTraversableOnce[A](l) {
+  implicit final class AsyncSeq[A](l : Seq[A]) extends AsyncTraversableOnce[A](l) {
     /** Evaluate each of the futures, serially left-to-right, and produce a list of the results. */
     def mapAsync[B, R](f : A => Future[B])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] = {
       val b = bf()
@@ -74,8 +93,14 @@ object async {
       foreachAsync[R](f(_).andThen { case Success(a) => b ++= a }, b.result)
     }
   }
+  implicit final class FutureSeq[A](l : Future[Seq[A]]) extends FutureTraversableOnce[A](l) {
+    def mapAsync[B, R](f : A => Future[B])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] =
+      l.flatMap(_.mapAsync[B,R](f)(bf, context))
+    def flatMapAsync[B, R](f : A => Future[TraversableOnce[B]])(implicit bf : generic.CanBuildFrom[Seq[A], B, R], context : ExecutionContext) : Future[R] =
+      l.flatMap(_.flatMapAsync[B,R](f)(bf, context))
+  }
 
-  implicit class AsyncMap[K, A](m : Map[K, A]) extends Async[Map[K, A]](m) {
+  implicit final class AsyncMap[K, A](m : Map[K, A]) extends Async[Map[K, A]](m) {
     /** Evaluate each of the futures in the Map in an arbitrary order and produce a collection of the results.
       * This is not as efficient as it could be due to a lack of foldMap/mapAccum-type functions. */
     def mapValuesAsync[B, R](f : A => Future[B])(implicit bf : generic.CanBuildFrom[Map[K, A], (K, B), R], context : ExecutionContext) : Future[R] = {
@@ -88,6 +113,10 @@ object async {
         madd(l).flatMap(_ => madd(r))
       }).map(_ => b.result)
     }
+  }
+  implicit final class FutureMap[K, A](m : Future[Map[K, A]]) {
+    def mapValuesAsync[B, R](f : A => Future[B])(implicit bf : generic.CanBuildFrom[Map[K, A], (K, B), R], context : ExecutionContext) : Future[R] =
+      m.flatMap(_.mapValuesAsync[B,R](f)(bf, context))
   }
 
   private def peek[A](a : Future[A]) : Option[A] = a.value.map(_.get)

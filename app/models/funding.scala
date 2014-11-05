@@ -85,8 +85,8 @@ object Funder extends Table[Funder]("funder") {
     }
 
   private[models] def get(id : Id) : Future[Option[Funder]] =
-    row.SELECT("WHERE fundref_id = ?").apply(id).singleOpt.flatMap(_.orElseAsync(
-      fundrefId(id).flatMap(_.filterAsync(f => INSERT(f.sqlArgs).execute))))
+    row.SELECT("WHERE fundref_id = ?").apply(id).singleOpt.orElseAsync(
+      fundrefId(id).filterAsync(f => INSERT(f.sqlArgs).execute))
 
   def search(query : String, all : Boolean = false) : Future[Seq[Funder]] =
     if (all)

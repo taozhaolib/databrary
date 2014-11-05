@@ -383,6 +383,6 @@ object Adolph extends Ingest {
     Sessions.parseCSV(s, p).map(_.length)
 
   def process(volume : Volume, s : File, p : Option[File])(implicit request : controllers.SiteRequest[_]) : Future[Seq[Container]] =
-    Sessions.parseCSV(s, p).flatMap(_.mapAsync(_.populate(volume)))
+    Sessions.parseCSV(s, p).mapAsync(_.populate(volume))
 
 }
