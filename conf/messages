@@ -166,7 +166,7 @@ orcid=ORCiD
 avatar=avatar
 affiliation=Affiliation
 
-password.advice=Your Databrary password is used to protect many sensitive resources, including identifying human subjects data, and to control your own stored research data.  Therefore, we require that passwords meet a minimum security threshold.  To choose a secure password, please:<ul><li>do not use the same password you use for other websites or computers;</li><li>do not base your password on a single word, even with minimal substitutions or additions;</li><li>do not use repeated characters or simple sequences (like "abc" or "&amp;*()");</li><li>use a long password with multiple words or a variety of characters.</li></ul>
+password.advice=Your Databrary password is used to protect many sensitive resources, including identifying human subjects data, and to control your own stored research data.  Therefore, we require that passwords meet a minimum security threshold.  To choose a secure password, please:<ul><li>do not use the same password you use for other websites or computers;</li><li>do not base your password on a single word, even with minimal substitutions or additions;</li><li>do not use repeated characters or simple sequences (like "abc" or "&amp;*()");</li><li>use a password with multiple words or a variety of characters;</li><li>use a password that is at least 7 characters in length.</li></ul>
 
 logout.success=You are logged out.
 logout.error=That''s weird. We couldn''t log you out.
