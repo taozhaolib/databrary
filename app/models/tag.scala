@@ -71,7 +71,7 @@ object Tag extends TableId[Tag]("tag") {
 
 private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] val aggregateColumns = Columns(
-      SelectAs[Int]("count(tag_use.*)", "weight")
+      SelectAs[Int]("count(tag_use.*)::integer", "weight")
     , SelectAs[Option[Boolean]]("bool_or(tag_use.who = ?)", "user")
     )
 
