@@ -73,14 +73,12 @@ app.controller('site/tags', [
 
     $scope.vote = function (tag, vote) {
       $scope.target.setTag(tag.id, vote).then(function (newTag) {
-        if (newTag.weight === 0 && !newTag.vote) {
+        if (newTag.weight === 0)
           $scope.tags.remove(tag);
-        }
-        else {
+        else
           $scope.tags.splice($scope.tags.indexOf(tag), 1, newTag);
-        }
 
-        var directions = {'-1': 'down', 0: 'null', 1: 'up'};
+        var directions = {false: 'null', true: 'up'};
         createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
         page.tooltips.clear(); // hack for broken tooltips
       }, function (res) {

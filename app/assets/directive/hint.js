@@ -32,7 +32,7 @@ app.directive('hint', [
         page.constants.message('object.tip.' + a);
     });
 
-    angular.forEach(['up', 'null', 'down'], function (a) {
+    angular.forEach(['up', 'null'], function (a) {
       hints['tags-vote-' + a] =
         page.constants.message('tags.vote.' + a);
     });
