@@ -549,13 +549,12 @@ CREATE TABLE "tag_use" (
 	"who" integer NOT NULL References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
-	"up" boolean NOT NULL DEFAULT true,
 	Primary Key ("tag", "who", "container", "segment"),
 	Exclude USING gist (singleton("tag") WITH =, singleton("who") WITH =, singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
-COMMENT ON TABLE "tag_use" IS 'Applications of tags to objects along with their weight (+-1).';
+COMMENT ON TABLE "tag_use" IS 'Applications of tags to slots.';
 
 
 ----------------------------------------------------------- records

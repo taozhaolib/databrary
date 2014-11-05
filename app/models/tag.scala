@@ -11,9 +11,10 @@ import site._
   * Immutable (create only).
   */
 final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] {
-  /** Set the current user's tag value (up, down, or none) for the slot. */
-  def set(slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
-    up.fold(TagUse.remove(this, slot))(TagUse.set(this, slot, _))
+  def add(slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
+    TagUse.add(this, slot)
+  def remove(slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
+    TagUse.remove(this, slot)
   def weight(slot : Slot) : Future[TagWeight] =
     TagWeight.getSlot(this, slot)
   def containers(implicit site : Site) : Future[Seq[TagWeightContainer]] =
@@ -66,42 +67,30 @@ object Tag extends TableId[Tag]("tag") {
   private[models] def getOrCreate(name : String) : Future[Tag] =
     SQL("SELECT get_tag(?)")
       .apply(name).single(SQLCols[Id].map(new Tag(_, name)))
-
-  // private[models] def set(name : String, slot : Slot, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Boolean] =
 }
 
 private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] val aggregateColumns = Columns(
-      SelectAs[Option[Int]]("SUM(CASE WHEN up THEN 1::integer ELSE -1::integer END)::integer", "weight")
-    , SelectAs[Option[Boolean]]("bool_or(CASE WHEN who = ? THEN up ELSE NULL END)", "user")
+      SelectAs[Int]("count(tag_use.*)", "weight")
+    , SelectAs[Option[Boolean]]("bool_or(tag_use.who = ?)", "user")
     )
 
-  private def remove(tag : Tag, slot : Slot, who : Account) : Future[Boolean] =
-    DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> who.id).execute
-
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    remove(tag, slot, site.account)
+    DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
 
-  private[models] def set(tag : Tag, slot : Slot, up : Boolean = true)(implicit site : AuthSite) : Future[Boolean] = {
-    val who = site.identity
-    val ids = SQLTerms('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> who.id)
-    val args = ('up -> up) +: ids
-    DBUtil.updateOrInsert(
-      SQL("UPDATE tag_use SET up = ? WHERE", ids.where)(_, _).apply(args))(
-      INSERT(args)(_, _)).execute
-  }
+  private[models] def add(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
+    INSERT(SQLTerms('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id)).execute
 }
 
-sealed class TagWeight protected (val tag : Tag, weightOpt : Option[Int], val user : Option[Boolean]) {
-  val weight = weightOpt.getOrElse(0)
+sealed class TagWeight protected (val tag : Tag, val weight : Int, val user : Boolean) {
   def json : JsonRecord = tag.json ++ JsonObject.flatten(
     Some('weight -> weight),
-    user.map(u => 'vote -> (if (u) 1 else -1))
+    if (user) Some('vote -> user) else None
   )
 }
 
 /** Summary representation of tag information for a single tag and current user. */
-final class TagWeightContainer private (tag : Tag, val container : Container, weightOpt : Option[Int], user : Option[Boolean]) extends TagWeight(tag, weightOpt, user) {
+final class TagWeightContainer private (tag : Tag, val container : Container, weight : Int, user : Boolean) extends TagWeight(tag, weight, user) {
   override def json = container.json ++ super.json
 }
 
@@ -121,16 +110,16 @@ object TagWeight extends TagWeightView[TagWeight] {
     TagUse.aggregateColumns
     .pushArgs(SQLArgs(site.identity.id))
     .map { case (weight, up) =>
-      new TagWeight(tag, weight, up)
+      new TagWeight(tag, weight, up.getOrElse(false))
     }
 
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
   private def rows(query : String*)(args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Tag.row, "tag_weight.tag = tag.id").map {
-      case ((weight, up), tag) => new TagWeight(tag, weight, up)
+      case ((weight, up), tag) => new TagWeight(tag, weight, up.getOrElse(false))
     }
-    .SELECT("WHERE weight > 0 OR user IS NOT NULL ORDER BY weight DESC")
+    .SELECT("ORDER BY weight DESC")
     .apply().list
 
   private[models] def getSlot(tag : Tag, slot : Slot) =
@@ -153,9 +142,9 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
   private def rows(tag : Tag, query : String*)(args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Container.row, "tag_weight.container = container.id").map {
-      case ((weight, up), container) => new TagWeightContainer(tag, container, weight, up)
+      case ((weight, up), container) => new TagWeightContainer(tag, container, weight, up.getOrElse(false))
     }
-    .SELECT("WHERE (weight > 0 OR user IS NOT NULL) AND", Volume.condition, "ORDER BY weight DESC")
+    .SELECT("WHERE", Volume.condition, "ORDER BY weight DESC")
     .apply().list
 
   private[models] def get(tag : Tag)(implicit site : Site) =

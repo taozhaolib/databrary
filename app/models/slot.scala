@@ -4,6 +4,7 @@ import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{JsValue,JsObject,JsNull,Json}
 import macros._
+import macros.async._
 import dbrary._
 import site._
 
@@ -87,15 +88,19 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** The list of tags on the current slot along with the current user's applications. */
   final def tags = TagWeight.getSlot(this)
   /** Tag this slot.
-    * @param up Some(true) for up, Some(false) for down, or None to remove
+    * @param vole true for up, false to remove
     * @return true if the tag name is valid
     */
-  final def setTag(tag : String, up : Option[Boolean] = Some(true))(implicit site : AuthSite) : Future[Option[TagWeight]] =
-    Tag.valid(tag).fold(async[Option[TagWeight]](None))(tname => for {
-      t <- Tag.getOrCreate(tname)
-      _ <- t.set(this, up)
-      r <- t.weight(this)
-    } yield (Some(r)))
+  final def setTag(tag : String, vote : Boolean = true)(implicit site : AuthSite) : Future[Option[TagWeight]] =
+    Tag.valid(tag).fold(async[Option[TagWeight]](None)) { tname =>
+      (if (vote)
+        Tag.getOrCreate(tname).flatMap { t =>
+          t.add(this).map(b => if (b) Some(t) else None)
+        }
+      else
+        Tag.get(tname).filterAsync(_.remove(this)))
+      .mapAsync(_.weight(this))
+    }
 
   def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.download("slot", 'container -> containerId, 'segment -> segment)

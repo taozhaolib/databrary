@@ -22,7 +22,7 @@ private[controllers] sealed class TagController extends SiteController {
 object TagController extends TagController {
   trait Form extends StructForm {
     val name = Field(OptionMapping(Mappings.tag))
-    val vote = Field(Forms.optional(Forms.boolean))
+    val vote = Field(Forms.boolean)
   }
   /* annoying inheritance: */
   final class TagForm(slot : Slot)
