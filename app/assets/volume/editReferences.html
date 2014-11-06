@@ -16,6 +16,6 @@
     <validator class="inputfield col-desktop-7 col-tablet-4" name="references[{{$index}}].url" noclientval>
       <input type="text" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-change="volumeEditReferencesForm.change()" ng-required>
     </validator>
-    <button class="mini" ng-if="reference.url" ng-click="volumeEditReferencesForm.data.remove(reference)"><span class="icon trash"></button>
+    <button class="mini" ng-if="$index < volumeEditReferencesForm.data.length-1" ng-click="volumeEditReferencesForm.data.remove(reference)"><span class="icon trash"></button>
   </fieldset>
 </ng-form>

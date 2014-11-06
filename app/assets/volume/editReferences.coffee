@@ -17,8 +17,6 @@ app.directive 'volumeEditReferencesForm', [
         url: ''
 
       form.change = () ->
-        form.data = form.data.filter (ref, i) ->
-          ref.url != '' || ref.head != '' || i == form.data.length-1
         if form.data[form.data.length-1].url != ''
           form.data.push
             head: ''

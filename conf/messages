@@ -427,8 +427,10 @@ citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
 volume.references=References
-reference.head=Title or citation
-reference.url=URL or DOI
+reference.head=Add new reference
+reference.url=Add new URL or DOI
+reference.titlehead = Step 1. Enter title
+reference.titleurl = Step 2. Enter URL or DOI
 reference.external= (external link)
 
 citation.head=Citation
