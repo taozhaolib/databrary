@@ -795,7 +795,7 @@ COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform acti
 
 CREATE TABLE "account_token" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL,
+	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	Check (false) NO INHERIT
 ) INHERITS ("token");
@@ -803,7 +803,7 @@ COMMENT ON TABLE "account_token" IS 'Generic tokens associated with particular a
 
 CREATE TABLE "login_token" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
+	"expires" timestamp NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"password" boolean NOT NULL DEFAULT false
 ) INHERITS ("account_token");
@@ -812,14 +812,14 @@ COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register
 
 CREATE TABLE "session" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '4 weeks',
+	"expires" timestamp NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
 
 CREATE TABLE "upload" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
+	"expires" timestamp NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"filename" text NOT NULL
 ) INHERITS ("account_token");
