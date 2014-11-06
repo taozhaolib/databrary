@@ -3,15 +3,19 @@
     <div class="ver-float-floater">
       <button ng-click="volumeEditReferencesForm.save()" class="green" message="save" ng-disabled="volumeEditReferencesForm.$pristine"></button>
       <button ng-click="volumeEditReferencesForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditReferencesForm.$pristine"></button>
-  </div>
+    </div>
   </fieldset>
-
-  <fieldset class="clean skinny" ng-repeat="reference in volumeEditReferencesForm.data">
+  <div class="col-desktop-15 col-tablet-9 col-mobile-6">
+    <label class="col-desktop-7 col-tablet-4" message="reference.titlehead"></label>
+    <label class="col-desktop-7 col-tablet-4" message="reference.titleurl"></label>
+  </div>
+  <fieldset class="inputfield clean skinny" ng-repeat="reference in volumeEditReferencesForm.data">
     <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].head" noclientval>
       <input type="text" name="references[{{$index}}].head" ng-model="reference.head" placeholder="{{::'reference.head' | message}}" ng-change="volumeEditReferencesForm.change()">
     </validator>
-    <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].url" noclientval>
+    <validator class="inputfield col-desktop-7 col-tablet-4" name="references[{{$index}}].url" noclientval>
       <input type="text" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-change="volumeEditReferencesForm.change()" ng-required>
     </validator>
+    <button class="mini"><span class="icon trash"></button>
   </fieldset>
 </ng-form>
