@@ -133,22 +133,21 @@ app.controller('volume/slot', [
       $scope.playing = 0
       true
 
-    $scope.dblclick = (c) ->
+    $scope.selectAll = (c) ->
       range = c.segment
       $scope.selection = range
       if range && isFinite(range.l) && !range.contains($scope.position)
         seekOffset(range.l)
       return
 
-    $scope.click = (event, c) ->
+    $scope.select = (event, c) ->
       if !c || $scope.current == c
         $scope.seekPosition event.clientX
       else
         select(c)
 
-    $scope.drag = (down, up, c) ->
-      console.log(c)
-      return down.stopPropagation() if c && $scope.current != c
+    $scope.dragSelection = (down, up, c) ->
+      return false if c && $scope.current != c
 
       startPos = down.position ?= positionOffset(down.clientX)
       endPos = positionOffset(up.clientX)
@@ -178,17 +177,11 @@ app.controller('volume/slot', [
       setAsset: (asset) ->
         super asset
         return unless asset
-        updateRange(asset.segment)
+        updateRange(@segment = asset.segment)
         select(this) if `asset.id == targetAsset`
-
-      Object.defineProperty @prototype, 'segment',
-        get: -> @asset?.segment
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
-
-      positionStyle: ->
-        $scope.positionStyle @asset?.segment
 
       remove: ->
         r = super()
@@ -213,6 +206,16 @@ app.controller('volume/slot', [
           @data.name ||= file.file.name
           ### jshint ignore:end ###
           return
+        return
+
+      dragMove: (event) ->
+        pos = positionOffset(event.clientX)
+        return unless pos?
+        @segment.u = pos + @segment.length
+        @segment.l = pos
+        if event.type != 'mousemove'
+          @data.position = $filter('timecode')(pos, true)
+          $scope.form.edit.$setDirty()
         return
 
     $scope.fileAdded = (file) ->

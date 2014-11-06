@@ -38,6 +38,12 @@ app.factory('Segment', [
       }
     });
 
+    Object.defineProperty(Segment.prototype, 'length', {
+      get: function () {
+        return this.u - this.l;
+      }
+    });
+
     Object.defineProperty(Segment.prototype, 'lBounded', {
       get: function () {
         return this.l < this.u && isFinite(this.l);

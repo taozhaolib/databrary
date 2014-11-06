@@ -29,7 +29,9 @@ app.directive 'mouseDrag', [
               return if final || up.timeStamp - startTime < 250
               startTime = undefined
             $scope.$apply () ->
-              action $scope, {$down:down, $up:up}
-              region.off 'mouseleave mouseup mousemove', mouseup if !final && down.isPropagationStopped()
+              if action($scope, {$down:down, $up:up}) == false
+                region.off 'mouseleave mouseup mousemove', mouseup unless final
+            false
           region.on 'mouseleave mouseup mousemove', mouseup
+          false
 ]
