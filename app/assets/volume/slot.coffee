@@ -31,6 +31,10 @@ app.controller('volume/slot', [
     byId = (a, b) -> a.id - b.id
     byPosition = (a, b) -> a.segment.l - b.segment.l
 
+    timecodeFilter = $filter('timecode')
+    timecode = (p) ->
+      if isFinite(p) then timecodeFilter(p, true)
+
     updateRange = (segment) ->
       if isFinite(slot.segment.l)
         $scope.range.l = slot.segment.l
@@ -214,7 +218,7 @@ app.controller('volume/slot', [
         @segment.u = pos + @segment.length
         @segment.l = pos
         if event.type != 'mousemove'
-          @data.position = $filter('timecode')(pos, true)
+          @data.position = timecode(pos)
           $scope.form.edit.$setDirty()
         return
 
@@ -272,8 +276,8 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           position:
-            lower: if @segment.lBounded then $filter('timecode')(@segment.l, true)
-            upper: if @segment.uBounded then $filter('timecode')(@segment.u, true)
+            lower: timecode(@segment.l)
+            upper: timecode(@segment.u)
 
       Object.defineProperty @prototype, 'id',
         get: -> @record.id
@@ -332,6 +336,22 @@ app.controller('volume/slot', [
               body: 'Error saving'
               report: res
           )
+        return
+
+      dragLeft: (event) ->
+        pos = positionOffset(event.clientX)
+        @segment.l = pos ? -Infinity
+        if event.type != 'mousemove'
+          @data.position.lower = timecode(pos)
+          $scope.form.edit.$setDirty()
+        return
+
+      dragRight: (event) ->
+        pos = positionOffset(event.clientX)
+        @segment.u = pos ? Infinity
+        if event.type != 'mousemove'
+          @data.position.upper = timecode(pos)
+          $scope.form.edit.$setDirty()
         return
 
     placeRecords = () ->

@@ -45,7 +45,10 @@
 
           <div class="slot-annotations">
             <div class="slot-record-track slot-track" ng-repeat="rs in records">
-              <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)"></div>
+              <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
+                <div ng-if="editing && r === current" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
+                <div ng-if="editing && r === current" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
+              </div>
               <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="select($event, r)" ng-dblclick="selectAll(r)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
             </div>
           </div>
