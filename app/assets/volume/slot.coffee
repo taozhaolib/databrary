@@ -28,6 +28,8 @@ app.controller('volume/slot', [
         #url: url
         click: -> searchLocation($location.url(url))
 
+    byId = (a, b) -> a.id - b.id
+    byPosition = (a, b) -> a.segment.l - b.segment.l
 
     updateRange = (segment) ->
       if isFinite(slot.segment.l)
@@ -286,8 +288,6 @@ app.controller('volume/slot', [
           )
         return
 
-      byId = (a, b) -> a.id - b.id
-
       ### jshint ignore:start #### fixed in jshint 2.5.7
       metrics: ->
         ident = constants.category[@record.category]?.ident || [constants.metricName.ident.id]
@@ -343,6 +343,8 @@ app.controller('volume/slot', [
         t[i] = [] unless i of t
         t[i].push(r)
         select(r) if `r.id == targetRecord`
+      for r in t
+        r.sort byPosition
       $scope.records = t
 
     $scope.positionBackgroundStyle = (l, i) ->
