@@ -51,7 +51,7 @@
           <ul>
             <li ng-repeat="reference in ::volume.references">
               <span ng-bind="::reference.head"></span>
-              <a ng-href="{{::reference.url}}" message="reference.external"></a>
+              <a ng-href="{{::reference.url | handle}}" message="reference.external"></a>
             </li>
           </ul>
         </div>
