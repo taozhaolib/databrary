@@ -82,7 +82,6 @@ app.controller('site/tags', [
         createMessage(page.constants.message('tags.vote.'+directions[vote]+'.success', {sce: page.$sce.HTML}, tag.id));
         page.tooltips.clear(); // hack for broken tooltips
       }, function (res) {
-        console.log(res);
         page.messages.addError({
           body: page.constants.message('tags.vote.error', {sce: page.$sce.HTML}, tag.id),
           report: res,
