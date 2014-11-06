@@ -124,7 +124,7 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
     val now = System.currentTimeMillis
     request.session.get("session").flatMapAsync(models.SessionToken.get _).flatMap { session =>
       val site = SiteRequest[A](request, session)
-      SiteApi.analytics(site).flatMap(_ =>
+      AngularController.analytics(site).flatMap(_ =>
       SiteException.invokeBlock(site, 
         if (session.exists(!_.valid)) { request : SiteRequest.Base[A] =>
           session.foreachAsync(_.remove).map { _ =>
@@ -165,6 +165,15 @@ object SiteAction extends ActionBuilder[SiteRequest.Base] {
   def access(access : Permission.Value) = auth andThen Access[SiteRequest.Auth](access)
   def rootMember(permission : Permission.Value = Permission.ADMIN) = auth andThen RootMember[SiteRequest.Auth](permission)
   def rootAccess(permission : Permission.Value = Permission.ADMIN) = auth andThen RootAccess[SiteRequest.Auth](permission)
+
+  object JS extends ActionBuilder[Request] {
+    def invokeBlock[A](request : Request[A], block : Request[A] => Future[Result]) : Future[Result] =
+      if (request.method == "GET" && !request.path.startsWith("/api/") && AngularController.jsEnabled(request))
+        AngularController.page(request.asInstanceOf[Request[AnyContent]])
+      else
+        block(request)
+  }
+  val js = JS andThen SiteAction
 }
 
 private[controllers] abstract class FormException(form : Form[_], status : Results.Status = Results.BadRequest)
@@ -196,7 +205,7 @@ object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
 
-  def start = SiteAction.async { implicit request =>
+  def start(js : Option[Boolean]) = SiteAction.js.async { implicit request =>
     VolumeHtml.viewSearch(request)
   }
 

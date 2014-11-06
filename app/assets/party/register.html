@@ -3,7 +3,6 @@
     <div class="row">
       <hgroup class="col">
         <h1 class="view-context" message="register.title"></h1>
-
         <h2 class="view-title" message="register.title.sub"></h2>
       </hgroup>
 
@@ -42,7 +41,19 @@
           </wizard-step>
 
           <wizard-step name="password">
-            <user-password-form></user-password-form>
+            <ng-form name="passwordForm">
+              <p message="password.advice" message-html></p>
+
+              <validator name="password.once" label="password.once">
+                <input id="fieldPassword" name="password.once" type="password" ng-model="passwordForm.data.password.once">
+              </validator>
+
+              <validator name="password.again" label="password.again">
+                <input id="fieldPasswordAgain" name="password.again" type="password" ng-model="passwordForm.data.password.again" key-enter="passwordForm.save()">
+              </validator>
+
+              <button class="green" type="submit" ng-disabled="passwordForm.$pristine || passwordForm.$invalid || passwordForm.data.password.once !== passwordForm.data.password.again" ng-click="passwordForm.save()" message="register.continue"></button>
+            </ng-form>
           </wizard-step>
 
           <wizard-step name="agent">

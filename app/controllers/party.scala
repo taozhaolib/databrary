@@ -38,8 +38,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction andThen action(i, p)
 
+  protected def adminAction(i : models.Party.Id, delegate : Boolean = true) =
+    action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
+
   protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
-    SiteAction andThen action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
+    SiteAction andThen adminAction(i, delegate)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
     request.obj.party.account.filter(_ === request.identity || request.superuser)
@@ -136,7 +139,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- async.when(Play.isProd, Mail.send(
         to = dl.map(_.email) :+ Mail.authorizeAddr,
         subject = Messages("mail.authorize.subject"),
-        body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId).absoluteURL(Play.isProd) + "?page=grant",
+        body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId, None).absoluteURL(Play.isProd) + "?page=grant",
           request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
           parent.name)
       ).recover {
@@ -154,7 +157,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
           _ <- Mail.send(
             to = Seq(Mail.authorizeAddr),
             subject = Messages("mail.authorize.subject"),
-            body = Messages("mail.authorize.body", routes.PartyHtml.view(id).absoluteURL(Play.isProd),
+            body = Messages("mail.authorize.body", routes.PartyHtml.view(id, None).absoluteURL(Play.isProd),
               request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
               form.name.get + form.info.get.fold("")(" (" + _ + ")")))
         } yield (Ok("request sent"))
@@ -295,11 +298,11 @@ object PartyHtml extends PartyController with HtmlController {
       comments <- request.obj.party.account.fold[Future[Seq[Comment]]](async(Nil))(_.comments)
     } yield (Ok(views.html.party.view(parents, children, vols, comments)))
 
-  def profile =
-    SiteAction.andThen(action(None, Some(Permission.NONE))).async(viewParty(_))
+  def profile(js : Option[Boolean]) =
+    SiteAction.js.andThen(action(None, Some(Permission.NONE))).async(viewParty(_))
 
-  def view(i : models.Party.Id) =
-    Action(Some(i), Some(Permission.NONE)).async(viewParty(_))
+  def view(i : models.Party.Id, js : Option[Boolean]) =
+    SiteAction.js.andThen(action(Some(i), Some(Permission.NONE))).async(viewParty(_))
 
   private[controllers] def viewAdmin(
     authorizeForms : Seq[AuthorizeForm] = Nil)(
@@ -317,7 +320,7 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (views.html.party.authorize(parents, forms))
   }
   
-  def edit(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+  def edit(i : models.Party.Id, js : Option[Boolean]) = SiteAction.js.andThen(adminAction(i)).async { implicit request =>
     editForm(request.asInstanceOf[Request[_] with AuthSite]).Ok
   }
 

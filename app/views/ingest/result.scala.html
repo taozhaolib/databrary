@@ -1,6 +1,6 @@
 @(vol : models.Volume, res : Iterable[SiteObject])(implicit request : SiteRequest[_])
 
-@template("Ingestion Result") {
+@html("Ingestion Result", None) {
   <article class="view">
     @ingest.panel("Ingestion Results"){
         <div>

@@ -1,6 +1,6 @@
 @(formats : Map[String, Iterable[AssetFormat]])(implicit request: SiteRequest[_])
 
-@template(Messages("help.formats.title"), angular = Some(play.api.libs.json.JsNull)) {
+@html(Messages("help.formats.title"), Some(routes.AssetHtml.formats(None))) {
 <article class="wrap">
   <div class="row">
     <h1 class="view-title">@Messages("help.formats.title")</h3>

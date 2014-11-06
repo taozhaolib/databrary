@@ -3,7 +3,7 @@
 app.directive('toolbar', [
   'pageService', function (page) {
     return {
-      restrict: 'A',
+      restrict: 'E',
       templateUrl: 'site/toolbar.html',
       scope: {},
       link: function ($scope) {

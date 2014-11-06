@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import play.api.Play
 import play.api.Play.current
 import play.api.data.Forms
+import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json
@@ -15,7 +16,7 @@ import dbrary._
 import site._
 import models._
 
-object SiteApi extends SiteController {
+object AngularController extends SiteController {
   private def parseBool(s : String) : Boolean =
     !s.equals("0") && !"false".startsWith(s.toLowerCase)
 
@@ -144,8 +145,8 @@ object SiteApi extends SiteController {
     , CommentApi.post
     , TagApi.search
     , TagApi.update
-    , routes.javascript.SiteApi.cite
-    , routes.javascript.SiteApi.void
+    , routes.javascript.AngularController.cite
+    , routes.javascript.AngularController.void
     )
   }
 
@@ -179,6 +180,11 @@ object SiteApi extends SiteController {
       jsDebugLibs
     else jsLibs
 
+  val page = SiteAction { implicit request =>
+    Ok(views.html.angular(jsDepends))
+    .withHeaders(HeaderNames.CACHE_CONTROL -> "max-age=86400")
+  }
+
   private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
     case json.JsObject(f) =>
       var action : Option[Audit.Action.Value] = None
@@ -206,7 +212,7 @@ object SiteApi extends SiteController {
 
 
   final class CiteForm
-    extends ApiForm(routes.SiteApi.cite) {
+    extends ApiForm(routes.AngularController.cite) {
     val url = Field(Forms.of[java.net.URL])
   }
   def cite = SiteAction.async { implicit request =>

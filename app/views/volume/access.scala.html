@@ -10,7 +10,7 @@
         @widget.tag.select(form.children(), Permission.values.to(if (form.isGroup) Permission.SHARED else Permission.EDIT).toSeq.map(v => (v.id.toString, v.toString)))
 }
 
-@widget.form(Some(volume), "Manage Access") {
+@widget.form(Some(volume), "Manage Access", None) {
     <table class="permission">
             <thead>
                 <tr>

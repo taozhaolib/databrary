@@ -52,7 +52,7 @@ object Citation {
   import play.api.libs.json
 
   private def crossref(hdl : String, typ : String) =
-    play.api.libs.ws.WS.url(crossRef + java.net.URLEncoder.encode(hdl))
+    play.api.libs.ws.WS.url(crossRef + java.net.URLEncoder.encode(hdl, "utf-8"))
     .withHeaders(("Accept", typ))
     .get.map { r =>
       if (r.status == 200 && r.header("Content-Type").equals(Some(Maybe(typ.indexOf(';')).fold(typ)(typ.substring(0, _)))))

@@ -45,7 +45,14 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     } yield (result(vol))
   }
 
-  def create(owner : Option[Party.Id]) = ContributeAction(owner).async { implicit request =>
+  protected def contributeAction(e : Option[models.Party.Id]) =
+    PartyController.action(e, Some(Permission.CONTRIBUTE)) andThen
+      new ActionFilter[PartyController.Request] {
+        protected def filter[A](request : PartyController.Request[A]) =
+          request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
+      }
+
+  def create(owner : Option[Party.Id]) = SiteAction.andThen(contributeAction(owner)).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind
     for {
       cite <- form.getCitation
@@ -56,13 +63,6 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ <- setRefs(vol, form, cite)
     } yield (result(vol))
   }
-
-  protected def ContributeAction(e : Option[models.Party.Id]) =
-    PartyController.Action(e, Some(Permission.CONTRIBUTE)) andThen
-      new ActionFilter[PartyController.Request] {
-        protected def filter[A](request : PartyController.Request[A]) =
-          request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
-      }
 
   protected def accessForm(access : VolumeAccess)(implicit request : Request[_]) =
     new VolumeController.AccessForm(access.party)._fill(access)
@@ -101,7 +101,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 object VolumeController extends VolumeController {
   final class SearchForm(implicit request : SiteRequest[_])
     extends HtmlForm[SearchForm](
-      routes.VolumeHtml.search,
+      routes.VolumeHtml.search(Some(false)),
       views.html.volume.search(Nil, _))
     with NoCsrfForm {
     val query = Field(Mappings.maybeText)
@@ -216,7 +216,7 @@ object VolumeController extends VolumeController {
 object VolumeHtml extends VolumeController with HtmlController {
   import VolumeController._
 
-  def view(i : models.Volume.Id) = Action(i).async { implicit request =>
+  def view(i : models.Volume.Id, js : Option[Boolean] = None) = SiteAction.js.andThen(action(i)).async { implicit request =>
     val vol = request.obj
     for {
       access <- vol.partyAccess()
@@ -240,9 +240,9 @@ object VolumeHtml extends VolumeController with HtmlController {
     } yield (Ok(views.html.volume.search(vols, form)))
   }
 
-  def search = SiteAction.async(viewSearch(_))
+  def search(js : Option[Boolean]) = SiteAction.js.async(viewSearch(_))
 
-  def edit(i : models.Volume.Id) = Action(i, Permission.EDIT).async { implicit request =>
+  def edit(i : models.Volume.Id, js : Option[Boolean]) = SiteAction.js.andThen(action(i, Permission.EDIT)).async { implicit request =>
     for {
       cite <- request.obj.citation
       refs <- VolumeReference.get(request.obj)
@@ -251,12 +251,13 @@ object VolumeHtml extends VolumeController with HtmlController {
     } yield (r)
   }
 
-  def add(e : Option[models.Party.Id]) = ContributeAction(e).async { implicit request =>
-    (new CreateForm).Ok
-  }
+  def add(e : Option[models.Party.Id], js : Option[Boolean]) =
+    SiteAction.js.andThen(contributeAction(e)).async { implicit request =>
+      (new CreateForm).Ok
+    }
 
   /* just exists in angular */
-  def spreadsheet(i : models.Volume.Id) = view(i)
+  def spreadsheet(i : models.Volume.Id, js : Option[Boolean]) = view(i, js)
 
   private[controllers] def viewAdmin(
     accessChangeForm : Option[AccessForm] = None,

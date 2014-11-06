@@ -12,7 +12,7 @@ import site._
 import models._
 
 private[controllers] sealed class TokenController extends SiteController {
-  def token(token : String, auth : String) = SiteAction.async { implicit request =>
+  def token(token : String, auth : String, js : Option[Boolean] = None) = SiteAction.js.async { implicit request =>
     models.LoginToken.get(token).flatMap(_.fold(
       ANotFound
     ) { token =>
@@ -90,7 +90,7 @@ object TokenHtml extends TokenController with HtmlController {
     val email = Field(Forms.email)
   }
 
-  def getPassword = SiteAction.async { implicit request =>
+  def getPassword(js : Option[Boolean]) = SiteAction.js.async { implicit request =>
     Mail.check
     new IssuePasswordForm().Ok
   }

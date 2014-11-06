@@ -2,14 +2,14 @@
 
 @defining(request.obj.party) { party =>
 @defining(both[Seq[VolumeAccess], Seq[Volume]](accesses.span(a => a.individual >= Permission.ADMIN), _.map(_.volume))) { case (owned, edited) =>
-@template("Profile: " + request.obj.party.name, angular = Some(request.obj.json.js)) {
+@html("Profile: " + request.obj.party.name, Some(request.obj.pageURL)) {
 <article class="wrap">
 @widget.panel.raw("overview", "panel_party", Messages("network.title")){
     <div class="col panel_overview_actions">
         <ul class="actions">
-                <li><a href="@request.obj.pageURL">view</a></li>
+                <li><a href="@controllers.routes.PartyHtml.view(party.id, Some(false))">view</a></li>
             @if(request.obj.checkPermission(Permission.EDIT)) {
-                <li><a href="@controllers.routes.PartyHtml.edit(party.id)">edit</a></li>
+                <li><a href="@controllers.routes.PartyHtml.edit(party.id, Some(false))">edit</a></li>
             }
             @if(request.obj.checkPermission(Permission.ADMIN)) {
                 <li><a href="@controllers.routes.PartyHtml.admin(party.id)">admin</a></li>

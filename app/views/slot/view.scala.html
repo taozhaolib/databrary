@@ -1,7 +1,7 @@
 @(records : Seq[(dbrary.Segment, Record)], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : CommentController.SlotForm, tags : Seq[TagWeight], tagForm : TagController.SlotForm)(implicit request : SlotHtml.Request[_])
 
 @defining(request.obj) { slot =>
-@template("Session: " + slot.pageName, angular = Some(request.obj.json.js)) {
+@html("Session: " + slot.pageName, Some(request.obj.pageURL)) {
 <article class="wrap">
 @widget.panel.raw("overview", "panel_slot"){
     <div class="col panel_overview_actions">
@@ -12,7 +12,7 @@
         <ul class="actions">
                 <li><a href="@slot.pageURL">view</a></li>
             @if(slot.checkPermission(Permission.EDIT)) {
-                <li><a href="@controllers.routes.SlotHtml.edit(slot.volumeId, slot.containerId, slot.segment)">edit</a></li>
+                <li><a href="@controllers.routes.SlotHtml.edit(slot.volumeId, slot.containerId, slot.segment, Some(false))">edit</a></li>
                 <li><a href="@controllers.routes.AssetHtml.create(slot.volumeId, Some(slot.containerId), slot.segment.lowerBound)">add file</a></li>
             }
         </ul>
