@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
   ws,
   "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
   "org.webjars" % "jquery" % "1.11.1",
-  "org.webjars" % "angularjs" % "1.3.0",
+  "org.webjars" % "angularjs" % "1.3.1",
   "org.webjars" % "ng-flow" % "2.4.0",
   "org.webjars" % "normalize.styl" % "3.0.0"
 )
