@@ -21,13 +21,17 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline" mouse-drag-region>
+          <div class="slot-timeline-now-zone">
+            <div class="slot-timeline-now" ng-if="position !== undefined" ng-style="positionStyle(position)"></div>
+          </div>
+
           <div class="slot-timeline-selection" ng-if="!selection.empty">
             <div class="selection" ng-style="positionStyle(selection)"></div>
           </div>
 
           <div class="slot-timeline-temporal" ng-if="!range.empty">
             <span class="slot-timeline-time" ng-bind="position | timecode:true"></span>
-            <div class="slot-timeline-ruler" mouse-drag="drag($down, $up)">
+            <div class="slot-timeline-ruler" ng-click="click($event)" mouse-drag="drag($down, $up)">
               <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
             </div>
@@ -47,18 +51,18 @@
           </div>
 
           <div class="slot-timeline-tracks">
-            <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': !!t.asset && !t.asset.segment.full, 'slot-track-select': t === current}" ng-click="click($event, t)" ng-dblclick="dblclick(t)" mouse-drag="drag($down, $up, t)">
+            <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.asset.segment.full, 'slot-track-select': t === current}" ng-click="click($event, t)" ng-dblclick="dblclick(t)" mouse-drag="drag($down, $up, t)">
+              <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="t.positionStyle()">
+                <div ng-if="editing && t === current && t.asset.asset.duration" class="slot-handle slot-handle-move"></div>
+                <div ng-if="editing && t === current && !t.asset.asset.duration" class="slot-handle slot-handle-left"></div>
+                <div ng-if="editing && t === current && !t.asset.asset.duration" class="slot-handle slot-handle-right"></div>
+              </div>
               <div class="slot-track-asset-info">
                 <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
                 <div class="slot-track-asset-info-name" ng-bind="t.name" ng-class="{ 'uploading' : !!t.file }"></div>
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
               </div>
-              <div class="slot-track-asset" ng-if="!!t.asset && !t.asset.segment.full" ng-style="t.positionStyle()"></div>
             </div>
-          </div>
-
-          <div class="slot-timeline-now-zone">
-            <div class="slot-timeline-now" ng-if="position !== undefined" ng-style="positionStyle(position)"></div>
           </div>
         </section>
 
@@ -84,7 +88,7 @@
                   <dt ng-if="!current.segment.full">Position</dt>
                   <dd>
                     <span ng-if="!current.segment.full"><span ng-if="::current.segment.lBounded" ng-bind="::current.segment.l | timecode:true"></span> &ndash; <span ng-if="::current.segment.uBounded" ng-bind="::current.segment.u | timecode:true"></span></span>
-                    <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode:true"></span>)</span>
+                    <span ng-if="current.asset.asset.duration"> (<span ng-bind="::current.asset.asset.duration | timecode:true"></span>)</span>
                   </dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>

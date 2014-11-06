@@ -1,6 +1,14 @@
 .slot-player, .slot-timeline
   margin-bottom b4
 
+.slot-player
+  dl > dd 
+    margin-left 0
+  select.add
+    margin-top b8
+  .validator
+    margin-bottom b8
+
 .player-main
   width 100%
   background white
@@ -105,14 +113,6 @@
   &.over-zone
     background-color green51
 
-
-.slot-toolbar
-  margin-bottom b4
-  min-height 1.5
-  background white
-  box-shadow box-shadow-def
-  padding b4
-
 .slot-toolbar-left
   float left
 
@@ -136,16 +136,14 @@
 .slot-timeline
   background-color white
   box-shadow box-shadow-def
-  overflow hidden
   position relative
-  user-select none
 
 .slot-timeline-selection
-  position relative
   height 0
+  pointer-events none
   .selection
     background-color red52
-    height 1000
+    height 100%
     position absolute
     min-width 1px
 
@@ -172,7 +170,6 @@
 
 .slot-timeline-ruler
   z-index 500
-  position relative
   width 100%
   box-shadow 0 b8 b8 -b8 black
   height 2
@@ -190,14 +187,10 @@
     float right
     margin-right b12
 
-.slot-timeline-tracks
-  z-index 100
-  position relative
-  background rgba(255, 255, 255, .75)
-
 .slot-timeline-track
   border-top 1px solid pale
   width 100%
+  position relative
 
   &.dirty
     background-color fade-out(red, 90%)
@@ -219,6 +212,7 @@
 .slot-track-asset-info
   padding b6
   overflow ellipsis
+  position relative
   .slot-track-asset-info-name
     display inline-block
     overflow hidden
@@ -248,43 +242,30 @@
   margin-right b6
   float left
 
-.slot-track-positioned
-  position relative
-
-  .slot-track-asset
-    border-color blue32
-    background-color blue51
-    position absolute
-    top 0
-    bottom 0
-    z-index -1
+.slot-track-asset
+  border-color blue32
+  background-color blue51
+  position absolute
+  top 0
+  bottom 0
 
 .slot-track-select
   .slot-track-asset
     border 1px solid orange33
     background-color orange52
     box-shadow box-shadow-def
-
-  &.slot-track-positioned
-    .slot-track-asset
-      border-color blue33
-      background-color blue52
+    border-color blue33
+    background-color blue52
 
 .slot-timeline-now-zone
   z-index 200
-  position absolute
-  top 0
-  bottom 0
-  left b6
-  right b6
   pointer-events none
 
 .slot-timeline-now
   position absolute
   z-index 100
   top 2 * b1
-  left 0
-  height 1000
+  bottom 0%
   border-left 1px solid green
   transition left .05s linear
 
@@ -296,9 +277,6 @@
     top -b3
     left -b6
     background-color green
-
-.slot-consent-track
-  position relative
 
 .slot-consent
   background-color purple51
@@ -314,10 +292,6 @@
 
 .slot-consent-select
   background-color purple52
-  height 1000
-
-.slot-record-track
-  position relative
 
 .slot-record-background
   position absolute
@@ -339,7 +313,24 @@
 
 .slot-record-select
   background-color yellow52
-  height 1000
+
+.slot-handle
+  position absolute
+  height 100%
+  width 3px
+  z-index 500
+
+.slot-handle-move
+  left 0%
+  cursor col-resize
+
+.slot-handle-left
+  left 0%
+  cursor e-resize
+
+.slot-handle-right
+  right 0%
+  cursor w-resize
 
 .slot-download
   width 100%
@@ -350,14 +341,6 @@
     right 0
     .download
       margin-left b3 
-
-.slot-player
-  dl > dd 
-    margin-left 0
-  select.add
-    margin-top b8
-  .validator
-    margin-bottom b8
 
 .position-input
   width auto

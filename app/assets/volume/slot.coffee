@@ -46,9 +46,10 @@ app.controller('volume/slot', [
       return offset unless isFinite offset
       (offset - $scope.range.base) / ($scope.range.u - $scope.range.l)
 
+    tl = document.getElementById('slot-timeline')
     positionOffset = (position) ->
-      tl = $('#slot-timeline')
-      p = (position - tl.offset().left) / tl.outerWidth()
+      tlr = tl.getBoundingClientRect()
+      p = (position - tlr.left) / tlr.width
       if p >= 0 && p <= 1
         $scope.range.l + p * ($scope.range.u - $scope.range.l)
 
@@ -146,6 +147,7 @@ app.controller('volume/slot', [
         select(c)
 
     $scope.drag = (down, up, c) ->
+      console.log(c)
       return down.stopPropagation() if c && $scope.current != c
 
       startPos = down.position ?= positionOffset(down.clientX)

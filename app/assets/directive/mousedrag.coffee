@@ -26,7 +26,7 @@ app.directive 'mouseDrag', [
             region.off 'mouseleave mouseup mousemove', mouseup if final
             # maybe should also count enough movement as a drag, even under time thresh
             if startTime != undefined
-              return if final || up.timeStamp - startTime < 250000
+              return if final || up.timeStamp - startTime < 250
               startTime = undefined
             $scope.$apply () ->
               action $scope, {$down:down, $up:up}
