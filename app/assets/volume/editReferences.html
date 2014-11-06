@@ -7,11 +7,11 @@
   </fieldset>
 
   <fieldset class="clean skinny" ng-repeat="reference in volumeEditReferencesForm.data">
-    <validator class="col-desktop-8 col-tablet-5" name="references[{{$index}}].head" noclientval>
+    <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].head" noclientval>
       <input type="text" name="references[{{$index}}].head" ng-model="reference.head" placeholder="{{::'reference.head' | message}}" ng-change="volumeEditReferencesForm.change()">
     </validator>
     <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].url" noclientval>
-      <input type="url" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-change="volumeEditReferencesForm.change()" ng-required>
+      <input type="text" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-change="volumeEditReferencesForm.change()" ng-required>
     </validator>
   </fieldset>
 </ng-form>

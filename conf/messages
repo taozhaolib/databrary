@@ -429,6 +429,7 @@ citations.more.body=Enter details about any other related research products, pap
 volume.references=References
 reference.head=Title or citation
 reference.url=URL or DOI
+reference.external= (external link)
 
 citation.head=Citation
 citation.year=Year

@@ -47,10 +47,11 @@
           </div>
         </div>
 
-        <div ng-if="::volume.references.length" frame id="frame-references" frame-title="volume.references" fold>
+        <div class="panel-overview-volume-ref" ng-if="::volume.references.length" frame id="frame-references" frame-title="volume.references" fold>
           <ul>
             <li ng-repeat="reference in ::volume.references">
-              <a ng-href="{{::reference.url}}" ng-bind="::reference.head"></a>
+              <span ng-bind="::reference.head"></span>
+              <a ng-href="{{::reference.url}}" message="reference.external"></a>
             </li>
           </ul>
         </div>
