@@ -139,26 +139,22 @@ app.controller('volume/slot', [
         seekOffset(range.l)
       return
 
-    $scope.mouse = (down, c) ->
+    $scope.click = (event, c) ->
       if !c || $scope.current == c
-        $scope.seekPosition down.clientX
+        $scope.seekPosition event.clientX
       else
-        return unless select(c)
+        select(c)
 
-      region = $(down.currentTarget)
-      startTime = down.timeStamp
-      startPos = positionOffset(down.clientX)
-      region.on 'mouseleave mouseup mousemove', $scope.$lift (up) ->
-        region.off 'mouseleave mouseup mousemove' if up.type != 'mousemove'
-        if startTime != undefined
-          return if up.type != 'mousemove' || up.timeStamp - startTime < 250000
-          startTime = undefined
-        endPos = positionOffset(up.clientX)
-        $scope.selection =
-          if startPos <= endPos
-            new Segment(startPos, endPos)
-          else
-            new Segment(endPos, startPos)
+    $scope.drag = (down, up, c) ->
+      return if c && $scope.current != c
+
+      startPos = down.position ?= positionOffset(down.clientX)
+      endPos = positionOffset(up.clientX)
+      $scope.selection =
+        if startPos <= endPos
+          new Segment(startPos, endPos)
+        else
+          new Segment(endPos, startPos)
       return
 
     removed = (track) ->

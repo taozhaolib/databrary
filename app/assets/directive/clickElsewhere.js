@@ -3,6 +3,7 @@
 app.directive('clickElsewhere', [
   '$parse', '$document',
   function ($parse, $document) { return {
+    restrict: 'A',
     compile: function ($element, $attrs) {
       var action = $parse($attrs.clickElsewhere);
       return function ($scope, $element) {
