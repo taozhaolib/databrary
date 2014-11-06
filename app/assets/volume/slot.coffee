@@ -151,10 +151,12 @@ app.controller('volume/slot', [
       startPos = down.position ?= positionOffset(down.clientX)
       endPos = positionOffset(up.clientX)
       $scope.selection =
-        if startPos <= endPos
+        if startPos < endPos
           new Segment(startPos, endPos)
-        else
+        else if startPos > endPos
           new Segment(endPos, startPos)
+        else if startPos = endPos
+          new Segment(startPos)
       return
 
     removed = (track) ->
