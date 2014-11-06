@@ -128,13 +128,15 @@ app.provider('routerService', [
       templateUrl: 'party/register.html',
       resolve: {
         user: [
-          'pageService', function (page) {
-            if (page.models.Login.isLoggedIn())
-              return page.models.Party.profile(['parents']);
+          'modelService',
+          function (models) {
+            if (models.Login.isLoggedIn())
+              return models.Party.profile(['parents']);
             else
-              return page.models.Login.user;
+              return models.Login.user;
           }
         ],
+        token: function () {},
       },
       reloadOnSearch: false
     });
@@ -158,30 +160,18 @@ app.provider('routerService', [
     //
 
     makeRoute(controllers.TokenHtml.token, ['id'], {
-      controller: (function () {
-        return window.$play.object && window.$play.object.reset ? 'party/reset' : 'party/register';
-      }()),
-      templateUrl: function () {
-        return window.$play.object && window.$play.object.reset ? 'party/reset.html' : 'party/register.html';
-      },
+      controller: 'party/register',
+      templateUrl: 'party/register.html',
       resolve: {
         token: [
-          'pageService', '$play',
-          function (page, $play) {
-            if ($play.object && $play.object.auth)
-              page.$q.successful($play.object);
-            else
-              return page.models.Login.getToken(page.$route.current.params.id, page.$route.current.params.auth)
-                .then(function (res) {
-                  return $play.object = res;
-                }, function () {
-                  page.$location.url('/');
-                });
+          'modelService', '$route',
+          function (models, $route) {
+            return models.Login.getToken($route.current.params.id, $route.current.params.auth);
           }
         ],
         user: [
-          'pageService', function (page) {
-            return page.models.Login.user;
+          'modelService', function (models) {
+            return models.Login.user;
           }
         ],
       },
@@ -337,9 +327,11 @@ app.provider('routerService', [
 
     //
 
+    /*
     $routeProvider.otherwise({
       redirectTo: '/'
     });
+    */
 
     this.$get = [
       '$rootScope', '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',

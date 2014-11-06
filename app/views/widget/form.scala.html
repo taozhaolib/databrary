@@ -1,7 +1,7 @@
-@(target: Option[SitePage], context: String, angular : Option[play.api.libs.json.JsValue] = None)(body: Html)(implicit request : SiteRequest[_])
+@(target: Option[SitePage], context: String, js : Option[Call])(body: Html)(implicit request : SiteRequest[_])
 
 @defining(target.map(_.pageName)) { title =>
-@template(context + title.fold("")(": " + _), angular = angular) {
+@html(context + title.fold("")(": " + _), js) {
     <article class="wrap">
         @widget.panel.form(title.getOrElse(""), context) {
                 <div class="col">

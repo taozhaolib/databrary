@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@template(Messages("search.title"), angular = Some(JsonArray(list.map[JsonRecord, Seq[JsonRecord]](_._1.json)))) {
+@html(Messages("search.title"), Some(routes.VolumeHtml.search(None))) {
   <article class="view">
   @widget.panel.raw("search", "panel_search"){
     <div class="search-form search-form-search col">

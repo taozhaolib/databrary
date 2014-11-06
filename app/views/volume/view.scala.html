@@ -1,7 +1,7 @@
 @(access : Seq[VolumeAccess], top : Container, sessions : Seq[Slot], records : Seq[Record], assets : Seq[SlotAsset], citation : Option[Citation], funding : Seq[Funding], comments : Seq[Comment], tags : Seq[TagWeight])(implicit request: VolumeHtml.Request[_])
 
 @defining(request.obj) { volume =>
-@template("Volume: " + volume.name, angular = Some(request.obj.json.js)) {
+@html("Volume: " + volume.name, Some(request.obj.pageURL)) {
 <article class="wrap">
 @widget.panel.raw("overview-volume", "", Messages("volume.overview.title")){
     <div class="col">
@@ -12,7 +12,7 @@
         <ul class="actions">
                 <li><a href="@volume.pageURL">view</a></li>
             @if(volume.checkPermission(Permission.EDIT)) {
-                <li><a href="@controllers.routes.VolumeHtml.edit(volume.id)">edit</a></li>
+                <li><a href="@controllers.routes.VolumeHtml.edit(volume.id, Some(false))">edit</a></li>
                 <li><a href="@controllers.routes.AssetHtml.create(volume.id)">add file</a></li>
                 <li><a href="@controllers.routes.SlotHtml.add(volume.id)">add session/folder</a></li>
             }

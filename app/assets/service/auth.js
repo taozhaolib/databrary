@@ -1,8 +1,8 @@
 'use strict';
 
 app.factory('authService', [
-  '$location', '$route', 'messageService', 'constantService', 'modelService', '$play',
-  function ($location, $route, messages, constants, models, $play) {
+  '$location', '$route', 'messageService', 'constantService', 'modelService',
+  function ($location, $route, messages, constants, models) {
     var auth = {};
 
     //
@@ -25,24 +25,6 @@ app.factory('authService', [
           report: res,
         });
       });
-    };
-
-    //
-
-    auth.hasToken = function () {
-      return $play.object && $play.object.auth;
-    };
-
-    auth.getToken = function () {
-      if (!auth.hasToken()) {
-        return;
-      }
-
-      return $play.object;
-    };
-
-    auth.isPasswordPending = function () {
-      return auth.hasToken() && !$play.object.reset;
     };
 
     //

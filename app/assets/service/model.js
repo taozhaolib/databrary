@@ -1046,11 +1046,11 @@ app.factory('modelService', [
           .then(resData);
       },
       cite: function (url) {
-        return router.http(router.controllers.SiteApi.cite, {url:url})
+        return router.http(router.controllers.AngularController.cite, {url:url})
           .then(resData);
       },
       analytic: function () {
-        return router.http(router.controllers.SiteApi.void, {}, {cache:false});
+        return router.http(router.controllers.AngularController.void, {}, {cache:false});
       },
 
     };

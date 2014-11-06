@@ -1,4 +1,5 @@
 # --- App
+app.title=Databrary: The Open Data Library for Developmental Science
 app.update=The Databrary website has been updated.
 app.reload=Please save your work and <a href="" onclick="window.location.reload()">reload</a> your browser tab.
 
@@ -40,15 +41,6 @@ error.report.subject=[Error {0}] {1}
 error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
 
 video.unsupported=Unfortunately, playing videos may not yet work in Firefox on OS X. If you have trouble, please try Safari or Chrome.
-
-error.forbidden.title=Access denied
-error.forbidden.body=If you are not logged-in, try logging in.
-error.notfound.title=There''s nothing here
-error.notfound.body=The resource you requested may no longer be available.
-error.badrequest.title=Bad request
-error.badrequest.body=Sorry, something went wrong with that request.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for asssistance.
-error.internal.title=Internal error
-error.internal.body=Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@databrary.org''>contact us</a> for assistance.
 
 error.title=Error
 error.resolve=<strong>Error</strong>: An error occurred retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.

@@ -1,11 +1,7 @@
 @(request : RequestHeader, throwable : Throwable)
 
-@template(Messages("error.internal.title")) {
-  <article class="article article_error">
-    @widget.panel.error(Messages("error.internal.title")) {
-        @HtmlFormat.raw(Messages("error.internal.body"))
-        <div>Error code: @throwable.toString</div>
-        <div>@throwable.getMessage</div>
-    }
-  </article>
+@error.template("Internal error") {
+  Sorry, something is broken.  More information is below, or <a href=''mailto:feedback@@databrary.org''>contact us</a> for assistance.
+  <div>Error code: @throwable.toString</div>
+  <div>@throwable.getMessage</div>
 }(request)

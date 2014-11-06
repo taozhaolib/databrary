@@ -1,7 +1,7 @@
 @(slots : Seq[Slot])(implicit request : RecordHtml.Request[_])
 
 @defining(request.obj) { record =>
-@template("Record: " + record.pageName) {
+@html("Record: " + record.pageName, None) {
 <article class="wrap">
 @widget.panel.raw("overview", "panel_record"){
     <div class="col panel_overview_actions">

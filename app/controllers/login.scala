@@ -23,7 +23,7 @@ private[controllers] sealed class LoginController extends SiteController {
     Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
       (if (request.isApi) Ok((new SiteRequest.Auth(request, token)).json)
-      else Redirect(routes.PartyHtml.profile))
+      else Redirect(routes.PartyHtml.profile(Some(false))))
         .withSession("session" -> token.id)
     }
   }
@@ -60,7 +60,7 @@ private[controllers] sealed class LoginController extends SiteController {
       case _ =>
     }
     (if (request.isApi) Ok((new SiteRequest.Anon(request)).json)
-    else Redirect(routes.Site.start))
+    else Redirect(routes.Site.start(Some(false))))
       .withNewSession
   }
 
@@ -71,13 +71,13 @@ private[controllers] sealed class LoginController extends SiteController {
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> true))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
       .withSession(request.session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> false))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start.url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
       .withSession(request.session - "superuser")
   }
 
@@ -189,8 +189,8 @@ object LoginHtml extends LoginController with HtmlController {
       form.withGlobalError(err, args)
     }
 
-  def view = SiteAction { implicit request =>
-    request.user.fold(Ok(viewLogin()))(u => Found(routes.PartyHtml.profile.url))
+  def view(js : Option[Boolean]) = SiteAction.js { implicit request =>
+    request.user.fold(Ok(viewLogin()))(u => Found(routes.PartyHtml.profile(Some(false)).url))
   }
 
   def openID(email : String) = SiteAction.async { implicit request =>
@@ -205,14 +205,14 @@ object LoginHtml extends LoginController with HtmlController {
     .recover { case e : OpenIDError => InternalServerError(viewLogin(e.toString)) }
   }
 
-  def registration =
-    SiteAction.async { implicit request =>
+  def registration(js : Option[Boolean]) =
+    SiteAction.js.async { implicit request =>
       if (request.isInstanceOf[AuthSite])
         async(Found((
           if (request.access.site == Permission.NONE)
-            routes.PartyHtml.profile
+            routes.PartyHtml.profile(Some(false))
           else
-            routes.Site.start).url))
+            routes.Site.start(Some(false))).url))
       else
         new RegistrationForm().Ok
     }

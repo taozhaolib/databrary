@@ -1,8 +1,8 @@
 'use strict';
 
 app.controller('party/register', [
-  '$scope', 'pageService', 'user',
-  function ($scope, page, user) {
+  '$scope', 'pageService', 'user', 'token',
+  function ($scope, page, user, token) {
     $scope.page = page;
     page.display.title = page.constants.message('register.title');
 
@@ -43,14 +43,40 @@ app.controller('party/register', [
       },
 
       password: function (step) {
-        var form = $scope.userPasswordForm = step.$scope.userPasswordForm;
+        var form = $scope.passwordForm = step.$scope.passwordForm;
         form.sent = false;
+        if (token)
+          form.data = {
+            token: token.id,
+            auth: token.auth
+          };
 
-        form.saveSuccessFn = function () {
-          form.sent = true;
-          page.$location.url(page.router.register());
-          $scope.proceed();
+        form.save = function () {
+          page.models.Login.passwordToken(token.party, form.data)
+            .then(function () {
+              form.validator.server({});
+
+              form.messages.add({
+                type: 'green',
+                countdown: 3000,
+                body: page.constants.message('reset.save.success', form.data.email)
+              });
+
+              form.sent = true;
+              page.$location.url(page.router.register());
+            }, function (res) {
+              form.validator.server(res);
+            });
         };
+
+        form.validator.client({
+          'password.once': {
+            tips: page.constants.message('reset.once.help'),
+          },
+          'password.again': {
+            tips: page.constants.message('reset.again.help'),
+          },
+        }, true);
       },
 
       agent: function (step) {
@@ -110,14 +136,14 @@ app.controller('party/register', [
     $scope.proceed = function () {
       var s = {};
       if (!page.models.Login.isLoggedIn())
-        if (!page.auth.isPasswordPending())
+        if (!token)
           if (!$scope.registerForm.sent) {
             s.create = true;
             s.agreement = $scope.registerForm.$dirty && $scope.registerForm.$valid;
           } else
             s.email = true;
         else
-          s.password = !$scope.userPasswordForm.sent;
+          s.password = !$scope.passwordForm.sent;
       else if (!(user.parents && user.parents.length) && !$scope.authApplyForm.sent) {
         s.agent = true;
         s.request = $scope.auth.party || $scope.auth.query;

@@ -1,6 +1,6 @@
 @(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
 
-@template("Asset" + asset.asset.name.fold("")(": " + _)) {
+@html("Asset" + asset.asset.name.fold("")(": " + _), None) {
 <article class="wrap">
 @widget.panel.raw("overview", "panel_asset"){
     <div class="col panel_overview_actions">

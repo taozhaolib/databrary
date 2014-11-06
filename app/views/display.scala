@@ -3,6 +3,7 @@ package views.html
  * The file needs to be sorted to views/script/
  */
 
+import play.api.mvc.RequestHeader
 import play.twirl.api.HtmlFormat._
 import org.joda.time.format.DateTimeFormat
 import macros._
@@ -88,4 +89,12 @@ object display {
   def apply(x : SitePage, full : Boolean = false)(implicit site : Site) = if (full) path(x) else page(x)
   def apply(x : Timestamp) = time(x.toDateTime)
   def apply(x : Range[Offset]) = x.singleton.fold(x.lowerBound.fold("")(_.toString) + "-" + x.upperBound.fold("")(_.toString))(_.toString)
+
+  def url(request : RequestHeader, abs : Boolean = false) : String =
+    (if (abs) "http" + (if (request.secure) "s" else "") + "://" + request.host else "") +
+    request.path +
+    (if (request.queryString.isEmpty) "" else
+      "?" + request.queryString.toSeq.flatMap { case (key, values) =>
+        values.map(value => (key + "=" + java.net.URLEncoder.encode(value, "utf-8")))
+      }.mkString("&"))
 }

@@ -76,7 +76,7 @@ object SlotController extends SlotController {
   final class ContainerCreateForm(implicit request : VolumeController.Request[_])
     extends HtmlForm[ContainerCreateForm](
       routes.SlotHtml.create(request.obj.id),
-      views.html.slot.edit(_, Nil, None)) 
+      views.html.slot.edit(_, Nil, None))
     with ContainerForm {
     val top = Field(Forms.boolean).fill(false)
     def actionName = "Create"
@@ -102,9 +102,10 @@ object SlotHtml extends SlotController with HtmlController {
     } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))
   }
 
-  def view(v : Volume.Id, i : Container.Id, segment : Segment) = Action(i, segment).async { implicit request =>
-    show().map(Ok(_))
-  }
+  def view(v : Volume.Id, i : Container.Id, segment : Segment, js : Option[Boolean]) =
+    SiteAction.js.andThen(action(i, segment)).async { implicit request =>
+      show().map(Ok(_))
+    }
 
   private[controllers] def viewEdit(form : Option[EditForm] = None, recordForm : Option[RecordController.SelectForm] = None)(implicit request : Request[_]) =
     for {
@@ -113,8 +114,8 @@ object SlotHtml extends SlotController with HtmlController {
       selectList = all diff records
     } yield (views.html.slot.edit(form getOrElse editForm, records, recordForm orElse Some(new RecordController.SelectForm), selectList))
 
-  def edit(v : Volume.Id, i : Container.Id, segment : Segment) =
-    Action(i, segment, Permission.EDIT).async { implicit request =>
+  def edit(v : Volume.Id, i : Container.Id, segment : Segment, js : Option[Boolean]) =
+    SiteAction.js.andThen(action(i, segment, Permission.EDIT)).async { implicit request =>
       editForm.Ok
     }
 

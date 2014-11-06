@@ -27,7 +27,7 @@ sealed abstract class Token protected (val id : Token.Id, val expires : Timestam
   private[models] def sqlKey = SQLTerms('token -> id)
   def token = id
   def valid = expires.toDateTime.isAfterNow
-  def redeemURL = controllers.routes.TokenHtml.token(id, auth)
+  def redeemURL = controllers.routes.TokenHtml.token(id, auth, None)
   def remove : Future[Boolean]
 }
 

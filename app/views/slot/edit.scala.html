@@ -4,7 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@widget.form(Some(request.obj), form.formName, Some(request.obj.json.js)) {
+@widget.form(Some(request.obj), form.formName, cast[Slot](request.obj).map(slot => routes.SlotHtml.edit(slot.volumeId, slot.containerId, slot.segment, None))) {
             @widget.tag.form(form) {
                 @cast[SlotController.ContainerForm](form).map { form =>
                     @widget.tag.inputText(form.name(), 'placeholder -> "Name")

@@ -314,7 +314,7 @@ object AssetHtml extends AssetController with HtmlController {
       }).map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
 
-  def formats = SiteAction { implicit request =>
+  def formats(js : Option[Boolean]) = SiteAction.js { implicit request =>
     Ok(views.html.asset.formats(
       AssetFormat.getAll.toSeq.groupBy(_.mimeSubTypes._1)))
   }

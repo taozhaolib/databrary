@@ -93,7 +93,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
 
   def pageName = alias.getOrElse(name)
   def pageParent = None
-  def pageURL = controllers.routes.VolumeHtml.view(id)
+  def pageURL = controllers.routes.VolumeHtml.view(id, None)
 
   lazy val fileName : Future[String] = {
     def last(s : String) =

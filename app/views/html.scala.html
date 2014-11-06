@@ -1,0 +1,72 @@
+@(title : String = "The Databrary Project", canon : Option[Call])(body : Html)(implicit request : RequestHeader)
+<!DOCTYPE html>
+<html>
+<head>
+  @head()
+  <title>@title || @Messages("app.title")</title>
+</head>
+<body>
+  @canon.map { canon =>
+  <div>
+    Our site works best with modern browsers (Firefox, Chrome, Safari &ge;6, IE &ge;10, and others).
+    You are viewing the simple version of our site: some functionality may not be available.
+    Switch to the <a href="@canon.url">modern version</a>.
+  </div>
+  }
+
+  <section id="toolbar" class="toolbar cf">
+    <div class="wrap">
+      <div class="row">
+        <div class="title cf col-desktop-11 col-tablet-5 col-mobile-4">
+          <h1 class="toolbar-site">
+            <a href="@routes.Site.start(Some(false))" title="Databrary: An Open Data Library"></a>
+          </h1>
+        </div>
+
+        <div class="toolbar-user col-desktop-4 col-tablet-4 col-mobile-2">
+          @request match {
+            case request : SiteRequest.Auth[_] => {
+              <a href="@routes.PartyHtml.profile(Some(false))" class="toolbar-user-link">
+                <span class="username">@request.identity.name</span>
+                <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">
+              </a>
+
+              @if(request.access.isAdmin) {
+                <span class="sep">|</span>
+
+                @if(request.superuser) {
+                  @helper.form(routes.LoginHtml.superuserOff) {
+                    <button type="submit" class="link toolbar-superuser on">SU</button>
+                  }
+                } else {
+                  @defining(new LoginController.SuperuserForm()(request)) { form =>
+                    @widget.tag.form(form) {
+                      @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
+                        @widget.tag.inputPassword(form.auth(), 'class -> "mini toolbar-static-input password")
+                        <button type="submit" class="link toolbar-superuser off">SU</button>
+                      }
+                    }(request)
+                  }
+                }
+              }
+
+              <span class="sep">|</span>
+
+              @widget.tag.form(LoginController.LogoutForm) {
+                <button type="submit" class="link">@Messages("toolbar.logout")</button>
+              }(request)
+            }
+
+            case _ => {
+              <a href="@routes.LoginHtml.view(Some(false))">@Messages("toolbar.login")</a>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  @body
+  @footer()
+</body>
+</html>

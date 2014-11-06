@@ -53,7 +53,7 @@ final class Party protected (val id : Party.Id, private[this] var name_ : String
 
   def pageName = name
   def pageParent = None
-  def pageURL = controllers.routes.PartyHtml.view(id)
+  def pageURL = controllers.routes.PartyHtml.view(id, None)
 
   def perSite(implicit site : Site) : Future[SiteParty] = SiteParty.get(this)
   /** Email, if accessible, for convenience. */
