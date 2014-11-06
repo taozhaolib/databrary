@@ -345,6 +345,9 @@ app.controller('volume/slot', [
         select(r) if `r.id == targetRecord`
       $scope.records = t
 
+    $scope.positionBackgroundStyle = (l, i) ->
+      $scope.positionStyle(new Segment(l[i].segment.l, if i+1 of l then l[i+1].segment.l else Infinity))
+
     class Consent
       constructor: (c) ->
         if typeof c == 'object'
