@@ -146,7 +146,7 @@ app.controller('volume/slot', [
         select(c)
 
     $scope.drag = (down, up, c) ->
-      return if c && $scope.current != c
+      return down.stopPropagation() if c && $scope.current != c
 
       startPos = down.position ?= positionOffset(down.clientX)
       endPos = positionOffset(up.clientX)
