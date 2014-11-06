@@ -10,10 +10,12 @@
     <div ng-repeat="award in fundingGrantForm.data.awards track by $index">
       <validator name="funding.awards[{{$index}}]" noclientval>
         <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{::'funding.awards.placeholder' | message}}" key-enter="fundingGrantForm.save()">
-        <button ng-click="fundingGrantForm.removeAward($index)" message="remove" class="red mini pull"></button>
+        <button ng-click="fundingGrantForm.removeAward($index)" class="mini pull">
+          <span class="icon trash"></span>
+        </button>
       </validator>
     </div>
-    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.addAwardEnabled()"  message="funding.awards.add" class="neutral mini add_f2"></button>
+    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.addAwardEnabled()"  message="funding.awards.add" class="neutral mini"></button>
   </fieldset>
 
 </ng-form>
