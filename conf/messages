@@ -429,9 +429,9 @@ citations.more.body=Enter details about any other related research products, pap
 volume.references=References
 reference.head=Add new reference
 reference.url=Add new URL or DOI
-reference.titlehead = Step 1. Enter title
-reference.titleurl = Step 2. Enter URL or DOI
-reference.external= (external link)
+reference.titlehead=Step 1. Enter title
+reference.titleurl=Step 2. Enter URL or DOI
+reference.external=(external link)
 
 citation.head=Citation
 citation.year=Year
