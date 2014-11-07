@@ -1,16 +1,10 @@
 @(vol : models.Volume, res : Iterable[SiteObject])(implicit request : SiteRequest[_])
 
-@html("Ingestion Result", None) {
-  <article class="view">
-    @ingest.panel("Ingestion Results"){
-        <div>
+@ingest.template("Ingestion Result") {
             <ul>
             @res.map { r =>
                 <li>@display(r)</li>
             }
             </ul>
-        </div>
-    }
-  </article>
 }
 

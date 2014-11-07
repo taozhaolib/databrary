@@ -4,11 +4,7 @@
     helper.FieldConstructor(widget.tag.labeledFieldConstructor.f)
 }
 
-@html("CSV Ingestion", None) {
-  <article class="view">
-    @ingest.panel("CSV Ingestion"){
-        <div>
-
+@ingest.template("CSV Ingestion") {
             @widget.tag.form(form) {
                 @widget.tag.inputFile(form.file())
 
@@ -20,7 +16,4 @@
             @display.plainText(text)
 
             @target.map(display(_))
-        </div>
-    }
-  </article>
 }

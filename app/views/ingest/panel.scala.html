@@ -1,6 +1,0 @@
-@(title: String = "")(body: Html)(implicit request : SiteRequest[_])
-
-@widget.panel.raw("overview", "panel-ingest"){
-    <h1>@display.formatTitle(title)</h1>
-    @body
-}

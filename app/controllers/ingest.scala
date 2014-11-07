@@ -98,4 +98,28 @@ object IngestController extends SiteController with HtmlController {
       }
   }
 
+  final class JsonForm(implicit request : VolumeController.Request[_])
+    extends HtmlForm[JsonForm](
+      routes.IngestController.json(request.obj.id),
+      views.html.ingest.json(_)) {
+    val json = File()
+      .verifying(validation.Constraint[FilePart] { f : FilePart =>
+        if (!(f.contentType.exists(c => c.equals("text/json") || c.equals("application/json")) || f.filename.endsWith(".json")))
+          validation.Invalid(validation.ValidationError("file.format.unknown", f.contentType.getOrElse(f.filename)))
+        else validation.Valid
+      })
+    val run = Field(Forms.boolean)
+  }
+
+  def jsonView(v : models.Volume.Id) = Action(v).async { implicit request =>
+    new JsonForm().Ok
+  }
+
+  def json(v : models.Volume.Id) = Action(v).async { implicit request =>
+    val volume = request.obj
+    val form = new JsonForm()._bind
+    // play.api.libs.json.Json.parse(org.apache.commons.io.FileUtils.readFileToByteArray(json.file.get))
+    Future.successful(NotImplemented)
+  }
+
 }

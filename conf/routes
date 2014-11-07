@@ -104,6 +104,8 @@ GET     /volume/$vID<[0-9]+>/ingest/curated                                     
 POST    /volume/$vID<[0-9]+>/ingest/curated                                                       controllers.IngestController.curated(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/ingest/adolph                                                        controllers.IngestController.adolphView(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/adolph                                                        controllers.IngestController.adolph(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/ingest/json                                                          controllers.IngestController.json(vID : models.Volume.Id)
+POST    /volume/$vID<[0-9]+>/ingest/json                                                          controllers.IngestController.json(vID : models.Volume.Id)
 
 # ===== API ===== #
 
