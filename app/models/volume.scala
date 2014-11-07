@@ -127,7 +127,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       ("access", opt => partyAccess(opt.headOption.flatMap(Permission.fromString(_)).getOrElse(Permission.NONE))
         .map(JsonArray.map(_.json - "volume"))),
       ("citation", opt => citation.map(_.fold[JsValue](JsNull)(_.json.js))),
-      ("references", opt => VolumeReference.get(this).map(JsonArray.map(_.json))),
+      ("links", opt => VolumeLink.get(this).map(JsonArray.map(_.json))),
       ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
       ("tags", opt => tags.map(JsonRecord.map(_.json))),

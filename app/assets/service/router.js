@@ -241,7 +241,7 @@ app.provider('routerService', [
               return undefined;
 
             return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'references', 'top', 'funding', 'records', 'containers'])
+              ['access', 'citation', 'links', 'top', 'funding', 'records', 'containers'])
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])
                   .then(function () {
@@ -266,7 +266,7 @@ app.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'references', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'containers']);
+              ['access', 'citation', 'links', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'containers']);
           }
         ]
       },

@@ -91,7 +91,6 @@ create=Create
 file=file
 account=Account
 password=Password
-link=link
 
 toolbar.login=login
 toolbar.logout=logout
@@ -418,12 +417,12 @@ citations.study.body=If this study corresponds to or represents a specific resea
 citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
-volume.references=References
-reference.head=Add new reference
-reference.url=Add new URL or DOI
-reference.titlehead=Step 1. Enter title
-reference.titleurl=Step 2. Enter URL or DOI
-reference.external=(external link)
+volume.links=Links
+link.head=Citation/title
+link.url=URL or DOI
+link.head.title=Step 1. Enter title
+link.url.title=Step 2. Enter URL or DOI
+link.link=(external link)
 
 citation.head=Citation
 citation.year=Year
@@ -627,9 +626,9 @@ asset.add=Add a new file...
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file
 
-wizard.volume-edit-references.name=References
-wizard.volume-edit-references.description=Add external links.
-wizard.volume-edit-references.instructions=List any external references related to this material, including additional citations and data repositories.
+wizard.volume-edit-links.name=Links
+wizard.volume-edit-links.description=Additional citations and external resources.
+wizard.volume-edit-links.instructions=List any external resources or references related to this material, including additional citations and data repositories.
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.

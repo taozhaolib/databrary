@@ -1,15 +1,15 @@
 'use strict'
 
-app.directive 'volumeEditReferencesForm', [
+app.directive 'volumeEditLinksForm', [
   'pageService',
   (page) ->
     restrict: 'E',
-    templateUrl: 'volume/editReferences.html',
+    templateUrl: 'volume/editLinks.html',
     link: ($scope) ->
       volume = $scope.volume
-      form = $scope.volumeEditReferencesForm
+      form = $scope.volumeEditLinksForm
 
-      form.data = volume.references.map (ref) ->
+      form.data = volume.links.map (ref) ->
         head: ref.head
         url: ref.url
 
@@ -32,7 +32,7 @@ app.directive 'volumeEditReferencesForm', [
       form.save = () ->
         data = form.data.filter (ref) ->
           !ref.removed && (ref.head != '' || ref.url != '')
-        volume.save({references: data}).then(() ->
+        volume.save({links: data}).then(() ->
             form.validator.server {}
             form.data = data
             blank()

@@ -9,7 +9,7 @@ import macros.async._
 import dbrary._
 import site._
 
-sealed abstract class ExternalLink(head : String, url : Option[URL]) {
+sealed abstract class ExternalReference(head : String, url : Option[URL]) {
   def json = JsonObject.flatten(
     Some('head -> head),
     url.map('url -> _)
@@ -17,12 +17,12 @@ sealed abstract class ExternalLink(head : String, url : Option[URL]) {
 }
 
 /** A reference to an external resource. */
-final class Reference(val head : String, val url : URL)
-  extends ExternalLink(head, Some(url))
+final class ExternalLink(val head : String, val url : URL)
+  extends ExternalReference(head, Some(url))
 
 /** A citation or reference to a publication or other external resource. */
 final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val authors : Option[IndexedSeq[String]] = None, val year : Option[Short] = None)
-  extends ExternalLink(head, url) {
+  extends ExternalReference(head, url) {
   def orElse(other : Citation) =
     new Citation(
       Maybe(head) orElse other.head,
@@ -91,20 +91,20 @@ object Citation {
     })
 }
 
-object VolumeReference extends Table[Reference]("volume_reference") {
+object VolumeLink extends Table[ExternalLink]("volume_link") {
   private val columns = Columns(
       SelectColumn[String]("head")
     , SelectColumn[URL]("url")
     ).map { (head, url) =>
-      new Reference(head = head, url = url)
+      new ExternalLink(head = head, url = url)
     }
 
-  def get(vol : Volume) : Future[Seq[Reference]] =
+  def get(vol : Volume) : Future[Seq[ExternalLink]] =
     columns
     .SELECT("WHERE volume = ?")
     .apply(vol.id).list
 
-  def set(vol : Volume, refs : Seq[Reference]) : Future[Boolean] = {
+  def set(vol : Volume, refs : Seq[ExternalLink]) : Future[Boolean] = {
     implicit val site = vol.site
     val i = SQLTerms('volume -> vol.id)
     implicitly[Site.DB].inTransaction { implicit siteDB => for {

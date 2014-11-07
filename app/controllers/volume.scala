@@ -25,11 +25,11 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     (form, Volume.search(form.query.get, form.party.get))
   }
 
-  private[this] def setRefs(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
-    val refs = form.references.get
+  private[this] def setLinks(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
+    val links = form.links.get
     for {
       _ <- cite.foreachAsync(vol.setCitation)
-      r <- if (refs.nonEmpty) VolumeReference.set(vol, refs.collect { case Some(x) => x }) else async(true)
+      r <- if (links.nonEmpty) VolumeLink.set(vol, links.collect { case Some(x) => x }) else async(true)
     } yield ()
   }
 
@@ -41,7 +41,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
         alias = form.alias.get.map(Maybe(_).opt),
         body = form.body.get)
-      _ <- setRefs(vol, form, cite)
+      _ <- setLinks(vol, form, cite)
     } yield (result(vol))
   }
 
@@ -60,7 +60,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
         alias = form.alias.get.flatMap(Maybe(_).opt),
         body = form.body.get.flatten)
       _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
-      _ <- setRefs(vol, form, cite)
+      _ <- setLinks(vol, form, cite)
     } yield (result(vol))
   }
 
@@ -108,13 +108,13 @@ object VolumeController extends VolumeController {
     val party = Field(OptionMapping(Forms.of[Party.Id]))
   }
 
-  private val referenceMapping = Forms.tuple(
+  private val linkMapping = Forms.tuple(
       "head" -> Forms.nonEmptyText,
       "url" -> Forms.of[URL]
-    ).transform[Reference]({
-      case (head, url) => new Reference(head, url)
+    ).transform[ExternalLink]({
+      case (head, url) => new ExternalLink(head, url)
     }, {
-      ref => (ref.head, ref.url)
+      link => (link.head, link.url)
     })
 
   private val citationMapping = Forms.tuple(
@@ -145,10 +145,10 @@ object VolumeController extends VolumeController {
     val citation = Field(OptionMapping(citationMapping))
     def getCitation : Future[Option[Option[Citation]]] =
       citation.get.mapAsync(_.mapAsync(_.copy(title = name.get).lookup(false)))
-    val references = Field(Forms.seq(Forms.optional(referenceMapping)))
+    val links = Field(Forms.seq(Forms.optional(linkMapping)))
   }
 
-  final class EditForm(cite : Option[Citation], refs : Seq[Reference])(implicit request : Request[_])
+  final class EditForm(cite : Option[Citation], link : Seq[ExternalLink])(implicit request : Request[_])
     extends HtmlForm[EditForm](
       routes.VolumeHtml.update(request.obj.id),
       views.html.volume.edit(_)) with VolumeForm {
@@ -158,7 +158,7 @@ object VolumeController extends VolumeController {
     alias.fill(Some(request.obj.alias.getOrElse("")))
     body.fill(Some(request.obj.body))
     citation.fill(Some(cite))
-    references.fill(refs.map(Some(_)))
+    links.fill(link.map(Some(_)))
   }
 
   final class CreateForm(implicit request : PartyController.Request[_])
@@ -245,8 +245,8 @@ object VolumeHtml extends VolumeController with HtmlController {
   def edit(i : models.Volume.Id, js : Option[Boolean]) = SiteAction.js.andThen(action(i, Permission.EDIT)).async { implicit request =>
     for {
       cite <- request.obj.citation
-      refs <- VolumeReference.get(request.obj)
-      form = new VolumeController.EditForm(cite, refs)
+      links <- VolumeLink.get(request.obj)
+      form = new VolumeController.EditForm(cite, links)
       r <- form.Ok
     } yield (r)
   }

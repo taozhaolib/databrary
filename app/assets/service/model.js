@@ -420,8 +420,8 @@ app.factory('modelService', [
         .then(function (res) {
           if ('citation' in data)
             v.clear('citation');
-          if ('references' in data)
-            v.clear('references');
+          if ('links' in data)
+            v.clear('links');
           return v.update(res.data);
         });
     };
