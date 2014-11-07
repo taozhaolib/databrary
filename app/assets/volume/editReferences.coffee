@@ -12,23 +12,30 @@ app.directive 'volumeEditReferencesForm', [
       form.data = volume.references.map (ref) ->
         head: ref.head
         url: ref.url
-      form.data.push
-        head: ''
-        url: ''
+
+      blank = () ->
+        form.data.push
+          head: ''
+          url: ''
+      blank()
 
       form.change = () ->
         if form.data[form.data.length-1].url != ''
-          form.data.push
-            head: ''
-            url: ''
-        else if form.data.length == 1
-          # hack!
-          page.$timeout () ->
-            form.$setDirty()
+          blank()
+
+      form.remove = (ref) ->
+        ref.removed = true
+        ref.head = ''
+        ref.url = ''
+        form.$setDirty()
 
       form.save = () ->
-        volume.save({references: form.data}).then(() ->
+        data = form.data.filter (ref) ->
+          !ref.removed && (ref.head != '' || ref.url != '')
+        volume.save({references: data}).then(() ->
             form.validator.server {}
+            form.data = data
+            blank()
 
             form.messages.add
               type: 'green'

@@ -9,13 +9,13 @@
     <label class="col-desktop-7 col-tablet-4" message="reference.titlehead"></label>
     <label class="col-desktop-7 col-tablet-4" message="reference.titleurl"></label>
   </div>
-  <fieldset class="inputfield clean skinny" ng-repeat="reference in volumeEditReferencesForm.data">
-    <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].head" noclientval>
-      <input type="text" name="references[{{$index}}].head" ng-model="reference.head" placeholder="{{::'reference.head' | message}}" ng-change="volumeEditReferencesForm.change()">
+  <fieldset class="inputfield clean skinny" ng-repeat="reference in volumeEditReferencesForm.data" ng-show="!reference.removed">
+    <validator class="col-desktop-7 col-tablet-4" name="references[{{$index}}].head">
+      <input type="text" name="references[{{$index}}].head" ng-model="reference.head" placeholder="{{::'reference.head' | message}}">
     </validator>
-    <validator class="inputfield col-desktop-7 col-tablet-4" name="references[{{$index}}].url" noclientval>
-      <input type="text" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-change="volumeEditReferencesForm.change()" ng-required>
+    <validator class="inputfield col-desktop-7 col-tablet-4" name="references[{{$index}}].url">
+      <input type="text" name="references[{{$index}}].url" ng-model="reference.url" placeholder="{{::'reference.url' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//" ng-change="volumeEditReferencesForm.change()">
     </validator>
-    <button class="mini" ng-if="$index < volumeEditReferencesForm.data.length-1" ng-click="volumeEditReferencesForm.data.remove(reference)"><span class="icon trash"></button>
+    <button class="mini" ng-if="$index < volumeEditReferencesForm.data.length-1" ng-click="volumeEditReferencesForm.remove(reference)"><span class="icon trash"></button>
   </fieldset>
 </ng-form>
