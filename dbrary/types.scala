@@ -132,7 +132,7 @@ object SQLType {
   class array[A](implicit t : SQLType[A]) extends SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
     /* TODO: */
     override def show(a : IndexedSeq[A]) : String = ???
-    override def put(a : IndexedSeq[A]) : Any = ???
+    override def put(a : IndexedSeq[A]) : Any = a.map(t.put)
     def read(s : String) = None
     override def get(x : Any, where : String = "") : IndexedSeq[A] = x match {
       case null => throw new SQLUnexpectedNull(this, where)
