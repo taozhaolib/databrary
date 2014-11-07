@@ -646,6 +646,8 @@ download.zip=Download all files as zip
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
+slot.add-tab=Add new tab to dataset
+slot.add-column=Add new column to 
 
 # --- Timeline
 slot.edit=Edit session
