@@ -182,7 +182,7 @@ private[ingest] object Parse {
 }
 
 private[ingest] class Ingest {
-  protected final implicit val executionContext = site.context.process
+  protected final implicit val context = site.context.background
 
   /* These are all upper-case to allow case-folding insensitive matches.
    * They also must match (in order) the option in the various metrics. */

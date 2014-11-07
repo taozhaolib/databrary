@@ -274,7 +274,7 @@ object Asset extends TableId[Asset]("asset") {
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
   def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
-    implicit val defaultContext = context.process
+    implicit val defaultContext = context.foreground
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
@@ -287,7 +287,7 @@ object Asset extends TableId[Asset]("asset") {
   }
 
   def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
-    implicit val defaultContext = context.process
+    implicit val defaultContext = context.foreground
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")

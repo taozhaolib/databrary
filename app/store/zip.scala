@@ -9,7 +9,7 @@ import site._
 import models._
 
 object Zip {
-  implicit val executionContext = context.process
+  implicit val executionContext = context.foreground
 
   private def comment(obj : SiteObject) : String =
     Site.url(obj.pageURL)

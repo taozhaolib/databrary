@@ -1,7 +1,6 @@
 package controllers
 
-import scala.concurrent.Future
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.{ExecutionContext,Future}
 import play.api._
 import          Play.current
 import          mvc._
@@ -12,6 +11,8 @@ import models._
 import ingest._
 
 object IngestController extends SiteController with HtmlController {
+  private implicit val context : ExecutionContext = site.context.background
+
   private def Action(i : models.Volume.Id) =
     SiteAction.rootAccess(Permission.ADMIN) andThen VolumeController.action(i, Permission.EDIT)
 
@@ -42,7 +43,7 @@ object IngestController extends SiteController with HtmlController {
     val volume = request.obj
     val form = new CuratedForm()._bind
     if (!form.run.get)
-      Future(ingest.Curated.preview(form.file.get.ref.file))(site.context.process).map { r =>
+      Future(ingest.Curated.preview(form.file.get.ref.file)).map { r =>
         Ok(views.html.ingest.curated(form, r))
       }.recover {
         case e : IngestException =>

@@ -35,7 +35,7 @@ object StreamEnumerator {
     val size = file.length
     private[this] val input = new FileInputStream(file)
     def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = 
-      Enumerator.fromStream(input, chunkSize)(site.context.process).apply[A](it)
+      Enumerator.fromStream(input, chunkSize)(site.context.foreground).apply[A](it)
     override def range(start : Long = 0, end : Long = size - 1) = new Range(start, end) {
       val pos = input.skip(start)
       override def apply[A](it : Iteratee[Data, A]) : Future[Iteratee[Data, A]] = {

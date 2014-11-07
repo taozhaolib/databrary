@@ -22,10 +22,10 @@ object Mail {
     mail.setRecipient(to : _*)
     mail.setSubject(subject)
     mail.send(body)
-  }(context.process)
+  }(context.foreground)
 
   def investigator(party : models.Party) : Future[play.api.libs.ws.WSResponse] = {
-    implicit val ctx = context.process
+    implicit val ctx = context.foreground
     Future {
       val hmac = javax.crypto.Mac.getInstance(fillinKey.getAlgorithm)
       hmac.init(fillinKey)

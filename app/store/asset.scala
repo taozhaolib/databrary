@@ -90,7 +90,7 @@ private[store] object Segment extends StoreDir("store.cache") {
 
   /* Cache filenames use millisecond resolution */
   private def cacheEnabled = java.nio.file.Files.isWritable(baseDir.toPath)
-  implicit val executionContext = site.context.process
+  implicit val executionContext = site.context.foreground
 
   private def generate(file : File, gen : File => Unit, cache : Boolean = true) : Future[StreamEnumerator] =
     try {

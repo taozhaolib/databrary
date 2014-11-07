@@ -4,7 +4,7 @@ import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 object periodic {
-  private implicit val executionContext = context.process
+  private implicit val executionContext = context.background
   private val logger = play.api.Logger("periodic")
 
   private def every(period : FiniteDuration, offset : FiniteDuration = Duration.Zero)(task : => Unit) {
