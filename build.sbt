@@ -35,6 +35,7 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m",
   ws,
   "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
+  "com.github.fge" % "json-schema-validator" % "2.2.6",
   "org.webjars" % "jquery" % "1.11.1",
   "org.webjars" % "angularjs" % "1.3.1",
   "org.webjars" % "ng-flow" % "2.4.0",

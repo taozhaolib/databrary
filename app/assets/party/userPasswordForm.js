@@ -5,7 +5,6 @@ app.directive('userPasswordForm', [
   function (page) {
     var link = function ($scope) {
       var form = $scope.userPasswordForm;
-      var token = $scope.token;
 
       form.data = {
         email: undefined,
