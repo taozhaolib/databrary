@@ -79,6 +79,13 @@ app.provider('routerService', [
       };
     }
 
+    function checkPermission($q, f, perm) {
+      return f.then(function (obj) {
+        return obj.checkPermission(perm) ? obj :
+          $q.reject({status: 403});
+      });
+    }
+
     var routes = {};
 
     routes.index = makeRoute(controllers.Site.start, [], {
@@ -222,7 +229,9 @@ app.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            return page.models.Party.get(page.$route.current.params.id, ['parents', 'children']);
+            return checkPermission(page.$q,
+              page.models.Party.get(page.$route.current.params.id, ['parents', 'children']),
+              page.permission.EDIT);
           }
         ],
       },
@@ -238,10 +247,13 @@ app.provider('routerService', [
         volume: [
           'pageService', function (page) {
             if (!('id' in page.$route.current.params))
-              return undefined;
+              return page.models.Login.isAuthorized() ? undefined :
+                page.$q.reject({status: 403});
 
-            return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'links', 'top', 'funding', 'records', 'containers'])
+            return checkPermission(page.$q,
+              page.models.Volume.get(page.$route.current.params.id,
+                ['access', 'citation', 'links', 'top', 'funding', 'records', 'containers']),
+              page.permission.EDIT)
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])
                   .then(function () {
@@ -279,8 +291,10 @@ app.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            return page.models.Volume.get(page.$route.current.params.id,
-              ['top', 'records', 'containers']);
+            return checkPermission(page.$q,
+              page.models.Volume.get(page.$route.current.params.id,
+                ['top', 'records', 'containers']),
+              page.permission.EDIT);
           }
         ]
       },
@@ -295,8 +309,9 @@ app.provider('routerService', [
       resolve: {
         slot: [
           'pageService', function (page) {
-            return page.models.Volume.get(page.$route.current.params.vid,
-              ['records'])
+            var r = page.models.Volume.get(page.$route.current.params.vid,
+              ['records']);
+            return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
                   ['consents', 'records', 'assets' /*, 'tags', 'comments'*/]);
