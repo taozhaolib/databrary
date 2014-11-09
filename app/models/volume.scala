@@ -41,7 +41,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   def top : Future[Container] = Container.getTop(this)
 
   /** List of toplevel assets within this volume. */
-  def excerpts = SlotAsset.getExcerpts(this)
+  def excerpts = Excerpt.getVolume(this)
 
   private val _records : FutureVar[Seq[Record]] = FutureVar(Record.getVolume(this))
   def records : Future[Seq[Record]] = _records()
@@ -63,7 +63,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   def tags = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
-  def thumb = SlotAsset.getThumb(this)
+  def thumb = Excerpt.getVolumeThumb(this)
 
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =
