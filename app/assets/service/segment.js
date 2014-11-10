@@ -163,7 +163,7 @@ app.factory('Segment', [
       if (Array.isArray(seg))
         return seg[0] + ',' + seg[1];
       if (Segment.isEmpty(seg))
-        return '';
+        return 'empty';
       return seg.toString();
     };
 

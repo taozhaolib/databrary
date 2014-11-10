@@ -138,9 +138,9 @@ object SlotRecord extends SlotTable("slot_record") {
     (if (src.isEmpty) {
       if (dst.isEmpty) return async(false)
       Audit.add(table, key :+ ('segment -> dst))
-    } else if (dst.isEmpty)
-      Audit.remove(table, key :+ ('segment -> src))
-    else
+    } else if (dst.isEmpty) {
+      Audit.remove(table, key :+ SQLTerm.eq("segment", "&&", src))
+    } else
       Audit.change(table, SQLTerms('segment -> dst), key :+ ('segment -> src)))
     .execute.recover {
       case SQLDuplicateKeyException() => false
