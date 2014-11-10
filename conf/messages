@@ -75,8 +75,7 @@ mail.authorized.body=You have been authorized for Databrary access by {0}.
 # Generic UI
 databrary=Databrary
 
-navigation.confirmation=Are you sure you want to leave without saving?
-
+navigation.confirmation=Are you sure you want to abandon your changes?
 save=Save
 save.all=Save All
 clear=Clear
@@ -421,7 +420,7 @@ citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
 volume.links=Links
-link.head=Citation/title
+link.head=Citation/description
 link.url=URL or DOI
 link.head.title=Step 1. Enter title
 link.url.title=Step 2. Enter URL or DOI
@@ -598,7 +597,7 @@ wizard.volume-edit-materials.instructions=<p>Provide any files related to this s
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
-wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.  Click the <em>play</em> button on the left to upload files for each session.</p>
+wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>play</em> button on the left to upload files for each session. Click the <em>plus</em> button on the outer most tab to add a new tab. Click the <em>plus</em> button within a tab to add a new column within the given tab. Any highlighted cells will be modified along with your current edits.</p>
 
 asset.file=File
 asset.file.help=Select the file you wish to upload.
@@ -626,7 +625,7 @@ asset.remove.confirm=Are you sure you want to remove this file?
 asset.add=Add a new file...
 
 asset.display.unavailable=Preview unavailable
-asset.display.nopermission=You are not authorized to view this file
+asset.display.nopermission=Get authorized to view this file
 
 wizard.volume-edit-links.name=Links
 wizard.volume-edit-links.description=Additional citations and external resources.
