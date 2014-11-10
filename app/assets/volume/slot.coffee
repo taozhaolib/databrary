@@ -181,7 +181,7 @@ app.controller('volume/slot', [
       setAsset: (asset) ->
         super asset
         return unless asset
-        updateRange(@segment = asset.segment)
+        updateRange(@segment = new Segment(asset.segment))
         select(this) if `asset.id == targetAsset`
 
       Object.defineProperty @prototype, 'id',
@@ -262,11 +262,11 @@ app.controller('volume/slot', [
 
     class Record
       constructor: (r) ->
+        @rec = r
         @record = slot.volume.records[r.id]
-        @segment = Segment.make(r.segment)
         for f in ['age'] when f of r
           @[f] = r[f]
-        updateRange @segment
+        updateRange(@segment = new Segment(r.segment))
         if editing
           @fillData()
 
@@ -280,10 +280,11 @@ app.controller('volume/slot', [
             upper: timecode(@segment.u)
 
       Object.defineProperty @prototype, 'id',
-        get: -> @record.id
+        get: -> @rec.id
 
       remove: ->
-        slot.removeRecord(@record, @segment).then(=>
+        slot.removeRecord(@rec, @segment).then((r) =>
+            return unless r
             records.remove(this)
             select() if $scope.current == this
             placeRecords()
@@ -318,10 +319,10 @@ app.controller('volume/slot', [
           saves.push @record.save({measures:@data.measures}).then () =>
             @form.measures.$setPristine()
         if @form.position.$dirty
-          saves.push slot.moveRecord(@record, @segment, @data.position).then (r) =>
+          saves.push slot.moveRecord(@rec, @rec.segment, @data.position).then (r) =>
             @form.position.$setPristine()
-            return unless 'container' of r # nothing happened
-            @segment = Segment.make(r.segment)
+            return unless r # nothing happened
+            updateRange(@segment = new Segment(r.segment))
             if @segment.empty
               records.remove(this)
               select() if this == $scope.current
@@ -343,7 +344,7 @@ app.controller('volume/slot', [
         @segment.l = pos ? -Infinity
         if event.type != 'mousemove'
           @data.position.lower = timecode(pos)
-          $scope.form.edit.$setDirty()
+          @form.position.$setDirty()
         return
 
       dragRight: (event) ->
@@ -351,7 +352,7 @@ app.controller('volume/slot', [
         @segment.u = pos ? Infinity
         if event.type != 'mousemove'
           @data.position.upper = timecode(pos)
-          $scope.form.edit.$setDirty()
+          @form.position.$setDirty()
         return
 
     placeRecords = () ->

@@ -714,8 +714,21 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.RecordApi.move, r.id, this.container.id, {src: Segment.data(src), dst: Segment.data(dst)})
         .then(function (res) {
-          s.clear('records');
-          return res.data;
+          if (!('container' in res.data))
+            return null;
+          var d = new Slot(s.container, res.data);
+          if (s.records) {
+            var ss = Segment.make(src);
+            for (var ri = 0; ri < s.records.length; ri ++)
+              if (s.records[ri].id === r.id && ss.equals(s.records[ri].segment)) {
+                if (d.segment.isEmpty)
+                  s.records.splice(ri, 1);
+                else
+                  s.records[ri].segment = d.segment;
+                break;
+              }
+          }
+          return d;
         });
     };
 

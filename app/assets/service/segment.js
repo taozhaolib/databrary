@@ -168,7 +168,7 @@ app.factory('Segment', [
     };
 
     Segment.data = function (seg) {
-      if (angular.isObject(seg) && !(seg instanceof Segment))
+      if (angular.isObject(seg) && !(seg instanceof Segment) && !Array.isArray(seg))
         return seg;
       return Segment.format(seg);
     };
