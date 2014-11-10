@@ -133,7 +133,7 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       ("tags", opt => tags.map(JsonRecord.map(_.json))),
       ("records", opt => records.map(JsonArray.map(_.json - "volume"))),
       ("containers", opt => containers.map(JsonArray.map { c =>
-        c.json - "volume" ++ c._jsonRecords.peek.map[JsonField]('records -> _)
+        c.json - "volume" ++ c._jsonRecords(false).peek.map[JsonField]('records -> _)
       })),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume").obj)),

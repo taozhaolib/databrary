@@ -263,7 +263,7 @@ app.controller('volume/slot', [
     class Record
       constructor: (r) ->
         @rec = r
-        @record = slot.volume.records[r.id]
+        @record = r.record || slot.volume.records[r.id]
         for f in ['age'] when f of r
           @[f] = r[f]
         updateRange(@segment = new Segment(r.segment))

@@ -133,18 +133,6 @@ app.directive('spreadsheet', [
         var top = $scope.top = 'top' in $attrs;
         var id = $scope.id = $attrs.id || (top ? 'sst' : 'ss');
 
-        function getSlot(slot) {
-          if ('records' in slot)
-            return slot;
-          angular.extend(slot, volume.containers[slot.id]);
-          if (slot.segment !== undefined) {
-            slot.records = slot.records.filter(function (rec) {
-              return page.types.segmentOverlaps(slot.segment, rec.segment);
-            });
-          }
-          return slot;
-        }
-
         /*
          * We use the following types of data structures:
          *   Row = index of slot in slots and rows (i)
@@ -160,7 +148,7 @@ app.directive('spreadsheet', [
         var slots = []; // [Row] = Slot
         angular.forEach(volume.containers, function (s) {
           if (top !== !s.top) // jshint ignore:line
-            slots.push(/*getSlot*/(s));
+            slots.push(s);
         });
 
         var count = slots.length;
@@ -206,7 +194,7 @@ app.directive('spreadsheet', [
           var count = counts[i] = {};
 
           for (var ri = 0; ri < slot.records.length; ri ++) {
-            var record = volume.records[slot.records[ri].id];
+            var record = slot.records[ri].record;
             /* temporary workaround for half-built volume inclusions: */
             if (!record) continue;
             var c = record.category || 0;

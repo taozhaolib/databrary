@@ -359,6 +359,13 @@ app.factory('modelService', [
       Model.prototype.init.call(this, init);
       if ('access' in init)
         partyMakeSubArray(this.access);
+      if ('records' in init) {
+        var rl = this.records;
+        var rm = {};
+        for (var ri = 0; ri < rl.length; ri ++)
+          rm[rl[ri].id] = new Record(this, rl[ri]);
+        this.records = rm;
+      }
       if ('containers' in init) {
         var cl = this.containers;
         var cm = {};
@@ -371,13 +378,6 @@ app.factory('modelService', [
           this.top = this.containers[this.top.id].update(this.top);
         else
           this.top = new Container(this, this.top);
-      }
-      if ('records' in init) {
-        var rl = this.records;
-        var rm = {};
-        for (var ri = 0; ri < rl.length; ri ++)
-          rm[rl[ri].id] = new Record(this, rl[ri]);
-        this.records = rm;
       }
       if ('excerpts' in init)
         assetMakeArray(this, this.excerpts);
@@ -541,7 +541,11 @@ app.factory('modelService', [
         slotAssetMakeArray(slot.container, slot.assets);
       if ('comments' in init)
         commentMakeArray(slot.volume, slot.comments);
-      /* records : [Record], but we shouldn't be using it */
+      if ('records' in init) {
+        var rl = slot.records;
+        for (var ri = 0; ri < rl.length; ri ++)
+          rl[ri].record = rl[ri].record ? new Record(slot.volume, rl[ri].record) : slot.volume.records[rl[ri].id];
+      }
     }
 
     Slot.prototype.init = function (init) {
@@ -673,7 +677,8 @@ app.factory('modelService', [
     function recordAdd(slot, record) {
       var r = {
         id: record.id,
-        segment: slot.segment
+        segment: slot.segment,
+        record: record,
       };
       if ('records' in slot)
         slot.records.push(r);

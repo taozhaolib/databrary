@@ -134,13 +134,14 @@ trait Slot extends TableRow with InVolume with SiteObject {
   )
   def json : JsonValue = slotJson
 
-  private[models] def _jsonRecords : FutureVar[JsValue] =
+  private[models] def _jsonRecords(full : Boolean) : FutureVar[JsValue] =
     _records.map(JsonArray.map { case (seg, rec) =>
       JsonRecord.flatten(rec.id
       , if (seg.isFull) None else Some('segment -> seg)
-      , rec.age(this).map('age -> _))
+      , rec.age(this).map('age -> _)
+      , if (full) Some('record -> rec.json) else None)
     })
-  private[models] def jsonRecords : Future[JsValue] = _jsonRecords()
+  private[models] def jsonRecords : Future[JsValue] = _jsonRecords(true)()
 
   final def slotJson(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(slotJson.obj, options
