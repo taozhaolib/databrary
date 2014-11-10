@@ -17,9 +17,10 @@ app.directive('volumeEditOverviewForm', [
             head: citation.head,
             title: citation.title,
             url: citation.url,
-            authors: citation.authors && citation.authors.length ? citation.authors.slice(0) : [''],
+            authors: citation.authors ? citation.authors.slice(0) : [],
           }
         };
+        form.data.citation.authors.push('');
       }
       init(volume || {});
 
@@ -34,10 +35,8 @@ app.directive('volumeEditOverviewForm', [
 
       form.save = function () {
         form.data.citation.authors = form.data.citation.authors
-          .map(function (author) {
-            return author.trim();
-          }).filter(function (author) {
-            return author !== '';
+          .filter(function (author) {
+            return author;
           });
 
         (volume ?
@@ -91,20 +90,13 @@ app.directive('volumeEditOverviewForm', [
           });
       };
 
-      form.addAuthor = function () {
-        form.data.citation.authors.push("");
-      };
-
-      form.addAuthorEnabled = function() {
-        return form.data.citation.authors.every(function (author) {
-          return author.trim() !== '';
-        });
-      };
-
-      form.removeAuthor = function (i) {
-        form.data.citation.authors.splice(i, 1);
-        if (!form.data.citation.authors.length)
+      form.authorChange = function (i) {
+        if (form.data.citation.authors[form.data.citation.authors.length-1] !== '')
           form.data.citation.authors.push('');
+      };
+
+      form.authorRemove = function (i) {
+        form.data.citation.authors[i] = i === form.data.citation.authors.length-1 ? '' : null;
         form.$setDirty();
       };
 
