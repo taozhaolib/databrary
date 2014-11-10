@@ -94,7 +94,7 @@ app.directive('volumeEditOverviewForm', [
           });
       };
 
-      form.authorChange = function (i) {
+      form.authorChange = function () {
         if (form.data.citation.authors[form.data.citation.authors.length-1] !== '')
           form.data.citation.authors.push('');
       };
