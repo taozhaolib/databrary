@@ -78,7 +78,7 @@ app.factory('tooltipService', [
         $doc.on(events[0], $target, function (event) {
           var target = $(event.target);
           timeout = $timeout(function () {
-            if (target.is($target)) // may have changed
+            if (document.body.contains(target[0]) && target.is($target)) // may have changed
               tooltip.target = event.target;
           }, tooltip.delay);
         });
@@ -110,10 +110,8 @@ app.factory('tooltipService', [
     $rootScope.$watch(function () {
       angular.forEach(Tooltip.list, function (tooltip) {
         if (!angular.isString(tooltip.$target) &&
-          (document.contains ? !document.contains(tooltip.$target[0]) :
-           tooltip.$target.closest(document.documentElement).length === 0)) {
+          !document.body.contains(tooltip.$target[0]))
           tooltip.remove();
-        }
       });
     });
 
