@@ -1,9 +1,9 @@
 <div class="spreadsheet-options">  
   <span ng-if="::!editing && volume.checkPermission(page.permission.EDIT)">
-    <a ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
+    <a href="" ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
   </span>
   <span ng-if="::editing">
-    <a ng-click="refresh()">refresh</a>
+    <a href="" ng-click="refresh()">refresh</a>
   </span>
   <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
     |
