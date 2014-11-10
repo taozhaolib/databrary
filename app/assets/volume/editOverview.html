@@ -28,13 +28,12 @@
 
     <label message="citation.authors"></label>
 
-    <div ng-repeat="author in volumeEditOverviewForm.data.citation.authors track by $index">
-      <validator name="citation.author" noclientval>
-        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.data.citation.authors[$index]" placeholder="{{::'volume.edit.citation.author.placeholder' | message}}">
-        <button ng-click="volumeEditOverviewForm.removeAuthor($index)" class="mini pull"><span class="icon trash"></span></button>
+    <div class="row" ng-repeat="author in volumeEditOverviewForm.data.citation.authors track by $index" ng-show="author !== null">
+      <validator class="col-desktop-14 col-tablet-8 col-mobile-5" name="citation.author" noclientval>
+        <input type="text" name="citation.author" ng-model="volumeEditOverviewForm.data.citation.authors[$index]" placeholder="{{::'volume.edit.citation.author.placeholder' | message}}" ng-change="volumeEditOverviewForm.authorChange()">
       </validator>
+      <button ng-if="$index < volumeEditOverviewForm.data.citation.authors.length-1" ng-click="volumeEditOverviewForm.authorRemove($index)" class="mini"><span class="icon trash"></span></button>
     </div>
-    <button ng-click="volumeEditOverviewForm.addAuthor()" message="volume.edit.citation.author.add" class="neutral mini add_f2" ng-disabled="!volumeEditOverviewForm.addAuthorEnabled()"></button>
 
     <validator name="citation.year" label="citation.year">
       <input type="number" name="citation.year" ng-model="volumeEditOverviewForm.data.citation.year" class="quarter" min="1900" max="2900" placeholder="{{::'volume.edit.citation.year.placeholder' | message}}">

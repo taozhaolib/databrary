@@ -163,12 +163,12 @@ app.factory('Segment', [
       if (Array.isArray(seg))
         return seg[0] + ',' + seg[1];
       if (Segment.isEmpty(seg))
-        return '';
+        return 'empty';
       return seg.toString();
     };
 
     Segment.data = function (seg) {
-      if (angular.isObject(seg) && !(seg instanceof Segment))
+      if (angular.isObject(seg) && !(seg instanceof Segment) && !Array.isArray(seg))
         return seg;
       return Segment.format(seg);
     };

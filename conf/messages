@@ -43,14 +43,16 @@ error.report.body=Describe what you were doing, what went wrong, and what you ex
 video.unsupported=Unfortunately, playing videos may not yet work in Firefox on OS X. If you have trouble, please try Safari or Chrome.
 
 error.title=Error
-error.resolve=<strong>Error</strong>: An error occurred retrieving this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
+error.resolve=<strong>Error</strong>: An error occurred accessing this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
 error.=Unknown Error
 error.0=Network Error
 error.400=400 - Bad Request
 error.401=401 - Unauthorized
 error.402=402 - Payment Required
-error.403=403 - Forbidden
+error.403=403 - Access denied
+error.403.message=You do not have access to this resource.
 error.404=404 - Not Found
+error.404.message=The resource you requested may no longer be available.
 error.500=500 - Internal Server Error
 error.501=501 - Not Implemented
 error.502=502 - Bad Gateway
@@ -91,7 +93,6 @@ create=Create
 file=file
 account=Account
 password=Password
-link=link
 
 toolbar.login=login
 toolbar.logout=logout
@@ -419,12 +420,12 @@ citations.study.body=If this study corresponds to or represents a specific resea
 citations.more.title=Citations
 citations.more.body=Enter details about any other related research products, papers, or publications that either reference or are referenced by this volume.
 
-volume.references=References
-reference.head=Add new reference
-reference.url=Add new URL or DOI
-reference.titlehead=Step 1. Enter title
-reference.titleurl=Step 2. Enter URL or DOI
-reference.external=(external link)
+volume.links=Links
+link.head=Citation/title
+link.url=URL or DOI
+link.head.title=Step 1. Enter title
+link.url.title=Step 2. Enter URL or DOI
+link.link=(external link)
 
 citation.head=Citation
 citation.year=Year
@@ -583,7 +584,6 @@ volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
 volume.edit.name.placeholder=Title
 volume.edit.citation.author.placeholder=First Last
-volume.edit.citation.author.add=Add another author
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
 volume.edit.citation.year.placeholder=2014
 volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
@@ -628,9 +628,9 @@ asset.add=Add a new file...
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file
 
-wizard.volume-edit-references.name=References
-wizard.volume-edit-references.description=Add external links.
-wizard.volume-edit-references.instructions=List any external references related to this material, including additional citations and data repositories.
+wizard.volume-edit-links.name=Links
+wizard.volume-edit-links.description=Additional citations and external resources.
+wizard.volume-edit-links.instructions=List any external resources or references related to this material, including additional citations and data repositories.
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.

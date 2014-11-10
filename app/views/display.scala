@@ -65,7 +65,7 @@ object display {
     s.getDate.map(fuzzyDate _)
 
   def formatTitle(text: String = "") =
-    raw(escape(text).body.replaceAll(": ", ": <br>"))
+    raw(escape(text).body)
 
   def rawFormat(text : String) =
     raw("<p>"+text.replaceAll("\\n\\n", "</p><p>")+"</p>")

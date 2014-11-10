@@ -7,10 +7,14 @@ import dbrary._
 import site._
 
 class SQLTerm[A](val name : String, value : A)(implicit sqlType : SQLType[A]) extends SQLArg[A](value)(sqlType) {
+  def eq : String = "="
+  def withEq(eq : String) = new SQLTermEq[A](name, eq, value)(sqlType)
 }
+class SQLTermEq[A](name : String, override val eq : String, value : A)(implicit sqlType : SQLType[A]) extends SQLTerm[A](name, value)(sqlType)
 object SQLTerm {
   def apply[A](name : String, arg : SQLArg[A]) = new SQLTerm[A](name, arg.value)(arg.sqlType)
   def apply[A](name : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTerm[A](name, value)(sqlType)
+  def eq[A](name : String, eq : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTermEq[A](name, eq, value)(sqlType)
   import scala.language.implicitConversions
   implicit def ofTuple[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
 }
@@ -35,7 +39,7 @@ final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLAr
     * @return `arg = ? sep ...`
     */
   def set(sep : String = ", ") =
-    terms.map(t => t.name + " = " + t.placeholder).mkString(sep)
+    terms.map(t => t.name + t.eq + t.placeholder).mkString(sep)
   def where = set(" AND ")
   /** Constant table.
     * @return `(VALUES (?, ...)) AS table (arg, ...)`

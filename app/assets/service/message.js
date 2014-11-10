@@ -69,7 +69,8 @@ app.factory('messageService', [
       if (message.report) {
         message.errors = message.report.data;
         message.status = message.report.status;
-        message.url = message.report.config.url;
+        if (message.report.config)
+          message.url = message.report.config.url;
       }
 
       if (!message.errors) {

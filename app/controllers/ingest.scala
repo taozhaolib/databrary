@@ -116,11 +116,21 @@ object IngestController extends SiteController with HtmlController {
     new JsonForm().Ok
   }
 
-  def json(v : models.Volume.Id) = Action(v).async { implicit request =>
+  def json(v : models.Volume.Id) = Action(v) { implicit request =>
     val volume = request.obj
     val form = new JsonForm()._bind
-    // play.api.libs.json.Json.parse(org.apache.commons.io.FileUtils.readFileToByteArray(json.file.get))
-    Future.successful(NotImplemented)
+    val json = try {
+      play.api.libs.json.Json.parse(org.apache.commons.io.FileUtils.readFileToByteArray(form.json.get.ref.file))
+    } catch {
+      case e : com.fasterxml.jackson.core.JsonParseException => form.json.withError(e.getMessage)._throw
+    }
+    try {
+      ingest.Json.load(json)
+      NotImplemented
+    } catch {
+      case e : IngestException =>
+        BadRequest(views.html.ingest.json(form, e.getMessage))
+    }
   }
 
 }

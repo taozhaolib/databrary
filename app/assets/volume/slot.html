@@ -109,7 +109,7 @@
                   </validator>
 
                   <validator name="position" label="position">
-                    <input class="position-input" type="text" size="10" name="position" ng-model="current.data.position" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
+                    <input class="position-input" type="text" size="10" name="position" ng-model="current.data.position" ng-pattern="/[-+]?(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
                   </validator>
                 </div>
 
@@ -131,9 +131,9 @@
                   </ng-form>
                   <ng-form name="current.form.position">
                   <validator name="position" label="position">
-                    <input class="position-input" type="text" size="10" name="position-lower" ng-model="current.data.position.lower" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
+                    <input class="position-input" type="text" size="10" name="position-lower" ng-model="current.data.position.lower" ng-pattern="/[-+]?(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
                     &ndash;
-                    <input class="position-input" type="text" size="10" name="position-upper" ng-model="current.data.position.upper" ng-pattern="/(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
+                    <input class="position-input" type="text" size="10" name="position-upper" ng-model="current.data.position.upper" ng-pattern="/[-+]?(\d+:){0,2}\d+(\.\d*)?$/" placeholder="{{::'position.placeholder' | message}}">
                   </validator>
                   </ng-form>
                 </div>

@@ -156,6 +156,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
           'consent -> s.consent)
         })
       })
+    , "excerpts" -> (opt => Excerpt.getSlot(this).map(JsonArray.map(_.json)))
     )
 }
 
