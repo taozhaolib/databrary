@@ -1,5 +1,5 @@
 <ng-form name="authGrantForm" class="auth-grant-form">
-  <fieldset class="radio-set">
+  <fieldset class="clean radio-set">
     <legend ng-bind="'auth.site' | possessive:party"></legend>
 
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="::canGrantSite(val)">
@@ -11,7 +11,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="radio-set">
+  <fieldset class="clean radio-set">
     <legend ng-bind="'auth.member' | possessive:party"></legend>
 
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="::canGrantMember(val)">

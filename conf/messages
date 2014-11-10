@@ -368,6 +368,7 @@ object.tip.study=Studies extend datasets with analysis, documents, and publicati
 object.tip.record=A metadata label applied to set of related sessions.
 object.tip.slot=Sessions group files and data collected at the same time.
 object.tip.asset=Files can potentially contain a lot of valuable data.
+object.tip.play=Click to view data in this session
 
 # Volume page
 volume=Volume
