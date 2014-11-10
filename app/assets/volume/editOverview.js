@@ -70,8 +70,12 @@ app.directive('volumeEditOverviewForm', [
 
         page.models.cite(doi[1])
           .then(function (res) {
-            form.data.citation = res;
             form.data.name = res.title;
+            form.data.citation = res;
+            if (form.data.citation.authors)
+              form.data.citation.authors.push('');
+            else
+              form.data.citation.authors = [''];
             delete res.title;
 
             form.setAutomatic(false);
