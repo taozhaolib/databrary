@@ -25,10 +25,6 @@ app.controller('volume/comments', [
 
     //
 
-    $scope.commentMeta = function (comment) {
-      return '<time datetime="' + page.$filter('date')(comment.time, 'yyyy-MM-dd HH:mm:ss Z') + '" pubdate>' + page.$filter('date')(comment.time, 'MMMM d, yyyy') + '</time>';
-    };
-
     $scope.commentClass = function (comment) {
       var cls = {};
       if (comment.parents)

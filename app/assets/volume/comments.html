@@ -5,7 +5,20 @@
     <div class="row">
       <div class="col-desktop-6 col-tablet-6 col-mobile-6">
         <footer class="panel-comments-meta" ng-init="party = comment.who">
-          <portrait extra="commentMeta(comment)"></portrait>
+          <aside class="portrait ng-cloak">
+            <a ng-href="{{::party.route}}">
+              <figure class="figure-avatar" ng-class="::{inst: party.institution}">
+                <img ng-src="{{::party.avatarRoute()}}">
+              </figure>
+            </a>
+
+            <div class="portrait-info">
+              <a class="portrait-name" ng-href="{{::party.route}}" ng-bind="::party.name"></a>
+              <span class="portrait-extra">
+                <time datetime="comment.time | date:'yyyy-MM-dd HH:mm:ss Z'" pubdate ng-bind="::comment.time | date:'MMMM d, yyyy'"></time>
+              </span>
+            </div>
+          </aside>
         </footer>
 
         <div class="panel-comments-body" ng-bind-html="comment.text | format"></div>
