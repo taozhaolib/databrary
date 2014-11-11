@@ -13,6 +13,7 @@ app.directive 'tooltip', [
       $scope.style = {}
 
       $timeout ->
+        return unless tooltip.target
         doc = window.document.documentElement
         box = tooltip.target.getBoundingClientRect()
 
