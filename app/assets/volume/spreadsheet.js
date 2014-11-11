@@ -880,7 +880,8 @@ app.directive('spreadsheet', [
                   editScope.options.push(c);
               });
               editScope.options.sort(byId);
-              editScope.options.push(noCategory);
+              if (!(noCategory.id in records))
+                editScope.options.push(noCategory);
               break;
             default:
               return;

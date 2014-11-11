@@ -1,4 +1,4 @@
-<div ng-switch="type" class="spreadsheet-edit">
+<div ng-switch="::type" class="spreadsheet-edit">
   <input ng-switch-when="text" name="edit" type="text" ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()"/>
   <textarea ng-switch-when="long" name="edit" ng-model="input.value" ng-blur="unedit($event)" key-escape="unedit()"/>
   <input ng-switch-when="date" name="edit" input-date ng-model="input.value" key-enter="unedit($event)" ng-blur="unedit($event)" key-escape="unedit()" placeholder="YYYY-MM-DD"/>
