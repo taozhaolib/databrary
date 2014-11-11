@@ -33,7 +33,7 @@ app.directive('wizard', [
 
           if ($scope.activeStep)
             $scope.activeStep.active = false;
-          page.$location.search('page', newStep.name);
+          page.$location.replace().search('page', newStep.name);
           $scope.activeStep = newStep;
           newStep.active = true;
         };
