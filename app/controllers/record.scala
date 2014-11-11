@@ -80,7 +80,7 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
       form.record.get.fold {
         for {
           r <- models.Record.create(request.obj.volume, form.category.get)
-          _ <- SlotRecord.move(r, request.obj.container, request.obj.segment)
+          _ <- SlotRecord.move(r, request.obj.container, dst = request.obj.segment)
         } yield (editResult(r))
       } { r =>
         for {
