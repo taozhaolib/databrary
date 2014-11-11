@@ -726,7 +726,7 @@ app.factory('modelService', [
             var ss = Segment.make(src);
             for (var ri = 0; ri < s.records.length; ri ++)
               if (s.records[ri].id === r.id && ss.contains(s.records[ri].segment)) {
-                if (d.segment.isEmpty)
+                if (d.segment.empty)
                   s.records.splice(ri, 1);
                 else
                   s.records[ri].segment = d.segment;
