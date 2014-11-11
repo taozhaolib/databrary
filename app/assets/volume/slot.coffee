@@ -130,7 +130,7 @@ app.controller('volume/slot', [
       return false if c && !confirmDirty()
 
       $scope.current = c
-      searchLocation($location)
+      searchLocation($location.replace())
       targetAsset = undefined
       targetRecord = undefined
 
