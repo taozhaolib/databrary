@@ -932,11 +932,25 @@ INSERT INTO "volume" (id, name) VALUES (0, 'Core'); -- CORE
 INSERT INTO "volume_access" VALUES (0, -1, 'PUBLIC', 'PUBLIC');
 
 
------------------------------------------------------------ ingest logs
+----------------------------------------------------------- ingest records
 
 CREATE SCHEMA ingest;
 
 CREATE TABLE ingest."asset" (
-	"id" integer Primary Key References "asset",
-	"file" text NOT NULL
+	"id" integer NOT NULL Unique References "asset" ON DELETE CASCADE,
+	"file" text NOT NULL Unique
+);
+
+CREATE TABLE ingest."container" (
+	"id" integer NOT NULL Unique References "container" ON DELETE CASCADE,
+	"volume" integer NOT NULL References "volume" ON DELETE CASCADE,
+	"key" text NOT NULL,
+	Unique ("volume", "key")
+);
+
+CREATE TABLE ingest."record" (
+	"id" integer NOT NULL Unique References "record" ON DELETE CASCADE,
+	"volume" integer NOT NULL References "volume" ON DELETE CASCADE,
+	"key" text NOT NULL,
+	Unique ("volume", "key")
 );
