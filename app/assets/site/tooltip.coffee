@@ -7,7 +7,7 @@ app.directive 'tooltip', [
     scope: false
     require: '^tooltips',
     templateUrl: 'site/tooltip.html'
-    link: ($scope, $element) ->
+    link: ($scope) ->
       tooltip = $scope.tooltip
       $scope.classes = [tooltip.cls]
       $scope.style = {}
