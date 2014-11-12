@@ -630,7 +630,8 @@ app.directive('spreadsheet', [
             cell.classList.remove('saving');
             collapse();
             generateRow(info.i);
-            expand(info);
+            if (info.n)
+              expand(info);
             return record;
           }, saveError.bind(null, cell));
         }
