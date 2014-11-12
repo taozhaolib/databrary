@@ -15,6 +15,7 @@ import scala.language.higherKinds
 object async {
   val void : Future[Unit] = successful(())
   def apply[A](a : A) : Future[A] = successful(a)
+  /* this is stupid: Promise lacks the direct constructor */
   private[macros] def apply[A](a : Try[A]) : Future[A] = a match {
     case Success(a) => successful(a)
     case Failure(a) => failed(a)
@@ -27,7 +28,6 @@ object async {
     apply(Exception.catching(exceptions : _*))
   /** Wrap any thrown exception in a future (basically same as Future but in this execution context). */
   def Try[A](a : => A) : Future[A] =
-    /* this is stupid: Promise lacks the direct constructor */
     apply(scala.util.Try(a))
 
   def when(guard : Boolean, f : => Future[Unit]) : Future[Unit] =

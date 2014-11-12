@@ -6,6 +6,7 @@ import          Play.current
 import          mvc._
 import          data._
 import          i18n.Messages
+import macros._
 import site._
 import models._
 import ingest._
@@ -110,13 +111,14 @@ object IngestController extends SiteController with HtmlController {
         else validation.Valid
       })
     val run = Field(Forms.boolean)
+    val overwrite = Field(Forms.boolean).fill(false)
   }
 
   def jsonView(v : models.Volume.Id) = Action(v).async { implicit request =>
     new JsonForm().Ok
   }
 
-  def json(v : models.Volume.Id) = Action(v) { implicit request =>
+  def json(v : models.Volume.Id) = Action(v).async { implicit request =>
     val volume = request.obj
     val form = new JsonForm()._bind
     val json = try {
@@ -124,13 +126,16 @@ object IngestController extends SiteController with HtmlController {
     } catch {
       case e : com.fasterxml.jackson.core.JsonParseException => form.json.withError(e.getMessage)._throw
     }
-    try {
-      ingest.Json.load(json)
-      NotImplemented
-    } catch {
-      case e : IngestException =>
-        BadRequest(views.html.ingest.json(form, e.getMessage))
-    }
+    async.catching(classOf[IngestException], classOf[play.api.libs.json.JsResultException]) {
+      val in = new ingest.Json(request.obj, json, form.overwrite.get)
+      (if (form.run.get)
+        in.run()
+      else
+        async.void)
+      .map(r => Ok(views.html.ingest.json(form, r.toString)))
+    }.recover(PartialFunction { e =>
+      BadRequest(views.html.ingest.json(form, e.getMessage))
+    })
   }
 
 }
