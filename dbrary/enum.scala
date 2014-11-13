@@ -13,6 +13,7 @@ abstract class PGEnum(name : String) extends Enumeration {
     def writes(v : Value) = json.JsNumber(v.id)
     def reads(j : json.JsValue) = j match {
       case json.JsNumber(i) if i.isValidInt && i >= 0 && i < maxId => json.JsSuccess(apply(i.toInt))
+      case json.JsString(s) => fromString(s).fold[json.JsResult[Value]](json.JsError("error.expected.jsnumber"))(json.JsSuccess(_))
       case _ => json.JsError("error.expected.jsnumber")
     }
   }

@@ -2,6 +2,7 @@ package ingest
 
 import scala.concurrent.Future
 import play.api.libs.json
+import macros._
 import macros.async._
 import dbrary._
 import site._
@@ -22,6 +23,11 @@ private final case class JsContext(path : json.JsPath, data : json.JsValue) {
       None
     else
       Some(as[A](read))
+  def children : Seq[JsContext] = data match {
+    case json.JsArray(l) => l.zipWithIndex.map { case (j, i) => JsContext(path(i), j) }
+    case json.JsObject(l) => l.map { case (k, j) => JsContext(path \ k, j) }
+    case _ => Nil
+  }
 }
 
 private object Json {
@@ -82,11 +88,12 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         } yield (c)
       }
 
-      consents = jc \ "consent"
+      _ <- write(Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
+
     } yield (c)
   }
 
-  def run() : Future[Unit] = {
+  def run() : Future[Seq[models.Container]] = {
     implicit val jc = JsContext(json.__, data)
     for {
       /* just to make sure it's the right volume: */
@@ -99,10 +106,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       ...
       */
      
-      _ <- (data \ "containers").asOpt[json.JsArray].fold[Seq[json.JsValue]](Nil)(_.value)
-        .zipWithIndex.foreachAsync { case (j, i) =>
-          container(JsContext(json.__(i), j))
-        }
-    } yield ()
+      c <- (jc \ "containers").children.mapAsync(container(_))
+    } yield (c)
   }
 }

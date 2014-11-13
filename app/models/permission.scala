@@ -2,6 +2,7 @@ package models
 
 import scala.util.control.Exception.catching
 import play.api.i18n.Messages
+import play.api.libs.json
 import macros._
 import dbrary._
 import site._
@@ -80,6 +81,16 @@ object Consent extends PGEnum("consent") {
     SQLType.transform[Option[String], Value]("consent", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(withNameOpt),
       Maybe(_).opt.map(_.toString))
+  override implicit val jsonFormat : json.Format[Value] = new json.Format[Value] {
+    def writes(v : Value) =
+      if (v == NONE) json.JsNull else json.JsNumber(v.id)
+    def reads(j : json.JsValue) = j match {
+      case json.JsNull => json.JsSuccess(NONE)
+      case json.JsNumber(i) if i.isValidInt && i >= 0 && i < maxId => json.JsSuccess(apply(i.toInt))
+      case json.JsString(s) => fromString(s).fold[json.JsResult[Value]](json.JsError("error.expected.jsnumber"))(json.JsSuccess(_))
+      case _ => json.JsError("error.expected.jsnumber")
+    }
+  }
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.
