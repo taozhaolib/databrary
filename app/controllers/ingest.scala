@@ -126,7 +126,7 @@ object IngestController extends SiteController with HtmlController {
     } catch {
       case e : com.fasterxml.jackson.core.JsonParseException => form.json.withError(e.getMessage)._throw
     }
-    async.catching(classOf[IngestException], classOf[play.api.libs.json.JsResultException]) {
+    async.catching(classOf[IngestException]) {
       val in = new ingest.Json(request.obj, json, form.overwrite.get)
       (if (form.run.get)
         in.run()
