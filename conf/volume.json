@@ -28,6 +28,19 @@
       "required": ["head"],
       "additionalProperties": false
     },
+    "link": {
+      "description": "Link to externals resources/references.",
+      "type": "object",
+      "properties": {
+        "head": {"type": "string"},
+        "url": {"type": "string",
+          "title": "URL or DOI",
+          "format": "uri"
+        }
+      },
+      "required": ["head", "url"],
+      "additionalProperties": false
+    },
     "container": {
       "title": "session or materials",
       "description": "Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).",
@@ -42,19 +55,7 @@
         "consent": {
           "description": "Sharing/release permissions granted by participants on (portions of) contained data.",
           "anyOf": [
-            {"$ref": "#/definitions/consent"},
-            {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "position": {"$ref": "#/definitions/segment"},
-                  "consent": {"$ref": "#/definitions/consent"}
-                },
-                "required": ["position", "consent"],
-                "additionalProperties": false
-              }
-            }
+            {"$ref": "#/definitions/consent"}
           ],
           "default": null
         },
@@ -104,7 +105,7 @@
         "key": {"type": "string"},
         "category": {
           "description": "Types of records that are relevant for data organization.",
-          "enum": [null, "pilot", "exclusion", "participant", "condition", "group", "context"]
+          "enum": [null, "pilot", "exclusion", "participant", "condition", "task", "group", "context"]
         },
         "position": {"$ref": "#/definitions/segment"},
         "ident": {"type": "string"},
@@ -171,14 +172,6 @@
   "type": "object",
   "properties": {
     "name": {"type": "string"},
-    "body": {"type": "string",
-      "title": "description or abstract"
-    },
-    "alias": {"type": "string",
-      "title": "internal short name",
-      "description": "Short, internal, code name for this volume, for contributors to reference their own data."
-    },
-    "citation": {"$ref": "#/definitions/citation"},
     "containers": {"type": "array",
       "items": {"$ref": "#/definitions/container"},
       "description": "The first container is required and must have 'top' set.",
