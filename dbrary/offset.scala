@@ -62,7 +62,7 @@ object Offset {
     )
 
   implicit val pathBindable : PathBindable[Offset] = PathBindable.bindableLong.transform(new Offset(_), _.millis)
-  implicit val queryStringBindable : QueryStringBindable[Offset] = new QueryStringBindable[Offset] {
+  implicit object queryStringBindable extends QueryStringBindable[Offset] {
     def bind(key : String, params : Map[String, Seq[String]]) : Option[Either[String, Offset]] =
       params.get(key).flatMap(_.headOption).map { s =>
         Maybe.toNumber(fromString(s))
@@ -71,11 +71,11 @@ object Offset {
     def unbind(key : String, offset : Offset) : String =
       QueryStringBindable.bindableLong.unbind(key, offset.millis)
   }
-  implicit val javascriptLitteral : JavascriptLitteral[Offset] = new JavascriptLitteral[Offset] {
+  implicit object javascriptLitteral extends JavascriptLitteral[Offset] {
     def to(value : Offset) = value.millis.toString
   }
 
-  implicit val formatter : Formatter[Offset] = new Formatter[Offset] {
+  implicit object formatter extends Formatter[Offset] {
     override val format = Some(("format.offset", Nil))
     def bind(key: String, data: Map[String, String]) =
       data.get(key).flatMap(s => 
@@ -84,9 +84,14 @@ object Offset {
     def unbind(key: String, value: Offset) = Map(key -> value.toString)
   }
 
-  implicit val jsonFormat : json.Format[Offset] = new json.Format[Offset] {
+  implicit object jsonFormat extends json.Format[Offset] {
+    private final val err = json.JsError(Seq(json.JsPath() -> Seq(play.api.data.validation.ValidationError("error.offset"))))
     def writes(o : Offset) = json.JsNumber(o.millis)
-    def reads(j : json.JsValue) = j.validate[Long].map(new Offset(_))
+    def reads(j : json.JsValue) = j match {
+      case json.JsNumber(o) => json.JsSuccess(new Offset(o.toLong))
+      case json.JsString(s) => Maybe.toNumber(fromString(s)).fold[json.JsResult[Offset]](err)(json.JsSuccess(_))
+      case _ => err
+    }
   }
 }
 

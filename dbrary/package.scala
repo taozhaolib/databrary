@@ -12,7 +12,7 @@ package object dbrary {
   }
 
   import play.api.libs.json
-  implicit val timestampJson : json.Format[Timestamp] = new json.Format[Timestamp] {
+  implicit object timestampJson extends json.Format[Timestamp] {
     def writes(t : Timestamp) = json.JsNumber(t./*getLocalMillis*/toDateTime.getMillis)
     def reads(j : json.JsValue) = j.validate[Long].map(new Timestamp(_))
   }

@@ -13,8 +13,7 @@ trait Asset {
   def info : Asset.Info
 
   def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
-    SQL("SELECT id FROM ingest.asset WHERE file = ?").apply(info.ingestPath).list(SQLCols[models.Asset.Id]).flatMap(_.toSeq match {
-      case Nil =>
+    models.Ingest.getAsset(volume, info.ingestPath).flatMap(_.fold {
         /* for now copy and don't delete */
         val infile = store.TemporaryFileLinkOrCopy(info.file)
         val n = Maybe(name).opt
@@ -35,12 +34,11 @@ trait Asset {
             case Asset.FileInfo(_, fmt) =>
               models.Asset.create(volume, fmt, classification, n, infile)
           }
-          r <- SQL("INSERT INTO ingest.asset VALUES (?, ?)").apply(asset.id, info.ingestPath).execute
+          r <- models.Ingest.setAsset(asset, info.ingestPath)
           if r
         } yield (asset)
-      case Seq(iid) =>
+      } { asset =>
         for {
-          asset <- models.Asset.get(iid).map(_.get)
           _ <- check(asset.format == info.format,
             PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name, asset))
           _ <- check(asset.classification == classification,
@@ -55,8 +53,6 @@ trait Asset {
             else check(asset.name.equals(Maybe(name).opt),
               PopulateException("inconsistent name for asset " + asset.name + ": " + name, asset))
         } yield (asset)
-      case _ =>
-        Future.failed(PopulateException("multiple imported assets for " + name + ": " + info.file.getPath))
     })
   def populate(volume : Volume)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     populate(volume, info)

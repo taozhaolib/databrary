@@ -75,7 +75,7 @@ object Container extends TableId[Container]("container") {
       consent.foreach(container.consent_ = _)
       container
     }
-  def rowVolume(volume : Volume) : Selector[Container] =
+  private[models] def rowVolume(volume : Volume) : Selector[Container] =
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
     rowVolume(Volume.row)

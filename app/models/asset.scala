@@ -243,7 +243,7 @@ object Asset extends TableId[Asset]("asset") {
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
     .join(volume, "asset.volume = volume.id").map(tupleApply)
-  private def rowVolume(volume : Volume) : Selector[Asset] =
+  private[models] def rowVolume(volume : Volume) : Selector[Asset] =
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
     rowVolume(Volume.row)

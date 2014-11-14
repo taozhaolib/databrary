@@ -28,19 +28,21 @@ final class RecordCategory private (val id : RecordCategory.Id, val name : Strin
 /** Interface to record categories.
   * These are all hard-coded so bypass the database, though they are stored in record_category. */
 object RecordCategory extends TableId[RecordCategory]("record_category") {
-  private val row = Columns(
+  private[this] val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
     ) map { (id, name) =>
       new RecordCategory(id, name)
     }
 
-  private val list : Seq[RecordCategory] =
+  private[this] val list : Seq[RecordCategory] =
     async.AWAIT {
       row.SELECT("ORDER BY id").apply().list
     }
-  private val byId = list.map(c => (c.id, c)).toMap
-  private val byName = list.map(c => (c.name, c)).toMap
+  private[this] val byId : TableIdMap[RecordCategory] =
+    TableIdMap(list : _*)
+  private[this] val byName : collection.immutable.Map[String, RecordCategory] =
+    list.map(c => (c.name, c)).toMap
 
   def get(id : Id) : Option[RecordCategory] = byId.get(id)
   def getName(name : String) : Option[RecordCategory] = byName.get(name)
@@ -134,7 +136,7 @@ object SlotRecord extends SlotTable("slot_record") {
 
   def move(record : Record, container : Container, src : Segment = Segment.empty, dst : Segment = Segment.empty) : Future[Boolean] = {
     implicit val site = record.site
-    var key = SQLTerms('record -> record.id, 'container -> container.id)
+    val key = SQLTerms('record -> record.id, 'container -> container.id)
     (if (src.isEmpty) {
       if (dst.isEmpty) return async(false)
       Audit.add(table, key :+ ('segment -> dst))
@@ -165,7 +167,7 @@ object Record extends TableId[Record]("record") {
     .map { case (((id, cat, meas), cons), vol) =>
       new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, meas)
     }
-  private def rowVolume(vol : Volume) : Selector[Record] =
+  private[models] def rowVolume(vol : Volume) : Selector[Record] =
     rowVolume(Volume.fixed(vol))
   private def row(implicit site : Site) =
     rowVolume(Volume.row)

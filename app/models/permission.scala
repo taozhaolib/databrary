@@ -81,7 +81,7 @@ object Consent extends PGEnum("consent") {
     SQLType.transform[Option[String], Value]("consent", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(withNameOpt),
       Maybe(_).opt.map(_.toString))
-  override implicit val jsonFormat : json.Format[Value] = new json.Format[Value] {
+  override implicit object jsonFormat extends json.Format[Value] {
     def writes(v : Value) =
       if (v == NONE) json.JsNull else json.JsNumber(v.id)
     def reads(j : json.JsValue) = j match {

@@ -20,7 +20,7 @@ object Age {
   private final val MONTH : Float = YEAR/12;
   def apply(start : Date, end : Date) : Age =
     Age(new Period(start, end, PeriodType.days).getDays)
-  implicit val range = new DiscreteRangeType[Age] {
+  implicit object range extends DiscreteRangeType[Age] {
     def compare(a : Age, b : Age) = a.days compare b.days
     def increment(a : Age) = Age(a.days + 1)
     def decrement(a : Age) = Age(a.days - 1)
@@ -32,7 +32,7 @@ object Age {
     * Ages above this should be truncated without appropriate release. */
   final val LIMIT = years(90)
 
-  implicit val jsonFormat : json.Format[Age] = new json.Format[Age] {
+  implicit object jsonFormat extends json.Format[Age] {
     def writes(a : Age) = json.JsNumber(a.days)
     def reads(j : json.JsValue) = json.Json.fromJson[Int](j).map(Age(_))
   }

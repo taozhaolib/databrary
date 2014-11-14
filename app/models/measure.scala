@@ -30,15 +30,15 @@ private[models] sealed abstract class MeasureType[T] private (final val dataType
 }
 private[models] object MeasureType {
   /** Text measurements are represented as Strings. */
-  implicit val measureText = new MeasureType[String](DataType.text) {
+  implicit object measureText extends MeasureType[String](DataType.text) {
     def fromString(s : String) = s
   }
   /** Numeric measurements are represented as BigDecimal. */
-  implicit val measureNumber = new MeasureType[BigDecimal](DataType.number) {
+  implicit object measureNumber extends MeasureType[BigDecimal](DataType.number) {
     def fromString(s : String) = BigDecimal.apply(s)
   }
   /** Date measurements. */
-  implicit val measureDate = new MeasureType[Date](DataType.date) {
+  implicit object measureDate extends MeasureType[Date](DataType.date) {
     def fromString(s : String) = org.joda.time.LocalDate.parse(s)
   }
 
