@@ -9,7 +9,7 @@ import dbrary._
 import site._
 
 case class JsonException(errors: Seq[(json.JsPath, Seq[ValidationError])])
-  extends IngestException(errors.mkString("\n"))
+  extends IngestException(errors.map { case (p, e) => p + ": " + e.mkString("; ") }.mkString("\n"))
 
 private final case class JsContext(path : json.JsPath, data : json.JsValue) {
   def \(child : String) = JsContext(path \ child, data \ child)
@@ -103,6 +103,7 @@ private object Json {
     private[this] def offset(o : json.JsValue) =
       readOffset.reads(o).map(_.fold[Segment](Segment.full)(Segment.singleton(_)))
     def reads(j : json.JsValue) = j match {
+      case _ : json.JsUndefined => json.JsSuccess(Segment.full)
       case json.JsArray(Seq()) => json.JsSuccess(Segment.full)
       case json.JsArray(Seq(o)) => offset(o)
       case json.JsArray(Seq(l, u)) => for {
@@ -130,7 +131,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           if (r) void else popErr(target, "update failed")(jc)
         }
       else
-        popErr(target, "conflicting value: " + v + " <> " + current)(jc)
+        popErr(target, "conflicting value: " + v + " <> " + current.get)(jc)
     }
 
   private[this] def record(implicit jc : JsContext) : Future[models.Record] = {
