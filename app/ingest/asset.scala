@@ -11,8 +11,9 @@ trait Asset {
   def name : String
   def classification : Classification.Value
   def info : Asset.Info
+  def clip : Segment = Segment.full
 
-  def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
+  private[this] def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     models.Ingest.getAsset(volume, info.ingestPath).flatMap(_.fold {
         /* for now copy and don't delete */
         val infile = store.TemporaryFileLinkOrCopy(info.file)
@@ -29,7 +30,7 @@ trait Asset {
             case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
               for {
                 a <- models.Asset.create(volume, fmt, classification, n, infile)
-                _ <- store.Transcode.start(a)
+                _ <- store.Transcode.start(a, clip)
               } yield (a)
             case Asset.FileInfo(_, fmt) =>
               models.Asset.create(volume, fmt, classification, n, infile)

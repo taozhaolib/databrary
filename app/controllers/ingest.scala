@@ -54,12 +54,9 @@ object IngestController extends SiteController with HtmlController {
       ingest.Curated.populate(form.file.get.ref.file, volume).map { r =>
         Ok(views.html.ingest.result(volume, (r._1 : Iterable[SiteObject]) ++ r._2))
       }.recover {
-        case e : PopulateException =>
-          Logger.error("curated ingest error", e)
-          BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
         case e : IngestException =>
           Logger.error("curated ingest error", e)
-          BadRequest(views.html.ingest.curated(form, e.getMessage))
+          BadRequest(views.html.ingest.curated(form, e.getMessage, e.target))
       }
   }
 
@@ -91,12 +88,9 @@ object IngestController extends SiteController with HtmlController {
       ingest.Adolph.process(volume, form.sessions.get.ref.file, form.participants.get.map(_.ref.file)).map { r =>
         Ok(views.html.ingest.result(volume, r))
       }.recover {
-        case e : PopulateException =>
-          Logger.error("adolph ingest error", e)
-          BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
         case e : IngestException =>
           Logger.error("adolph ingest error", e)
-          BadRequest(views.html.ingest.adolph(form, e.getMessage))
+          BadRequest(views.html.ingest.adolph(form, e.getMessage, e.target))
       }
   }
 
@@ -133,9 +127,9 @@ object IngestController extends SiteController with HtmlController {
       else
         async.void)
       .map(r => Ok(views.html.ingest.json(form, r.toString)))
-    }.recover(PartialFunction { e =>
-      BadRequest(views.html.ingest.json(form, e.getMessage))
-    })
+    }.recover { case e : IngestException =>
+      BadRequest(views.html.ingest.json(form, e.getMessage, e.target))
+    }
   }
 
 }

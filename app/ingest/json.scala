@@ -101,9 +101,9 @@ private object Json {
 
   private implicit object readsSegment extends json.Reads[Segment] {
     private[this] def offset(o : json.JsValue) =
-      readOffset.reads(o).map(_.fold[Segment](Range.full[Offset])(Range.singleton[Offset](_)))
+      readOffset.reads(o).map(_.fold[Segment](Segment.full)(Segment.singleton(_)))
     def reads(j : json.JsValue) = j match {
-      case json.JsArray(Seq()) => json.JsSuccess(Range.full)
+      case json.JsArray(Seq()) => json.JsSuccess(Segment.full)
       case json.JsArray(Seq(o)) => offset(o)
       case json.JsArray(Seq(l, u)) => for {
           l <- readOffset.reads(l)
@@ -113,24 +113,24 @@ private object Json {
     }
   }
 
-  private def popErr(msg : String)(implicit jc : JsContext) =
-    Future.failed(PopulateException(msg + " in " + jc.path.toString))
+  private def popErr(target : site.SitePage, msg : String)(implicit jc : JsContext) =
+    Future.failed(PopulateException(msg + " in " + jc.path.toString, target))
 }
 
-final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit site : Site) extends Ingest {
+final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit request : controllers.SiteRequest[_]) extends Ingest {
   import Json._
   validate(data)
 
-  private[this] def write[A](current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
+  private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
     jc.asOpt[A](read).fold(void) { v =>
       if (current.exists(_.equals(v)))
         void
       else if (current.isEmpty || overwrite)
         change(v).flatMap { r =>
-          if (r) void else popErr("update failed")(jc)
+          if (r) void else popErr(target, "update failed")(jc)
         }
       else
-        popErr("conflicting value: " + v + " <> " + current)(jc)
+        popErr(target, "conflicting value: " + v + " <> " + current)(jc)
     }
 
   private[this] def record(implicit jc : JsContext) : Future[models.Record] = {
@@ -144,7 +144,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           _ <- models.Ingest.setRecord(r, key)
         } yield (r)
       } { r => for {
-          _ <- write(Some(r.category), jc \ "category")(_ => popErr("can't change record category"))
+          _ <- write(r, Some(r.category), jc \ "category")(_ => popErr(r, "can't change record category"))
         } yield (r)
       }
 
@@ -152,9 +152,22 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         .filterNot(jc => Seq("key", "category", "position").contains(jc.key.as[String]))
         .foreachAsync { implicit jc =>
           val met = jc.key.as[models.Metric[_]]
-          write(r.measures.datum(met), jc)(v => r.setMeasure(new models.Measure(met, v)))(readsValue)
+          write(r, r.measures.datum(met), jc)(v => r.setMeasure(new models.Measure(met, v)))(readsValue)
         }
     } yield (r)
+  }
+
+  private[this] def asset(implicit jc : JsContext) : Future[models.Asset] = {
+    val path = (jc \ "file").as[String]
+    val file = store.Stage.file(path)
+    if (!file.isFile)
+      return Future.failed(new IngestException("file not found: " + path))
+    new Asset {
+      val name = (jc \ "name").as[String]
+      val classification = (jc \ "classification").as[models.Classification.Value]
+      val info = Asset.fileInfo(file)
+      override val clip = (jc \ "clip").as[Segment]
+    }.populate(v)
   }
 
   private[this] def container(implicit jc : JsContext) : Future[models.Container] = {
@@ -170,19 +183,28 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           _ <- models.Ingest.setContainer(c, key)
         } yield (c)
       } { c => for {
-          _ <- write(Some(c.top), jc \ "top")(_ => popErr("can't change container top"))
-          _ <- write(c.name, jc \ "name")(x => c.change(name = Some(Some(x))))
-          _ <- write(c.date, jc \ "date")(x => c.change(date = Some(Some(x))))
+          _ <- write(c, Some(c.top), jc \ "top")(_ => popErr(c, "can't change container top"))
+          _ <- write(c, c.name, jc \ "name")(x => c.change(name = Some(Some(x))))
+          _ <- write(c, c.date, jc \ "date")(x => c.change(date = Some(Some(x))))
         } yield (c)
       }
 
-      _ <- write(Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
+      _ <- write(c, Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
 
       _ <- (jc \ "records").children.foreachAsync { implicit jc =>
         for {
           r <- record
           seg = (jc \ "position").as[Segment]
           _ <- models.SlotRecord.move(r, c, dst = seg)
+        } yield ()
+      }
+
+      _ <- (jc \ "assets").children.foreachAsync { implicit jc =>
+        for {
+          a <- asset
+          // TODO: singleton ts, auto, clip position
+          seg = (jc \ "position").as[Segment]
+          _ <- a.link(c, seg)
         } yield ()
       }
     } yield (c)
@@ -192,11 +214,11 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
     implicit val jc = JsContext(json.__, data)
     for {
       /* just to make sure it's the right volume: */
-      _ <- write(Some(v.name), jc \ "name")(x => /* v.change(name = Some(x)) */
-          popErr("refusing to overwrite mismatching volume name"))
+      _ <- write(v, Some(v.name), jc \ "name")(x => /* v.change(name = Some(x)) */
+          popErr(v, "refusing to overwrite mismatching volume name"))
       /* We don't actually ingest volume-level metadata through this interface:
-      _ <- write(v.body, jc \ "body")(x => v.change(body = Some(Some(x))))
-      _ <- write(v.alias, jc \ "alias")(x => v.change(alias = Some(Some(x))))
+      _ <- write(v, v.body, jc \ "body")(x => v.change(body = Some(Some(x))))
+      _ <- write(v, v.alias, jc \ "alias")(x => v.change(alias = Some(Some(x))))
       cite <- v.citation
       ...
       */

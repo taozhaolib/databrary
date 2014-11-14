@@ -203,7 +203,7 @@ object Curated extends Ingest {
           None
       }
       for {
-        a <- asset.populate(container.volume, info)
+        a <- asset.populate(container.volume)
         s <- a.slot
         sa <- s.fold(
           a.link(container, pos.fold(Segment.full)(p => Segment(p, p + info.duration)))) { sa =>

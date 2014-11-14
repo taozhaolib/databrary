@@ -1,7 +1,9 @@
 package ingest {
-  class IngestException(message : String) extends java.lang.RuntimeException(message)
+  class IngestException(message : String) extends java.lang.RuntimeException(message) {
+    def target : Option[site.SitePage] = None
+  }
 
-  final case class PopulateException(message : String, target : Option[site.SitePage] = None) extends IngestException(message)
+  final case class PopulateException(message : String, override val target : Option[site.SitePage] = None) extends IngestException(message)
   object PopulateException {
     def apply(message : String, target : site.SitePage) : PopulateException = PopulateException(message, Some(target))
   }
