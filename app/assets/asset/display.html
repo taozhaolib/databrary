@@ -1,4 +1,8 @@
-<div class="asset-display" ng-switch="::readable ? asset.format.type : 'noperm'">
+<div class="asset-display" ng-switch="::asset.pending ? 'pending' : (readable ? asset.format.type : 'noperm')">
+  <div class="no-preview" ng-switch-when="pending">
+    <span message="asset.display.pending"></span>
+  </div>
+
   <div class="no-preview" ng-switch-when="noperm">
     <span message="asset.display.nopermission"></span>
   </div>
