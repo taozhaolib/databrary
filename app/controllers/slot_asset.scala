@@ -17,10 +17,15 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 }
 
 object SlotAssetController extends SlotAssetController {
+  private[this] def backed(implicit request : Request[_]) : SlotFileAsset = request.obj match {
+    case a : SlotFileAsset => a
+    case _ => throw NotFoundException
+  }
+
   private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] = {
-    val a = request.obj
+    val a = backed
     val s = a match {
-      case ts : SlotTimeseries =>
+      case ts : SlotTimeseriesAsset =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           throw NotFoundException
@@ -39,11 +44,12 @@ object SlotAssetController extends SlotAssetController {
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.READ).async { implicit request =>
+      val a = backed
       (if (inline) macros.async(None) else for {
-        _ <- request.obj.auditDownload
-        name <- request.obj.fileName
+        _ <- a.auditDownload
+        name <- a.fileName
       } yield (Some(name)))
-      .flatMap(AssetController.assetResult(request.obj, None, _))
+      .flatMap(AssetController.assetResult(a, None, _))
     }
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset, size : Int = AssetController.defaultThumbSize) =

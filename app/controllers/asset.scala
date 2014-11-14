@@ -24,19 +24,23 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  private[this] def duration(asset : Asset) : Future[Offset] =
-    if (asset.isInstanceOf[TimeseriesAsset] || asset.duration > Offset.ZERO)
-      async(asset.duration)
-    else
-      asset.slot.map { sa =>
+  private[this] def duration(asset : Asset) : Future[Offset] = asset match {
+    case ts : TimeseriesAsset => async(ts.duration)
+    case f : FileAsset =>
+      f.slot.map { sa =>
         sa.flatMap(_.segment.zip((l, u) => u - l)) orElse {
-          if (asset.format.isTranscodable)
+          if (f.format.isTranscodable)
             scala.util.control.Exception.catching(classOf[media.AV.Error]).opt(
-              media.AV.probe(store.FileAsset.file(asset)).duration)
+              media.AV.probe(store.FileAsset.file(f)).duration)
           else
             None
         } filter(_ > Offset.ZERO) getOrElse Offset.ZERO
       }
+    case a =>
+      a.slot.map { sa =>
+        sa.flatMap(_.segment.zip((l, u) => u - l)) getOrElse Offset.ZERO
+      }
+  }
 
   private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
@@ -103,15 +107,14 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       classification = form.classification.get.getOrElse(Classification(0))
       asset <- fmt match {
         case fmt : TimeseriesFormat if adm && form.timeseries.get =>
-          val probe = media.AV.probe(file.file)
-          models.Asset.create(form.volume, fmt, classification, probe.duration, name, file)
+          models.TimeseriesAsset.create(form.volume, fmt, classification, name, file)
         case fmt =>
           if (fmt.isTranscodable) try {
             media.AV.probe(file.file)
           } catch { case e : media.AV.Error =>
             form.file.withError("file.invalid", e.getMessage)._throw
           }
-          models.Asset.create(form.volume, fmt, classification, name, file)
+          models.FileAsset.create(form.volume, fmt, classification, name, file)
       }
       _ = if (asset.format.isTranscodable && !form.timeseries.get && store.Transcode.enabled)
         store.Transcode.start(asset)
@@ -279,17 +282,19 @@ object AssetHtml extends AssetController with HtmlController {
   }
 
   private def getTranscode(id : Asset.Id)(implicit site : Site) : Future[Option[Transcode]] =
-    Transcode.get(id).orElseAsync(Asset.get(id).mapAsync { a =>
-      for {
-        revs <- Asset.getRevisions(a)
-        o = if (revs.nonEmpty) revs.minBy(_._id) else a
-        s <- a.slot.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
-          for {
-            l <- s.segment.lowerBound
-            u <- s.segment.upperBound
-          } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
-        }))
-      } yield (Transcode(o, s.getOrElse(Segment.full)))
+    Transcode.get(id).orElseAsync(Asset.get(id).flatMapAsync {
+      case a : FileAsset =>
+        for {
+          revs <- Asset.getRevisions(a)
+          o = if (revs.nonEmpty) revs.minBy(_._id) else a
+          s <- a.slot.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
+            for {
+              l <- s.segment.lowerBound
+              u <- s.segment.upperBound
+            } yield (Range(c.segment.lowerBound.filter(_ > l), c.segment.upperBound.filter(_ < u)).map(_ - l))
+          }))
+        } yield Some(Transcode(o, s.getOrElse(Segment.full)))
+      case _ => async(None)
     })
 
   private def transcoding_(id : Option[Asset.Id]) =

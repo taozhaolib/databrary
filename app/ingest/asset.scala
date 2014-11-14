@@ -20,20 +20,20 @@ trait Asset {
         val n = Maybe(name).opt
         for {
           asset <- info match {
-            case Asset.TimeseriesInfo(_, fmt, duration, orig) =>
+            case Asset.TimeseriesInfo(_, fmt, _, orig) =>
               for {
                 o <- populate(volume, orig)
-                a <- models.Asset.create(volume, fmt, classification, duration, n, infile)
+                a <- models.TimeseriesAsset.create(volume, fmt, classification, n, infile)
                 r <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
                 if r
               } yield (a)
             case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
               for {
-                a <- models.Asset.create(volume, fmt, classification, n, infile)
-                _ <- store.Transcode.start(a, clip)
-              } yield (a)
+                o <- models.FileAsset.create(volume, fmt, classification, n, infile)
+                t <- store.Transcode.start(o, clip)
+              } yield t.asset
             case Asset.FileInfo(_, fmt) =>
-              models.Asset.create(volume, fmt, classification, n, infile)
+              models.FileAsset.create(volume, fmt, classification, n, infile)
           }
           r <- models.Ingest.setAsset(asset, info.ingestPath)
           if r

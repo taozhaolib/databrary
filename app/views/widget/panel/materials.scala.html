@@ -9,11 +9,13 @@
             @if(assets.nonEmpty) {
                 @assets.map { link =>
                         <li class="panel_materials_item @link.classification">
-                            <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
-
-                        <span class="classification">@link.classification.toString.charAt(0)</span>
-
-                            <span class="duration">@cast[SlotTimeseries](link).map(_.duration)</span>
+                            @cast[SlotFileAsset](link).map { file =>
+                              <a href="@file.pageURL" class="filename">@file.pageName.@file.format.extension</a>
+                            }
+                            <span class="classification">@link.classification.toString.charAt(0)</span>
+                            @cast[SlotTimeseriesAsset](link).map { ts =>
+                              <span class="duration">ts.duration</span>
+                            }
                         </li>
                 }
             } else {
@@ -27,7 +29,7 @@
                 <span></span>
 
                 @assets.map { link =>
-                    @if(link.checkPermission(Permission.READ)) {
+                    @cast[SlotFileAsset](link).filter(_.checkPermission(Permission.READ)).map { link =>
                         <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
                             <h2>
                                 @link.pageName.@link.format.extension <a href='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, false)' class="link">download</a>
@@ -42,7 +44,7 @@
                                         <source src="@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)" type="@link.asset.format.mimetype">
                                     </video>
 
-                                    @if(!link.isInstanceOf[SlotTimeseries]) {
+                                    @if(!link.isInstanceOf[SlotTimeseriesAsset]) {
                                         @Messages("asset.untranscoded")
                                     }
                                 }

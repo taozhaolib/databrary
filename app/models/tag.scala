@@ -79,7 +79,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
     DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
 
   private[models] def add(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT(SQLTerms('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id)).execute
+    INSERT('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
 }
 
 sealed class TagWeight protected (val tag : Tag, val weight : Int, val user : Boolean) {

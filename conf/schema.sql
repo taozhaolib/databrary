@@ -428,11 +428,13 @@ CREATE TABLE "asset" (
 	"classification" classification NOT NULL,
 	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
 	"name" text,
-	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
+	"sha1" bytea Check (octet_length("sha1") = 20),
+	"size" bigint Check ("size" >= 0)
 );
 ALTER TABLE "asset"
 	ALTER "name" SET STORAGE EXTERNAL,
-	ALTER "sha1" SET STORAGE EXTERNAL;
+	ALTER "sha1" SET STORAGE EXTERNAL,
+	ALTER "size" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
 SELECT audit.CREATE_TABLE ('asset');
@@ -492,7 +494,7 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE TABLE "transcode" (
-	"asset" integer NOT NULL Primary Key Default nextval('asset_id_seq'),
+	"asset" integer NOT NULL Primary Key References "asset",
 	"owner" integer NOT NULL References "party",
 	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Default '(,)',

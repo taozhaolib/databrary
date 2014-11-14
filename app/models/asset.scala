@@ -111,46 +111,11 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       getFilename(file.filename)
 }
 
-
-/** Assets which are backed by files on disk.
-  * Currently this includes all of them. */
-trait BackedAsset {
-  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
-  def source : Asset
-  def sourceId : Asset.Id = source.id
-  def format : AssetFormat = source.format
-  def etag : String = "obj:" + sourceId
-}
-
-/** Refinement (implicitly of Asset) for objects representing timeseries data. */
-trait TimeseriesData extends BackedAsset {
-  def source : TimeseriesAsset
-  /** The range of times represented by this object.
-    * Should be a valid, finite, bounded range. */
-  def section : Section
-  def entire : Boolean
-  /** Length of time represented by this object, which may be zero if it is a single sample. */
-  def duration : Offset = section.upper - section.lower
-  override def format : AssetFormat = if (section.isSingleton) source.format.sampleFormat else source.format
-  override def etag : String =
-    if (entire) super.etag
-    else {
-      val seg = section
-      super.etag + ":" + seg.lower.millis +
-        (if (seg.isSingleton) "" else "-" + seg.upper.millis)
-    }
-  def sample(offset : Offset) = new TimeseriesSample(this, offset)
-}
-
-/** File assets: objects within the system backed by primary file storage. */
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, override val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String], val sha1 : Array[Byte]) extends TableRowId[Asset] with BackedAsset with InVolume with SiteObject {
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String])
+  extends TableRowId[Asset] with InVolume with SiteObject {
   /** Title or name of the asset as used in the container. */
   def name : Option[String] = name_
   def classification : Classification.Value = classification_
-
-  def duration : Offset = Offset.ZERO
-  def source = this
-  override def sourceId = id
 
   def creation : Future[(Option[Timestamp], Option[String])] =
     SQL("SELECT audit_time, name FROM audit.asset WHERE id = ? AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1")
@@ -184,11 +149,11 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
   def pageParent = Some(volume)
   def pageURL = controllers.routes.AssetHtml.view(id)
 
-  lazy val json : JsonRecord = JsonRecord.flatten(id,
+  def json : JsonRecord = JsonRecord.flatten(id,
     Some('format -> format.id),
     Some('classification -> classification),
     name.map('name -> _),
-    cast[TimeseriesAsset](this).map('duration -> _.duration)
+    if (this.isInstanceOf[BackedAsset]) None else Some('pending -> true)
   )
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
@@ -205,13 +170,55 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, override v
     )
 }
 
+/** Assets which are backed by files on disk.
+  * Currently this includes all of them. */
+trait BackedAsset {
+  /** The backing asset from which this data is taken, which may be itself or a containing asset. */
+  def source : FileAsset
+  def sourceId : Asset.Id = source.id
+  def format : AssetFormat = source.format
+  def etag : String = "obj:" + sourceId
+}
+
+/** Refinement (implicitly of Asset) for objects representing timeseries data. */
+trait TimeseriesData extends BackedAsset {
+  def source : TimeseriesAsset
+  /** The range of times represented by this object.
+    * Should be a valid, finite, bounded range. */
+  def section : Section
+  def entire : Boolean
+  /** Length of time represented by this object, which may be zero if it is a single sample. */
+  def duration : Offset = section.upper - section.lower
+  override def format : AssetFormat = if (section.isSingleton) source.format.sampleFormat else source.format
+  override def etag : String =
+    if (entire) super.etag
+    else {
+      val seg = section
+      super.etag + ":" + seg.lower.millis +
+        (if (seg.isSingleton) "" else "-" + seg.upper.millis)
+    }
+  def sample(offset : Offset) = new TimeseriesSample(this, offset)
+}
+
+/** File assets: objects within the system backed by primary file storage. */
+sealed class FileAsset private[models] (id : Asset.Id, volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte])
+  extends Asset(id, volume, format, classification_, name_) with BackedAsset {
+  def duration : Offset = Offset.ZERO
+  def source = this
+  override def sourceId = id
+}
+
 /** Special timeseries assets in a designated format.
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
-final class TimeseriesAsset private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte]) extends Asset(id, volume, format, classification, name, sha1) with TimeseriesData {
+final class TimeseriesAsset private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte])
+  extends FileAsset(id, volume, format, classification, name, sha1) with TimeseriesData {
   override def source = this
   def entire = true
   def section : Section = Segment(Offset.ZERO, duration)
+
+  override def json : JsonRecord =
+    super.json + ('duration -> duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
@@ -226,6 +233,8 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
   override def format = parent.source.format.sampleFormat
 }
 
+object PendingAsset extends TableId[Asset]("asset") {
+}
 
 object Asset extends TableId[Asset]("asset") {
   private[models] val columns = Columns(
@@ -234,11 +243,13 @@ object Asset extends TableId[Asset]("asset") {
     , SelectColumn[Classification.Value]("classification")
     , SelectColumn[Option[Offset]]("duration")
     , SelectColumn[Option[String]]("name")
-    , SelectColumn[Array[Byte]]("sha1")
+    , SelectColumn[Option[Array[Byte]]]("sha1")
     ).map { (id, format, classification, duration, name, sha1) =>
-      duration.fold(
-        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, sha1))(
-        dur => (volume : Volume) => new TimeseriesAsset(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1))
+      sha1.fold(
+        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name))(
+        sha1 => duration.fold(
+          (volume : Volume) => new FileAsset(id, volume, AssetFormat.get(format).get, classification, name, sha1))(
+          dur => (volume : Volume) => new TimeseriesAsset(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1)))
     }
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
@@ -247,25 +258,34 @@ object Asset extends TableId[Asset]("asset") {
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
     rowVolume(Volume.row)
+  private[models] def rowFileVolume(volume : Volume) : Selector[FileAsset] =
+    rowVolume(Volume.fixed(volume)).map(_.asInstanceOf[FileAsset])
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
     row.SELECT("WHERE asset.id = ? AND", Volume.condition)
       .apply(a).singleOpt
 
   /** Get the list of older versions of this asset. */
-  def getRevisions(a : Asset) : Future[Seq[Asset]] =
-    rowVolume(a.volume)
+  def getRevisions(a : Asset) : Future[Seq[FileAsset]] =
+    rowFileVolume(a.volume)
     .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ?")
     .apply(a.id).list
 
   /** Get a particular older version of this asset. */
-  def getRevision(a : Asset, o : Id) : Future[Option[Asset]] =
-    rowVolume(a.volume)
+  def getRevision(a : Asset, o : Id) : Future[Option[FileAsset]] =
+    rowFileVolume(a.volume)
     .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ? AND asset.id = ?")
     .apply(a.id, o).singleOpt
 
-  def getAvatar(p : Party)(implicit site : Site) : Future[Option[Asset]] =
-    rowVolume(Volume.Core)
+  private[models] def createPending(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String])(implicit site : Site) : Future[Asset] =
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name), "id")
+    .single(SQLCols[Id])
+    .map(new Asset(_, volume, format, classification, name))
+}
+
+object FileAsset extends TableId[Asset]("asset") {
+  def getAvatar(p : Party)(implicit site : Site) : Future[Option[FileAsset]] =
+    Asset.rowFileVolume(Volume.Core)
     .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ?")
     .apply(p.id).singleOpt
 
@@ -273,27 +293,30 @@ object Asset extends TableId[Asset]("asset") {
     * @param format the format of the file, taken as given
     * @param file a complete, uploaded file which will be moved into the appropriate storage location
     */
-  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+  def create(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[FileAsset] = {
     implicit val defaultContext = context.foreground
     for {
       sha1 <- Future(store.SHA1(file.file))
-      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1), "id")
+      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
         .single(SQLCols[Id])
     } yield {
-      val a = new Asset(id, volume, format, classification, name, sha1)
+      val a = new FileAsset(id, volume, format, classification, name, sha1)
       store.FileAsset.store(a, file)
       a
     }
   }
+}
 
-  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, duration : Offset, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[Asset] = {
+object TimeseriesAsset extends TableId[Asset]("asset") {
+  def create(volume : Volume, format : TimeseriesFormat, classification : Classification.Value, name : Option[String], file : TemporaryFile)(implicit site : Site) : Future[TimeseriesAsset] = {
     implicit val defaultContext = context.foreground
     for {
+      probe <- Future(media.AV.probe(file.file))
       sha1 <- Future(store.SHA1(file.file))
-      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1), "id")
+      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> probe.duration, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
         .single(SQLCols[Id])
     } yield {
-      val a = new TimeseriesAsset(id, volume, format, classification, duration, name, sha1)
+      val a = new TimeseriesAsset(id, volume, format, classification, probe.duration, name, sha1)
       store.FileAsset.store(a, file)
       a
     }

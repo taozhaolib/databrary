@@ -359,7 +359,7 @@ object PartyHtml extends PartyController with HtmlController {
 
   def avatar(i : models.Party.Id, size : Int = 64) =
     SiteAction.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
-      request.obj.avatar.flatMap(_.fold(
+      FileAsset.getAvatar(request.obj.party).flatMap(_.fold(
         async(Found("/public/images/avatar.png")))(
         AssetController.assetResult(_, Some(size))))
     }

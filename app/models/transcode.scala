@@ -8,9 +8,10 @@ import macros._
 import dbrary._
 import site._
 
-sealed class Transcode(val owner : Party, val orig : Asset, val segment : Segment, val options : Seq[String])
+sealed class Transcode(val owner : Party, val orig : FileAsset, val segment : Segment, val options : IndexedSeq[String])
   extends InVolume {
-  def id : Asset.Id = orig.id
+  def asset : Asset = orig
+  val id : Transcode.Id = asset.id
   def process : Option[Int] = None
   def log : Option[String] = None
   final def volume = orig.volume
@@ -20,7 +21,7 @@ sealed class Transcode(val owner : Party, val orig : Asset, val segment : Segmen
   final def fake = id === orig.id
 }
 
-final class TranscodeJob private[models] (override val id : Transcode.Id, owner : Party, orig : Asset, segment : Segment, options : Seq[String], override val process : Option[Int] = None, override val log : Option[String] = None)
+final class TranscodeJob private[models] (override val asset : Asset, owner : Party, orig : FileAsset, segment : Segment, options : IndexedSeq[String], override val process : Option[Int] = None, override val log : Option[String] = None)
   extends Transcode(owner, orig, segment, options) with TableRowId[Asset] {
   def args(implicit request : RequestHeader) = Seq(
     "-f", store.FileAsset.file(orig).getAbsolutePath,
@@ -33,16 +34,16 @@ final class TranscodeJob private[models] (override val id : Transcode.Id, owner 
     SQL("UPDATE transcode SET process = ?, log = NULLIF(COALESCE(log || E'\\n', '') || COALESCE(?, ''), '') WHERE asset = ?")
     .apply(status.right.toOption, status.left.toOption, id).execute
 
-  def complete(file : TemporaryFile, sha1 : Array[Byte])(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[Asset] = {
+  def complete(file : TemporaryFile, sha1 : Array[Byte])(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[TimeseriesAsset] = {
     val tp = media.AV.probe(file.file)
     if (!tp.isVideo)
       scala.sys.error("transcode check failed: " + id)
     for {
-      _ <- Audit.add("asset", SQLTerms('id -> id, 'volume -> volumeId, 'format -> AssetFormat.Video.id, 'classification -> orig.classification, 'duration -> tp.duration, 'name -> orig.name, 'sha1 -> sha1))
-      a = new TimeseriesAsset(id, volume, AssetFormat.Video, orig.classification, tp.duration, orig.name, sha1)
+      _ <- Audit.change("asset", SQLTerms('duration -> tp.duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
+      a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, tp.duration, asset.name, sha1)
       _ = store.FileAsset.store(a, file)
-      _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, lower(segment) + ?) WHERE asset = ?")
-        .apply(id, start, start + a.duration, orig.id)
+      _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ?")
+        .apply(a.duration, a.id).execute
     } yield (a)
   }
 }
@@ -50,8 +51,7 @@ final class TranscodeJob private[models] (override val id : Transcode.Id, owner 
 object Transcode extends TableId[Asset]("transcode") {
   /* This does not check permissions as you might expect */
   private val row = Columns(
-      SelectColumn[Id]("asset")
-    , SelectColumn[Segment]("segment")
+      SelectColumn[Segment]("segment")
     , SelectColumn[IndexedSeq[String]]("options")
     , SelectColumn[Option[Int]]("process")
     , SelectColumn[Option[String]]("log")
@@ -59,10 +59,12 @@ object Transcode extends TableId[Asset]("transcode") {
       .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
       .map { case (p, a) => Authorization.make(p)(a) },
       "transcode.owner = party.id")
-    .join(Asset.columns, "transcode.orig = asset.id")
-    .join(Volume.columns, "asset.volume = volume.id")
-    .map { case ((((id, segment, options, process, log), owner), orig), volume) =>
-      new TranscodeJob(id, owner.identity, orig(volume(Permission.ADMIN, new LocalAuth(owner, superuser = true))), segment, options, process, log)
+    .join(Asset.columns, "transcode.asset = asset.id")
+    .join(Asset.columns fromAlias "orig", "transcode.orig = orig.id")
+    .join(Volume.columns, "asset.volume = volume.id AND orig.volume = volume.id")
+    .map { case (((((segment, options, process, log), owner), asset), orig), volume) =>
+      val vol = volume(Permission.ADMIN, new LocalAuth(owner, superuser = true))
+      new TranscodeJob(asset(vol), owner.identity, orig(vol).asInstanceOf[FileAsset], segment, options, process, log)
     }
       
   def getJob(id : Id)(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[Option[TranscodeJob]] =
@@ -80,11 +82,15 @@ object Transcode extends TableId[Asset]("transcode") {
     row.SELECT("WHERE NOT EXISTS (SELECT asset.id FROM asset WHERE asset.id = transcode.asset)")
     .apply().list
 
-  def createJob(orig : Asset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
-    SQL("INSERT INTO transcode (owner, orig, segment, options) VALUES (?, ?, ?, ?) RETURNING asset")
-    .apply(site.identity.id, orig.id, segment, options).single(SQLCols[Id])
-    .map(new TranscodeJob(_, site.identity, orig, segment, options))
+  def createJob(orig : FileAsset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
+    for {
+      asset <- Asset.createPending(orig.volume, AssetFormat.Video, orig.classification, orig.name)
+      tc = new TranscodeJob(asset, site.identity, orig, segment, options)
+      _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
+      _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, COALESCE(lower(segment) + ?, upper(segment))) WHERE asset = ?")
+        .apply(asset.id, tc.start, segment.upperBound, orig.id).execute
+    } yield tc
 
-  def apply(orig : Asset, segment : Segment = Segment.full, options : Seq[String] = Nil)(implicit site : Site) =
+  def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit site : Site) =
     new Transcode(site.identity, orig, segment, options)
 }

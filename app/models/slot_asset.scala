@@ -14,14 +14,12 @@ final class Excerpt (val segment : Segment, val classification : Classification.
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot with TableRow with BackedAsset with InVolume with SiteObject {
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot with TableRow with InVolume with SiteObject {
   private[models] def sqlKey = asset.sqlKey
   final val segment = slot.segment * asset_segment
   final def context = slot.context
   final override def volume = asset.volume
   final def assetId = asset.id
-  def source = asset.source
-  override def format = asset.format
 
   def entire = slot.segment @> asset_segment
   /** Segment occupied by asset wrt slot position. */
@@ -76,7 +74,6 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
 
   override def json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
-    if (format === asset.format) None else Some('format -> format.id),
     excerpt.map('excerpt -> _.classification),
     Some('asset -> (asset.json ++
       JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))),
@@ -88,7 +85,18 @@ sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, va
     )
 }
 
-final class SlotTimeseries private[models] (override val asset : TimeseriesAsset, asset_segment : Segment, slot : Slot, _excerpt : Option[Excerpt]) extends SlotAsset(asset, asset_segment, slot, _excerpt) with TimeseriesData {
+sealed class SlotFileAsset private[models] (override val asset : FileAsset, asset_segment : Segment, slot : Slot, excerpt : Option[Excerpt])
+  extends SlotAsset(asset, asset_segment, slot, excerpt) with BackedAsset {
+  def source = asset.source
+  override def format = asset.format
+
+  override def json : JsonObject =
+    if (format === asset.format) super.json
+    else super.json + ('format -> format.id)
+}
+
+final class SlotTimeseriesAsset private[models] (override val asset : TimeseriesAsset, asset_segment : Segment, slot : Slot, _excerpt : Option[Excerpt])
+  extends SlotFileAsset(asset, asset_segment, slot, _excerpt) with TimeseriesData {
   override def source = asset.source
   def section = segment.singleton.fold {
       /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
@@ -108,7 +116,8 @@ final class SlotTimeseries private[models] (override val asset : TimeseriesAsset
 
 object SlotAsset extends Table[SlotAsset]("slot_asset") {
   private[models] def make(asset : Asset, asset_segment : Segment, slot : Slot, excerpt : Option[Excerpt]) = asset match {
-    case ts : TimeseriesAsset => new SlotTimeseries(ts, asset_segment, slot, excerpt)
+    case ts : TimeseriesAsset => new SlotTimeseriesAsset(ts, asset_segment, slot, excerpt)
+    case f : FileAsset => new SlotFileAsset(f, asset_segment, slot, excerpt)
     case _ => new SlotAsset(asset, asset_segment, slot, excerpt)
   }
 

@@ -26,12 +26,12 @@
                     <dd>@Classification.message(asset.classification)</dd>
 
                     <dt>Format</dt>
-                    <dd>@asset.format.name</dd>
+                    <dd>@cast[SlotFileAsset](asset).map(_.format.name)</dd>
 
                     <dt>Position</dt>
                     <dd>@asset.relativeSegment</dd>
 
-                    @cast[SlotTimeseries](asset).map { ts =>
+                    @cast[SlotTimeseriesAsset](asset).map { ts =>
                         <dt>Duration</dt>
                         <dd>@ts.duration</dd>
                     }

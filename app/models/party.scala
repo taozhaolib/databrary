@@ -84,12 +84,11 @@ final class SiteParty(access : Access)(implicit val site : Site)
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
 
-  def avatar : Future[Option[Asset]] = Asset.getAvatar(party)
-  def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[Asset] =
+  def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[FileAsset] =
     for {
-      asset <- Asset.create(Volume.Core, format, Classification.PUBLIC, name, file)
+      asset <- FileAsset.create(Volume.Core, format, Classification.PUBLIC, name, file)
       _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
-    } yield (asset)
+    } yield asset
 
   def pageName = party.pageName
   def pageParent = party.pageParent
