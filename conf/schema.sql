@@ -64,6 +64,9 @@ CREATE TABLE "party" (
 	"affiliation" text,
 	"url" text
 );
+ALTER TABLE "party"
+	ALTER "name" SET STORAGE EXTERNAL,
+	ALTER "affiliation" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
 
@@ -80,6 +83,9 @@ CREATE TABLE "account" (
 	"password" varchar(60), -- standard unix-style hash, currently $2a$ bcrypt
 	"openid" varchar(256) -- split out (multiple/user)?
 );
+ALTER TABLE "account"
+	ALTER "email" SET STORAGE EXTERNAL,
+	ALTER "password" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "account" IS 'Login information for parties associated with registered individuals.';
 
 SELECT audit.CREATE_TABLE ('account');
@@ -201,6 +207,9 @@ CREATE TABLE "volume" (
 	"body" text,
 	"alias" varchar(64)
 );
+ALTER TABLE "volume"
+	ALTER "name" SET STORAGE EXTERNAL,
+	ALTER "alias" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "volume" IS 'Basic organizational unit for data.';
 COMMENT ON COLUMN "volume"."alias" IS 'Short, internal, code name for this volume, for contributors to reference their own data.';
 
@@ -320,6 +329,8 @@ CREATE TABLE "container" (
 	"name" text,
 	"date" date
 );
+ALTER TABLE "container"
+	ALTER "name" SET STORAGE EXTERNAL;
 CREATE INDEX ON "container" ("volume");
 CREATE INDEX "container_top_idx" ON "container" ("volume") WHERE "top";
 COMMENT ON TABLE "container" IS 'Organizational unit within volume containing related files (with common annotations), often corresponding to an individual data session (single visit/acquisition/participant/group/day).';
@@ -341,7 +352,8 @@ CREATE TABLE "slot" ( -- ABSTRACT
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
 	Check (false) NO INHERIT
 );
-ALTER TABLE "slot" ALTER COLUMN "segment" SET STORAGE plain;
+ALTER TABLE "slot"
+	ALTER "segment" SET STORAGE PLAIN;
 COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal sub-sections of a container.  Inherit from this table to use the functions below.';
 
 SELECT audit.CREATE_TABLE ('slot');
@@ -379,6 +391,9 @@ CREATE TABLE "format" (
 	"extension" varchar(8),
 	"name" text NOT NULL
 );
+ALTER TABLE "format"
+	ALTER "mimetype" SET STORAGE EXTERNAL,
+	ALTER "extension" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
@@ -415,6 +430,9 @@ CREATE TABLE "asset" (
 	"name" text,
 	"sha1" bytea NOT NULL Check (octet_length("sha1") = 20)
 );
+ALTER TABLE "asset"
+	ALTER "name" SET STORAGE EXTERNAL,
+	ALTER "sha1" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
 SELECT audit.CREATE_TABLE ('asset');
@@ -464,6 +482,8 @@ CREATE TABLE "excerpt" (
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
+ALTER TABLE "excerpt"
+	ALTER "segment" SET STORAGE PLAIN;
 COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
 COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
 COMMENT ON COLUMN "excerpt"."classification" IS 'Override (by relaxing only) asset''s original classification.';
@@ -524,6 +544,8 @@ CREATE TABLE "tag" (
 	"id" serial NOT NULL Primary Key,
 	"name" varchar(32) NOT NULL Unique
 );
+ALTER TABLE "tag"
+	ALTER "name" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "tag" IS 'Tag/keywords that can be applied to objects.';
 
 CREATE FUNCTION "get_tag" ("tag_name" varchar(32)) RETURNS integer STRICT LANGUAGE plpgsql AS $$
@@ -563,6 +585,8 @@ CREATE TABLE "record_category" (
 	"id" smallserial Primary Key,
 	"name" varchar(64) NOT NULL Unique
 );
+ALTER TABLE "record_category"
+	ALTER "name" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "record_category" IS 'Types of records that are relevant for data organization.';
 INSERT INTO "record_category" ("id", "name") VALUES (-500, 'participant');
 INSERT INTO "record_category" ("id", "name") VALUES (-200, 'group');
@@ -593,6 +617,8 @@ CREATE TABLE "metric" (
 	"options" text[],
 	"assumed" text
 );
+ALTER TABLE "metric"
+	ALTER "name" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
 COMMENT ON COLUMN "metric"."options" IS '(Suggested) options for text enumerations, not enforced.';
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'SHARED', 'text');
@@ -791,6 +817,8 @@ CREATE TABLE "token" (
 	"expires" timestamp NOT NULL,
 	Check (false) NO INHERIT
 );
+ALTER TABLE "token"
+	ALTER "token" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform actions such as logins or authorizations.';
 
 CREATE TABLE "account_token" (
@@ -940,6 +968,8 @@ CREATE TABLE ingest."asset" (
 	"id" integer NOT NULL Unique References "asset" ON DELETE CASCADE,
 	"file" text NOT NULL Unique
 );
+ALTER TABLE ingest."asset"
+	ALTER "file" SET STORAGE EXTERNAL;
 
 CREATE TABLE ingest."container" (
 	"id" integer NOT NULL Unique References "container" ON DELETE CASCADE,
@@ -947,6 +977,8 @@ CREATE TABLE ingest."container" (
 	"key" text NOT NULL,
 	Unique ("volume", "key")
 );
+ALTER TABLE ingest."container"
+	ALTER "key" SET STORAGE EXTERNAL;
 
 CREATE TABLE ingest."record" (
 	"id" integer NOT NULL Unique References "record" ON DELETE CASCADE,
@@ -954,3 +986,5 @@ CREATE TABLE ingest."record" (
 	"key" text NOT NULL,
 	Unique ("volume", "key")
 );
+ALTER TABLE ingest."record"
+	ALTER "key" SET STORAGE EXTERNAL;
