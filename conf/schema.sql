@@ -433,8 +433,7 @@ CREATE TABLE "asset" (
 );
 ALTER TABLE "asset"
 	ALTER "name" SET STORAGE EXTERNAL,
-	ALTER "sha1" SET STORAGE EXTERNAL,
-	ALTER "size" SET STORAGE EXTERNAL;
+	ALTER "sha1" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "asset" IS 'Assets reflecting files in primary storage.';
 
 SELECT audit.CREATE_TABLE ('asset');
@@ -494,7 +493,7 @@ SELECT audit.CREATE_TABLE ('excerpt');
 
 
 CREATE TABLE "transcode" (
-	"asset" integer NOT NULL Primary Key References "asset",
+	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
 	"owner" integer NOT NULL References "party",
 	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Default '(,)',
