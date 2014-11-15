@@ -121,6 +121,10 @@ private object Json {
 final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit request : controllers.SiteRequest[_]) extends Ingest {
   import Json._
   validate(data)
+  private[this] val root = JsContext(json.__, data)
+  private[this] val directory = store.Stage.file((root \ "directory").asOpt[String].getOrElse(""))
+  if (!directory.isDirectory)
+    throw new IngestException("stage directory not found: " + directory)
 
   private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
     jc.asOpt[A](read).fold(void) { v =>
@@ -159,12 +163,11 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
   }
 
   private[this] def asset(implicit jc : JsContext) : Asset = {
-    val path = (jc \ "file").as[String]
-    val file = store.Stage.file(path)
+    val file = new java.io.File(directory, (jc \ "file").as[String])
     if (!file.isFile)
-      throw new IngestException("file not found: " + path)
+      throw new IngestException("file not found: " + file)
     new Asset {
-      val name = (jc \ "name").as[String]
+      val name = (jc \ "name").asOpt[String].getOrElse("")
       val classification = (jc \ "classification").as[models.Classification.Value]
       val info = Asset.fileInfo(file)
       override val clip = (jc \ "clip").as[Segment]
@@ -216,7 +219,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
   }
 
   def run() : Future[Seq[models.Container]] = {
-    implicit val jc = JsContext(json.__, data)
+    implicit val jc = root
     for {
       /* just to make sure it's the right volume: */
       _ <- write(v, Some(v.name), jc \ "name")(x => /* v.change(name = Some(x)) */
