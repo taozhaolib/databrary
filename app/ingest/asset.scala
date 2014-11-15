@@ -12,6 +12,7 @@ trait Asset {
   def classification : Classification.Value
   def info : Asset.Info
   def clip : Segment = Segment.full
+  def duration : Offset = (clip * Segment(Offset.ZERO, duration)).zip((l,u) => u-l).getOrElse(Offset.ZERO)
 
   private[this] def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     models.Ingest.getAsset(volume, info.ingestPath).flatMap(_.fold {
@@ -54,7 +55,7 @@ trait Asset {
             else check(asset.name.equals(Maybe(name).opt),
               PopulateException("inconsistent name for asset " + asset.name + ": " + name, asset))
         } yield (asset)
-    })
+      })
   def populate(volume : Volume)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
     populate(volume, info)
 }

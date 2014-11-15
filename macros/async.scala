@@ -40,14 +40,17 @@ object async {
   private def ss[A](a : A) : Future[Option[A]] = successful(Some(a))
 
   implicit sealed class AsyncTraversableOnce[A](l : TraversableOnce[A]) extends Async[TraversableOnce[A]](l) {
+    def foldLeftAsync[B](z : B)(f : (B, A) => Future[B])(implicit context : ExecutionContext) : Future[B] =
+      l.foldLeft[Future[B]](successful(z)) { (b, a) =>
+        b.flatMap(f(_, a))
+      }
     /** Evaluate each of the futures, serially. */
-    def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] = {
-      l.foldLeft[Future[Any]](void) { (r, a) =>
-        r.flatMap(_ => f(a))
-      }.map(_ => r)
-    }
+    def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] =
+      foldLeftAsync[Any](void)((_, a) => f(a)).map(_ => r)
   }
   implicit sealed class FutureTraversableOnce[A](l : Future[TraversableOnce[A]]) {
+    def foldLeftAsync[B](z : B)(f : (B, A) => Future[B])(implicit context : ExecutionContext) : Future[B] =
+      l.flatMap(_.foldLeftAsync(z)(f))
     /** Evaluate each of the futures, serially. */
     def foreachAsync[R](f : A => Future[_], r : => R = ())(implicit context : ExecutionContext) : Future[R] =
       l.flatMap(_.foreachAsync[R](f, r))

@@ -158,17 +158,17 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
     } yield (r)
   }
 
-  private[this] def asset(implicit jc : JsContext) : Future[models.Asset] = {
+  private[this] def asset(implicit jc : JsContext) : Asset = {
     val path = (jc \ "file").as[String]
     val file = store.Stage.file(path)
     if (!file.isFile)
-      return Future.failed(new IngestException("file not found: " + path))
+      throw new IngestException("file not found: " + path)
     new Asset {
       val name = (jc \ "name").as[String]
       val classification = (jc \ "classification").as[models.Classification.Value]
       val info = Asset.fileInfo(file)
       override val clip = (jc \ "clip").as[Segment]
-    }.populate(v)
+    }
   }
 
   private[this] def container(implicit jc : JsContext) : Future[models.Container] = {
@@ -200,13 +200,17 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         } yield ()
       }
 
-      _ <- (jc \ "assets").children.foreachAsync { implicit jc =>
+      _ <- (jc \ "assets").children.foldLeftAsync(Offset.ZERO) { (off, jc) =>
+        val ai = asset(jc)
         for {
-          a <- asset
-          // TODO: singleton ts, auto, clip position
-          seg = (jc \ "position").as[Segment]
+          a <- ai.populate(v)
+          pos = jc \ "position"
+          seg = pos.data match {
+            case json.JsString("auto") => Segment.singleton(off)
+            case _ => pos.as[Segment]
+          }
           _ <- a.link(c, seg)
-        } yield ()
+        } yield (off + ai.duration)
       }
     } yield (c)
   }
