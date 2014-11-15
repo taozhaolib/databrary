@@ -69,8 +69,7 @@ object Transcode extends TableId[Asset]("transcode") {
       
   def getJob(id : Id)(implicit siteDB : Site.DB, exc : ExecutionContext) : Future[Option[TranscodeJob]] =
     row.SELECT("""
-      WHERE transcode.asset = ?
-        AND NOT EXISTS (SELECT asset.id FROM asset WHERE asset.id = transcode.asset)
+      WHERE transcode.asset = ? AND asset.sha1 IS NULL
       FOR NO KEY UPDATE OF transcode""")
     .apply(id).singleOpt
 
@@ -79,7 +78,7 @@ object Transcode extends TableId[Asset]("transcode") {
     .apply(id).singleOpt
 
   def getActive(implicit site : Site, exc : ExecutionContext) : Future[Seq[Transcode]] =
-    row.SELECT("WHERE NOT EXISTS (SELECT asset.id FROM asset WHERE asset.id = transcode.asset)")
+    row.SELECT("WHERE asset.sha1 IS NULL")
     .apply().list
 
   def createJob(orig : FileAsset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =

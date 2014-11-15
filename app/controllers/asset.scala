@@ -420,13 +420,12 @@ object AssetApi extends AssetController with ApiController {
 
   /** Called from remote transcoding process only. */
   def transcoded(i : models.Transcode.Id, auth : String) =
-    play.api.mvc.Action { implicit request =>
+    play.api.mvc.Action.async { implicit request =>
       val form = new TranscodedForm(i)._bind
       if (!form.token.checkAuth(auth) || form.hasErrors)
-        BadRequest("error")
-      else {
+        async(BadRequest("error"))
+      else
         store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
-        Ok("")
-      }
+          .map(_.fold[Result](NotFound)(_ => Ok("")))
     }
 }
