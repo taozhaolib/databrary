@@ -7,7 +7,8 @@ app.directive('volumeEditOverviewForm', [
       var volume = $scope.volume;
       var form = $scope.volumeEditOverviewForm;
 
-      function init(volume) {
+      function init(vol) {
+        var volume = vol || {};
         var citation = volume.citation || {};
         form.data = {
           name: volume.name,
@@ -18,26 +19,20 @@ app.directive('volumeEditOverviewForm', [
             title: citation.title,
             url: citation.url,
             authors: citation.authors ? citation.authors.slice(0) : [],
-          }
+          },
+          published: vol && vol.citation !== null
         };
         form.data.citation.authors.push('');
       }
-      init(volume || {});
-
-      form.setAutomatic = function (auto) {
-        form.automatic = auto;
-        form.validator.client({
-          'citation.url': {
-            tips: page.constants.message('volume.edit.citation.' + (form.automatic ? 'doi' : 'url') + '.help')
-          }
-        }, true);
-      };
+      init(volume);
 
       form.save = function () {
-        form.data.citation.authors = form.data.citation.authors
-          .filter(function (author) {
-            return author;
-          });
+        if (form.data.published)
+          form.data.citation.authors = form.data.citation.authors
+            .filter(function (author) {
+              return author;
+            });
+        else form.data.citation = {head:''};
 
         (volume ?
           volume.save(form.data) :
@@ -78,7 +73,7 @@ app.directive('volumeEditOverviewForm', [
               form.data.citation.authors = [''];
             delete res.title;
 
-            form.setAutomatic(false);
+            form.$setDirty();
 
             form.messages.add({
               type: 'green',
@@ -111,7 +106,6 @@ app.directive('volumeEditOverviewForm', [
         };
       });
       form.validator.client(validate, true);
-      form.setAutomatic(!volume);
 
       form.scrollFn = page.display.makeFloatScrollFn($('.veo-float'), $('.veo-float-floater'), 24*1.5);
       page.$w.scroll(form.scrollFn);
