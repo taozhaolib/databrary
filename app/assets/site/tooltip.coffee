@@ -5,7 +5,6 @@ app.directive 'tooltip', [
   (window, $timeout) ->
     restrict: 'E'
     scope: false
-    require: '^tooltips',
     templateUrl: 'site/tooltip.html'
     link: ($scope) ->
       tooltip = $scope.tooltip
