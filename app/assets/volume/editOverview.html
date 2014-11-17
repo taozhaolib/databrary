@@ -16,7 +16,7 @@
     <button class="green mini" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url)" ng-click="volumeEditOverviewForm.autoDOI()" message="volume.edit.autodoi.lookup"></button>
     <button class="yellow mini" ng-if="volumeEditOverviewForm.automatic" ng-click="volumeEditOverviewForm.setAutomatic(false)" message="volume.edit.autodoi.donthave"></button>
 
-    <validator name="name" label="volume.name">
+    <validator name="name" label="volume.name" required>
       <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}">
     </validator>
   </fieldset>
