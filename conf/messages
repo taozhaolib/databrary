@@ -92,6 +92,7 @@ create=Create
 file=file
 account=Account
 password=Password
+required=(required)
 
 toolbar.login=login
 toolbar.logout=logout
@@ -567,7 +568,7 @@ wizard.volume-edit-overview.name=Overview
 wizard.volume-edit-overview.description=Edit title, description, and citation.
 wizard.volume-edit-overview.instructions=First, provide basic information about this study.  Then, visit the tabs on the left to provide more information and data.
 
-volume.edit.autodoi.instructions=Enter one of these two fields. If this study represents a published paper or resource, you can automatically fill out your study information by entering the DOI of a published paper. A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website.
+volume.edit.autodoi.instructions=A DOI starts with "10." and can usually be found on the first page of a published paper or on the journal''s website. Press "retrieve study information" to fill out study information from your DOI. Previously entered information will be replaced.
 volume.edit.autodoi=DOI or URL
 volume.edit.autodoi.placeholder=10.XXXX/XXXXXXXX
 volume.edit.citation.doi.help=Enter a DOI starting with "10." to automatically retrieve the paper citation, and press "Retrieve study information".
