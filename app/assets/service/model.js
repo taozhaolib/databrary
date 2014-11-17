@@ -28,7 +28,7 @@ app.factory('modelService', [
     };
 
     Model.prototype.update = function (init) {
-      if (!angular.isObject(init))
+      if (typeof init !== 'object')
         return this;
       if ('id' in init && init.id !== this.id)
         throw new Error("update id mismatch");
@@ -546,6 +546,8 @@ app.factory('modelService', [
         for (var ri = 0; ri < rl.length; ri ++)
           rl[ri].record = rl[ri].record ? new Record(slot.volume, rl[ri].record) : slot.volume.records[rl[ri].id];
       }
+      if ('excerpts' in init)
+        slotAssetMakeArray(slot.container, this.excerpts);
     }
 
     Slot.prototype.init = function (init) {
