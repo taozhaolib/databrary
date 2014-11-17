@@ -53,6 +53,8 @@ app.directive('partyEditApplyForm', [
             new: true,
             query: query
           });
+          //warning: next line is template dependent! if classnames change this will no longer work
+          page.display.scrollTo('fieldset article.permission-auth.pef:last');
         };
 
         if (preSelect)
