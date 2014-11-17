@@ -7,11 +7,12 @@ app.controller('volume/edit', [
     $scope.volume = volume;
     page.display.title = volume ? volume.title : page.constants.message('volume.edit.create');
 
-    page.display.toolbarLinks.push({
-      type: 'yellow',
-      html: page.constants.message('volume.edit.' + (volume ? 'exit' : 'cancel')),
-      url: volume ? volume.route : page.router.prev
-    });
+    if (volume)
+      page.display.toolbarLinks.push({
+        type: 'yellow',
+        html: page.constants.message('volume.edit.exit'),
+        url: volume.route
+      });
 
     $scope.registerStep = function (step) {
       step.form = step.$scope['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
