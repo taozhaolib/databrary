@@ -69,7 +69,7 @@ exec >$LOG 2>&1
 sleep 5 # hope server knows job has started by now
 
 ls -s "$IN"
-ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac "${args[@]}" -y "$OUT"
+ffmpeg -loglevel warning -benchmark -threads ${PBS_NP:-1} -i "$IN" "${args[@]}" -vf pad='iw+mod(iw\,2):ih+mod(ih\,2)' -threads ${PBS_NP:-1} -f mp4 -g 60 -c:v libx264 -pix_fmt yuvj420p -c:a libfdk_aac -y "$OUT"
 r=$?
 ls -s "$OUT"
 if [[ $r -ne 0 ]] ; then
