@@ -12,6 +12,7 @@ trait Asset {
   def classification : Classification.Value
   def info : Asset.Info
   def clip : Segment = Segment.full
+  def options : IndexedSeq[String] = IndexedSeq.empty[String]
   def duration : Offset = (clip * Segment(Offset.ZERO, duration)).zip((l,u) => u-l).getOrElse(Offset.ZERO)
 
   private[this] def populate(volume : Volume, info : Asset.Info)(implicit request : controllers.SiteRequest[_], exc : ExecutionContext) : Future[models.Asset] =
@@ -31,7 +32,7 @@ trait Asset {
             case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
               for {
                 o <- models.FileAsset.create(volume, fmt, classification, n, infile)
-                t <- store.Transcode.start(o, clip)
+                t <- store.Transcode.start(o, clip, options)
               } yield t.asset
             case Asset.FileInfo(_, fmt) =>
               models.FileAsset.create(volume, fmt, classification, n, infile)

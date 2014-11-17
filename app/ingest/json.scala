@@ -170,7 +170,8 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       val name = (jc \ "name").asOpt[String].getOrElse("")
       val classification = (jc \ "classification").as[models.Classification.Value]
       val info = Asset.fileInfo(file)
-      override val clip = (jc \ "clip").as[Segment]
+      override val clip = (jc \ "clip").asOpt[Segment].getOrElse(Segment.full)
+      override val options = (jc \ "options").asOpt[IndexedSeq[String]].getOrElse(IndexedSeq.empty)
     }
   }
 
