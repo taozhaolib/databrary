@@ -291,7 +291,7 @@ auth.request.notfound.success=Thank you for submitting a request to be Authorize
 auth.request.notfound.info=Contact info
 
 # Permission levels
-auth.site=Access to others'' shared Databrary data
+auth.site=Access to others'' data shared on Databrary 
 auth.site.NONE.title=No access
 # for lockdown only:
 auth.site.NONE=Can only access public data.

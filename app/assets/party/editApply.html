@@ -20,19 +20,19 @@
             <span class="permission-auth-email" ng-if="::!!auth.party.email" ng-bind="::auth.party.email"></span>
           </div>
 
-          <div ng-if="::auth.site">
-            <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
-            <div class="permission-auth-site">
-              <strong message="auth.site.{{page.constants.permission[auth.site]}}.title"></strong>:
-              {{'auth.site.'+page.constants.permission[auth.site] | possessive:party}}
-            </div>
-          </div>
-
           <div ng-if="::auth.member">
             <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
             <div class="permission-auth-member">
               <strong message="auth.member.{{page.constants.permission[auth.member]}}.title"></strong>:
-              {{'auth.member.'+page.constants.permission[auth.member] | possessive:party}}
+              {{'auth.member.'+page.constants.permission[auth.member] | message:'their'}}
+            </div>
+          </div>
+
+          <div ng-if="::auth.site">
+            <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
+            <div class="permission-auth-site">
+              <strong message="auth.site.{{page.constants.permission[auth.site]}}.title"></strong>:
+              {{'auth.site.'+page.constants.permission[auth.site] | message:'their'}}
             </div>
           </div>
 

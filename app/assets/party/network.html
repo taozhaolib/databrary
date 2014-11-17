@@ -17,6 +17,17 @@
               <span class="permission-auth-email" ng-if="::!!parent.party.email" ng-bind="::parent.party.email"></span>
             </div>
 
+            <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.member">
+              <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
+              <div class="permission-auth-member">
+                <strong message="auth.member.{{::page.constants.permission[parent.member]}}.title"></strong>:
+                {{::'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
+              </div>
+            </div>
+            <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.member">
+              &nbsp;
+            </div>
+
             <div ng-if="::isAdmin">
               <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.site">
                 <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
@@ -26,17 +37,6 @@
                 </div>
               </div>
               <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.site">
-                &nbsp;
-              </div>
-
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::parent.member">
-                <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
-                <div class="permission-auth-member">
-                  <strong message="auth.member.{{::page.constants.permission[parent.member]}}.title"></strong>:
-                  {{::'auth.member.'+page.constants.permission[parent.member] | message:'their'}}
-                </div>
-              </div>
-              <div class="col-desktop-6 col-tablet-3 col-mobile-5" ng-if="::!parent.member">
                 &nbsp;
               </div>
 
