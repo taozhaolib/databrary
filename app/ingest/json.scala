@@ -213,7 +213,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
             case json.JsString("auto") => Segment.singleton(off)
             case _ => pos.as[Segment]
           }
-          _ <- a.link(c, seg)
+          _ <- when(ai.created, a.link(c, seg).map(_ => ()))
         } yield (off + ai.duration)
       }
     } yield (c)

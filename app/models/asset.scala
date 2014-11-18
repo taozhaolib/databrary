@@ -23,7 +23,9 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   final def isImage = mimetype.startsWith("image/")
   final def isVideo = mimetype.startsWith("video/")
   final def isAudio = mimetype.startsWith("audio/")
-  final def isTranscodable = isVideo // || isAudio
+  final def isTranscodable : Option[AssetFormat] =
+    if (isVideo) Some(AssetFormat.Video)
+    else None
   
   def description = name
 
@@ -39,7 +41,7 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
     extension.map('extension -> _),
     Some('name -> name),
     if (description.equals(name)) None else Some('description -> description),
-    if (isTranscodable) Some('transcodable -> true) else None
+    isTranscodable.map('transcodable -> _.id)
   )
 }
 
