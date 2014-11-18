@@ -90,6 +90,6 @@ object Transcode extends TableId[Asset]("transcode") {
         .apply(asset.id, tc.start, segment.upperBound, orig.id).execute
     } yield tc
 
-  def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit site : Site) =
+  def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = store.Transcode.defaultOptions)(implicit site : Site) =
     new Transcode(site.identity, orig, segment, options)
 }

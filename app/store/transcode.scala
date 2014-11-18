@@ -54,7 +54,9 @@ object Transcode {
     tc.setStatus(pid).map(_ => tc)
   }
 
-  def start(asset : models.FileAsset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit request : controllers.SiteRequest[_]) : Future[models.Transcode] =
+  val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
+
+  def start(asset : models.FileAsset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit request : controllers.SiteRequest[_]) : Future[models.Transcode] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
       models.Transcode.createJob(asset, segment, options).flatMap(run)
     }

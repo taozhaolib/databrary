@@ -12,7 +12,7 @@ trait Asset {
   def classification : Classification.Value
   def info : Asset.Info
   def clip : Segment = Segment.full
-  def options : IndexedSeq[String] = IndexedSeq.empty[String]
+  def options : IndexedSeq[String] = store.Transcode.defaultOptions
   def duration : Offset = (clip * Segment(Offset.ZERO, info.duration)).zip((l,u) => u-l).getOrElse(Offset.ZERO)
   var created : Boolean = false
 
