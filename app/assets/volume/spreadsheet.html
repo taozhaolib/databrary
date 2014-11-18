@@ -1,3 +1,14 @@
+<div class="spreadsheet-release-legend" ng-if="::editing && !top">
+  <a href="" ng-click="showConsents=false" ng-show="showConsents" message="wizard.volume-edit-data.releasekeyhide"></a>
+  <a href="" ng-click="showConsents=true" ng-hide="showConsents" message="wizard.volume-edit-data.releasekeyshow"></a>
+  <ul ng-show="showConsents" class="spreadsheet-release-legend-options">
+    <li ng-repeat="(i,c) in page.constants.consent" ng-if="i>0">
+      <span class="icon consent" ng-class="c"></span>
+      <span ng-bind="'consent.'+c | message"></span>
+    </li>
+  </ul>
+</div>
+
 <div class="spreadsheet-options">  
   <span ng-if="::!editing && volume.checkPermission(page.permission.EDIT)">
     <a href="" ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
