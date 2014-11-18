@@ -286,7 +286,7 @@ auth.search.grant.legend=Authorize a new affiliate
 auth.request.title=Request authorization from {0}
 auth.request.notfound.user=User Not Found
 auth.request.notfound.title=More information required
-auth.request.notfound.instructions=<p>If you''re seeking affiliate status from an investigator, please contact them and suggest they create an account at Databrary.</p><p>Otherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.</p>
+auth.request.notfound.instructions=<p>If you cannot find the Principal Investigator or Institution that you are looking for, please complete one of the following steps.</p><p>If you''re seeking affiliate status from an investigator, please contact him/her directly and suggest creating an account at Databrary. Once an account is created, you can apply for a sponsor. </p><p>Otherwise, please list the name and contact information (email, phone number) for your Institution''s Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.</p>
 auth.request.notfound.success=Thank you for submitting a request to be Authorized. We will let you know as soon your application is Authorized.
 auth.request.notfound.info=Contact info
 
@@ -540,10 +540,10 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://databrary.org/user-guide/getting-authorized/agreement.html" target="_blank">Read more</a> about this process and its requirements.
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as a "Databrary Authorized Investigator" through a sponsoring institution, or by an authorized Databrary Investigator as an "Affiliate Investigator". <a href="http://staging.databrary.org/resources/guide/investigators.html" target="_blank">Read more</a> about the authorization process and its requirements.
 
-auth.register.principal=<strong>Authorized Investigator</strong>: Researchers with <a href="http://databrary.org/user-guide/definitions.html#people" target="_blank">PI status</a> (eligible to conduct independent research at their institution) may request authorization to access and share Databrary data, as well as authorize affiliates.
-auth.register.affiliate=<strong>Affiliate Investigator</strong>: Individuals working with Authorized Investigators may be sponsored to access shared Databrary data.
+auth.register.principal=<strong>Authorized Investigator</strong> (Researchers that are eligible to conduct independent research at their institution may become Authorized Investigators and authorize and manage Affiliates.)
+auth.register.affiliate=<strong>Affiliate Investigator</strong> (Individuals working with Authorized Investigators may be authorized as Affiliates.)
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
@@ -597,7 +597,7 @@ wizard.volume-edit-materials.instructions=<p>Provide any files related to this s
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
-wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>green arrow</em> (<img src="/public/images/icon/go.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified along with your current edits.</p>
+wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>green arrow</em> (<img src="/public/images/icon/go.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified by your current edit.</p>
 wizard.volume-edit-data.releasekeyhide=Hide legend of release levels
 wizard.volume-edit-data.releasekeyshow=Show legend of release levels
 

@@ -2,7 +2,8 @@
   <fieldset class="clean veo-float">
     <div class="veo-float-floater">
       <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
-      <button ng-click="volumeEditOverviewForm.resetAll()" message="revert" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+      <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+      <a ng-if="::!volume" ng-href="{{page.router.prev}}" message="volume.edit.cancel" class="button"></a>
     </div>
   </fieldset>
   <fieldset>

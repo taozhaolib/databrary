@@ -4,7 +4,7 @@
       <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-9 col-tablet-3 col-mobile-2"></auth-search-form>
     </div>
   </fieldset>
- <fieldset ng-show="partyEditApplyForm.data.length > 0">
+  <fieldset ng-show="partyEditApplyForm.data.length > 0">
     <legend message="auth.apply.legend"></legend>
     <article ng-repeat="auth in partyEditApplyForm.data track by auth.party.id" class="permission-auth cf foot pef">
       <div ng-if="!auth.new" class="row">

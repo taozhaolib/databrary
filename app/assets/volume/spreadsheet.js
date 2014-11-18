@@ -122,6 +122,8 @@ app.directive('spreadsheet', [
       return pseudoMetrics[m] || page.constants.metric[m];
     }
 
+    var selectStyles = document.head.appendChild(document.createElement('style')).sheet;
+
     var controller = [
       '$scope', '$element', '$attrs',
       function ($scope, $element, $attrs) {
@@ -905,8 +907,6 @@ app.directive('spreadsheet', [
               input.one('change', $scope.$lift(unedit));
           });
         }
-
-        var selectStyles = document.head.appendChild(document.createElement('style')).sheet;
 
         function unselect() {
           while (selectStyles.cssRules.length)
