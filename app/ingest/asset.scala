@@ -34,8 +34,8 @@ trait Asset {
                 o <- models.FileAsset.create(volume, fmt, classification, n, infile)
                 t <- store.Transcode.start(o, clip, options)
               } yield t.asset
-            case Asset.FileInfo(_, fmt) =>
-              models.FileAsset.create(volume, fmt, classification, n, infile)
+            case _ =>
+              models.FileAsset.create(volume, info.format, classification, n, infile)
           }
           r <- models.Ingest.setAsset(asset, info.ingestPath)
           if r
