@@ -6,12 +6,6 @@ app.factory('modelService', [
 
     ///////////////////////////////// Model: common base class and utils
 
-    // just a bit more efficient than angular's
-    function extend(dst, src) {
-      for (var key in src)
-        dst[key] = src[key];
-    }
-
     function resData(res) {
       return res.data;
     }
@@ -20,11 +14,20 @@ app.factory('modelService', [
       this.init(init);
     }
 
-    /* optional fields that are always returned (so missingness is significant) */
-    Model.prototype.staticFields = [];
+    /* map of fields to to true (static, missingness is significant) or false (update when present) */
+    Model.prototype.fields = {
+      id: true,
+      permission: false,
+    };
 
     Model.prototype.init = function (init) {
-      extend(this, init);
+      var fields = this.fields;
+      for (var f in fields) {
+        if (f in init)
+          this[f] = init[f];
+        else if (fields[f])
+          delete this[f];
+      }
     };
 
     Model.prototype.update = function (init) {
@@ -32,12 +35,6 @@ app.factory('modelService', [
         return this;
       if ('id' in init && init.id !== this.id)
         throw new Error("update id mismatch");
-      var s = this.staticFields;
-      for (var i = 0; i < s.length; i ++) {
-        var k = s[i];
-        if (!(k in init) && k in this)
-          delete this[k];
-      }
       this.init(init);
       return this;
     };
@@ -48,6 +45,10 @@ app.factory('modelService', [
           delete this[arguments[i]];
     };
 
+    function hasField(obj, opt) {
+      return obj && opt in obj && (typeof obj[opt] !== 'object' || !obj[opt]._PLACEHOLDER);
+    }
+
     /* determine whether the given object satisfies all the given dependency options already.
      * returns the missing options, or null if nothing is missing. */
     function checkOptions(obj, options) {
@@ -55,7 +56,7 @@ app.factory('modelService', [
       var need = obj ? null : opts;
       if (Array.isArray(options)) {
         for (var i = 0; i < options.length; i ++)
-          if (!obj || !(options[i] in obj)) {
+          if (!hasField(obj, options[i])) {
             opts[options[i]] = '';
             need = opts;
           }
@@ -64,7 +65,7 @@ app.factory('modelService', [
         return options || opts;
       else if (options)
         angular.forEach(options, function (v, o) {
-          if (v || !(o in obj)) {
+          if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
           }
@@ -127,18 +128,29 @@ app.factory('modelService', [
 
     modelCache(Party, 'party', 256);
 
-    Party.prototype.staticFields = ['orcid', 'affiliation', 'email', 'institution', 'url'];
+    Party.prototype.fields = {
+      id: true,
+      permission: false,
+      name: true,
+      orcid: true,
+      affiliation: true,
+      email: true,
+      institution: true,
+      url: true,
+      access: false,
+      openid: false,
+    };
 
     Party.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
       if ('volumes' in init)
-        volumeMakeSubArray(this.volumes);
+        this.volumes = volumeMakeSubArray(init.volumes);
       if ('parents' in init)
-        partyMakeSubArray(this.parents);
+        this.parents = partyMakeSubArray(init.parents);
       if ('children' in init)
-        partyMakeSubArray(this.children);
+        this.children = partyMakeSubArray(init.children);
       if ('comments' in init)
-        commentMakeArray(null, this.comments);
+        this.comments = commentMakeArray(null, init.comments);
     };
 
     function partyPeek(id) {
@@ -226,9 +238,8 @@ app.factory('modelService', [
       size = size || 56;
 
       var params = {};
-      if (nonce) {
+      if (nonce)
         params.nonce = nonce;
-      }
 
       return router.partyAvatar([this.id, size], params);
     };
@@ -348,41 +359,51 @@ app.factory('modelService', [
     ///////////////////////////////// Volume
 
     function Volume(init) {
+      this.containers = {_PLACEHOLDER:true};
+      this.records = {_PLACEHOLDER:true};
+      this.assets = {};
       Model.call(this, init);
     }
 
     modelCache(Volume, 'volume', 8);
 
-    Volume.prototype.staticFields = ['alias'];
+    Volume.prototype.fields = {
+      id: true,
+      permission: false,
+      name: true,
+      alias: true,
+      body: true,
+      creation: true,
+      citation: false,
+      links: false,
+      funding: false,
+      tags: false,
+      // consumers: false,
+      // producers: false,
+    };
 
     Volume.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
       if ('access' in init)
-        partyMakeSubArray(this.access);
+        this.access = partyMakeSubArray(init.access);
       if ('records' in init) {
-        var rl = this.records;
-        var rm = {};
+        var rl = init.records;
         for (var ri = 0; ri < rl.length; ri ++)
-          rm[rl[ri].id] = new Record(this, rl[ri]);
-        this.records = rm;
+          recordMake(this, rl[ri]);
+        delete this.records._PLACEHOLDER;
       }
       if ('containers' in init) {
-        var cl = this.containers;
-        var cm = {};
+        var cl = init.containers;
         for (var ci = 0; ci < cl.length; ci ++)
-          cm[cl[ci].id] = new Container(this, cl[ci]);
-        this.containers = cm;
+          containerMake(this, cl[ci]);
+        delete this.containers._PLACEHOLDER;
       }
-      if ('top' in init) {
-        if (this.containers && this.top.id in this.containers)
-          this.top = this.containers[this.top.id].update(this.top);
-        else
-          this.top = new Container(this, this.top);
-      }
+      if ('top' in init)
+        this.top = containerMake(this, init.top);
       if ('excerpts' in init)
-        assetMakeArray(this, this.excerpts);
+        this.excerpts = assetMakeArray(this, init.excerpts);
       if ('comments' in init)
-        commentMakeArray(this, this.comments);
+        this.comments = commentMakeArray(this, init.comments);
     };
 
     function volumeMake(init) {
@@ -529,7 +550,12 @@ app.factory('modelService', [
     Slot.prototype.constructor = Slot;
     Slot.prototype.class = 'slot';
 
-    Slot.prototype.staticFields = ['consent', 'context'];
+    Slot.prototype.fields = {
+      consent: true,
+      context: true,
+      tags: false,
+      consents: false,
+    };
 
     Slot.prototype.clear = function (/*f...*/) {
       Model.prototype.clear.apply(this, arguments);
@@ -538,24 +564,24 @@ app.factory('modelService', [
 
     function slotInit(slot, init) {
       if ('assets' in init)
-        slotAssetMakeArray(slot.container, slot.assets);
+        slot.assets = slotAssetMakeArray(slot.container, init.assets);
       if ('comments' in init)
-        commentMakeArray(slot.volume, slot.comments);
+        slot.comments = commentMakeArray(slot.volume, init.comments);
       if ('records' in init) {
-        var rl = slot.records;
+        var rl = init.records;
         for (var ri = 0; ri < rl.length; ri ++)
-          rl[ri].record = rl[ri].record ? new Record(slot.volume, rl[ri].record) : slot.volume.records[rl[ri].id];
+          rl[ri].record = rl[ri].record ? recordMake(slot.volume, rl[ri].record) : slot.volume.records[rl[ri].id];
+        slot.records = rl;
       }
       if ('excerpts' in init)
-        slotAssetMakeArray(slot.container, this.excerpts);
+        slot.exceprts = slotAssetMakeArray(slot.container, init.excerpts);
     }
 
     Slot.prototype.init = function (init) {
-      var c = this.container;
       Model.prototype.init.call(this, init);
       this.segment = new Segment(init.segment);
       if ('container' in init)
-        this.container = c.update(init.container);
+        this.container.update(init.container);
       slotInit(this, init);
     };
 
@@ -584,21 +610,27 @@ app.factory('modelService', [
 
     function Container(volume, init) {
       this.volume = volume;
+      volume.containers[init.id] = this;
       Slot.call(this, this, init);
     }
 
     Container.prototype = Object.create(Slot.prototype);
     Container.prototype.constructor = Container;
 
-    Container.prototype.staticFields = ['_PLACEHOLDER', 'name', 'date', 'top'].concat(Slot.prototype.staticFields);
+    Container.prototype.fields = angular.extend({
+      id: false,
+      _PLACEHOLDER: true,
+      name: true,
+      top: true,
+      date: true,
+    }, Slot.prototype.fields);
 
     Container.prototype.init = function (init) {
-      var v = this.volume;
       Model.prototype.init.call(this, init);
       if ('volume' in init)
-        this.volume = v.update(init.volume);
+        this.volume.update(init.volume);
       if ('container' in init)
-        this.container = this.update(init.container);
+        this.update(init.container);
       slotInit(this, init);
     };
 
@@ -612,8 +644,7 @@ app.factory('modelService', [
       var c = this;
       return router.http(router.controllers.SlotApi.remove, this.id)
         .then(function () {
-          if ('containers' in c.volume)
-            delete c.volume.containers[c.id];
+          delete c.volume.containers[c.id];
           return true;
         }, function (res) {
           if (res.status == 409) {
@@ -624,12 +655,17 @@ app.factory('modelService', [
         });
     };
 
+    function containerMake(volume, init) {
+      var c = volume.containers[init.id];
+      if (c) {
+        delete init._PLACEHOLDER;
+        return c.update(init);
+      } else
+        return new Container(volume, init);
+    }
+
     function containerPrepare(volume, id) {
-      if (volume.containers && id in volume.containers)
-        return volume.containers[id];
-      if (volume.top && volume.top.id === id)
-        return volume.top;
-      return new Container(volume, {id:id, _PLACEHOLDER:true});
+      return containerMake(volume, {id:id, _PLACEHOLDER:true});
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
@@ -669,10 +705,7 @@ app.factory('modelService', [
       var v = this;
       return router.http(router.controllers.SlotApi.create, this.id, data)
         .then(function (res) {
-          var c = new Container(v, res.data);
-          if ('containers' in v)
-            v.containers[c.id] = c;
-          return c;
+          return new Container(v, res.data);
         });
     };
 
@@ -703,10 +736,7 @@ app.factory('modelService', [
         c = c.id;
       return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {category:c})
         .then(function (res) {
-          var v = s.volume;
-          var r = new Record(v, res.data);
-          if ('records' in v)
-            v.records[r.id] = r;
+          var r = new Record(s.volume, res.data);
           recordAdd(s, r);
           return r;
         });
@@ -757,6 +787,7 @@ app.factory('modelService', [
 
     function Record(volume, init) {
       this.volume = volume;
+      volume.records[init.id] = this;
       Model.call(this, init);
     }
 
@@ -764,22 +795,31 @@ app.factory('modelService', [
     Record.prototype.constructor = Record;
     Record.prototype.class = 'record';
 
-    Record.prototype.staticFields = ['category'];
+    Record.prototype.fields = {
+      id: true,
+      category: true,
+      measures: true,
+      // slots: false,
+    };
 
     Record.prototype.init = function (init) {
-      var v = this.volume;
       Model.prototype.init.call(this, init);
       if ('volume' in init)
-        this.volume = v.update(init.volume);
+        this.volume.update(init.volume);
     };
 
     delegate(Record, 'volume',
         'permission');
 
+    function recordMake(volume, init) {
+      var r = volume.records[init.id];
+      return r ? r.update(init) : new Record(volume, init);
+    }
+
     Volume.prototype.getRecord = function (record) {
       if (record instanceof Record)
         return $q.successful(record);
-      if (this.records && record in this.records)
+      if (record in this.records)
         return $q.successful(this.records[record]);
       var v = this;
       return router.http(router.controllers.RecordApi.get, record)
@@ -835,6 +875,7 @@ app.factory('modelService', [
 
     function Asset(volume, init) {
       this.volume = volume;
+      volume.assets[init.id] = this;
       Model.call(this, init);
     }
 
@@ -842,26 +883,36 @@ app.factory('modelService', [
     Asset.prototype.constructor = Asset;
     Asset.prototype.class = 'asset';
 
-    Asset.prototype.staticFields = ['name', 'duration'];
+    Asset.prototype.fields = {
+      id: true,
+      classification: true,
+      name: true,
+      duration: true,
+      // slot: false,
+      creation: false,
+    };
 
     Asset.prototype.init = function (init) {
-      var v = this.volume;
       Model.prototype.init.call(this, init);
       if ('segment' in init)
         this.segment = new Segment(init.segment);
       if ('volume' in init)
-        this.volume = v.update(this.volume);
+        this.volume.update(init.volume);
       if ('format' in init)
-        this.format = constants.format[this.format];
+        this.format = constants.format[init.format];
       if ('revisions' in init)
-        assetMakeArray(v, this.revisions);
+        this.revisions = assetMakeArray(this.volume, init.revisions);
       /* slot : Slot, but really implies SlotAsset */
     };
 
     function assetMake(context, init) {
-      if ('id' in init)
-        return new Asset('volume' in context ? context.volume : context, init);
-      else
+      var v = context.volume || context;
+      if (typeof init === 'number')
+        return v.assets[init];
+      if ('id' in init) {
+        var a = v.assets[init.id];
+        return a ? a.update(init) : new Asset(v, init);
+      } else
         return new SlotAsset(context, init);
     }
 
@@ -892,14 +943,19 @@ app.factory('modelService', [
     SlotAsset.prototype.constructor = SlotAsset;
     SlotAsset.prototype.class = 'asset';
 
-    SlotAsset.prototype.staticFields = ['format', 'excerpt'].concat(Slot.prototype.staticFields);
+    SlotAsset.prototype.fields = angular.extend({
+      permission: true,
+      excerpt: true,
+    }, Slot.prototype.fields);
 
     SlotAsset.prototype.init = function (init) {
-      var a = this.asset;
       Slot.prototype.init.call(this, init);
-      this.asset = a ? a.update(init.asset) : new Asset(this.volume, init.asset);
+      if (this.asset)
+        this.asset.update(init.asset);
+      else
+        this.asset = assetMake(this.volume, init.asset);
       if ('format' in init)
-        this.format = constants.format[this.format];
+        this.format = constants.format[init.format];
     };
 
     function slotAssetMakeArray(container, l) {
@@ -997,7 +1053,11 @@ app.factory('modelService', [
     Comment.prototype.constructor = Comment;
     Comment.prototype.class = 'comment';
 
-    Comment.prototype.staticFields = ['parent'].concat(Slot.prototype.staticFields);
+    Comment.prototype.fields = angular.extend({
+      time: true,
+      text: true,
+      parents: true
+    }, Slot.prototype.fields);
 
     Comment.prototype.init = function (init) {
       Slot.prototype.init.call(this, init);
