@@ -45,21 +45,19 @@ object Transcode {
 
   /* we use database transactions here to lock the transcode table */
 
-  private def run(tc : models.TranscodeJob)(implicit request : RequestHeader, siteDB : Site.DB) : Future[models.TranscodeJob] = {
+  private def run(tc : models.TranscodeJob)(implicit request : RequestHeader, siteDB : Site.DB) : Future[Boolean] = {
     val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
       val r = ctl(tc.id, tc.args : _*)
       Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
     }.left.map(_.toString).joinRight
     logger.debug("running " + tc.id + ": " + pid.merge.toString)
-    tc.setStatus(pid).map(_ => tc)
+    tc.setStatus(pid)
   }
 
   val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
 
-  def start(asset : models.FileAsset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit request : controllers.SiteRequest[_]) : Future[models.Transcode] =
-    implicitly[Site.DB].inTransaction { implicit siteDB =>
-      models.Transcode.createJob(asset, segment, options).flatMap(run)
-    }
+  def start(asset : models.FileAsset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit request : controllers.SiteRequest[_]) : Future[(models.Transcode, Future[Boolean])] =
+    models.Transcode.createJob(asset, segment, options).map(tc => (tc, run(tc)))
 
   def stop(id : models.Transcode.Id) : Future[Option[models.Transcode]] =
     implicitly[Site.DB].inTransaction { implicit siteDB =>
