@@ -17,14 +17,8 @@ private[controllers] sealed class SlotAssetController extends ObjectController[S
 }
 
 object SlotAssetController extends SlotAssetController {
-  private[this] def backed(implicit request : Request[_]) : SlotFileAsset = request.obj match {
-    case a : SlotFileAsset => a
-    case _ => throw NotFoundException
-  }
-
-  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] = {
-    val a = backed
-    val s = a match {
+  private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] =
+    (request.obj match {
       case ts : SlotTimeseriesAsset =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
@@ -34,22 +28,25 @@ object SlotAssetController extends SlotAssetController {
         if (!offset.fold(_ => true, _ == Offset.ZERO))
           throw NotFoundException
         a
+    }) match {
+      case s : BackedAsset if s.format.isImage =>
+        AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
+      case a : SlotAsset =>
+        async(Found("/public/images/filetype/16px/" + a.asset.format.extension.getOrElse("_blank") + ".png")
+          .withHeaders(CACHE_CONTROL -> "max-age=31556926"))
     }
-    if (s.format.isImage)
-      AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
-    else
-      async(Found("/public/images/filetype/16px/" + a.format.extension.getOrElse("_blank") + ".png")
-        .withHeaders(CACHE_CONTROL -> "max-age=31556926"))
-  }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
     Action(s, segment, o, Permission.READ).async { implicit request =>
-      val a = backed
-      (if (inline) macros.async(None) else for {
-        _ <- a.auditDownload
-        name <- a.fileName
-      } yield (Some(name)))
-      .flatMap(AssetController.assetResult(a, None, _))
+      request.obj match {
+        case a : BackedAsset =>
+          (if (inline) macros.async(None) else for {
+            _ <- a.auditDownload
+            name <- a.fileName
+          } yield (Some(name)))
+          .flatMap(AssetController.assetResult(a, None, _))
+        case _ => NotFoundException.result
+      }
     }
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset, size : Int = AssetController.defaultThumbSize) =

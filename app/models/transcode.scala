@@ -83,13 +83,13 @@ object Transcode extends TableId[Asset]("transcode") {
 
   def createJob(orig : FileAsset, segment : Segment, options : IndexedSeq[String])(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
     for {
-      asset <- Asset.createPending(orig.volume, AssetFormat.Video, orig.classification, orig.name)
+      asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.classification, orig.name)
       tc = new TranscodeJob(asset, site.identity, orig, segment, options)
       _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
       _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, COALESCE(lower(segment) + ?, upper(segment))) WHERE asset = ?")
         .apply(asset.id, tc.start, segment.upperBound, orig.id).execute
     } yield tc
 
-  def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = IndexedSeq.empty[String])(implicit site : Site) =
+  def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = store.Transcode.defaultOptions)(implicit site : Site) =
     new Transcode(site.identity, orig, segment, options)
 }

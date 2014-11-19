@@ -1,9 +1,8 @@
 package store
 
 import java.io.File
-import play.api.libs.Files
 
-final class TemporaryFileLinkOrCopy(file : File) extends Files.TemporaryFile(file) {
+final class TemporaryFileLinkOrCopy(file : File) extends play.api.libs.Files.TemporaryFile(file) {
   override def clean() : Boolean = false
   private[this] def linkTo(to : File) {
     java.nio.file.Files.createLink(to.toPath, file.toPath)
@@ -18,7 +17,10 @@ final class TemporaryFileLinkOrCopy(file : File) extends Files.TemporaryFile(fil
     try {
       linkTo(to)
     } catch {
-      case _ : UnsupportedOperationException => copyTo(to, replace)
+      case _ : UnsupportedOperationException =>
+        copyTo(to, replace)
+      case e : java.nio.file.FileSystemException if e.getReason.equals("Invalid cross-device link") =>
+        copyTo(to, replace)
     }
   }
 }

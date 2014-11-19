@@ -171,7 +171,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       val classification = (jc \ "classification").as[models.Classification.Value]
       val info = Asset.fileInfo(file)
       override val clip = (jc \ "clip").asOpt[Segment].getOrElse(Segment.full)
-      override val options = (jc \ "options").asOpt[IndexedSeq[String]].getOrElse(IndexedSeq.empty)
+      override val options = (jc \ "options").asOpt[IndexedSeq[String]].getOrElse(store.Transcode.defaultOptions)
     }
   }
 
@@ -213,7 +213,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
             case json.JsString("auto") => Segment.singleton(off)
             case _ => pos.as[Segment]
           }
-          _ <- a.link(c, seg)
+          _ <- when(ai.created, a.link(c, seg).map(_ => ()))
         } yield (off + ai.duration)
       }
     } yield (c)

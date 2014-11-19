@@ -29,7 +29,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     case f : FileAsset =>
       f.slot.map { sa =>
         sa.flatMap(_.segment.zip((l, u) => u - l)) orElse {
-          if (f.format.isTranscodable)
+          if (f.format.isTranscodable.nonEmpty)
             scala.util.control.Exception.catching(classOf[media.AV.Error]).opt(
               media.AV.probe(store.FileAsset.file(f)).duration)
           else
@@ -109,14 +109,14 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
         case fmt : TimeseriesFormat if adm && form.timeseries.get =>
           models.TimeseriesAsset.create(form.volume, fmt, classification, name, file)
         case fmt =>
-          if (fmt.isTranscodable) try {
+          if (fmt.isTranscodable.nonEmpty) try {
             media.AV.probe(file.file)
           } catch { case e : media.AV.Error =>
             form.file.withError("file.invalid", e.getMessage)._throw
           }
           models.FileAsset.create(form.volume, fmt, classification, name, file)
       }
-      _ = if (asset.format.isTranscodable && !form.timeseries.get && store.Transcode.enabled)
+      _ = if (asset.format.isTranscodable.nonEmpty && !form.timeseries.get && store.Transcode.enabled)
         store.Transcode.start(asset)
     } yield (asset)
   }

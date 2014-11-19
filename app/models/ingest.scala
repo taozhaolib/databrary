@@ -28,6 +28,6 @@ object Ingest {
     .apply(path).singleOpt
 
   def setAsset(asset : Asset, path : String)(implicit dbc : site.Site.DB, exc : ExecutionContext) : Future[Boolean] =
-    SQL("INSERT INTO ingest.asset (id, path) VALUES (?, ?)")
+    SQL("INSERT INTO ingest.asset (id, file) VALUES (?, ?)")
     .apply(asset.id, path).execute
 }
