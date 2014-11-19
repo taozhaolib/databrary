@@ -1,10 +1,4 @@
 <ng-form name="partyEditProfileForm">
-  <fieldset class="clean pep-float">
-    <div class="pep-float-floater">
-      <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
-      <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
-    </div>
-  </fieldset>
   <fieldset>
     <legend message="party.edit.personal"></legend>
     <validator name="name" label="party.edit.name.title">
@@ -38,4 +32,9 @@
     </div>
 
   </fieldset>
+  <fieldset class="skinny">
+    <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
+    <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
+  </fieldset>
+
 </ng-form>

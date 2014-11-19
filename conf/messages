@@ -636,7 +636,7 @@ wizard.volume-edit-links.instructions=List any external resources or references 
 
 wizard.volume-edit-funding.name=Funding
 wizard.volume-edit-funding.description=Specify funding sources.
-wizard.volume-edit-funding.instructions=Sources of funding that supported this research.
+wizard.volume-edit-funding.instructions=Add or manage sources of funding that supported this research here.
 
 wizard.volume-edit-access.name=Access
 wizard.volume-edit-access.description=Set access and sharing levels.

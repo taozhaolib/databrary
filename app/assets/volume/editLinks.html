@@ -1,13 +1,7 @@
 <ng-form name="volumeEditLinksForm">
-  <fieldset class="clean ver-float">
-    <div class="ver-float-floater">
-      <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
-      <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
-    </div>
-  </fieldset>
   <div class="link-label">
     <label class="col-desktop-7 col-tablet-4" message="link.head.title"></label>
-    <label class="col-desktop-7 col-tablet-4" message="link.url.title"></label>
+    <label class="col-desktop-8 col-tablet-5" message="link.url.title"></label>
   </div>
   <fieldset class="link-field clean skinny" ng-repeat="link in volumeEditLinksForm.data" ng-show="!link.removed">
     <validator class="col-desktop-7 col-tablet-4 col-mobile-6" name="links[{{$index}}].head">
@@ -17,5 +11,9 @@
       <input type="text" name="links[{{$index}}].url" ng-model="link.url" placeholder="{{::'link.url' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//" ng-change="volumeEditLinksForm.change()">
     </validator>
     <button class="mini" ng-if="$index < volumeEditLinksForm.data.length-1" ng-click="volumeEditLinksForm.remove(link)"><span class="icon trash"></button>
+  </fieldset>
+  <fieldset>
+      <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
+      <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
   </fieldset>
 </ng-form>

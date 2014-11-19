@@ -1,6 +1,6 @@
 <ng-form name="authGrantForm" class="auth-grant-form">
-  <fieldset class="clean radio-set">
-    <legend ng-bind="'auth.site' | possessive:party"></legend>
+  <fieldset class="skinny clean radio-set">
+    <div class="permission-auth-heading" ng-bind="'auth.site' | possessive:party"></div>
 
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="::canGrantSite(val)">
       <input type="radio" ng-model="authGrantForm.data.site" name="auth-{{auth.party.id}}-site" ng-value="val" ng-selected="val == authGrantForm.data.site">
@@ -11,8 +11,8 @@
     </div>
   </fieldset>
 
-  <fieldset class="clean radio-set">
-    <legend ng-bind="'auth.member' | possessive:party"></legend>
+  <fieldset class="skinny clean radio-set">
+    <div class="permission-auth-heading" ng-bind="'auth.member' | possessive:party"></div>
 
     <div ng-repeat="(val, name) in page.constants.permission" ng-if="::canGrantMember(val)">
       <input type="radio" ng-model="authGrantForm.data.member" name="auth-{{auth.party.id}}-member" ng-value="val" ng-selected="val == authGrantForm.data.member">

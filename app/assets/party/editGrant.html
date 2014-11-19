@@ -1,9 +1,7 @@
 <ng-form name="partyEditGrantForm">
-  <fieldset class="clean peg-float">
+  <fieldset class="clean skinny peg-float">
     <div class="peg-float-floater row">
-      <auth-search-form principal="child" placeholder-text="{{::'auth.search.grant.legend' | message}}" class="col-desktop-8 col-tablet-3 col-mobile-2"></auth-search-form>
-      <button ng-click="partyEditGrantForm.saveAll()" class="green" message="save" ng-disabled="partyEditGrantForm.$pristine" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
-      <button ng-click="partyEditGrantForm.resetAll()" class="yellow" message="revert" ng-disabled="partyEditGrantForm.$pristine"class=" col-desktop-1 col-tablet-1 col-mobile-1"></button>
+      <auth-search-form principal="child" placeholder-text="{{::'auth.search.grant.legend' | message}}" class="col-desktop-9 col-tablet-7 col-mobile-6"></auth-search-form>
     </div>
   </fieldset>
   <fieldset ng-show="partyEditGrantForm.data.length > 0">
@@ -32,5 +30,8 @@
       </div>
     </article>
   </fieldset>
-
+  <fieldset class="skinny">
+    <button ng-click="partyEditGrantForm.saveAll()" class="green" message="save" ng-disabled="partyEditGrantForm.$pristine" class="col-desktop-1 col-tablet-1 col-mobile-1"></button>
+    <button ng-click="partyEditGrantForm.resetAll()" class="yellow" message="revert" ng-disabled="partyEditGrantForm.$pristine"class=" col-desktop-1 col-tablet-1 col-mobile-1"></button>
+  </fieldset
 </ng-form>

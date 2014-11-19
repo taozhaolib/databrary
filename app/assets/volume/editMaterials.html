@@ -8,9 +8,6 @@
         <span class="icon line add"></span>
         <span class="vem-float-dropzone-message" message="asset.add-drop"></span>
       </div>
-
-      <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" message="save" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
-      <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" message="revert" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
     </div>
   </section>
 
@@ -58,5 +55,9 @@
         <input type="text" name="name" ng-model="material.data.name" placeholder="{{::'asset.name.placeholder' | message}}">
       </validator>
     </div>
+  </fieldset>
+  <fieldset>
+    <button class="green" ng-click="volumeEditMaterialsForm.saveAll()" message="save" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
+    <button class="yellow" ng-click="volumeEditMaterialsForm.resetAll()" message="revert" ng-disabled="volumeEditMaterialsForm.$pristine"></button>
   </fieldset>
 </ng-form>
