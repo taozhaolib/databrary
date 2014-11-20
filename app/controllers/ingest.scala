@@ -125,8 +125,8 @@ object IngestController extends SiteController with HtmlController {
       (if (form.run.get)
         in.run()
       else
-        async.void)
-      .map(r => Ok(views.html.ingest.json(form, r.toString)))
+        async(Nil))
+      .map(r => Ok(views.html.ingest.json(form, "done", r)))
     }.recover { case e : IngestException =>
       BadRequest(views.html.ingest.json(form, e.getMessage, e.target))
     }
