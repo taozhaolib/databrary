@@ -3,6 +3,12 @@
 # This is run directly from the application, on the webserver.
 # It calls tools/transcode on transcode.host, which must be in the path.
 
+escape() {
+	for a in "$@" ; do
+		echo \'${a//\'/\'\\\'\'}\'
+	done
+}
+
 cmd=`dirname $0`/transcode
 chmod +x "$cmd"
 
@@ -51,7 +57,7 @@ elif [[ -n $host ]] ; then
 	if [[ -z $kill ]] ; then
 		rsync "$src" "$host:$dir/$id"
 	fi
-	ssh "$host" "$cmd" "$@" | sed 's/^\([0-9]\+\)\.[.a-z0-9-]*$/\1/'
+	ssh "$host" "$cmd" `escape "$@"` | sed 's/^\([0-9]\+\)\.[.a-z0-9-]*$/\1/'
 elif [[ -n $kill ]] ; then
 	"$cmd" "$@"
 else

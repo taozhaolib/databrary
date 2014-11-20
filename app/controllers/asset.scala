@@ -116,9 +116,11 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           }
           models.FileAsset.create(form.volume, fmt, classification, name, file)
       }
-      _ = if (asset.format.isTranscodable.nonEmpty && !form.timeseries.get && store.Transcode.enabled)
-        store.Transcode.start(asset)
-    } yield (asset)
+      asset <- if (asset.format.isTranscodable.nonEmpty && !form.timeseries.get && store.Transcode.enabled)
+          store.Transcode.start(asset).map(_._1.asset)
+        else
+          async(asset)
+    } yield asset
   }
 
   def upload(v : models.Volume.Id) =
@@ -311,7 +313,9 @@ object AssetHtml extends AssetController with HtmlController {
       getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
         val form = new TranscodeForm(t)._bind
         if (t.fake)
-          store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).map(Some(_))
+          store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).flatMap { case (tc, run) =>
+            run.map(_ => Some(tc))
+          }
         else if (form.stop.get)
           store.Transcode.stop(t.id)
         else
