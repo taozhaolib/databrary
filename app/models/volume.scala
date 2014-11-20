@@ -102,11 +102,10 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
       owns <- partyAccess(Permission.ADMIN)
       own = owns.headOption.map(_.party.name).map(last _)
       cite <- citation
-      auth = cite.flatMap(_.authors).flatMap(_.headOption).map(last _).filterNot(a => own.exists(_.equals(a)))
       nme = store.truncate(alias.getOrElse(name))
     } yield {
       store.fileName(Seq("databrary" + id) ++
-        own ++ auth ++ cite.flatMap(_.year).map(_.toString) :+ nme : _*)
+        own ++ cite.flatMap(_.year).map(_.toString) :+ nme : _*)
     }
   }
 

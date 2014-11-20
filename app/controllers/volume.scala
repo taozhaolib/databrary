@@ -120,19 +120,18 @@ object VolumeController extends VolumeController {
   private val citationMapping = Forms.tuple(
       "head" -> Mappings.maybeText,
       "url" -> Forms.optional(Forms.of[URL]),
-      "authors" -> Forms.seq(Forms.nonEmptyText),
       "year" -> Forms.optional(Forms.number(1900, 2900))
     ).verifying("citation.invalid", _ match {
-      case (None, None, Nil, None) => true
-      case (Some(_), _, _, _) => true
-      case (None, Some(url), _, _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
+      case (None, None, None) => true
+      case (Some(_), _, _) => true
+      case (None, Some(url), _) if url.getProtocol.equals("hdl") || url.getProtocol.equals("doi") => true
       case _ => false
     }).transform[Option[Citation]]({
-      case (None, None, Nil, None) => None
-      case (head, url, authors, year) => Some(new Citation(head = head.getOrElse(""), url = url, authors = if (authors.nonEmpty) Some(authors.toIndexedSeq) else None, year = year.map(_.toShort)))
+      case (None, None, None) => None
+      case (head, url, year) => Some(new Citation(head = head.getOrElse(""), url = url, year = year.map(_.toShort)))
     }, {
-      case None => (None, None, Nil, None)
-      case Some(cite) => (Some(cite.head), cite.url, cite.authors.fold[Seq[String]](Nil)(_.toSeq), cite.year.map(_.toInt))
+      case None => (None, None, None)
+      case Some(cite) => (Some(cite.head), cite.url, cite.year.map(_.toInt))
     })
 
   trait VolumeForm extends FormView {

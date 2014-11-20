@@ -21,25 +21,23 @@ final class ExternalLink(val head : String, val url : URL)
   extends ExternalReference(head, Some(url))
 
 /** A citation or reference to a publication or other external resource. */
-final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val authors : Option[IndexedSeq[String]] = None, val year : Option[Short] = None)
+final case class Citation(val head : String, val title : Option[String] = None, val url : Option[URL] = None, val year : Option[Short] = None)
   extends ExternalReference(head, url) {
   def orElse(other : Citation) =
     new Citation(
       Maybe(head) orElse other.head,
       title orElse other.title,
       url orElse other.url,
-      authors orElse other.authors,
       year orElse other.year)
 
   def lookup(replace : Boolean = false) : Future[Citation] = 
-    if (!replace && head.nonEmpty && title.nonEmpty && authors.nonEmpty && year.nonEmpty)
+    if (!replace && head.nonEmpty && title.nonEmpty && year.nonEmpty)
       async(this)
     else
       url.fold(async(this))(Citation.get(_).map(_.fold(this)(if (replace) _ orElse this else this orElse _)))
 
   override def json = super.json ++ JsonObject.flatten(
     Some('title -> title),
-    authors.map('authors -> _),
     year.map('year -> _)
   )
 }
@@ -75,18 +73,12 @@ object Citation {
       getHDLJson(url.getFile, style)
     else async(None)
 
-  private def name(j : json.JsObject) : String =
-    Seq("given", "non-dropping-particle", "family", "suffix")
-    .flatMap(j.\(_).asOpt[String])
-    .mkString(" ")
-
   def get(url : java.net.URL) : Future[Option[Citation]] =
     getURLJson(url).map(_.map { j =>
       new Citation(
         head = (j \ "head").asOpt[String].getOrElse(""),
         title = (j \ "title").asOpt[String],
         url = Some(url),
-        authors = (j \ "author").asOpt[IndexedSeq[json.JsObject]].map(_.map(name)),
         year = (j \ "issued" \ "date-parts")(0)(0).asOpt[Short])
     })
 }
@@ -123,10 +115,9 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
   private val columns = Columns(
       SelectColumn[String]("head")
     , SelectColumn[Option[URL]]("url")
-    , SelectColumn[Option[IndexedSeq[String]]]("authors")
     , SelectColumn[Option[Short]]("year")
-    ).map { (head, url, authors, year) =>
-      new Citation(head = head, url = url, authors = authors, year = year)
+    ).map { (head, url, year) =>
+      new Citation(head = head, url = url, year = year)
     }
 
   private[models] def get(vol : Volume) : Future[Option[Citation]] =
@@ -139,7 +130,7 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
     cite.fold {
       Audit.remove(table, SQLTerms('volume -> vol.id))
     } { cite =>
-      Audit.changeOrAdd(table, SQLTerms('head -> cite.head, 'url -> cite.url, 'authors -> cite.authors, 'year -> cite.year), SQLTerms('volume -> vol.id))
+      Audit.changeOrAdd(table, SQLTerms('head -> cite.head, 'url -> cite.url, 'year -> cite.year), SQLTerms('volume -> vol.id))
     }.execute
   }
 }

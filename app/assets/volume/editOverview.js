@@ -18,21 +18,15 @@ app.directive('volumeEditOverviewForm', [
             head: citation.head,
             title: citation.title,
             url: citation.url,
-            authors: citation.authors ? citation.authors.slice(0) : [],
           },
           published: vol && vol.citation !== null
         };
-        form.data.citation.authors.push('');
       }
       init(volume);
 
       form.save = function () {
-        if (form.data.published)
-          form.data.citation.authors = form.data.citation.authors
-            .filter(function (author) {
-              return author;
-            });
-        else form.data.citation = {head:''};
+        if (!form.data.published)
+          form.data.citation = {head:''};
 
         (volume ?
           volume.save(form.data) :
@@ -67,10 +61,6 @@ app.directive('volumeEditOverviewForm', [
           .then(function (res) {
             form.data.name = res.title;
             form.data.citation = res;
-            if (form.data.citation.authors)
-              form.data.citation.authors.push('');
-            else
-              form.data.citation.authors = [''];
             delete res.title;
 
             form.$setDirty();
@@ -87,16 +77,6 @@ app.directive('volumeEditOverviewForm', [
               body: page.constants.message('volume.edit.autodoi.citation.error'),
             });
           });
-      };
-
-      form.authorChange = function () {
-        if (form.data.citation.authors[form.data.citation.authors.length-1] !== '')
-          form.data.citation.authors.push('');
-      };
-
-      form.authorRemove = function (i) {
-        form.data.citation.authors[i] = i === form.data.citation.authors.length-1 ? '' : null;
-        form.$setDirty();
       };
 
       var validate = {};

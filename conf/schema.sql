@@ -260,10 +260,8 @@ CREATE TABLE "volume_citation" (
 	"volume" integer NOT NULL Unique References "volume",
 	"head" text NOT NULL,
 	"url" text,
-	"authors" text[],
 	"year" smallint Check ("year" BETWEEN 1900 AND 2900)
 ); -- INHERITS ("volume_link");
-ALTER TABLE "volume_citation" ALTER "url" DROP NOT NULL;
 COMMENT ON TABLE "volume_citation" IS 'Publications/products corresponding to study volumes.';
 
 SELECT audit.CREATE_TABLE ('volume_citation');
@@ -873,7 +871,6 @@ CREATE VIEW "volume_text" ("volume", "text") AS
 	UNION ALL SELECT id, body FROM volume WHERE body IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
 	UNION ALL SELECT volume, head FROM volume_citation
-	UNION ALL SELECT volume, unnest(authors) FROM volume_citation
 	UNION ALL SELECT volume, year::text FROM volume_citation WHERE year IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
 	UNION ALL SELECT volume, name FROM container WHERE name IS NOT NULL
@@ -911,7 +908,7 @@ BEGIN
 	RETURN null;
 END; $$;
 CREATE TRIGGER "volume_changed_text" AFTER INSERT OR UPDATE OF "name", "body" ON "volume" FOR EACH ROW EXECUTE PROCEDURE "volume_text_changed" ();
-CREATE TRIGGER "volume_citation_changed_text" AFTER INSERT OR UPDATE OF "head", "authors" ON "volume_citation" FOR EACH ROW EXECUTE PROCEDURE "volume_text_changed" ();
+CREATE TRIGGER "volume_citation_changed_text" AFTER INSERT OR UPDATE OF "head", "year" ON "volume_citation" FOR EACH ROW EXECUTE PROCEDURE "volume_text_changed" ();
 
 ----------------------------------------------------------- analytics
 
