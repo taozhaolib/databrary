@@ -300,7 +300,7 @@ object AssetHtml extends AssetController with HtmlController {
     })
 
   private def transcoding_(id : Option[Asset.Id]) =
-    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+    SiteAction.rootMember().async { implicit request =>
       id.fold[Future[Iterable[Transcode]]](Transcode.getActive)(getTranscode(_).map(_.toIterable))
       .map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
     }
@@ -309,7 +309,7 @@ object AssetHtml extends AssetController with HtmlController {
   def transcoding(id : Asset.Id) = transcoding_(Some(id))
 
   def transcode(id : Asset.Id) =
-    SiteAction.rootAccess(Permission.ADMIN).async { implicit request =>
+    SiteAction.rootMember().async { implicit request =>
       getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
         val form = new TranscodeForm(t)._bind
         if (t.fake)
