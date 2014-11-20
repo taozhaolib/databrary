@@ -15,7 +15,7 @@ object IngestController extends SiteController with HtmlController {
   private implicit val context : ExecutionContext = site.context.background
 
   private def Action(i : models.Volume.Id) =
-    SiteAction.rootAccess(Permission.ADMIN) andThen VolumeController.action(i, Permission.EDIT)
+    SiteAction.rootMember() andThen VolumeController.action(i, Permission.EDIT)
 
   trait CSVForm extends StructForm {
     protected def CSV[T <: FileMember[_]](f : T = File()) : T = f
