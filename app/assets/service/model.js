@@ -46,7 +46,7 @@ app.factory('modelService', [
     };
 
     function hasField(obj, opt) {
-      return obj && opt in obj && (typeof obj[opt] !== 'object' || !obj[opt]._PLACEHOLDER);
+      return obj && opt in obj && (!obj[opt] || typeof obj[opt] !== 'object' || !obj[opt]._PLACEHOLDER);
     }
 
     /* determine whether the given object satisfies all the given dependency options already.
