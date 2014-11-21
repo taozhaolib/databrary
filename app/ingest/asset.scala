@@ -23,14 +23,6 @@ trait Asset {
         val n = Maybe(name).opt
         created = true
         info match {
-          case Asset.TimeseriesInfo(_, fmt, _, orig) =>
-            for {
-              o <- populate(volume, orig)
-              a <- models.TimeseriesAsset.create(volume, fmt, classification, n, infile)
-              r <- models.Ingest.setAsset(a, info.ingestPath)
-              if r
-              _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).ensure
-            } yield a
           case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
             for {
               o <- models.FileAsset.create(volume, fmt, classification, n, infile)
@@ -52,12 +44,6 @@ trait Asset {
             PopulateException("inconsistent format for asset " + name + ": " + info.format.name + " <> " + asset.format.name, asset))
           _ <- check(asset.classification == classification,
             PopulateException("inconsistent classification for asset " + name + ": " + classification + " <> " + asset.classification, asset))
-          _ <- info match {
-            case ts : Asset.TimeseriesInfo =>
-              check(asset.asInstanceOf[TimeseriesAsset].duration.equals(ts.duration),
-                PopulateException("inconsistent duration for asset " + name + ": " + ts.duration + " <> " + asset.asInstanceOf[TimeseriesAsset].duration, asset))
-            case _ => async.void
-          }
           _ <- if (asset.name.isEmpty) asset.change(name = Some(Maybe(name).opt))
             else check(asset.name.equals(Maybe(name).opt),
               PopulateException("inconsistent name for asset " + asset.name + ": " + name, asset))
@@ -78,11 +64,10 @@ private[ingest] object Asset {
     def duration : Offset = Offset.ZERO
   }
   final case class TranscodableFileInfo(val file : File, val format : AssetFormat, val duration : Offset) extends Info
-  final case class TimeseriesInfo(val file : File, val format : TimeseriesFormat, val duration : Offset, original : Info) extends Info
 
   def fileInfo(file : File) : Info = {
     val fmt = AssetFormat.getFilename(file.getPath)
-      .getOrElse(Parse.fail("no file format found for " + file))
+      .getOrElse(throw new IngestException("no file format found for " + file))
     if (fmt.isTranscodable.nonEmpty)
       Asset.TranscodableFileInfo(file, fmt, media.AV.probe(file).duration)
     else

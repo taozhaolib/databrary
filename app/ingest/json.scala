@@ -118,7 +118,9 @@ private object Json {
     Future.failed(PopulateException(msg + " in " + jc.path.toString, target))
 }
 
-final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit request : controllers.SiteRequest[_]) extends Ingest {
+final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit request : controllers.SiteRequest[_]) {
+  private[this] implicit def context = site.context.background
+
   import Json._
   validate(data)
   private[this] val root = JsContext(json.__, data)
