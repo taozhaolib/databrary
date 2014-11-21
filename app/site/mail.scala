@@ -3,6 +3,7 @@ package site
 import scala.concurrent.Future
 import play.api.Play.current
 import play.api.i18n.Messages
+import macros.async._
 
 object Mail {
   private lazy val mailer = current.plugin[com.typesafe.plugin.MailerPlugin]
@@ -39,14 +40,13 @@ object Mail {
           (k, Seq(v))
         } :+ ("auth" -> Seq(new String(store.Hex(hmac.doFinal))))
     }.flatMap { args =>
-      val ws = play.api.libs.ws.WS.url("http://databrary.org/internal/investigator.cgi")
-        .post(args.toMap)
-      ws.onComplete {
+      play.api.libs.ws.WS.url("http://databrary.org/internal/investigator.cgi")
+      .post(args.toMap)
+      .whenComplete {
         case scala.util.Success(r) if r.status == 200 => ()
         case scala.util.Success(r) => play.api.Logger.error("investigator registration call failed: " + r.statusText + "\n" + r.body)
         case scala.util.Failure(e) => play.api.Logger.error("investigator registration call failed", e)
       }
-      ws
     }
   }
 }

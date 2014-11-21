@@ -12,7 +12,7 @@ trait Asset {
   def classification : Classification.Value
   def info : Asset.Info
   def clip : Segment = Segment.full
-  def options : IndexedSeq[String] = store.Transcode.defaultOptions
+  def options : IndexedSeq[String] = models.Transcode.defaultOptions
   def duration : Offset = (clip * Segment(Offset.ZERO, info.duration)).zip((l,u) => u-l).getOrElse(Offset.ZERO)
   var created : Boolean = false
 
@@ -29,17 +29,15 @@ trait Asset {
               a <- models.TimeseriesAsset.create(volume, fmt, classification, n, infile)
               r <- models.Ingest.setAsset(a, info.ingestPath)
               if r
-              r <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).execute
-              if r
+              _ <- SQL("INSERT INTO asset_revision VALUES (?, ?)").apply(o.id, a.id).ensure
             } yield a
           case Asset.TranscodableFileInfo(_, fmt, _) if store.Transcode.enabled =>
             for {
               o <- models.FileAsset.create(volume, fmt, classification, n, infile)
               r <- models.Ingest.setAsset(o, info.ingestPath)
               if r
-              (t, run) <- store.Transcode.start(o, clip, options)
-              r <- run
-              if r
+              t <- models.Transcode.create(o, clip, options)
+              _ <- t.start
             } yield t.asset
           case _ =>
             for {

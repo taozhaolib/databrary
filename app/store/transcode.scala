@@ -12,7 +12,7 @@ import dbrary._
 import site._
 
 object Transcode {
-  private implicit val context : ExecutionContext = site.context.background
+  private implicit def context : ExecutionContext = site.context.background
   private val logger = play.api.Logger("transcode")
   private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
   private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt).map { s =>
@@ -37,60 +37,30 @@ object Transcode {
       (host : Iterable[String]).flatMap(Seq("-h", _)))
   }
 
-  private def ctl(id : models.Transcode.Id, args : String*) : String = {
+  /* Despite the fact that this is a future, it's actually blocking in the background context. */
+  private def ctl(id : models.Transcode.Id, args : String*) : Future[String] = Future {
     val cmd = ctlCmd ++ Seq("-i", id.toString) ++ args
     logger.debug(cmd.mkString(" "))
     Process(cmd).!!(procLogger(id.toString)).trim // XXX blocking, should be futurable
   }
 
-  /* we use database transactions here to lock the transcode table */
-
-  private def run(tc : models.TranscodeJob)(implicit request : RequestHeader, siteDB : Site.DB) : Future[Boolean] = {
-    val pid = scala.util.control.Exception.catching(classOf[RuntimeException]).either {
-      val r = ctl(tc.id, tc.args : _*)
-      Maybe.toInt(r.trim).toRight("Unexpected transcode result: " + r)
-    }.left.map(_.toString).joinRight
-    logger.debug("running " + tc.id + ": " + pid.merge.toString)
-    tc.setStatus(pid)
-  }
-
-  val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
-
-  def start(asset : models.FileAsset, segment : Segment = dbrary.Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit request : controllers.SiteRequest[_]) : Future[(models.Transcode, Future[Boolean])] =
-    models.Transcode.createJob(asset, segment, options).map(tc => (tc, run(tc)))
-
-  def stop(id : models.Transcode.Id) : Future[Option[models.Transcode]] =
-    implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.getJob(id).mapAsync { tc =>
-      tc.process.foreachAsync({ pid =>
-        tc.setStatus(Left("aborted")).map { _ =>
-          ctl(tc.id, "-k", pid.toString)
-        }
-      }, tc)
-    }
+  def start(id : models.Transcode.Id, args : Seq[String]) : Future[Int] =
+    ctl(id, args : _*)
+    .map(_.toInt)
+    .whenComplete { r => 
+      logger.debug("running " + id + ": " + either(r).merge.toString)
     }
 
-  def restart(id : models.Transcode.Id)(implicit request : controllers.SiteRequest[_]) : Future[Option[models.Transcode]] =
-    implicitly[Site.DB].inTransaction { implicit siteDB =>
-      models.Transcode.getJob(id).flatMap(t => t.filter(_.process.isEmpty).foreachAsync(run, t))
-    }
+  def stop(id : models.Transcode.Id, pid : Int) : Future[String] =
+    ctl(id, "-k", pid.toString)
 
-  def collect(id : models.Transcode.Id, pid : Int, res : Int, sha1 : Array[Byte], log : String) : Future[Option[models.TimeseriesAsset]] =
-    implicitly[Site.DB].inTransaction { implicit siteDB =>
-    models.Transcode.getJob(id).flatMap(_.filter(_.process.exists(_ == pid)).mapAsync { tc =>
-      logger.debug("result " + tc.id + ": " + log)
-      val r = for {
-        _ <- tc.setStatus(Left(log))
-        _ = if (res != 0) scala.sys.error("exit " + res)
-        o = TemporaryFile(Upload.file(tc.id + ".mp4"))
-        _ = ctl(tc.id, "-c", o.file.getAbsolutePath)
-        r <- tc.complete(o, sha1)
-      } yield r
-      r.onFailure { case e : Throwable =>
+  def collect(id : models.Transcode.Id, res : Int, log : String) : Future[TemporaryFile] = {
+    logger.info("result " + id + (if (res != 0) " exit " + res else "") + ": " + log)
+    val o = TemporaryFile(Upload.file(id + ".mp4"))
+    if (res != 0) Future.failed(new RuntimeException("exit " + res))
+    else ctl(id, "-c", o.file.getAbsolutePath).map(_ => o)
+      .whenFailure { case e : Exception =>
         logger.error("collecting " + id, e)
-        tc.setStatus(Left(e.getMessage))
       }
-      r
-    })
-    }
+  }
 }

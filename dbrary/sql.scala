@@ -59,6 +59,7 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
   def flatMap[A](f : db.QueryResult => Future[A]) : Future[A] = result.flatMap(f)
   def rowsAffected : Future[Long] = map(_.rowsAffected)
   def execute : Future[Boolean] = map(_.rowsAffected > 0)
+  def ensure : Future[Unit] = map(r => if (r.rowsAffected > 0) () else fail(r, "no rows affected"))
 
   def as[A](parse : SQLRow[A]) : SQLRows[A] = new SQLRows[A](result, parse)
 

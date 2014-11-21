@@ -117,7 +117,9 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           models.FileAsset.create(form.volume, fmt, classification, name, file)
       }
       asset <- if (asset.format.isTranscodable.nonEmpty && !form.timeseries.get && store.Transcode.enabled)
-          store.Transcode.start(asset).map(_._1.asset)
+          Transcode.create(asset)
+            .whenSuccess(_.start)
+            .map(_.asset)
         else
           async(asset)
     } yield asset
@@ -310,17 +312,19 @@ object AssetHtml extends AssetController with HtmlController {
 
   def transcode(id : Asset.Id) =
     SiteAction.rootMember().async { implicit request =>
-      getTranscode(id).flatMap(_.fold[Future[Option[models.Transcode]]](throw NotFoundException) { t =>
-        val form = new TranscodeForm(t)._bind
-        if (t.fake)
-          store.Transcode.start(t.orig, Range(form.start.get, form.end.get)).flatMap { case (tc, run) =>
-            run.map(_ => Some(tc))
-          }
-        else if (form.stop.get)
-          store.Transcode.stop(t.id)
-        else
-          store.Transcode.restart(t.id)
-      }).map(t => Ok(views.html.asset.transcodes(t.map(new TranscodeForm(_)))))
+      for {
+        mt <- getTranscode(id)
+        t = mt.getOrElse(throw NotFoundException)
+        form = new TranscodeForm(t)._bind
+        t <- t match {
+          case t : TranscodeJob => async(t)
+          case t if !form.stop.get => Transcode.create(t.orig, Range(form.start.get, form.end.get))
+          case _ => throw NotFoundException
+        }
+        _ <-
+          if (form.stop.get) t.stop
+          else t.start
+      } yield Ok(views.html.asset.transcodes(Some(new TranscodeForm(t))))
     }
 
   def formats(js : Option[Boolean]) = SiteAction.js { implicit request =>
@@ -428,8 +432,10 @@ object AssetApi extends AssetController with ApiController {
       val form = new TranscodedForm(i)._bind
       if (!form.token.checkAuth(auth) || form.hasErrors)
         async(BadRequest("error"))
-      else
-        store.Transcode.collect(i, form.pid.get, form.res.get, form.sha1.get, form.log.get)
-          .map(_.fold[Result](NotFound)(_ => Ok("")))
+      else for {
+        tc <- models.Transcode.get(i)
+        job = tc.filter(_.process.exists(_ == form.pid.get)).getOrElse(throw NotFoundException)
+        a <- job.collect(form.res.get, form.sha1.get, form.log.get)
+      } yield (Ok(a.id.toString))
     }
 }

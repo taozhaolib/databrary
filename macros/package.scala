@@ -55,4 +55,9 @@ package object macros {
 
   def max[A](x : A, y : A)(implicit o : Ordering[A]) = o.max(x, y)
   def min[A](x : A, y : A)(implicit o : Ordering[A]) = o.min(x, y)
+
+  def either[A](a : scala.util.Try[A]) : Either[Throwable, A] = a match {
+    case scala.util.Success(a) => Right(a)
+    case scala.util.Failure(e) => Left(e)
+  }
 }
