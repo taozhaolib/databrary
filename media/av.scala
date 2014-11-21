@@ -13,7 +13,8 @@ object AV {
   /* These are referenced by native code so must match their use there */
   final class Error(val file : String, msg : String, val err : Int) extends RuntimeException(msg)
   final class Probe(val format : String, _duration : Double, val streams : Array[String]) {
-    def duration : Offset = Offset.ofSeconds(_duration)
+    def duration : Option[Offset] =
+      if (_duration > 0) Some(Offset.ofSeconds(_duration)) else None
 
     /** Test if this represents a video in primary format. */
     def isVideo : Boolean =

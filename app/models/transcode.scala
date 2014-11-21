@@ -58,14 +58,14 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
 
   private def complete(file : TemporaryFile, sha1 : Array[Byte]) : Future[TimeseriesAsset] = {
     val tp = media.AV.probe(file.file)
-    if (!tp.isVideo)
-      scala.sys.error("transcode check failed: " + id)
+    val duration = tp.duration.filter(_ => tp.isVideo)
+      .getOrElse(scala.sys.error("transcode check failed: " + id))
     for {
-      _ <- Audit.change("asset", SQLTerms('duration -> tp.duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
-      a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, tp.duration, asset.name, sha1)
+      _ <- Audit.change("asset", SQLTerms('duration -> duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
+      a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, duration, asset.name, sha1)
       _ = store.FileAsset.store(a, file)
       _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ?")
-        .apply(a.duration, a.id).execute
+        .apply(duration, id).execute
     } yield a
   }
 
@@ -109,9 +109,9 @@ object Transcode extends TableId[Asset]("transcode") {
 
   val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
 
-  def create(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
+  def create(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = defaultOptions, duration : Option[Offset] = None)(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
     for {
-      asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.classification, orig.name)
+      asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.classification, orig.name, duration)
       tc = new TranscodeJob(asset, site.identity, orig, segment, options)
       _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
       _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, COALESCE(lower(segment) + ?, upper(segment))) WHERE asset = ?")
