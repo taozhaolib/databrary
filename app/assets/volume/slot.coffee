@@ -137,12 +137,12 @@ app.controller('volume/slot', [
       $scope.playing = 0
       true
 
-    $scope.selectAll = (c) ->
+    $scope.selectAll = (event, c) ->
       range = c.segment
       $scope.selection = range
       if range && isFinite(range.l) && !range.contains($scope.position)
         seekOffset(range.l)
-      return
+      event.stopPropagation()
 
     $scope.select = (event, c) ->
       if !c || $scope.current == c
@@ -228,6 +228,15 @@ app.controller('volume/slot', [
 
     $scope.fileSuccess = Store.fileSuccess
     $scope.fileProgress = Store.fileProgress
+
+    fillExcerpts = ->
+      tracks = {}
+      for t in $scope.tracks when t.asset
+        t.excerpts = []
+        tracks[t.asset.id] = t
+      for e in slot.excerpts
+        t = tracks[e.id]
+        t.excerpts.push(e) if t
 
     videoEvents =
       pause: ->
@@ -399,6 +408,7 @@ app.controller('volume/slot', [
     $scope.tracks = (new Track(asset) for asset in slot.assets)
     addBlank() if editing
     sortTracks()
+    fillExcerpts()
 
     records = slot.records.map((r) -> new Record(r))
     placeRecords()

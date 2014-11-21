@@ -574,7 +574,7 @@ app.factory('modelService', [
         slot.records = rl;
       }
       if ('excerpts' in init)
-        slot.exceprts = slotAssetMakeArray(slot.container, init.excerpts);
+        slot.excerpts = slotAssetMakeArray(slot.container, init.excerpts);
     }
 
     Slot.prototype.init = function (init) {

@@ -313,7 +313,7 @@ app.provider('routerService', [
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-                  ['consents', 'records', 'assets' /*, 'tags', 'comments'*/]);
+                  ['consents', 'records', 'assets', 'excerpts' /*, 'tags', 'comments'*/]);
               });
           },
         ],
