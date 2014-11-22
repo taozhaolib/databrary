@@ -56,10 +56,11 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
       .flatMap(_ => store.Transcode.stop(id, pid))
     }
 
-  private def complete(file : TemporaryFile, sha1 : Array[Byte]) : Future[TimeseriesAsset] = {
+  private def complete(file : TemporaryFile, sha1o : Option[Array[Byte]]) : Future[TimeseriesAsset] = {
     val tp = media.AV.probe(file.file)
     val duration = tp.duration.filter(_ => tp.isVideo)
       .getOrElse(scala.sys.error("transcode check failed: " + id))
+    val sha1 = sha1o.getOrElse(store.SHA1(file.file))
     for {
       _ <- Audit.change("asset", SQLTerms('duration -> duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
       a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, duration, asset.name, sha1)
@@ -69,7 +70,7 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
     } yield a
   }
 
-  def collect(res : Int, sha1 : Array[Byte], log : String) : Future[TimeseriesAsset] =
+  def collect(res : Int, sha1 : Option[Array[Byte]], log : String) : Future[TimeseriesAsset] =
     (for {
       _ <- update(log = Some(log))
       file <- store.Transcode.collect(id, res, log)

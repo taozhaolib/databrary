@@ -412,7 +412,7 @@ object AssetApi extends AssetController with ApiController {
     } with StructForm(routes.AssetApi.transcoded(id, token.auth())) with NoCsrfForm {
     val pid = Field(Forms.number)
     val res = Field(Forms.number)
-    val sha1 = Field(Mappings.hash(store.SHA1, store.Hex))
+    val sha1 = Field(OptionMapping(Mappings.hash(store.SHA1, store.Hex)))
     val log = Field(Forms.text)
   }
 

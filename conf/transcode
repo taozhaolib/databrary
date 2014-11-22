@@ -78,4 +78,4 @@ else
 	sha1=`sha1sum "$OUT"`
 fi
 
-curl -sSk --data-urlencode "pid=$PID" --data-urlencode "res=$r" --data-urlencode "sha1=${sha1%% *}" --data-urlencode "log@$LOG" "$url"
+curl -sSk --data-urlencode "pid=$PID" --data-urlencode "res=$r" ${sha1:+--data-urlencode "sha1=${sha1%% *}"} --data-urlencode "log@$LOG" "$url"
