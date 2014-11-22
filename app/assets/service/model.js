@@ -888,6 +888,7 @@ app.factory('modelService', [
       classification: true,
       name: true,
       duration: true,
+      pending: true,
       // slot: false,
       creation: false,
     };
