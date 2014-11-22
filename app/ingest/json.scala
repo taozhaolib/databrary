@@ -92,7 +92,7 @@ private object Json {
     def reads(j : json.JsValue) = read.reads(j).map(new models.MeasureV[T](metric, _))
   }
 
-  private implicit object readOffset extends json.Reads[Option[Offset]] {
+  private implicit object readsOffset extends json.Reads[Option[Offset]] {
     def reads(j : json.JsValue) = j match {
       case json.JsNull => json.JsSuccess(None)
       case j => j.validate[Offset].map(Some(_))
@@ -101,14 +101,14 @@ private object Json {
 
   private implicit object readsSegment extends json.Reads[Segment] {
     private[this] def offset(o : json.JsValue) =
-      readOffset.reads(o).map(_.fold[Segment](Segment.full)(Segment.singleton(_)))
+      readsOffset.reads(o).map(_.fold[Segment](Segment.full)(Segment.singleton(_)))
     def reads(j : json.JsValue) = j match {
       case _ : json.JsUndefined => json.JsSuccess(Segment.full)
       case json.JsArray(Seq()) => json.JsSuccess(Segment.full)
       case json.JsArray(Seq(o)) => offset(o)
       case json.JsArray(Seq(l, u)) => for {
-          l <- readOffset.reads(l)
-          u <- readOffset.reads(u)
+          l <- readsOffset.reads(l)
+          u <- readsOffset.reads(u)
         } yield (Range(l, u))
       case o => offset(o)
     }
@@ -128,17 +128,19 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
   if (!directory.isDirectory)
     throw new IngestException("stage directory not found: " + directory)
 
-  private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
+  private[this] def update[A](target : site.SitePage, current : Option[A], jc : JsContext, change : Option[A => Future[Boolean]] = None)(implicit read : json.Reads[A]) : Future[Unit] =
     jc.asOpt[A](read).fold(void) { v =>
       if (current.exists(_.equals(v)))
         void
-      else if (current.isEmpty || overwrite)
-        change(v).flatMap { r =>
-          if (r) void else popErr(target, "update failed")(jc)
-        }
-      else
-        popErr(target, "conflicting value: " + v + " <> " + current.get)(jc)
+      else 
+        change.filter(_ => current.isEmpty || overwrite).fold[Future[Unit]](
+          popErr(target, "conflicting value: " + v + " <> " + current.get)(jc))(
+          _(v).flatMap { r =>
+            if (r) void else popErr(target, "update failed")(jc)
+          })
     }
+  private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
+    update[A](target, current, jc, Some(change))(read)
 
   private[this] def record(implicit jc : JsContext) : Future[models.Record] = {
     val key = (jc \ "key").as[String]
@@ -151,7 +153,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           _ <- models.Ingest.setRecord(r, key)
         } yield (r)
       } { r => for {
-          _ <- write(r, Some(r.category), jc \ "category")(_ => popErr(r, "can't change record category"))
+          _ <- update(r, Some(r.category), jc \ "category")
         } yield (r)
       }
 
@@ -164,16 +166,53 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
     } yield (r)
   }
 
-  private[this] def asset(implicit jc : JsContext) : Asset = {
-    val file = new java.io.File(directory, (jc \ "file").as[String])
+  private[this] def asset(implicit jc : JsContext) : Future[models.Asset] = {
+    val filename = (jc \ "file").as[String]
+    val file = new java.io.File(directory, filename)
     if (!file.isFile)
       throw new IngestException("file not found: " + file)
-    new Asset {
-      val name = (jc \ "name").asOpt[String].getOrElse("")
-      val classification = (jc \ "classification").as[models.Classification.Value]
-      val info = Asset.fileInfo(file)
-      override val clip = (jc \ "clip").asOpt[Segment].getOrElse(Segment.full)
-      override val options = (jc \ "options").asOpt[IndexedSeq[String]].getOrElse(models.Transcode.defaultOptions)
+    val fmt = models.AssetFormat.getFilename(filename)
+      .getOrElse(throw new IngestException("no file format found for " + filename))
+    val path = store.Stage.path(file)
+    val clip = (jc \ "clip").asOpt[Segment].getOrElse(Segment.full)
+    val options = (jc \ "options").asOpt[IndexedSeq[String]].getOrElse(models.Transcode.defaultOptions)
+
+    models.Ingest.getAsset(v, path).flatMap(_.fold {
+      /* for now copy and don't delete */
+      val infile = store.TemporaryFileLinkOrCopy(file)
+      for {
+        a <- models.FileAsset.create(v, fmt, (jc \ "classification").as[models.Classification.Value], (jc \ "name").asOpt[String], infile)
+        _ <- models.Ingest.setAsset(a, path)
+      } yield a
+    } {
+      case a : models.FileAsset =>
+        for {
+          _ <- update(a, Some(a.classification), jc \ "classification")
+          _ <- update(a, a.name, jc \ "name")
+        } yield a
+      case a =>
+        throw PopulateException("ingested asset incomplete", a)
+    }).flatMap { a =>
+      if (a.format.isTranscodable.isEmpty) {
+        if (!clip.isFull)
+          throw PopulateException("don't know how to clip", a)
+        async(a)
+      } else
+        models.Ingest.getAssetClip(a, clip).flatMap(_.fold {
+          val dur = (cast[models.TimeseriesAsset](a).map(_.duration)
+            .orElse(media.AV.probe(store.FileAsset.file(a)).duration)
+            .fold(Segment.full)(Segment(Offset.ZERO, _))
+            * clip).zip((l, u) => u-l)
+          for {
+            t <- models.Transcode.create(a, clip, options, dur)
+            _ <- t.start
+          } yield t.asset
+        } { a =>
+          for {
+            _ <- update(a, Some(a.classification), jc \ "classification")
+            _ <- update(a, a.name, jc \ "name")
+          } yield a
+        })
     }
   }
 
@@ -190,7 +229,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           _ <- models.Ingest.setContainer(c, key)
         } yield (c)
       } { c => for {
-          _ <- write(c, Some(c.top), jc \ "top")(_ => popErr(c, "can't change container top"))
+          _ <- update(c, Some(c.top), jc \ "top")
           _ <- write(c, c.name, jc \ "name")(x => c.change(name = Some(Some(x))))
           _ <- write(c, c.date, jc \ "date")(x => c.change(date = Some(Some(x))))
         } yield (c)
@@ -206,17 +245,17 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         } yield ()
       }
 
-      _ <- (jc \ "assets").children.foldLeftAsync(Offset.ZERO) { (off, jc) =>
-        val ai = asset(jc)
+      _ <- (jc \ "assets").children.foldLeftAsync(Offset.ZERO) { (off, ajc) =>
+        implicit val jc = ajc
         for {
-          a <- ai.populate(v)
+          a <- asset(jc)
           pos = jc \ "position"
-          seg = pos.data match {
-            case json.JsString("auto") => Segment.singleton(off)
-            case _ => pos.as[Segment]
-          }
-          _ <- when(ai.created, a.link(c, seg).map(_ => ()))
-        } yield (off + ai.duration)
+          l <- a.slot
+          _ <- write(a, l.map(_.segment), jc \ "position")(a.link(c, _).map(_ => true))(json.Reads {
+            case json.JsString("auto") => json.JsSuccess(Segment.singleton(off))
+            case j => readsSegment.reads(j)
+          }.map(s => s.singleton.fold(s)(o => Segment(o, o + a.duration))))
+        } yield (off + a.duration)
       }
     } yield (c)
   }
@@ -225,8 +264,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
     implicit val jc = root
     for {
       /* just to make sure it's the right volume: */
-      _ <- write(v, Some(v.name), jc \ "name")(x => /* v.change(name = Some(x)) */
-          popErr(v, "refusing to overwrite mismatching volume name"))
+      _ <- update(v, Some(v.name), jc \ "name")
       /* We don't actually ingest volume-level metadata through this interface:
       _ <- write(v, v.body, jc \ "body")(x => v.change(body = Some(Some(x))))
       _ <- write(v, v.alias, jc \ "alias")(x => v.change(alias = Some(Some(x))))

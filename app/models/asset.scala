@@ -24,7 +24,8 @@ sealed class AssetFormat private[models] (val id : AssetFormat.Id, val mimetype 
   final def isVideo = mimetype.startsWith("video/")
   final def isAudio = mimetype.startsWith("audio/")
   final def isTranscodable : Option[AssetFormat] =
-    if (isVideo) Some(AssetFormat.Video)
+    if (!store.Transcode.enabled) None
+    else if (isVideo) Some(AssetFormat.Video)
     else None
   
   def description = name
@@ -113,11 +114,12 @@ object AssetFormat extends TableId[AssetFormat]("format") {
       getFilename(file.filename)
 }
 
-sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String])
+sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format : AssetFormat, private[this] var classification_ : Classification.Value, private[this] var name_ : Option[String], _duration : Option[Offset])
   extends TableRowId[Asset] with InVolume with SiteObject {
   /** Title or name of the asset as used in the container. */
   def name : Option[String] = name_
   def classification : Classification.Value = classification_
+  def duration = _duration.getOrElse(Offset.ZERO)
 
   def creation : Future[(Option[Timestamp], Option[String])] =
     SQL("SELECT audit_time, name FROM audit.asset WHERE id = ? AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1")
@@ -135,10 +137,8 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
   def link(c : Container, segment : Segment = Segment.full) : Future[SlotAsset] =
-    for {
-      r <- Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> segment), SQLTerms('asset -> id)).execute
-      if r
-    } yield (SlotAsset.make(this, segment, c, None))
+    Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> segment), SQLTerms('asset -> id)).ensure
+    .map(_ => SlotAsset.make(this, segment, c, None))
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
@@ -204,8 +204,7 @@ trait TimeseriesData extends BackedAsset {
 
 /** File assets: objects within the system backed by primary file storage. */
 sealed class FileAsset private[models] (id : Asset.Id, volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte])
-  extends Asset(id, volume, format, classification_, name_) with BackedAsset {
-  def duration : Offset = Offset.ZERO
+  extends Asset(id, volume, format, classification_, name_, None) with BackedAsset {
   def source = this
   override def sourceId = id
 }
@@ -248,7 +247,7 @@ object Asset extends TableId[Asset]("asset") {
     , SelectColumn[Option[Array[Byte]]]("sha1")
     ).map { (id, format, classification, duration, name, sha1) =>
       sha1.fold(
-        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name))(
+        (volume : Volume) => new Asset(id, volume, AssetFormat.get(format).get, classification, name, duration))(
         sha1 => duration.fold(
           (volume : Volume) => new FileAsset(id, volume, AssetFormat.get(format).get, classification, name, sha1))(
           dur => (volume : Volume) => new TimeseriesAsset(id, volume, AssetFormat.getTimeseries(format).get, classification, dur, name, sha1)))
@@ -279,10 +278,10 @@ object Asset extends TableId[Asset]("asset") {
     .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ? AND asset.id = ?")
     .apply(a.id, o).singleOpt
 
-  private[models] def createPending(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String])(implicit site : Site) : Future[Asset] =
-    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name), "id")
+  private[models] def createPending(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], duration : Option[Offset] = None)(implicit site : Site) : Future[Asset] =
+    Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'duration -> duration), "id")
     .single(SQLCols[Id])
-    .map(new Asset(_, volume, format, classification, name))
+    .map(new Asset(_, volume, format, classification, name, duration))
 }
 
 object FileAsset extends TableId[Asset]("asset") {
@@ -314,11 +313,12 @@ object TimeseriesAsset extends TableId[Asset]("asset") {
     implicit val defaultContext = context.foreground
     for {
       probe <- Future(media.AV.probe(file.file))
+      duration = probe.duration.get
       sha1 <- Future(store.SHA1(file.file))
-      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> probe.duration, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
+      id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
         .single(SQLCols[Id])
     } yield {
-      val a = new TimeseriesAsset(id, volume, format, classification, probe.duration, name, sha1)
+      val a = new TimeseriesAsset(id, volume, format, classification, duration, name, sha1)
       store.FileAsset.store(a, file)
       a
     }

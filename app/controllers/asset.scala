@@ -25,17 +25,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     SiteAction andThen action(i, p)
 
   private[this] def duration(asset : Asset) : Future[Offset] = asset match {
-    case ts : TimeseriesAsset => async(ts.duration)
-    case f : FileAsset =>
-      f.slot.map { sa =>
-        sa.flatMap(_.segment.zip((l, u) => u - l)) orElse {
-          if (f.format.isTranscodable.nonEmpty)
-            scala.util.control.Exception.catching(classOf[media.AV.Error]).opt(
-              media.AV.probe(store.FileAsset.file(f)).duration)
-          else
-            None
-        } filter(_ > Offset.ZERO) getOrElse Offset.ZERO
-      }
+    case ts : TimeseriesAsset =>
+      async(ts.duration)
     case a =>
       a.slot.map { sa =>
         sa.flatMap(_.segment.zip((l, u) => u - l)) getOrElse Offset.ZERO
@@ -108,20 +99,19 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       asset <- fmt match {
         case fmt : TimeseriesFormat if adm && form.timeseries.get =>
           models.TimeseriesAsset.create(form.volume, fmt, classification, name, file)
-        case fmt =>
-          if (fmt.isTranscodable.nonEmpty) try {
+        case fmt if fmt.isTranscodable.nonEmpty =>
+          val av = try {
             media.AV.probe(file.file)
           } catch { case e : media.AV.Error =>
             form.file.withError("file.invalid", e.getMessage)._throw
           }
           models.FileAsset.create(form.volume, fmt, classification, name, file)
-      }
-      asset <- if (asset.format.isTranscodable.nonEmpty && !form.timeseries.get && store.Transcode.enabled)
-          Transcode.create(asset)
+          .flatMap(Transcode.create(_, duration = av.duration)
             .whenSuccess(_.start)
-            .map(_.asset)
-        else
-          async(asset)
+            .map(_.asset))
+        case fmt =>
+          models.FileAsset.create(form.volume, fmt, classification, name, file)
+      }
     } yield asset
   }
 
