@@ -4,7 +4,7 @@ app.directive('spreadsheet', [
   'pageService', '$compile', '$templateCache',
   function (page, $compile, $templateCache) {
     function maybeInt(s) {
-      var i = parseInt(s);
+      var i = parseInt(s, 10);
       return isNaN(i) ? s : i;
     }
     function byNumber(a,b) {
@@ -61,21 +61,21 @@ app.directive('spreadsheet', [
         return;
       var s = id.split('_');
       var info = { t: s[0] };
-      if (s.length > 1 && isNaN(info.i = parseInt(s[1])))
+      if (s.length > 1 && isNaN(info.i = parseInt(s[1], 10)))
         return;
       switch (info.t) {
         case 'rec':
           if (3 in s) {
-            info.n = parseInt(s[2]);
-            info.m = parseInt(s[3]);
+            info.n = parseInt(s[2], 10);
+            info.m = parseInt(s[3], 10);
           } else {
             info.n = 0;
-            info.m = parseInt(s[2]);
+            info.m = parseInt(s[2], 10);
           }
           break;
         case 'add':
         case 'more':
-          info.c = parseInt(s[2]);
+          info.c = parseInt(s[2], 10);
           break;
         case 'metric':
           info.m = info.i;
@@ -710,7 +710,7 @@ app.directive('spreadsheet', [
             value = undefined;
           else switch (type) {
             case 'consent':
-              value = parseInt(value);
+              value = parseInt(value, 10);
               break;
             case 'record':
               var v;
@@ -726,7 +726,7 @@ app.directive('spreadsheet', [
                   if (r)
                     saveMeasure(cell, r, m, v);
                 });
-              } else if (!isNaN(v = parseInt(value))) {
+              } else if (!isNaN(v = parseInt(value, 10))) {
                 if (v !== info.r)
                   setRecord(cell, info, volume.records[v]);
                 else

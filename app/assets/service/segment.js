@@ -13,15 +13,27 @@ app.factory('Segment', [
       } else if (Array.isArray(l)) {
         this.l = typeof l[0] === 'number' ? l[0] : -Infinity;
         this.u = typeof l[1] === 'number' ? l[1] : Infinity;
-      } else if (angular.isNumber(l)) {
+      } else if (typeof l === 'number') {
         this.l = l;
         this.u = l+0.1; // this is floored out later
-      } else if (l === null) {
+      } else if (l === null || l === '') {
         this.l = 0;
         this.u = 0;
-      } else if (l instanceof Object && 'l' in l && 'u' in l) {
+      } else if (typeof l === 'object' && 'l' in l && 'u' in l) {
         this.l = l.l;
         this.u = l.u;
+      } else if (typeof l === 'string') {
+        var i = l.indexOf(',');
+        if (i === -1) {
+          i = l.indexOf('-', 1);
+          if (i === -1) {
+            this.l = parseInt(l, 10);
+            this.u = this.l+0.1;
+            return;
+          }
+        }
+        this.l = parseInt(l.substr(0,i), 10);
+        this.u = parseInt(l.substr(i+1), 10);
       } else
         throw new Error('invalid Segment construction');
     }

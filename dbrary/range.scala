@@ -269,7 +269,7 @@ object Range {
             p += keys.upperClosed -> (s.last == ']').toString
             s = s.init
           }
-          val i = Maybe(s.indexOf(',')) orElse s.indexOf('-')
+          val i = Maybe(s.indexOf(',')) orElse s.indexOf('-', 1)
           if (i < 0)
             p += keys.singleton -> s
           else {

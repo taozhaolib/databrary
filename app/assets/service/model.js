@@ -669,7 +669,7 @@ app.factory('modelService', [
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
-      return containerPrepare(this, parseInt(container)).getSlot(segment, options);
+      return containerPrepare(this, parseInt(container, 10)).getSlot(segment, options);
     };
 
     Container.prototype.getSlot = function (segment, options) {

@@ -7,7 +7,7 @@ app.filter('truncate', [
         return text;
       }
 
-      max = parseInt(max);
+      max = parseInt(max, 10);
       if (isNaN(max))
         max = 10;
 
