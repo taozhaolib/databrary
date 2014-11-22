@@ -12,6 +12,12 @@ import macros._
  * Called "interval" in postgres and Duration in joda, offset is a better name for our purposes. */
 final case class Offset(millis : Long) extends scala.math.Ordered[Offset] {
   // def nanos = 1000000L*seconds
+  override def hashCode = millis.hashCode
+  override def equals(o : Any) = o match {
+    case Offset(m) => millis == m
+    case _ => false
+  }
+  def ==(o : Offset) = millis == o.millis
   def seconds : Double = millis/1000.0
   def samples(rate : Double) = math.round(rate*seconds)
   def +(other : Offset) = Offset(millis + other.millis)

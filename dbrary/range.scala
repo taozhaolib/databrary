@@ -108,6 +108,13 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
       else if (lowerClosed == lowerBound.isDefined && upperClosed == t.SomeOrdering.equiv(lowerBound, upperBound)) new NormalRange[A](lowerBound, upperBound)
       else self
     } (new SingletonRange[A](_))
+  final override def hashCode = if (isEmpty) 0 else (lowerBound, upperBound).hashCode
+  final def canEqual(o : Any) = o.isInstanceOf[Range[A]]
+  final override def equals(o : Any) = o match {
+    case r : Range[_] if r.isEmpty => r.canEqual(this) && isEmpty
+    case r : Range[_] => r.canEqual(this) && !isEmpty && lowerBound.equals(r.lowerBound) && upperBound.equals(r.upperBound)
+    case _ => false
+  }
   /** Contains relations, as in postgres. */
   final def @>(x : A) = isFull || !isEmpty &&
     lowerBound.forall(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
