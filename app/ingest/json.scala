@@ -193,7 +193,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       case a =>
         throw PopulateException("ingested asset incomplete", a)
     }).flatMap { a =>
-      if (a.format.isTranscodable.nonEmpty) {
+      if (a.format.isTranscodable.isEmpty) {
         if (!clip.isFull)
           throw PopulateException("don't know how to clip", a)
         async(a)
