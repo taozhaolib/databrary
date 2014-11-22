@@ -259,7 +259,7 @@ object Range {
         val p = Iterable.newBuilder[(String, String)]
         if (rs.equals("empty") || rs.isEmpty)
           p += keys.empty -> "true"
-        else {
+        else if (!(rs.equals("-") || rs.equals(","))) {
           var s = rs
           if (s.startsWith("[") || s.startsWith("(")) {
             p += keys.lowerClosed -> (s.head == '[').toString

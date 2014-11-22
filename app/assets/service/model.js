@@ -214,11 +214,9 @@ app.factory('modelService', [
         });
     };
 
-    Object.defineProperty(Party.prototype, 'route', {
-      get: function () {
-        return router.party([this.id]);
-      }
-    });
+    Party.prototype.route = function () {
+      return router.party([this.id]);
+    };
 
     Object.defineProperty(Party.prototype, 'lastName', {
       get: function () {
@@ -470,11 +468,9 @@ app.factory('modelService', [
       }
     });
 
-    Object.defineProperty(Volume.prototype, 'route', {
-      get: function () {
-        return router.volume([this.id]);
-      }
-    });
+    Volume.prototype.route = function () {
+      return router.volume([this.id]);
+    };
 
     Volume.prototype.editRoute = function (page) {
       var params = {};
@@ -769,11 +765,9 @@ app.factory('modelService', [
         });
     };
 
-    Object.defineProperty(Slot.prototype, 'route', {
-      get: function () {
-        return router.slot([this.volume.id, this.container.id, this.segment.format()]);
-      }
-    });
+    Slot.prototype.route = function (params) {
+      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
+    };
 
     Slot.prototype.editRoute = function () {
       return router.slotEdit([this.volume.id, this.container.id, this.segment.format()]);
@@ -861,11 +855,9 @@ app.factory('modelService', [
       }
     });
 
-    Object.defineProperty(Record.prototype, 'route', {
-      get: function () {
-        return router.record([this.id]);
-      }
-    });
+    Record.prototype.route = function () {
+      return router.record([this.id]);
+    };
 
     Record.prototype.editRoute = function () {
       return router.recordEdit([this.id]);
@@ -974,11 +966,10 @@ app.factory('modelService', [
       }
     });
 
-    Object.defineProperty(SlotAsset.prototype, 'route', {
-      get: function () {
-        return router.slot([this.volume.id, this.container.id, this.segment.format()], {asset:this.id});
-      }
-    });
+    SlotAsset.prototype.route = function (params) {
+      params.asset = this.id;
+      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
+    };
 
     Object.defineProperty(SlotAsset.prototype, 'icon', {
       get: function () {

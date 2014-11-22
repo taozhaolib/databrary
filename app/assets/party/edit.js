@@ -8,7 +8,7 @@ app.controller('party/edit', [
     page.display.toolbarLinks.push({
       type: 'yellow',
       html: page.constants.message('party.view'),
-      url: party.route,
+      url: party.route(),
     });
 
     $scope.registerStep = function (step) {

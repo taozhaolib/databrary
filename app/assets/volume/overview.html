@@ -101,7 +101,7 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in ::volume.consumers">
-                  <a ng-href="{{::ext.route}}"> <img src="/public/images/browser/icon-study.png">&nbsp;
+                  <a ng-href="{{::ext.route()}}"> <img src="/public/images/browser/icon-study.png">&nbsp;
                     <span ng-bind="::ext.name"></span>
                   </a>
                 </li>
@@ -113,7 +113,7 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in ::volume.providers">
-                  <a ng-href="{{::ext.route}}"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
+                  <a ng-href="{{::ext.route()}}"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
                     <span ng-bind="::ext.name"></span>
                   </a>
                 </li>

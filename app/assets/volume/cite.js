@@ -36,7 +36,7 @@ app.directive('citeVolume', [
 
       $scope.authors = authors;
       $scope.today = new Date();
-      $scope.permalink = page.router.permalink($scope.volume.route);
+      $scope.permalink = page.router.permalink($scope.volume.route());
     };
 
     return {

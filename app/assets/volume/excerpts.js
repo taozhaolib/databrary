@@ -20,8 +20,7 @@ app.controller('volume/excerpts', [
     };
 
     $scope.jumpLink = function (excerpt) {
-      /* maybe should be excerpt.inContext().route or something? */
-      return excerpt.route;
+      return excerpt.inContext().route({select:excerpt.segment.format()});
     };
   }
 ]);

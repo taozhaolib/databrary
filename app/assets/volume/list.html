@@ -7,13 +7,13 @@
       <article class="volume-list-result cf" ng-class="::{study: volume.citation, dataset: !volume.citation}">
         <h1>
           <span class="icon" ng-class="::{study: volume.citation, dataset: !volume.citation}" hint="object-{{volume.type}}"></span>
-          <a ng-href="{{::volume.route}}" ng-bind="::name(volume)"></a>
+          <a ng-href="{{::volume.route()}}" ng-bind="::name(volume)"></a>
         </h1>
 
         <div class="volume-list-investigators" ng-if="::volume.access && page.$location.path() !== '/profile'">
           <ul class="inline-block comma">
             <li ng-repeat="access in volume.access | filter:{individual: page.permission.ADMIN}">
-              <a ng-href="{{::access.party.route}}" ng-bind="::access.party.name"></a>
+              <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
             </li>
           </ul>
           <span class="year" ng-if="::volume.citation && volume.citation.year" ng-bind="::' (' + volume.citation.year + ')'"></span>

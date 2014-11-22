@@ -4,14 +4,14 @@
       <div class="col-desktop-6 col-tablet-6 col-mobile-6">
         <footer class="panel-comments-meta">
           <aside class="portrait ng-cloak">
-            <a ng-href="{{::comment.volume.route}}">
+            <a ng-href="{{::comment.volume.route()}}">
               <figure class="figure-avatar">
                 <img ng-src="{{::comment.volume.thumbRoute(56)}}">
               </figure>
             </a>
 
             <div>
-              <a class="portrait-name" ng-href="{{::comment.volume.route}}" ng-bind="::comment.volume.name"></a>
+              <a class="portrait-name" ng-href="{{::comment.volume.route()}}" ng-bind="::comment.volume.name"></a>
               <span class="portrait-extra">
                 <time datetime="comment.time | date:'yyyy-MM-dd HH:mm:ss Z'" pubdate ng-bind="::comment.time | date:'MMMM d, yyyy'"></time>
               </span>

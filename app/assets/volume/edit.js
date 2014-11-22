@@ -11,7 +11,7 @@ app.controller('volume/edit', [
       page.display.toolbarLinks.push({
         type: 'yellow',
         html: page.constants.message('volume.edit.exit'),
-        url: volume.route
+        url: volume.route()
       });
 
     $scope.registerStep = function (step) {

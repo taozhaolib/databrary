@@ -6,7 +6,7 @@
     <div class="row">
       <div class="col">
         <hgroup>
-          <a class="view-link" ng-href="{{::editing ? page.router.volumeSpreadsheet(volume.id) : volume.route}}" ng-bind="::volume.alias || volume.name"></a>
+          <a class="view-link" ng-href="{{::editing ? page.router.volumeSpreadsheet(volume.id) : volume.route()}}" ng-bind="::volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
             <span ng-bind="::slot.displayName"></span>
             <span ng-if="::slot.date" ng-bind="::' (' + slot.date + ')'"></span>

@@ -10,6 +10,8 @@ app.controller('volume/slot', [
     $scope.editing = editing
     $scope.mode = if editing then 'edit' else 'view'
     $scope.form = {}
+    target = $location.search()
+    $scope.selection = if 'select' of target then new Segment(target.select) else Segment.empty
 
     video = undefined
     blank = undefined
@@ -19,9 +21,10 @@ app.controller('volume/slot', [
         .search('asset', undefined)
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
+        .search('select', $scope.selection.format())
 
     if editing || slot.checkPermission(constants.permission.EDIT)
-      url = if editing then slot.route else slot.editRoute()
+      url = if editing then slot.route() else slot.editRoute()
       display.toolbarLinks.push
         type: 'yellow'
         html: constants.message(if editing then 'slot.view' else 'slot.edit')
@@ -118,9 +121,6 @@ app.controller('volume/slot', [
         else
           !a.asset - !b.asset || !a.file - !b.file
 
-    targetAsset = $location.search().asset
-    targetRecord = $location.search().record
-
     confirmDirty = ->
       not (editing && $scope.current && $scope.form.edit &&
         ($scope.current.dirty = $scope.form.edit.$dirty)) or
@@ -131,8 +131,8 @@ app.controller('volume/slot', [
 
       $scope.current = c
       searchLocation($location.replace())
-      targetAsset = undefined
-      targetRecord = undefined
+      delete target.asset
+      delete target.record
 
       $scope.playing = 0
       true
@@ -182,7 +182,7 @@ app.controller('volume/slot', [
         super asset
         return unless asset
         updateRange(@segment = new Segment(asset.segment))
-        select(this) if `asset.id == targetAsset`
+        select(this) if `asset.id == target.asset`
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
@@ -375,7 +375,7 @@ app.controller('volume/slot', [
           break unless o[0].record.category != r.record.category || o.some(overlaps)
         t[i] = [] unless i of t
         t[i].push(r)
-        select(r) if `r.id == targetRecord`
+        select(r) if `r.id == target.record`
       for r in t
         r.sort byPosition
       $scope.records = t
@@ -403,7 +403,6 @@ app.controller('volume/slot', [
     $scope.range = new Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
-    $scope.selection = Segment.empty
 
     $scope.tracks = (new Track(asset) for asset in slot.assets)
     addBlank() if editing
@@ -422,7 +421,7 @@ app.controller('volume/slot', [
         []
 
     $scope.playing = 0
-    $scope.position = undefined
+    $scope.position = $scope.selection.l if !$scope.selection.empty
 
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->
