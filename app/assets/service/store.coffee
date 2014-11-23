@@ -1,8 +1,8 @@
 'use strict'
 
 app.factory('Store', [
-  '$sce', 'constantService', 'routerService', '$filter', 'messageService', 'modelService', 'Offset',
-  ($sce, constants, router, $filter, messages, models, Offset) -> class Store
+  '$sce', 'constantService', 'routerService', 'messageService', 'modelService',
+  ($sce, constants, router, messages, models) -> class Store
     constructor: (@slot, asset) ->
       if asset
         @setAsset(asset)

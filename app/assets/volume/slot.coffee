@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$rootScope', '$location', '$q', '$filter', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $rootScope, $location, $q, $filter, constants, display, messages, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$rootScope', '$location', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $rootScope, $location, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
