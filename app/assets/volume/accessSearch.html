@@ -1,15 +1,5 @@
 <ng-form name="accessSearchForm">
-  <validator noclientval class="auth-search" name="name">
-    <input type="search" name="name" placeholder="{{accessSearchForm.placeholderText}}" ng-model="accessSearchForm.nameVal" ng-change="accessSearchForm.search()">
+  <validator name="name" noclientval>
+    <input-completer name="name" model="accessSearchForm.nameVal" completer="accessSearchForm.search($input)" placeholder="{{::accessSearchForm.placeholderText}}"></input-completer>
   </validator>
-
-  <ul ng-show="accessSearchForm.found.length > 0" class="flat auth-found-list">
-    <li ng-repeat="found in accessSearchForm.found">
-      <a href="" class="auth-found" ng-click="accessSearchForm.select(found)" ng-bind="found.name"></a>
-    </li>
-
-    <li>
-      <a href="" class="auth-found" ng-click="accessSearchForm.notFound()" message="access.notfound"></a>
-    </li>
-  </ul>
 </ng-form>

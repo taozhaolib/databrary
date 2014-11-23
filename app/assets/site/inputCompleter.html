@@ -1,0 +1,9 @@
+<div>
+  <input type="text" ng-model="model" ng-change="search(model)" ng-model-options="{debounce: 250}" placeholder="{{placeholder}}"/>
+  <ul ng-if="choices.length" class="flat input-completer-choices">
+    <li ng-repeat="c in choices" class="input-completer-choice">
+      <a ng-if="::c.select" href="" ng-click="choose(c)" ng-bind="::c.text"></a>
+      <span ng-if="::!c.select" ng-bind="::c.text"></span>
+    </li>
+  </ul>
+</div>

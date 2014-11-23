@@ -16,6 +16,10 @@ app.directive('toolbar', [
         page.$rootScope.$on('$locationChangeStart', function () {
           $scope.hoverUser = false;
         });
+        $scope.search = function () {
+          page.$location.path(page.router.search()).search($scope.search.data);
+        };
+        $scope.search.data = {};
       }
     };
   }

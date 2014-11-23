@@ -1,21 +1,5 @@
 <ng-form name="fundingSearchForm">
-  <validator noclientval class="auth-search" name="name">
-    <input type="search" name="name" ng-model="fundingSearchForm.nameVal" ng-change="fundingSearchForm.search()" placeholder="{{::'funding.search.placeholder' | message}}">
+  <validator name="name" noclientval>
+    <input-completer name="name" model="fundingSearchForm.nameVal" completer="fundingSearchForm.search($input)" placeholder="{{::'funding.search.placeholder' | message}}"></input-completer>
   </validator>
-
-  <ul ng-if="fundingSearchForm.nameVal.length >= 3" class="flat auth-found-list">
-    <li ng-repeat="found in fundingSearchForm.found">
-      <a href="" class="auth-found" ng-click="fundingSearchForm.select(found)" ng-bind="::found.name"></a>
-    </li>
-
-    <li ng-if="fundingSearchForm.sent === undefined">
-      <a href="" class="auth-found" message="search.active"></a>
-    </li>
-    <li ng-if="fundingSearchForm.sent === false">
-      <a href="" class="auth-found" ng-click="fundingSearchForm.notFound()" message="funding.search.more"></a>
-    </li>
-    <li ng-if="fundingSearchForm.sent && !fundingSearchForm.found.length">
-      <a href="" class="auth-found" message="search.none"></a>
-    </li>
-  </ul>
 </ng-form>

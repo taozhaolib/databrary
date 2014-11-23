@@ -15,7 +15,7 @@ app.directive('validator', [
 
       validator.name = form[$attrs.name];
       validator.noclientval = 'noclientval' in $attrs;
-      validator.$element = $element.find('[name="' + $attrs.name + '"]').first();
+      validator.$element = $element.find(':input[name="' + $attrs.name + '"]');
       validator.changed = false;
       validator.focus = false;
       validator.serverErrors = [];
@@ -27,9 +27,8 @@ app.directive('validator', [
       });
 
       var off = $scope.$lift(function () {
-        if (!validator.$element.is(":focus")) {
+        if (!validator.$element.is(":focus"))
           validator.focus = false;
-        }
       });
 
       validator.$element
