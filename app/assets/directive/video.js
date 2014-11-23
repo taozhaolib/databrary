@@ -1,14 +1,14 @@
 'use strict';
 
 app.directive('video', [
-  'pageService',
-  function (page) { return {
+  'Segment',
+  function (Segment) { return {
     restrict: 'E',
     require: '^?ngController',
     link: function ($scope, $element, $attr, view) {
       $element.on('loadedmetadata', function () {
         var seek = $scope.$eval($attr.seek), stop;
-        if (seek instanceof page.models.Segment) {
+        if (seek instanceof Segment) {
           stop = seek.u;
           seek = seek.l;
         }

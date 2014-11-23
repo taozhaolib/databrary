@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$rootScope', '$location', '$q', '$filter', 'constantService', 'displayService', 'messageService', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $rootScope, $location, $q, $filter, constants, display, messages, Segment, Store, slot, editing) ->
+  '$scope', '$rootScope', '$location', '$q', '$filter', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $rootScope, $location, $q, $filter, constants, display, messages, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -33,10 +33,6 @@ app.controller('volume/slot', [
 
     byId = (a, b) -> a.id - b.id
     byPosition = (a, b) -> a.segment.l - b.segment.l
-
-    timecodeFilter = $filter('timecode')
-    timecode = (p) ->
-      if isFinite(p) then timecodeFilter(p, true)
 
     updateRange = (segment) ->
       if isFinite(slot.segment.l)
@@ -218,7 +214,7 @@ app.controller('volume/slot', [
         @segment.u = pos + @segment.length
         @segment.l = pos
         if event.type != 'mousemove'
-          @data.position = timecode(pos)
+          @data.position = pos
           $scope.form.edit.$setDirty()
         return
 
@@ -284,9 +280,6 @@ app.controller('volume/slot', [
       fillData: ->
         @data =
           measures: angular.extend({}, @record.measures)
-          position:
-            lower: timecode(@segment.l)
-            upper: timecode(@segment.u)
 
       Object.defineProperty @prototype, 'id',
         get: -> @rec.id
@@ -328,7 +321,7 @@ app.controller('volume/slot', [
           saves.push @record.save({measures:@data.measures}).then () =>
             @form.measures.$setPristine()
         if @form.position.$dirty
-          saves.push slot.moveRecord(@rec, @rec.segment, @data.position).then (r) =>
+          saves.push slot.moveRecord(@rec, @rec.segment, @segment).then (r) =>
             @form.position.$setPristine()
             return unless r # nothing happened
             updateRange(@segment = new Segment(r.segment))
@@ -352,7 +345,6 @@ app.controller('volume/slot', [
         pos = positionOffset(event.clientX)
         @segment.l = pos ? -Infinity
         if event.type != 'mousemove'
-          @data.position.lower = timecode(pos)
           @form.position.$setDirty()
         return
 
@@ -360,7 +352,6 @@ app.controller('volume/slot', [
         pos = positionOffset(event.clientX)
         @segment.u = pos ? Infinity
         if event.type != 'mousemove'
-          @data.position.upper = timecode(pos)
           @form.position.$setDirty()
         return
 

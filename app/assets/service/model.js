@@ -1101,7 +1101,6 @@ app.factory('modelService', [
     /////////////////////////////////
 
     return {
-      Segment: Segment,
       Party: Party,
       Login: Login,
       Volume: Volume,

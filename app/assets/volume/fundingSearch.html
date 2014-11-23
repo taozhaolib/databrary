@@ -1,5 +1,5 @@
 <ng-form name="fundingSearchForm">
   <validator name="name" noclientval>
-    <input-completer name="name" model="fundingSearchForm.nameVal" completer="fundingSearchForm.search($input)" placeholder="{{::'funding.search.placeholder' | message}}"></input-completer>
+    <input-completer name="name" ng-model="fundingSearchForm.nameVal" completer="fundingSearchForm.search($input)" placeholder="{{::'funding.search.placeholder' | message}}"></input-completer>
   </validator>
 </ng-form>

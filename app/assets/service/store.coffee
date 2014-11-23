@@ -1,8 +1,8 @@
 'use strict'
 
 app.factory('Store', [
-  '$sce', 'constantService', 'routerService', '$filter', 'messageService', 'modelService',
-  ($sce, constants, router, $filter, messages, models) -> class Store
+  '$sce', 'constantService', 'routerService', '$filter', 'messageService', 'modelService', 'Offset',
+  ($sce, constants, router, $filter, messages, models, Offset) -> class Store
     constructor: (@slot, asset) ->
       if asset
         @setAsset(asset)
@@ -18,7 +18,7 @@ app.factory('Store', [
           name: @asset.name
           classification: @asset.classification+''
           container: @slot.id # required for position, which has the side-effect of restoring deleted/moved assets
-          position: if @asset.segment.lBounded then $filter('timecode')(@asset.segment.l, true)
+          position: @asset.segment.l
           excerptOn: @asset.excerpt?
           excerpt: (@asset.excerpt || 0)+''
         else

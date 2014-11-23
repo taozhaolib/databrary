@@ -6,7 +6,7 @@ app.directive 'inputCompleter', [
     restrict: 'E'
     templateUrl: 'site/inputCompleter.html'
     scope:
-      model: '='
+      value: '=ngModel'
       completer: '&'
       placeholder: '@'
     link: ($scope, $element, $attrs) ->
@@ -23,11 +23,11 @@ app.directive 'inputCompleter', [
           $scope.choices =
             if Array.isArray(r)
               if 'input' of r
-                $scope.model = r.input
+                $scope.value = r.input
                 delete r.input
               r
             else if r || r == ''
-              $scope.model = r
+              $scope.value = r
               []
             else [
               text: constants.message('search.none')

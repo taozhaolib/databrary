@@ -1,8 +1,8 @@
 'use strict';
 
 app.factory('Segment', [
-  'constantService',
-  function (constants) {
+  'constantService', 'Offset',
+  function (constants, Offset) {
     function Segment(l, u) {
       if (arguments.length >= 2) {
         this.l = l;
@@ -27,13 +27,13 @@ app.factory('Segment', [
         if (i === -1) {
           i = l.indexOf('-', 1);
           if (i === -1) {
-            this.l = parseInt(l, 10);
+            this.l = Offset.parse(l);
             this.u = this.l+0.1;
             return;
           }
         }
-        this.l = parseInt(l.substr(0,i), 10);
-        this.u = parseInt(l.substr(i+1), 10);
+        this.l = i === 0 ? -Infinity : Offset.parse(l.substr(0,i));
+        this.u = i === l.length-1 ? Infinity : Offset.parse(l.substr(i+1));
       } else
         throw new Error('invalid Segment construction');
     }
@@ -172,15 +172,13 @@ app.factory('Segment', [
     Segment.format = function (seg) {
       if (Segment.isFull(seg))
         return '-';
-      if (Array.isArray(seg))
-        return seg[0] + ',' + seg[1];
       if (Segment.isEmpty(seg))
         return 'empty';
       return seg.toString();
     };
 
     Segment.data = function (seg) {
-      if (angular.isObject(seg) && !(seg instanceof Segment) && !Array.isArray(seg))
+      if (seg instanceof Object && !(seg instanceof Segment) && !Array.isArray(seg))
         return seg;
       return Segment.format(seg);
     };
