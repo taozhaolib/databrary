@@ -45,8 +45,8 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           duration(asset).map(d => Segment(p, p + d)))
         .flatMap(asset.link(c, _))
       }
-      _ <- form.excerpt.get.foreachAsync(Excerpt.set(asset, Range.full, _).map(r =>
-          if (!r) form.excerpt.withError("error.conflict")._throw))
+      _ <- form.excerpt.get.foreachAsync(c => Excerpt.set(asset, Range.full, c).map(r =>
+          if (!r && c.nonEmpty) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
     } yield (sa.fold(result(asset))(SlotAssetController.result _))

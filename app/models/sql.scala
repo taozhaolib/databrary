@@ -59,8 +59,11 @@ object SQLException {
 }
 
 object SQLDuplicateKeyException {
-  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Boolean =
-    e.errorMessage.message.startsWith("duplicate key value violates unique constraint ")
+  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Boolean = {
+    val msg = e.errorMessage.message
+    msg.startsWith("duplicate key value violates unique constraint ") ||
+    msg.startsWith("conflicting key value violates exclusion constraint ")
+  }
 }
 
 object DBUtil {

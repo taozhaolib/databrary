@@ -42,7 +42,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     else
       Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
         .recover {
-          case SQLException(e) if e.startsWith("conflicting key value violates exclusion constraint ") => false
+          case SQLDuplicateKeyException() => false
         }
   }
 

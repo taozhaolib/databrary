@@ -206,14 +206,13 @@ object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
 
   def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
     implicit val site = asset.site
-    val key = SQLTerms('asset -> asset.id, 'segment -> segment)
+    val key = SQLTerms('asset -> asset.id)
     classification.fold {
-      Audit.remove("excerpt", key).execute.map(_ => true)
+      Audit.remove("excerpt", key :+ SQLTerm.eq("segment", "&&", segment))
     } { classification =>
-      Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key).execute
-        .recover {
-          case SQLException(e) if e.startsWith("conflicting key value violates exclusion constraint ") => false
-        }
+      Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key :+ ('segment -> segment))
+    }.execute.recover {
+      case SQLDuplicateKeyException() => false
     }
   }
 }

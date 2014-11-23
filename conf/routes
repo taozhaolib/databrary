@@ -195,6 +195,8 @@ DELETE  /api/asset/$aID<[0-9]+>                                                 
 #                                                                                                 TODO: GET     /api/slot/containerId<[0-9]+>/asset
 # GET       ?segment=
 GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+POST    /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.SlotAssetApi.setExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+DELETE  /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.SlotAssetApi.removeExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
 
 # ----- COMMENT ----- #
 # CREATE    ?container=ID;segment=
