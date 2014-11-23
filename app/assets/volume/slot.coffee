@@ -9,9 +9,12 @@ app.controller('volume/slot', [
     $scope.volume = slot.volume
     $scope.editing = editing
     $scope.mode = if editing then 'edit' else 'view'
-    $scope.form = {}
     target = $location.search()
-    $scope.selection = if 'select' of target then new Segment(target.select) else Segment.empty
+    $scope.form = {}
+    ruler = $scope.ruler =
+      range: new Segment(Infinity, -Infinity)
+      selection: if 'select' of target then new Segment(target.select) else Segment.empty
+      position: Offset.parse(target.pos)
 
     video = undefined
     blank = undefined
@@ -21,7 +24,7 @@ app.controller('volume/slot', [
         .search('asset', undefined)
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
-        .search('select', $scope.selection.format())
+        .search('select', ruler.selection.format())
 
     if editing || slot.checkPermission(constants.permission.EDIT)
       url = if editing then slot.route() else slot.editRoute()
@@ -36,25 +39,25 @@ app.controller('volume/slot', [
 
     updateRange = (segment) ->
       if isFinite(slot.segment.l)
-        $scope.range.l = slot.segment.l
-      else if isFinite(segment.l) && segment.l < $scope.range.l
-        $scope.range.l = segment.l
+        ruler.range.l = slot.segment.l
+      else if isFinite(segment.l) && segment.l < ruler.range.l
+        ruler.range.l = segment.l
       
       if isFinite(slot.segment.u)
-        $scope.range.u = slot.segment.u
-      else if isFinite(segment.u) && segment.u > $scope.range.u
-        $scope.range.u = segment.u
+        ruler.range.u = slot.segment.u
+      else if isFinite(segment.u) && segment.u > ruler.range.u
+        ruler.range.u = segment.u
 
     offsetPosition = (offset) ->
       return offset unless isFinite offset
-      (offset - $scope.range.base) / ($scope.range.u - $scope.range.l)
+      (offset - ruler.range.base) / (ruler.range.u - ruler.range.l)
 
     tl = document.getElementById('slot-timeline')
     positionOffset = (position) ->
       tlr = tl.getBoundingClientRect()
       p = (position - tlr.left) / tlr.width
       if p >= 0 && p <= 1
-        $scope.range.l + p * ($scope.range.u - $scope.range.l)
+        ruler.range.l + p * (ruler.range.u - ruler.range.l)
 
     $scope.positionStyle = (p) ->
       styles = {}
@@ -85,7 +88,7 @@ app.controller('volume/slot', [
     seekOffset = (o) ->
       if video && $scope.current?.asset?.segment.contains(o) && isFinite($scope.current.asset.segment.l)
         video[0].currentTime = (o - $scope.current.asset.segment.l) / 1000
-      $scope.position = o
+      ruler.position = o
 
     $scope.seekPosition = (pos) ->
       if o = positionOffset(pos)
@@ -135,8 +138,8 @@ app.controller('volume/slot', [
 
     $scope.selectAll = (event, c) ->
       range = c.segment
-      $scope.selection = range
-      if range && isFinite(range.l) && !range.contains($scope.position)
+      ruler.selection = range
+      if range && isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
       event.stopPropagation()
 
@@ -151,7 +154,7 @@ app.controller('volume/slot', [
 
       startPos = down.position ?= positionOffset(down.clientX)
       endPos = positionOffset(up.clientX)
-      $scope.selection =
+      ruler.selection =
         if startPos < endPos
           new Segment(startPos, endPos)
         else if startPos > endPos
@@ -243,10 +246,10 @@ app.controller('volume/slot', [
         $scope.playing = video[0].playbackRate
       timeupdate: ->
         if $scope.current?.asset && isFinite($scope.current.asset.segment.l)
-          $scope.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
-          if $scope.selection.uBounded && $scope.position >= $scope.selection.u
+          ruler.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
+          if ruler.selection.uBounded && ruler.position >= ruler.selection.u
             video[0].pause()
-            seekOffset($scope.selection.l) if $scope.selection.lBounded
+            seekOffset(ruler.selection.l) if ruler.selection.lBounded
       ended: ->
         $scope.playing = 0
         # look for something else to play?
@@ -262,7 +265,7 @@ app.controller('volume/slot', [
     @registerVideo = (v) ->
       this.deregisterVideo video if video
       video = v
-      seekOffset($scope.position)
+      seekOffset(ruler.position)
       v.on(videoEvents)
 
     class Record
@@ -391,7 +394,6 @@ app.controller('volume/slot', [
         cls.push('slot-consent-select') if $scope.current == this
         cls
 
-    $scope.range = new Segment(Infinity, -Infinity)
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
 
@@ -412,7 +414,6 @@ app.controller('volume/slot', [
         []
 
     $scope.playing = 0
-    $scope.position = $scope.selection.l if !$scope.selection.empty
 
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->

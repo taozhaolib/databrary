@@ -22,18 +22,18 @@
 
         <section id="slot-timeline" class="slot-timeline" mouse-drag-region>
           <div class="slot-timeline-now-zone">
-            <div class="slot-timeline-now" ng-if="position !== undefined" ng-style="positionStyle(position)"></div>
+            <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
           </div>
 
-          <div class="slot-timeline-selection" ng-if="!selection.empty">
-            <div class="selection" ng-style="positionStyle(selection)"></div>
+          <div class="slot-timeline-selection" ng-if="!ruler.selection.empty">
+            <div class="selection" ng-style="positionStyle(ruler.selection)"></div>
           </div>
 
-          <div class="slot-timeline-temporal" ng-if="!range.empty">
-            <span class="slot-timeline-time" ng-class="{'hide-eyes': position === undefined}" ng-bind="position | timecode:true"></span>
+          <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
+            <input input-position id="position-edit" class="slot-timeline-time position-input" type="text" size="10" ng-model="ruler.position" name="position"></input>
             <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
-              <div class="slot-timeline-ruler-time left" ng-bind="range.l | timecode"></div>
-              <div class="slot-timeline-ruler-time right" ng-bind="range.u | timecode"></div>
+              <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
+              <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>
             </div>
           </div>
 
