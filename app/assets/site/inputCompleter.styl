@@ -1,24 +1,25 @@
 .input-completer-choices
   background-color white
+  box-shadow b8 b8 b8 -b8 black
   border 1px black solid
   z-index 9
   max-height 200px
   overflow-y scroll
   position absolute
   width inherit
-  padding-right 1
+  padding-right 0
+  padding-left 0
 
 .input-completer-choice
-  margin-bottom f8
+  margin-bottom 0
+  transition none
 
   &:last-child
-    margin-bottom 0
+    a
+      border-bottom 0px
 
   a
-    border-left 1px solid gray
-    border-right 1px solid gray
     border-bottom 1px solid gray
-    border-top 1px solid pale
     display block
     padding f4 f2
 

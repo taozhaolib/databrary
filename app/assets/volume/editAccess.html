@@ -1,5 +1,5 @@
 <ng-form name="volumeEditAccessForm">
-  <fieldset class="clean radio-set volume-edit-access-radioset" ng-disabled="!page.models.Login.checkAccess(page.permission.EDIT)" ng-form="accessGlobalForm">
+  <fieldset class="radio-set volume-edit-access-radioset" ng-disabled="!page.models.Login.checkAccess(page.permission.EDIT)" ng-form="accessGlobalForm">
     <legend message="access.global.legend"></legend>
 
     <div class="col message message-yellow message-content" ng-if="::!page.models.Login.checkAccess(page.permission.EDIT)" message="access.global.restricted"></div>
@@ -10,16 +10,16 @@
     </div>
   </fieldset>
 
-  <fieldset class="clean vea-float">
-    <div class="vea-float-floater row">
-      <access-search-form class="col-desktop-8 col-tablet-4 col-mobile-2" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
-      <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
-      <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
-    </div>
-  </fieldset>
-
   <fieldset ng-show="volumeEditAccessForm.data.length > 0">
     <legend message="access.grant.legend"></legend>
+
+    <fieldset class="clean skinny vea-float">
+      <div class="vea-float-floater row">
+        <access-search-form class="col-desktop-8 col-tablet-4 col-mobile-2" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
+        <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
+        <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
+      </div>
+    </fieldset>
 
     <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" class="access-grant cf">
       <div class="row">
