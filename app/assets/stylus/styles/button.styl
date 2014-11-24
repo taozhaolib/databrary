@@ -10,6 +10,7 @@ button, .button
   color black
   margin-right f8
   button-color neutral
+  box-shadow 0 b8 b8 -b8 black
 
   &.red
     button-color red
@@ -30,11 +31,12 @@ button, .button
     button-color purple
 
   &:disabled, &.disabled
-    disabled-background = linear-gradient(top, mix(gray, white, 75%), mix(gray, white, 50%))
+    disabled-background = mix(gray, white, 75%)
     border 1px solid gray
     background disabled-background
     color mix(black, gray, 25%)
     cursor default
+    box-shadow none
 
     &:hover
       background disabled-background
