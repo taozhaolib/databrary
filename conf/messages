@@ -471,7 +471,7 @@ access.grant.remove.error=Could not remove access at this time.
 access.delete.self=You cannot remove your own access to a volume.
 access.grant.restricted=You are not authorized to share data with {0}.
 
-access.search.legend=Add another collaborator
+access.search.legend=Add new collaborator
 access.search=Search for a user, group, or institution...
 access.search.name.help=Enter the user, group, or institution to which you want to grant access.
 access.search.name.error=Enter at least 3 characters for auto-search to begin.
@@ -637,7 +637,7 @@ wizard.volume-edit-funding.instructions=Add or manage sources of funding that su
 
 wizard.volume-edit-access.name=Access
 wizard.volume-edit-access.description=Set access and sharing levels.
-wizard.volume-edit-access.instructions=Specify with whom you want to share the data contained in this volume and what level of access you wish them to have.
+wizard.volume-edit-access.instructions=Specify with whom you want to share the data contained in this volume by adding collaborators and what level of access you wish them to have.
 
 volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.

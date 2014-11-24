@@ -15,9 +15,7 @@
 
     <fieldset class="clean skinny vea-float">
       <div class="vea-float-floater row">
-        <access-search-form class="col-desktop-8 col-tablet-4 col-mobile-2" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
-        <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
-        <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
+        <access-search-form class="col-desktop-8 col-tablet-6 col-mobile-6" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
       </div>
     </fieldset>
 
@@ -26,6 +24,11 @@
        <access-grant-form></access-grant-form>
       </div>
     </article>
+  </fieldset>
+
+  <fieldset>
+    <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
+    <button ng-click="volumeEditAccessForm.resetAll()" class="yellow" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
   </fieldset>
 
 </ng-form>
