@@ -91,7 +91,7 @@ app.factory('Segment', [
     function base(x) {
       if (x instanceof Segment)
         return x.base;
-      else if (Array.isArray(x))
+      if (Array.isArray(x))
         x = x[0];
       return isFinite(x) ? x : 0;
     }
@@ -164,9 +164,12 @@ app.factory('Segment', [
       return this.l <= that.l && this.u >= that.u;
     };
 
+    Segment.prototype.shift = function (s) {
+      return new Segment(this.l + s, this.u + s);
+    };
+
     Segment.prototype.relativeTo = function (b) {
-      b = base(b);
-      return new Segment(this.l - b, this.u - b);
+      this.shift(-base(b));
     };
 
     Segment.format = function (seg) {

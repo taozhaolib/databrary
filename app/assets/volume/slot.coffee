@@ -197,10 +197,15 @@ app.controller('volume/slot', [
         return
 
       save: ->
+        shift = @asset.segment.l
         super().then (done) =>
           return unless done
           delete @dirty
           $scope.form.edit.$setPristine() if this == $scope.current
+          shift -= @asset.segment.l
+          if shift for e in @excerpts
+            e.segment.l -= shift
+            e.segment.u -= shift
           sortTracks()
         return
 
