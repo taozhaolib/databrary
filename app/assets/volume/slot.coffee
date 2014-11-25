@@ -225,7 +225,7 @@ app.controller('volume/slot', [
         return
 
       editExcerpt: () ->
-        @excerpt = null
+        @excerpt = undefined
         return if !@asset || @segment.full || !@segment.overlaps(seg = ruler.selection) || !@asset.checkPermission(constants.permission.EDIT)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
@@ -238,7 +238,7 @@ app.controller('volume/slot', [
             on: true
             classification: excerpt.excerpt+''
           else
-            undefined
+            null
 
       saveExcerpt: () ->
         @excerpt.target.setExcerpt(if @excerpt.on then @excerpt.classification else null)
@@ -253,7 +253,7 @@ app.controller('volume/slot', [
                 report: res
 
     editExcerpt = ->
-      $scope.current.editExcerpt() if $scope.current.excerpts
+      $scope.current.editExcerpt() if $scope.current?.excerpts
 
     $scope.fileAdded = (file) ->
       (!$scope.current?.file && $scope.current || blank).upload(file) if editing

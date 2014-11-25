@@ -145,7 +145,7 @@
                 <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </ng-form>
 
-              <ng-form ng-if="current.excerpt !== null" name="current.form.excerpt">
+              <ng-form ng-if="current.excerpt !== undefined" name="current.form.excerpt">
                 <label class="option">
                   <input type="checkbox" name="excerpt-on" ng-disabled="!current.excerpt" ng-model="current.excerpt.on">
                   <span message="asset.excerpt.checkbox-label"></span>
