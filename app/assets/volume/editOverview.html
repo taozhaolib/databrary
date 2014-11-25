@@ -43,7 +43,7 @@
   </fieldset>
   <fieldset>
       <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
-      <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" class="red" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+      <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" ng-disabled="volumeEditOverviewForm.$pristine"></button>
       <a ng-if="::!volume" ng-href="{{page.router.prev}}" message="volume.edit.cancel" class="button"></a>
   </fieldset>
 </ng-form>
