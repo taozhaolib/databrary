@@ -24,7 +24,7 @@ app.controller('volume/slot', [
         .search('asset', undefined)
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
-        .search('select', ruler.selection.format())
+        .search('select', ruler.selection?.format())
 
     if editing || slot.checkPermission(constants.permission.EDIT)
       url = if editing then slot.route() else slot.editRoute()
@@ -226,7 +226,8 @@ app.controller('volume/slot', [
 
       editExcerpt: () ->
         @excerpt = undefined
-        return if !@asset || @segment.full || !@segment.overlaps(seg = ruler.selection) || !@asset.checkPermission(constants.permission.EDIT)
+        seg = ruler.selection
+        return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg) || !@asset.checkPermission(constants.permission.EDIT)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
           if !excerpt
