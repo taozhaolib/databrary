@@ -220,7 +220,7 @@ app.controller('volume/slot', [
         @segment.u = pos + @segment.length
         @segment.l = pos
         if event.type != 'mousemove'
-          @data.position = pos
+          @data.position = Math.floor(pos)
           $scope.form.edit.$setDirty()
         return
 
