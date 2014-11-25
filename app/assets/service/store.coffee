@@ -19,8 +19,6 @@ app.factory('Store', [
           classification: @asset.classification+''
           container: @slot.id # required for position, which has the side-effect of restoring deleted/moved assets
           position: @asset.segment.l
-          excerptOn: @asset.excerpt?
-          excerpt: (@asset.excerpt || 0)+''
         else
           classification: constants.classification.RESTRICTED+''
 
@@ -53,7 +51,6 @@ app.factory('Store', [
     save: ->
       return if @pending # sorry
       @pending = 1
-      @data.excerpt = '' if 'excerpt' of @data && !@data.excerptOn
       (if @file
         @data.upload = @file.uniqueIdentifier
         if @asset then @asset.replace(@data) else @slot.createAsset(@data)

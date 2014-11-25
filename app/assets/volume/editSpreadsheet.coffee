@@ -9,5 +9,5 @@ app.controller('volume/spreadsheet', [
     page.display.toolbarLinks.push
       type: 'yellow'
       html: page.constants.message('volume.edit.exit')
-      url: volume.route
+      url: volume.route()
 ])

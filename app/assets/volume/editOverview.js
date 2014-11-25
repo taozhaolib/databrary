@@ -19,7 +19,7 @@ app.directive('volumeEditOverviewForm', [
             title: citation.title,
             url: citation.url,
           },
-          published: vol && vol.citation !== null
+          published: vol && vol.citation != null
         };
       }
       init(volume);

@@ -14,6 +14,20 @@ app.directive('volumeEditMaterialsForm', [
       Material.prototype = Object.create(Store.prototype);
       Material.prototype.constructor = Material;
 
+      Material.prototype.fillData = function () {
+        Store.prototype.fillData.call(this);
+        if (this.asset) {
+          this.data.excerptOn = this.asset.excerpt != null;
+          this.data.excerpt = (this.asset.excerpt || 0)+'';
+        }
+      };
+
+      Material.prototype.save = function () {
+        if (!this.data.excerptOn)
+          this.data.excerpt = '';
+        return Store.prototype.save.call(this);
+      };
+
       form.materials = slot.assets.map(function (asset) {
         asset.asset.get(['creation']);
         return new Material(asset);
