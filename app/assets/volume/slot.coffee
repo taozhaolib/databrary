@@ -366,16 +366,15 @@ app.controller('volume/slot', [
               records.remove(this)
               select() if this == $scope.current
             placeRecords()
-        $q.all(saves).then(=>
+        $q.all(saves).then =>
             @fillData()
             delete @dirty
             $scope.form.edit.$setPristine() if this == $scope.current
-          , (res) =>
+          , (res) ->
             messages.addError
               type: 'red'
               body: 'Error saving'
               report: res
-          )
         return
 
       dragLeft: (event) ->

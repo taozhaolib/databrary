@@ -36,7 +36,7 @@ app.factory('Store', [
         @file.cancel()
         delete @file
         return true
-      @asset.remove().then(=>
+      @asset.remove().then =>
           messages.add
             type: 'green'
             countdown: 3000
@@ -49,7 +49,6 @@ app.factory('Store', [
             body: constants.message('asset.remove.error', @name)
             report: res
           false
-        )
 
     save: ->
       return if @pending # sorry
@@ -60,7 +59,7 @@ app.factory('Store', [
         if @asset then @asset.replace(@data) else @slot.createAsset(@data)
       else
         @asset.save(@data)
-      ).then((asset) =>
+      ).then (asset) =>
           delete @pending
 
           first = !@asset
@@ -94,7 +93,6 @@ app.factory('Store', [
             delete @progress
             delete @data.upload
           false
-        )
 
     upload: (file) ->
       return if @file
@@ -106,7 +104,7 @@ app.factory('Store', [
       router.http(router.controllers.AssetApi.uploadStart, @slot.volume.id,
           filename: file.name
           size: file.size
-        ).then((res) =>
+        ).then (res) ->
           file.uniqueIdentifier = res.data
           file.resume()
           true
@@ -119,7 +117,6 @@ app.factory('Store', [
           delete @file
           delete @progress
           false
-        )
 
     excerptOptions: () ->
       l = {}
