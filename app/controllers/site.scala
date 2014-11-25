@@ -197,7 +197,7 @@ class ObjectController[O <: SiteObject] extends SiteController {
   final type Request[A] = RequestObject[O]#Site[A]
 
   private[controllers] final def result(o : O)(implicit request : SiteRequest[_]) : Result =
-    if (request.isApi) Ok(o.json.js)
+    if (request.isApi) Ok(o.json)
     else Redirect(o.pageURL)
 }
 

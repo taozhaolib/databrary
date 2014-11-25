@@ -32,6 +32,8 @@ trait JsonValue {
 object JsonValue {
   implicit val writes : Writes[JsonValue] =
     Writes[JsonValue](_.js)
+  implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonValue] =
+    Writeable.writeableOf_JsValue(codec).map(_.js)
 }
 
 class JsonObject(val fields : Seq[(String, JsValue)]) extends JsonValue {
@@ -82,8 +84,6 @@ object JsonRecord {
     new JsonRecord(Json.toJson(id), fields)
   def flatten[I : Writes](id : I, fields : Option[JsonField]*) =
     new JsonRecord(Json.toJson(id), fields.flatten)
-  implicit def writable(implicit codec : play.api.mvc.Codec) : Writeable[JsonRecord] =
-    Writeable.writeableOf_JsValue(codec).map(_.obj)
   def seq(s : Seq[JsonRecord]) : JsValue =
     JsObject(s.map(JsonField.ofField(_)))
 

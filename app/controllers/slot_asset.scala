@@ -83,13 +83,13 @@ object SlotAssetApi extends SlotAssetController with ApiController {
       Excerpt.set(request.obj.asset, request.obj.segment, Some(form.classification.get))
       .map {
         case false => form.withGlobalError("error.conflict")._throw
-        case true => result(request.obj)
+        case true => Ok(request.obj.json - "excerpt" + ('excerpt -> form.classification.get))
       }
     }
 
   def removeExcerpt(c : Container.Id, segment : Segment, a : Asset.Id) =
     Action(c, segment, a, Permission.EDIT).async { implicit request =>
       Excerpt.set(request.obj.asset, request.obj.segment, None)
-      .map(_ => result(request.obj))
+      .map(_ => Ok(request.obj.json - "excerpt"))
     }
 }

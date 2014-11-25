@@ -43,7 +43,7 @@ app.factory('Store', [
             body: constants.message('asset.remove.success', @name)
           delete @asset
           true
-        , (res) =>
+        , (res) ->
           messages.addError
             type: 'red'
             body: constants.message('asset.remove.error', @name)
@@ -120,6 +120,12 @@ app.factory('Store', [
           delete @progress
           false
         )
+
+    excerptOptions: () ->
+      l = {}
+      for c, i in constants.classification when i == 0 || i > @data.classification
+        l[i] = c
+      l
 
     # callbacks for ng-flow:
 

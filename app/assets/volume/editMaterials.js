@@ -43,14 +43,6 @@ app.directive('volumeEditMaterialsForm', [
       form.fileSuccess = Store.fileSuccess;
       form.fileProgress = Store.fileProgress;
 
-      form.excerptOptions = function (material) {
-        var l = {};
-        for (var i = page.constants.classification.length-1; i > material.data.classification; i --)
-          l[i] = page.constants.classification[i];
-        l[0] = page.constants.classification[0];
-        return l;
-      };
-
       form.save = function (material) {
         if (material.form.$pristine)
           return;

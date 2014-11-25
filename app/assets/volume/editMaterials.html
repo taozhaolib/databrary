@@ -48,7 +48,7 @@
         <span message="asset.excerpt.checkbox-label"></span>
       </label>
       <validator noclientval class="excerpt-validator" name="excerpt" ng-show="material.data.excerptOn && material.data.classification < page.classification.PUBLIC" label="asset.excerpt">
-        <select name="excerpt" ng-model="material.data.excerpt" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in volumeEditMaterialsForm.excerptOptions(material)"></select>
+        <select name="excerpt" ng-model="material.data.excerpt" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in material.excerptOptions()"></select>
       </validator>
 
       <validator name="name" label="asset.name">

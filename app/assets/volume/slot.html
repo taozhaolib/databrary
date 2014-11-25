@@ -86,7 +86,7 @@
                 <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
               </nav>
 
-              <div ng-if="!editing">
+              <div ng-if="::!editing">
                 <dl class="player-main-info-list cf">
                   <dt ng-if="!!current.asset" message="asset.format"></dt>
                   <dd ng-if="!!current.asset" ng-bind="::(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
@@ -144,6 +144,18 @@
 
                 <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </ng-form>
+
+              <ng-form ng-if="current.excerpt !== null" name="current.form.excerpt">
+                <label class="option">
+                  <input type="checkbox" name="excerpt-on" ng-disabled="!current.excerpt" ng-model="current.excerpt.on">
+                  <span message="asset.excerpt.checkbox-label"></span>
+                </label>
+                <validator noclientval class="excerpt-validator" name="excerpt" ng-show="current.excerpt.on && current.data.classification < page.classification.PUBLIC" label="asset.excerpt">
+                  <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()"></select>
+                </validator>
+                <button ng-if="current.excerpt" class="green" ng-click="current.saveExcerpt()" message="save" ng-disabled="current.form.excerpt.$pristine || current.form.excerpt.$invalid"></button>
+              </ng-form>
+
             </div>
 
             <div class="player-main-viewport" ng-if="::current.type === 'asset'">

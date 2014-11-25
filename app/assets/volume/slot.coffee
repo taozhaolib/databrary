@@ -134,11 +134,13 @@ app.controller('volume/slot', [
       delete target.record
 
       $scope.playing = 0
+      editExcerpt()
       true
 
     $scope.selectAll = (event, c) ->
       range = c.segment
       ruler.selection = range
+      editExcerpt()
       if range && isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
       event.stopPropagation()
@@ -161,6 +163,7 @@ app.controller('volume/slot', [
           new Segment(endPos, startPos)
         else if startPos = endPos
           new Segment(startPos)
+      editExcerpt() if event.type != 'mousemove'
       return
 
     removed = (track) ->
@@ -220,6 +223,37 @@ app.controller('volume/slot', [
           @data.position = pos
           $scope.form.edit.$setDirty()
         return
+
+      editExcerpt: () ->
+        @excerpt = null
+        return if !@asset || @segment.full || !@segment.overlaps(seg = ruler.selection) || !@asset.checkPermission(constants.permission.EDIT)
+        excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
+        @excerpt =
+          if !excerpt
+            target: @asset.inSegment(seg)
+            on: false
+            classification: '0'
+          else if excerpt.segment.equals(seg)
+            target: excerpt
+            on: true
+            classification: excerpt.excerpt+''
+          else
+            undefined
+
+      saveExcerpt: () ->
+        @excerpt.target.setExcerpt(if @excerpt.on then @excerpt.classification else null)
+          .then (excerpt) =>
+              @excerpts.remove(excerpt)
+              @excerpts.push(excerpt) if 'excerpt' of excerpt
+              @form.excerpt.$setPristine()
+            , (res) ->
+              messages.addError
+                type: 'red'
+                body: constants.message('asset.update.error', @name)
+                report: res
+
+    editExcerpt = ->
+      $scope.current.editExcerpt() if $scope.current.excerpts
 
     $scope.fileAdded = (file) ->
       (!$scope.current?.file && $scope.current || blank).upload(file) if editing
@@ -288,12 +322,12 @@ app.controller('volume/slot', [
         get: -> @rec.id
 
       remove: ->
-        slot.removeRecord(@rec, @segment).then((r) =>
+        slot.removeRecord(@rec, @segment).then((r) ->
             return unless r
             records.remove(this)
             select() if $scope.current == this
             placeRecords()
-          , (res) =>
+          , (res) ->
             messages.addError
               type: 'red'
               body: 'Unable to remove'
@@ -414,6 +448,7 @@ app.controller('volume/slot', [
         []
 
     $scope.playing = 0
+    editExcerpt()
 
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->

@@ -905,8 +905,8 @@ app.factory('modelService', [
       if ('id' in init) {
         var a = v.assets[init.id];
         return a ? a.update(init) : new Asset(v, init);
-      } else
-        return new SlotAsset(context, init);
+      }
+      return new SlotAsset(context, init);
     }
 
     function assetMakeArray(context, l) {
@@ -928,7 +928,8 @@ app.factory('modelService', [
 
     ///////////////////////////////// SlotAsset
 
-    function SlotAsset(context, init) {
+    function SlotAsset(context, init, asset) {
+      this.asset = asset;
       Slot.call(this, context, init);
     }
 
@@ -939,6 +940,7 @@ app.factory('modelService', [
     SlotAsset.prototype.fields = angular.extend({
       permission: true,
       excerpt: true,
+      format: true,
     }, Slot.prototype.fields);
 
     SlotAsset.prototype.init = function (init) {
@@ -981,8 +983,10 @@ app.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.update, this.asset.id, data)
         .then(function (res) {
-          if ('excerpt' in data)
+          if ('excerpt' in data) {
+            a.clear('excerpts');
             a.volume.clear('excerpts');
+          }
           return 'id' in res.data ? a.asset.update(res.data) : a.update(res.data);
         });
     };
@@ -1020,6 +1024,23 @@ app.factory('modelService', [
         .then(function (res) {
           s.clear('assets');
           return s.asset.update(res.data);
+        });
+    };
+
+    SlotAsset.prototype.inSegment = function (segment) {
+      segment = this.segment.intersect(segment);
+      if (segment.equals(this.segment))
+        return this;
+      return new SlotAsset(this.container, {permission:this.permission, segment:segment}, this.asset);
+    };
+
+    SlotAsset.prototype.setExcerpt = function (classification) {
+      var a = this;
+      return router.http(classification != null ? router.controllers.SlotAssetApi.setExcerpt : router.controllers.SlotAssetApi.removeExcerpt, this.container.id, this.segment.format(), this.asset.id, {classification:classification})
+        .then(function (res) {
+          a.clear('excerpts');
+          a.volume.clear('excerpts');
+          return a.update(res.data);
         });
     };
 
