@@ -991,8 +991,22 @@ app.factory('modelService', [
         });
     };
 
+    Asset.prototype.save = function (slot, data) {
+      var a = this;
+      if (!data)
+        data = {};
+      data.container = slot.container.id;
+      data.position = slot.segment.l;
+      return router.http(router.controllers.AssetApi.update, this.id, data)
+        .then(function (res) {
+          return 'id' in res.data ? a.asset.update(res.data) : new SlotAsset(slot.container, res.data, a);
+        });
+    };
+
     Slot.prototype.createAsset = function (data) {
       var s = this;
+      if (!data)
+        data = {};
       data.container = this.container.id;
       if (!('position' in data) && isFinite(this.segment.l))
         data.position = this.segment.l;

@@ -84,6 +84,7 @@
                 <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="::page.constants.classification[current.asset.classification]" hint="classification-{{::page.constants.classification[current.asset.classification]}}"></span>
                 <a ng-href="{{::current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download line"></a>
                 <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash line"></a>
+                <span ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></span>
               </nav>
 
               <div ng-if="::!editing">

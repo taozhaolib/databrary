@@ -34,14 +34,16 @@ app.factory('Store', [
         @file.cancel()
         delete @file
         return true
-      @asset.remove().then =>
+      @asset.remove().then (asset) =>
+          console.log(asset)
+          Store.removedAsset = asset
           messages.add
             type: 'green'
             countdown: 3000
             body: constants.message('asset.remove.success', @name)
           delete @asset
           true
-        , (res) ->
+        , (res) =>
           messages.addError
             type: 'red'
             body: constants.message('asset.remove.error', @name)
@@ -114,6 +116,18 @@ app.factory('Store', [
           delete @file
           delete @progress
           false
+
+    @restore: (slot) =>
+      return unless @removedAsset?.volume.id == slot.volume.id
+      @removedAsset.save(slot).then (a) =>
+          delete @removedAsset
+          a
+        , (res) ->
+          messages.addError
+            type: 'red'
+            body: constants.message('asset.update.error', '[removed file]')
+            report: res
+          return
 
     excerptOptions: () ->
       l = {}

@@ -177,6 +177,7 @@ app.controller('volume/slot', [
     class Track extends Store
       constructor: (asset) ->
         super slot, asset
+        @excerpts = []
 
       type: 'asset'
 
@@ -197,15 +198,16 @@ app.controller('volume/slot', [
         return
 
       save: ->
-        shift = @asset.segment.l
+        shift = @asset?.segment.l
         super().then (done) =>
           return unless done
           delete @dirty
           $scope.form.edit.$setPristine() if this == $scope.current
           shift -= @asset.segment.l
-          if shift for e in @excerpts
-            e.segment.l -= shift
-            e.segment.u -= shift
+          if shift
+            for e in @excerpts
+              e.segment.l -= shift
+              e.segment.u -= shift
           sortTracks()
         return
 
@@ -252,11 +254,19 @@ app.controller('volume/slot', [
               @excerpts.remove(excerpt)
               @excerpts.push(excerpt) if 'excerpt' of excerpt
               @form.excerpt.$setPristine()
-            , (res) ->
+            , (res) =>
               messages.addError
                 type: 'red'
                 body: constants.message('asset.update.error', @name)
                 report: res
+
+      canRestore: () ->
+        Store.removedAsset if editing && this == blank && Store.removedAsset?.volume.id == slot.volume.id
+
+      restore: () ->
+        Store.restore(slot).then (a) =>
+          @setAsset(a)
+          addBlank()
 
     editExcerpt = ->
       $scope.current.editExcerpt() if $scope.current?.excerpts
@@ -272,7 +282,6 @@ app.controller('volume/slot', [
     fillExcerpts = ->
       tracks = {}
       for t in $scope.tracks when t.asset
-        t.excerpts = []
         tracks[t.asset.id] = t
       for e in slot.excerpts
         t = tracks[e.id]
