@@ -447,12 +447,10 @@ tags.title=Tags
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.auto.error=The auto-suggestion list is out-of-order.
-tags.update.error=Could not update tag list.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
-tags.new.success=Tag <strong>{0}</strong> added.
-tags.new.error=Error while adding tag <strong>{0}</strong>.
+tags.new.placeholder=Add new tag...
 
 # Access
 access.global.legend=Share this study

@@ -1125,7 +1125,7 @@ app.factory('modelService', [
 
     Slot.prototype.setTag = function (tag, vote) {
       var s = this;
-      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote ? vote>0 : undefined})
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote})
         .then(function (res) {
           s.volume.clear('tags');
           s.clear('tags');

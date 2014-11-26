@@ -9,6 +9,8 @@ app.directive 'inputCompleter', [
       value: '=ngModel'
       completer: '&'
       placeholder: '@'
+      pattern: '@ngPattern'
+      submit: '&'
     link: ($scope, $element, $attrs) ->
       # this doesn't happen early enough with normal angular binding:
       $element[0].firstChild.firstChild.setAttribute('name', $attrs.name)
@@ -20,31 +22,32 @@ app.directive 'inputCompleter', [
           r.then(handle)
         else
           sent = undefined
-          $scope.choices =
-            if Array.isArray(r)
-              if 'input' of r
-                $scope.value = r.input
-                delete r.input
-              r
-            else if r || r == ''
-              $scope.value = r
-              []
-            else [
-              text: constants.message('search.none')
-            ]
+          if Array.isArray(r)
+            if 'input' of r
+              $scope.value = r.input
+              delete r.input
+            if r.length
+              $scope.choices = r
+            else
+              $scope.choices = [
+                text: constants.message('search.none')
+              ]
+          else if r || r == ''
+            $scope.value = r
+            $scope.choices = []
           $scope.search(resend) if resend
 
       $scope.search = (input) ->
         if sent
           resend = input != sent && input
-        else if input.length >= 3
+        else if input && input.length >= 3
           resend = undefined
           sent = input
           $scope.choices.push
             text: constants.message('search.active')
           handle($scope.completer({$input:input}))
         else
-          handle []
+          $scope.choices = []
 
       $scope.choose = (c) ->
         resend = undefined
@@ -53,4 +56,7 @@ app.directive 'inputCompleter', [
             c.select()
           else
             c.select)
+
+      $scope.enter = (input) ->
+        handle($scope.submit({$input:input})) if input
 ]

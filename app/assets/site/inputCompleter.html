@@ -1,5 +1,5 @@
 <div>
-  <input type="text" ng-model="value" ng-change="search(value)" ng-model-options="{debounce: 250}" placeholder="{{placeholder}}"/>
+  <input type="text" ng-model="value" ng-change="search(value)" ng-model-options="{debounce: 250}" placeholder="{{placeholder}}" ng-pattern="pattern" key-escape="value=''" key-enter="enter(value)"/>
   <ul ng-if="choices.length" class="flat input-completer-choices">
     <li ng-repeat="c in choices" class="input-completer-choice">
       <a ng-if="::c.select" href="" ng-click="choose(c)" ng-bind="::c.text"></a>

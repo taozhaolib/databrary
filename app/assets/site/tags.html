@@ -4,14 +4,12 @@
       <ul class="panel-tags-items">
         <li ng-repeat="tag in tags" class="panel-tags-item">
           <div class="panel-tag-weight">{{tag.weight}}</div>
-
           <div class="panel-tag-name">{{tag.id}}</div>
-
-          <div class="panel-tag-controls" ng-if="page.models.Login.isAuthorized()">
-            <button class="panel-tag-vote available null" name="vote" ng-click="vote(tag, false)" ng-if="tag.vote" hint="tags-vote-null">
+          <div class="panel-tag-controls" ng-if="::target">
+            <button class="panel-tag-vote available null" name="vote" ng-click="vote(tag.id, false)" ng-if="tag.vote" hint="tags-vote-null">
               -
             </button>
-            <button class="panel-tag-vote available up" name="vote" ng-click="vote(tag, true)" ng-if="!tag.vote" hint="tags-vote-up">
+            <button class="panel-tag-vote available up" name="vote" ng-click="vote(tag.id, true)" ng-if="!tag.vote" hint="tags-vote-up">
               +
             </button>
           </div>
@@ -20,15 +18,7 @@
     </ng-form>
   </div>
 
-  <div id="tag-add" class="panel-tags-form" ng-if="page.models.Login.isAuthorized()">
-    <ng-form name="tagNewForm" ng-submit="voteNew(tagNewForm)" class="panel-tags-new-form">
-      <input type="text" id="newName" name="newName" ng-model="tagNewForm.newNameVal" placeholder="Add new tag..." ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/" required ng-change="newNameChange(tagNewForm)" ng-focus="newNameFocus(tagNewForm)" ng-blur="newNameBlur()" key-enter="voteNew(tagNewForm)">
-      <button name="vote" ng-click="voteNew(tagNewForm)" class="hide">add</button>
-
-      <ul class="panel-tags-auto-list">
-        <li ng-repeat="autoTag in autoList" ng-class="{active: autoSelect == $index}">
-          <a href="" ng-click="fillAuto(tagNewForm, autoTag)">{{autoTag}}</a></li>
-      </ul>
-    </ng-form>
+  <div id="tag-add" class="panel-tags-form" ng-if="::target">
+    <tag-add></tag-add>
   </div>
 </panel>
