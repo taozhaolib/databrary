@@ -5,7 +5,7 @@ app.directive 'tagAdd', [
   (page) ->
     restrict: 'E'
     templateUrl: 'site/tagAdd.html'
-    link: ($scope, $element, $attrs) ->
+    link: ($scope) ->
       form = $scope.tagAddForm
 
       select = (tag) -> ->

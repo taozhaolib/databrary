@@ -338,7 +338,7 @@ app.controller('volume/slot', [
         get: -> @rec.id
 
       remove: ->
-        slot.removeRecord(@rec, @segment).then((r) ->
+        slot.removeRecord(@rec, @segment).then((r) =>
             return unless r
             records.remove(this)
             select() if $scope.current == this
