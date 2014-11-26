@@ -36,18 +36,17 @@ app.controller('party/network', [
 
     //
 
-    var userExists = function (list) {
-      var user = page.models.Login.user.id;
+    var user = page.models.Login.user.id;
+    function isUser(a) {
+      return a.party.id === user;
+    }
 
+    $scope.isParent =
+      $scope.party.parents.some(isUser);
+    $scope.isRelation = $scope.isParent ||
       /* you always exist on your own page */
-      return $scope.party.id <= 0 || $scope.party.id === user ||
-        list.some(function (a) {
-          return a.party.id === user;
-        });
-    };
-
-    $scope.canGrant = !($scope.party.institution || userExists($scope.party.parents));
-    $scope.canApply = !userExists($scope.party.children);
+      $scope.party.id <= 0 || $scope.party.id === user ||
+      $scope.party.children.some(isUser);
 
     $scope.grant = function () {
       page.$location.url(page.models.Login.user.editRoute('grant'));
