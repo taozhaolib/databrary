@@ -413,6 +413,7 @@ app.provider('routerService', [
 
         var prev;
         $rootScope.$on('$locationChangeStart', function (event, to, from) {
+          router.prev = prev;
           prev = from;
         });
         $rootScope.$on('$routeChangeStart', function () {
