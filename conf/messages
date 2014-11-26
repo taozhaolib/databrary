@@ -525,7 +525,7 @@ wizard.register-create.instructions=Please provide information about yourself.
 wizard.register-agreement.name=Sign Agreement
 wizard.register-agreement.description=Learn about the responsibilities of all Databrary members.
 wizard.register-agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">full agreement as pdf</a>.
-wizard.register-agreement.agreement-contents=<p>As a member of the Databrary community, you promise to:</p><ol><li>Treat Databrary data with the same high standard of care that you treat data collected in your own laboratory.</li><li>Ensure that participants'' wishes about sharing their data are respected.</li><li>Take care in authorizing other peopole (affiliates and collaborators) and are responsible for their conduct and use of Databrary data, just as they are in their own labs.</li></ol>
+wizard.register-agreement.agreement-contents=<p>As a member of the Databrary community, you promise to:</p><ol><li>Treat Databrary data with the same high standard of care that you treat data collected in your own laboratory.</li><li>Ensure that participants'' wishes about sharing their data are respected.</li><li>Take care in authorizing other people (affiliates and collaborators) and take responsibility for their conduct and use of Databrary data, just as you do in your own lab.</li></ol>
 wizard.register-agreement.agree=I have read and understand the <a href="http://databrary.org/user-guide/policies/investigator-agreement.html" target="_blank">Databrary Investigator Agreement</a>
 
 wizard.register-email.name=Confirm Email
