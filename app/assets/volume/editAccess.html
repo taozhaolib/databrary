@@ -19,7 +19,7 @@
       </div>
     </fieldset>
 
-    <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" class="access-grant cf">
+    <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" id="access-{{::access.party.id}}" class="access-grant cf">
       <div class="row">
        <access-grant-form></access-grant-form>
       </div>
