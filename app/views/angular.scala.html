@@ -12,39 +12,31 @@
   @defining(Messages("app.title")){ title =>
     <title ng-bind="page.display.title + ' || @title'">@title</title>
   }
-  
-  <!-- icons -->
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="@routes.Assets.at("icons/apple-touch-icon-114x114.png")">
   <link rel="apple-touch-icon-precomposed" sizes="72x72" href="@routes.Assets.at("icons/apple-touch-icon-72x72.png")">
   <link rel="apple-touch-icon-precomposed" href="@routes.Assets.at("icons/apple-touch-icon.png")">
-  
-  <!-- css -->
   <link rel="stylesheet" href="@routes.Assets.at("app.min.css")">
-  
-  <!-- js -->
-  @jsDepends.map { js =>
-    <script src="@routes.Assets.at(js)"></script>
-  }
-  <script src="@routes.AngularController.constantsJs"></script>
   <script>
     window.$play = {
       user: @format.raw(request.json.toString),
     };
   </script>
+  @jsDepends.map { js =>
+    <script src="@routes.Assets.at(js)"></script>
+  }
+  <script src="@routes.AngularController.constantsJs"></script>
 </head>
 <body flow-prevent-drop>
   <noscript>
     Our site works best with modern browsers (Firefox, Chrome, Safari &ge;6, IE &ge;10, and others) with Javascript enabled.
     You can also switch to the <a href="@display.url(nojs)">simple version</a> of this page.
   </noscript>
-
   <toolbar></toolbar>
   <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error"></main>
   <errors></errors>
   @footer()
   <messages></messages>
   <tooltip ng-repeat="tooltip in page.tooltips.list track by tooltip.id" ng-if="tooltip.target"></tooltip>
-
   <div id="loading" class="loading" style="display:none" ng-show="page.display.loading">
     <div class="loading-animation">
       <div class="loading-spinner">
