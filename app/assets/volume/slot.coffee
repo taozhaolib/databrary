@@ -16,6 +16,7 @@ app.controller('volume/slot', [
       selection: if 'select' of target then new Segment(target.select) else Segment.empty
       position: Offset.parse(target.pos)
 
+    $flow = undefined
     video = undefined
     blank = undefined
 
@@ -120,13 +121,12 @@ app.controller('volume/slot', [
         else
           !a.asset - !b.asset || !a.file - !b.file
 
-    confirmDirty = ->
-      not (editing && $scope.current && $scope.form.edit &&
-        ($scope.current.dirty = $scope.form.edit.$dirty)) or
-          confirm(constants.message('navigation.confirmation'))
+    stayDirty = (global) ->
+      if global || editing && $scope.current && $scope.form.edit && ($scope.current.dirty = $scope.form.edit.$dirty)
+        not confirm(constants.message('navigation.confirmation'))
 
     select = (c) ->
-      return false if c && !confirmDirty()
+      return false if stayDirty()
 
       $scope.current = c
       searchLocation($location.replace())
@@ -262,6 +262,7 @@ app.controller('volume/slot', [
       $scope.current.editExcerpt() if $scope.current?.excerpts
 
     $scope.fileAdded = (file) ->
+      $flow = file.flowObj
       (!$scope.current?.file && $scope.current || blank).upload(file) if editing
       return
 
@@ -458,6 +459,6 @@ app.controller('volume/slot', [
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->
         return if url.contains(slot.editRoute())
-        return display.cancelRouteChange(event) unless confirmDirty()
+        return display.cancelRouteChange(event) if stayDirty($flow?.isUploading())
         done()
 ])
