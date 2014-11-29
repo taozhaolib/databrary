@@ -69,7 +69,7 @@ class SQLResult(val result : Future[db.QueryResult])(implicit context : Executio
 }
 
 object SQLResult {
-  private final val emptyResult = new db.QueryResult(0, "")
+  private final val emptyResult = new db.QueryResult(1, "empty") // 1 to emulate "success"
   def empty(implicit context : ExecutionContext) = new SQLResult(async(emptyResult))(context)
 }
 

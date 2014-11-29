@@ -9,30 +9,25 @@ import site._
 /** Collection of related assets.
   * To be used, all assets must be placed into containers.
   * These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
+  * @param name descriptive name to help with organization by contributors.
+  * @param date the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
   */
-final class Container protected (override val id : Container.Id, override val volume : Volume, override val top : Boolean = false, private[this] var name_ : Option[String], private[this] var date_ : Option[Date]) extends ContextSlot with TableRowId[Container] with InVolume {
+final class Container protected (override val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val consent : Consent.Value = Consent.NONE) extends ContextSlot with TableRowId[Container] with InVolume {
   override def container = this
   val segment = Segment.full
   override def isFull = true
-  private[models] var consent_ = Consent.NONE
-  override def consent = consent_
-  /** Descriptive name to help with organization by contributors.
-    * This (as with Container in general) is not necessarily intended for public consumption. */
-  def name = name_
-  /** The date at which the contained data were collected.
-    * Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions. */
-  def date = date_
+
+  private[models] def withConsent(consent : Consent.Value) =
+    new Container(id, volume, top, name, date, consent)
 
   def ===(a : Container) = super[TableRowId].===(a)
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Boolean] = {
-    Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).execute
-      .andThen { case scala.util.Success(true) =>
-        name.foreach(name_ = _)
-        date.foreach(date_ = _)
+  def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Container] =
+    Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).ensure
+      .map { _ =>
+        new Container(id, volume, top, name.getOrElse(this.name), date.getOrElse(this.date))
       }
-  }
 
   def remove : Future[Boolean] =
     (if (top) volume.top else async(null)).flatMap { stop =>
@@ -72,8 +67,7 @@ object Container extends TableId[Container]("container") {
   private[models] def rowVolume(volume : Selector[Volume]) : Selector[Container] = columnsVolume(volume)
     .leftJoin(consent, "container.id = container_consent.container AND container_consent.segment = '(,)'::segment")
     .map { case (container, consent) =>
-      consent.foreach(container.consent_ = _)
-      container
+      consent.fold(container)(container.withConsent)
     }
   private[models] def rowVolume(volume : Volume) : Selector[Container] =
     rowVolume(Volume.fixed(volume))

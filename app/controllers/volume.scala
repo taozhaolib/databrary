@@ -38,7 +38,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     val form = new VolumeController.EditForm(None, Nil)._bind
     for {
       cite <- form.getCitation
-      _ <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
+      vol <- vol.change(name = form.name.get orElse cite.flatMap(_.flatMap(_.title)),
         alias = form.alias.get.map(Maybe(_).opt),
         body = form.body.get)
       _ <- setLinks(vol, form, cite)

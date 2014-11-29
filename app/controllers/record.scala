@@ -53,15 +53,15 @@ private[controllers] abstract sealed class RecordController extends ObjectContro
     Action(i, Permission.EDIT).async { implicit request =>
       val form = new RecordController.EditForm()._bind
       for {
-        _ <- request.obj.change(category = form.category.get)
+        r <- request.obj.change(category = form.category.get)
         _ <- form.measures.get.foreachAsync { case (m, value) =>
           val metric = Maybe.toInt(m).flatMap(m => Metric.get(Metric.asId(m))).getOrElse(form.measures.withKeyError(m, "error.number")._throw)
-          updateMeasure(request.obj, metric, value).map {
+          updateMeasure(r, metric, value).map {
             case false => form.measures.withKeyError(m, metricError(metric))._throw
             case true => true
           }
         }
-      } yield (editResult(request.obj))
+      } yield (editResult(r))
     }
 
   def measureUpdate(recordId : Record.Id, metricId : Metric.Id) =

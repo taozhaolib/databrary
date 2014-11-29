@@ -230,8 +230,8 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         } yield (c)
       } { c => for {
           _ <- update(c, Some(c.top), jc \ "top")
-          _ <- write(c, c.name, jc \ "name")(x => c.change(name = Some(Some(x))))
-          _ <- write(c, c.date, jc \ "date")(x => c.change(date = Some(Some(x))))
+          _ <- write(c, c.name, jc \ "name")(x => c.change(name = Some(Some(x))).map(_ => true))
+          _ <- write(c, c.date, jc \ "date")(x => c.change(date = Some(Some(x))).map(_ => true))
         } yield (c)
       }
 

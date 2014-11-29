@@ -57,17 +57,16 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, private[this] var category_ : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
-  def category : Option[RecordCategory] = category_
+final class Record private (val id : Record.Id, val volume : Volume, val category : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
-  def change(category : Option[Option[RecordCategory]] = None) : Future[Boolean] =
+  def change(category : Option[Option[RecordCategory]] = None) : Future[Record] =
     Audit.change("record", SQLTerms.flatten(
         category.map('category -> _.map(_.id))),
       sqlKey)
-      .execute.andThen { case scala.util.Success(true) =>
-        category.foreach(category_ = _)
+      .ensure.map { _ =>
+        new Record(id, volume, category.getOrElse(this.category), consent, measures_)
       }
 
   /** The set of measures on the current volume readable by the current user. */

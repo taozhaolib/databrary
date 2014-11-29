@@ -9,27 +9,23 @@ import site._
 
 /** Main organizational unit or package of data, within which everything else exists.
   * Usually represents a single project or dataset with a single set of procedures.
+  * @param name title headline.
+  * @param body longer, abstract-like description.
   * @param permission the effective permission level granted to the current user, making this and many other related objects unique to a particular account/request. This will never be less than [[Permission.VIEW]] except possibly for transient objects, as unavailable volumes should never be returned in the first place. */
-final class Volume private (val id : Volume.Id, private[this] var name_ : String, private[this] var alias_ : Option[String], private[this] var body_ : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
-  /** Title headline. */
-  def name = name_
+final class Volume private (val id : Volume.Id, val name : String, alias_ : Option[String], val body : Option[String], override val permission : Permission.Value, val creation : Timestamp)(implicit override val site : Site) extends TableRowId[Volume] with SiteObject with InVolume {
   /** Short, internal name, only available to editors. */
   def alias = alias_.filter(_ => checkPermission(Permission.EDIT))
-  /** Longer, abstract-like description. */
-  def body = body_
   def volume = this
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Boolean] =
+  def change(name : Option[String] = None, alias : Option[Option[String]] = None, body : Option[Option[String]] = None) : Future[Volume] =
     Audit.change("volume", SQLTerms.flatten(
         name.map('name -> _),
         alias.map('alias -> _),
         body.map('body -> _)),
       sqlKey)
-      .execute.andThen { case scala.util.Success(true) =>
-        name.foreach(name_ = _)
-        alias.foreach(alias_ = _)
-        body.foreach(body_ = _)
+      .ensure.map { _ =>
+        new Volume(id, name = name.getOrElse(this.name), alias.getOrElse(alias_), body.getOrElse(this.body), permission, creation)
       }
 
   /** List of parties access to this volume, sorted by level (ADMIN first). */
@@ -43,7 +39,8 @@ final class Volume private (val id : Volume.Id, private[this] var name_ : String
   /** List of toplevel assets within this volume. */
   def excerpts = Excerpt.getVolume(this)
 
-  private val _records : FutureVar[Seq[Record]] = FutureVar(Record.getVolume(this))
+  private val _records : FutureVar[Seq[Record]] =
+    FutureVar(Record.getVolume(this))
   def records : Future[Seq[Record]] = _records()
 
   /** Corresponding citation for this volume. */

@@ -24,9 +24,9 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
     Action(i, segment, Permission.EDIT).async { implicit request =>
       val form = SlotController.editForm._bind
       for {
-        _ <- cast[SlotController.ContainerEditForm](form).foreachAsync((form : SlotController.ContainerEditForm) =>
+        cont <- cast[SlotController.ContainerEditForm](form).fold(async(request.obj))(form =>
           request.obj.container.change(name = form.name.get, date = form.date.get))
-        _ <- form.consent.get.foreachAsync((c : Consent.Value) => request.obj.setConsent(c).map(r =>
+        _ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c).map(r =>
             if (!r) form.consent.withError("error.conflict")._throw))
         /* refresh consent: */
         s <- Slot.get(i, segment)

@@ -36,7 +36,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
     if (seg @> segment) this else Slot.make(segment * seg, context)
 
   /** Update the given values in the database. */
-  final def setConsent(consent : Consent.Value) : Future[Boolean] = {
+  final def setConsent(consent : Consent.Value) : Future[Boolean] =
     if (consent == Consent.NONE)
       Audit.remove("slot_consent", slotSql).execute.map(_ => true)
     else
@@ -44,7 +44,6 @@ trait Slot extends TableRow with InVolume with SiteObject {
         .recover {
           case SQLDuplicateKeyException() => false
         }
-  }
 
   /** The permisison level granted to restricted data within this slot. */
   final def dataPermission(classification : Classification.Value) : HasPermission =
@@ -184,8 +183,7 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
   private[models] val row : Selector[Container => ContextSlot] = columns
     .map { (segment, consent) =>
       if (segment.isFull) { (container : Container) =>
-        container.consent_ = consent
-        container
+        container.withConsent(consent)
       } else { (container : Container) =>
         new SlotConsent(container, segment, consent)
       }
