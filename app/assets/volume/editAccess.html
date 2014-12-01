@@ -10,6 +10,14 @@
     </div>
   </fieldset>
 
+  <fieldset scroll-float class="skinny">
+    <div class="col-desktop-5 col-tablet-5 col-mobile-6">
+      <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
+      <button ng-click="volumeEditAccessForm.resetAll()" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
+    </div>
+    <access-search-form class="col-desktop-6 col-tablet-4 col-mobile-6" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
+  </fieldset>
+
   <fieldset ng-show="volumeEditAccessForm.data.length > 0">
     <legend message="access.grant.legend"></legend>
     <article ng-repeat="access in volumeEditAccessForm.data track by access.party.id" id="access-{{::access.party.id}}" class="access-grant cf">
@@ -17,16 +25,6 @@
        <access-grant-form></access-grant-form>
       </div>
     </article>
-  </fieldset>
-
-  <fieldset class="skinny vea-float">
-    <div class="vea-float-floater row">
-      <div class="col-desktop-5 col-tablet-5 col-mobile-6">
-        <button ng-click="volumeEditAccessForm.saveAll()" class="green" message="save" ng-disabled="volumeEditAccessForm.$pristine"></button>
-        <button ng-click="volumeEditAccessForm.resetAll()" message="revert" ng-disabled="volumeEditAccessForm.$pristine"></button>
-      </div>
-      <access-search-form class="col-desktop-6 col-tablet-4 col-mobile-6" placeholder-text="{{::'access.search.legend' | message}}"></access-search-form>
-    </div>
   </fieldset>
 
 </ng-form>

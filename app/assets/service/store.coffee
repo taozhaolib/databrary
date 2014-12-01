@@ -35,7 +35,6 @@ app.factory('Store', [
         delete @file
         return true
       @asset.remove().then (asset) =>
-          console.log(asset)
           Store.removedAsset = asset
           messages.add
             type: 'green'

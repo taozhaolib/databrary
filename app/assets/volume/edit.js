@@ -22,16 +22,7 @@ app.controller('volume/edit', [
       return !$scope.activeStep || !$scope.activeStep.form || $scope.activeStep.form.resetAll(false, true);
     }
 
-    $scope.switchStep = function (step) {
-      if (!leavingSoSoon())
-        return false;
-
-      //to avoid bug where "float" elements fixed to top of page at lower scrolls are already at top
-      if (step.form && step.form.scrollFn)
-        page.$timeout(step.form.scrollFn);
-
-      return true;
-    };
+    $scope.switchStep = leavingSoSoon;
 
     var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */

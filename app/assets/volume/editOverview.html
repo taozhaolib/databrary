@@ -1,4 +1,9 @@
 <ng-form name="volumeEditOverviewForm">
+  <fieldset scroll-float class="skinny">
+    <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
+    <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" ng-disabled="volumeEditOverviewForm.$pristine"></button>
+    <button ng-if="::!volume" ng-click="page.router.back()" message="volume.edit.cancel"></a>
+  </fieldset>
   <fieldset>
     <div>Does this study represent a published paper or resource?</div>
     <label class="line-option">
@@ -39,13 +44,5 @@
     <validator name="alias" label="volume.alias">
       <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{::'volume.edit.alias.placeholder' | message}}">
     </validator>
-
-  </fieldset>
-  <fieldset class="skinny veo-float">
-    <div class="veo-float-floater row col-desktop-5 col-tablet-5 col-mobile-6">
-      <button ng-click="volumeEditOverviewForm.save()" message="save" class="green" ng-disabled="volumeEditOverviewForm.$pristine || volumeEditOverviewForm.$invalid"></button>
-      <button ng-if="::!!volume" ng-click="volumeEditOverviewForm.resetAll()" message="revert" ng-disabled="volumeEditOverviewForm.$pristine"></button>
-      <button ng-if="::!volume" ng-click="page.router.back()" message="volume.edit.cancel"></a>
-    </div>
   </fieldset>
 </ng-form>

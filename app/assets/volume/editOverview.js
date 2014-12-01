@@ -86,9 +86,6 @@ app.directive('volumeEditOverviewForm', [
         };
       });
       form.validator.client(validate, true);
-
-      form.scrollFn = page.display.makeFloatScrollFn($('.veo-float'), $('.veo-float-floater'), 24*2.5);
-      page.$w.scroll(form.scrollFn);
     };
 
     return {

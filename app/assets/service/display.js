@@ -2,7 +2,7 @@
 
 app.factory('displayService', [
   '$rootScope', 'storageService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
-  function ($rootScope, storage, $filter, messages, constants, $timeout, $window) {
+  function ($rootScope, storage, $filter, messages, constants, $timeout, window) {
     var display = {};
 
     //
@@ -59,18 +59,6 @@ app.factory('displayService', [
       }, 1);
     };
 
-    //will give error if $float or $floater are not elements with offset() available
-    display.makeFloatScrollFn = function(float, floater, x) {
-      return function () {
-        if (window.pageYOffset + window.innerHeight < float.offset().top+x){
-          floater.addClass('float');
-        } else
-          floater.removeClass('float');
-      };
-    };
-
-    //
-
     var ageKeys = ['science', 'days', 'months', 'years'],
       ageKey = storage.get('displayAge') || 'science';
 
@@ -93,8 +81,8 @@ app.factory('displayService', [
     //
 
     /* TODO: this should really use .canPlayType */
-    if ($window.navigator.userAgent.toLowerCase().contains('firefox') &&
-        $window.navigator.platform.toLowerCase().contains('mac'))
+    if (window.navigator.userAgent.toLowerCase().contains('firefox') &&
+        window.navigator.platform.toLowerCase().contains('mac'))
       messages.add({
         type: 'yellow',
         closeable: true,
