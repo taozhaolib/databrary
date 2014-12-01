@@ -132,7 +132,7 @@ object VolumeFunding extends Table[Funding]("volume_funding") {
       Funder.get(funderId).flatMap(_.fold(async(false)) { _ =>
         val args = ('awards -> a) +: ids
         DBUtil.updateOrInsert(
-          SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).apply(args))(
+          SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).immediately.apply(args))(
           INSERT(args)(_, _)).execute
       })
     }

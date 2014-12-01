@@ -41,7 +41,7 @@ private[models] trait TableView {
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     INSERT(SQLTerms(args : _*))(dbc, exc)
   protected def DELETE(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
-    SQL("DELETE FROM ONLY", table, "WHERE", args.where, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)
+    SQL("DELETE FROM ONLY", table, "WHERE", args.where, Maybe.bracket("RETURNING ", returning))(dbc, exc).immediately.apply(args)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }

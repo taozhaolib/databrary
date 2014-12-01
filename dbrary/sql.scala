@@ -203,17 +203,17 @@ final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
   * @param query SQL statement */
 protected sealed abstract class SQLBuilder[+A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
-  protected def send(args : Seq[SQLArg[_]], immediate : Boolean) : Future[db.QueryResult] = {
+  protected def send(args : Seq[SQLArg[_]], prepared : Boolean) : Future[db.QueryResult] = {
     val r = if (args.isEmpty)
       dbconn.sendQuery(query)
-    else if (immediate)
-      dbconn.sendQuery(SQL.substituteArgs(query, args))
-    else
+    else if (prepared)
       dbconn.sendPreparedStatement(query, args.map(_.put))
+    else
+      dbconn.sendQuery(SQL.substituteArgs(query, args))
     if (SQL.logger.isTraceEnabled) {
       val t0 = System.nanoTime
       r.onComplete { r =>
-        SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + query)
+        SQL.logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + (if (args.nonEmpty) if (prepared) "{" + args.length + "}" else "[" + args.length + "]" else "") + query)
       }
     }
     r
@@ -221,15 +221,16 @@ protected sealed abstract class SQLBuilder[+A] protected (val query : String)(im
 }
 
 /** A simple query which may be applied to arguments, producing a SQLResult. */
-final class SQL private (query : String, immediate : Boolean)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
-  final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args, immediate))
-  final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse, immediate)(dbconn, context)
-  def execute() : Future[Unit] = send(Nil, immediate).map(_ => ())
-  def immediately = new SQL(query, true)(dbconn, context)
+final class SQL private (query : String, prepared : Boolean = true)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
+  final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args, prepared))
+  final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse, prepared)(dbconn, context)
+  def execute() : Future[Unit] = send(Nil, prepared).map(_ => ())
+  def immediately = if (prepared) new SQL(query, false)(dbconn, context) else this
+  def prepare = if (prepared) this else new SQL(query, true)(dbconn, context)
 }
 object SQL {
   def apply(q : String*)(implicit dbc : db.Connection, context : ExecutionContext) : SQL =
-    new SQL(unwords(q : _*), false)(dbc, context)
+    new SQL(unwords(q : _*))(dbc, context)
   private[dbrary] def quoted(s : String) =
     "'" + s.replaceAllLiterally("'", "''") + "'";
   private[dbrary] val logger : play.api.Logger = play.api.Logger("sql")
@@ -265,7 +266,8 @@ object SQL {
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
   * @param parse the parser to use on result rows */
-final class SQLToRows[+A](query : String, parse : SQLRow[A], immediate : Boolean, val preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
-  final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args, immediate), parse)
-  def immediately = new SQLToRows[A](query, parse, true, preargs)(dbconn, context)
+final class SQLToRows[+A](query : String, parse : SQLRow[A], prepared : Boolean, val preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+  final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args, prepared), parse)
+  def immediately = if (prepared) new SQLToRows[A](query, parse, false, preargs)(dbconn, context) else this
+  def prepare = if (prepared) this else new SQLToRows[A](query, parse, true, preargs)(dbconn, context)
 }

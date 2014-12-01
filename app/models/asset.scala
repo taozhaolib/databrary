@@ -145,7 +145,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
   def isSuperseded : Future[Boolean] =
     SQL("SELECT id FROM asset_revision JOIN asset ON asset = id WHERE orig = ?").apply(id).execute
   def supersede(old : Asset) : Future[Boolean] =
-    SQL("SELECT asset_supersede(?, ?)").apply(old.id, id).execute
+    SQL("SELECT asset_supersede(?, ?)").immediately.apply(old.id, id).execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)

@@ -90,7 +90,7 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, parse : S
     join(that, _ + " CROSS JOIN " + _)
 
   def SQL(q : (String, String) => String)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
-    new SQLToRows(q(select, source), parse, false, preargs.args)(dbc, executionContext)
+    new SQLToRows(q(select, source), parse, true, preargs.args)(dbc, executionContext)
   def SELECT(q : String*)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
     SQL((select, source) => unwords(Seq("SELECT", select, "FROM", source) ++ q : _*))
 }

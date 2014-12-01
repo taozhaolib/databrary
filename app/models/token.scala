@@ -37,9 +37,9 @@ object Token extends Table[Token]("token") {
 
   def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
     for {
-      u <- UploadToken.clean
-      r <- SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").apply().execute
-    } yield (u && r)
+      r <- UploadToken.clean
+      _ <- SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").execute
+    } yield (r)
 
   private final val rawLength = store.Base64.decodedLength(length)
   private final val random = new java.security.SecureRandom
@@ -74,7 +74,7 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
     insert[A] { (token : Token.Id) =>
       val a = ('token -> token) +: args
       SQL("INSERT INTO", table, a.insert, "RETURNING", returning.select)
-        .apply(a).single(returning.parse)
+        .immediately.apply(a).single(returning.parse)
     }
 }
 
@@ -85,7 +85,7 @@ sealed abstract class AccountToken protected (id : Token.Id, expires : Timestamp
 object AccountToken extends Table[AccountToken]("account_token") {
   private[models] def clearAccount(account : Account.Id, except : Option[Token] = None) : Future[Boolean] =
     SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?")
-    .apply(account, except.fold("")(_.id))
+    .immediately.apply(account, except.fold("")(_.id))
     .execute
 }
 
@@ -174,7 +174,7 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
 
   private[models] def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
     SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING token")
-      .apply().list(SQLCols[String])
+      .immediately.apply().list(SQLCols[String])
       .map(_.map(store.Upload.file(_).delete).forall(identity))
 
   def get(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
@@ -186,7 +186,7 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
     rowAccount(site.account)
     .SQL((select, source) =>
       "DELETE FROM upload WHERE token = ? AND account = ? RETURNING " + select)
-    .apply(token, site.identity.id).singleOpt
+    .immediately.apply(token, site.identity.id).singleOpt
 
   /** Issue a new token for a new upload. */
   def create(filename : String)(implicit site : AuthSite) : Future[UploadToken] =

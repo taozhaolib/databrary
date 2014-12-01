@@ -36,7 +36,7 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
 
   private[this] def update(pid : Option[Int] = None, log : Option[String] = None, lock : Option[Int] = process) =
     SQL("UPDATE transcode SET process = ?, log = NULLIF(COALESCE(log || E'\\n', '') || COALESCE(?, ''), '') WHERE asset = ? AND COALESCE(process, 0) = ?")
-    .apply(pid, log, id, lock.getOrElse(0)).ensure
+    .immediately.apply(pid, log, id, lock.getOrElse(0)).ensure
 
   def start(implicit request : RequestHeader) : Future[Int] = {
     val lock = Some(-1)
@@ -66,7 +66,7 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
       a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, duration, asset.name, sha1)
       _ = store.FileAsset.store(a, file)
       _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ?")
-        .apply(duration, id).execute
+        .immediately.apply(duration, id).execute
     } yield a
   }
 
@@ -102,11 +102,11 @@ object Transcode extends TableId[Asset]("transcode") {
 
   def get(id : Id)(implicit exc : ExecutionContext) : Future[Option[TranscodeJob]] =
     row.SELECT("WHERE transcode.asset = ?")
-    .apply(id).singleOpt
+    .immediately.apply(id).singleOpt
 
   def getActive(implicit exc : ExecutionContext) : Future[Seq[TranscodeJob]] =
     row.SELECT("WHERE asset.sha1 IS NULL")
-    .apply().list
+    .immediately.apply().list
 
   val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
 
@@ -116,7 +116,7 @@ object Transcode extends TableId[Asset]("transcode") {
       tc = new TranscodeJob(asset, site.identity, orig, segment, options)
       _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
       _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, COALESCE(lower(segment) + ?, upper(segment))) WHERE asset = ?")
-        .apply(asset.id, tc.offset, segment.upperBound, orig.id).execute
+        .immediately.apply(asset.id, tc.offset, segment.upperBound, orig.id).execute
     } yield tc
 
   def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit site : Site) : Transcode =

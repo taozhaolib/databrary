@@ -234,8 +234,8 @@ object Volume extends TableId[Volume]("volume") {
     }
   }
 
-  def updateIndex(implicit defaultContext : ExecutionContext) : Future[Boolean] =
-    SQL("SELECT volume_text_refresh()").apply().execute
+  def updateIndex(implicit defaultContext : ExecutionContext) : Future[Unit] =
+    SQL("SELECT volume_text_refresh()").execute
 }
 
 trait InVolume extends HasPermission {
