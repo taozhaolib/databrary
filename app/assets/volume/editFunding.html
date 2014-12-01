@@ -1,17 +1,17 @@
 <ng-form name="volumeEditFundingForm">
-  <fieldset class="clean skinny vef-float">
-    <div class="vef-float-floater row">
-      <funding-search-form class="col-desktop-9 col-tablet-7 col-mobile-6"></funding-search-form>
-  </div>
-  </fieldset>
 
   <fieldset class="clean funding-grant" ng-repeat="funding in volumeEditFundingForm.data">
     <funding-grant-form></funding-grant-form>
   </fieldset>
 
-  <fieldset>
-    <button ng-click="volumeEditFundingForm.saveAll()" class="green" message="save" ng-disabled="volumeEditFundingForm.$pristine"></button>
-    <button ng-click="volumeEditFundingForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditFundingForm.$pristine"></button>
+  <fieldset class="skinny vef-float">
+    <div class="vef-float-floater row">
+      <div class="col-desktop-5 col-tablet-5 col-mobile-6">
+        <button ng-click="volumeEditFundingForm.saveAll()" class="green" message="save" ng-disabled="volumeEditFundingForm.$pristine"></button>
+        <button ng-click="volumeEditFundingForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditFundingForm.$pristine"></button>
+      </div>
+      <funding-search-form class="col-desktop-6 col-tablet-4 col-mobile-6"></funding-search-form>
+    </div>
   </fieldset>
 
 </ng-form>
