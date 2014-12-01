@@ -258,7 +258,7 @@ object PartyController extends PartyController {
     override val expires = Field(if (request.superuser) Forms.optional(Forms.jodaLocalDate)
       else Mappings.some(Forms.default(Forms.jodaLocalDate, maxexp)
         .verifying(validation.Constraint[Date]("constraint.max", maxExpiration) { d =>
-          if (d.isAfter(maxexp)) validation.Invalid(validation.ValidationError("error.max", maxExpiration))
+          if (d.isAfter(maxexp) || d.isBefore(new Date(2000,1,1))) validation.Invalid(validation.ValidationError("auth.grant.expires.help", maxExpiration))
           else validation.Valid
         }), maxexp))
     private[controllers] override def _fill(auth : Authorize) : this.type = {
