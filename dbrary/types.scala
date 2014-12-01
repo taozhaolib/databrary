@@ -74,7 +74,7 @@ object SQLType {
       case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
-    override def escaped(a : Boolean) = show(a)
+    override def escaped(a : Boolean) = a.toString
   }
 
   implicit object short extends SQLDBType[Short]("smallint", classOf[Short], db.column.ShortEncoderDecoder) {
@@ -129,7 +129,7 @@ object SQLType {
   implicit val url : SQLType[java.net.URL] =
     string.transform("text", classOf[java.net.URL])(dbrary.url.parse, _.toString)
 
-  class array[A](implicit t : SQLType[A]) extends SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
+  final class array[A](implicit t : SQLType[A]) extends SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
     /* TODO: */
     override def show(a : IndexedSeq[A]) : String = ???
     override def put(a : IndexedSeq[A]) : Any = a.map(t.put)
@@ -143,12 +143,18 @@ object SQLType {
   }
   implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] = new array[A]
 
-  class option[A](implicit t : SQLType[A]) extends SQLType[Option[A]](t.name, classOf[Option[A]]) {
-    def read(s : String) : Option[Option[A]] = Option(s).map(t.read(_))
+  final class option[A](implicit t : SQLType[A]) extends SQLType[Option[A]](t.name, classOf[Option[A]]) {
+    def read(s : String) : Option[Option[A]] = Option(s).map(t.read)
     override def get(x : Any, where : String = "") : Option[A] = Option(x).map(t.get(_, where))
-    override def put(a : Option[A]) = a.map(t.put(_))//.orNull
+    override def put(a : Option[A]) = a.map(t.put)//.orNull
+    override def escaped(a : Option[A]) : String = a.fold("null")(t.escaped)
   }
   implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] = new option[A]
+
+  final class default[A](default : A)(implicit t : SQLType[A]) extends SQLType[A](t.name, t.aClass) {
+    def read(s : String) : Option[A] = Option(s).fold[Option[A]](Some(default))(t.read)
+    override def get(x : Any, where : String = "") : A = Option(x).fold(default)(t.get(_, where))
+  }
 
   implicit object jsonValue extends SQLType[JsValue]("json", classOf[JsValue]) {
     override def put(j : JsValue) : Any = j.toString

@@ -8,6 +8,7 @@ import macros._
 class SQLArg[A](val value : A)(implicit val sqlType : SQLType[A]) {
   def put : Any = sqlType.put(value)
   def placeholder = "?::" + sqlType.name
+  def escaped : String = sqlType.escaped(value)
 }
 
 object SQLArg {
@@ -202,9 +203,11 @@ final class SQLCols7[C1 : SQLType, C2 : SQLType, C3 : SQLType, C4 : SQLType, C5 
 /** A generic class representing a query which may (or may not) be applied to arguments, and produces a particular result type.
   * @param query SQL statement */
 protected sealed abstract class SQLBuilder[+A] protected (val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLArgsView[A] {
-  protected def send(args : Seq[SQLArg[_]]) : Future[db.QueryResult] = {
+  protected def send(args : Seq[SQLArg[_]], immediate : Boolean) : Future[db.QueryResult] = {
     val r = if (args.isEmpty)
       dbconn.sendQuery(query)
+    else if (immediate)
+      dbconn.sendQuery(SQL.substituteArgs(query, args))
     else
       dbconn.sendPreparedStatement(query, args.map(_.put))
     if (SQL.logger.isTraceEnabled) {
@@ -218,21 +221,51 @@ protected sealed abstract class SQLBuilder[+A] protected (val query : String)(im
 }
 
 /** A simple query which may be applied to arguments, producing a SQLResult. */
-final class SQL private (override val query : String)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
-  final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args))
-  final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse)(dbconn, context)
-  def execute() : Future[Unit] = send(Nil).map(_ => ())
+final class SQL private (query : String, immediate : Boolean)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLResult](query)(dbconn, context) {
+  final protected def result(args : SQLArg[_]*) : SQLResult = new SQLResult(send(args, immediate))
+  final protected def as[A](parse : SQLRow[A]) : SQLToRows[A] = new SQLToRows(query, parse, immediate)(dbconn, context)
+  def execute() : Future[Unit] = send(Nil, immediate).map(_ => ())
+  def immediately = new SQL(query, true)(dbconn, context)
 }
 object SQL {
   def apply(q : String*)(implicit dbc : db.Connection, context : ExecutionContext) : SQL =
-    new SQL(unwords(q : _*))(dbc, context)
-  def quoted(s : String) =
+    new SQL(unwords(q : _*), false)(dbc, context)
+  private[dbrary] def quoted(s : String) =
     "'" + s.replaceAllLiterally("'", "''") + "'";
-  val logger : play.api.Logger = play.api.Logger("sql")
+  private[dbrary] val logger : play.api.Logger = play.api.Logger("sql")
+  private[dbrary] def substituteArgs(query : String, args : Seq[SQLArg[_]]) : String = {
+    /* based on com.github.mauricio.async.db.postgresql.PreparedStatementHolder */
+    val result = new StringBuilder(query.length + 16*args.length)
+    var offset = 0
+    @scala.annotation.tailrec def next() : Boolean = {
+      val i = query.indexOf('?', offset)
+      if (i == -1) {
+        result ++= query.substring(offset)
+        return false
+      }
+      result ++= query.substring(offset, i)
+      offset = i + 1
+      if (offset < query.length && query(offset) == '?') {
+        result += '?'
+        offset += 1
+        next()
+      } else
+        true
+    }
+    for (arg <- args) {
+      if (!next())
+        throw new db.exceptions.InsufficientParametersException(0 /* whatever */, args)
+      result ++= arg.escaped
+    }
+    if (next())
+      throw new db.exceptions.InsufficientParametersException(args.length+1 /* whatever */, args)
+    result.toString
+  }
 }
 
 /** A query which may be applied to arguments, producing rows to be parsed to a particular type.
   * @param parse the parser to use on result rows */
-final case class SQLToRows[+A](override val query : String, parse : SQLRow[A], preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
-  final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args), parse)
+final class SQLToRows[+A](query : String, parse : SQLRow[A], immediate : Boolean, val preargs : Seq[SQLArg[_]] = Nil)(implicit dbconn : db.Connection, context : ExecutionContext) extends SQLBuilder[SQLRows[A]](query)(dbconn, context) {
+  final protected def result(args : SQLArg[_]*) : SQLRows[A] = new SQLRows(send(preargs ++ args, immediate), parse)
+  def immediately = new SQLToRows[A](query, parse, true, preargs)(dbconn, context)
 }

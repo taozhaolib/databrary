@@ -26,9 +26,8 @@ object Permission extends PGEnum("permission") {
 
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
-    SQLType.transform[Option[String], Value]("permission", classOf[Value])(
-      _.fold[Option[Value]](Some(NONE))(withNameOpt),
-      p => Some(p.toString))
+    new SQLType.default(NONE)(
+      SQLType[Value]("permission", classOf[Value])(withNameOpt, _.toString))
 
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
@@ -78,9 +77,9 @@ object Consent extends PGEnum("consent") {
   }
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
   override implicit val sqlType : SQLType[Value] =
-    SQLType.transform[Option[String], Value]("consent", classOf[Value])(
+    SQLType.transform[Option[String],Value]("consent", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(withNameOpt),
-      Maybe(_).opt.map(_.toString))
+      v => Maybe(v).opt.map(_.toString))
   override implicit object jsonFormat extends json.Format[Value] {
     def writes(v : Value) =
       if (v == NONE) json.JsNull else json.JsNumber(v.id)
