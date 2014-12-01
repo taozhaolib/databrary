@@ -62,9 +62,9 @@ app.factory('displayService', [
     //will give error if $float or $floater are not elements with offset() available
     display.makeFloatScrollFn = function(float, floater, x) {
       return function () {
-        if (window.pageYOffset + x >= float.offset().top)
+        if (window.pageYOffset + window.innerHeight < float.offset().top+x){
           floater.addClass('float');
-        else
+        } else
           floater.removeClass('float');
       };
     };
