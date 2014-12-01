@@ -16,7 +16,7 @@ class SQLUnexpectedNull(sqltype : SQLType[_], where : String = "") extends SQLTy
 
 abstract class SQLType[A](val name : String, val aClass : Class[A]) {
   parent =>
-  def show(a : A) : String = a.toString
+  def show(a : A) : String
   def put(a : A) : Any = a
   def read(s : String) : Option[A]
   def get(x : Any, where : String = "") : A = x match {
@@ -30,17 +30,18 @@ abstract class SQLType[A](val name : String, val aClass : Class[A]) {
 
   final def transform[B](n : String, bc : Class[B])(f : A => Option[B], g : B => A) : SQLType[B] =
     new SQLType[B](n, bc) {
-      override def show(b : B) : String = parent.show(g(b))
+      def show(b : B) : String = parent.show(g(b))
       override def put(b : B) : Any = parent.put(g(b))
       def read(s : String) : Option[B] = parent.read(s).flatMap(f)
       override def get(x : Any, where : String) : B = f(parent.get(x, where))
         .getOrElse(throw new SQLTypeMismatch(x, this, parent.name).amend(where))
+      override def escaped(b : B) : String = parent.escaped(g(b))
     }
 }
 
 abstract class SQLDBType[A](name : String, aClass : Class[A], column : db.column.ColumnEncoderDecoder) extends SQLType[A](name, aClass) {
-  override def show(a : A) : String = column.encode(a)
-  override def read(s : String) : Option[A] = Some(column.decode(s).asInstanceOf[A])
+  def show(a : A) : String = column.encode(a)
+  def read(s : String) : Option[A] = Some(column.decode(s).asInstanceOf[A])
 }
 
 object SQLType {
@@ -115,6 +116,7 @@ object SQLType {
   implicit object date extends SQLDBType[Date]("date", classOf[Date], db.column.DateEncoderDecoder)
 
   implicit object timestamp extends SQLType[Timestamp]("timestamp", classOf[Timestamp]) {
+    def show(t : Timestamp) = t.toString
     def read(s : String) =
       catching(classOf[java.lang.IllegalArgumentException]).opt(
         org.joda.time.LocalDateTime.parse(s))
@@ -129,34 +131,41 @@ object SQLType {
   implicit val url : SQLType[java.net.URL] =
     string.transform("text", classOf[java.net.URL])(dbrary.url.parse, _.toString)
 
+  /* can be generalized to any traversable/array (but read as IndexedSeq) */
   final class array[A](implicit t : SQLType[A]) extends SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
-    /* TODO: */
-    override def show(a : IndexedSeq[A]) : String = ???
+    def show(a : IndexedSeq[A]) : String = a.map(a =>
+      if (a == null || a == None) "null" /* kind of hacky */
+      else "\"" + t.show(a).replaceAllLiterally("\\", """\\""").replaceAllLiterally("\"", """\"""") + "\"")
+      .mkString("{", ",", "}")
     override def put(a : IndexedSeq[A]) : Any = a.map(t.put)
-    def read(s : String) = None
+    def read(s : String) = ???
     override def get(x : Any, where : String = "") : IndexedSeq[A] = x match {
       case null => throw new SQLUnexpectedNull(this, where)
       case a : IndexedSeq[Any] => a.map(t.get(_, where))
-      case s : String => read(s).getOrElse(throw new SQLTypeMismatch(x, this, where))
       case _ => throw new SQLTypeMismatch(x, this, where)
     }
   }
-  implicit def array[A](implicit t : SQLType[A]) : SQLType[IndexedSeq[A]] = new array[A]
+  implicit def array[A : SQLType] : SQLType[IndexedSeq[A]] = new array[A]
 
   final class option[A](implicit t : SQLType[A]) extends SQLType[Option[A]](t.name, classOf[Option[A]]) {
+    def show(a : Option[A]) : String = a.fold[String](null)(t.show)
     def read(s : String) : Option[Option[A]] = Option(s).map(t.read)
     override def get(x : Any, where : String = "") : Option[A] = Option(x).map(t.get(_, where))
     override def put(a : Option[A]) = a.map(t.put)//.orNull
     override def escaped(a : Option[A]) : String = a.fold("null")(t.escaped)
   }
-  implicit def option[A](implicit t : SQLType[A]) : SQLType[Option[A]] = new option[A]
+  implicit def option[A : SQLType] : SQLType[Option[A]] = new option[A]
 
   final class default[A](default : A)(implicit t : SQLType[A]) extends SQLType[A](t.name, t.aClass) {
+    def show(a : A) = t.show(a)
     def read(s : String) : Option[A] = Option(s).fold[Option[A]](Some(default))(t.read)
+    override def put(a : A) = t.put(a)
     override def get(x : Any, where : String = "") : A = Option(x).fold(default)(t.get(_, where))
+    override def escaped(a : A) = t.escaped(a)
   }
 
   implicit object jsonValue extends SQLType[JsValue]("json", classOf[JsValue]) {
+    def show(j : JsValue) : String = j.toString
     override def put(j : JsValue) : Any = j.toString
     def read(s : String) : Option[JsValue] =
       catching(classOf[com.fasterxml.jackson.core.JsonProcessingException]).opt(Json.parse(s))
