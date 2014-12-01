@@ -41,6 +41,18 @@
   background white
   box-shadow box-shadow-def
 
+.player-excerpt-form
+  margin-top b2
+  padding-top b2
+  border-top solid pale 1px
+  input,select
+    margin-top 0
+    margin-bottom 0
+    padding-top 1px
+    padding-bottom 1px
+  button
+    float right
+
 .player-main-info
   text-align left
   //border-bottom 1px solid pale
@@ -142,7 +154,7 @@
   height 0
   pointer-events none
   .selection
-    background-color red52
+    background-color rgba(193,177,177,0.5)
     height 100%
     position absolute
     min-width 1px
@@ -167,6 +179,16 @@
   margin-left auto
   margin-top f3
   margin-bottom f3
+  &.start
+    border-top-right-radius 0
+    border-bottom-right-radius 0
+  &.stop
+    border-top-left-radius 0
+    border-bottom-left-radius 0
+
+.position-input
+  display inline
+  width auto
 
 .slot-timeline-ruler
   z-index 500
@@ -191,11 +213,13 @@
   border-top 1px solid pale
   width 100%
 
+  &.select
+    background-color fade-out(green52, 60%)
+
   &.dirty
     background-color fade-out(red, 90%)
-
-  &.select
-    background-color fade-out(yellow, 90%)
+    &.select
+      background-color fade-out(red,70%)
 
 .slot-track
   height b1 + b3 + b12
@@ -219,9 +243,9 @@
   top 2px
   bottom 2px
   min-width 3px
-  border 2px #7ca19a solid
+  border 1px #7ca19a solid
   z-index 50
-  background-color rgba(124,161,154,0.54)
+  background-color rgba(159,161,207,0.54)
 
 .slot-track-asset-info
   padding b6
@@ -349,5 +373,4 @@
     .download
       margin-left b3 
 
-.position-input
-  width auto
+
