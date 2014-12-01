@@ -132,12 +132,12 @@ object SQLType {
 
   /* can be generalized to any traversable/array (but read as IndexedSeq) */
   final class array[A](implicit t : SQLType[A]) extends SQLType[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
-    def show(a : IndexedSeq[A]) : String = a.map(a =>
-      if (a == null || a == None) "null" /* kind of hacky */
-      else "\"" + t.show(a).replaceAllLiterally("\\", """\\""").replaceAllLiterally("\"", """\"""") + "\"")
-      .mkString("{", ",", "}")
+    private[this] def quote(s : String) =
+      if (s == null) "null"
+      else "\"" + s.replaceAllLiterally("\\", """\\""").replaceAllLiterally("\"", """\"""") + "\""
+    def show(a : IndexedSeq[A]) : String = a.map(a => quote(t.show(a))).mkString("{", ",", "}")
     override def put(a : IndexedSeq[A]) : Any = a.map(t.put)
-    def read(s : String) = ???
+    def read(s : String) = ??? // could be implemented with db.postgresql.util.ArrayStreamingParser
     override def get(x : Any, where : String = "") : IndexedSeq[A] = x match {
       case null => throw new SQLUnexpectedNull(this, where)
       case a : IndexedSeq[Any] => a.map(t.get(_, where))
