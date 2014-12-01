@@ -24,8 +24,10 @@
     </validator>
   </fieldset>
 
-  <fieldset class="skinny">
+  <fieldset class="skinny pea-float col-desktop-15 col-tablet-9 col-mobile-6">
+    <div class="pea-float-floater row">
       <button ng-click="partyEditAccountForm.save()" message="save" class="green" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$invalid"></button>
       <button ng-click="partyEditAccountForm.resetAll()" message="revert" class="red" ng-disabled="partyEditAccountForm.$pristine"></button>
+    </div>
   </fieldset>  
 </ng-form>

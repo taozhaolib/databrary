@@ -1,9 +1,4 @@
 <ng-form name="partyEditApplyForm">
-   <fieldset class="clean skinny peap-float">
-    <div class="peap-float-floater row">
-      <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-9 col-tablet-7 col-mobile-6"></auth-search-form>
-    </div>
-  </fieldset>
   <fieldset ng-show="partyEditApplyForm.data.length > 0">
     <legend message="auth.apply.legend"></legend>
     <article ng-repeat="auth in partyEditApplyForm.data track by auth.party.id" id="auth-{{::auth.party.id}}" class="permission-auth cf foot pef">
@@ -50,5 +45,10 @@
         <auth-apply-form></auth-apply-form>
       </div>
     </article>
+  </fieldset>
+  <fieldset class="clean skinny peap-float">
+    <div class="peap-float-floater row ">
+      <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-5 col-tablet-5 col-mobile-6"></auth-search-form>
+    </div>
   </fieldset>
 </ng-form>

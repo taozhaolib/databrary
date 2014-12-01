@@ -44,6 +44,9 @@ app.directive('partyEditAccountForm', [
       validate.email.errors = page.constants.message('login.email.error');
       validate['password.again'].errors = page.constants.message('party.edit.password.again.error');
       form.validator.client(validate, true);
+
+      form.scrollFn = page.display.makeFloatScrollFn($('.pea-float'), $('.pea-float-floater'), 24*2.5);
+      page.$w.scroll(form.scrollFn);   
     };
 
     return {
