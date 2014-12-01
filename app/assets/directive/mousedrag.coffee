@@ -7,6 +7,7 @@ app.directive 'mouseDragRegion', [
       '$element',
       ($element) ->
         this.region = $element
+        return
     ]
 ]
 
@@ -34,4 +35,5 @@ app.directive 'mouseDrag', [
             false
           region.on 'mouseleave mouseup mousemove', mouseup
           false
+        return
 ]

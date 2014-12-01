@@ -54,4 +54,6 @@ app.directive 'authSearchForm', [
         , true
 
       $scope.$emit('authSearchForm-init', form)
+
+      return
 ]

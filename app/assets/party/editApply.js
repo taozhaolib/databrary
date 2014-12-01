@@ -62,9 +62,6 @@ app.directive('partyEditApplyForm', [
         preSelect = null;
       });
 
-      form.scrollFn = page.display.makeFloatScrollFn($('.peap-float'), $('.peap-float-floater'), 24*2.5);
-      page.$w.scroll(form.scrollFn);
-
       $scope.$emit('partyEditApplyForm-init', form);
     };
 

@@ -14,4 +14,5 @@ app.directive 'assetDisplay', [
 
       if $scope.asset != asset
         $scope.clip = asset.segment.relativeTo($scope.asset.segment)
+      return
 ]

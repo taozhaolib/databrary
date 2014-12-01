@@ -9,11 +9,11 @@ app.directive 'message', [
         if 'messageHtml' of $attrs
           ($element, $attrs) ->
             $element.html($sce.getTrustedHtml(constants.message($attrs.message, {sce:$sce.HTML})))
-            undefined
+            return
         else
           ($element, $attrs) ->
             $element[0].textContent = constants.message $attrs.message
-            undefined
+            return
       if $attrs.message.contains('{{')
         ($scope, $element, $attrs) ->
           fill($element, $attrs)

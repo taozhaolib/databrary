@@ -98,9 +98,6 @@ app.directive('volumeEditMaterialsForm', [
               removed(material);
           });
       };
-
-      form.scrollFn = page.display.makeFloatScrollFn($('.vem-float'), $('.vem-float-floater'), 24*1.5);
-      page.$w.scroll(form.scrollFn);
     };
 
     //

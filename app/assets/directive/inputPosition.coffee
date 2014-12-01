@@ -14,4 +14,5 @@ app.directive 'inputPosition', [
       ngModel.$formatters.push (value) ->
         return '' if value == blank
         Offset.format(value)
+      return
 ]

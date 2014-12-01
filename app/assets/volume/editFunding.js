@@ -47,9 +47,6 @@ app.directive('volumeEditFundingForm', [
         //warning: next line is template dependent! if classnames or structure change this may no longer work
         page.display.scrollTo('fieldset.funding-grant:last');
       };
-
-      form.scrollFn = page.display.makeFloatScrollFn($('.vef-float'), $('.vef-float-floater'), 24*2.5);
-      page.$w.scroll(form.scrollFn);
     };
 
     //

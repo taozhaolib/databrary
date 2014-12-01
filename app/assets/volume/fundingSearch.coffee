@@ -33,4 +33,6 @@ app.directive 'fundingSearchForm', [
           name:
             tips: constants.message('funding.search.name.help'),
         , true
+
+      return
 ]

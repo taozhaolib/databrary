@@ -35,7 +35,6 @@ app.factory('Store', [
         delete @file
         return true
       @asset.remove().then (asset) =>
-          console.log(asset)
           Store.removedAsset = asset
           messages.add
             type: 'green'
@@ -147,6 +146,7 @@ app.factory('Store', [
     @flowOptions =
       target: router.controllers.AssetApi.uploadChunk().url
       method: 'octet'
+      chunkSize: 1048576
       simultaneousUploads: 3
       testChunks: false
       chunkRetryInterval: 5000

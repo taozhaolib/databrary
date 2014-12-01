@@ -1,4 +1,8 @@
 <ng-form name="volumeEditLinksForm">
+  <fieldset scroll-float>
+    <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
+    <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
+  </fieldset>
   <div class="link-label">
     <label class="col-desktop-7 col-tablet-4" message="link.head.title"></label>
     <label class="col-desktop-8 col-tablet-5" message="link.url.title"></label>
@@ -11,11 +15,5 @@
       <input type="text" name="links[{{$index}}].url" ng-model="link.url" placeholder="{{::'link.url' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//" ng-change="volumeEditLinksForm.change()">
     </validator>
     <button class="mini" ng-if="$index < volumeEditLinksForm.data.length-1" ng-click="volumeEditLinksForm.remove(link)"><span class="icon trash"></button>
-  </fieldset>
-  <fieldset class="skinny vel-float">
-    <div class="vel-float-floater row col-desktop-5 col-tablet-5 col-mobile-6">
-      <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
-      <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
-    </div>
   </fieldset>
 </ng-form>

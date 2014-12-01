@@ -47,7 +47,5 @@ app.directive 'volumeEditLinksForm', [
             form.validator.server res
           )
 
-      form.scrollFn = page.display.makeFloatScrollFn($('.vel-float'), $('.vel-float-floater'), 24*2.5)
-      page.$w.scroll(form.scrollFn)
       return
 ]

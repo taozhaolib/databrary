@@ -1,4 +1,9 @@
 <ng-form name="partyEditProfileForm">
+  <fieldset scroll-float class="skinny col-desktop-15 col-tablet-9 col-mobile-6">
+    <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
+    <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
+  </fieldset>
+
   <fieldset>
     <legend message="party.edit.personal"></legend>
     <validator name="name" label="party.edit.name.title">
@@ -30,13 +35,5 @@
         </validator>
       </div>
     </div>
-
   </fieldset>
-  <fieldset class="skinny pep-float col-desktop-15 col-tablet-9 col-mobile-6">
-    <div class="pep-float-floater row">
-      <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
-      <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
-    </div>
-  </fieldset>
-
 </ng-form>

@@ -14,4 +14,5 @@ app.directive 'classificationSelect', [
       $scope.check = ($scope.value <= i for l, i in constants.classification)
       $scope.update = () ->
         $scope.value = $scope.check.indexOf(true)
+      return
 ]

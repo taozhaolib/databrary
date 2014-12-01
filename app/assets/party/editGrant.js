@@ -66,9 +66,6 @@ app.directive('partyEditGrantForm', [
         event.stopPropagation();
       });
 
-      form.scrollFn = page.display.makeFloatScrollFn($('.peg-float'), $('.peg-float-floater'), 24*2.5);
-      page.$w.scroll(form.scrollFn);
-
       $scope.$emit('partyEditGrantForm-init', form);
     };
 

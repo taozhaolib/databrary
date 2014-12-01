@@ -83,9 +83,6 @@ app.directive('volumeEditAccessForm', [
         //warning: next line is template dependent! if classnames change this will no longer work
         page.display.scrollTo('fieldset .access-grant:last');
       };
-
-      form.scrollFn = page.display.makeFloatScrollFn($('.vea-float'), $('.vea-float-floater'), 24*2.5);
-      page.$w.scroll(form.scrollFn);
     };
 
     return {

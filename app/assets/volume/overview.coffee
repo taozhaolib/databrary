@@ -31,4 +31,6 @@ app.controller 'volume/overview', [
         agemean: if ages then agesum / ages
 
     generateSummary($scope.volume) unless $scope.volume.summary
+
+    return
 ]
