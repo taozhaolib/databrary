@@ -10,4 +10,6 @@ app.controller('volume/spreadsheet', [
       type: 'yellow'
       html: page.constants.message('volume.edit.exit')
       url: volume.route()
+
+    return
 ])

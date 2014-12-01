@@ -33,4 +33,6 @@ app.directive 'tagAdd', [
       form.submit = (input) ->
         console.log(input)
         $scope.vote(input, true).then () -> ''
+
+      return
 ]

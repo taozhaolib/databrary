@@ -147,6 +147,7 @@ app.factory('Store', [
     @flowOptions =
       target: router.controllers.AssetApi.uploadChunk().url
       method: 'octet'
+      chunkSize: 1048576
       simultaneousUploads: 3
       testChunks: false
       chunkRetryInterval: 5000

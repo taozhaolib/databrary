@@ -17,4 +17,6 @@ app.directive('errors', [
               'error.resolve'
           , {sce:page.$sce.HTML})
         $scope.error = error
+        return
+      return
 ])

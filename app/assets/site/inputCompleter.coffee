@@ -59,4 +59,6 @@ app.directive 'inputCompleter', [
 
       $scope.enter = (input) ->
         handle($scope.submit({$input:input})) if input
+
+      return
 ]

@@ -6,4 +6,6 @@ app.controller('party/comments', [
     $scope.refreshPanel = ->
       $scope.comments = $scope.party.comments
       $scope.enabled = !$.isEmptyObject($scope.comments)
+      return
+    return
 ])

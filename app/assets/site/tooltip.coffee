@@ -37,4 +37,6 @@ app.directive 'tooltip', [
 
         $scope.classes.push('tooltip-visible')
         return
+
+      return
 ]

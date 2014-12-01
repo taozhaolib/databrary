@@ -16,7 +16,7 @@ app.controller('volume/slot', [
       selection: if 'select' of target then new Segment(target.select) else Segment.empty
       position: Offset.parse(target.pos)
 
-    $flow = undefined
+    $flow = $scope.$flow # not really in this scope
     video = undefined
     blank = undefined
 
@@ -468,6 +468,18 @@ app.controller('volume/slot', [
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->
         return if url.contains(slot.editRoute())
-        return display.cancelRouteChange(event) if stayDirty($flow?.isUploading())
-        done()
+        if $flow
+          uploading = $flow.isUploading()
+          $flow.pause()
+        if stayDirty(uploading)
+          $flow.resume() if uploading
+          display.cancelRouteChange(event)
+        else
+          done()
+
+    $scope.$on '$destroy', ->
+      $flow?.cancel()
+      return
+
+    return
 ])

@@ -32,4 +32,6 @@ app.directive 'accessSearchForm', [
           name:
             tips: constants.message('access.search.name.help')
         , true
+      
+      return
 ]
