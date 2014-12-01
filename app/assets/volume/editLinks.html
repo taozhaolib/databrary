@@ -12,8 +12,10 @@
     </validator>
     <button class="mini" ng-if="$index < volumeEditLinksForm.data.length-1" ng-click="volumeEditLinksForm.remove(link)"><span class="icon trash"></button>
   </fieldset>
-  <fieldset>
+  <fieldset class="skinny vel-float">
+    <div class="vel-float-floater row col-desktop-5 col-tablet-5 col-mobile-6">
       <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
       <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
+    </div>
   </fieldset>
 </ng-form>
