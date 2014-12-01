@@ -235,7 +235,7 @@ object SQL {
     "'" + s.replaceAllLiterally("'", "''") + "'";
   private[dbrary] val logger : play.api.Logger = play.api.Logger("sql")
   private[dbrary] def substituteArgs(query : String, args : Seq[SQLArg[_]]) : String = {
-    /* based on com.github.mauricio.async.db.postgresql.PreparedStatementHolder */
+    /* based on db.postgresql.PreparedStatementHolder */
     val result = new StringBuilder(query.length + 16*args.length)
     var offset = 0
     @scala.annotation.tailrec def next() : Boolean = {
