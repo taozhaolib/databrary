@@ -10,6 +10,7 @@ app.directive 'scrollFloat', [
       floater = $element[0]
       scroll = ->
         box = floater.getBoundingClientRect()
+        return unless box.height
         if box.top < 36
           floater.style['min-height'] = box.height + 'px'
           floater.firstChild.classList.add 'scroll-float'

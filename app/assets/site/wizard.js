@@ -1,3 +1,4 @@
+/* globals Event */
 'use strict';
 
 app.directive('wizard', [
@@ -36,6 +37,9 @@ app.directive('wizard', [
           page.$location.replace().search('page', newStep.name);
           $scope.activeStep = newStep;
           newStep.active = true;
+          page.$timeout(function() {
+            window.dispatchEvent(new Event('scroll'));
+          });
         };
       }],
     };
