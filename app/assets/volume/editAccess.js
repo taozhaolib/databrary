@@ -77,8 +77,6 @@ app.directive('volumeEditAccessForm', [
         form.data.push({
           new: true,
           party: found,
-          individual: 0,
-          children: 0,
         });
         //warning: next line is template dependent! if classnames change this will no longer work
         page.display.scrollTo('fieldset .access-grant:last');

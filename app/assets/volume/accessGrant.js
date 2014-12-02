@@ -11,8 +11,13 @@ app.directive('accessGrantForm', [
         individual: access.individual,
         extend: access.children === access.individual
       };
-      if (access.new)
+      if (!access.individual) {
         form.$setDirty();
+        page.$timeout(function () {
+          // hack! calling $validate() doesn't work!
+          form['access-'+access.party.id+'-individual'].$setValidity('required', false);
+        });
+      }
 
       form.canGrantAccess = function (p) {
         return p == page.permission.READ ||
