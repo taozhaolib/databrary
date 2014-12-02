@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'inputPosition', [
-  'Offset',
-  (Offset) ->
+  '$parse', 'Offset',
+  ($parse, Offset) ->
     restrict: 'A'
     require: 'ngModel'
     link: ($scope, $element, $attrs, ngModel) ->
@@ -14,5 +14,18 @@ app.directive 'inputPosition', [
       ngModel.$formatters.push (value) ->
         return '' if value == blank
         Offset.format(value)
+      if 'positionMin' of $attrs
+        min = $parse($attrs.positionMin)
+        ngModel.$validators.min = (value) ->
+          ### jshint ignore:start ###
+          ngModel.$isEmpty(value) || !(value < min($scope))
+          ### jshint ignore:end ###
+      if 'positionMax' of $attrs
+        max = $parse($attrs.positionMax)
+        ngModel.$validators.max = (value) ->
+          ### jshint ignore:start ###
+          ngModel.$isEmpty(value) || !(value > max($scope))
+          ### jshint ignore:end ###
+
       return
 ]
