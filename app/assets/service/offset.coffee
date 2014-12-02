@@ -9,7 +9,7 @@ app.factory 'Offset', [
         s = '0' + s
       s
     multipliers = [1000,60,60,24]
-    notInt = /[^0-9]/
+    regex = /^\s*[-+]?(\d+:){0,2}\d+(\.\d*)?\s*$/
 
     {
       format: (o, round) ->
@@ -27,8 +27,8 @@ app.factory 'Offset', [
             s = i + ':' + pad(s, 2, ':')
         if o < 0 then '-' + s else s
       parse: (s) ->
-        return unless s
-        return parseInt(s, 10) unless notInt.test(s)
+        return unless r = regex.exec(s)
+        return parseInt(s, 10) unless r[1] || r[2]
         s = s.substr(1) if n = s.charAt(0) == '-'
         s = s.split(':')
         l = s.length
