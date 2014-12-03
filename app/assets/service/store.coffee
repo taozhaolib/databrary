@@ -8,9 +8,11 @@ app.factory('Store', [
         @setAsset(asset)
       else
         @fillData()
+      return
 
     setAsset: (@asset) ->
       @fillData()
+      return
 
     fillData: ->
       @data =
@@ -21,6 +23,7 @@ app.factory('Store', [
           position: @asset.segment.l
         else
           classification: constants.classification.RESTRICTED+''
+      return
 
     Object.defineProperty @prototype, 'name',
       get: ->
@@ -139,9 +142,11 @@ app.factory('Store', [
     @fileSuccess = (file) ->
       file.store.progress = 1
       file.store.save()
+      return
 
     @fileProgress = (file) ->
       file.store.progress = file.progress()
+      return
 
     @flowOptions =
       target: router.controllers.AssetApi.uploadChunk().url
