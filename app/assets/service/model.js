@@ -971,7 +971,9 @@ app.factory('modelService', [
     SlotAsset.prototype.inContext = function (context) {
       if (context === undefined)
         context = this.context;
-      return Slot.prototype.inContext.call(this, this.asset.segment.intersect(context));
+      if (this.asset.segment)
+        context = this.asset.segment.intersect(context);
+      return Slot.prototype.inContext.call(this, context);
     };
 
     Object.defineProperty(SlotAsset.prototype, 'displayName', {
