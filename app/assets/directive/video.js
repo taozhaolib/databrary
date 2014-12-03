@@ -5,9 +5,9 @@ app.directive('video', [
   function (Segment) { return {
     restrict: 'E',
     require: '^?ngController',
-    link: function ($scope, $element, $attr, view) {
+    link: function ($scope, $element, $attrs, view) {
       $element.on('loadedmetadata', function () {
-        var seek = $scope.$eval($attr.seek), stop;
+        var seek = $scope.$eval($attrs.seek), stop;
         if (seek instanceof Segment) {
           stop = seek.u;
           seek = seek.l;

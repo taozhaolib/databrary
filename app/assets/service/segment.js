@@ -169,7 +169,7 @@ app.factory('Segment', [
     };
 
     Segment.prototype.relativeTo = function (b) {
-      this.shift(-base(b));
+      return this.shift(-base(b));
     };
 
     Segment.format = function (seg) {

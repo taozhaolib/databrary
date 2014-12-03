@@ -593,13 +593,19 @@ app.factory('modelService', [
       }
     });
 
-    Slot.prototype.inContext = function () {
-      if (this.segment.equals(this.context))
+    Slot.prototype.asSlot = function () {
+      return this.segment.full ? this.container : angular.extend(new Slot(this.container), this);
+    };
+
+    Slot.prototype.inContext = function (context) {
+      if (context === undefined)
+        context = this.context;
+      if (this.segment.equals(context))
         return this;
       /* not type-safe for descendents:
       if (this.context === undefined)
         return this.container; */
-      var s = angular.extend(Object.create(Object.getPrototypeOf(this)), this, {segment:Segment.make(this.context)});
+      var s = angular.extend(Object.create(Object.getPrototypeOf(this)), this, {segment:Segment.make(context)});
       s.clear('format');
       return s;
     };
@@ -961,6 +967,12 @@ app.factory('modelService', [
 
     delegate(SlotAsset, 'asset',
         'id', 'format', 'classification', 'name', 'pending');
+
+    SlotAsset.prototype.inContext = function (context) {
+      if (context === undefined)
+        context = this.context;
+      return Slot.prototype.inContext.call(this, this.asset.segment.intersect(context));
+    };
 
     Object.defineProperty(SlotAsset.prototype, 'displayName', {
       get: function () {
