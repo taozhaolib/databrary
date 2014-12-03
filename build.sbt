@@ -34,7 +34,7 @@ libraryDependencies ++= Seq(
   "org.databrary" %% "iteratees" % "0.1",
   "org.mindrot" % "jbcrypt" % "0.3m",
   ws,
-  "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.0",
+  "com.typesafe.play.plugins" %% "play-plugins-mailer" % "2.3.1",
   "com.github.fge" % "json-schema-validator" % "2.2.6",
   "org.webjars" % "jquery" % "1.11.1",
   "org.webjars" % "angularjs" % "1.3.4",
