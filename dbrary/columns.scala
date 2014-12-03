@@ -102,7 +102,7 @@ object Selector {
 }
 
 abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], table : FromTable, override val parse : C) extends Selector[A](selects, table, parse) {
-  def ~+[C](a : SelectExpr[C]) : Columns[_,_]
+  def ~+[C2](a : SelectExpr[C2]) : Columns[_,_]
 }
 
 object Columns {
