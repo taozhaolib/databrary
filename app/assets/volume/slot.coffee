@@ -33,7 +33,9 @@ app.controller('volume/slot', [
         type: 'yellow'
         html: constants.message(if editing then 'slot.view' else 'slot.edit')
         #url: url
-        click: -> searchLocation($location.url(url))
+        click: ->
+          searchLocation($location.url(url))
+          return
 
     byId = (a, b) -> a.id - b.id
     byPosition = (a, b) -> a.segment.l - b.segment.l
@@ -48,6 +50,8 @@ app.controller('volume/slot', [
         ruler.range.u = slot.segment.u
       else if isFinite(segment.u) && segment.u > ruler.range.u
         ruler.range.u = segment.u
+
+      return
 
     offsetPosition = (offset) ->
       return offset unless isFinite offset
@@ -90,10 +94,13 @@ app.controller('volume/slot', [
       if video && $scope.current?.asset?.segment.contains(o) && isFinite($scope.current.asset.segment.l)
         video[0].currentTime = (o - $scope.current.asset.segment.l) / 1000
       ruler.position = o
+      return
 
-    $scope.seekPosition = (pos) ->
+    seekPosition = (pos) ->
       if o = positionOffset(pos)
         seekOffset(o)
+        unless ruler.selection.empty || ruler.selection.contains(o) || ruler.selection.u == o # "loose" contains
+          ruler.selection = Segment.empty
       return
 
     $scope.play = ->
@@ -120,6 +127,7 @@ app.controller('volume/slot', [
             a.id - b.id
         else
           !a.asset - !b.asset || !a.file - !b.file
+      return
 
     stayDirty = (global) ->
       if global || editing && $scope.current && $scope.form.edit && ($scope.current.dirty = $scope.form.edit.$dirty)
@@ -147,9 +155,10 @@ app.controller('volume/slot', [
 
     $scope.select = (event, c) ->
       if !c || $scope.current == c
-        $scope.seekPosition event.clientX
+        seekPosition event.clientX
       else
         select(c)
+      return
 
     $scope.dragSelection = (down, up, c) ->
       return false if c && $scope.current != c
@@ -170,14 +179,17 @@ app.controller('volume/slot', [
       return if track.asset || track.file || track == blank
       select() if track == $scope.current
       $scope.tracks.remove(track)
+      return
 
     addBlank = () ->
       $scope.tracks.push(blank = new Track())
+      return
 
     class Track extends Store
       constructor: (asset) ->
         super slot, asset
         @excerpts = []
+        return
 
       type: 'asset'
 
@@ -186,6 +198,7 @@ app.controller('volume/slot', [
         return unless asset
         updateRange(@segment = new Segment(asset.segment))
         select(this) if `asset.id == target.asset`
+        return
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
@@ -195,6 +208,7 @@ app.controller('volume/slot', [
         return removed this unless r?.then
         r.then (done) =>
           removed this if done
+          return
         return
 
       save: ->
@@ -209,7 +223,7 @@ app.controller('volume/slot', [
               e.segment.l -= shift
               e.segment.u -= shift
           sortTracks()
-        return
+          return
 
       upload: (file) ->
         addBlank() if this == blank
@@ -247,6 +261,7 @@ app.controller('volume/slot', [
             classification: excerpt.excerpt+''
           else
             null
+        return
 
       saveExcerpt: () ->
         @excerpt.target.setExcerpt(if @excerpt.on then @excerpt.classification else null)
@@ -267,9 +282,11 @@ app.controller('volume/slot', [
         Store.restore(slot).then (a) =>
           @setAsset(a)
           addBlank()
+          return
 
     editExcerpt = ->
       $scope.current.editExcerpt() if $scope.current?.excerpts
+      return
 
     $scope.fileAdded = (file) ->
       $flow = file.flowObj
@@ -286,23 +303,29 @@ app.controller('volume/slot', [
       for e in slot.excerpts
         t = tracks[e.id]
         t.excerpts.push(e) if t
+      return
 
     videoEvents =
       pause: ->
         $scope.playing = 0
+        return
       playing: ->
         $scope.playing = 1
+        return
       ratechange: ->
         $scope.playing = video[0].playbackRate
+        return
       timeupdate: ->
         if $scope.current?.asset && isFinite($scope.current.asset.segment.l)
           ruler.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
           if ruler.selection.uBounded && ruler.position >= ruler.selection.u
             video[0].pause()
             seekOffset(ruler.selection.l) if ruler.selection.lBounded
+        return
       ended: ->
         $scope.playing = 0
         # look for something else to play?
+        return
 
     for ev, fn of videoEvents
       videoEvents[ev] = $scope.$lift(fn)
@@ -311,12 +334,14 @@ app.controller('volume/slot', [
       return unless video == v
       video = undefined
       v.off(videoEvents)
+      return
 
     @registerVideo = (v) ->
       this.deregisterVideo video if video
       video = v
       seekOffset(ruler.position)
       v.on(videoEvents)
+      return
 
     class Record
       constructor: (r) ->
@@ -327,29 +352,31 @@ app.controller('volume/slot', [
         updateRange(@segment = new Segment(r.segment))
         if editing
           @fillData()
+        return
 
       type: 'record'
 
       fillData: ->
         @data =
           measures: angular.extend({}, @record.measures)
+        return
 
       Object.defineProperty @prototype, 'id',
         get: -> @rec.id
 
       remove: ->
-        slot.removeRecord(@rec, @segment).then((r) =>
+        slot.removeRecord(@rec, @segment).then (r) =>
             return unless r
             records.remove(this)
             select() if $scope.current == this
             placeRecords()
+            return
           , (res) ->
             messages.addError
               type: 'red'
               body: 'Unable to remove'
               report: res
-          )
-        return
+            return
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
       metrics: ->
@@ -373,6 +400,7 @@ app.controller('volume/slot', [
         if @form.measures.$dirty
           saves.push @record.save({measures:@data.measures}).then () =>
             @form.measures.$setPristine()
+            return
         if @form.position.$dirty
           saves.push slot.moveRecord(@rec, @rec.segment, @segment).then (r) =>
             @form.position.$setPristine()
@@ -382,16 +410,18 @@ app.controller('volume/slot', [
               records.remove(this)
               select() if this == $scope.current
             placeRecords()
+            return
         $q.all(saves).then =>
             @fillData()
             delete @dirty
             $scope.form.edit.$setPristine() if this == $scope.current
+            return
           , (res) ->
             messages.addError
               type: 'red'
               body: 'Error saving'
               report: res
-        return
+            return
 
       dragLeft: (event) ->
         pos = positionOffset(event.clientX)
@@ -422,6 +452,7 @@ app.controller('volume/slot', [
       for r in t
         r.sort byPosition
       $scope.records = t
+      return
 
     $scope.positionBackgroundStyle = (l, i) ->
       $scope.positionStyle(new Segment(l[i].segment.l, if i+1 of l then l[i+1].segment.l else Infinity))
@@ -434,6 +465,7 @@ app.controller('volume/slot', [
         else
           @consent = c
           @segment = Segment.full
+        return
 
       type: 'consent'
 
@@ -476,6 +508,7 @@ app.controller('volume/slot', [
           display.cancelRouteChange(event)
         else
           done()
+        return
 
     $scope.$on '$destroy', ->
       $flow?.cancel()
