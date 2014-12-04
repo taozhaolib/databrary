@@ -57,18 +57,21 @@ app.directive 'spreadsheet', [
           delete info.i
       info
 
-    noCategory =
-      id: 0
-      name: 'record'
-      not: 'No record'
-      template: [constants.metricName.ident.id]
-    Object.freeze(noCategory)
+    pseudoCategory =
+      0:
+        id: 0
+        name: 'record'
+        not: 'No record'
+        template: [constants.metricName.ident.id]
+      asset:
+        id: 'asset'
+        name: 'file'
+        not: 'No file'
+    constants.deepFreeze(pseudoCategory)
     getCategory = (c) ->
-      ### jshint ignore:start ###
-      if `c != 0` then constants.category[c] else noCategory
-      ### jshint ignore:end ###
+      pseudoCategory[c || 0] || constants.category[c]
 
-    pseudoMetrics =
+    pseudoMetric =
       id:
         id: 'id'
         name: 'id'
@@ -80,9 +83,9 @@ app.directive 'spreadsheet', [
         name: 'age'
         type: 'number'
         classification: constants.classification.SHARED
-    constants.deepFreeze(pseudoMetrics)
+    constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
-      pseudoMetrics[m] || constants.metric[m]
+      pseudoMetric[m] || constants.metric[m]
 
     selectStyles = document.head.appendChild(document.createElement('style')).sheet
 
@@ -97,6 +100,7 @@ app.directive 'spreadsheet', [
 
         editing = $scope.editing = $attrs.edit != undefined
         top = $scope.top = 'top' of $attrs
+        assets = $scope.assets = 'assets' of $attrs
         id = $scope.id = $attrs.id ? if top then 'sst' else 'ss'
 
         ###
@@ -181,6 +185,8 @@ app.directive 'spreadsheet', [
 
             depends[record.id][i] = n
 
+          count.asset = slot.assets.length if assets
+
           return
 
         # Fill metricCols and recordCols from records
@@ -196,12 +202,12 @@ app.directive 'spreadsheet', [
             metrics = metrics.map(getMetric)
             # add back the 'id' column first if needed
             if !metrics.length || editing && !(metrics.length == 1 && metrics[0].options)
-              metrics.unshift(pseudoMetrics.id)
+              metrics.unshift(pseudoMetric.id)
             si = metricCols.length
             metricCols.push.apply metricCols, metrics.map (m) ->
               category: category
               metric: m
-              sortable: m != pseudoMetrics.id || metrics.length == 1
+              sortable: m != pseudoMetric.id || metrics.length == 1
             l = metrics.length
             metricCols[si].first = metricCols[si+l-1].last = l
             {
@@ -242,6 +248,10 @@ app.directive 'spreadsheet', [
           else if v == undefined
             c.classList.add('blank')
             v = assumed || ''
+          else if m == 'classification' || m == 'excerpt'
+            cn = constants.classification[v]
+            c.className = cn + ' classification icon hint-classification-' + cn
+            v = ''
           else
             c.classList.remove('blank')
             if m == 'id'
@@ -262,32 +272,39 @@ app.directive 'spreadsheet', [
             td.id = i
           td
 
+        generateMultiple = (cat, cols, row, i, n, t) ->
+          if n == undefined
+            return if t == 1
+          else
+            return if n < t
+          td = row.appendChild(document.createElement('td'))
+          td.setAttribute("colspan", cols)
+          if n == undefined && t > 1
+            td.appendChild(document.createTextNode(t + " " + cat.name + "s"))
+            td.className = 'more'
+            td.id = id + '-more_' + i + '_' + cat.id
+          else
+            td.className = 'null'
+            if !n || n == t
+              if !n
+                td.appendChild(document.createTextNode(cat.not))
+              else if editing
+                td.appendChild(document.createTextNode("add " + cat.name))
+              if edit
+                td.className = 'null add'
+                td.id = id + '-add_' + i + '_' + cat.id
+          td
+
         # Add all the measure tds to row i for count n, record r
-        generateRecord = (row, i, col, edit, n) ->
+        generateRecord = (row, i, col, n) ->
+          return unless l = col.metrics.length
           c = col.category.id
           t = counts[i][c] || 0
-          l = col.metrics.length
-          return unless l
           r = records[c]
-          if (if n == undefined then t != 1 else n >= t)
-            td = row.appendChild(document.createElement('td'))
-            td.setAttribute("colspan", l)
-            if n == undefined && t > 1
-              td.appendChild(document.createTextNode(t + " " + col.category.name + "s"))
-              td.className = 'more'
-              td.id = id + '-more_' + i + '_' + c
+          if td = generateMultiple(col.category, l, row, i, n, t)
+            if n == undefined
               for n in [0..t-1] by 1
                 td.classList.add('ss-rec_' + r.id[n][i])
-            else
-              td.className = 'null'
-              if !n || n == t
-                if !n
-                  td.appendChild(document.createTextNode(col.category.not))
-                else if edit
-                  td.appendChild(document.createTextNode("add " + col.category.name))
-                if edit
-                  td.className = 'null add'
-                  td.id = id + '-add_' + i + '_' + c
             return
           ms = col.metrics
           b = id + '-rec_' + i + '_'
@@ -303,6 +320,15 @@ app.directive 'spreadsheet', [
               ri = 'ss-rec_' + r.id[n][i]
               cell.classList.add(ri)
               cell.classList.add(ri + '_' + m)
+          return
+
+        generateAsset = (row, i, n) ->
+          a = slots[i].assets
+          return if generateMultiple(pseudoCategory.asset, 3, row, i, n, a.length)
+          a = a[n || 0]
+          generateCell(row, 'asset', a.name, id + '-asset_' + a.id)
+          generateCell(row, 'classification', a.classification, id + '-class_' + a.id)
+          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + a.id)
           return
 
         # Fill out rows[i].
@@ -337,7 +363,9 @@ app.directive 'spreadsheet', [
           generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i)
           for c in recordCols
-            generateRecord(row, i, c, editing && !stop)
+            generateRecord(row, i, c)
+          if assets
+            generateAsset(row, i)
           return
 
         # Update all age displays.
@@ -563,17 +591,20 @@ app.directive 'spreadsheet', [
           row.classList.add('expand')
 
           max = counts[expanded][expandedCat]
-          edit = editing && slots[expanded].id != volume.top.id
-          max++ if edit
+          max++ if editing
           return if max <= 1
-          col = recordCols.find (col) -> col.category.id == expandedCat
           next = row.nextSibling
           start = counts[expanded][expandedCat] == 1
+          col = expandedCat != 'asset' &&
+            recordCols.find (col) -> col.category.id == expandedCat
           for n in [+start..max-1] by 1
             el = tbody.insertBefore(document.createElement('tr'), next)
             el.data = expanded
             el.className = 'expand'
-            generateRecord(el, expanded, col, edit, n)
+            if col
+              generateRecord(el, expanded, col, n)
+            else
+              generateAsset(el, expanded, n)
 
           max++ unless start
           el = row.firstChild
@@ -721,7 +752,7 @@ app.directive 'spreadsheet', [
               for ci, c of constants.category when ci not of records
                 editScope.options.push(c)
               editScope.options.sort(byId)
-              editScope.options.push(noCategory) unless noCategory.id of records
+              editScope.options.push(pseudoCategory[0]) unless 0 of records
             else
               return
 
