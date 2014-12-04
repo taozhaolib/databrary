@@ -789,7 +789,7 @@ app.directive 'spreadsheet', [
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
               selectStyles.insertRule('.' + c + '{background-color:' +
-                (if c.contains('_', 7) then '#e8e47f' else '#f3f1bf') +
+                (if c.contains('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}', selectStyles.cssRules.length)
 
           edit(cell, info) if editing

@@ -59,8 +59,14 @@ app.directive('partyEditGrantForm', [
           });
         };
 
-        if (preSelect)
-          searchForm.selectFn(preSelect);
+        if (preSelect) {
+          if (form.data.some(function (auth) {
+              return auth.party.id == preSelect.id;
+            }))
+            page.display.scrollTo("#auth-"+preSelect.id);
+          else
+            searchForm.selectFn(preSelect);
+        }
         preSelect = null;
 
         event.stopPropagation();
