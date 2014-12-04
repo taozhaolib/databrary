@@ -28,21 +28,22 @@
 
   .panel-tag-weight
     font-weight bold
-    display inline-block
+    float left
     background green51
     border-radius b3
     margin-right f4
-    top -b12
+    margin-top f4
+    margin-bottom f4
     min-width b1
     font-line f34 f23
     text-align center
 
   .panel-tag-controls
-    display inline-block
+    float left
     margin-left f4
 
   .panel-tag-name
-    display inline-block
+    float left
     height b1
     top -b12
 
@@ -57,13 +58,15 @@
     padding 0
     background transparent
     line-height b2
+    box-shadow none
 
     &.null
       color transparent
-      top 5px
       height 1px
       width 9px
       border 2px solid able
+      margin-top 11px
+      margin-bottom 5px
 
       &:hover
         border-color hover
