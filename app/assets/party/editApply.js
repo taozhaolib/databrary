@@ -57,8 +57,14 @@ app.directive('partyEditApplyForm', [
           page.display.scrollTo('fieldset article.permission-auth.pef:last');
         };
 
-        if (preSelect)
-          searchForm.selectFn(preSelect);
+        if (preSelect) {
+          if (form.data.some(function (auth) {
+              return auth.party.id == preSelect.id;
+            }))
+            page.display.scrollTo("#auth-"+preSelect.id);
+          else
+            searchForm.selectFn(preSelect);
+        }
         preSelect = null;
       });
 
