@@ -1,5 +1,5 @@
 <ng-form name="volumeEditFundingForm">
-  <fieldset scroll-float class="skinny">
+  <fieldset scroll-float class="skinny clean">
     <div class="col-desktop-5 col-tablet-5 col-mobile-6">
       <button ng-click="volumeEditFundingForm.saveAll()" class="green" message="save" ng-disabled="volumeEditFundingForm.$pristine"></button>
       <button ng-click="volumeEditFundingForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditFundingForm.$pristine"></button>
@@ -7,7 +7,7 @@
     <funding-search-form class="col-desktop-6 col-tablet-4 col-mobile-6"></funding-search-form>
   </fieldset>
 
-  <fieldset class="clean funding-grant anchor" ng-repeat="funding in volumeEditFundingForm.data" id="funder-{{funding.id}}">
+  <fieldset class="funding-grant anchor" ng-repeat="funding in volumeEditFundingForm.data" id="funder-{{funding.id}}">
     <funding-grant-form></funding-grant-form>
   </fieldset>
 </ng-form>
