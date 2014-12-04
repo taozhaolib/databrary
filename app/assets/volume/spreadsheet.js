@@ -928,7 +928,7 @@ app.directive('spreadsheet', [
               var c = cl[ci];
               if (c.startsWith('ss-rec_'))
                 selectStyles.insertRule('.' + c + '{background-color:' +
-                  (!c.contains('_', 7) ? '#f3f1bf' : '#e8e47f') + 
+                  (!c.contains('_', 7) ? 'rgba(242,238,100,0.4)' : '#e8e47f') + 
                   ';\n text-}', selectStyles.cssRules.length);
             }
           }
