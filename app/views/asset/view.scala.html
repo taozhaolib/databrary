@@ -29,7 +29,7 @@
                     <dd>@cast[SlotFileAsset](asset).map(_.format.name)</dd>
 
                     <dt>Position</dt>
-                    <dd>@asset.relativeSegment</dd>
+                    <dd>@asset.segment</dd>
 
                     @cast[SlotTimeseriesAsset](asset).map { ts =>
                         <dt>Duration</dt>

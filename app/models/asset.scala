@@ -234,9 +234,6 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
   override def format = parent.source.format.sampleFormat
 }
 
-object PendingAsset extends TableId[Asset]("asset") {
-}
-
 object Asset extends TableId[Asset]("asset") {
   private[models] val columns = Columns(
       SelectColumn[Id]("id")

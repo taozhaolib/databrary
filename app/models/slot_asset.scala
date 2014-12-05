@@ -12,9 +12,93 @@ final class Excerpt (val segment : Segment, val classification : Classification.
   private[models] def sqlKey = ???
 }
 
+sealed trait AssetSlot extends Slot {
+  def slotAsset : SlotAsset
+  def asset : Asset = slotAsset.asset
+  final def assetId = asset.id
+  override final def volume = asset.volume
+  def entire = segment === slotAsset.segment
+
+  def classification = asset.classification
+  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
+    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
+  final override val permission : Permission.Value =
+    slot.dataPermission(classification).permission
+    
+  final override def auditDownload(implicit site : Site) : Future[Boolean] =
+    Audit.download("slot_asset", 'container -> containerId, 'segment -> segment, 'asset -> assetId)
+
+  override def pageName = asset.pageName
+  override def pageParent = Some(slot)
+  override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
+
+  override def fileName : Future[String] =
+    for {
+      vol <- volume.fileName
+      slot <- super.fileName
+    } yield {
+      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name.map(store.truncate(_)) : _*)
+    }
+
+}
+
+sealed class SlotAsset protected (val asset : Asset, val container : Container, val segment : Segment, val context : ContextSlot) extends AssetSlot {
+  private[models] final def sqlKey = asset.sqlKey
+  def slotAsset = this
+
+  override def json : JsonObject =
+    asset.json ++ slotJson 
+}
+
+/** A segment of an asset as used in a slot.
+  * This is a "virtual" model representing an SlotAsset within the context of a Slot. */
+sealed class SlotAssetSlot protected (val slotAsset : SlotAsset, val slot : Slot, val excerpt : Option[Excerpt]) extends AssetSlot {
+  final val segment = slot.segment * slotAsset.segment
+  final def context = slot.context
+
+  require(excerpt.forall(_ @> this))
+
+  final def classification = excerpt.fold(super.classification)(e => max(e.classification, super.classification))
+
+  final private def in(s : Slot) = {
+    require(s.containerId === containerId)
+    if (s.segment === slot.segment)
+      this
+    else
+      SlotAsset.make(asset, asset_segment, s, excerpt.filter(_.segment @> s.segment))
+  }
+  /** "Expand" this slot asset to a larger one with equivalent permissions.
+    * This determines what segment should be shown to users when they request a smaller one.
+    */
+  final def inContext : SlotAsset = {
+    val c = in(slot.context)
+    if (c.permission < permission)
+      this
+    else {
+      val a = c.in(container)
+      if (a.permission < c.permission)
+        c
+      else
+        a
+    }
+  }
+  final def inContainer : SlotAsset = in(container)
+
+  override def json : JsonObject = JsonObject.flatten(
+    Some('permission -> permission),
+    excerpt.map('excerpt -> _.classification),
+    Some('asset -> slotAsset.json),
+    Some(inContext.slot.segment).filterNot(_.isFull).map('context -> _)
+  ) ++ (slotJson - "context")
+
+  def json(options : JsonOptions.Options) : Future[JsObject] =
+    JsonOptions(json.obj, options
+    )
+}
+
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot with TableRow with InVolume with SiteObject {
+sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot {
   private[models] def sqlKey = asset.sqlKey
   final val segment = slot.segment * asset_segment
   final def context = slot.context
