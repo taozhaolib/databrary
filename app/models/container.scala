@@ -12,12 +12,12 @@ import site._
   * @param name descriptive name to help with organization by contributors.
   * @param date the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
   */
-final class Container protected (override val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val consent : Consent.Value = Consent.NONE) extends ContextSlot with TableRowId[Container] with InVolume {
-  override def container = this
-  val segment = Segment.full
+final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], consent : Consent.Value = Consent.NONE)
+  extends ContextSlot(this, Segment.full, consent) with TableRowId[Container] {
   override def isFull = true
 
   private[models] def withConsent(consent : Consent.Value) =
+    if (consent == this.consent) this else
     new Container(id, volume, top, name, date, consent)
 
   def ===(a : Container) = super[TableRowId].===(a)
