@@ -8,18 +8,19 @@ import macros.async._
 import dbrary._
 import site._
 
-final class Excerpt (val segment : Segment, val classification : Classification.Value, val context : ContextSlot) extends Slot {
-  private[models] def sqlKey = ???
-}
-
 sealed trait AssetSlot extends Slot {
   def slotAsset : SlotAsset
+  val excerpt : Option[Classification]
+
   def asset : Asset = slotAsset.asset
   final def assetId = asset.id
   override final def volume = asset.volume
-  def entire = segment === slotAsset.segment
+  final def entire = segment === slotAsset.segment
+  def format = asset.format
+  protected def assetSegment = soltAsset.segment
 
-  def classification = asset.classification
+  final def classification = excerpt.fold(asset.classification)(max(asset.classification, _))
+
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   final override val permission : Permission.Value =
@@ -32,6 +33,13 @@ sealed trait AssetSlot extends Slot {
   override def pageParent = Some(slot)
   override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
 
+  override def json : JsonObject = JsonObject.flatten(
+    Some('permission -> permission),
+    excerpt.map('excerpt -> _),
+    Some('asset -> slotAsset.json),
+    if (format === asset.format) None else Some('format -> format.id)
+  ) ++ (slotJson - "container")
+
   override def fileName : Future[String] =
     for {
       vol <- volume.fileName
@@ -39,10 +47,38 @@ sealed trait AssetSlot extends Slot {
     } yield {
       store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name.map(store.truncate(_)) : _*)
     }
-
 }
 
-sealed class SlotAsset protected (val asset : Asset, val container : Container, val segment : Segment, val context : ContextSlot) extends AssetSlot {
+sealed trait FileAssetSlot extends AssetSlot with BackedAsset {
+  def slotAsset : SlotFileAsset
+  def asset : FileAsset = slotAsset.asset
+  def source = asset.source
+}
+
+sealed trait TimeseriesAssetSlot extends FileAssetSlot with TimeseriesData {
+  def slotAsset : TimeseriesFileAsset
+  def asset : TimeseriesAsset = slotAsset.asset
+  def source = asset.source
+
+  def section = segment.singleton.fold {
+      /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
+      /* it must be within (and default to) this asset's own space */
+      val l = asset.duration
+      /* shifted forward if the slot starts later than the asset */
+      val t0 = (for { s <- segment.lowerBound ; p <- assetSegment.lowerBound ; if s > p }
+        yield (s - p)).getOrElse(Offset.ZERO)
+      /* the lesser of the slot end and the asset end */
+      val t1 = l + (for { s <- segment.upperBound ; p <- assetSegment.upperBound ; if s < p }
+        yield (s - p)).getOrElse(Offset.ZERO)
+      Segment(t0, t1)
+    } { s =>
+      Range.singleton[Offset](s - assetSegment.lowerBound.getOrElse(Offset.ZERO))
+    }
+}
+
+/** An entire asset in its assigned position. */
+sealed class SlotAsset protected (override val asset : Asset, val container : Container, val segment : Segment, val consent : Consent.Value, val excerpt : Option[Classification])
+  extends AssetSlot {
   private[models] final def sqlKey = asset.sqlKey
   def slotAsset = this
 
@@ -50,159 +86,58 @@ sealed class SlotAsset protected (val asset : Asset, val container : Container, 
     asset.json ++ slotJson 
 }
 
-/** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an SlotAsset within the context of a Slot. */
-sealed class SlotAssetSlot protected (val slotAsset : SlotAsset, val slot : Slot, val excerpt : Option[Excerpt]) extends AssetSlot {
-  final val segment = slot.segment * slotAsset.segment
-  final def context = slot.context
+sealed class SlotFileAsset protected (override val asset : FileAsset, container : Container, segment : Segment, consent : Consent.Value, excerpt : Option[Classification])
+  extends SlotAsset(asset, container, segment, consent, excerpt) with FileAssetSlot
 
-  require(excerpt.forall(_ @> this))
-
-  final def classification = excerpt.fold(super.classification)(e => max(e.classification, super.classification))
-
-  final private def in(s : Slot) = {
-    require(s.containerId === containerId)
-    if (s.segment === slot.segment)
-      this
-    else
-      SlotAsset.make(asset, asset_segment, s, excerpt.filter(_.segment @> s.segment))
-  }
-  /** "Expand" this slot asset to a larger one with equivalent permissions.
-    * This determines what segment should be shown to users when they request a smaller one.
-    */
-  final def inContext : SlotAsset = {
-    val c = in(slot.context)
-    if (c.permission < permission)
-      this
-    else {
-      val a = c.in(container)
-      if (a.permission < c.permission)
-        c
-      else
-        a
-    }
-  }
-  final def inContainer : SlotAsset = in(container)
-
-  override def json : JsonObject = JsonObject.flatten(
-    Some('permission -> permission),
-    excerpt.map('excerpt -> _.classification),
-    Some('asset -> slotAsset.json),
-    Some(inContext.slot.segment).filterNot(_.isFull).map('context -> _)
-  ) ++ (slotJson - "context")
-
-  def json(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(json.obj, options
-    )
-}
+sealed class SlotTimeseriesAsset protected (override val asset : TimeseriesAsset, container : Container, segment : Segment, consent : Consent.Value, excerpt : Option[Classification])
+  extends SlotFileAsset(asset, container, segment, consent, excerpt) with TimeseriesAssetSlot
 
 /** A segment of an asset as used in a slot.
-  * This is a "virtual" model representing an ContainerAsset within the context of a Slot. */
-sealed class SlotAsset protected (val asset : Asset, asset_segment : Segment, val slot : Slot, val excerpt : Option[Excerpt]) extends Slot {
-  private[models] def sqlKey = asset.sqlKey
-  final val segment = slot.segment * asset_segment
-  final def context = slot.context
-  final override def volume = asset.volume
-  final def assetId = asset.id
+  * This is a "virtual" model representing an SlotAsset within the context of a segment. */
+sealed class SlotAssetSegment protected (val slotAsset : SlotAsset, val segment : Segment, val consent : Consent.Value, val excerpt : Option[Classification])
+  extends AssetSlot
 
-  def entire = slot.segment @> asset_segment
-  /** Segment occupied by asset wrt slot position. */
-  final def relativeSegment = segment.map(_ - slot.position)
-  require(excerpt.forall(_ @> this))
+sealed class SlotFileAssetSegment private[models] (override val slotAsset : SlotFileAsset, segment : Segment, consent : Consent.Value, excerpt : Option[Classification])
+  extends SlotAssetSegment(slotAsset, segment, consent, excerpt) with FileAssetSlot
 
-  final def classification = excerpt.fold(asset.classification)(e => max(e.classification, asset.classification))
+final class SlotTimeseriesAssetSegment private[models] (override val slotAsset : SlotTimeseriesAsset, segment : Segment, consent : Consent.Value, excerpt : Option[Classification])
+  extends SlotFileAssetSegment(slotAsset, segment, consent, excerpt) with TimeseriesAssetSlot
 
-  /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
-    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
-  final override val permission : Permission.Value =
-    slot.dataPermission(classification).permission
 
-  final private def in(s : Slot) = {
-    require(s.containerId === containerId)
-    if (s.segment === slot.segment)
-      this
-    else
-      SlotAsset.make(asset, asset_segment, s, excerpt.filter(_.segment @> s.segment))
+object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset] {
+  private[models] def make(segment : Segment, excerpt : Option[Classification])(asset : Asset)(container : Container, consent : Consent.Value) : SlotAsset = asset match {
+    case ts : TimeseriesAsset => new SlotTimeseriesAsset(ts, container, segment, consent, excerpt)
+    case f : FileAsset => new SlotFileAsset(f, container, segment, consent, excerpt)
+    case a => new SlotAsset(a, container, segment, consent, excerpt)
   }
-  /** "Expand" this slot asset to a larger one with equivalent permissions.
-    * This determines what segment should be shown to users when they request a smaller one.
-    */
-  final def inContext : SlotAsset = {
-    val c = in(slot.context)
-    if (c.permission < permission)
-      this
-    else {
-      val a = c.in(container)
-      if (a.permission < c.permission)
-        c
-      else
-        a
-    }
-  }
-  final def inContainer : SlotAsset = in(container)
 
-  final override def auditDownload(implicit site : Site) : Future[Boolean] =
-    Audit.download("slot_asset", 'container -> containerId, 'segment -> segment, 'asset -> assetId)
+  private val columns : Selector[Asset => (Container, Consent.Value) => SlotAsset] =
+    Columns(segment)
+    .leftJoin(Excerpt.excerpt, "slot_asset.asset = excerpt.excerpt AND slot_asset.segment <@ excerpt.segment")
+    .map { (segment, excerpt) => make(segment, excerpt) }
 
-  override def pageName = asset.pageName
-  override def pageParent = Some(slot)
-  override def pageURL = controllers.routes.SlotAssetHtml.view(containerId, slot.segment, assetId)
+  /** Retrieve the list of all assets within the given slot. */
+  private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
+    columnsSlot(columns
+      .join(Asset.rowVolume(slot.volume), "slot_asset.asset = asset.id")
+      .map(tupleApply)
+      slot.container)
+    .SELECT("WHERE slot_asset.segment && ? ORDER BY slot_asset.segment")
+    .apply(slot.segment).list
 
-  override def fileName : Future[String] =
-    for {
-      vol <- volume.fileName
-      slot <- super.fileName
-    } yield {
-      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name.map(store.truncate(_)) : _*)
-    }
-
-  override def json : JsonObject = JsonObject.flatten(
-    Some('permission -> permission),
-    excerpt.map('excerpt -> _.classification),
-    Some('asset -> (asset.json ++
-      JsonObject.flatten(if (asset_segment.isFull) None else Some('segment -> asset_segment)))),
-    Some(inContext.slot.segment).filterNot(_.isFull).map('context -> _)
-  ) ++ (slotJson - "context")
-
-  def json(options : JsonOptions.Options) : Future[JsObject] =
-    JsonOptions(json.obj, options
-    )
+  /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
+  private[models] def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
+    columnsSlot(columns.map(_(asset)),
+      Container.columnsVolume(asset.volume))
+    .SELECT("WHERE slot_asset.asset = ?")
+    .apply(asset.id).singleOpt
 }
 
-sealed class SlotFileAsset private[models] (override val asset : FileAsset, asset_segment : Segment, slot : Slot, excerpt : Option[Excerpt])
-  extends SlotAsset(asset, asset_segment, slot, excerpt) with BackedAsset {
-  def source = asset.source
-  override def format = asset.format
-
-  override def json : JsonObject =
-    if (format === asset.format) super.json
-    else super.json + ('format -> format.id)
-}
-
-final class SlotTimeseriesAsset private[models] (override val asset : TimeseriesAsset, asset_segment : Segment, slot : Slot, _excerpt : Option[Excerpt])
-  extends SlotFileAsset(asset, asset_segment, slot, _excerpt) with TimeseriesData {
-  override def source = asset.source
-  def section = segment.singleton.fold {
-      /* We need to determine the portion of this asset and the slot which overlap, in asset-source space: */
-      /* it must be within (and default to) this asset's own space */
-      val l = asset.duration
-      /* shifted forward if the slot starts later than the asset */
-      val t0 = (for { s <- segment.lowerBound ; p <- asset_segment.lowerBound ; if s > p }
-        yield (s - p)).getOrElse(Offset.ZERO)
-      /* the lesser of the slot end and the asset end */
-      val t1 = l + (for { s <- segment.upperBound ; p <- asset_segment.upperBound ; if s < p }
-        yield (s - p)).getOrElse(Offset.ZERO)
-      Segment(t0, t1)
-    } { s =>
-      Range.singleton[Offset](s - asset_segment.lowerBound.getOrElse(Offset.ZERO))
-    }
-}
-
-object SlotAsset extends Table[SlotAsset]("slot_asset") {
-  private[models] def make(asset : Asset, asset_segment : Segment, slot : Slot, excerpt : Option[Excerpt]) = asset match {
-    case ts : TimeseriesAsset => new SlotTimeseriesAsset(ts, asset_segment, slot, excerpt)
-    case f : FileAsset => new SlotFileAsset(f, asset_segment, slot, excerpt)
-    case _ => new SlotAsset(asset, asset_segment, slot, excerpt)
+object SlotAssetSegment extends Table[SlotAssetSegment]("slot_asset") {
+  private[models] def make(segment : Segment, excerpt : Option[Classification])(slotAsset : Asset)(container : Container, consent : Consent.Value) = slotAsset match {
+    case ts : SlotTimeseriesAsset => new SlotTimeseriesAssetSegment(ts, slot, excerpt)
+    case f : SlotFileAsset => new SlotFileAssetSegment(f, slot, excerpt)
+    case a => new SlotAssetSegment(asset, slot, excerpt)
   }
 
   private object SlotAssetSlot extends SlotTable("slot_asset") {
@@ -244,11 +179,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") {
 
 object Excerpt extends Table[Excerpt]("excerpt") with TableSlot[Excerpt] {
   protected final type A = Excerpt
-  private[models] val columns = Columns(
-      segment
-    , SelectColumn[Classification.Value]("classification")
-    ).map { (segment, classification) =>
-      context : ContextSlot => new Excerpt(segment, classification, context)
+  private[models] val excerpt = Columns(
+      SelectColumn[Classification.Value]("classification")
+    )
+  private[models] val columns = (excerpt +~ segment)
+    .map { (classification, segment) => (container, consent) =>
+      new SlotAssetSlot(segment, classification, context)
     }
   private[models] val columnsContext = columns from
     "(SELECT asset, container, excerpt.segment, excerpt.classification, slot_asset.segment AS asset_segment FROM slot_asset JOIN excerpt USING (asset)) AS excerpt"

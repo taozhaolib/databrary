@@ -185,7 +185,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
     * @param container container selector to use
     * @param consent determine applicable consent level, or just use container context
    */
-  protected final def columnsSlot(columns : Selector[(Container, Consent) => A], container : Selector[Container], consent : Boolean = true) : Selector[A] = {
+  protected final def columnsSlot(columns : Selector[(Container, Consent.Value) => A], container : Selector[Container], consent : Boolean = true) : Selector[A] = {
     val base = columns
       .join(container, table + ".container = container.id")
     if (consent) base
@@ -195,7 +195,7 @@ private[models] trait TableSlot[R <: Slot] extends Table[R] {
     else base
       .map { case (a, container) => a(container, container.consent) }
   }
-  protected final def columnsSlot(columns : Selector[(Container, Consent) => A], container : Container) : Selector[A] =
+  protected final def columnsSlot(columns : Selector[(Container, Consent.Value) => A], container : Container) : Selector[A] =
     columnsSlot(columns, Container.fixed(container), container.consent == Consent.NONE)
 }
 
@@ -213,7 +213,7 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") wi
 
 private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {
   protected final type A = Slot
-  private final def make(segment : Segment) : (Container, Consent) => Slot =
+  private final def make(segment : Segment) : (Container, Consent.Value) => Slot =
     if (segment.isFull) _.withConsent(_)
     else new Slot(_, segment, _)
   private[models] final val columns =
