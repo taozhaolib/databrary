@@ -184,7 +184,6 @@ object AngularController extends SiteController {
 
   val page = SiteAction { implicit request =>
     Ok(views.html.angular(jsDepends))
-    .withHeaders(HeaderNames.CACHE_CONTROL -> "max-age=86400")
   }
 
   private def analytic(data : json.JsValue)(implicit site : Site) : Future[Unit] = data match {
