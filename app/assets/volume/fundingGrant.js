@@ -8,19 +8,20 @@ app.directive('fundingGrantForm', [
       var form = $scope.fundingGrantForm;
 
       form.data = {
-        awards: funding.awards && funding.awards.length ? funding.awards.slice(0) : ['']
+        awards: funding.awards.slice(0)
       };
+      form.data.awards.push('');
 
       if (funding.new)
         form.$setDirty();
 
+      function keep(x) {
+        return x;
+      }
+
       form.save = function () {
         form.data.awards = form.data.awards
-          .map(function (grant) {
-            return grant.trim();
-          }).filter(function (grant) {
-            return grant !== '';
-          });
+          .filter(keep);
 
         volume.fundingSave(funding.funder.id, form.data).then(function () {
           form.messages.add({
@@ -30,6 +31,7 @@ app.directive('fundingGrantForm', [
           });
 
           delete funding.new;
+          form.data.awards.push('');
           form.$setPristine();
         }, function (res) {
           form.messages.addError({
@@ -61,26 +63,18 @@ app.directive('fundingGrantForm', [
         });
       };
 
-      //
-
-      form.addAward = function () {
-        form.data.awards.push('');
+      form.awardChange = function () {
+        if (form.data.awards[form.data.awards.length-1] !== '')
+          form.data.awards.push('');
       };
 
-      form.addAwardEnabled = function() {
-        return form.data.awards.every(function (grant) {
-          return grant.trim() !== '';
-        });
-      };
-
-      form.removeAward = function (i) {
-        form.data.awards.splice(i, 1);
+      form.awardRemove = function (i) {
+        form.data.awards[i] = i === form.data.awards.length-1 ? '' : null;
+        if (i === 0 && !form.data.awards.some(keep))
+          return form.remove();
+        form.awardChange();
         form.$setDirty();
-        if (!form.data.awards.length)
-          form.remove();
       };
-
-      //
 
       $scope.$emit('fundingGrantForm-init', form, $scope);
     };
