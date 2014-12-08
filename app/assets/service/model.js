@@ -663,8 +663,9 @@ app.factory('modelService', [
     function containerMake(volume, init) {
       var c = volume.containers[init.id];
       if (c) {
-        delete init._PLACEHOLDER;
-        return c.update(init);
+        if (!init._PLACEHOLDER)
+          c.update(init);
+        return c;
       } else
         return new Container(volume, init);
     }
