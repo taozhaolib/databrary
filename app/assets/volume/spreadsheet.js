@@ -397,7 +397,7 @@ app.directive('spreadsheet', [
           }
           a = cell.insertBefore(document.createElement('a'), cell.firstChild);
           a.setAttribute('href', editing ? slot.editRoute() : slot.route());
-          a.className = "go icon hint-object-play";
+          a.className = "session icon hint-object-play";
 
           if (!slot.top)
             generateCell(row, 'date', slot.date, id + '-date_' + i);
