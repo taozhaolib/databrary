@@ -1,4 +1,4 @@
-<ng-form name="accessSearchForm">
+<ng-form name="accessSearchForm"  autocomplete="off">
   <validator name="name" noclientval>
     <input-completer name="name" ng-model="accessSearchForm.nameVal" completer="accessSearchForm.search($input)" placeholder="{{::accessSearchForm.placeholderText}}"></input-completer>
   </validator>

@@ -1,3 +1,3 @@
-<ng-form name="tagAddForm" class="panel-tags-new-form">
+<ng-form name="tagAddForm" class="panel-tags-new-form" autocomplete="off">
   <input-completer name="newName" ng-model="tagAddForm.name" placeholder="{{::'tags.new.placeholder' | message}}" completer="tagAddForm.search($input)" submit="tagAddForm.submit($input)" ng-pattern="/^[a-zA-Z][a-zA-Z -]{1,30}[a-zA-Z]$/">
 </ng-form>
