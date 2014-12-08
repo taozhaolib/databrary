@@ -7,15 +7,14 @@
     </fieldset>
     <label message="funding.awards"></label>
 
-    <div ng-repeat="award in fundingGrantForm.data.awards track by $index">
+    <div ng-repeat="award in fundingGrantForm.data.awards track by $index" ng-show="award !== null">
       <validator name="funding.awards[{{$index}}]" noclientval>
-        <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{::'funding.awards.placeholder' | message}}" key-enter="fundingGrantForm.save()">
-        <button ng-click="fundingGrantForm.removeAward($index)" class="mini pull">
+        <input type="text" name="funding.awards[{{$index}}]" ng-model="fundingGrantForm.data.awards[$index]" placeholder="{{::'funding.awards.placeholder' | message}}" ng-change="fundingGrantForm.awardChange()">
+        <button ng-click="fundingGrantForm.awardRemove($index)" class="mini pull">
           <span class="icon trash"></span>
         </button>
       </validator>
     </div>
-    <button ng-click="fundingGrantForm.addAward()" ng-disabled="!fundingGrantForm.addAwardEnabled()"  message="funding.awards.add" class="neutral mini"></button>
   </fieldset>
 
 </ng-form>
