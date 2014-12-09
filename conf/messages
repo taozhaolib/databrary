@@ -592,7 +592,7 @@ wizard.volume-edit-materials.instructions=<p>Provide any files related to this s
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
-wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>folder</em> (<img src=">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified by your current edit.</p>
+wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session2.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified by your current edit.</p>
 wizard.volume-edit-data.releasekeyhide=Hide legend of session release levels
 wizard.volume-edit-data.releasekeyshow=Show legend of session release levels
 
