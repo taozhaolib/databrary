@@ -8,7 +8,8 @@ import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parents : Seq[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
+final class Comment private (val id : Comment.Id, val who : Account, container : Container, segment : Segment, consent : Consent.Value, val time : Timestamp, val text : String, val parents : Seq[Comment.Id])
+  extends Slot(container, segment, consent) with TableRowId[Comment] with InVolume {
   def whoId = who.id
 
   override def json = JsonRecord.flatten(id,
@@ -20,16 +21,15 @@ final class Comment private (val id : Comment.Id, val who : Account, val segment
 }
 
 object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
-  override protected type A = Account => Comment
-  private val columns : Selector[ContextSlot => A] = Columns(
+  private val columns : Selector[(Container, Consent.Value) => Account => Comment] = Columns(
       SelectColumn[Id]("id")
     , segment
     , SelectColumn[Timestamp]("time")
     , SelectColumn[String]("text")
     , SelectColumn[IndexedSeq[Id]]("thread")
     ).map { (id, segment, time, text, thread) =>
-      (context : ContextSlot) => (who : Account) =>
-        new Comment(id, who, segment, context, time, text, thread.tail)
+      (container, consent) => (who : Account) =>
+        new Comment(id, who, container, segment, consent, time, text, thread.tail)
     } from "comment_thread AS comment"
 
   private def row(who : Selector[Account], container : Selector[Container]) =

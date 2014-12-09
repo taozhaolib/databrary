@@ -49,7 +49,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
           if (!r && c.nonEmpty) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
-    } yield (sa.fold(result(asset))(SlotAssetController.result _))
+    } yield (sa.fold(result(asset))(AssetSlotController.result _))
 
   private[this] def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =
     request.obj.isSuperseded.map(when(_,
@@ -242,14 +242,14 @@ object AssetHtml extends AssetController with HtmlController {
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[Result](
       throw NotFoundException /* TODO */)(
-      sa => Redirect(sa.inContainer.pageURL)))
+      sa => Redirect(sa.pageURL)))
   }
 
   def edit(o : models.Asset.Id) =
     Action(o, Permission.EDIT).async { implicit request =>
       request.obj.slot.flatMap { sa =>
         val form = new ChangeForm()
-        form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
+        form.excerpt.fill(Some(sa.flatMap(_.excerpt)))
         form.Ok
       }
     }

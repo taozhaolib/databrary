@@ -1,4 +1,4 @@
-@(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
+@(asset : AssetSlot, comments : Seq[Comment])(implicit request : AssetSlotHtml.Request[_])
 
 @html("Asset" + asset.asset.name.fold("")(": " + _), None) {
 <article class="wrap">

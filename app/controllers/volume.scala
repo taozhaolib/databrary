@@ -208,7 +208,7 @@ object VolumeController extends VolumeController {
     Action(v).async { implicit request =>
       request.obj.thumb.flatMap(_.fold(
         async(Found("/public/images/draft.png")))(
-        a => SlotAssetController.getFrame(Left(0.25f), size)(request.withObj(a))))
+        a => AssetSlotController.getFrame(Left(0.25f), size)(request.withObj(a))))
     }
 }
 

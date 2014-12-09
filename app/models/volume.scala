@@ -37,7 +37,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def top : Future[Container] = Container.getTop(this)
 
   /** List of toplevel assets within this volume. */
-  def excerpts = Excerpt.getVolume(this)
+  def excerpts : Future[Seq[FileAssetSlot]] = Excerpt.getVolume(this)
 
   private val _records : FutureVar[Seq[Record]] =
     FutureVar(Record.getVolume(this))
@@ -60,7 +60,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def tags = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
-  def thumb = Excerpt.getVolumeThumb(this)
+  def thumb : Future[Option[FileAssetSlot]] = Excerpt.getVolumeThumb(this)
 
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =

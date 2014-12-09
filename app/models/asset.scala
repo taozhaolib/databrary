@@ -134,11 +134,11 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
       }
   }
 
-  def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
+  def slot : Future[Option[AssetSlot]] = AssetSlot.getAssetFull(this)
 
   def link(c : Container, segment : Segment = Segment.full) : Future[SlotAsset] =
     Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> segment), SQLTerms('asset -> id)).ensure
-    .map(_ => SlotAsset.make(this, segment, c, None))
+    .map(_ => SlotAsset.make(this, c, segment))
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
@@ -160,7 +160,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(sa => (sa.json - "asset").js))),
       "revisions" -> (opt => Asset.getRevisions(this).map(JsonArray.map(_.json))),
       "creation" -> (opt => if (checkPermission(Permission.EDIT))
         creation.map { case (date, name) => JsonObject.flatten(

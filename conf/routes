@@ -79,11 +79,11 @@ GET     /transcode                                                              
 GET     /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcoding(assetId : models.Asset.Id)
 POST    /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcode(assetId : models.Asset.Id)
 
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.SlotAssetHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.SlotAssetController.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.SlotAssetController.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.SlotAssetController.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.SlotAssetController.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.AssetSlotHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.AssetSlotController.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.AssetSlotController.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.AssetSlotController.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
+GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/frame/$offset<[0-9:\.]+>                            controllers.AssetSlotController.frame(   sID : models.Container.Id, aID : models.Asset.Id, offset : dbrary.Offset, size : Int ?= controllers.AssetController.defaultThumbSize)
 
 # annotations
 POST    /slot/$sID<[0-9]+>/comment/create                                                         controllers.CommentHtml.post(sID : models.Container.Id, segment : dbrary.Segment ?= dbrary.Range.full[dbrary.Offset], parent : Option[models.Comment.Id] ?= None)
@@ -194,9 +194,9 @@ DELETE  /api/asset/$aID<[0-9]+>                                                 
 # QUERY     ?volume=ID;segment=
 #                                                                                                 TODO: GET     /api/slot/containerId<[0-9]+>/asset
 # GET       ?segment=
-GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.SlotAssetApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
-POST    /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.SlotAssetApi.setExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
-DELETE  /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.SlotAssetApi.removeExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+GET     /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>                                     controllers.AssetSlotApi.get(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+POST    /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.AssetSlotApi.setExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
+DELETE  /api/slot/$containerId<[0-9]+>/asset/$assetId<[0-9]+>/excerpt                             controllers.AssetSlotApi.removeExcerpt(containerId : models.Container.Id, segment : dbrary.Segment, assetId : models.Asset.Id)
 
 # ----- COMMENT ----- #
 # CREATE    ?container=ID;segment=
