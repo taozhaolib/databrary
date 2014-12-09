@@ -185,18 +185,35 @@
               
         </dd></dl></div>
     </li><li name="store.Transcode#collect" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="collect(id:models.Transcode.Id,pid:Int,res:Int,sha1:Array[Byte],log:String):scala.concurrent.Future[Unit]"></a>
-      <a id="collect(models.Transcode.Id,Int,Int,Array[Byte],String):Future[Unit]"></a>
+      <a id="collect(id:models.Transcode.Id,res:Int,log:String):scala.concurrent.Future[play.api.libs.Files.TemporaryFile]"></a>
+      <a id="collect(models.Transcode.Id,Int,String):Future[TemporaryFile]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">collect</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>, <span name="pid">pid: <span class="extype" name="scala.Int">Int</span></span>, <span name="res">res: <span class="extype" name="scala.Int">Int</span></span>, <span name="sha1">sha1: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>, <span name="log">log: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+        <span class="name">collect</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>, <span name="res">res: <span class="extype" name="scala.Int">Int</span></span>, <span name="log">log: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#store.Transcode$@collect(id:models.Transcode.Id,pid:Int,res:Int,sha1:Array[Byte],log:String):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+      <a href="../index.html#store.Transcode$@collect(id:models.Transcode.Id,res:Int,log:String):scala.concurrent.Future[play.api.libs.Files.TemporaryFile]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="store.Transcode#enabled" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="enabled:Boolean"></a>
+      <a id="enabled:Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">enabled</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#store.Transcode$@enabled:Boolean" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -360,53 +377,36 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
-    </li><li name="store.Transcode#restart" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="restart(id:models.Transcode.Id)(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[Option[models.Transcode]]"></a>
-      <a id="restart(models.Transcode.Id)(SiteRequest[_]):Future[Option[Transcode]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">restart</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/Transcode.html" class="extype" name="models.Transcode">Transcode</a>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#store.Transcode$@restart(id:models.Transcode.Id)(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[Option[models.Transcode]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="store.Transcode#start" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="start(asset:models.Asset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[models.Transcode]"></a>
-      <a id="start(Asset,Segment,IndexedSeq[String])(SiteRequest[_]):Future[Transcode]"></a>
+      <a id="start(id:models.Transcode.Id,args:Seq[String]):scala.concurrent.Future[Int]"></a>
+      <a id="start(models.Transcode.Id,Seq[String]):Future[Int]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">start</span><span class="params">(<span name="asset">asset: <a href="../models/Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span> = <span class="symbol">dbrary.Segment.full</span></span>, <span name="options">options: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">IndexedSeq.empty[String]</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="../controllers/SiteRequest.html" class="extype" name="controllers.SiteRequest">SiteRequest</a>[_]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="../models/Transcode.html" class="extype" name="models.Transcode">Transcode</a>]</span>
+        <span class="name">start</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>, <span name="args">args: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Int">Int</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#store.Transcode$@start(asset:models.Asset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitrequest:controllers.SiteRequest[_]):scala.concurrent.Future[models.Transcode]" title="Permalink" target="_top">
+      <a href="../index.html#store.Transcode$@start(id:models.Transcode.Id,args:Seq[String]):scala.concurrent.Future[Int]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
       
     </li><li name="store.Transcode#stop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="stop(id:models.Transcode.Id):scala.concurrent.Future[Option[models.Transcode]]"></a>
-      <a id="stop(models.Transcode.Id):Future[Option[Transcode]]"></a>
+      <a id="stop(id:models.Transcode.Id,pid:Int):scala.concurrent.Future[String]"></a>
+      <a id="stop(models.Transcode.Id,Int):Future[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">stop</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/Transcode.html" class="extype" name="models.Transcode">Transcode</a>]]</span>
+        <span class="name">stop</span><span class="params">(<span name="id">id: <a href="../models/Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">models.Transcode.Id</a></span>, <span name="pid">pid: <span class="extype" name="scala.Int">Int</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#store.Transcode$@stop(id:models.Transcode.Id):scala.concurrent.Future[Option[models.Transcode]]" title="Permalink" target="_top">
+      <a href="../index.html#store.Transcode$@stop(id:models.Transcode.Id,pid:Int):scala.concurrent.Future[String]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>

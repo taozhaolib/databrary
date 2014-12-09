@@ -43,13 +43,13 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <span class="name">SearchForm</span><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>]</span>
+        <span class="name">SearchForm</span><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>] with <a href="NoCsrfForm.html" class="extype" name="controllers.NoCsrfForm">NoCsrfForm</a></span>
       </span>
       </h4>
       
           <div id="comment" class="fullcommenttop"><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/controllers/volume.scala" target="_blank">volume.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>], <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a>, <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a>, <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="NoCsrfForm.html" class="extype" name="controllers.NoCsrfForm">NoCsrfForm</a>, <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>], <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a>, <a href="FormView.html" class="extype" name="controllers.FormView">FormView</a>, <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -67,7 +67,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="controllers.VolumeController.SearchForm"><span>SearchForm</span></li><li class="in" name="controllers.HtmlForm"><span>HtmlForm</span></li><li class="in" name="controllers.HtmlFormView"><span>HtmlFormView</span></li><li class="in" name="controllers.FormView"><span>FormView</span></li><li class="in" name="controllers.StructForm"><span>StructForm</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="controllers.VolumeController.SearchForm"><span>SearchForm</span></li><li class="in" name="controllers.NoCsrfForm"><span>NoCsrfForm</span></li><li class="in" name="controllers.HtmlForm"><span>HtmlForm</span></li><li class="in" name="controllers.HtmlFormView"><span>HtmlFormView</span></li><li class="in" name="controllers.FormView"><span>FormView</span></li><li class="in" name="controllers.StructForm"><span>StructForm</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -371,6 +371,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="FormView.html" class="extype" name="controllers.FormView">FormView</a> → <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
+    </li><li name="controllers.NoCsrfForm#_csrf" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_csrf(implicitrequest:play.api.mvc.RequestHeader):Option[String]"></a>
+      <a id="_csrf(RequestHeader):Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_csrf</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$SearchForm@_csrf(implicitrequest:play.api.mvc.RequestHeader):Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="NoCsrfForm.html" class="extype" name="controllers.NoCsrfForm">NoCsrfForm</a> → <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#_enctype" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_enctype:String"></a>
       <a id="_enctype:String"></a>
@@ -513,6 +530,40 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="controllers.StructForm#csrf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="csrf:StructForm.this.Field[Option[String]]"></a>
+      <a id="csrf:Field[Option[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">csrf</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$SearchForm@csrf:StructForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
+    </li><li name="controllers.StructForm#csrfField" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="csrfField(implicitrequest:play.api.mvc.RequestHeader):play.api.data.Field"></a>
+      <a id="csrfField(RequestHeader):play.api.data.Field"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">csrfField</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.data.Field">play.api.data.Field</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$SearchForm@csrfField(implicitrequest:play.api.mvc.RequestHeader):play.api.data.Field" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -903,7 +954,9 @@
         </div>
 
         <div id="inheritedMembers">
-        <div class="parent" name="controllers.HtmlForm">
+        <div class="parent" name="controllers.NoCsrfForm">
+              <h3>Inherited from <a href="NoCsrfForm.html" class="extype" name="controllers.NoCsrfForm">NoCsrfForm</a></h3>
+            </div><div class="parent" name="controllers.HtmlForm">
               <h3>Inherited from <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>]</h3>
             </div><div class="parent" name="controllers.HtmlFormView">
               <h3>Inherited from <a href="HtmlFormView.html" class="extype" name="controllers.HtmlFormView">HtmlFormView</a></h3>

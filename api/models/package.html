@@ -144,7 +144,7 @@ Controllers and other callers should do any necessary checking to ensure appropr
     </span>
       
     </li><li name="models.Asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="AssetextendsTableRowId[models.Asset]withBackedAssetwithInVolumewithSiteObject"></a>
+      <a id="AssetextendsTableRowId[models.Asset]withInVolumewithSiteObject"></a>
       <a id="Asset:Asset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -152,14 +152,14 @@ Controllers and other callers should do any necessary checking to ensure appropr
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
+        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="models.TableRowId">TableRowId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>] with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@AssetextendsTableRowId[models.Asset]withBackedAssetwithInVolumewithSiteObject" title="Permalink" target="_top">
+      <a href="../index.html#models.package@AssetextendsTableRowId[models.Asset]withInVolumewithSiteObject" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">File assets: objects within the system backed by primary file storage.</p>
+      
     </li><li name="models.AssetFormat" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="AssetFormatextendsTableRowId[models.AssetFormat]"></a>
       <a id="AssetFormat:AssetFormat"></a>
@@ -268,7 +268,7 @@ Unlike most [TableRow] classes, these may be constructed directly, and thus are 
       <p class="shortcomment cmt">Assets which are backed by files on disk.</p><div class="fullcomment"><div class="comment cmt"><p>Assets which are backed by files on disk.
 Currently this includes all of them.</p></div></div>
     </li><li name="models.Citation" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="CitationextendsProductwithSerializable"></a>
+      <a id="CitationextendsExternalReferencewithProductwithSerializable"></a>
       <a id="Citation:Citation"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -276,10 +276,10 @@ Currently this includes all of them.</p></div></div>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="Citation.html"><span class="name">Citation</span></a><span class="params">(<span name="head">head: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="url">url: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.net.URL">URL</span>] = <span class="symbol">None</span></span>, <span name="authors">authors: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="year">year: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Short">Short</span>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="Citation.html"><span class="name">Citation</span></a><span class="params">(<span name="head">head: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="title">title: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="url">url: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="java.net.URL">URL</span>] = <span class="symbol">None</span></span>, <span name="year">year: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Short">Short</span>] = <span class="symbol">None</span></span>)</span><span class="result"> extends <a href="ExternalReference.html" class="extype" name="models.ExternalReference">ExternalReference</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@CitationextendsProductwithSerializable" title="Permalink" target="_top">
+      <a href="../index.html#models.package@CitationextendsExternalReferencewithProductwithSerializable" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -320,8 +320,7 @@ These are immutable (and unaudited), although the author may be considered to ha
     </span>
       <p class="shortcomment cmt">Collection of related assets.</p><div class="fullcomment"><div class="comment cmt"><p>Collection of related assets.
 To be used, all assets must be placed into containers.
-These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
-</p></div></div>
+These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.</p></div></div>
     </li><li name="models.ContextSlot" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
       <a id="ContextSlotextendsSlot"></a>
       <a id="ContextSlot:ContextSlot"></a>
@@ -356,6 +355,57 @@ These containers can represent a package of raw data acquired cotemporaneously o
       </a>
     </span>
       
+    </li><li name="models.ExternalLink" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="ExternalLinkextendsExternalReference"></a>
+      <a id="ExternalLink:ExternalLink"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExternalLink.html"><span class="name">ExternalLink</span></a><span class="result"> extends <a href="ExternalReference.html" class="extype" name="models.ExternalReference">ExternalReference</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@ExternalLinkextendsExternalReference" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A reference to an external resource.</p>
+    </li><li name="models.ExternalReference" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="ExternalReferenceextendsAnyRef"></a>
+      <a id="ExternalReference:ExternalReference"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed abstract </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="ExternalReference.html"><span class="name">ExternalReference</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@ExternalReferenceextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FileAssetextendsAssetwithBackedAsset"></a>
+      <a id="FileAsset:FileAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="FileAsset.html"><span class="name">FileAsset</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@FileAssetextendsAssetwithBackedAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">File assets: objects within the system backed by primary file storage.</p>
     </li><li name="models.Funder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="FunderextendsTableRow"></a>
       <a id="Funder:Funder"></a>
@@ -441,6 +491,23 @@ These containers can represent a package of raw data acquired cotemporaneously o
       </a>
     </span>
       <p class="shortcomment cmt">GenericId specific to integers.</p><div class="fullcomment"><div class="comment cmt"><p>GenericId specific to integers.  The most common (only?) type of identifier we have.</p></div></div>
+    </li><li name="models.IntIdMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="IntIdMap[T,A]extendsMap[models.IntId[T],A]"></a>
+      <a id="IntIdMap[T,A]:IntIdMap[T,A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="IntIdMap.html"><span class="name">IntIdMap</span></a><span class="tparams">[<span name="T">T</span>, <span name="A">A</span>]</span><span class="result"> extends <span class="extype" name="scala.Predef.Map">Map</span>[<a href="IntId.html" class="extype" name="models.IntId">IntId</a>[<span class="extype" name="models.IntIdMap.T">T</span>], <span class="extype" name="models.IntIdMap.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@IntIdMap[T,A]extendsMap[models.IntId[T],A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.LoginToken" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="LoginTokenextendsAccountToken"></a>
       <a id="LoginToken:LoginToken"></a>
@@ -653,6 +720,23 @@ For now, all instances are hard-coded.
       </a>
     </span>
       
+    </li><li name="models.SQLTermEq" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SQLTermEq[A]extendsSQLTerm[A]"></a>
+      <a id="SQLTermEq[A]:SQLTermEq[A]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SQLTermEq.html"><span class="name">SQLTermEq</span></a><span class="tparams">[<span name="A">A</span>]</span><span class="result"> extends <a href="SQLTerm.html" class="extype" name="models.SQLTerm">SQLTerm</a>[<span class="extype" name="models.SQLTermEq.A">A</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@SQLTermEq[A]extendsSQLTerm[A]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.SQLTerms" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="SQLTermsextendsSQLArgs"></a>
       <a id="SQLTerms:SQLTerms"></a>
@@ -722,7 +806,7 @@ For now, all instances are hard-coded.
     </span>
       <p class="shortcomment cmt">Conceptually a slot represents a segment of a container.</p>
     </li><li name="models.SlotAsset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="SlotAssetextendsSlotwithTableRowwithBackedAssetwithInVolumewithSiteObject"></a>
+      <a id="SlotAssetextendsSlotwithTableRowwithInVolumewithSiteObject"></a>
       <a id="SlotAsset:SlotAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -730,10 +814,10 @@ For now, all instances are hard-coded.
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <a href="Slot.html" class="extype" name="models.Slot">Slot</a> with <span class="extype" name="models.TableRow">TableRow</span> with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
+        <a href="SlotAsset.html"><span class="name">SlotAsset</span></a><span class="result"> extends <a href="Slot.html" class="extype" name="models.Slot">Slot</a> with <span class="extype" name="models.TableRow">TableRow</span> with <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> with <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@SlotAssetextendsSlotwithTableRowwithBackedAssetwithInVolumewithSiteObject" title="Permalink" target="_top">
+      <a href="../index.html#models.package@SlotAssetextendsSlotwithTableRowwithInVolumewithSiteObject" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -756,19 +840,53 @@ This is a &quot;virtual&quot; model representing an ContainerAsset within the co
       </a>
     </span>
       
-    </li><li name="models.SlotTimeseries" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SlotTimeseriesextendsSlotAssetwithTimeseriesData"></a>
-      <a id="SlotTimeseries:SlotTimeseries"></a>
+    </li><li name="models.SlotFileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotFileAssetextendsSlotAssetwithBackedAsset"></a>
+      <a id="SlotFileAsset:SlotFileAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">sealed </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="SlotFileAsset.html"><span class="name">SlotFileAsset</span></a><span class="result"> extends <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> with <a href="BackedAsset.html" class="extype" name="models.BackedAsset">BackedAsset</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@SlotFileAssetextendsSlotAssetwithBackedAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.SlotTimeseriesAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotTimeseriesAssetextendsSlotFileAssetwithTimeseriesData"></a>
+      <a id="SlotTimeseriesAsset:SlotTimeseriesAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="SlotTimeseries.html"><span class="name">SlotTimeseries</span></a><span class="result"> extends <a href="SlotAsset.html" class="extype" name="models.SlotAsset">SlotAsset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
+        <a href="SlotTimeseriesAsset.html"><span class="name">SlotTimeseriesAsset</span></a><span class="result"> extends <a href="SlotFileAsset.html" class="extype" name="models.SlotFileAsset">SlotFileAsset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@SlotTimeseriesextendsSlotAssetwithTimeseriesData" title="Permalink" target="_top">
+      <a href="../index.html#models.package@SlotTimeseriesAssetextendsSlotFileAssetwithTimeseriesData" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.TableIdMap" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TableIdMap[R&lt;:models.TableRowId[R]]extendsIntIdMap[R,R]"></a>
+      <a id="TableIdMap[R&lt;:TableRowId[R]]:TableIdMap[R]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="TableIdMap.html"><span class="name">TableIdMap</span></a><span class="tparams">[<span name="R">R &lt;: <span class="extype" name="models.TableRowId">TableRowId</span>[<span class="extype" name="models.TableIdMap.R">R</span>]</span>]</span><span class="result"> extends <a href="IntIdMap.html" class="extype" name="models.IntIdMap">IntIdMap</a>[<span class="extype" name="models.TableIdMap.R">R</span>, <span class="extype" name="models.TableIdMap.R">R</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@TableIdMap[R&lt;:models.TableRowId[R]]extendsIntIdMap[R,R]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -827,7 +945,7 @@ Immutable (create only).
     </span>
       <p class="shortcomment cmt">Summary representation of tag information for a single tag and current user.</p>
     </li><li name="models.TimeseriesAsset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="TimeseriesAssetextendsAssetwithTimeseriesData"></a>
+      <a id="TimeseriesAssetextendsFileAssetwithTimeseriesData"></a>
       <a id="TimeseriesAsset:TimeseriesAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -835,10 +953,10 @@ Immutable (create only).
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="TimeseriesAsset.html"><span class="name">TimeseriesAsset</span></a><span class="result"> extends <a href="Asset.html" class="extype" name="models.Asset">Asset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
+        <a href="TimeseriesAsset.html"><span class="name">TimeseriesAsset</span></a><span class="result"> extends <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a> with <a href="TimeseriesData.html" class="extype" name="models.TimeseriesData">TimeseriesData</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@TimeseriesAssetextendsAssetwithTimeseriesData" title="Permalink" target="_top">
+      <a href="../index.html#models.package@TimeseriesAssetextendsFileAssetwithTimeseriesData" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -900,7 +1018,7 @@ Note that some non-TimeseriesFormat AssetFormats may represent timeseries data, 
     </span>
       
     </li><li name="models.Token" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="TokenextendsTableRow"></a>
+      <a id="TokenextendsTableRowwithTokenAuth"></a>
       <a id="Token:Token"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -908,10 +1026,27 @@ Note that some non-TimeseriesFormat AssetFormats may represent timeseries data, 
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="Token.html"><span class="name">Token</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span></span>
+        <a href="Token.html"><span class="name">Token</span></a><span class="result"> extends <span class="extype" name="models.TableRow">TableRow</span> with <a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.package@TokenextendsTableRow" title="Permalink" target="_top">
+      <a href="../index.html#models.package@TokenextendsTableRowwithTokenAuth" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.TokenAuth" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
+      <a id="TokenAuthextendsAnyRef"></a>
+      <a id="TokenAuth:TokenAuth"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">trait</span>
+      </span>
+      <span class="symbol">
+        <a href="TokenAuth.html"><span class="name">TokenAuth</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@TokenAuthextendsAnyRef" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -1286,6 +1421,23 @@ Must match the corresponding postgres &quot;consent&quot; type, except for the N
       </a>
     </span>
       
+    </li><li name="models.FileAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="FileAsset"></a>
+      <a id="FileAsset:FileAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="FileAsset$.html"><span class="name">FileAsset</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@FileAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Funder" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Funder"></a>
       <a id="Funder:Funder"></a>
@@ -1299,6 +1451,23 @@ Must match the corresponding postgres &quot;consent&quot; type, except for the N
       </span>
       </h4><span class="permalink">
       <a href="../index.html#models.package@Funder" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.Ingest" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Ingest"></a>
+      <a id="Ingest:Ingest"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Ingest$.html"><span class="name">Ingest</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@Ingest" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -1439,6 +1608,23 @@ Must match the corresponding postgres &quot;consent&quot; type, except for the N
       </a>
     </span>
       
+    </li><li name="models.PendingAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="PendingAsset"></a>
+      <a id="PendingAsset:PendingAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="PendingAsset$.html"><span class="name">PendingAsset</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@PendingAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Permission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Permission"></a>
       <a id="Permission:Permission"></a>
@@ -1505,6 +1691,23 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </span>
       </h4><span class="permalink">
       <a href="../index.html#models.package@SQLDuplicateKeyException" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.SQLException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SQLException"></a>
+      <a id="SQLException:SQLException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SQLException$.html"><span class="name">SQLException</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@SQLException" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -1611,6 +1814,23 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </a>
     </span>
       
+    </li><li name="models.SlotRecord" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="SlotRecord"></a>
+      <a id="SlotRecord:SlotRecord"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="SlotRecord$.html"><span class="name">SlotRecord</span></a><span class="result"> extends <span class="extype" name="models.SlotTable">SlotTable</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@SlotRecord" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Tag" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Tag"></a>
       <a id="Tag:Tag"></a>
@@ -1662,6 +1882,23 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </a>
     </span>
       
+    </li><li name="models.TimeseriesAsset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TimeseriesAsset"></a>
+      <a id="TimeseriesAsset:TimeseriesAsset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TimeseriesAsset$.html"><span class="name">TimeseriesAsset</span></a><span class="result"> extends <span class="extype" name="models.TableId">TableId</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@TimeseriesAsset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Token" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="Token"></a>
       <a id="Token:Token"></a>
@@ -1675,6 +1912,23 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </span>
       </h4><span class="permalink">
       <a href="../index.html#models.package@Token" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.TokenAuth" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="TokenAuth"></a>
+      <a id="TokenAuth:TokenAuth"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="TokenAuth$.html"><span class="name">TokenAuth</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@TokenAuth" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -1777,6 +2031,23 @@ These are all hard-coded so bypass the database, though they are stored in recor
       </span>
       </h4><span class="permalink">
       <a href="../index.html#models.package@VolumeFunding" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.VolumeLink" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="VolumeLink"></a>
+      <a id="VolumeLink:VolumeLink"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="VolumeLink$.html"><span class="name">VolumeLink</span></a><span class="result"> extends <span class="extype" name="models.Table">Table</span>[<a href="ExternalLink.html" class="extype" name="models.ExternalLink">ExternalLink</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.package@VolumeLink" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>

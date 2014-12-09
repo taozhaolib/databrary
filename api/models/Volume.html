@@ -253,7 +253,7 @@ Usually represents a single project or dataset with a single set of procedures.<
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">body</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
@@ -263,7 +263,7 @@ Usually represents a single project or dataset with a single set of procedures.<
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Longer, abstract-like description.</p>
+      <p class="shortcomment cmt">longer, abstract-like description.</p>
     </li><li name="models.HasGenericId#canEqual" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="canEqual(i:Any):Boolean"></a>
       <a id="canEqual(Any):Boolean"></a>
@@ -282,18 +282,18 @@ Usually represents a single project or dataset with a single set of procedures.<
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals</dd></dl></div>
     </li><li name="models.Volume#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Option[String],Option[Option[String]],Option[Option[String]]):Future[Boolean]"></a>
+      <a id="change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[models.Volume]"></a>
+      <a id="change(Option[String],Option[Option[String]],Option[Option[String]]):Future[Volume]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="alias">alias: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">None</span></span>, <span name="alias">alias: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="body">body: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="" class="extype" name="models.Volume">Volume</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Volume@change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+      <a href="../index.html#models.Volume@change(name:Option[String],alias:Option[Option[String]],body:Option[Option[String]]):scala.concurrent.Future[models.Volume]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -657,7 +657,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
@@ -667,7 +667,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Title headline.</p>
+      <p class="shortcomment cmt">title headline.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -838,36 +838,19 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <p class="shortcomment cmt">Volumes (&quot;datasets&quot;) which provide data included in this volume.</p>
-    </li><li name="models.Volume#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="records(category:Option[models.RecordCategory]):scala.concurrent.Future[Seq[models.Record]]"></a>
-      <a id="records(Option[RecordCategory]):Future[Seq[Record]]"></a>
+    </li><li name="models.Volume#records" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="records:scala.concurrent.Future[Seq[models.Record]]"></a>
+      <a id="records:Future[Seq[Record]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">records</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
+        <span class="name">records</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Volume@records(category:Option[models.RecordCategory]):scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">List of records defined in this volume.</p><div class="fullcomment"><div class="comment cmt"><p>List of records defined in this volume.</p></div><dl class="paramcmts block"><dt class="param">category</dt><dd class="cmt"><p>restrict to the specified category</p></dd><dt>returns</dt><dd class="cmt"><p>records sorted by category</p></dd></dl></div>
-    </li><li name="models.Volume#sessions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="sessions:scala.concurrent.Future[Seq[models.Volume.Session.Group]]"></a>
-      <a id="sessions:Future[Seq[Group]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">sessions</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Volume$$Session$.html#Group=(models.Container,Seq[(dbrary.Segment,models.Record)])" class="extmbr" name="models.Volume.Session.Group">Group</a>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Volume@sessions:scala.concurrent.Future[Seq[models.Volume.Session.Group]]" title="Permalink" target="_top">
+      <a href="../index.html#models.Volume@records:scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -906,24 +889,6 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Volume">Volume</a> → <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
-    </li><li name="models.Volume#summary" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="summary:scala.concurrent.Future[models.Volume.Summary]"></a>
-      <a id="summary:Future[Summary]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">lazy val</span>
-      </span>
-      <span class="symbol">
-        <span class="name">summary</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Volume$$Summary.html" class="extype" name="models.Volume.Summary">Summary</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Volume@summary:scala.concurrent.Future[models.Volume.Summary]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Basic summary information on this volume.</p><div class="fullcomment"><div class="comment cmt"><p>Basic summary information on this volume.
-For now this only includes session (cross participant) information.</p></div></div>
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

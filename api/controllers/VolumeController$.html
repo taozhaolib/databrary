@@ -175,7 +175,7 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="ObjectController.html" class="extype" name="controllers.ObjectController">ObjectController</a></dd></dl></div>
     </li><li name="controllers.VolumeController.SearchForm" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SearchFormextendsHtmlForm[controllers.VolumeController.SearchForm]"></a>
+      <a id="SearchFormextendsHtmlForm[controllers.VolumeController.SearchForm]withNoCsrfForm"></a>
       <a id="SearchForm:SearchForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -183,10 +183,10 @@
         <span class="kind">class</span>
       </span>
       <span class="symbol">
-        <a href="VolumeController$$SearchForm.html"><span class="name">SearchForm</span></a><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="VolumeController$$SearchForm.html" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>]</span>
+        <a href="VolumeController$$SearchForm.html"><span class="name">SearchForm</span></a><span class="result"> extends <a href="HtmlForm.html" class="extype" name="controllers.HtmlForm">HtmlForm</a>[<a href="VolumeController$$SearchForm.html" class="extype" name="controllers.VolumeController.SearchForm">SearchForm</a>] with <a href="NoCsrfForm.html" class="extype" name="controllers.NoCsrfForm">NoCsrfForm</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.VolumeController$@SearchFormextendsHtmlForm[controllers.VolumeController.SearchForm]" title="Permalink" target="_top">
+      <a href="../index.html#controllers.VolumeController$@SearchFormextendsHtmlForm[controllers.VolumeController.SearchForm]withNoCsrfForm" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -1065,23 +1065,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Results</dd></dl></div>
-    </li><li name="controllers.VolumeController#ContributeAction" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="ContributeAction(e:Option[models.Party.Id]):play.api.mvc.ActionBuilder[controllers.PartyController.Request]"></a>
-      <a id="ContributeAction(Option[models.Party.Id]):ActionBuilder[PartyController.Request]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">ContributeAction</span><span class="params">(<span name="e">e: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionBuilder">ActionBuilder</span>[<a href="PartyController$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.PartyController.Request">PartyController.Request</a>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#controllers.VolumeController$@ContributeAction(e:Option[models.Party.Id]):play.api.mvc.ActionBuilder[controllers.PartyController.Request]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li><li name="play.api.mvc.Results#Created" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Created:Results.this.Status"></a>
       <a id="Created:Status"></a>
@@ -3332,6 +3315,23 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="controllers.VolumeController#contributeAction" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="contributeAction(e:Option[models.Party.Id]):play.api.mvc.ActionFunction[controllers.SiteRequest.Base,controllers.PartyController.Request]"></a>
+      <a id="contributeAction(Option[models.Party.Id]):ActionFunction[Base,PartyController.Request]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">contributeAction</span><span class="params">(<span name="e">e: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>]</span>)</span><span class="result">: <span class="extype" name="play.api.mvc.ActionFunction">ActionFunction</span>[<a href="SiteRequest$$Base.html" class="extype" name="controllers.SiteRequest.Base">Base</a>, <a href="PartyController$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.PartyController.Request">PartyController.Request</a>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$@contributeAction(e:Option[models.Party.Id]):play.api.mvc.ActionFunction[controllers.SiteRequest.Base,controllers.PartyController.Request]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>VolumeController</dd></dl></div>
     </li><li name="controllers.VolumeController#create" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="create(owner:Option[models.Party.Id]):play.api.mvc.Action[play.api.mvc.AnyContent]"></a>
       <a id="create(Option[models.Party.Id]):Action[AnyContent]"></a>

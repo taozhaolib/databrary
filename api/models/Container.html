@@ -49,8 +49,7 @@
       
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>Collection of related assets.
 To be used, all assets must be placed into containers.
-These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.
-</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/container.scala" target="_blank">container.scala</a></dd></dl><div class="toggleContainer block">
+These containers can represent a package of raw data acquired cotemporaneously or within a short time period (a single session), or a group of related materials.</p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/container.scala" target="_blank">container.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
           <div class="superTypes hiddenContent"><span class="extype" name="models.TableRowId">TableRowId</span>[<a href="" class="extype" name="models.Container">Container</a>], <span class="extype" name="models.HasId">HasId</span>[<a href="" class="extype" name="models.Container">Container</a>], <span class="extype" name="models.HasGenericId">HasGenericId</span>[<span class="extype" name="scala.Int">Int</span>, <a href="" class="extype" name="models.Container">Container</a>], <span class="extype" name="scala.Equals">Equals</span>, <a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>, <a href="Slot.html" class="extype" name="models.Slot">Slot</a>, <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a>, <a href="../site/SitePage.html" class="extype" name="site.SitePage">SitePage</a>, <a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a>, <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a>, <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
@@ -91,7 +90,7 @@ These containers can represent a package of raw data acquired cotemporaneously o
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Container#&lt;init&gt;" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="&lt;init&gt;(id:models.Container.Id,volume:models.Volume,top:Boolean,name_:Option[String],date_:Option[dbrary.Date]):models.Container"></a>
+      <a id="&lt;init&gt;(id:models.Container.Id,volume:models.Volume,top:Boolean,name:Option[String],date:Option[dbrary.Date],consent:models.Consent.Value):models.Container"></a>
       <a id="&lt;init&gt;:Container"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -99,14 +98,15 @@ These containers can represent a package of raw data acquired cotemporaneously o
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="top">top: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="name_">name_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="date_">date_: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>]</span>)</span>
+        <span class="name">Container</span><span class="params">(<span name="id">id: <a href="Container$.html#Id=models.IntId[T]" class="extmbr" name="models.Container.Id">Container.Id</a></span>, <span name="volume">volume: <a href="Volume.html" class="extype" name="models.Volume">Volume</a></span>, <span name="top">top: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">false</span></span>, <span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>]</span>, <span name="consent">consent: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a> = <span class="symbol"><span class="name"><a href="Consent$.html">Consent.NONE</a></span></span></span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Container@&lt;init&gt;(id:models.Container.Id,volume:models.Volume,top:Boolean,name_:Option[String],date_:Option[dbrary.Date]):models.Container" title="Permalink" target="_top">
+      <a href="../index.html#models.Container@&lt;init&gt;(id:models.Container.Id,volume:models.Volume,top:Boolean,name:Option[String],date:Option[dbrary.Date],consent:models.Consent.Value):models.Container" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
+      <p class="shortcomment cmt"></p><div class="fullcomment"><div class="comment cmt"></div><dl class="paramcmts block"><dt class="param">name</dt><dd class="cmt"><p>descriptive name to help with organization by contributors.</p></dd><dt class="param">date</dt><dd class="cmt"><p>the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
+</p></dd></dl><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd></dl></div>
     </li></ol>
             </div>
 
@@ -252,6 +252,24 @@ These containers can represent a package of raw data acquired cotemporaneously o
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
+    </li><li name="models.Slot#_idents" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_idents:macros.FutureVar[Seq[String]]"></a>
+      <a id="_idents:FutureVar[Seq[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_idents</span><span class="result">: <span class="extype" name="macros.FutureVar">FutureVar</span>[<span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Container@_idents:macros.FutureVar[Seq[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
+This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -321,18 +339,18 @@ These containers can represent a package of raw data acquired cotemporaneously o
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasGenericId → Equals</dd></dl></div>
     </li><li name="models.Container#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(name:Option[Option[String]],date:Option[Option[dbrary.Date]]):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Option[Option[String]],Option[Option[Date]]):Future[Boolean]"></a>
+      <a id="change(name:Option[Option[String]],date:Option[Option[dbrary.Date]]):scala.concurrent.Future[models.Container]"></a>
+      <a id="change(Option[Option[String]],Option[Option[Date]]):Future[Container]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="name">name: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]] = <span class="symbol">None</span></span>, <span name="date">date: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="" class="extype" name="models.Container">Container</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Container@change(name:Option[Option[String]],date:Option[Option[dbrary.Date]]):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+      <a href="../index.html#models.Container@change(name:Option[Option[String]],date:Option[Option[dbrary.Date]]):scala.concurrent.Future[models.Container]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -400,7 +418,7 @@ These containers can represent a package of raw data acquired cotemporaneously o
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">consent</span><span class="result">: <a href="Consent$.html#ValueextendsOrdered[Enumeration.this.Value]withSerializable" class="extmbr" name="models.Consent.Value">Consent.Value</a></span>
@@ -519,7 +537,7 @@ These containers can represent a package of raw data acquired cotemporaneously o
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">date</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Date">Date</span>]</span>
@@ -529,8 +547,8 @@ These containers can represent a package of raw data acquired cotemporaneously o
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">The date at which the contained data were collected.</p><div class="fullcomment"><div class="comment cmt"><p>The date at which the contained data were collected.
-Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.</p></div></div>
+      <p class="shortcomment cmt">the date at which the contained data were collected.</p><div class="fullcomment"><div class="comment cmt"><p>the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
+</p></div></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -606,6 +624,23 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="models.Slot#fullRecords" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="fullRecords:scala.concurrent.Future[Seq[models.Record]]"></a>
+      <a id="fullRecords:Future[Seq[Record]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">fullRecords</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Container@fullRecords:scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="scala.AnyRef#getClass" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="getClass():Class[_]"></a>
       <a id="getClass():Class[_]"></a>
@@ -690,8 +725,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">A list of record identification strings that apply to this object.</p><div class="fullcomment"><div class="comment cmt"><p>A list of record identification strings that apply to this object.
-This is probably not a permanent solution for naming, but it's a start.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Container#isFull" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isFull:Boolean"></a>
       <a id="isFull:Boolean"></a>
@@ -743,13 +777,13 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.Container">Container</a> → <a href="Slot.html" class="extype" name="models.Slot">Slot</a> → <a href="../site/SiteObject.html" class="extype" name="site.SiteObject">SiteObject</a></dd></dl></div>
-    </li><li name="models.Container#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Container#name" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="name:Option[String]"></a>
       <a id="name:Option[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">name</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
@@ -759,8 +793,7 @@ This is probably not a permanent solution for naming, but it's a start.</p></div
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Descriptive name to help with organization by contributors.</p><div class="fullcomment"><div class="comment cmt"><p>Descriptive name to help with organization by contributors.
-This (as with Container in general) is not necessarily intended for public consumption.</p></div></div>
+      <p class="shortcomment cmt">descriptive name to help with organization by contributors.</p>
     </li><li name="scala.AnyRef#ne" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="ne(x$1:AnyRef):Boolean"></a>
       <a id="ne(AnyRef):Boolean"></a>
@@ -932,22 +965,39 @@ This (as with Container in general) is not necessarily intended for public consu
     </span>
       <p class="shortcomment cmt">Post a new comment this object.</p><div class="fullcomment"><div class="comment cmt"><p>Post a new comment this object.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#records" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="records:scala.concurrent.Future[Seq[models.Record]]"></a>
-      <a id="records:Future[Seq[Record]]"></a>
+      <a id="records:scala.concurrent.Future[Seq[(dbrary.Segment,models.Record)]]"></a>
+      <a id="records:Future[Seq[(Segment,Record)]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">records</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Record.html" class="extype" name="models.Record">Record</a>]]</span>
+        <span class="name">records</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="dbrary.Segment">Segment</span>, <a href="Record.html" class="extype" name="models.Record">Record</a>)]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Container@records:scala.concurrent.Future[Seq[models.Record]]" title="Permalink" target="_top">
+      <a href="../index.html#models.Container@records:scala.concurrent.Future[Seq[(dbrary.Segment,models.Record)]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
       <p class="shortcomment cmt">The list of records that apply to this slot.</p><div class="fullcomment"><div class="comment cmt"><p>The list of records that apply to this slot.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+    </li><li name="models.Container#remove" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="remove:scala.concurrent.Future[Boolean]"></a>
+      <a id="remove:Future[Boolean]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">remove</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Container@remove:scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Slot#restricted" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="restricted:Boolean"></a>
       <a id="restricted:Boolean"></a>
@@ -998,24 +1048,24 @@ This (as with Container in general) is not necessarily intended for public consu
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Update the given values in the database and this object in-place.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database and this object in-place.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
+      <p class="shortcomment cmt">Update the given values in the database.</p><div class="fullcomment"><div class="comment cmt"><p>Update the given values in the database.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.Slot#setTag" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]"></a>
-      <a id="setTag(String,Option[Boolean])(AuthSite):Future[Option[TagWeight]]"></a>
+      <a id="setTag(tag:String,vote:Boolean)(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]"></a>
+      <a id="setTag(String,Boolean)(AuthSite):Future[Option[TagWeight]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">setTag</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="up">up: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">Some(true)</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
+        <span class="name">setTag</span><span class="params">(<span name="tag">tag: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="vote">vote: <span class="extype" name="scala.Boolean">Boolean</span> = <span class="symbol">true</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/AuthSite.html" class="extype" name="site.AuthSite">AuthSite</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TagWeight.html" class="extype" name="models.TagWeight">TagWeight</a>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Container@setTag(tag:String,up:Option[Boolean])(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]" title="Permalink" target="_top">
+      <a href="../index.html#models.Container@setTag(tag:String,vote:Boolean)(implicitsite:site.AuthSite):scala.concurrent.Future[Option[models.TagWeight]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Tag this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Tag this slot.</p></div><dl class="paramcmts block"><dt class="param">up</dt><dd class="cmt"><p>Some(true) for up, Some(false) for down, or None to remove</p></dd><dt>returns</dt><dd class="cmt"><p>true if the tag name is valid
+      <p class="shortcomment cmt">Tag this slot.</p><div class="fullcomment"><div class="comment cmt"><p>Tag this slot.</p></div><dl class="paramcmts block"><dt>returns</dt><dd class="cmt"><p>true if the tag name is valid
 </p></dd></dl><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Slot.html" class="extype" name="models.Slot">Slot</a></dd></dl></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>

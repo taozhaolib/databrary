@@ -199,18 +199,18 @@
     </span>
       
     </li><li name="controllers.ReverseVolumeHtml#add" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="add(owner:Option[models.Party.Id]):play.api.mvc.Call"></a>
-      <a id="add(Option[models.Party.Id]):Call"></a>
+      <a id="add(owner:Option[models.Party.Id],js:Option[Boolean]):play.api.mvc.Call"></a>
+      <a id="add(Option[models.Party.Id],Option[Boolean]):Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">add</span><span class="params">(<span name="owner">owner: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+        <span class="name">add</span><span class="params">(<span name="owner">owner: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Party$.html#Id=models.IntId[T]" class="extmbr" name="models.Party.Id">models.Party.Id</a>] = <span class="symbol">None</span></span>, <span name="js">js: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.ReverseVolumeHtml@add(owner:Option[models.Party.Id]):play.api.mvc.Call" title="Permalink" target="_top">
+      <a href="../index.html#controllers.ReverseVolumeHtml@add(owner:Option[models.Party.Id],js:Option[Boolean]):play.api.mvc.Call" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -290,18 +290,18 @@
     </span>
       
     </li><li name="controllers.ReverseVolumeHtml#edit" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="edit(vID:models.Volume.Id):play.api.mvc.Call"></a>
-      <a id="edit(models.Volume.Id):Call"></a>
+      <a id="edit(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call"></a>
+      <a id="edit(models.Volume.Id,Option[Boolean]):Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">edit</span><span class="params">(<span name="vID">vID: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+        <span class="name">edit</span><span class="params">(<span name="vID">vID: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="js">js: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.ReverseVolumeHtml@edit(vID:models.Volume.Id):play.api.mvc.Call" title="Permalink" target="_top">
+      <a href="../index.html#controllers.ReverseVolumeHtml@edit(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -466,18 +466,35 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
     </li><li name="controllers.ReverseVolumeHtml#search" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="search():play.api.mvc.Call"></a>
-      <a id="search():Call"></a>
+      <a id="search(js:Option[Boolean]):play.api.mvc.Call"></a>
+      <a id="search(Option[Boolean]):Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">search</span><span class="params">()</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+        <span class="name">search</span><span class="params">(<span name="js">js: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.ReverseVolumeHtml@search():play.api.mvc.Call" title="Permalink" target="_top">
+      <a href="../index.html#controllers.ReverseVolumeHtml@search(js:Option[Boolean]):play.api.mvc.Call" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="controllers.ReverseVolumeHtml#spreadsheet" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="spreadsheet(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call"></a>
+      <a id="spreadsheet(models.Volume.Id,Option[Boolean]):Call"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">spreadsheet</span><span class="params">(<span name="vID">vID: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="js">js: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.ReverseVolumeHtml@spreadsheet(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -534,18 +551,18 @@
     </span>
       
     </li><li name="controllers.ReverseVolumeHtml#view" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="view(vID:models.Volume.Id):play.api.mvc.Call"></a>
-      <a id="view(models.Volume.Id):Call"></a>
+      <a id="view(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call"></a>
+      <a id="view(models.Volume.Id,Option[Boolean]):Call"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">view</span><span class="params">(<span name="vID">vID: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
+        <span class="name">view</span><span class="params">(<span name="vID">vID: <a href="../models/Volume$.html#Id=models.IntId[T]" class="extmbr" name="models.Volume.Id">models.Volume.Id</a></span>, <span name="js">js: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Boolean">Boolean</span>] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="play.api.mvc.Call">Call</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.ReverseVolumeHtml@view(vID:models.Volume.Id):play.api.mvc.Call" title="Permalink" target="_top">
+      <a href="../index.html#controllers.ReverseVolumeHtml@view(vID:models.Volume.Id,js:Option[Boolean]):play.api.mvc.Call" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>

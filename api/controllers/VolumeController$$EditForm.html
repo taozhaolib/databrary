@@ -88,7 +88,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="controllers.VolumeController.EditForm#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(cite:Option[models.Citation])(implicitrequest:controllers.VolumeController.Request[_]):controllers.VolumeController.EditForm"></a>
+      <a id="&lt;init&gt;(cite:Option[models.Citation],link:Seq[models.ExternalLink])(implicitrequest:controllers.VolumeController.Request[_]):controllers.VolumeController.EditForm"></a>
       <a id="&lt;init&gt;:EditForm"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -96,10 +96,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">EditForm</span><span class="params">(<span name="cite">cite: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Citation.html" class="extype" name="models.Citation">Citation</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="VolumeController$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeController.Request">VolumeController.Request</a>[_]</span>)</span>
+        <span class="name">EditForm</span><span class="params">(<span name="cite">cite: <span class="extype" name="scala.Option">Option</span>[<a href="../models/Citation.html" class="extype" name="models.Citation">Citation</a>]</span>, <span name="link">link: <span class="extype" name="scala.Seq">Seq</span>[<a href="../models/ExternalLink.html" class="extype" name="models.ExternalLink">ExternalLink</a>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <a href="VolumeController$.html#Request[A]=controllers.RequestObject[O]#Site[A]" class="extmbr" name="controllers.VolumeController.Request">VolumeController.Request</a>[_]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#controllers.VolumeController$$EditForm@&lt;init&gt;(cite:Option[models.Citation])(implicitrequest:controllers.VolumeController.Request[_]):controllers.VolumeController.EditForm" title="Permalink" target="_top">
+      <a href="../index.html#controllers.VolumeController$$EditForm@&lt;init&gt;(cite:Option[models.Citation],link:Seq[models.ExternalLink])(implicitrequest:controllers.VolumeController.Request[_]):controllers.VolumeController.EditForm" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -371,6 +371,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="FormView.html" class="extype" name="controllers.FormView">FormView</a> → <a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
+    </li><li name="controllers.StructForm#_csrf" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="_csrf(implicitrequest:play.api.mvc.RequestHeader):Option[String]"></a>
+      <a id="_csrf(RequestHeader):Option[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">_csrf</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$EditForm@_csrf(implicitrequest:play.api.mvc.RequestHeader):Option[String]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="controllers.StructForm#_enctype" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_enctype:String"></a>
       <a id="_enctype:String"></a>
@@ -581,6 +598,40 @@
     </span>)</span>
               
         </dd></dl></div>
+    </li><li name="controllers.StructForm#csrf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="csrf:StructForm.this.Field[Option[String]]"></a>
+      <a id="csrf:Field[Option[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">csrf</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$EditForm@csrf:StructForm.this.Field[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
+    </li><li name="controllers.StructForm#csrfField" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="csrfField(implicitrequest:play.api.mvc.RequestHeader):play.api.data.Field"></a>
+      <a id="csrfField(RequestHeader):play.api.data.Field"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">csrfField</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="play.api.data.Field">play.api.data.Field</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$EditForm@csrfField(implicitrequest:play.api.mvc.RequestHeader):play.api.data.Field" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="StructForm.html" class="extype" name="controllers.StructForm">StructForm</a></dd></dl></div>
     </li><li name="scala.AnyRef#eq" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="eq(x$1:AnyRef):Boolean"></a>
       <a id="eq(AnyRef):Boolean"></a>
@@ -757,6 +808,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="controllers.VolumeController.VolumeForm#links" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="links:VolumeForm.this.Field[Seq[Option[models.ExternalLink]]]"></a>
+      <a id="links:Field[Seq[Option[ExternalLink]]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">links</span><span class="result">: <a href="#Field[T]extendsStructForm.this.Member[T]withProductwithSerializable" class="extmbr" name="controllers.StructForm.Field">Field</a>[<span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Option">Option</span>[<a href="../models/ExternalLink.html" class="extype" name="models.ExternalLink">ExternalLink</a>]]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#controllers.VolumeController$$EditForm@links:VolumeForm.this.Field[Seq[Option[models.ExternalLink]]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="VolumeController$$VolumeForm.html" class="extype" name="controllers.VolumeController.VolumeForm">VolumeForm</a></dd></dl></div>
     </li><li name="controllers.VolumeController.VolumeForm#name" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="name:VolumeForm.this.Field[Option[String]]"></a>
       <a id="name:Field[Option[String]]"></a>

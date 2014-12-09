@@ -50,7 +50,7 @@
           <div id="comment" class="fullcommenttop"><div class="comment cmt"><p>A token issued as a resumable upload identifier.
 </p></div><dl class="attributes block"> <dt>Source</dt><dd><a href="https://github.com/databrary/databrary/tree/master/app/models/token.scala" target="_blank">token.scala</a></dd></dl><div class="toggleContainer block">
           <span class="toggle">Linear Supertypes</span>
-          <div class="superTypes hiddenContent"><a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a>, <a href="Token.html" class="extype" name="models.Token">Token</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
+          <div class="superTypes hiddenContent"><a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a>, <a href="Token.html" class="extype" name="models.Token">Token</a>, <a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a>, <span class="extype" name="models.TableRow">TableRow</span>, <span class="extype" name="scala.AnyRef">AnyRef</span>, <span class="extype" name="scala.Any">Any</span></div>
         </div></div>
         
 
@@ -68,7 +68,7 @@
                 <span class="filtertype">Inherited<br />
                 </span>
                 <ol id="linearization">
-                  <li class="in" name="models.UploadToken"><span>UploadToken</span></li><li class="in" name="models.AccountToken"><span>AccountToken</span></li><li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
+                  <li class="in" name="models.UploadToken"><span>UploadToken</span></li><li class="in" name="models.AccountToken"><span>AccountToken</span></li><li class="in" name="models.Token"><span>Token</span></li><li class="in" name="models.TokenAuth"><span>TokenAuth</span></li><li class="in" name="models.TableRow"><span>TableRow</span></li><li class="in" name="scala.AnyRef"><span>AnyRef</span></li><li class="in" name="scala.Any"><span>Any</span></li>
                 </ol>
               </div><div id="ancestors">
             <span class="filtertype"></span>
@@ -216,23 +216,40 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
-    </li><li name="models.Token#auth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="auth:String"></a>
-      <a id="auth:String"></a>
+    </li><li name="models.TokenAuth#auth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="auth():String"></a>
+      <a id="auth():String"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">auth</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
+        <span class="name">auth</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Predef.String">String</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.UploadToken@auth:String" title="Permalink" target="_top">
+      <a href="../index.html#models.UploadToken@auth():String" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Token.html" class="extype" name="models.Token">Token</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a></dd></dl></div>
+    </li><li name="models.TokenAuth#checkAuth" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="checkAuth(a:String):Boolean"></a>
+      <a id="checkAuth(String):Boolean"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">checkAuth</span><span class="params">(<span name="a">a: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.Boolean">Boolean</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.UploadToken@checkAuth(a:String):Boolean" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a></dd></dl></div>
     </li><li name="scala.AnyRef#clone" visbl="prt" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clone():Object"></a>
       <a id="clone():AnyRef"></a>
@@ -551,6 +568,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Token#token" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="token:models.Token.Id"></a>
+      <a id="token:Id"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">token</span><span class="result">: <a href="Token$.html#Id=String" class="extmbr" name="models.Token.Id">Id</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.UploadToken@token:models.Token.Id" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Token.html" class="extype" name="models.Token">Token</a> → <a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a></dd></dl></div>
     </li><li name="models.Token#valid" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="valid:Boolean"></a>
       <a id="valid:Boolean"></a>
@@ -650,6 +684,8 @@
               <h3>Inherited from <a href="AccountToken.html" class="extype" name="models.AccountToken">AccountToken</a></h3>
             </div><div class="parent" name="models.Token">
               <h3>Inherited from <a href="Token.html" class="extype" name="models.Token">Token</a></h3>
+            </div><div class="parent" name="models.TokenAuth">
+              <h3>Inherited from <a href="TokenAuth.html" class="extype" name="models.TokenAuth">TokenAuth</a></h3>
             </div><div class="parent" name="models.TableRow">
               <h3>Inherited from <span class="extype" name="models.TableRow">TableRow</span></h3>
             </div><div class="parent" name="scala.AnyRef">

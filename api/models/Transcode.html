@@ -91,7 +91,7 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="models.Transcode#&lt;init&gt;" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(owner:models.Party,orig:models.Asset,segment:dbrary.Segment,options:Seq[String]):models.Transcode"></a>
+      <a id="&lt;init&gt;(owner:models.Party,orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String]):models.Transcode"></a>
       <a id="&lt;init&gt;:Transcode"></a>
       <h4 class="signature">
       <span class="modifier_kind">
@@ -99,10 +99,10 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">Transcode</span><span class="params">(<span name="owner">owner: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="orig">orig: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="options">options: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span>
+        <span class="name">Transcode</span><span class="params">(<span name="owner">owner: <a href="Party.html" class="extype" name="models.Party">Party</a></span>, <span name="orig">orig: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="options">options: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode@&lt;init&gt;(owner:models.Party,orig:models.Asset,segment:dbrary.Segment,options:Seq[String]):models.Transcode" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode@&lt;init&gt;(owner:models.Party,orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String]):models.Transcode" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -184,6 +184,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.Transcode#asset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="asset:models.Asset"></a>
+      <a id="asset:Asset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asset</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Transcode@asset:models.Asset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.HasPermission#checkPermission" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="checkPermission(need:models.Permission.Value):Boolean"></a>
       <a id="checkPermission(Permission.Value):Boolean"></a>
@@ -350,18 +367,18 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="models.Transcode#id" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="id:models.Asset.Id"></a>
-      <a id="id:Asset.Id"></a>
+      <a id="id:models.Transcode.Id"></a>
+      <a id="id:Transcode.Id"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">id</span><span class="result">: <a href="Asset$.html#Id=models.IntId[T]" class="extmbr" name="models.Asset.Id">Asset.Id</a></span>
+        <span class="name">id</span><span class="result">: <a href="Transcode$.html#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">Transcode.Id</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode@id:models.Asset.Id" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode@id:models.Transcode.Id" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -451,36 +468,53 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.Transcode#offset" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="offset:dbrary.Offset"></a>
+      <a id="offset:Offset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">offset</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Transcode@offset:dbrary.Offset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Transcode#options" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="options:Seq[String]"></a>
-      <a id="options:Seq[String]"></a>
+      <a id="options:IndexedSeq[String]"></a>
+      <a id="options:IndexedSeq[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">options</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">options</span><span class="result">: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode@options:Seq[String]" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode@options:IndexedSeq[String]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
       
     </li><li name="models.Transcode#orig" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="orig:models.Asset"></a>
-      <a id="orig:Asset"></a>
+      <a id="orig:models.FileAsset"></a>
+      <a id="orig:FileAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">orig</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
+        <span class="name">orig</span><span class="result">: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode@orig:models.Asset" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode@orig:models.FileAsset" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -604,23 +638,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
-    </li><li name="models.Transcode#start" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="start:dbrary.Offset"></a>
-      <a id="start:Offset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier">final </span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">start</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Transcode@start:dbrary.Offset" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>

@@ -89,24 +89,7 @@
 
         <div id="types" class="types members">
               <h3>Type Members</h3>
-              <ol><li name="ingest.Asset" visbl="pub" data-isabs="true" fullComment="no" group="Ungrouped">
-      <a id="AssetextendsAnyRef"></a>
-      <a id="Asset:Asset"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">trait</span>
-      </span>
-      <span class="symbol">
-        <a href="Asset.html"><span class="name">Asset</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#ingest.package@AssetextendsAnyRef" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="ingest.IngestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="ingest.IngestException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="IngestExceptionextendsRuntimeException"></a>
       <a id="IngestException:IngestException"></a>
       <h4 class="signature">
@@ -123,19 +106,36 @@
       </a>
     </span>
       
-    </li><li name="ingest.ParseException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ParseExceptionextendsIngestExceptionwithProductwithSerializable"></a>
-      <a id="ParseException:ParseException"></a>
+    </li><li name="ingest.Json" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonextendsAnyRef"></a>
+      <a id="Json:Json"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier">final </span>
+        <span class="kind">class</span>
+      </span>
+      <span class="symbol">
+        <a href="Json.html"><span class="name">Json</span></a><span class="result"> extends <span class="extype" name="scala.AnyRef">AnyRef</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#ingest.package@JsonextendsAnyRef" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="ingest.JsonException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="JsonExceptionextendsIngestExceptionwithProductwithSerializable"></a>
+      <a id="JsonException:JsonException"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <a href="ParseException.html"><span class="name">ParseException</span></a><span class="params">(<span name="message">message: <span class="extype" name="scala.Predef.String">String</span></span>, <span name="line">line: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="column">column: <span class="extype" name="scala.Int">Int</span> = <span class="symbol">0</span></span>, <span name="context">context: <span class="extype" name="scala.Predef.String">String</span> = <span class="symbol">&quot;&quot;</span></span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <a href="JsonException.html"><span class="name">JsonException</span></a><span class="params">(<span name="errors">errors: <span class="extype" name="scala.Seq">Seq</span>[(<span class="extype" name="play.api.libs.json.JsPath">JsPath</span>, <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="play.api.data.validation.ValidationError">ValidationError</span>])]</span>)</span><span class="result"> extends <a href="IngestException.html" class="extype" name="ingest.IngestException">IngestException</a> with <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#ingest.package@ParseExceptionextendsIngestExceptionwithProductwithSerializable" title="Permalink" target="_top">
+      <a href="../index.html#ingest.package@JsonExceptionextendsIngestExceptionwithProductwithSerializable" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -164,76 +164,7 @@
 
         <div id="values" class="values members">
               <h3>Value Members</h3>
-              <ol><li name="ingest.Adolph" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Adolph"></a>
-      <a id="Adolph:Adolph"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Adolph$.html"><span class="name">Adolph</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#ingest.package@Adolph" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="ingest.CSV" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="CSV"></a>
-      <a id="CSV:CSV"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="CSV$.html"><span class="name">CSV</span></a><span class="result"> extends <span class="extype" name="scala.util.parsing.combinator.RegexParsers">RegexParsers</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#ingest.package@CSV" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Simple CSV parser based on RFC 4180.</p><div class="fullcomment"><div class="comment cmt"><p>Simple CSV parser based on RFC 4180.
-Throws a ParseException on failure.</p></div></div>
-    </li><li name="ingest.Curated" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Curated"></a>
-      <a id="Curated:Curated"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Curated$.html"><span class="name">Curated</span></a><span class="result"> extends <span class="extype" name="ingest.Ingest">Ingest</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#ingest.package@Curated" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="ingest.ParseException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="ParseException"></a>
-      <a id="ParseException:ParseException"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="ParseException$.html"><span class="name">ParseException</span></a><span class="result"> extends <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#ingest.package@ParseException" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+              <ol><li name="ingest.PopulateException" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="PopulateException"></a>
       <a id="PopulateException:PopulateException"></a>
       <h4 class="signature">

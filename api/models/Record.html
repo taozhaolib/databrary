@@ -178,23 +178,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
-    </li><li name="models.Record#addSlot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="addSlot(s:models.Slot):scala.concurrent.Future[Boolean]"></a>
-      <a id="addSlot(Slot):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">addSlot</span><span class="params">(<span name="s">s: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Record@addSlot(s:models.Slot):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Attach this record to a slot.</p>
     </li><li name="models.Record#age" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="age(slot:models.Slot):Option[dbrary.Age]"></a>
       <a id="age(Slot):Option[Age]"></a>
@@ -269,7 +252,7 @@
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
-        <span class="kind">def</span>
+        <span class="kind">val</span>
       </span>
       <span class="symbol">
         <span class="name">category</span><span class="result">: <span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]</span>
@@ -298,18 +281,18 @@
     </span>
       
     </li><li name="models.Record#change" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="change(category:Option[Option[models.RecordCategory]]):scala.concurrent.Future[Boolean]"></a>
-      <a id="change(Option[Option[RecordCategory]]):Future[Boolean]"></a>
+      <a id="change(category:Option[Option[models.RecordCategory]]):scala.concurrent.Future[models.Record]"></a>
+      <a id="change(Option[Option[RecordCategory]]):Future[Record]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">change</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
+        <span class="name">change</span><span class="params">(<span name="category">category: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Option">Option</span>[<a href="RecordCategory.html" class="extype" name="models.RecordCategory">RecordCategory</a>]] = <span class="symbol">None</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="" class="extype" name="models.Record">Record</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Record@change(category:Option[Option[models.RecordCategory]]):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
+      <a href="../index.html#models.Record@change(category:Option[Option[models.RecordCategory]]):scala.concurrent.Future[models.Record]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -718,7 +701,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <p class="shortcomment cmt">Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p><div class="fullcomment"><div class="comment cmt"><p>Permission granted to the current site user for this object, defined by the containing volume and determined at lookup time.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="HasPermission.html" class="extype" name="models.HasPermission">HasPermission</a></dd></dl></div>
-    </li><li name="models.Record#removeMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Record#removeMeasure" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
       <a id="removeMeasure(metric:models.Metric[_]):scala.concurrent.Future[Boolean]"></a>
       <a id="removeMeasure(Metric[_]):Future[Boolean]"></a>
       <h4 class="signature">
@@ -734,25 +717,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <p class="shortcomment cmt">Remove a measure from this record.</p><div class="fullcomment"><div class="comment cmt"><p>Remove a measure from this record.
-This may invalidate measures on this object.</p></div></div>
-    </li><li name="models.Record#removeSlot" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="removeSlot(s:models.Slot):scala.concurrent.Future[Boolean]"></a>
-      <a id="removeSlot(Slot):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">removeSlot</span><span class="params">(<span name="s">s: <a href="Slot.html" class="extype" name="models.Slot">Slot</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Record@removeSlot(s:models.Slot):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      <p class="shortcomment cmt">Remove this record from a slot.</p>
+      <p class="shortcomment cmt">Remove a measure from this record.</p>
     </li><li name="models.Record#setMeasure" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="setMeasure[T](measure:models.Measure[T]):scala.concurrent.Future[Boolean]"></a>
       <a id="setMeasure[T](Measure[T]):Future[Boolean]"></a>
@@ -770,7 +735,7 @@ This may invalidate measures on this object.</p></div></div>
       </a>
     </span>
       <p class="shortcomment cmt">Add or change a measure on this record.</p><div class="fullcomment"><div class="comment cmt"><p>Add or change a measure on this record.
-This is not type safe so may generate SQL exceptions, and may invalidate measures on this object.</p></div></div>
+This is not type safe so may generate SQL exceptions.</p></div></div>
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>

@@ -123,40 +123,6 @@
       </a>
     </span>
       <p class="shortcomment cmt">Type of TableRow this object can generate.</p><div class="fullcomment"><div class="comment cmt"><p>Type of TableRow this object can generate.</p></div><dl class="attributes block"> <dt>Definition Classes</dt><dd>Table → TableView</dd></dl></div>
-    </li><li name="models.Volume.Session" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Session=(models.ContextSlot,Option[(dbrary.Segment,models.Record)])"></a>
-      <a id="Session:Session"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">type</span>
-      </span>
-      <span class="symbol">
-        <span class="name">Session</span><span class="result"> = (<a href="ContextSlot.html" class="extype" name="models.ContextSlot">ContextSlot</a>, <span class="extype" name="scala.Option">Option</span>[(<span class="extype" name="dbrary.Segment">Segment</span>, <a href="Record.html" class="extype" name="models.Record">Record</a>)])</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Volume$@Session=(models.ContextSlot,Option[(dbrary.Segment,models.Record)])" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
-    </li><li name="models.Volume.Summary" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="SummaryextendsProductwithSerializable"></a>
-      <a id="Summary:Summary"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">case class</span>
-      </span>
-      <span class="symbol">
-        <a href="Volume$$Summary.html"><span class="name">Summary</span></a><span class="params">(<span name="sessions">sessions: <span class="extype" name="scala.Int">Int</span></span>, <span name="shared">shared: <span class="extype" name="scala.Int">Int</span></span>, <span name="agerange">agerange: <span class="extype" name="dbrary.Range">Range</span>[<span class="extype" name="dbrary.Age">Age</span>]</span>, <span name="agemean">agemean: <span class="extype" name="dbrary.Age">Age</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Volume$@SummaryextendsProductwithSerializable" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li></ol>
             </div>
 
@@ -215,6 +181,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Volume.Containers" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="Containers"></a>
+      <a id="Containers:Containers"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">object</span>
+      </span>
+      <span class="symbol">
+        <a href="Volume$$Containers$.html"><span class="name">Containers</span></a>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume$@Containers" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="models.Volume#Core" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="Core(implicitsite:site.Site):models.Volume"></a>
       <a id="Core(Site):Volume"></a>
@@ -301,23 +284,6 @@ We ignore any access rules here and grant everyone DOWNLOAD.</p></div></div>
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
-    </li><li name="models.Volume.Session" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="Session"></a>
-      <a id="Session:Session"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">object</span>
-      </span>
-      <span class="symbol">
-        <a href="Volume$$Session$.html"><span class="name">Session</span></a>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Volume$@Session" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="models.ProvidesId#asId" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asId(i:Int):ProvidesId.this.Id"></a>
       <a id="asId(Int):Id"></a>
@@ -638,6 +604,23 @@ This checks user permissions and returns None if the user lacks <a href="Permiss
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
+    </li><li name="models.Volume#updateIndex" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="updateIndex(implicitdefaultContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[Unit]"></a>
+      <a id="updateIndex(ExecutionContext):Future[Unit]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">updateIndex</span><span class="params">(<span class="implicit">implicit </span><span name="defaultContext">defaultContext: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Unit">Unit</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Volume$@updateIndex(implicitdefaultContext:scala.concurrent.ExecutionContext):scala.concurrent.Future[Unit]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#wait" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="wait():Unit"></a>
       <a id="wait():Unit"></a>

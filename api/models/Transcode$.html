@@ -250,18 +250,18 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Transcode#apply" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="apply(orig:models.Asset,segment:dbrary.Segment,options:Seq[String])(implicitsite:site.Site):models.Transcode"></a>
-      <a id="apply(Asset,Segment,Seq[String])(Site):Transcode"></a>
+      <a id="apply(orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitsite:site.Site):models.Transcode"></a>
+      <a id="apply(FileAsset,Segment,IndexedSeq[String])(Site):Transcode"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">apply</span><span class="params">(<span name="orig">orig: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span> = <span class="symbol">Segment.full</span></span>, <span name="options">options: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol">Nil</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></span>
+        <span class="name">apply</span><span class="params">(<span name="orig">orig: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span> = <span class="symbol">Segment.full</span></span>, <span name="options">options: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol"><span class="name"><a href="#defaultOptions:IndexedSeq[String]">defaultOptions</a></span></span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>)</span><span class="result">: <a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode$@apply(orig:models.Asset,segment:dbrary.Segment,options:Seq[String])(implicitsite:site.Site):models.Transcode" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode$@apply(orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitsite:site.Site):models.Transcode" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -323,19 +323,36 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.Transcode#createJob" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="createJob(orig:models.Asset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitsite:site.Site,implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.TranscodeJob]"></a>
-      <a id="createJob(Asset,Segment,IndexedSeq[String])(Site,DB,ExecutionContext):Future[TranscodeJob]"></a>
+    </li><li name="models.Transcode#create" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="create(orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String],duration:Option[dbrary.Offset])(implicitsite:site.Site,implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.TranscodeJob]"></a>
+      <a id="create(FileAsset,Segment,IndexedSeq[String],Option[Offset])(Site,DB,ExecutionContext):Future[TranscodeJob]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">createJob</span><span class="params">(<span name="orig">orig: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span></span>, <span name="options">options: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="siteDB">siteDB: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="TranscodeJob.html" class="extype" name="models.TranscodeJob">TranscodeJob</a>]</span>
+        <span class="name">create</span><span class="params">(<span name="orig">orig: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>, <span name="segment">segment: <span class="extype" name="dbrary.Segment">Segment</span> = <span class="symbol">Segment.full</span></span>, <span name="options">options: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>] = <span class="symbol"><span class="name"><a href="#defaultOptions:IndexedSeq[String]">defaultOptions</a></span></span></span>, <span name="duration">duration: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="dbrary.Offset">Offset</span>] = <span class="symbol">None</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="siteDB">siteDB: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="TranscodeJob.html" class="extype" name="models.TranscodeJob">TranscodeJob</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode$@createJob(orig:models.Asset,segment:dbrary.Segment,options:IndexedSeq[String])(implicitsite:site.Site,implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.TranscodeJob]" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode$@create(orig:models.FileAsset,segment:dbrary.Segment,options:IndexedSeq[String],duration:Option[dbrary.Offset])(implicitsite:site.Site,implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.TranscodeJob]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
+    </li><li name="models.Transcode#defaultOptions" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="defaultOptions:IndexedSeq[String]"></a>
+      <a id="defaultOptions:IndexedSeq[String]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">defaultOptions</span><span class="result">: <span class="extype" name="scala.collection.IndexedSeq">IndexedSeq</span>[<span class="extype" name="java.lang.String">String</span>]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.Transcode$@defaultOptions:IndexedSeq[String]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -415,35 +432,35 @@
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected </dd><dt>Definition Classes</dt><dd>TableView</dd></dl></div>
     </li><li name="models.Transcode#get" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="get(id:models.Transcode.Id)(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.Transcode]]"></a>
-      <a id="get(Id)(ExecutionContext):Future[Option[Transcode]]"></a>
+      <a id="get(id:models.Transcode.Id)(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.TranscodeJob]]"></a>
+      <a id="get(Id)(ExecutionContext):Future[Option[TranscodeJob]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a>]]</span>
+        <span class="name">get</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TranscodeJob.html" class="extype" name="models.TranscodeJob">TranscodeJob</a>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode$@get(id:models.Transcode.Id)(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.Transcode]]" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode$@get(id:models.Transcode.Id)(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.TranscodeJob]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
       
     </li><li name="models.Transcode#getActive" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getActive(implicitsite:site.Site,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Seq[models.Transcode]]"></a>
-      <a id="getActive(Site,ExecutionContext):Future[Seq[Transcode]]"></a>
+      <a id="getActive(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Seq[models.TranscodeJob]]"></a>
+      <a id="getActive(ExecutionContext):Future[Seq[TranscodeJob]]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">getActive</span><span class="params">(<span class="implicit">implicit </span><span name="site">site: <a href="../site/Site.html" class="extype" name="site.Site">Site</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a>]]</span>
+        <span class="name">getActive</span><span class="params">(<span class="implicit">implicit </span><span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Seq">Seq</span>[<a href="TranscodeJob.html" class="extype" name="models.TranscodeJob">TranscodeJob</a>]]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.Transcode$@getActive(implicitsite:site.Site,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Seq[models.Transcode]]" title="Permalink" target="_top">
+      <a href="../index.html#models.Transcode$@getActive(implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Seq[models.TranscodeJob]]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -465,23 +482,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
-    </li><li name="models.Transcode#getJob" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="getJob(id:models.Transcode.Id)(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.TranscodeJob]]"></a>
-      <a id="getJob(Id)(DB,ExecutionContext):Future[Option[TranscodeJob]]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">getJob</span><span class="params">(<span name="id">id: <a href="#Id=models.IntId[T]" class="extmbr" name="models.Transcode.Id">Id</a></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="siteDB">siteDB: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<a href="TranscodeJob.html" class="extype" name="models.TranscodeJob">TranscodeJob</a>]]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.Transcode$@getJob(id:models.Transcode.Id)(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Option[models.TranscodeJob]]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.AnyRef#hashCode" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="hashCode():Int"></a>
       <a id="hashCode():Int"></a>

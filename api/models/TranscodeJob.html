@@ -178,23 +178,6 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>TableRowId → HasGenericId</dd></dl></div>
-    </li><li name="models.TranscodeJob#args" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="args(implicitrequest:play.api.mvc.RequestHeader):Seq[String]"></a>
-      <a id="args(RequestHeader):Seq[String]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">args</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.collection.Seq">Seq</span>[<span class="extype" name="java.lang.String">String</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@args(implicitrequest:play.api.mvc.RequestHeader):Seq[String]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="scala.Any#asInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="asInstanceOf[T0]:T0"></a>
       <a id="asInstanceOf[T0]:T0"></a>
@@ -212,6 +195,23 @@
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>Any</dd></dl></div>
+    </li><li name="models.TranscodeJob#asset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="asset:models.Asset"></a>
+      <a id="asset:Asset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">val</span>
+      </span>
+      <span class="symbol">
+        <span class="name">asset</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.TranscodeJob@asset:models.Asset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TranscodeJob">TranscodeJob</a> → <a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
     </li><li name="models.HasGenericId#canEqual" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="canEqual(i:Any):Boolean"></a>
       <a id="canEqual(Any):Boolean"></a>
@@ -269,19 +269,19 @@
     </span>)</span>
               
         </dd></dl></div>
-    </li><li name="models.TranscodeJob#complete" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="complete(file:play.api.libs.Files.TemporaryFile,sha1:Array[Byte])(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.Asset]"></a>
-      <a id="complete(TemporaryFile,Array[Byte])(DB,ExecutionContext):Future[Asset]"></a>
+    </li><li name="models.TranscodeJob#collect" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="collect(res:Int,sha1:Option[Array[Byte]],log:String):scala.concurrent.Future[models.TimeseriesAsset]"></a>
+      <a id="collect(Int,Option[Array[Byte]],String):Future[TimeseriesAsset]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">complete</span><span class="params">(<span name="file">file: <span class="extype" name="play.api.libs.Files.TemporaryFile">TemporaryFile</span></span>, <span name="sha1">sha1: <span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="siteDB">siteDB: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="Asset.html" class="extype" name="models.Asset">Asset</a>]</span>
+        <span class="name">collect</span><span class="params">(<span name="res">res: <span class="extype" name="scala.Int">Int</span></span>, <span name="sha1">sha1: <span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Array">Array</span>[<span class="extype" name="scala.Byte">Byte</span>]]</span>, <span name="log">log: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<a href="TimeseriesAsset.html" class="extype" name="models.TimeseriesAsset">TimeseriesAsset</a>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@complete(file:play.api.libs.Files.TemporaryFile,sha1:Array[Byte])(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[models.Asset]" title="Permalink" target="_top">
+      <a href="../index.html#models.TranscodeJob@collect(res:Int,sha1:Option[Array[Byte]],log:String):scala.concurrent.Future[models.TimeseriesAsset]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -412,7 +412,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>HasId → HasGenericId → AnyRef → Any</dd></dl></div>
-    </li><li name="models.TranscodeJob#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+    </li><li name="models.Transcode#id" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="id:models.Transcode.Id"></a>
       <a id="id:Transcode.Id"></a>
       <h4 class="signature">
@@ -428,7 +428,7 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="" class="extype" name="models.TranscodeJob">TranscodeJob</a> → TableRowId → <a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
     </li><li name="scala.Any#isInstanceOf" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="isInstanceOf[T0]:Boolean"></a>
       <a id="isInstanceOf[T0]:Boolean"></a>
@@ -514,36 +514,53 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd></dl></div>
+    </li><li name="models.Transcode#offset" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
+      <a id="offset:dbrary.Offset"></a>
+      <a id="offset:Offset"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier">final </span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">offset</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.TranscodeJob@offset:dbrary.Offset" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
     </li><li name="models.Transcode#options" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="options:Seq[String]"></a>
-      <a id="options:Seq[String]"></a>
+      <a id="options:IndexedSeq[String]"></a>
+      <a id="options:IndexedSeq[String]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">options</span><span class="result">: <span class="extype" name="scala.Seq">Seq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
+        <span class="name">options</span><span class="result">: <span class="extype" name="scala.IndexedSeq">IndexedSeq</span>[<span class="extype" name="scala.Predef.String">String</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@options:Seq[String]" title="Permalink" target="_top">
+      <a href="../index.html#models.TranscodeJob@options:IndexedSeq[String]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
     </li><li name="models.Transcode#orig" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="orig:models.Asset"></a>
-      <a id="orig:Asset"></a>
+      <a id="orig:models.FileAsset"></a>
+      <a id="orig:FileAsset"></a>
       <h4 class="signature">
       <span class="modifier_kind">
         <span class="modifier"></span>
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">orig</span><span class="result">: <a href="Asset.html" class="extype" name="models.Asset">Asset</a></span>
+        <span class="name">orig</span><span class="result">: <a href="FileAsset.html" class="extype" name="models.FileAsset">FileAsset</a></span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@orig:models.Asset" title="Permalink" target="_top">
+      <a href="../index.html#models.TranscodeJob@orig:models.FileAsset" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
@@ -650,23 +667,6 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
-    </li><li name="models.TranscodeJob#setStatus" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="setStatus(status:Either[String,Int])(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Boolean]"></a>
-      <a id="setStatus(Either[String,Int])(DB,ExecutionContext):Future[Boolean]"></a>
-      <h4 class="signature">
-      <span class="modifier_kind">
-        <span class="modifier"></span>
-        <span class="kind">def</span>
-      </span>
-      <span class="symbol">
-        <span class="name">setStatus</span><span class="params">(<span name="status">status: <span class="extype" name="scala.Either">Either</span>[<span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="scala.Int">Int</span>]</span>)</span><span class="params">(<span class="implicit">implicit </span><span name="siteDB">siteDB: <a href="../site/Site$.html#DB=com.github.mauricio.async.db.Connection" class="extmbr" name="site.Site.DB">DB</a></span>, <span name="exc">exc: <span class="extype" name="scala.concurrent.ExecutionContext">ExecutionContext</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Boolean">Boolean</span>]</span>
-      </span>
-      </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@setStatus(status:Either[String,Int])(implicitsiteDB:site.Site.DB,implicitexc:scala.concurrent.ExecutionContext):scala.concurrent.Future[Boolean]" title="Permalink" target="_top">
-        <img src="../lib/permalink.png" />
-      </a>
-    </span>
-      
     </li><li name="models.InVolume#site" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="site:site.Site"></a>
       <a id="site:Site"></a>
@@ -684,23 +684,40 @@ This doesn't properly check types due to erasure, so === should be preferred.</p
       </a>
     </span>
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="InVolume.html" class="extype" name="models.InVolume">InVolume</a> → <a href="../site/PerSite.html" class="extype" name="site.PerSite">PerSite</a></dd></dl></div>
-    </li><li name="models.Transcode#start" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
-      <a id="start:dbrary.Offset"></a>
-      <a id="start:Offset"></a>
+    </li><li name="models.TranscodeJob#start" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="start(implicitrequest:play.api.mvc.RequestHeader):scala.concurrent.Future[Int]"></a>
+      <a id="start(RequestHeader):Future[Int]"></a>
       <h4 class="signature">
       <span class="modifier_kind">
-        <span class="modifier">final </span>
+        <span class="modifier"></span>
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">start</span><span class="result">: <span class="extype" name="dbrary.Offset">Offset</span></span>
+        <span class="name">start</span><span class="params">(<span class="implicit">implicit </span><span name="request">request: <span class="extype" name="play.api.mvc.RequestHeader">RequestHeader</span></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Int">Int</span>]</span>
       </span>
       </h4><span class="permalink">
-      <a href="../index.html#models.TranscodeJob@start:dbrary.Offset" title="Permalink" target="_top">
+      <a href="../index.html#models.TranscodeJob@start(implicitrequest:play.api.mvc.RequestHeader):scala.concurrent.Future[Int]" title="Permalink" target="_top">
         <img src="../lib/permalink.png" />
       </a>
     </span>
-      <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd><a href="Transcode.html" class="extype" name="models.Transcode">Transcode</a></dd></dl></div>
+      
+    </li><li name="models.TranscodeJob#stop" visbl="pub" data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="stop():scala.concurrent.Future[Option[String]]"></a>
+      <a id="stop():Future[Option[String]]"></a>
+      <h4 class="signature">
+      <span class="modifier_kind">
+        <span class="modifier"></span>
+        <span class="kind">def</span>
+      </span>
+      <span class="symbol">
+        <span class="name">stop</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Option">Option</span>[<span class="extype" name="scala.Predef.String">String</span>]]</span>
+      </span>
+      </h4><span class="permalink">
+      <a href="../index.html#models.TranscodeJob@stop():scala.concurrent.Future[Option[String]]" title="Permalink" target="_top">
+        <img src="../lib/permalink.png" />
+      </a>
+    </span>
+      
     </li><li name="scala.AnyRef#synchronized" visbl="pub" data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="synchronized[T0](x$1:=&gt;T0):T0"></a>
       <a id="synchronized[T0](⇒T0):T0"></a>
