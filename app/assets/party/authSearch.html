@@ -1,4 +1,4 @@
-<ng-form name="authSearchForm" class="auth-search-form">
+<ng-form name="authSearchForm" class="auth-search-form" autocomplete="off">
   <validator name="name" noclientval>
     <input-completer name="name" ng-model="authSearchForm.nameVal" completer="authSearchForm.search($input)" placeholder="{{authSearchForm.placeholderText}}"></input-completer>
   </validator>

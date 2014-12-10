@@ -5,27 +5,21 @@
   position relative
   background transparent no-repeat 0 0
   size b23
-
   &.public,
   &.excerpt
     padding-left b1 - b6
-
-
   &.excerpts
     padding-left b1
-
-
   &.classification.RESTRICTED,
   &.classification.SHARED
     padding-left b1 - b12
-
-
   &.dataset,
-  &.record,
-  &.session,
   &.study
     size b1
-
+  &.record,
+  &.session
+    height b23
+    width b23+b8
 
   &.contact
     background-image url('/public/images/icon/contact.png')
@@ -35,7 +29,6 @@
 
   &.close
     background-image url('/public/images/icon/close.png')
-
 
   &.access.ADMIN
     background-image url('/public/images/icon/admin.png')
@@ -85,14 +78,19 @@
     background-image url('/public/images/icon/record.png')
 
   &.session
-    background-image url('/public/images/icon/session.png')
+    background-image url('/public/images/icon/session2.png')
+    &:hover
+      opacity 0.4
 
   &.study
     background-image url('/public/images/icon/study.png')
 
-
   &.download
-    background-image url('/public/images/icon/download.png')
+    background-image url('/public/images/icon/download2.png')
+    &:hover
+      opacity 0.4
+    &.line
+      width b1
 
   &.jump
     background-image url('/public/images/icon/jump.png')
@@ -127,22 +125,20 @@
   &.unlocked
     background-image url('/public/images/icon/public.png')
     cursor pointer
- 
 
   &.line
-    size(b1)
+    height b1
     background-position 4px 4px
-
+    &.add
+      width b1
+    &.session
+      width b1+b8    
     &.public,
     &.excerpt
       background-position 2px 4px
-
-
     &.consent.EXCERPTS
       padding-left b1 + 2px
       background-position 1px 4px
-
-
     &.classification.RESTRICTED,
     &.classification.SHARED
       background-position 1px 4px

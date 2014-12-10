@@ -24,14 +24,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   protected def Action(i : models.Asset.Id, p : Permission.Value) =
     SiteAction andThen action(i, p)
 
-  private[this] def duration(asset : Asset) : Future[Offset] = asset match {
-    case ts : TimeseriesAsset =>
-      async(ts.duration)
-    case a =>
-      a.slot.map { sa =>
-        sa.flatMap(_.segment.zip((l, u) => u - l)) getOrElse Offset.ZERO
-      }
-  }
+  private[this] def duration(asset : Asset) : Future[Offset] =
+    asset.slot.map { sa =>
+      sa.flatMap(_.segment.zip((l, u) => u - l)).filter(_ != Offset.ZERO) getOrElse asset.duration
+    }
 
   private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {

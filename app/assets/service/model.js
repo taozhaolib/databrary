@@ -286,6 +286,9 @@ app.factory('modelService', [
 
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
+    Login.prototype.fields = angular.extend({
+      superuser: true,
+    }, Party.prototype.fields);
 
     Login.user = new Login({id:constants.party.NOBODY});
 
@@ -660,8 +663,9 @@ app.factory('modelService', [
     function containerMake(volume, init) {
       var c = volume.containers[init.id];
       if (c) {
-        delete init._PLACEHOLDER;
-        return c.update(init);
+        if (!init._PLACEHOLDER)
+          c.update(init);
+        return c;
       } else
         return new Container(volume, init);
     }

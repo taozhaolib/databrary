@@ -146,8 +146,7 @@ app.controller('volume/slot', [
       true
 
     $scope.selectAll = (event, c) ->
-      range = c.segment
-      ruler.selection = range
+      ruler.selection = range = c.segment
       editExcerpt()
       if range && isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
@@ -172,7 +171,7 @@ app.controller('volume/slot', [
           new Segment(endPos, startPos)
         else if startPos = endPos
           new Segment(startPos)
-      editExcerpt() if event.type != 'mousemove'
+      editExcerpt() if up.type != 'mousemove'
       return
 
     removed = (track) ->
@@ -199,6 +198,11 @@ app.controller('volume/slot', [
         updateRange(@segment = new Segment(asset.segment))
         select(this) if `asset.id == target.asset`
         return
+
+      fillData: ->
+        super()
+        if !@asset
+          @data.position = if ruler.range.uBounded then ruler.range.u else 0
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id

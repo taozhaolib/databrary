@@ -62,6 +62,15 @@ app.service('exportService', [
       return a-b;
     }
 
+    function byCategory(a, b){ 
+      if(a.record.category > b.record.category)
+          return 1;
+      if(a.record.category < b.record.category)
+          return -1;
+      return 0;
+    }
+
+
     function getId(x) {
       return x.id;
     }
@@ -79,8 +88,10 @@ app.service('exportService', [
           ssRow.push(containers[k].id);
           ssRow.push(containers[k].name);
           ssRow.push(containers[k].date);
-          var recIdArr = containers[k].records.map(getId);
 
+
+          var recIdArr = containers[k].records.sort(byCategory).map(getId);
+          
           var idx = 0; //create and index for the record loop so we have more control over the loop logic
           for(var l = 0; l < headerReference.length; l++ ){
 
@@ -90,6 +101,7 @@ app.service('exportService', [
             if (idx < recIdArr.length){
 
               var recID = recIdArr[idx];
+
               var recMetrics = Object.keys(records[recID].measures).sort(byNumber);
 
               var currRecCat = records[recID].category || 0;
