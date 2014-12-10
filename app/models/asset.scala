@@ -138,7 +138,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def link(c : Container, segment : Segment = Segment.full) : Future[SlotAsset] =
     Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> segment), SQLTerms('asset -> id)).ensure
-    .map(_ => SlotAsset.make(this, c, segment))
+    .map(_ => SlotAsset(this, c, segment))
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 

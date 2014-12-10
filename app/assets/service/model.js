@@ -1064,7 +1064,7 @@ app.factory('modelService', [
 
     SlotAsset.prototype.setExcerpt = function (classification) {
       var a = this;
-      return router.http(classification != null ? router.controllers.SlotAssetApi.setExcerpt : router.controllers.SlotAssetApi.removeExcerpt, this.container.id, this.segment.format(), this.asset.id, {classification:classification})
+      return router.http(classification != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.asset.id, {classification:classification})
         .then(function (res) {
           a.clear('excerpts');
           a.volume.clear('excerpts');

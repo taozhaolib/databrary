@@ -26,12 +26,12 @@
                     <dd>@Classification.message(asset.classification)</dd>
 
                     <dt>Format</dt>
-                    <dd>@cast[SlotFileAsset](asset).map(_.format.name)</dd>
+                    <dd>asset.format.name</dd>
 
                     <dt>Position</dt>
                     <dd>@asset.segment</dd>
 
-                    @cast[SlotTimeseriesAsset](asset).map { ts =>
+                    @cast[TimeseriesAssetSlot](asset).map { ts =>
                         <dt>Duration</dt>
                         <dd>@ts.duration</dd>
                     }
@@ -42,6 +42,5 @@
 }
 
     @widget.panel.materials(Seq(asset))
-    @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)
 </article>
 }

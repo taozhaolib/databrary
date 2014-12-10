@@ -96,7 +96,7 @@ object SlotHtml extends SlotController with HtmlController {
     val slot = request.obj
     for {
       records <- slot.records
-      assets <- slot.assets
+      assets <- AssetSlot.getSlotFull(slot)
       comments <- slot.comments
       tags <- slot.tags
     } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))

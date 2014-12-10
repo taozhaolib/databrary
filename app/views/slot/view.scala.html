@@ -1,4 +1,4 @@
-@(records : Seq[(dbrary.Segment, Record)], assets : Seq[SlotAsset], comments : Seq[Comment], commentForm : CommentController.SlotForm, tags : Seq[TagWeight], tagForm : TagController.SlotForm)(implicit request : SlotHtml.Request[_])
+@(records : Seq[(dbrary.Segment, Record)], assets : Seq[AssetSlot], comments : Seq[Comment], commentForm : CommentController.SlotForm, tags : Seq[TagWeight], tagForm : TagController.SlotForm)(implicit request : SlotHtml.Request[_])
 
 @defining(request.obj) { slot =>
 @html("Session: " + slot.pageName, Some(request.obj.pageURL)) {

@@ -1,4 +1,4 @@
-@(assets : Seq[SlotAsset])(implicit request : SiteRequest[_])
+@(assets : Seq[AssetSlot])(implicit request : SiteRequest[_])
 
 @import play.api.templates.HtmlFormat._
 
@@ -9,11 +9,9 @@
             @if(assets.nonEmpty) {
                 @assets.map { link =>
                         <li class="panel_materials_item @link.classification">
-                            @cast[SlotFileAsset](link).map { file =>
-                              <a href="@file.pageURL" class="filename">@file.pageName.@file.format.extension</a>
-                            }
+                            <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
                             <span class="classification">@link.classification.toString.charAt(0)</span>
-                            @cast[SlotTimeseriesAsset](link).map { ts =>
+                            @cast[TimeseriesAssetSlot](link).map { ts =>
                               <span class="duration">ts.duration</span>
                             }
                         </li>
@@ -29,27 +27,27 @@
                 <span></span>
 
                 @assets.map { link =>
-                    @cast[SlotFileAsset](link).filter(_.checkPermission(Permission.READ)).map { link =>
+                    @cast[FileAssetSlot](link).filter(_.checkPermission(Permission.READ)).map { link =>
                         <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
                             <h2>
-                                @link.pageName.@link.format.extension <a href='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, false)' class="link">download</a>
+                                @link.pageName.@link.format.extension <a href='@routes.AssetSlotController.download(link.containerId, link.segment, link.assetId, false)' class="link">download</a>
                             </h2>
 
                             @link.format.mimeSubTypes match {
                                 case ("image", _) => {
-                                    <img src='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
+                                    <img src='@routes.AssetSlotController.download(link.containerId, link.segment, link.assetId, true)'/>
                                 }
                                 case ("video", _) => {
                                     <video controls>
-                                        <source src="@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)" type="@link.asset.format.mimetype">
+                                        <source src="@routes.AssetSlotController.download(link.containerId, link.segment, link.assetId, true)" type="@link.asset.format.mimetype">
                                     </video>
 
-                                    @if(!link.isInstanceOf[SlotTimeseriesAsset]) {
+                                    @if(!link.isInstanceOf[TimeseriesAssetSlot]) {
                                         @Messages("asset.untranscoded")
                                     }
                                 }
                                 case ("text", "plain") => {
-                                    <iframe src='@routes.SlotAssetController.download(link.slot.containerId, link.slot.segment, link.assetId, true)'/>
+                                    <iframe src='@routes.AssetSlotController.download(link.containerId, link.segment, link.assetId, true)'/>
                                 }
                                 case _ => {
                                     @Messages("asset.display.unavailable")

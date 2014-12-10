@@ -125,11 +125,8 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 }
 
 object SlotRecord extends SlotTable("slot_record") {
-  private[models] def row(record : Record) =
-    rowContainer(Container.columnsVolume(Volume.fixed(record.volume)))
-
   private[models] def slots(record : Record) =
-    row(record)
+    rowVolume(Volume.fixed(record.volume))
     .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
     .apply(record.id, record.volumeId).list
 

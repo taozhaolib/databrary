@@ -8,9 +8,13 @@ import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, container : Container, segment : Segment, consent : Consent.Value, val time : Timestamp, val text : String, val parents : Seq[Comment.Id])
-  extends Slot(container, segment, consent) with TableRowId[Comment] with InVolume {
+final class Comment private (val id : Comment.Id, val who : Account, val container : Container, val segment : Segment, val consent : Consent.Value, val time : Timestamp, val text : String, val parents : Seq[Comment.Id])
+  extends Slot with TableRowId[Comment] with InVolume {
   def whoId = who.id
+
+  private[models] def withConsent(consent : Consent.Value) =
+    if (consent == this.consent) this else
+    new Comment(id, who, container, segment, consent, time, text, parents)
 
   override def json = JsonRecord.flatten(id,
     Some('who -> who.party.json),
@@ -28,7 +32,7 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
     , SelectColumn[String]("text")
     , SelectColumn[IndexedSeq[Id]]("thread")
     ).map { (id, segment, time, text, thread) =>
-      (container, consent) => (who : Account) =>
+      (container : Container, consent : Consent.Value) => (who : Account) =>
         new Comment(id, who, container, segment, consent, time, text, thread.tail)
     } from "comment_thread AS comment"
 
@@ -64,6 +68,6 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Comment] =
     INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent), "id, time")
     .single(SQLCols[Id, Timestamp].map { (id, time) =>
-      new Comment(id, site.account, slot.segment, slot.context, time, text, parent.toSeq)
+      new Comment(id, site.account, slot.container, slot.segment, slot.consent, time, text, parent.toSeq)
     })
 }

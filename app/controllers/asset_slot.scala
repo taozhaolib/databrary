@@ -19,7 +19,7 @@ private[controllers] sealed class AssetSlotController extends ObjectController[A
 object AssetSlotController extends AssetSlotController {
   private[controllers] def getFrame(offset : Either[Float,Offset], size : Int)(implicit request : Request[AnyContent]) : Future[Result] =
     (request.obj match {
-      case ts : SlotTimeseriesAsset =>
+      case ts : TimeseriesAssetSlot =>
         val off = offset.fold[Offset](f => Offset((f*ts.duration.millis).toLong), o => o)
         if (off < Offset.ZERO || off > ts.duration)
           throw NotFoundException

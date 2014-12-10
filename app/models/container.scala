@@ -12,11 +12,13 @@ import site._
   * @param name descriptive name to help with organization by contributors.
   * @param date the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
   */
-final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], consent : Consent.Value = Consent.NONE)
-  extends ContextSlot(this, Segment.full, consent) with TableRowId[Container] {
+final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], val consent : Consent.Value = Consent.NONE)
+  extends ContextSlot with TableRowId[Container] {
+  def container = this
+  def segment = Segment.full
   override def isFull = true
 
-  private[models] def withConsent(consent : Consent.Value) =
+  private[models] def withConsent(consent : Consent.Value) : Container =
     if (consent == this.consent) this else
     new Container(id, volume, top, name, date, consent)
 
@@ -38,6 +40,8 @@ final class Container protected (val id : Container.Id, override val volume : Vo
           case SQLException(e) if e.startsWith("update or delete on table \"container\" violates foreign key constraint ") => false
         }
     }
+
+  override def pageParent = Some(volume)
 
   override lazy val json : JsonRecord = JsonRecord.flatten(id,
     Some('volume -> volumeId),
