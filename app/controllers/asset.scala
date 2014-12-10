@@ -36,11 +36,12 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
         classification = form.classification.get)
-      sa <- container.mapAsync { c =>
+      _ <- container.foreachAsync { c =>
         form.position.get.fold(async(Segment.full))(p =>
           duration(asset).map(d => Segment(p, p + d)))
         .flatMap(asset.link(c, _))
       }
+      /* TODO: eliminate whole-excerpt: */
       _ <- form.excerpt.get.foreachAsync(c => Excerpt.set(asset, Range.full, c).map(r =>
           if (!r && c.nonEmpty) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */

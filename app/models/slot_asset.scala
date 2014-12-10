@@ -88,7 +88,7 @@ sealed class AssetSlot protected (val slotAsset : SlotAsset, _segment : Segment,
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
   final override val permission : Permission.Value =
-    dataPermission(classification).permission
+    volume.dataPermission(classification, consent).permission
 
   final override def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.download("slot_asset", 'container -> containerId, 'segment -> segment, 'asset -> assetId)
@@ -106,11 +106,13 @@ sealed class AssetSlot protected (val slotAsset : SlotAsset, _segment : Segment,
   override def pageURL = controllers.routes.AssetSlotHtml.view(containerId, _segment, assetId)
     
   override def json : JsonObject = JsonObject.flatten(
-    Some('permission -> permission),
-    excerpt.map('excerpt -> _),
     Some('asset -> slotAsset.json),
-    if (format === asset.format) None else Some('format -> format.id)
-  ) ++ (slotJson - "container")
+    if (entire) None else Some('segment -> segment),
+    Some('permission -> permission),
+    if (format === asset.format) None else Some('format -> format.id),
+    excerpt.map('excerpt -> _),
+    if (consent == Consent.NONE) None else Some('consent -> consent)
+  )
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(json.obj, options
@@ -249,8 +251,7 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
   private[models] def getVolumeThumb(vol : Volume) : Future[Option[FileAssetSlot]] =
     rowVolume(vol)
     .SELECT("JOIN format ON asset.format = format.id",
-      "WHERE container.volume = ? AND asset.volume = ?",
-        "AND GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, excerpt_consent.consent)",
+      "WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, slot_consent.consent)",
         "AND asset.sha1 IS NOT NULL AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
     .apply(vol.permission).singleOpt
