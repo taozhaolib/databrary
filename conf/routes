@@ -216,6 +216,7 @@ POST    /api/transcode/:id/complete                                             
 
 # ===== /TEST ==== #
 GET     /test                                                                                     controllers.APIConn.res
+GET     /test/id/:ezid                                                                            controllers.APIConn.idData(ezid: String)
 
 # ===== /API ===== #
 
