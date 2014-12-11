@@ -20,14 +20,14 @@ final case class Offset(millis : Long) extends scala.math.Ordered[Offset] {
   def ==(o : Offset) = millis == o.millis
   def seconds : Double = millis/1000.0
   def samples(rate : Double) = math.round(rate*seconds)
-  def +(other : Offset) = Offset(millis + other.millis)
-  def -(other : Offset) = Offset(millis - other.millis)
-  def unary_- = Offset(-millis)
+  def +(other : Offset) = new Offset(millis + other.millis)
+  def -(other : Offset) = new Offset(millis - other.millis)
+  def unary_- = new Offset(-millis)
   def compare(other : Offset) : Int = millis.compare(other.millis)
-  def min(other : Offset) = Offset(millis.min(other.millis))
-  def max(other : Offset) = Offset(millis.max(other.millis))
+  def min(other : Offset) = new Offset(millis.min(other.millis))
+  def max(other : Offset) = new Offset(millis.max(other.millis))
   def duration : time.Duration = new time.Duration(millis)
-  def abs = Offset(millis.abs)
+  def abs = new Offset(millis.abs)
 
   /* This is unfortunate but I can't find any other reasonable formatting options without the postgres server or converting to a joda Period */
   override def toString = {
@@ -50,6 +50,20 @@ object Offset {
   def ofSeconds(seconds : Double) : Offset =
     if (seconds.isInfinite /* why !seconds.isValidLong? */) throw new java.lang.NumberFormatException("Invalid offset")
     else new Offset((1000.0*seconds).toLong)
+
+  trait numeric extends Numeric[Offset] {
+    private val long = Numeric.LongIsIntegral
+    def compare(x : Offset, y : Offset) = long.compare(x.millis, y.millis)
+    def fromInt(x : Int) = new Offset(1000*x)
+    def plus(x : Offset, y : Offset) = new Offset(long.plus(x.millis, y.millis))
+    def minus(x : Offset, y : Offset) = new Offset(long.minus(x.millis, y.millis))
+    def negate(x : Offset) = new Offset(long.negate(x.millis))
+    def times(x : Offset, y : Offset) = new Offset(long.times(x.millis, y.millis) / 1000)
+    def toDouble(x : Offset) = x.millis / 1000.0
+    def toFloat(x : Offset) = x.millis / 1000.0f
+    def toInt(x : Offset) = (x.millis / 1000).toInt
+    def toLong(x : Offset) = x.millis / 1000
+  }
 
   private val multipliers : Seq[Double] = Seq(60,60,24).scanLeft(1.0)(_ * _)
   def fromString(s : String) : Offset = Maybe.toLong(s).fold(

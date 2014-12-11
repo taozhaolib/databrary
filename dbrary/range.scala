@@ -35,8 +35,7 @@ trait RangeType[A] extends Ordering[A] {
         val yb = y.lowerBound
         (for { xb <- xb ; yb <- yb } yield {
           val c = t.compare(xb, yb)
-          if (c == 0) y.lowerClosed compare x.lowerClosed
-          else c
+          if (c != 0) c else y.lowerClosed compare x.lowerClosed
         }).getOrElse(xb.isDefined compare yb.isDefined)
       }
     }
@@ -51,31 +50,46 @@ trait RangeType[A] extends Ordering[A] {
         val yb = y.upperBound
         (for { xb <- xb ; yb <- yb } yield {
           val c = t.compare(xb, yb)
-          if (c == 0) x.lowerClosed compare y.lowerClosed
-          else c
+          if (c != 0) c else x.lowerClosed compare y.lowerClosed
         }).getOrElse(xb.isEmpty compare yb.isEmpty)
       }
     }
   }
-
+  object Total extends Ordering[Range[A]] {
+    def compare(x : Range[A], y : Range[A]) : Int = {
+      val o = LowerOrdering.compare(x, y)
+      if (o != 0) o else UpperOrdering.compare(x, y)
+    }
+  }
+  object Nesting extends PartialOrdering[Range[A]] {
+    def tryCompare(x : Range[A], y : Range[A]) : Option[Int] = {
+      val lo = LowerOrdering.compare(x, y)
+      val uo = UpperOrdering.compare(x, y)
+      if (lo == 0 && uo == 0) Some(0)
+      else if (lo <= 0 && uo >= 0) Some(1)
+      else if (lo >= 0 && uo <= 0) Some(-1)
+      else None
+    }
+    def lteq(x : Range[A], y : Range[A]) =
+      tryCompare(x, y).exists(_ <= 0)
+  }
 }
+
 trait DiscreteRangeType[A] extends RangeType[A] {
   def increment(a : A) : A // = a + 1
   def decrement(a : A) : A // = a - 1
   override final def isDiscrete = true
 }
 
+trait NumericRangeType[A] extends RangeType[A] with Numeric[A] {
+  object SizeOrdering extends Ordering[Range[A]] {
+    def compare(x : Range[A], y : Range[A]) : Int = ???
+  }
+}
+
 object RangeType {
-  implicit object int extends DiscreteRangeType[Int] with Ordering.IntOrdering {
-    def increment(a : Int) = a + 1
-    def decrement(a : Int) = a - 1
-  }
-  implicit object long extends DiscreteRangeType[Long] with Ordering.LongOrdering {
-    def increment(a : Long) = a + 1
-    def decrement(a : Long) = a - 1
-  }
-  implicit val segment : RangeType[Offset] = PGRangeType.segment
-  implicit val date : RangeType[Date] = PGRangeType.date
+  implicit val segment : NumericRangeType[Offset] = PGRangeType.segment
+  implicit val date : DiscreteRangeType[Date] = PGRangeType.date
 }
 
 abstract sealed class Range[A](implicit t : RangeType[A]) {
@@ -119,8 +133,7 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
   final def @>(x : A) = isFull || !isEmpty &&
     lowerBound.forall(l => if (lowerClosed) t.lteq(l, x) else t.lt(l, x)) &&
     upperBound.forall(u => if (upperClosed) t.lteq(x, u) else t.lt(x, u))
-  final def @>(r : Range[A]) = isFull || r.isEmpty || !isEmpty &&
-    t.LowerOrdering.lteq(this, r) && t.UpperOrdering.gteq(this, r)
+  final def @>(r : Range[A]) = t.Nesting.lteq(r, this)
   /** Intersection, as in postgres. */
   final def *(r : Range[A]) =
     if (isEmpty || r.isFull) this
@@ -145,15 +158,13 @@ abstract sealed class Range[A](implicit t : RangeType[A]) {
       l <- lowerBound
       u <- upperBound
     } yield (f(l,u))
-  final def ===(a : Range[A]) = a match {
-    case r : Range[A] =>
-      val oo = Ordering.Option(t)
-      oo.equiv(lowerBound, r.lowerBound) &&
-      oo.equiv(upperBound, r.upperBound) &&
-      lowerClosed == r.lowerClosed &&
-      upperClosed == r.upperClosed &&
-      isEmpty == r.isEmpty
-    case _ => false
+  final def ===(a : Range[A]) = {
+    val oo = Ordering.Option(t)
+    oo.equiv(lowerBound, a.lowerBound) &&
+    oo.equiv(upperBound, a.upperBound) &&
+    lowerClosed == a.lowerClosed &&
+    upperClosed == a.upperClosed &&
+    isEmpty == a.isEmpty
   }
   override def toString =
     (if (lowerClosed) "[" else "(") +
@@ -228,6 +239,8 @@ object Range {
     val lowerClosed = lc
     val upperClosed = uc
   }
+  def size[A](r : Range[A])(implicit t : NumericRangeType[A]) : Option[A] =
+    if (r.isEmpty) Some(t.zero) else r.zip((l,u) => t.minus(u, l))
 
   implicit def lowerOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.LowerOrdering
   implicit def upperOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.UpperOrdering
@@ -417,9 +430,7 @@ abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends
 }
 
 object PGRangeType {
-  implicit object segment extends PGRangeType[Offset]("segment") {
-    def compare(a : Offset, b : Offset) = a compare b
-  }
+  implicit object segment extends PGRangeType[Offset]("segment") with NumericRangeType[Offset] with Offset.numeric
 
   implicit object date extends PGRangeType[Date]("daterange") with DiscreteRangeType[Date] {
     def compare(a : Date, b : Date) = a compareTo b
