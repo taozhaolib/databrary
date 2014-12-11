@@ -214,6 +214,9 @@ GET     /api/cite                                                               
 # transcode remote
 POST    /api/transcode/:id/complete                                                               controllers.AssetApi.transcoded(id : models.Transcode.Id, auth : String)
 
+# ===== /TEST ==== #
+GET     /test                                                                                     controllers.APIConn.res
+
 # ===== /API ===== #
 
 # static resources
@@ -225,3 +228,4 @@ GET     /p/*path                                                                
 GET     /v/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "volume", path : String)
 
 GET     /*path/                                                                                   controllers.Site.moved(path: String)
+
