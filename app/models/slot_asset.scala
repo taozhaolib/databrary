@@ -8,21 +8,20 @@ import macros.async._
 import dbrary._
 import site._
 
-private[models] final case class Excerpt(classification : Classification.Value, segment : Segment)
+final case class Excerpt(segment : Segment, classification : Classification.Value) {
+  def apply(seg : Segment) : Boolean = segment @> seg
+}
 
 sealed trait AssetSlot extends Slot {
   def slotAsset : SlotAsset
-  val excerpt : Option[Excerpt]
+  def excerpt : Option[Excerpt]
   def asset : Asset = slotAsset.asset
   final def assetId = asset.id
   override final def volume = asset.volume
   protected final def assetSegment = slotAsset.segment
   def format = asset.format
-  final def classification = excerpt.fold(asset.classification)(max(asset.classification, _))
-
-  private[models] def withConsent(consent : Consent.Value) =
-    if (consent == this.consent) this else
-    AssetSlot(slotAsset, segment, consent, excerpt)
+  def entire : Boolean
+  def classification = excerpt.fold(asset.classification)(e => max(asset.classification, e.classification))
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
     * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
@@ -42,11 +41,11 @@ sealed trait AssetSlot extends Slot {
 
   override def pageURL = controllers.routes.AssetSlotHtml.view(containerId, segment, assetId)
 
-  protected def json : JsonObject = JsonObject.flatten(
+  override def json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
     if (segment.isFull) None else Some('segment -> segment),
-    if (consent == Consent.NONE) None else Some('consent -> consent), // probably no-one uses this
-    excerpt.map('excerpt -> _)
+    consentJson, // probably no-one uses this
+    excerpt.map('excerpt -> _.classification)
   )
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
@@ -88,6 +87,7 @@ sealed class SlotAsset protected (override val asset : Asset, final val segment 
   extends AssetSlot {
   def slotAsset = this
   private[models] def sqlKey = asset.sqlKey
+  def entire = true
 
   override def pageName = asset.pageName
   override def pageParent = Some(container)
@@ -108,17 +108,20 @@ final class SlotTimeseriesAsset private[models] (override val asset : Timeseries
 
 /** A segment of an asset as used in a slot.
   * This is a "virtual" model representing an SlotAsset within the context of a segment. */
-sealed class AssetSegment protected (val slotAsset : SlotAsset, _segment : Segment, final val context : ContextSlot, final val excerpt : Option[Excerpt])
+sealed class AssetSegment private[models] (val slotAsset : SlotAsset, _segment : Segment, final val context : ContextSlot, final val excerpt : Option[Excerpt])
   extends AssetSlot {
   final val segment = slotAsset.segment * _segment
   private[models] def sqlKey = SQLTerms('asset -> assetId, 'segment -> segment)
+  def entire = false
 
   override def pageName = _segment.toString
   override def pageParent = Some(slotAsset)
     
-  override def json : JsonObject = super.json +
-    ('asset -> slotAsset.json) ++
-    (if (format === asset.format) None else Some('format -> format.id))
+  override def json : JsonObject = super.json ++ JsonObject.flatten(
+    Some('asset -> slotAsset.json),
+    if (format === asset.format) None else Some[JsonField]('format -> format.id),
+    excerpt.filter(_ => slotAsset.permission < permission).map(e => 'context -> e.segment)
+  )
 }
 
 sealed class FileAssetSegment private[models] (override val slotAsset : SlotFileAsset, segment : Segment, context : ContextSlot, excerpt : Option[Excerpt])
@@ -155,7 +158,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     .apply(asset.id).singleOpt
 
   /** Retrieve the list of all assets within the given slot. */
-  private[models] def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
+  def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     columns
     .join(Asset.rowVolume(slot.volume), "slot_asset.asset = asset.id")
     .join(ContextSlot.rowContainer(slot.container, "slot_asset.segment"),
@@ -169,12 +172,17 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
 }
 
 object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot] {
-  private[models] def apply(slotAsset : SlotAsset, segment : Segment, context : CnotextSlot, excerpt : Option[Classification.Value]) : AssetSlot =
-    if (segment === slotAsset.segment) slotAsset else slotAsset match {
-      case ts : SlotTimeseriesAsset => new TimeseriesAssetSegment(ts, segment, context, excerpt)
-      case f : SlotFileAsset => new FileAssetSegment(f, segment, context, excerpt)
-      case a => new AssetSegment(a, segment, context, excerpt)
+  private def apply(slotAsset : SlotAsset, seg : Segment, context : ContextSlot, excerpt : Option[Excerpt]) : AssetSlot =
+    slotAsset match {
+      case ts : SlotTimeseriesAsset => new TimeseriesAssetSegment(ts, seg, context, excerpt)
+      case f : SlotFileAsset => new FileAssetSegment(f, seg, context, excerpt)
+      case a => new AssetSegment(a, seg, context, excerpt)
     }
+  private[models] def apply(asset : Asset, segment : Segment, seg : Segment, context : ContextSlot, excerpt : Option[Excerpt]) : AssetSlot =
+    if (seg === segment)
+      SlotAsset(asset, segment, context, excerpt)
+    else
+      AssetSlot(SlotAsset(asset, segment, context.contextFor(segment), excerpt.filter(_(segment))), seg, context, excerpt)
 
   private def columnsSegment(seg : Segment) = SlotAsset.columns * Columns(
       SelectColumn[Segment]("asset_slot", "segment")
@@ -185,81 +193,65 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume. */
   def get(assetId : Asset.Id, containerId : Container.Id, seg : Segment)(implicit site : Site) : Future[Option[AssetSlot]] =
     columnsSegment(seg)
-    .join(Container.columns, "slot_asset.container = container.id")
     .join(Asset.columns, "slot_asset.asset = asset.id")
-    .join(Volume.row, "container.volume = volume.id AND asset.volume = volume.id")
-    .leftJoin(Excerpt.excerpt, "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
-    .leftJoin(SlotConsent.consent, "slot_asset.container = slot_consent.container AND asset_slot.segment <@ slot_consent.segment")
-    .map { case ((((((segment, seg), container), asset), volume), excerpt), consent) =>
-      AssetSlot(SlotAsset(asset(volume), container(volume), segment), seg, consent.getOrElse(Consent.NONE), excerpt)
+    .join(ContextSlot.rowContainer(
+        Container.columnsVolume(Volume.row),
+        "asset_slot.segment"),
+      "slot_asset.container = container.id AND asset.volume = volume.id")
+    .leftJoin(Excerpt.columns, "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
+    .map { case ((((segment, seg), asset), context), excerpt) =>
+      AssetSlot(asset(context.volume), segment, seg, context, excerpt)
     }
     .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
     .apply(assetId, containerId).singleOpt
-
-  def getFull(slotAsset : SlotAsset) : Future[AssetSlot] =
-    SlotAsset.columns
-    .leftJoin(Excerpt.excerpt, "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
-    .leftJoin(SlotConsent.consent, "slot_asset.container = slot_consent.container AND slot_asset.segment <@ slot_consent.segment")
-    .map { case ((segment, excerpt), consent) =>
-      AssetSlot(slotAsset, segment, consent.getOrElse(Consent.NONE), excerpt)
-    }
-    .SELECT("WHERE slot_asset.asset = ?")
-    .apply(slotAsset.assetId).single
-
-  def getSlotFull(slot : Slot) : Future[Seq[AssetSlot]] =
-    SlotAsset.columns
-    .join(Asset.columns, "slot_asset.asset = asset.id")
-    .leftJoin(Excerpt.excerpt, "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
-    .leftJoin(SlotConsent.consent, "slot_asset.container = slot_consent.container AND slot_asset.segment <@ slot_consent.segment")
-    .map { case (((segment, asset), excerpt), consent) =>
-      AssetSlot(SlotAsset(asset(slot.volume), slot.container, segment), segment, consent.getOrElse(Consent.NONE), excerpt)
-    }
-    .SELECT("WHERE slot_asset.container = ? AND slot_asset.segment && ? AND asset.volume = ?")
-    .apply(slot.containerId, slot.segment, slot.volumeId).list
 }
 
 object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
-  private[models] val excerpt = Columns(
-    SelectColumn[Classification.Value]("classification")
-  )
-  private[models] val columns =
-    (excerpt ~+ segment).map(Excerpt.apply)
+  private[models] val columns = Columns(
+      segment
+    , SelectColumn[Classification.Value]("classification")
+    ).map(Excerpt.apply _)
 
   private def rowVolume(volume : Volume) =
     columns
     .join(SlotAsset.columns, "excerpt.asset = slot_asset.asset")
-    .join(Asset.rowFileVolume(volume), "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
-    .join(Container.columns, "slot_asset.container = container.id AND volume.id = container.volume")
-    .leftJoin(SlotConsent.consent, "slot_asset.container = slot_consent.container AND excerpt.segment <@ slot_consent.segment")
-    .map { case (((((excerpt, seg), segment), asset), container), consent) =>
-      AssetSlot(SlotAsset(asset, container(volume), segment), seg, consent.getOrElse(Consent.NONE), Some(excerpt)).asInstanceOf[FileAssetSlot]
+    .join(Asset.columns.map(_(volume)), "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
+    .join(ContextSlot.rowContainer(
+        Container.columns.map(_(volume)),
+        "excerpt.segment"),
+      "slot_asset.container = container.id")
+    .map { case (((excerpt, segment), asset), context) =>
+      AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt)).asInstanceOf[FileAssetSlot]
     }
 
   /** Retrieve the list of all excerpts on a volume. */
   private[models] def getVolume(vol : Volume) : Future[Seq[FileAssetSlot]] =
     rowVolume(vol)
-    .SELECT().apply().list
+    .SELECT("WHERE container.volume = ? AND asset.volume = ?")
+    .apply(vol.id, vol.id).list
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getVolumeThumb(vol : Volume) : Future[Option[FileAssetSlot]] =
     rowVolume(vol)
     .SELECT("JOIN format ON asset.format = format.id",
-      "WHERE GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, slot_consent.consent)",
-        "AND asset.sha1 IS NOT NULL AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')",
+      "WHERE container.volume = ? AND asset.volume = ?",
+        "AND GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, slot_consent.consent)",
+        "AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')",
       "ORDER BY container.top DESC LIMIT 1")
-    .apply(vol.permission).singleOpt
+    .apply(vol.id, vol.id, vol.permission).singleOpt
 
   /** Retrieve the list of all excerpts in a slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[AssetSlot]] =
     columns
     .join(SlotAsset.columns, "excerpt.asset = slot_asset.asset")
-    .join(Asset.rowVolume(slot.volume), "slot_asset.asset = asset.id")
-    .leftJoin(SlotConsent.consent, "slot_asset.container = slot_consent.container AND excerpt.segment <@ slot_consent.segment")
-    .map { case ((((excerpt, seg), segment), asset), consent) =>
-      AssetSlot(SlotAsset(asset, slot.container, segment), seg, consent.getOrElse(Consent.NONE), Some(excerpt))
+    .join(Asset.columns.map(_(slot.volume)), "slot_asset.asset = asset.id")
+    .join(ContextSlot.rowContainer(slot.container, "excerpt.segment"),
+      "slot_asset.container = container.id")
+    .map { case (((excerpt, segment), asset), context) =>
+      AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt))
     }
-    .SELECT("WHERE asset.volume = ? AND slot_asset.container = ? AND excerpt.segment && ?")
-    .apply(slot.volumeId, slot.containerId, slot.segment).list
+    .SELECT("WHERE asset.volume = ? AND excerpt.segment && ?")
+    .apply(slot.volumeId, slot.segment).list
 
   def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
     implicit val site = asset.site

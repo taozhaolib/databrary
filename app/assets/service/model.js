@@ -941,6 +941,7 @@ app.factory('modelService', [
     AssetSlot.prototype.fields = angular.extend({
       permission: true,
       excerpt: true,
+      context: true
     }, Slot.prototype.fields);
 
     AssetSlot.prototype.init = function (init) {

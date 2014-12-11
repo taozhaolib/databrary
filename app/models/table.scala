@@ -21,20 +21,16 @@ private[models] trait TableRowId[T] extends TableRow with HasId[T] {
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
-private[models] trait TableView {
-  /** Name of the database table. */
-  private[models] def table : String
+private[models] abstract class Table[R] protected (private[models] val table : String) {
   protected implicit def fromTable : FromTable = FromTable(table)
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
   private[models] lazy val tableOID : Long = async.AWAIT {
     SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
   }
 
-  /** Type of TableRow this object can generate. */
-  private[models] type Row // <: TableRow
   /* Description of the database selection to produce a Row. */
   // private[models] val row : Selector[Row]
-  private[models] def fixed(r : Row with TableRow) = r.sqlKey.values.map(_ => r)
+  private[models] def fixed(r : R with TableRow) = r.sqlKey.values.map(_ => r)
 
   protected def INSERT(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQL("INSERT INTO", table, args.insert, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)
@@ -44,10 +40,6 @@ private[models] trait TableView {
     SQL("DELETE FROM ONLY", table, "WHERE", args.where, Maybe.bracket("RETURNING ", returning))(dbc, exc).immediately.apply(args)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     DELETE(SQLTerms(args : _*))(dbc, exc)
-}
-
-private[models] abstract class Table[R] protected (private[models] val table : String) extends TableView {
-  type Row = R
 }
 private[models] abstract class TableId[R <: TableRowId[R]] protected (table : String) extends Table[R](table) with ProvidesId[R]
 

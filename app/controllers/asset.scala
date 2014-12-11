@@ -31,18 +31,18 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
-      container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-        form.container.withError("object.invalid", "container")._throw))
+      slot <- form.container.get.mapAsync { c =>
+        form.position.get.fold(async(Segment.full))(p =>
+          duration(asset).map(d => Segment(p, p + d)))
+        .flatMap(Slot.get(c, _))
+        .map(_ getOrElse form.container.withError("object.invalid", "container")._throw)
+      }
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
         classification = form.classification.get)
-      _ <- container.foreachAsync { c =>
-        form.position.get.fold(async(Segment.full))(p =>
-          duration(asset).map(d => Segment(p, p + d)))
-        .flatMap(asset.link(c, _))
-      }
-      _ <- form.excerpt.get.foreachAsync(c => Excerpt.set(asset, Range.full, c).map(r =>
-          if (!r && c.nonEmpty) form.excerpt.withError("error.conflict")._throw))
+      _ <- slot.foreachAsync(asset.link)
+      _ <- form.excerpt.get.foreachAsync(e => Excerpt.set(asset, Segment.full, e).map(r =>
+          if (!r && e.nonEmpty) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
     } yield (sa.fold(result(asset))(AssetSlotController.result _))
@@ -245,7 +245,7 @@ object AssetHtml extends AssetController with HtmlController {
     Action(o, Permission.EDIT).async { implicit request =>
       request.obj.slot.flatMap { sa =>
         val form = new ChangeForm()
-        form.excerpt.fill(Some(sa.flatMap(_.excerpt)))
+        form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
         form.Ok
       }
     }

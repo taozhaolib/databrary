@@ -55,7 +55,7 @@ trait RangeType[A] extends Ordering[A] {
       }
     }
   }
-  object Total extends Ordering[Range[A]] {
+  object TotalOrdering extends Ordering[Range[A]] {
     def compare(x : Range[A], y : Range[A]) : Int = {
       val o = LowerOrdering.compare(x, y)
       if (o != 0) o else UpperOrdering.compare(x, y)
@@ -242,8 +242,10 @@ object Range {
   def size[A](r : Range[A])(implicit t : NumericRangeType[A]) : Option[A] =
     if (r.isEmpty) Some(t.zero) else r.zip((l,u) => t.minus(u, l))
 
-  implicit def lowerOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.LowerOrdering
-  implicit def upperOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.UpperOrdering
+  def lowerOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.LowerOrdering
+  def upperOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.UpperOrdering
+  def totalOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.TotalOrdering
+  def nesting[A](implicit t : RangeType[A]) : PartialOrdering[Range[A]] = t.Nesting
   implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
   implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
   implicit def jsonWrites[T : json.Writes] : json.Writes[Range[T]] =
