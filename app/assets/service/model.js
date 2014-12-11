@@ -551,7 +551,6 @@ app.factory('modelService', [
 
     Slot.prototype.fields = {
       consent: true,
-      context: true,
       tags: false,
       consents: false,
     };
@@ -960,14 +959,6 @@ app.factory('modelService', [
 
     delegate(AssetSlot, 'asset',
         'id', 'container', 'format', 'classification', 'name', 'pending');
-
-    AssetSlot.prototype.inContext = function (context) {
-      if (context === undefined)
-        context = this.context;
-      if (this.asset.segment)
-        context = this.asset.segment.intersect(context);
-      return Slot.prototype.inContext.call(this, context);
-    };
 
     Object.defineProperty(AssetSlot.prototype, 'displayName', {
       get: function () {

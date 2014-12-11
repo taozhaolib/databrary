@@ -126,9 +126,16 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
 
 object SlotRecord extends SlotTable("slot_record") {
   private[models] def slots(record : Record) =
-    rowVolume(Volume.fixed(record.volume))
-    .SELECT("WHERE slot_record.record = ? AND container.volume = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
-    .apply(record.id, record.volumeId).list
+    columns
+    .join(ContextSlot.rowContainer(
+        Container.columnsVolume(Volume.fixed(record.volume)),
+        "slot_record.segment"),
+      "slot_record.container = container.id")
+    .map { case (segment, context) =>
+      new Row(context, segment)
+    }
+    .SELECT("WHERE slot_record.record = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
+    .apply(record.id).list
 
   def move(record : Record, container : Container, src : Segment = Segment.empty, dst : Segment = Segment.empty) : Future[Boolean] = {
     implicit val site = record.site

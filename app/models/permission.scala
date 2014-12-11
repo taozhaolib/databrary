@@ -90,6 +90,8 @@ object Consent extends PGEnum("consent") {
       case _ => json.JsError("error.expected.jsnumber")
     }
   }
+  def jsonField(value : Value) : Option[JsonField] =
+    if (value == NONE) None else Some('consent -> value)
 }
 
 /** The possible types of data sensitivity according to the presence of identifying user data.
