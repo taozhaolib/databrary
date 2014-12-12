@@ -148,9 +148,9 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     columns
     .join(ContextSlot.rowContainer(
         Container.columnsVolume(Volume.fixed(asset.volume)),
-        "slot_asset.segment"),
+        "slot_asset.segment") on
       "slot_asset.container = container.id")
-    .leftJoin(Excerpt.columns, "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
+    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
     .map { case ((segment, context), excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
@@ -160,10 +160,10 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
   /** Retrieve the list of all assets within the given slot. */
   def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     columns
-    .join(Asset.rowVolume(slot.volume), "slot_asset.asset = asset.id")
-    .join(ContextSlot.rowContainer(slot.container, "slot_asset.segment"),
+    .join(Asset.rowVolume(slot.volume) on "slot_asset.asset = asset.id")
+    .join(ContextSlot.rowContainer(slot.container, "slot_asset.segment") on
       "slot_asset.container = container.id")
-    .leftJoin(Excerpt.columns, "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
+    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
     .map { case (((segment, asset), context), excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
@@ -193,12 +193,12 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume. */
   def get(assetId : Asset.Id, containerId : Container.Id, seg : Segment)(implicit site : Site) : Future[Option[AssetSlot]] =
     columnsSegment(seg)
-    .join(Asset.columns, "slot_asset.asset = asset.id")
+    .join(Asset.columns on "slot_asset.asset = asset.id")
     .join(ContextSlot.rowContainer(
         Container.columnsVolume(Volume.row),
-        "asset_slot.segment"),
+        "asset_slot.segment") on
       "slot_asset.container = container.id AND asset.volume = volume.id")
-    .leftJoin(Excerpt.columns, "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
+    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
     .map { case ((((segment, seg), asset), context), excerpt) =>
       AssetSlot(asset(context.volume), segment, seg, context, excerpt)
     }
@@ -214,11 +214,11 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
 
   private def rowVolume(volume : Volume) =
     columns
-    .join(SlotAsset.columns, "excerpt.asset = slot_asset.asset")
-    .join(Asset.columns.map(_(volume)), "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
+    .join(SlotAsset.columns on "excerpt.asset = slot_asset.asset")
+    .join(Asset.columns.map(_(volume)) on "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
     .join(ContextSlot.rowContainer(
         Container.columns.map(_(volume)),
-        "excerpt.segment"),
+        "excerpt.segment") on
       "slot_asset.container = container.id")
     .map { case (((excerpt, segment), asset), context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt)).asInstanceOf[FileAssetSlot]
@@ -243,9 +243,9 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
   /** Retrieve the list of all excerpts in a slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[AssetSlot]] =
     columns
-    .join(SlotAsset.columns, "excerpt.asset = slot_asset.asset")
-    .join(Asset.columns.map(_(slot.volume)), "slot_asset.asset = asset.id")
-    .join(ContextSlot.rowContainer(slot.container, "excerpt.segment"),
+    .join(SlotAsset.columns on "excerpt.asset = slot_asset.asset")
+    .join(Asset.columns.map(_(slot.volume)) on "slot_asset.asset = asset.id")
+    .join(ContextSlot.rowContainer(slot.container, "excerpt.segment") on
       "slot_asset.container = container.id")
     .map { case (((excerpt, segment), asset), context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt))

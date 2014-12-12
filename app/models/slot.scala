@@ -244,7 +244,7 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") wi
     columns.map(_(container))
 
   private[models] def join[A](that : Selector[A], container : String = "container.id", segment : String) : Selector[(A,Row)] =
-    that.leftJoin(columns, container + " = slot_consent.container AND " + segment + " <@ slot_consent.segment")
+    that.join(columns.on_?(container + " = slot_consent.container AND " + segment + " <@ slot_consent.segment"))
     .map { case (a, c) => (a, c.getOrElse(No)) }
 }
 

@@ -40,8 +40,8 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
         new VolumeAccess(volume, party, individual, children)
     }
   private def row(volume : Selector[Volume], party : Selector[Party]) = columns
-    .join(volume, "volume_access.volume = volume.id").map(tupleApply)
-    .join(party, "volume_access.party = party.id").map(tupleApply)
+    .join(volume on "volume_access.volume = volume.id").map(tupleApply)
+    .join(party on "volume_access.party = party.id").map(tupleApply)
 
   /** Retrieve the access entries for a volume. */
   private[models] def getParties(volume : Volume, access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] =

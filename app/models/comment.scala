@@ -33,8 +33,8 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
 
   private def row(who : Selector[Account], container : Selector[Consent.Value => Container]) =
     columns
-    .join(who, "comment.who = account.id")
-    .join(ContextSlot.rowContainer(container, "comment.segment"),
+    .join(who on "comment.who = account.id")
+    .join(ContextSlot.rowContainer(container, "comment.segment") on
       "comment.container = container.id")
     .map { case ((comment, who), context) =>
       comment(who, context)
@@ -50,8 +50,8 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   /** Retrieve the set of all comments that apply to the given target. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
     columns
-    .join(Account.row, "comment.who = account.id")
-    .join(ContextSlot.rowContainer(slot.container, "comment.segment"),
+    .join(Account.row on "comment.who = account.id")
+    .join(ContextSlot.rowContainer(slot.container, "comment.segment") on
       "comment.container = container.id")
     .map { case ((comment, who), context) =>
       comment(who, context)

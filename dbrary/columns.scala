@@ -52,7 +52,7 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, parse : S
     copy[(A,C)](selects = selects :+ a, parse = parse.~[C](SQLCols[C]))
   def map[B](f : A => B) : Selector[B] =
     copy[B](parse = parse.map[B](f))
-  def ? : Selector[Option[A]] =
+  protected def ? : Selector[Option[A]] =
     copy[Option[A]](parse = parse.?)
   def from(from : String) : Selector[A] =
     copy[A](source = from)
@@ -68,26 +68,33 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, parse : S
   def pushArgs(args : SQLArgs) : Selector[A] =
     copy[A](preargs = preargs ++ args)
 
-  def join[B](that : Selector[B], joiner : (String, String) => String) : Selector[(A,B)] =
-    Selector[(A,B)](selects ++ that.selects, if (source.equals(that.source)) source else joiner(source, that.source), parse.~[B](that.parse), preargs ++ that.preargs)
-  def join[B](that : Selector[B], on : String) : Selector[(A,B)] =
-    join(that, unwords(_, "JOIN", _, "ON", on))
-  def join[B](that : Selector[B], using : Seq[String]) : Selector[(A,B)] =
-    join(that, unwords(_, "JOIN", _, "USING", using.mkString("(", ", ", ")")))
-  def join[B](that : Selector[B], using : Symbol) : Selector[(A,B)] =
-    join(that, Seq(using.name))
-  def leftJoin[B](that : Selector[B], on : String) : Selector[(A,Option[B])] =
-    join(that.?, unwords(_, "LEFT JOIN", _, "ON", on))
-  def leftJoin[B](that : Selector[B], using : Seq[String]) : Selector[(A,Option[B])] =
-    join(that.?, unwords(_, "LEFT JOIN", _, "USING", using.mkString("(", ", ", ")")))
-  def leftJoin[B](that : Selector[B], using : Symbol) : Selector[(A,Option[B])] =
-    leftJoin(that, Seq(using.name))
-  def ~[B](that : Selector[B]) : Selector[(A,B)] =
-    join(that, _ + " NATURAL JOIN " + _)
-  def ~?[B](that : Selector[B]) : Selector[(A,Option[B])] =
-    join(that.?, _ + " NATURAL LEFT JOIN " + _)
+  def join[B](b : Joiner[B]) : Selector[(A,B)] =
+    new Selector[(A,B)](selects ++ b.selects, source + " " + b.join, parse.~[B](b.parse), preargs ++ b.preargs)
+  def join[B,C](b : Joiner[B], c : Joiner[C]) : Selector[(A,B,C)] =
+    new Selector[(A,B,C)](selects ++ b.selects ++ c.selects, unwords(source, b.join, c.join), parse.~[B,C](b.parse, c.parse), preargs ++ b.preargs ++ c.preargs)
   def *[B](that : Selector[B]) : Selector[(A,B)] =
-    join(that, _ + " CROSS JOIN " + _)
+    join(that.cross)
+
+  private[dbrary] def joiner(join : String*) : Joiner[A] =
+    new Joiner[A](selects, source, unwords(join : _*), parse, preargs)
+  def on(on : String) : Joiner[A] =
+    joiner("JOIN", source, "ON", on)
+  def using(use : String*) : Joiner[A] =
+    joiner("JOIN", source, "USING", use.mkString("(", ",", ")"))
+  def using(use : Symbol) : Joiner[A] =
+    using(use.name)
+  def on_?(on : String) : Joiner[Option[A]] =
+    ?.joiner("LEFT JOIN", source, "ON", on)
+  def using_?(use : String*) : Joiner[Option[A]] =
+    ?.joiner("LEFT JOIN", source, "USING", use.mkString("(", ",", ")"))
+  def using_?(use : Symbol) : Joiner[Option[A]] =
+    using_?(use.name)
+  def natural : Joiner[A] =
+    joiner("NATURAL JOIN", source)
+  def natural_? : Joiner[Option[A]] =
+    ?.joiner("NATURAL LEFT JOIN", source)
+  def cross : Joiner[A] =
+    joiner("CROSS JOIN", source)
 
   def SQL(q : (String, String) => String)(implicit dbc : db.Connection, executionContext : ExecutionContext) : SQLToRows[A] =
     new SQLToRows(q(select, source), parse, true, preargs.args)(dbc, executionContext)
@@ -99,6 +106,14 @@ object Selector {
   def apply(selects : Seq[SelectExpr[_]])(implicit table : FromTable) : Selector[Seq[Any]] =
     new Selector[Seq[Any]](selects, table,
       new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }))
+}
+
+final class Joiner[+A](selects : Seq[SelectExpr[_]], source : String, val join : String, parse : SQLLine[A], preargs : SQLArgs = SQLNoArgs)
+  extends Selector[A](selects, source, parse, preargs) {
+  override def join[B](b : Joiner[B]) : Joiner[(A,B)] =
+    super.join(b).joiner(join + " " + b.join)
+  override def join[B,C](b : Joiner[B], c : Joiner[C]) : Joiner[(A,B,C)] =
+    super.join(b, c).joiner(unwords(join, b.join, c.join))
 }
 
 abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], table : FromTable, override val parse : C) extends Selector[A](selects, table, parse) {

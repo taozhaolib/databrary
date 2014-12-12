@@ -199,8 +199,8 @@ object Volume extends TableId[Volume]("volume") {
   object Containers {
     def get(vol : Volume) : Future[Seq[Container]] =
       vol._records.peek.fold(Container.getVolume(vol)) { records =>
-        Container.rowVolume(vol).leftJoin(
-          SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record"),
+        Container.rowVolume(vol).join(
+          SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record") on_?
           "container.id = slot_record.container")
         .SELECT(/* should be: "ORDER BY container.id"*/).apply().list
         .map(fill(records, _))

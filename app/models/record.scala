@@ -129,7 +129,7 @@ object SlotRecord extends SlotTable("slot_record") {
     columns
     .join(ContextSlot.rowContainer(
         Container.columnsVolume(Volume.fixed(record.volume)),
-        "slot_record.segment"),
+        "slot_record.segment") on
       "slot_record.container = container.id")
     .map { case (segment, context) =>
       new Row(context, segment)
@@ -166,7 +166,7 @@ object Record extends TableId[Record]("record") {
     }
   private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
     .~(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
-    .join(volume, "record.volume = volume.id")
+    .join(volume on "record.volume = volume.id")
     .map { case (((id, cat, meas), cons), vol) =>
       new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, meas)
     }
@@ -189,7 +189,7 @@ object Record extends TableId[Record]("record") {
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[(Segment,Record)]] =
     SlotRecord.columns
-    .join(rowVolume(slot.volume), "slot_record.record = record.id")
+    .join(rowVolume(slot.volume) on "slot_record.record = record.id")
     .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST")
     .apply(slot.containerId, slot.segment).list
 
@@ -210,8 +210,8 @@ object Record extends TableId[Record]("record") {
       val (m, i) = mi
       val ma = "m_" + i.toString
       val mt = m.metric.measureType
-      s.join(mt.select.column.fromAlias(ma),
-        "record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?")
+      s.join(mt.select.column.fromAlias(ma).on(
+        "record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?"))
       .pushArgs(SQLArgs(m.metric.id) :+ m.sqlArg)
       .map(_._1)
     }

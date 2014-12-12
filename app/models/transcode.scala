@@ -89,12 +89,12 @@ object Transcode extends TableId[Asset]("transcode") {
     , SelectColumn[Option[Int]]("process")
     , SelectColumn[Option[String]]("log")
     ).join(Party.row
-      .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
-      .map { case (p, a) => Authorization.make(p)(a) },
+      .join(Authorization.columns on_? "authorize_view.child = party.id AND authorize_view.parent = 0")
+      .map { case (p, a) => Authorization.make(p)(a) } on
       "transcode.owner = party.id")
-    .join(Asset.columns, "transcode.asset = asset.id")
-    .join(Asset.columns fromAlias "orig", "transcode.orig = orig.id")
-    .join(Volume.columns, "asset.volume = volume.id AND orig.volume = volume.id")
+    .join(Asset.columns on "transcode.asset = asset.id")
+    .join(Asset.columns fromAlias "orig" on "transcode.orig = orig.id")
+    .join(Volume.columns on "asset.volume = volume.id AND orig.volume = volume.id")
     .map { case (((((segment, options, process, log), owner), asset), orig), volume) =>
       val vol = volume(Permission.ADMIN, new LocalAuth(owner, superuser = true))
       new TranscodeJob(asset(vol), owner.identity, orig(vol).asInstanceOf[FileAsset], segment, options, process, log)

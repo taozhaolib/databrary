@@ -58,12 +58,12 @@ object Container extends TableId[Container]("container") {
     }
   private[models] def columnsVolume(volume : Selector[Volume]) =
     columns
-    .join(volume, "container.volume = volume.id")
+    .join(volume on "container.volume = volume.id")
     .map(tupleApply)
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Container] =
     columnsVolume(volume)
-    .leftJoin(SlotConsent.consent, "container.id = slot_consent.container AND slot_consent.segment = '(,)'")
+    .join(SlotConsent.consent on_? "container.id = slot_consent.container AND slot_consent.segment = '(,)'")
     .map { case (container, consent) => container(consent.getOrElse(Consent.NONE)) }
   private[models] def rowVolume(volume : Volume) : Selector[Container] =
     rowVolume(Volume.fixed(volume))

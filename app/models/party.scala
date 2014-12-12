@@ -174,7 +174,7 @@ object Party extends TableId[Party]("party") {
       new Party(id, name, orcid, affiliation, url)
     }
   private[models] val row : Selector[Party] =
-    columns.leftJoin(Account.columns, using = 'id)
+    columns.join(Account.columns using_? 'id)
     .map { case (party, acct) =>
       acct.foreach(_(party))
       party
@@ -199,7 +199,7 @@ object Party extends TableId[Party]("party") {
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
     row
-    .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
+    .join(Authorization.columns on_? "authorize_view.child = party.id AND authorize_view.parent = 0")
     .map { case (a, p) => Authorization.make(a)(p) }
     .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name").apply().list
 
@@ -257,7 +257,7 @@ object Party extends TableId[Party]("party") {
 object SiteParty {
   private[models] def row(implicit site : Site) =
     Party.row
-    .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
+    .join(Authorization.columns on_? "authorize_view.parent = party.id AND authorize_view.child = ?")
     .pushArgs(SQLArgs(site.identity.id))
     .map {
       case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
@@ -284,7 +284,7 @@ object Account extends Table[Account]("account") {
       (party : Party) => new Account(party, email, password.getOrElse(""), openid)
     }
   private[models] val row : Selector[Account] =
-    Party.columns.join(columns, using = 'id) map {
+    Party.columns.join(columns using 'id) map {
       case (party, acct) => acct(party)
     }
 

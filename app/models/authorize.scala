@@ -64,21 +64,21 @@ object Authorize extends Table[Authorize]("authorize") {
     * @param all include inactive authorizations
     */
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "parent = party.id")
+    columns.join(Party.row on "parent = party.id")
       .map { case (a, p) => a(child, p) }
       .SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "child = party.id")
+    columns.join(Party.row on "child = party.id")
       .map { case (a, c) => a(c, parent) }
       .SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 
   def getAll() : Future[Seq[Authorize]] =
     columns
-    .join(Party.columns.fromAlias("child"), "child = child.id")
-    .join(Party.columns.fromAlias("parent"), "parent = parent.id")
+    .join(Party.columns.fromAlias("child") on "child = child.id")
+    .join(Party.columns.fromAlias("parent") on "parent = parent.id")
     .map { case ((auth, child), parent) => auth(child, parent) }
     .SELECT("ORDER BY parent.id, site")
     .apply().list
@@ -132,7 +132,7 @@ object Authorization extends Table[Authorization]("authorize_view") {
     else if (childId == Party.NOBODY) async(Some(Nobody))
     else if (childId == Party.ROOT) async(Some(Root))
     else Party.row
-      .leftJoin(columns, "party.id = authorize_view.child AND authorize_view.parent = ?")
+      .join(columns on_? "party.id = authorize_view.child AND authorize_view.parent = ?")
       .map { case (p, a) => make(p)(a) }
       .SELECT("WHERE party.id = ?")
       .apply(parent.id, childId).singleOpt

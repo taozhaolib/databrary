@@ -143,6 +143,19 @@ class SQLLine[+A](val arity : Int, val get : IndexedSeq[Any] => A) extends SQLRo
       val (la, lb) = l.splitAt(arity) 
       (get(la), b.get(lb))
     })
+  def ~[B,C](b : SQLLine[B], c : SQLLine[C]) : SQLLine[(A,B,C)] =
+    new SQLLine[(A,B,C)](arity + b.arity + c.arity, { l =>
+      val (la, lbc) = l.splitAt(arity) 
+      val (lb, lc) = lbc.splitAt(b.arity)
+      (get(la), b.get(lb), c.get(lc))
+    })
+  def ~[B,C,D](b : SQLLine[B], c : SQLLine[C], d : SQLLine[D]) : SQLLine[(A,B,C,D)] =
+    new SQLLine[(A,B,C,D)](arity + b.arity + c.arity + d.arity, { l =>
+      val (la, lbcd) = l.splitAt(arity) 
+      val (lb, lcd) = lbcd.splitAt(b.arity)
+      val (lc, ld) = lbcd.splitAt(c.arity)
+      (get(la), b.get(lb), c.get(lc), d.get(ld))
+    })
 
   override def ? : SQLLine[Option[A]] = new SQLLine[Option[A]](arity, l =>
     catching(classOf[SQLUnexpectedNull]).opt(get(l)))
