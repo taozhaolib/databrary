@@ -179,10 +179,6 @@ final class SlotConsent private (override val container : Container, val segment
 /** A generic type of Table that includes (presumably inheriting from) slot. */
 private[models] trait TableSlot[R <: Slot] extends Table[R] {
   protected final def segment = SelectColumn[Segment]("segment")
-  /*
-  protected final def values(containerId : Container.Id, segment : Segment) =
-    SQLTerms('container -> containerId, 'segment -> segment).values
-  */
 }
 
 private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {

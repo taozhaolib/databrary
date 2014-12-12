@@ -48,7 +48,7 @@ object Transcode {
     ctl(id, args : _*)
     .map(_.toInt)
     .whenComplete { r => 
-      logger.debug("running " + id + ": " + either(r).merge.toString)
+      logger.debug("running " + id + ": " + r.toEither.merge.toString)
     }
 
   def stop(id : models.Transcode.Id, pid : Int) : Future[String] =
