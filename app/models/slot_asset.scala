@@ -147,9 +147,8 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
   def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
     columns
     .join(ContextSlot.rowContainer(
-        Container.columnsVolume(Volume.fixed(asset.volume)),
-        "slot_asset.segment") on
-      "slot_asset.container = container.id")
+      Container.columnsVolume(Volume.fixed(asset.volume)) on "slot_asset.container = container.id",
+      "slot_asset.segment"))
     .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
     .map { case ((segment, context), excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
@@ -186,7 +185,7 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
 
   private def columnsSegment(seg : Segment) = SlotAsset.columns join Columns(
       SelectColumn[Segment]("asset_slot", "segment")
-    )(FromTable("LATERAL (VALUES (slot_asset.segment * ?)) AS asset_slot (segment)"))
+    )(FromTable("LATERAL (VALUES (slot_asset.segment * ?)) AS asset_slot (segment)")).cross
     .pushArgs(seg)
 
   /** Retrieve a single SlotAsset by asset id and slot id.
@@ -195,9 +194,8 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
     columnsSegment(seg)
     .join(Asset.columns on "slot_asset.asset = asset.id")
     .join(ContextSlot.rowContainer(
-        Container.columnsVolume(Volume.row),
-        "asset_slot.segment") on
-      "slot_asset.container = container.id AND asset.volume = volume.id")
+      Container.columnsVolume(Volume.row) on "slot_asset.container = container.id AND asset.volume = volume.id",
+      "asset_slot.segment"))
     .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
     .map { case ((((segment, seg), asset), context), excerpt) =>
       AssetSlot(asset(context.volume), segment, seg, context, excerpt)
@@ -217,9 +215,8 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     .join(SlotAsset.columns on "excerpt.asset = slot_asset.asset")
     .join(Asset.columns.map(_(volume)) on "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
     .join(ContextSlot.rowContainer(
-        Container.columns.map(_(volume)),
-        "excerpt.segment") on
-      "slot_asset.container = container.id")
+      Container.columns.map(_(volume)) on "slot_asset.container = container.id",
+      "excerpt.segment"))
     .map { case (((excerpt, segment), asset), context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt)).asInstanceOf[FileAssetSlot]
     }

@@ -128,9 +128,8 @@ object SlotRecord extends SlotTable("slot_record") {
   private[models] def slots(record : Record) =
     columns
     .join(ContextSlot.rowContainer(
-        Container.columnsVolume(Volume.fixed(record.volume)),
-        "slot_record.segment") on
-      "slot_record.container = container.id")
+      Container.columnsVolume(Volume.fixed(record.volume)) on "slot_record.container = container.id",
+      "slot_record.segment"))
     .map { case (segment, context) =>
       new Row(context, segment)
     }

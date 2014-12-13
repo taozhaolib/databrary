@@ -142,7 +142,7 @@ object Volume extends TableId[Volume]("volume") {
   private object Permission extends Table[models.Permission.Value]("volume_permission") {
     private val columns = Columns(
         SelectColumn[models.Permission.Value]("permission")
-      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
+      )(FromTable("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS volume_permission (permission, superuser)")).cross
     def row(implicit site : Site) =
       columns.pushArgs(site.identity.id, site.superuser)
     def condition =

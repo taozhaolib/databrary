@@ -213,13 +213,13 @@ object Slot extends SlotTable("slot") {
 
 private[models] object ContextSlot {
   private[models] def rowContainer(container : Selector[Consent.Value => Container], segment : String) : Selector[ContextSlot] =
-    SlotConsent.join(container, segment = segment)
+    container.join(SlotConsent.rowUsing(segment = segment))
     .map { case (container, consent) =>
       consent(container)
     }
   private[models] def rowContainer(container : Container, segment : String) : Selector[ContextSlot] =
     if (container.consent != Consent.NONE) Container.fixed(container)
-    else SlotConsent.join(Container.fixed(container), segment = segment)
+    else Container.fixed(container).join(SlotConsent.rowUsing(segment = segment))
       .map { case (container, consent) =>
         consent(container)
       }
@@ -243,8 +243,8 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") wi
   private[models] def rowContainer(container : Container) : Selector[ContextSlot] =
     columns.map(_(container))
 
-  private[models] def join[A](that : Selector[A], container : String = "container.id", segment : String) : Selector[(A,Row)] =
-    that.join(columns.on_?(container + " = slot_consent.container AND " + segment + " <@ slot_consent.segment"))
-    .map { case (a, c) => (a, c.getOrElse(No)) }
+  private[models] def rowUsing(container : String = "container.id", segment : String) : Selector[Row] =
+    columns.on_?(container + " = slot_consent.container AND " + segment + " <@ slot_consent.segment")
+    .map(_.getOrElse(No))
 }
 

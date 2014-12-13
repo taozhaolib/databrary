@@ -34,8 +34,9 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private def row(who : Selector[Account], container : Selector[Consent.Value => Container]) =
     columns
     .join(who on "comment.who = account.id")
-    .join(ContextSlot.rowContainer(container, "comment.segment") on
-      "comment.container = container.id")
+    .join(ContextSlot.rowContainer(
+      container on "comment.container = container.id",
+      "comment.segment"))
     .map { case ((comment, who), context) =>
       comment(who, context)
     }
