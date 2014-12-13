@@ -108,7 +108,7 @@ private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Tabl
 object TagWeight extends TagWeightView[TagWeight] {
   private def row(tag : Tag)(implicit site : Site) =
     TagUse.aggregateColumns
-    .pushArgs(SQLArgs(site.identity.id))
+    .pushArgs(site.identity.id)
     .map { case (weight, up) =>
       new TagWeight(tag, weight, up.getOrElse(false))
     }

@@ -184,10 +184,10 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
     else
       AssetSlot(SlotAsset(asset, segment, context.contextFor(segment), excerpt.filter(_(segment))), seg, context, excerpt)
 
-  private def columnsSegment(seg : Segment) = SlotAsset.columns * Columns(
+  private def columnsSegment(seg : Segment) = SlotAsset.columns join Columns(
       SelectColumn[Segment]("asset_slot", "segment")
     )(FromTable("LATERAL (VALUES (slot_asset.segment * ?)) AS asset_slot (segment)"))
-    .pushArgs(SQLArgs(seg))
+    .pushArgs(seg)
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume. */

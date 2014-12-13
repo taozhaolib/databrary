@@ -30,8 +30,8 @@ class SQLArgs(val args : Seq[SQLArg[_]]) extends Iterable[SQLArg[_]] {
 object SQLNoArgs extends SQLArgs(Nil)
 
 /** Generic trait for anything which may accept SQLType args to produce a result. */
-protected sealed abstract trait SQLArgsView[+R] extends RepeatedView[SQLType, SQLArg[_], R] {
-  protected def arg[A : SQLType](a : A) = SQLArg(a)
+abstract trait SQLArgsView[+R] extends RepeatedView[SQLType, SQLArg[_], R] {
+  protected final def arg[A : SQLType](a : A) = SQLArg(a)
   final def apply(a : SQLArgs) : R = result(a.args : _*)
 }
 

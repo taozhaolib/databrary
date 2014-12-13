@@ -175,6 +175,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     Selector[MeasureV[_]](
       mid +: MeasureType.all.map(_.selectAll),
       "measure_all",
+      ",measure_all",
       new SQLLine[MeasureV[_]](1 + MeasureType.all.length, { l =>
         val metric = Metric.get(mid.get(l.head)).get
         val d = l(1+metric.dataType.id)

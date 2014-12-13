@@ -144,7 +144,7 @@ object Volume extends TableId[Volume]("volume") {
         SelectColumn[models.Permission.Value]("permission")
       ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
     def row(implicit site : Site) =
-      columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
+      columns.pushArgs(site.identity.id, site.superuser)
     def condition =
       "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
@@ -162,7 +162,7 @@ object Volume extends TableId[Volume]("volume") {
         new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
-    columns.*(Permission.row).map { case (v, p) => v(p, site) }
+    columns.join(Permission.row).map { case (v, p) => v(p, site) }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */

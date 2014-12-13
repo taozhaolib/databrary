@@ -258,7 +258,7 @@ object SiteParty {
   private[models] def row(implicit site : Site) =
     Party.row
     .join(Authorization.columns on_? "authorize_view.parent = party.id AND authorize_view.child = ?")
-    .pushArgs(SQLArgs(site.identity.id))
+    .pushArgs(site.identity.id)
     .map {
       case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
     }
