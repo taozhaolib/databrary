@@ -231,13 +231,8 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") wi
     def apply(container : Consent.Value => Container) : ContextSlot =
       if (consent == Consent.NONE || segment.isFull) container(consent)
       else new SlotConsent(container(Consent.NONE), segment, consent)
-    def apply(container : Container) : ContextSlot = {
-      apply { c =>
-        println(container.consent)
-        println(c)
-        container.ensuring(_.consent == c)
-      }
-    }
+    def apply(container : Container) : ContextSlot =
+      apply(c => container.ensuring(_.consent == c))
   }
   val No = Row(Consent.NONE, Segment.empty)
 
