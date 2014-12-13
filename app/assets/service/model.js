@@ -402,7 +402,7 @@ app.factory('modelService', [
       if ('top' in init)
         this.top = containerMake(this, init.top);
       if ('excerpts' in init)
-        this.excerpts = assetSlotMakeArray(this, init.excerpts);
+        this.excerpts = assetMakeArray(this, init.excerpts);
       if ('comments' in init)
         this.comments = commentMakeArray(this, init.comments);
     };
@@ -572,7 +572,7 @@ app.factory('modelService', [
         slot.records = rl;
       }
       if ('excerpts' in init)
-        slot.excerpts = assetSlotMakeArray(slot.container, init.excerpts);
+        slot.excerpts = assetMakeArray(slot.container, init.excerpts);
     }
 
     Slot.prototype.init = function (init) {
@@ -888,12 +888,6 @@ app.factory('modelService', [
       if ('format' in init)
         this.format = constants.format[init.format];
     };
-
-    function assetSlotMakeArray(container, l) {
-      if (l) for (var i = 0; i < l.length; i ++)
-        l[i] = new AssetSlot(container, l[i]);
-      return l;
-    }
 
     delegate(AssetSlot, 'asset',
         'id', 'container', 'format', 'classification', 'name', 'pending');

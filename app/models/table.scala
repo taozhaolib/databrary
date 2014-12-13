@@ -20,6 +20,18 @@ private[models] trait TableRowId[T] extends TableRow with HasId[T] {
   private[models] def sqlKey = SQLTerms('id -> _id)
 }
 
+final class FixedRowSelector[R](val value : R, selector : Selector[R])
+  extends SelectorProxy[R](selector) {
+  override protected def joiner(join : String*) : FixedRowSelector[R] =
+    new FixedRowSelector[R](value, super.joiner(join : _*))
+}
+
+object FixedRowSelector {
+  def apply[R <: TableRow](value : R)(implicit table : FromTable) : FixedRowSelector[R] =
+    new FixedRowSelector[R](value, value.sqlKey.values.map(_ => value))
+  def get[A <: TableRow](s : Selector[A]) : Option[A] = cast[FixedRowSelector[A]](s).map(_.value)
+}
+
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
 private[models] abstract class Table[R] protected (private[models] val table : String) {
   protected implicit def fromTable : FromTable = FromTable(table)
@@ -30,7 +42,7 @@ private[models] abstract class Table[R] protected (private[models] val table : S
 
   /* Description of the database selection to produce a Row. */
   // private[models] val row : Selector[Row]
-  private[models] def fixed(r : R with TableRow) = r.sqlKey.values.map(_ => r)
+  private[models] final def fixed(r : R with TableRow) = FixedRowSelector(r)
 
   protected def INSERT(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult =
     SQL("INSERT INTO", table, args.insert, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)

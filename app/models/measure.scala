@@ -105,7 +105,7 @@ object Metric extends TableId[Metric[_]]("metric") {
 
   private[models] def getTemplate(category : RecordCategory.Id) : Future[Seq[(Metric[_], Boolean)]] =
     SQL("SELECT metric, ident FROM record_template WHERE category = ?")
-    .apply(category)
+    .immediately.apply(category)
     .list(SQLCols[Metric.Id, Boolean].map { (m, i) =>
       (byId(m), i)
     })

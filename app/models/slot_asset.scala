@@ -160,7 +160,7 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
   def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
     columns.join(
       Asset.rowVolume(slot.volume) on "slot_asset.asset = asset.id",
-      ContextSlot.rowContainer(slot.container, "slot_asset.segment") on "slot_asset.container = container.id",
+      ContextSlot.rowContainer(slot.container, "slot_asset.container", "slot_asset.segment"),
       Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment"
     ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
@@ -241,8 +241,7 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     columns.join(
       SlotAsset.columns on "excerpt.asset = slot_asset.asset",
       Asset.columns.map(_(slot.volume)) on "slot_asset.asset = asset.id",
-      ContextSlot.rowContainer(slot.container, "excerpt.segment") on
-        "slot_asset.container = container.id"
+      ContextSlot.rowContainer(slot.container, "slot_asset.container", "excerpt.segment")
     ).map { case (excerpt, segment, asset, context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt))
     }

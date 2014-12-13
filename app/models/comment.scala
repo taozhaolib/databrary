@@ -52,8 +52,7 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
     columns.join(
       Account.row on "comment.who = account.id",
-      ContextSlot.rowContainer(slot.container, "comment.segment") on
-        "comment.container = container.id"
+      ContextSlot.rowContainer(slot.container, "comment.container", "comment.segment")
     ).map { case (comment, who, context) =>
       comment(who, context)
     }

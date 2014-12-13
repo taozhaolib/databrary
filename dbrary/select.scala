@@ -85,7 +85,7 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, joined : 
   def join[B,C,D,E](b : Selector[B], c : Selector[C], d : Selector[D], e : Selector[E]) : Selector[(A,B,C,D,E)] =
     new Selector[(A,B,C,D,E)](selects ++ b.selects ++ c.selects ++ d.selects ++ e.selects, unwords(source, b.joined, c.joined, d.joined, e.joined), unwords(joined, b.joined, c.joined, d.joined, e.joined), parse.~[B,C,D,E](b.parse, c.parse, d.parse, e.parse), preargs ++ b.preargs ++ c.preargs ++ d.preargs ++ e.preargs)
 
-  private def joiner(join : String*) : Selector[A] =
+  protected def joiner(join : String*) : Selector[A] =
     copy(joined = unwords(join : _*))
   def on(on : String) : Selector[A] =
     joiner("JOIN", source, "ON", on)
@@ -117,6 +117,9 @@ object Selector {
     new Selector[Seq[Any]](selects, table, "," + table,
       new SQLLine[Seq[Any]](selects.length, _.zip(selects).map { case (v, s) => s.get(v) }))
 }
+
+class SelectorProxy[A](selector : Selector[A])
+  extends Selector[A](selector.selects, selector.source, selector.joined, selector.parse, selector.preargs)
 
 abstract sealed class Columns[A,C <: SQLCols[A]] protected (selects : Seq[SelectExpr[_]], table : FromTable, override val parse : C) extends Selector[A](selects, table, ","+table, parse) {
   def ~+[C2](a : SelectExpr[C2]) : Columns[_,_]

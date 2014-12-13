@@ -195,12 +195,12 @@ object Slot extends SlotTable("slot") {
   def get(container : Container, segment : Segment) : Future[Slot] =
     if (segment.isFull) async(container)
     else if (container.consent != Consent.NONE) async(new Row(container, segment))
-    else ContextSlot.rowContainer(container, "?")
-      .map { context  =>
+    else ContextSlot.rowContainer(container, "?", "?")
+      .map { context =>
         new Row(context, segment)
       }
       .SELECT()
-      .apply(segment).single
+      .apply(container.id, segment).single
   def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
     if (segment.isFull) Container.get(containerId)
     else ContextSlot.rowContainer(Container.columnsVolume(Volume.row), "?")
@@ -217,12 +217,13 @@ private[models] object ContextSlot {
     .map { case (container, consent) =>
       consent(container)
     }
-  private[models] def rowContainer(container : Container, segment : String) : Selector[ContextSlot] =
-    if (container.consent != Consent.NONE) Container.fixed(container)
-    else Container.fixed(container).join(SlotConsent.rowUsing(segment = segment))
-      .map { case (container, consent) =>
-        consent(container)
-      }
+  private[models] def rowContainer(container : Container, containerSql : String, segment : String) : Selector[ContextSlot] = {
+    val c = Container.fixed(container).on(containerSql + " = container.id")
+    if (container.consent != Consent.NONE) c
+    else c.join(SlotConsent.rowUsing(segment = segment)).map { case (_, consent) =>
+      consent(container)
+    }
+  }
 }
 
 private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") with TableSlot[SlotConsent] {
@@ -230,8 +231,13 @@ private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") wi
     def apply(container : Consent.Value => Container) : ContextSlot =
       if (consent == Consent.NONE || segment.isFull) container(consent)
       else new SlotConsent(container(Consent.NONE), segment, consent)
-    def apply(container : Container) : ContextSlot =
-      apply(c => container.ensuring(_.consent == c))
+    def apply(container : Container) : ContextSlot = {
+      apply { c =>
+        println(container.consent)
+        println(c)
+        container.ensuring(_.consent == c)
+      }
+    }
   }
   val No = Row(Consent.NONE, Segment.empty)
 
