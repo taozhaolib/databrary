@@ -32,12 +32,12 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
     } from "comment_thread AS comment"
 
   private def row(who : Selector[Account], container : Selector[Consent.Value => Container]) =
-    columns
-    .join(who on "comment.who = account.id")
-    .join(ContextSlot.rowContainer(
-      container on "comment.container = container.id",
-      "comment.segment"))
-    .map { case ((comment, who), context) =>
+    columns.join(
+      who on "comment.who = account.id",
+      ContextSlot.rowContainer(
+        container on "comment.container = container.id",
+        "comment.segment")
+    ).map { case (comment, who, context) =>
       comment(who, context)
     }
   private val order = "ORDER BY comment.thread"
@@ -50,11 +50,11 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
 
   /** Retrieve the set of all comments that apply to the given target. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
-    columns
-    .join(Account.row on "comment.who = account.id")
-    .join(ContextSlot.rowContainer(slot.container, "comment.segment") on
-      "comment.container = container.id")
-    .map { case ((comment, who), context) =>
+    columns.join(
+      Account.row on "comment.who = account.id",
+      ContextSlot.rowContainer(slot.container, "comment.segment") on
+        "comment.container = container.id"
+    ).map { case (comment, who, context) =>
       comment(who, context)
     }
     .SELECT("WHERE comment.segment && ?::segment", order)

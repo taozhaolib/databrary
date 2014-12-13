@@ -145,12 +145,12 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
 
   /** Retrieve an asset's native (full) SlotAsset representing the entire span of the asset. */
   def getAsset(asset : Asset) : Future[Option[SlotAsset]] =
-    columns
-    .join(ContextSlot.rowContainer(
-      Container.columnsVolume(Volume.fixed(asset.volume)) on "slot_asset.container = container.id",
-      "slot_asset.segment"))
-    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
-    .map { case ((segment, context), excerpt) =>
+    columns.join(
+      ContextSlot.rowContainer(
+        Container.columnsVolume(Volume.fixed(asset.volume)) on "slot_asset.container = container.id",
+        "slot_asset.segment"),
+      Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment"
+    ).map { case (segment, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
     .SELECT("WHERE slot_asset.asset = ?")
@@ -158,12 +158,11 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
 
   /** Retrieve the list of all assets within the given slot. */
   def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
-    columns
-    .join(Asset.rowVolume(slot.volume) on "slot_asset.asset = asset.id")
-    .join(ContextSlot.rowContainer(slot.container, "slot_asset.segment") on
-      "slot_asset.container = container.id")
-    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment")
-    .map { case (((segment, asset), context), excerpt) =>
+    columns.join(
+      Asset.rowVolume(slot.volume) on "slot_asset.asset = asset.id",
+      ContextSlot.rowContainer(slot.container, "slot_asset.segment") on "slot_asset.container = container.id",
+      Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment"
+    ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
     .SELECT("WHERE slot_asset.segment && ? ORDER BY slot_asset.segment")
@@ -191,13 +190,13 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume. */
   def get(assetId : Asset.Id, containerId : Container.Id, seg : Segment)(implicit site : Site) : Future[Option[AssetSlot]] =
-    columnsSegment(seg)
-    .join(Asset.columns on "slot_asset.asset = asset.id")
-    .join(ContextSlot.rowContainer(
-      Container.columnsVolume(Volume.row) on "slot_asset.container = container.id AND asset.volume = volume.id",
-      "asset_slot.segment"))
-    .join(Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment")
-    .map { case ((((segment, seg), asset), context), excerpt) =>
+    columnsSegment(seg).join(
+      Asset.columns on "slot_asset.asset = asset.id",
+      ContextSlot.rowContainer(
+        Container.columnsVolume(Volume.row) on "slot_asset.container = container.id AND asset.volume = volume.id",
+        "asset_slot.segment"),
+      Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND asset_slot.segment <@ excerpt.segment"
+    ).map { case ((segment, seg), asset, context, excerpt) =>
       AssetSlot(asset(context.volume), segment, seg, context, excerpt)
     }
     .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
@@ -211,13 +210,13 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     ).map(Excerpt.apply _)
 
   private def rowVolume(volume : Volume) =
-    columns
-    .join(SlotAsset.columns on "excerpt.asset = slot_asset.asset")
-    .join(Asset.columns.map(_(volume)) on "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL")
-    .join(ContextSlot.rowContainer(
-      Container.columns.map(_(volume)) on "slot_asset.container = container.id",
-      "excerpt.segment"))
-    .map { case (((excerpt, segment), asset), context) =>
+    columns.join(
+      SlotAsset.columns on "excerpt.asset = slot_asset.asset",
+      Asset.columns.map(_(volume)) on "slot_asset.asset = asset.id AND asset.sha1 IS NOT NULL",
+      ContextSlot.rowContainer(
+        Container.columns.map(_(volume)) on "slot_asset.container = container.id",
+        "excerpt.segment")
+    ).map { case (excerpt, segment, asset, context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt)).asInstanceOf[FileAssetSlot]
     }
 
@@ -239,12 +238,12 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
 
   /** Retrieve the list of all excerpts in a slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[AssetSlot]] =
-    columns
-    .join(SlotAsset.columns on "excerpt.asset = slot_asset.asset")
-    .join(Asset.columns.map(_(slot.volume)) on "slot_asset.asset = asset.id")
-    .join(ContextSlot.rowContainer(slot.container, "excerpt.segment") on
-      "slot_asset.container = container.id")
-    .map { case (((excerpt, segment), asset), context) =>
+    columns.join(
+      SlotAsset.columns on "excerpt.asset = slot_asset.asset",
+      Asset.columns.map(_(slot.volume)) on "slot_asset.asset = asset.id",
+      ContextSlot.rowContainer(slot.container, "excerpt.segment") on
+        "slot_asset.container = container.id"
+    ).map { case (excerpt, segment, asset, context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt))
     }
     .SELECT("WHERE asset.volume = ? AND excerpt.segment && ?")

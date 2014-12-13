@@ -198,10 +198,9 @@ object Party extends TableId[Party]("party") {
 
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
-    row
-    .join(Authorization.columns on_? "authorize_view.child = party.id AND authorize_view.parent = 0")
-    .map { case (a, p) => Authorization.make(a)(p) }
-    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name").apply().list
+    Authorization.rowParent()
+    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
+    .apply().list
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
@@ -256,12 +255,8 @@ object Party extends TableId[Party]("party") {
 
 object SiteParty {
   private[models] def row(implicit site : Site) =
-    Party.row
-    .join(Authorization.columns on_? "authorize_view.parent = party.id AND authorize_view.child = ?")
-    .pushArgs(site.identity.id)
-    .map {
-      case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
-    }
+    Authorization.rowChild(site.identity)
+    .map(new SiteParty(_))
 
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
     if (p.id === Party.ROOT) async(new SiteParty(site.access))

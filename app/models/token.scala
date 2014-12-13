@@ -140,10 +140,10 @@ object SessionToken extends TokenTable[SessionToken]("session") {
       (account : Account, access : Access) =>
         new SessionToken(token, expires, account, access)
     }
-  protected val row = columns
-    .join(Account.row on "session.account = account.id")
-    .join(Authorization.columns on_? "authorize_view.child = session.account AND authorize_view.parent = 0")
-    .map { case ((t, a), p) => t(a, Authorization.make(a.party)(p)) }
+  protected val row = columns.join(
+      Account.columns on "session.account = account.id",
+      Authorization.rowParent() on "account.id = party.id"
+    ).map { case (t, acct, auth) => t(acct(auth.child), auth) }
 
   /** Issue a new token for the given party. */
   def create(account : Account) : Future[SessionToken] =

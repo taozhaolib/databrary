@@ -80,6 +80,10 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : String, joined : 
     new Selector[(A,B)](selects ++ b.selects, unwords(source, b.joined), unwords(joined, b.joined), parse.~[B](b.parse), preargs ++ b.preargs)
   def join[B,C](b : Selector[B], c : Selector[C]) : Selector[(A,B,C)] =
     new Selector[(A,B,C)](selects ++ b.selects ++ c.selects, unwords(source, b.joined, c.joined), unwords(joined, b.joined, c.joined), parse.~[B,C](b.parse, c.parse), preargs ++ b.preargs ++ c.preargs)
+  def join[B,C,D](b : Selector[B], c : Selector[C], d : Selector[D]) : Selector[(A,B,C,D)] =
+    new Selector[(A,B,C,D)](selects ++ b.selects ++ c.selects ++ d.selects, unwords(source, b.joined, c.joined, d.joined), unwords(joined, b.joined, c.joined, d.joined), parse.~[B,C,D](b.parse, c.parse, d.parse), preargs ++ b.preargs ++ c.preargs ++ d.preargs)
+  def join[B,C,D,E](b : Selector[B], c : Selector[C], d : Selector[D], e : Selector[E]) : Selector[(A,B,C,D,E)] =
+    new Selector[(A,B,C,D,E)](selects ++ b.selects ++ c.selects ++ d.selects ++ e.selects, unwords(source, b.joined, c.joined, d.joined, e.joined), unwords(joined, b.joined, c.joined, d.joined, e.joined), parse.~[B,C,D,E](b.parse, c.parse, d.parse, e.parse), preargs ++ b.preargs ++ c.preargs ++ d.preargs ++ e.preargs)
 
   private def joiner(join : String*) : Selector[A] =
     copy(joined = unwords(join : _*))

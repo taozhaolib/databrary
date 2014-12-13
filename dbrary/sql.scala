@@ -139,26 +139,39 @@ class SQLLine[+A](val arity : Int, val get : IndexedSeq[Any] => A) extends SQLRo
 
   /** Join two parsers, effectively splitting each row into two parts to form a tuple. */
   def ~[B](b : SQLLine[B]) : SQLLine[(A,B)] =
-    new SQLLine[(A,B)](arity + b.arity, { l =>
-      val (la, lb) = l.splitAt(arity) 
-      (get(la), b.get(lb))
-    })
+    SQLLine.tuple[(A,B)](this, b) { l =>
+      (get(l(0)), b.get(l(1)))
+    }
   def ~[B,C](b : SQLLine[B], c : SQLLine[C]) : SQLLine[(A,B,C)] =
-    new SQLLine[(A,B,C)](arity + b.arity + c.arity, { l =>
-      val (la, lbc) = l.splitAt(arity) 
-      val (lb, lc) = lbc.splitAt(b.arity)
-      (get(la), b.get(lb), c.get(lc))
-    })
+    SQLLine.tuple[(A,B,C)](this, b, c) { l =>
+      (get(l(0)), b.get(l(1)), c.get(l(2)))
+    }
   def ~[B,C,D](b : SQLLine[B], c : SQLLine[C], d : SQLLine[D]) : SQLLine[(A,B,C,D)] =
-    new SQLLine[(A,B,C,D)](arity + b.arity + c.arity + d.arity, { l =>
-      val (la, lbcd) = l.splitAt(arity) 
-      val (lb, lcd) = lbcd.splitAt(b.arity)
-      val (lc, ld) = lbcd.splitAt(c.arity)
-      (get(la), b.get(lb), c.get(lc), d.get(ld))
-    })
+    SQLLine.tuple[(A,B,C,D)](this, b, c, d) { l =>
+      (get(l(0)), b.get(l(1)), c.get(l(2)), d.get(l(3)))
+    }
+  def ~[B,C,D,E](b : SQLLine[B], c : SQLLine[C], d : SQLLine[D], e : SQLLine[E]) : SQLLine[(A,B,C,D,E)] =
+    SQLLine.tuple[(A,B,C,D,E)](this, b, c, d, e) { l =>
+      (get(l(0)), b.get(l(1)), c.get(l(2)), d.get(l(3)), e.get(l(4)))
+    }
 
-  override def ? : SQLLine[Option[A]] = new SQLLine[Option[A]](arity, l =>
-    catching(classOf[SQLUnexpectedNull]).opt(get(l)))
+  override def ? : SQLLine[Option[A]] = SQLLine[Option[A]](arity) { l =>
+    catching(classOf[SQLUnexpectedNull]).opt(get(l))
+  }
+}
+
+object SQLLine {
+  def apply[A](arity : Int)(get : IndexedSeq[Any] => A) =
+    new SQLLine[A](arity, get)
+  private def tuple[R](lines : SQLLine[_]*)(get : Array[IndexedSeq[Any]] => R) : SQLLine[R] = {
+    val arities = lines.map(_.arity).toArray
+    SQLLine[R](arities.sum) { l =>
+      var n = 0
+      get(arities.map { i =>
+        l.slice(n, { n += i ; n })
+      })
+    }
+  }
 }
 
 abstract sealed class SQLCols[A] protected (n : Int, f : Iterator[Any] => A) extends SQLLine[A](n, l => f(l.iterator)) {
