@@ -288,7 +288,7 @@ app.factory('modelService', [
     Login.prototype.constructor = Login;
     Login.prototype.fields = angular.extend({
       superuser: true,
-    }, Party.prototype.fields);
+    }, Login.prototype.fields);
 
     Login.user = new Login({id:constants.party.NOBODY});
 
@@ -616,7 +616,7 @@ app.factory('modelService', [
       name: true,
       top: true,
       date: true,
-    }, Slot.prototype.fields);
+    }, Container.prototype.fields);
 
     Container.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
@@ -861,6 +861,91 @@ app.factory('modelService', [
       return router.recordEdit([this.id]);
     };
 
+    ///////////////////////////////// AssetSlot
+
+    // This usually maps to an AssetSegment
+    function AssetSlot(context, init) {
+      this.asset =
+        context instanceof Asset ? context :
+        new assetMake(context, init.asset);
+      Model.call(this, init);
+    }
+
+    AssetSlot.prototype = Object.create(Slot.prototype);
+    AssetSlot.prototype.constructor = AssetSlot;
+    AssetSlot.prototype.class = 'asset-slot';
+
+    AssetSlot.prototype.fields = angular.extend({
+      permission: true,
+      excerpt: true,
+      context: true
+    }, AssetSlot.prototype.fields);
+
+    AssetSlot.prototype.init = function (init) {
+      Model.prototype.init.call(this, init);
+      this.asset.update(init.asset);
+      this.segment = new Segment(init.segment);
+      if ('format' in init)
+        this.format = constants.format[init.format];
+    };
+
+    function assetSlotMakeArray(container, l) {
+      if (l) for (var i = 0; i < l.length; i ++)
+        l[i] = new AssetSlot(container, l[i]);
+      return l;
+    }
+
+    delegate(AssetSlot, 'asset',
+        'id', 'container', 'format', 'classification', 'name', 'pending');
+
+    Object.defineProperty(AssetSlot.prototype, 'displayName', {
+      get: function () {
+        return this.name || this.format.name;
+      }
+    });
+
+    AssetSlot.prototype.route = function (params) {
+      params.asset = this.id;
+      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
+    };
+
+    AssetSlot.prototype.inContext = function () {
+      return 'context' in this ?
+        angular.extend(Object.create(AssetSlot.prototype), this, {segment:Segment.make(this.context)}) :
+        this.asset;
+    };
+
+    Object.defineProperty(AssetSlot.prototype, 'icon', {
+      get: function () {
+        return '/public/images/filetype/16px/' + this.format.extension + '.png';
+      }
+    });
+
+    AssetSlot.prototype.inSegment = function (segment) {
+      segment = this.segment.intersect(segment);
+      if (segment.equals(this.segment))
+        return this;
+      return new AssetSlot(this.asset, {permission:this.permission, segment:segment});
+    };
+
+    AssetSlot.prototype.setExcerpt = function (classification) {
+      var a = this;
+      return router.http(classification != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.id, {classification:classification})
+        .then(function (res) {
+          a.clear('excerpts');
+          a.volume.clear('excerpts');
+          return a.update(res.data);
+        });
+    };
+
+    AssetSlot.prototype.thumbRoute = function (size) {
+      return router.assetThumb([this.container.id, this.segment.format(), this.id, size]);
+    };
+
+    AssetSlot.prototype.downloadRoute = function (inline) {
+      return router.assetDownload([this.container.id, this.segment.format(), this.id, inline]);
+    };
+
     ///////////////////////////////// Asset
 
     // This usually maps to a SlotAsset, but may be an unlinked Asset
@@ -871,10 +956,11 @@ app.factory('modelService', [
         this.volume = context;
         Model.call(this, init);
       }
+      this.asset = this;
       this.volume.assets[init.id] = this;
     }
 
-    Asset.prototype = Object.create(Slot.prototype);
+    Asset.prototype = Object.create(AssetSlot.prototype);
     Asset.prototype.constructor = Asset;
     Asset.prototype.class = 'asset';
 
@@ -885,7 +971,7 @@ app.factory('modelService', [
       duration: true,
       pending: true,
       creation: false,
-    }, Slot.prototype.fields);
+    }, Asset.prototype.fields);
 
     Asset.prototype.init = function (init) {
       if (!this.container && 'container' in init)
@@ -925,68 +1011,15 @@ app.factory('modelService', [
         return $q.successful(a);
     };
 
-    ///////////////////////////////// AssetSlot
-
-    function AssetSlot(context, init) {
-      this.asset =
-        context instanceof Asset ? context :
-        new assetMake(context, init.asset);
-      Model.call(this, init);
-    }
-
-    AssetSlot.prototype = Object.create(Slot.prototype);
-    AssetSlot.prototype.constructor = AssetSlot;
-    AssetSlot.prototype.class = 'asset-slot';
-
-    AssetSlot.prototype.fields = angular.extend({
-      permission: true,
-      excerpt: true,
-      context: true
-    }, Slot.prototype.fields);
-
-    AssetSlot.prototype.init = function (init) {
-      Model.prototype.init.call(this, init);
-      this.asset.update(init.asset);
-      this.segment = new Segment(init.segment);
-      if ('format' in init)
-        this.format = constants.format[init.format];
-    };
-
-    function assetSlotMakeArray(container, l) {
-      if (l) for (var i = 0; i < l.length; i ++)
-        l[i] = new AssetSlot(container, l[i]);
-      return l;
-    }
-
-    delegate(AssetSlot, 'asset',
-        'id', 'container', 'format', 'classification', 'name', 'pending');
-
-    Object.defineProperty(AssetSlot.prototype, 'displayName', {
-      get: function () {
-        return this.name || this.format.name;
-      }
-    });
-
-    AssetSlot.prototype.route = function (params) {
-      params.asset = this.id;
-      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
-    };
-
-    Object.defineProperty(AssetSlot.prototype, 'icon', {
-      get: function () {
-        return '/public/images/filetype/16px/' + this.format.extension + '.png';
-      }
-    });
-
-    AssetSlot.prototype.save = function (data) {
+    Asset.prototype.save = function (data) {
       var a = this;
-      return router.http(router.controllers.AssetApi.update, this.asset.id, data)
+      return router.http(router.controllers.AssetApi.update, this.id, data)
         .then(function (res) {
           if ('excerpt' in data) {
             a.clear('excerpts');
             a.volume.clear('excerpts');
           }
-          return 'id' in res.data ? a.asset.update(res.data) : a.update(res.data);
+          return a.update(res.data);
         });
     };
 
@@ -998,7 +1031,7 @@ app.factory('modelService', [
       data.position = slot.segment.l;
       return router.http(router.controllers.AssetApi.update, this.id, data)
         .then(function (res) {
-          return 'id' in res.data ? a.asset.update(res.data) : new AssetSlot(slot.container, res.data, a);
+          return a.update(res.data);
         });
     };
 
@@ -1016,57 +1049,24 @@ app.factory('modelService', [
         });
     };
 
-    AssetSlot.prototype.replace = function (data) {
-      var s = this;
-      return router.http(router.controllers.AssetApi.replace, this.asset.id, data)
-        .then(function (res) {
-          var a = assetMake(s.volume, res.data);
-          if (a instanceof AssetSlot) {
-            s.clear('assets');
-            return a;
-          } else /* Asset */ {
-            s.asset = a;
-            return s;
-          }
-        });
-    };
-
-    AssetSlot.prototype.remove = function () {
-      var s = this;
-      return router.http(router.controllers.AssetApi.remove, this.asset.id)
-        .then(function (res) {
-          s.clear('assets');
-          return s.asset.update(res.data);
-        });
-    };
-
-    AssetSlot.prototype.inSegment = function (segment) {
-      segment = this.segment.intersect(segment);
-      if (segment.equals(this.segment))
-        return this;
-      return new AssetSlot(this.container, {permission:this.permission, segment:segment}, this.asset);
-    };
-
-    AssetSlot.prototype.setExcerpt = function (classification) {
+    Asset.prototype.replace = function (data) {
       var a = this;
-      return router.http(classification != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.asset.id, {classification:classification})
+      return router.http(router.controllers.AssetApi.replace, this.id, data)
         .then(function (res) {
-          a.clear('excerpts');
-          a.volume.clear('excerpts');
+          return assetMake(a.volume, res.data);
+        });
+    };
+
+    Asset.prototype.remove = function () {
+      var a = this;
+      return router.http(router.controllers.AssetApi.remove, this.id)
+        .then(function (res) {
           return a.update(res.data);
         });
     };
 
-    AssetSlot.prototype.thumbRoute = function (size) {
-      return router.assetThumb([this.container.id, this.segment.format(), this.asset.id, size]);
-    };
-
-    AssetSlot.prototype.downloadRoute = function (inline) {
-      return router.assetDownload([this.container.id, this.segment.format(), this.asset.id, inline]);
-    };
-
-    AssetSlot.prototype.editRoute = function () {
-      return router.assetEdit([this.asset.id]);
+    Asset.prototype.editRoute = function () {
+      return router.assetEdit([this.id]);
     };
 
     ///////////////////////////////// Comment
@@ -1083,7 +1083,7 @@ app.factory('modelService', [
       time: true,
       text: true,
       parents: true
-    }, Slot.prototype.fields);
+    }, Comment.prototype.fields);
 
     Comment.prototype.init = function (init) {
       Slot.prototype.init.call(this, init);
