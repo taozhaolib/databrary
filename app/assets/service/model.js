@@ -1017,16 +1017,12 @@ app.factory('modelService', [
         });
     };
 
-    Asset.prototype.save = function (slot, data) {
-      var a = this;
+    Asset.prototype.link = function (slot, data) {
       if (!data)
         data = {};
       data.container = slot.container.id;
       data.position = slot.segment.l;
-      return router.http(router.controllers.AssetApi.update, this.id, data)
-        .then(function (res) {
-          return a.update(res.data);
-        });
+      return this.save(data);
     };
 
     Slot.prototype.createAsset = function (data) {

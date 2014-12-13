@@ -64,9 +64,6 @@ app.factory('Store', [
           delete @pending
 
           first = !@asset
-          if asset instanceof models.Asset
-            @asset.asset = asset
-            asset = @asset
           @setAsset(asset)
 
           messages.add
@@ -76,8 +73,7 @@ app.factory('Store', [
               (if @file && asset.format.transcodable then ' ' + constants.message('asset.upload.transcoding') else '')
 
           if @file
-            unless 'creation' of asset.asset
-              asset.asset.creation = {date: Date.now(), name: @file.file.name}
+            asset.creation ?= {date: Date.now(), name: @file.file.name}
             @file.cancel()
             delete @file
             delete @progress
@@ -121,7 +117,7 @@ app.factory('Store', [
 
     @restore: (slot) =>
       return unless @removedAsset?.volume.id == slot.volume.id
-      @removedAsset.save(slot).then (a) =>
+      @removedAsset.link(slot).then (a) =>
           delete @removedAsset
           a
         , (res) ->
