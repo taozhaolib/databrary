@@ -4,7 +4,8 @@
   display inline-block
   position relative
   background transparent no-repeat 0 0
-  size b23
+  width b23+1px
+  height b23
   &.public,
   &.excerpt
     padding-left b1 - b6
@@ -107,6 +108,11 @@
   &.trash
     background-image url('/public/images/icon/close_c.png')
     cursor pointer
+  &.trash2
+    background-image url('/public/images/icon/trash.png')
+    cursor pointer
+    &:hover
+      opacity 0.4
 
   &.paste
     background-image url('/public/images/icon/paste.png')
