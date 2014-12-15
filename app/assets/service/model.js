@@ -540,7 +540,7 @@ app.factory('modelService', [
     function Slot(context, init) {
       this.container =
         context instanceof Container ? context :
-        containerPrepare(context, init.container.id);
+        containerPrepare(context, init.container);
       if (init)
         Model.call(this, init);
     }
@@ -658,8 +658,10 @@ app.factory('modelService', [
         return new Container(volume, init);
     }
 
-    function containerPrepare(volume, id) {
-      return containerMake(volume, {id:id, _PLACEHOLDER:true});
+    function containerPrepare(volume, init) {
+      if (typeof init == 'number')
+        init = {id:init,_PLACEHOLDER:true};
+      return containerMake(volume, init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
@@ -969,7 +971,7 @@ app.factory('modelService', [
 
     Asset.prototype.init = function (init) {
       if (!this.container && 'container' in init)
-        this.container = containerPrepare(this.volume, init.container.id);
+        this.container = containerPrepare(this.volume, init.container);
       Slot.prototype.init.call(this, init);
       if ('format' in init)
         this.format = constants.format[init.format];

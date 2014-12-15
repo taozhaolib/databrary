@@ -131,6 +131,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
       ("containers", opt => containers.map(JsonArray.map { c =>
         c.json - "volume" ++ c._jsonRecords(false).peek.map[JsonField]('records -> _)
       })),
+      ("assets", opt => SlotAsset.getVolume(this, if (opt.contains("top")) Some(true) else None).map(JsonArray.map(_.json))),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume").obj)),
       ("consumers", opt => consumers.map(JsonRecord.map(_.json))),

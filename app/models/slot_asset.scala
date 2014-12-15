@@ -93,7 +93,7 @@ sealed class SlotAsset protected (override val asset : Asset, final val segment 
   override def pageParent = Some(container)
     
   override def json : JsonObject = asset.json ++ super.json +
-    ('container -> container.json)
+    ('container -> containerId)
 }
 
 sealed class SlotFileAsset private[models] (override val asset : FileAsset, segment : Segment, context : ContextSlot, excerpt : Option[Excerpt])
@@ -165,8 +165,21 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
-    .SELECT("WHERE slot_asset.segment && ? ORDER BY slot_asset.segment")
+    .SELECT("WHERE slot_asset.segment && ?")
     .apply(slot.segment).list
+
+  def getVolume(volume : Volume, top : Option[Boolean]) : Future[Seq[SlotAsset]] =
+    columns.join(
+      ContextSlot.rowContainer(
+        Container.columnsVolume(Volume.fixed(volume)) on "slot_asset.container = container.id",
+        "slot_asset.segment"),
+      Asset.columns on "volume.id = asset.volume AND slot_asset.asset = asset.id",
+      Excerpt.columns on_? "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment"
+    ).map { case (segment, context, asset, excerpt) =>
+      SlotAsset(asset(context.volume), segment, context, excerpt)
+    }
+    .SELECT("WHERE COALESCE(? = container.top, true)")
+    .apply(top).list
 }
 
 object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot] {
