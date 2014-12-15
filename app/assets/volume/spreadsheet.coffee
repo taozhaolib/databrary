@@ -48,13 +48,16 @@ app.directive 'spreadsheet', [
             info.n = 0
             info.m = parseInt(s[2], 10)
         when 'add', 'more'
-          info.c = parseInt(s[2], 10)
+          info.c = if s[2] == 'asset' then s[2] else parseInt(s[2], 10)
         when 'metric'
           info.m = info.i
           delete info.i
         when 'category'
           info.c = info.i
           delete info.i
+        when 'asset', 'class', 'excerpt'
+          info.c = 'asset'
+          info.a = if 2 of s then parseInt(s[2], 10) else 0
       info
 
     pseudoCategory =
@@ -100,7 +103,7 @@ app.directive 'spreadsheet', [
 
         editing = $scope.editing = $attrs.edit != undefined
         top = $scope.top = 'top' of $attrs
-        assets = $scope.assets = 'assets' of $attrs
+        assets = if $scope.assets = 'assets' of $attrs then []
         id = $scope.id = $attrs.id ? if top then 'sst' else 'ss'
 
         ###
@@ -143,6 +146,8 @@ app.directive 'spreadsheet', [
             info.slot = slots[info.i]
             if 'n' of info
               info.record = volume.records[info.r = records[info.c].id[info.n][info.i]]
+            if 'a' of info
+              info.asset = assets[info.i][info.a]
           info
 
         ################################# Populate data structures 
@@ -185,7 +190,11 @@ app.directive 'spreadsheet', [
 
             depends[record.id][i] = n
 
-          count.asset = slot.assets.length if assets
+          if assets
+            ### jshint ignore:start #### fixed in jshint 2.5.7
+            assets[i] = (asset for assetId, asset of slot.assets)
+            ### jshint ignore:end ###
+            count.asset = assets[i].length
 
           return
 
@@ -323,12 +332,17 @@ app.directive 'spreadsheet', [
           return
 
         generateAsset = (row, i, n) ->
-          a = slots[i].assets
+          a = assets[i]
           return if generateMultiple(pseudoCategory.asset, 3, row, i, n, a.length)
-          a = a[n || 0]
-          generateCell(row, 'asset', a.name, id + '-asset_' + a.id)
-          generateCell(row, 'classification', a.classification, id + '-class_' + a.id)
-          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + a.id)
+          b = i
+          if n == undefined
+            a = a[0]
+          else
+            a = a[n]
+            b += '_' + n
+          generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          generateCell(row, 'classification', a.classification, id + '-class_' + b)
+          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].

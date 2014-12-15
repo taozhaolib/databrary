@@ -482,7 +482,9 @@ app.controller('volume/slot', [
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
 
-    $scope.tracks = (new Track(asset) for asset in slot.assets)
+    ### jshint ignore:start #### fixed in jshint 2.5.7
+    $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
+    ### jshint ignore:end ###
     addBlank() if editing
     sortTracks()
     fillExcerpts()

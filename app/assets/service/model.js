@@ -362,7 +362,7 @@ app.factory('modelService', [
     function Volume(init) {
       this.containers = {_PLACEHOLDER:true};
       this.records = {_PLACEHOLDER:true};
-      this.assets = {};
+      this.assets = {_PLACEHOLDER:true};
       Model.call(this, init);
     }
 
@@ -398,6 +398,20 @@ app.factory('modelService', [
         for (var ci = 0; ci < cl.length; ci ++)
           containerMake(this, cl[ci]);
         delete this.containers._PLACEHOLDER;
+      }
+      if ('assets' in init) {
+        var al = init.assets;
+        for (var ai = 0; ai < al.length; ai ++) {
+          var a = assetMake(this, al[ai]);
+          /* this assumes when we get assets we get all or none for each container: */
+          var c = a.container;
+          if (c) {
+            if (!c.assets)
+              c.assets = {};
+            c.assets[a.id] = a;
+          }
+        }
+        delete this.assets._PLACEHOLDER;
       }
       if ('top' in init)
         this.top = containerMake(this, init.top);
@@ -561,8 +575,14 @@ app.factory('modelService', [
     };
 
     function slotInit(slot, init) {
-      if ('assets' in init)
-        slot.assets = assetMakeArray(slot.container, init.assets);
+      if ('assets' in init) {
+        var al = init.assets;
+        slot.assets = {};
+        for (var ai = 0; ai < al.length; ai ++) {
+          var a = assetMake(slot.container, al[ai]);
+          slot.assets[a.id] = a;
+        }
+      }
       if ('comments' in init)
         slot.comments = commentMakeArray(slot.volume, init.comments);
       if ('records' in init) {

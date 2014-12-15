@@ -33,7 +33,7 @@ if (!Array.prototype.findIndex) {
 Object.defineProperty(Array.prototype, 'remove', {
   value: function (value) {
     var i = this.indexOf(value);
-    if (i < 0)
+    if (i === -1)
       return;
     return this.splice(i, 1)[0];
   }
