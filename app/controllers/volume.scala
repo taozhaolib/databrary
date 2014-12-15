@@ -204,6 +204,12 @@ object VolumeController extends VolumeController {
     }
   }
 
+  def csv(i : Volume.Id) = Action(i).async { implicit request =>
+    request.obj.auditDownload.map { _ => 
+      AssetController.csvDelivery( , "databrary-metadata-vol-" + request.obj.id)
+    }
+  }
+
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =
     Action(v).async { implicit request =>
       request.obj.thumb.flatMap(_.fold(

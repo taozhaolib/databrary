@@ -52,6 +52,7 @@ GET     /volume/$vID<[0-9]+>/access/search                                      
 POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
 GET     /volume/$vID<[0-9]+>/spreadsheet                                                          controllers.VolumeHtml.spreadsheet(vID : models.Volume.Id, js : Option[Boolean] ?= None)
 GET     /volume/$vID<[0-9]+>/zip                                                                  controllers.VolumeController.zip(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/csv                                                                  controllers.VolumeController.csv(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
 
 # slots
