@@ -231,13 +231,7 @@ object AssetController extends AssetController {
         CACHE_CONTROL -> "max-age=31556926, private")),
       body = zip)
 
-  private[controllers] def csvDelivery(csvBody : Enumerator[Array[Byte]], name : String) : Result =
-  Result(
-    header = ResponseHeader(OK, Map(
-      CONTENT_TYPE -> "application/csvsv",
-      CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".csv")),
-      CACHE_CONTROL -> "max-age=31556926, private")),
-    body = csvBody)
+
 }
 
 object AssetHtml extends AssetController with HtmlController {
