@@ -8,6 +8,12 @@
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
+            <li>
+              <a href="/search"><span>Datasets</span></a>                       
+            </li>
+            <li>
+              <a href="http://databrary.org/access/guide.html"><span>User Guide</span></a>                       
+            </li>
             <li ng-repeat="link in page.display.toolbarLinks">
               <a ng-href="{{::link.url}}" class="button mini" ng-class="::link.type" target="{{::link.target}}" ng-click="link.click()">
                 <span ng-if="::link.icon" class="icon" ng-class="::link.icon"></span>
@@ -19,13 +25,7 @@
       </div>
 
       <div class="toolbar-user col-desktop-8 col-tablet-4" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}">
-        <div class="toolbar-search">
-          <ng-form class="search-form">
-            <div class="search-form-search">
-              <input type="search" ng-model="search.data.query" placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
-            </div>
-          </ng-form>
-        </div>
+
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a ng-href="{{::page.router.login()}}" message="toolbar.login"></a>
 
@@ -36,9 +36,15 @@
 
         <span ng-if="page.models.Login.isLoggedIn()">
           <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
+            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> 
             <span class="username hide-mobile" ng-bind="::page.models.Login.user.name"></span>
-            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> </a>
+          </a>
         </span>
+
+        <a href="" ng-click="hoverSearchToggle($event)" class="toolbar-search-toggle">
+          <img src="/public/images/icon/search.svg" class="icon">
+          <span>Search</span>
+        </a>
 
         <span class="sep">|</span>
 
@@ -81,6 +87,17 @@
           </div>
         </div>
       </section>
+
+      <section class="toolbar-hover search">
+        <div class="toolbar-search">
+          <ng-form class="search-form">
+            <div class="search-form-search">
+              <input type="search" ng-model="search.data.query" placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
+            </div>
+          </ng-form>
+        </div>  
+      </section>
+
     </div>
   </div>
 </section>
