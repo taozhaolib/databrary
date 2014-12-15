@@ -16,8 +16,8 @@ app.directive('volumeEditOverviewForm', [
           body: volume.body,
           citation: {
             head: citation.head,
-            title: citation.title,
             url: citation.url,
+            year: citation.year
           },
           published: vol && vol.citation != null
         };
