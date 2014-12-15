@@ -340,7 +340,10 @@ app.directive 'spreadsheet', [
           else
             a = a[n]
             b += '_' + n
-          generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          cell = generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
+          icon.src = a.icon
+          icon.className = "hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
           generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
           return
