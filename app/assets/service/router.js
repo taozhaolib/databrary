@@ -252,7 +252,7 @@ app.provider('routerService', [
 
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,
-                ['access', 'citation', 'links', 'top', 'funding', 'records', 'containers']),
+                {access:'', citation:'', links:'', top:'', funding:'', records:'', containers:''}),
               page.permission.EDIT)
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])
@@ -278,7 +278,7 @@ app.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'links', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'containers']);
+              {access:'', citation:'', links:'', funding:'', providers:'', consumers:'', top:'', tags:'', excerpts:'', comments:'', records:'', containers:'', assets:'top'});
           }
         ]
       },
@@ -293,7 +293,7 @@ app.provider('routerService', [
           'pageService', function (page) {
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,
-                ['top', 'records', 'containers']),
+                {'top':'', 'records':'', 'containers':'', 'assets':'top'}),
               page.permission.EDIT);
           }
         ]

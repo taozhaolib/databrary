@@ -12,7 +12,7 @@
   </div>
 
   <div ng-switch-when="video">
-    <div ng-if="::!asset.asset.duration" message="asset.untranscoded"></div>
+    <div ng-if="::!asset.duration" message="asset.untranscoded"></div>
     <video controls preload="metadata" seek="clip">
       <source ng-src="{{::asset.downloadRoute(true)}}" type="{{::asset.format.mimetype}}">
     </video>
