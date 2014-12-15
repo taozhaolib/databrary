@@ -82,20 +82,19 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
 }
 
 object Transcode extends TableId[Asset]("transcode") {
-  /* This does not check permissions as you might expect */
-  private val row = Columns(
+  private val columns = Columns(
       SelectColumn[Segment]("segment")
     , SelectColumn[IndexedSeq[String]]("options")
     , SelectColumn[Option[Int]]("process")
     , SelectColumn[Option[String]]("log")
-    ).join(Party.row
-      .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
-      .map { case (p, a) => Authorization.make(p)(a) },
-      "transcode.owner = party.id")
-    .join(Asset.columns, "transcode.asset = asset.id")
-    .join(Asset.columns fromAlias "orig", "transcode.orig = orig.id")
-    .join(Volume.columns, "asset.volume = volume.id AND orig.volume = volume.id")
-    .map { case (((((segment, options, process, log), owner), asset), orig), volume) =>
+    )
+  /* This does not check permissions as you might expect */
+  private val row = columns.join(
+      Authorization.rowParent() on "transcode.owner = party.id",
+      Asset.columns on "transcode.asset = asset.id",
+      Asset.columns fromAlias "orig" on "transcode.orig = orig.id",
+      Volume.columns on "asset.volume = volume.id AND orig.volume = volume.id"
+    ).map { case ((segment, options, process, log), owner, asset, orig, volume) =>
       val vol = volume(Permission.ADMIN, new LocalAuth(owner, superuser = true))
       new TranscodeJob(asset(vol), owner.identity, orig(vol).asInstanceOf[FileAsset], segment, options, process, log)
     }

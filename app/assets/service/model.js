@@ -288,7 +288,7 @@ app.factory('modelService', [
     Login.prototype.constructor = Login;
     Login.prototype.fields = angular.extend({
       superuser: true,
-    }, Party.prototype.fields);
+    }, Login.prototype.fields);
 
     Login.user = new Login({id:constants.party.NOBODY});
 
@@ -362,7 +362,7 @@ app.factory('modelService', [
     function Volume(init) {
       this.containers = {_PLACEHOLDER:true};
       this.records = {_PLACEHOLDER:true};
-      this.assets = {};
+      this.assets = {_PLACEHOLDER:true};
       Model.call(this, init);
     }
 
@@ -398,6 +398,20 @@ app.factory('modelService', [
         for (var ci = 0; ci < cl.length; ci ++)
           containerMake(this, cl[ci]);
         delete this.containers._PLACEHOLDER;
+      }
+      if ('assets' in init) {
+        var al = init.assets;
+        for (var ai = 0; ai < al.length; ai ++) {
+          var a = assetMake(this, al[ai]);
+          /* this assumes when we get assets we get all or none for each container: */
+          var c = a.container;
+          if (c) {
+            if (!c.assets)
+              c.assets = {};
+            c.assets[a.id] = a;
+          }
+        }
+        delete this.assets._PLACEHOLDER;
       }
       if ('top' in init)
         this.top = containerMake(this, init.top);
@@ -538,9 +552,9 @@ app.factory('modelService', [
     // This does not handle cross-volume inclusions
 
     function Slot(context, init) {
-      this.container = context instanceof Volume ?
-        containerPrepare(context, init.container.id) :
-        context;
+      this.container =
+        context instanceof Container ? context :
+        containerPrepare(context, init.container);
       if (init)
         Model.call(this, init);
     }
@@ -551,7 +565,6 @@ app.factory('modelService', [
 
     Slot.prototype.fields = {
       consent: true,
-      context: true,
       tags: false,
       consents: false,
     };
@@ -562,8 +575,14 @@ app.factory('modelService', [
     };
 
     function slotInit(slot, init) {
-      if ('assets' in init)
-        slot.assets = slotAssetMakeArray(slot.container, init.assets);
+      if ('assets' in init) {
+        var al = init.assets;
+        slot.assets = {};
+        for (var ai = 0; ai < al.length; ai ++) {
+          var a = assetMake(slot.container, al[ai]);
+          slot.assets[a.id] = a;
+        }
+      }
       if ('comments' in init)
         slot.comments = commentMakeArray(slot.volume, init.comments);
       if ('records' in init) {
@@ -573,7 +592,7 @@ app.factory('modelService', [
         slot.records = rl;
       }
       if ('excerpts' in init)
-        slot.excerpts = slotAssetMakeArray(slot.container, init.excerpts);
+        slot.excerpts = assetMakeArray(slot.container, init.excerpts);
     }
 
     Slot.prototype.init = function (init) {
@@ -581,6 +600,8 @@ app.factory('modelService', [
       this.segment = new Segment(init.segment);
       if ('container' in init)
         this.container.update(init.container);
+      if ('volume' in init)
+        this.volume.update(init.volume);
       slotInit(this, init);
     };
 
@@ -600,19 +621,6 @@ app.factory('modelService', [
       return this.segment.full ? this.container : angular.extend(new Slot(this.container), this);
     };
 
-    Slot.prototype.inContext = function (context) {
-      if (context === undefined)
-        context = this.context;
-      if (this.segment.equals(context))
-        return this;
-      /* not type-safe for descendents:
-      if (this.context === undefined)
-        return this.container; */
-      var s = angular.extend(Object.create(Object.getPrototypeOf(this)), this, {segment:Segment.make(context)});
-      s.clear('format');
-      return s;
-    };
-
     function Container(volume, init) {
       this.volume = volume;
       volume.containers[init.id] = this;
@@ -628,7 +636,7 @@ app.factory('modelService', [
       name: true,
       top: true,
       date: true,
-    }, Slot.prototype.fields);
+    }, Container.prototype.fields);
 
     Container.prototype.init = function (init) {
       Model.prototype.init.call(this, init);
@@ -670,8 +678,10 @@ app.factory('modelService', [
         return new Container(volume, init);
     }
 
-    function containerPrepare(volume, id) {
-      return containerMake(volume, {id:id, _PLACEHOLDER:true});
+    function containerPrepare(volume, init) {
+      if (typeof init == 'number')
+        init = {id:init,_PLACEHOLDER:true};
+      return containerMake(volume, init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
@@ -873,39 +883,120 @@ app.factory('modelService', [
       return router.recordEdit([this.id]);
     };
 
-    ///////////////////////////////// Asset
+    ///////////////////////////////// AssetSlot
 
-    function Asset(volume, init) {
-      this.volume = volume;
-      volume.assets[init.id] = this;
+    // This usually maps to an AssetSegment
+    function AssetSlot(context, init) {
+      this.asset =
+        context instanceof Asset ? context :
+        new assetMake(context, init.asset);
       Model.call(this, init);
     }
 
-    Asset.prototype = Object.create(Model.prototype);
+    AssetSlot.prototype = Object.create(Slot.prototype);
+    AssetSlot.prototype.constructor = AssetSlot;
+    AssetSlot.prototype.class = 'asset-slot';
+
+    AssetSlot.prototype.fields = angular.extend({
+      permission: true,
+      excerpt: true,
+      context: true
+    }, AssetSlot.prototype.fields);
+
+    AssetSlot.prototype.init = function (init) {
+      Model.prototype.init.call(this, init);
+      this.asset.update(init.asset);
+      this.segment = new Segment(init.segment);
+      if ('format' in init)
+        this.format = constants.format[init.format];
+    };
+
+    delegate(AssetSlot, 'asset',
+        'id', 'container', 'format', 'classification', 'name', 'pending');
+
+    Object.defineProperty(AssetSlot.prototype, 'displayName', {
+      get: function () {
+        return this.name || this.format.name;
+      }
+    });
+
+    AssetSlot.prototype.route = function (params) {
+      params.asset = this.id;
+      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
+    };
+
+    AssetSlot.prototype.inContext = function () {
+      return 'context' in this ?
+        angular.extend(Object.create(AssetSlot.prototype), this, {segment:Segment.make(this.context)}) :
+        this.asset;
+    };
+
+    Object.defineProperty(AssetSlot.prototype, 'icon', {
+      get: function () {
+        return '/public/images/filetype/16px/' + this.format.extension + '.png';
+      }
+    });
+
+    AssetSlot.prototype.inSegment = function (segment) {
+      segment = this.segment.intersect(segment);
+      if (segment.equals(this.segment))
+        return this;
+      return new AssetSlot(this.asset, {permission:this.permission, segment:segment});
+    };
+
+    AssetSlot.prototype.setExcerpt = function (classification) {
+      var a = this;
+      return router.http(classification != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.id, {classification:classification})
+        .then(function (res) {
+          a.clear('excerpts');
+          a.volume.clear('excerpts');
+          return a.update(res.data);
+        });
+    };
+
+    AssetSlot.prototype.thumbRoute = function (size) {
+      return router.assetThumb([this.container.id, this.segment.format(), this.id, size]);
+    };
+
+    AssetSlot.prototype.downloadRoute = function (inline) {
+      return router.assetDownload([this.container.id, this.segment.format(), this.id, inline]);
+    };
+
+    ///////////////////////////////// Asset
+
+    // This usually maps to a SlotAsset, but may be an unlinked Asset
+    function Asset(context, init) {
+      if (init.container || context instanceof Container)
+        Slot.call(this, context, init);
+      else {
+        this.volume = context;
+        Model.call(this, init);
+      }
+      this.asset = this;
+      this.volume.assets[init.id] = this;
+    }
+
+    Asset.prototype = Object.create(AssetSlot.prototype);
     Asset.prototype.constructor = Asset;
     Asset.prototype.class = 'asset';
 
-    Asset.prototype.fields = {
+    Asset.prototype.fields = angular.extend({
       id: true,
       classification: true,
       name: true,
       duration: true,
       pending: true,
-      // slot: false,
       creation: false,
-    };
+    }, Asset.prototype.fields);
 
     Asset.prototype.init = function (init) {
-      Model.prototype.init.call(this, init);
-      if ('segment' in init)
-        this.segment = new Segment(init.segment);
-      if ('volume' in init)
-        this.volume.update(init.volume);
+      if (!this.container && 'container' in init)
+        this.container = containerPrepare(this.volume, init.container);
+      Slot.prototype.init.call(this, init);
       if ('format' in init)
         this.format = constants.format[init.format];
       if ('revisions' in init)
         this.revisions = assetMakeArray(this.volume, init.revisions);
-      /* slot : Slot, but really implies SlotAsset */
     };
 
     function assetMake(context, init) {
@@ -914,9 +1005,9 @@ app.factory('modelService', [
         return v.assets[init];
       if ('id' in init) {
         var a = v.assets[init.id];
-        return a ? a.update(init) : new Asset(v, init);
-      }
-      return new SlotAsset(context, init);
+        return a ? a.update(init) : new Asset(context, init);
+      } else
+        return new AssetSlot(context, init);
     }
 
     function assetMakeArray(context, l) {
@@ -936,89 +1027,24 @@ app.factory('modelService', [
         return $q.successful(a);
     };
 
-    ///////////////////////////////// SlotAsset
-
-    function SlotAsset(context, init, asset) {
-      this.asset = asset;
-      Slot.call(this, context, init);
-    }
-
-    SlotAsset.prototype = Object.create(Slot.prototype);
-    SlotAsset.prototype.constructor = SlotAsset;
-    SlotAsset.prototype.class = 'asset';
-
-    SlotAsset.prototype.fields = angular.extend({
-      permission: true,
-      excerpt: true,
-      format: true,
-    }, Slot.prototype.fields);
-
-    SlotAsset.prototype.init = function (init) {
-      Slot.prototype.init.call(this, init);
-      if (this.asset)
-        this.asset.update(init.asset);
-      else
-        this.asset = assetMake(this.volume, init.asset);
-      if ('format' in init)
-        this.format = constants.format[init.format];
-    };
-
-    function slotAssetMakeArray(container, l) {
-      if (l) for (var i = 0; i < l.length; i ++)
-        l[i] = new SlotAsset(container, l[i]);
-      return l;
-    }
-
-    delegate(SlotAsset, 'asset',
-        'id', 'format', 'classification', 'name', 'pending');
-
-    SlotAsset.prototype.inContext = function (context) {
-      if (context === undefined)
-        context = this.context;
-      if (this.asset.segment)
-        context = this.asset.segment.intersect(context);
-      return Slot.prototype.inContext.call(this, context);
-    };
-
-    Object.defineProperty(SlotAsset.prototype, 'displayName', {
-      get: function () {
-        return this.name || this.format.name;
-      }
-    });
-
-    SlotAsset.prototype.route = function (params) {
-      params.asset = this.id;
-      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
-    };
-
-    Object.defineProperty(SlotAsset.prototype, 'icon', {
-      get: function () {
-        return '/public/images/filetype/16px/' + this.format.extension + '.png';
-      }
-    });
-
-    SlotAsset.prototype.save = function (data) {
+    Asset.prototype.save = function (data) {
       var a = this;
-      return router.http(router.controllers.AssetApi.update, this.asset.id, data)
+      return router.http(router.controllers.AssetApi.update, this.id, data)
         .then(function (res) {
           if ('excerpt' in data) {
             a.clear('excerpts');
             a.volume.clear('excerpts');
           }
-          return 'id' in res.data ? a.asset.update(res.data) : a.update(res.data);
+          return a.update(res.data);
         });
     };
 
-    Asset.prototype.save = function (slot, data) {
-      var a = this;
+    Asset.prototype.link = function (slot, data) {
       if (!data)
         data = {};
       data.container = slot.container.id;
       data.position = slot.segment.l;
-      return router.http(router.controllers.AssetApi.update, this.id, data)
-        .then(function (res) {
-          return 'id' in res.data ? a.asset.update(res.data) : new SlotAsset(slot.container, res.data, a);
-        });
+      return this.save(data);
     };
 
     Slot.prototype.createAsset = function (data) {
@@ -1035,57 +1061,24 @@ app.factory('modelService', [
         });
     };
 
-    SlotAsset.prototype.replace = function (data) {
-      var s = this;
-      return router.http(router.controllers.AssetApi.replace, this.asset.id, data)
-        .then(function (res) {
-          var a = assetMake(s.volume, res.data);
-          if (a instanceof SlotAsset) {
-            s.clear('assets');
-            return a;
-          } else /* Asset */ {
-            s.asset = a;
-            return s;
-          }
-        });
-    };
-
-    SlotAsset.prototype.remove = function () {
-      var s = this;
-      return router.http(router.controllers.AssetApi.remove, this.asset.id)
-        .then(function (res) {
-          s.clear('assets');
-          return s.asset.update(res.data);
-        });
-    };
-
-    SlotAsset.prototype.inSegment = function (segment) {
-      segment = this.segment.intersect(segment);
-      if (segment.equals(this.segment))
-        return this;
-      return new SlotAsset(this.container, {permission:this.permission, segment:segment}, this.asset);
-    };
-
-    SlotAsset.prototype.setExcerpt = function (classification) {
+    Asset.prototype.replace = function (data) {
       var a = this;
-      return router.http(classification != null ? router.controllers.SlotAssetApi.setExcerpt : router.controllers.SlotAssetApi.removeExcerpt, this.container.id, this.segment.format(), this.asset.id, {classification:classification})
+      return router.http(router.controllers.AssetApi.replace, this.id, data)
         .then(function (res) {
-          a.clear('excerpts');
-          a.volume.clear('excerpts');
+          return assetMake(a.volume, res.data);
+        });
+    };
+
+    Asset.prototype.remove = function () {
+      var a = this;
+      return router.http(router.controllers.AssetApi.remove, this.id)
+        .then(function (res) {
           return a.update(res.data);
         });
     };
 
-    SlotAsset.prototype.thumbRoute = function (size) {
-      return router.assetThumb([this.container.id, this.segment.format(), this.asset.id, size]);
-    };
-
-    SlotAsset.prototype.downloadRoute = function (inline) {
-      return router.assetDownload([this.container.id, this.segment.format(), this.asset.id, inline]);
-    };
-
-    SlotAsset.prototype.editRoute = function () {
-      return router.assetEdit([this.asset.id]);
+    Asset.prototype.editRoute = function () {
+      return router.assetEdit([this.id]);
     };
 
     ///////////////////////////////// Comment
@@ -1102,7 +1095,7 @@ app.factory('modelService', [
       time: true,
       text: true,
       parents: true
-    }, Slot.prototype.fields);
+    }, Comment.prototype.fields);
 
     Comment.prototype.init = function (init) {
       Slot.prototype.init.call(this, init);
@@ -1161,7 +1154,7 @@ app.factory('modelService', [
       Slot: Slot,
       Record: Record,
       Asset: Asset,
-      SlotAsset: SlotAsset,
+      AssetSlot: AssetSlot,
       Comment: Comment,
       Tag: Tag,
 

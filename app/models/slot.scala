@@ -10,19 +10,18 @@ import site._
 
 /** Conceptually a slot represents a segment of a container. */
 trait Slot extends TableRow with InVolume with SiteObject {
-  def container : Container = context.container
-  val segment : Segment
-  /** The containing consent slot, or container. */
   def context : ContextSlot
-  /** The effective consent level that applies to contained data. */
-  def consent : Consent.Value = context.consent
+  def container : Container = context.container
+  def segment : Segment
+  private[models] def slotSql : SQLTerms = SQLTerms('container -> containerId, 'segment -> segment)
 
   final def ===(a : Slot) : Boolean = containerId === a.containerId && segment === a.segment
   final def @>(a : Slot) : Boolean = containerId === a.containerId && segment @> a.segment
-  private[models] def slotSql : SQLTerms = SQLTerms('container -> containerId, 'segment -> segment)
 
   final def containerId : Container.Id = container.id
   def volume = container.volume
+
+  def consent : Consent.Value = context.consent
 
   /** True if this is its container's full slot. */
   def isFull : Boolean = segment.isFull
@@ -30,17 +29,18 @@ trait Slot extends TableRow with InVolume with SiteObject {
   /** Effective start point of this slot within the container. */
   final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
-  /** Intersect this Slot with a segment, in the current context.
-    * If current context is not consented, the result may be incorrect.  */
-  private[models] def *(seg : Segment) : Slot =
-    if (seg @> segment) this else Slot.make(segment * seg, context)
+  def consents : Future[Seq[ContextSlot]] =
+    if (consent != Consent.NONE) async(Seq(context)) else
+    SlotConsent.rowContainer(container)
+    .SELECT("WHERE slot_consent.container = ? AND slot_consent.segment && ?")
+    .apply(containerId, segment).list
 
   /** Update the given values in the database. */
-  final def setConsent(consent : Consent.Value) : Future[Boolean] =
-    if (consent == Consent.NONE)
+  final def setConsent(c : Consent.Value) : Future[Boolean] =
+    if (c == Consent.NONE)
       Audit.remove("slot_consent", slotSql).execute.map(_ => true)
     else
-      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> consent), slotSql).execute
+      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> c), slotSql).execute
         .recover {
           case SQLDuplicateKeyException() => false
         }
@@ -57,8 +57,6 @@ trait Slot extends TableRow with InVolume with SiteObject {
       if (restricted) new org.joda.time.Partial(Permission.publicDateFields, Permission.publicDateFields.map(date.get _))
       else date
     }
-
-  def consents : Future[Seq[ContextSlot]] = SlotConsent.getAll(this)
 
   /** List of asset that overlap with this slot. */
   final def assets : Future[Seq[SlotAsset]] = SlotAsset.getSlot(this)
@@ -125,12 +123,15 @@ trait Slot extends TableRow with InVolume with SiteObject {
   def fileName : Future[String] =
     idents.map(i => store.fileName(container.name ++: i : _*))
 
+  protected def consentJson : Option[JsonField] =
+    if (consent == Consent.NONE) None else Some('consent -> consent)
+
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
-    Maybe(consent).opt.map('consent -> _),
-    if (context.segment.isFull) None else Some('context -> context.segment)
+    consentJson
   )
+
   def json : JsonValue = slotJson
 
   private[models] def _jsonRecords(full : Boolean) : FutureVar[JsValue] =
@@ -144,7 +145,7 @@ trait Slot extends TableRow with InVolume with SiteObject {
 
   final def slotJson(options : JsonOptions.Options) : Future[JsObject] =
     JsonOptions(slotJson.obj, options
-    , "assets" -> (opt => assets.map(JsonArray.map(_.inContext.json - "container")))
+    , "assets" -> (opt => assets.map(JsonArray.map(_.json - "container")))
     , "records" -> (opt => jsonRecords)
     , "tags" -> (opt => tags.map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
@@ -162,111 +163,89 @@ trait Slot extends TableRow with InVolume with SiteObject {
 }
 
 trait ContextSlot extends Slot {
-  // override val container : Container
-  final override def context = this
-  // override val consent : Consent.Value
+  override def context = this
 
-  override def consents = if (consent == Consent.NONE) super.consents else async(Seq(this))
-
-  override def pageParent = Some(volume)
+  final private[models] def contextFor(seg : Segment) : ContextSlot =
+    Range.nesting[Offset].tryCompare(segment, seg).map { o =>
+      if (o >= 0) this else container
+    }.orNull
 }
 
-final class SlotConsent private (override val container : Container, val segment : Segment, override val consent : Consent.Value) extends ContextSlot {
+final class SlotConsent private (override val container : Container, val segment : Segment, override val consent : Consent.Value)
+  extends ContextSlot {
   private[models] def sqlKey = slotSql
-}
-
-private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") {
-  private val columns = Columns(
-      SelectColumn[Segment]("segment")
-    , SelectColumn[Consent.Value]("consent")
-    )
-  private[models] val row : Selector[Container => ContextSlot] = columns
-    .map { (segment, consent) =>
-      if (segment.isFull) { (container : Container) =>
-        container.withConsent(consent)
-      } else { (container : Container) =>
-        new SlotConsent(container, segment, consent)
-      }
-    }
-
-  def getAll(slot : Slot) : Future[Seq[ContextSlot]] =
-    row.map(_(slot.container))
-    .SELECT("WHERE slot_consent.container = ? AND slot_consent.segment && ?")
-    .apply(slot.containerId, slot.segment).list
 }
 
 /** A generic type of Table that includes (presumably inheriting from) slot. */
 private[models] trait TableSlot[R <: Slot] extends Table[R] {
-  protected type A
   protected final def segment = SelectColumn[Segment]("segment")
-  protected final def makeContext(container : Container, consent : Option[Container => ContextSlot]) : ContextSlot =
-    consent.fold[ContextSlot](container)(_(container))
-  protected final def values(containerId : Container.Id, segment : Segment) =
-    SQLTerms('container -> containerId, 'segment -> segment).values
-
-  /** Generate a selector for the target type from a base selector.
-    * @param columns base selector requiring a ContextSlot to produce the final type
-    * @param container container selector to use
-    * @param consent determine applicable consent level, or just use container context
-   */
-  protected final def columnsSlot(columns : Selector[ContextSlot => A], container : Selector[Container], consent : Boolean = true) : Selector[A] = {
-    val base = columns
-      .join(container, table + ".container = container.id")
-    if (consent) base
-      .leftJoin(SlotConsent.row.fromAlias(table + "_consent"),
-        table + ".segment <@ " + table + "_consent.segment AND " + table + ".container = " + table + "_consent.container")
-      .map { case ((a, container), consent) => a(makeContext(container, consent)) }
-    else base
-      .map(tupleApply)
-  }
-  protected final def columnsSlot(columns : Selector[ContextSlot => A], container : Container) : Selector[A] =
-    columnsSlot(columns, Container.fixed(container), container.consent == Consent.NONE)
 }
 
 private[models] abstract class SlotTable protected (table : String) extends Table[Slot](table) with TableSlot[Slot] {
-  protected final type A = Slot
-  private final class Virtual (val segment : Segment, val context : ContextSlot) extends Slot {
+  protected final class Row (val context : ContextSlot, val segment : Segment) extends Slot {
     private[models] def sqlKey = slotSql
   }
-  private[models] final def make(segment : Segment, context : ContextSlot) : Slot =
-    if (segment === context.segment) context
-    else new Virtual(segment, context)
   private[models] final val columns =
     Columns(segment)
-  protected def columnsContext =
-    columns.map((make _).curried)
-  protected final def valueColumns(containerId : Container.Id, segment : Segment) =
-    values(containerId, segment).map(_ => make(segment, _ : ContextSlot))
-  /** Generate a Slot selector from the given container selector. */
-  private[models] final def rowContainer(container : Selector[Container]) =
-    columnsSlot(columnsContext, container)
-  private[models] final def rowContainer(container : Container) =
-    columnsSlot(columnsContext, container)
-  private[models] final def rowVolume(volume : Selector[Volume]) =
-    rowContainer(Container.columnsVolume(volume))
-  private[models] final def row(implicit site : Site) =
-    rowVolume(Volume.row)
 }
 
 object Slot extends SlotTable("slot") {
   private[models] def fixed(slot : Slot) = slot.slotSql.values.map(_ => slot)
 
-  private[models] def rowContainer(container : Container, segment : Segment) =
-    columnsSlot(
-      valueColumns(container.id, segment),
-      container)
-  private[models] def rowVolume(volume : Selector[Volume], containerId : Container.Id, segment : Segment) =
-    columnsSlot(
-      valueColumns(containerId, segment),
-      Container.columnsVolume(volume))
-  private[models] def row(containerId : Container.Id, segment : Segment)(implicit site : Site) =
-    rowVolume(Volume.row, containerId, segment)
-
-  def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
-    row(containerId, segment)
-    .SELECT().apply().singleOpt
-
   def get(container : Container, segment : Segment) : Future[Slot] =
-    rowContainer(container, segment)
-    .SELECT().apply().single
+    if (segment.isFull) async(container)
+    else if (container.consent != Consent.NONE) async(new Row(container, segment))
+    else ContextSlot.rowContainer(container, "?", "?")
+      .map { context =>
+        new Row(context, segment)
+      }
+      .SELECT()
+      .apply(container.id, segment).single
+  def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
+    if (segment.isFull) Container.get(containerId)
+    else ContextSlot.rowContainer(Container.columnsVolume(Volume.row), "?")
+      .map { context  =>
+        new Row(context, segment)
+      }
+      .SELECT("WHERE container.id = ? AND", Volume.condition)
+      .apply(segment, containerId).singleOpt
 }
+
+private[models] object ContextSlot {
+  private[models] def rowContainer(container : Selector[Consent.Value => Container], segment : String) : Selector[ContextSlot] =
+    container.join(SlotConsent.rowUsing(segment = segment))
+    .map { case (container, consent) =>
+      consent(container)
+    }
+  private[models] def rowContainer(container : Container, containerSql : String, segment : String) : Selector[ContextSlot] = {
+    val c = Container.fixed(container).on(containerSql + " = container.id")
+    if (container.consent != Consent.NONE) c
+    else c.join(SlotConsent.rowUsing(segment = segment)).map { case (_, consent) =>
+      consent(container)
+    }
+  }
+}
+
+private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") with TableSlot[SlotConsent] {
+  private[models] final case class Row(consent : Consent.Value, segment : Segment) {
+    def apply(container : Consent.Value => Container) : ContextSlot =
+      if (consent == Consent.NONE || segment.isFull) container(consent)
+      else new SlotConsent(container(Consent.NONE), segment, consent)
+    def apply(container : Container) : ContextSlot =
+      apply(c => container.ensuring(_.consent == c))
+  }
+  val No = Row(Consent.NONE, Segment.empty)
+
+  private[models] val consent = Columns(
+      SelectColumn[Consent.Value]("consent")
+    )
+  private val columns = 
+    (consent ~+ segment).map(Row.apply _)
+  private[models] def rowContainer(container : Container) : Selector[ContextSlot] =
+    columns.map(_(container))
+
+  private[models] def rowUsing(container : String = "container.id", segment : String) : Selector[Row] =
+    columns.on_?(container + " = slot_consent.container AND " + segment + " <@ slot_consent.segment")
+    .map(_.getOrElse(No))
+}
+

@@ -32,6 +32,11 @@
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
     </colgroup>
+    <colgroup ng-if="::assets">
+      <col class="name"/>
+      <col class="classification"/>
+      <col class="excerpt"/>
+    </colgroup>
     <colgroup ng-if="::editing">
       <col class="add">
     </colgroup>
@@ -42,14 +47,19 @@
           <span ng-bind="col.category.name"></span>
           <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="('slot.add-column' | message) + ' ' + col.category.name"></span>
         </th>
+        <th ng-if="::assets" colspan="3">
+          file
+        </th>
         <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'slot.add-tab' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
-        <th id="{{::id}}-name" class="first sort sortable" ng-click="clickSlot($event, 'name')"/>
-        <th ng-if="::!top" id="{{::id}}-date" class="sort sortable" ng-click="clickSlot($event, 'date')">test date</th>
-        <th id="{{::id}}-consent" class="last sort sortable" ng-click="clickSlot($event, 'consent')">release</th>
-
-        <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="{'first': col.first, 'last': col.last, 'sort': col.sortable, 'sortable': currentSort !== col, 'sort-desc': currentSort === col && currentSortDirection, 'sort-asc': currentSort === col && !currentSortDirection}" ng-bind="col.metric.display || col.metric.name"></th>
+        <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
+        <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
+        <th id="{{::id}}-consent" class="last" ng-click="clickSlot($event, 'consent')" ng-class="colClasses('consent')">release</th>
+        <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.display || col.metric.name"></th>
+        <th ng-if-start="::assets" class="first">name</th>
+        <th>classification</th>
+        <th ng-if-end class="last">excerpt</th>
         <th ng-if="::editing" class="first last"></th>
       </tr>
     </thead>
@@ -57,7 +67,7 @@
     </tbody>
     <tfoot>
       <tr ng-if="::editing">
-        <td id="{{::id}}-new" colspan="{{2+!top+metricCols.length}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td id="{{::id}}-new" colspan="{{2+!top+metricCols.length+3*assets}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
       </tr>
     </tfoot>
   </table>

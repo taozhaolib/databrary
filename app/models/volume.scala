@@ -37,7 +37,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def top : Future[Container] = Container.getTop(this)
 
   /** List of toplevel assets within this volume. */
-  def excerpts = Excerpt.getVolume(this)
+  def excerpts : Future[Seq[FileAssetSlot]] = Excerpt.getVolume(this)
 
   private val _records : FutureVar[Seq[Record]] =
     FutureVar(Record.getVolume(this))
@@ -60,7 +60,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def tags = TagWeight.getVolume(this)
 
   /** An image-able "asset" that may be used as the volume's thumbnail. */
-  def thumb = Excerpt.getVolumeThumb(this)
+  def thumb : Future[Option[FileAssetSlot]] = Excerpt.getVolumeThumb(this)
 
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =
@@ -131,6 +131,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
       ("containers", opt => containers.map(JsonArray.map { c =>
         c.json - "volume" ++ c._jsonRecords(false).peek.map[JsonField]('records -> _)
       })),
+      ("assets", opt => SlotAsset.getVolume(this, if (opt.contains("top")) Some(true) else None).map(JsonArray.map(_.json))),
       ("excerpts", opt => excerpts.map(JsonArray.map(_.json))),
       ("top", opt => top.map(t => (t.json - "volume").obj)),
       ("consumers", opt => consumers.map(JsonRecord.map(_.json))),
@@ -142,9 +143,9 @@ object Volume extends TableId[Volume]("volume") {
   private object Permission extends Table[models.Permission.Value]("volume_permission") {
     private val columns = Columns(
         SelectColumn[models.Permission.Value]("permission")
-      ).from("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS " + _ + " (permission, superuser)")
+      )(FromTable("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS volume_permission (permission, superuser)")).cross
     def row(implicit site : Site) =
-      columns.pushArgs(SQLArgs(site.identity.id, site.superuser))
+      columns.pushArgs(site.identity.id, site.superuser)
     def condition =
       "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
@@ -162,7 +163,7 @@ object Volume extends TableId[Volume]("volume") {
         new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
-    columns.*(Permission.row).map { case (v, p) => v(p, site) }
+    columns.join(Permission.row).map { case (v, p) => v(p, site) }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
@@ -199,8 +200,8 @@ object Volume extends TableId[Volume]("volume") {
   object Containers {
     def get(vol : Volume) : Future[Seq[Container]] =
       vol._records.peek.fold(Container.getVolume(vol)) { records =>
-        Container.rowVolume(vol).leftJoin(
-          SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record"),
+        Container.rowVolume(vol).join(
+          SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record") on_?
           "container.id = slot_record.container")
         .SELECT(/* should be: "ORDER BY container.id"*/).apply().list
         .map(fill(records, _))

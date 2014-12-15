@@ -105,7 +105,7 @@ object Metric extends TableId[Metric[_]]("metric") {
 
   private[models] def getTemplate(category : RecordCategory.Id) : Future[Seq[(Metric[_], Boolean)]] =
     SQL("SELECT metric, ident FROM record_template WHERE category = ?")
-    .apply(category)
+    .immediately.apply(category)
     .list(SQLCols[Metric.Id, Boolean].map { (m, i) =>
       (byId(m), i)
     })
@@ -175,6 +175,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     Selector[MeasureV[_]](
       mid +: MeasureType.all.map(_.selectAll),
       "measure_all",
+      ",measure_all",
       new SQLLine[MeasureV[_]](1 + MeasureType.all.length, { l =>
         val metric = Metric.get(mid.get(l.head)).get
         val d = l(1+metric.dataType.id)

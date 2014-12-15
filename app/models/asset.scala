@@ -136,9 +136,9 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def slot : Future[Option[SlotAsset]] = SlotAsset.getAsset(this)
 
-  def link(c : Container, segment : Segment = Segment.full) : Future[SlotAsset] =
-    Audit.changeOrAdd("slot_asset", SQLTerms('container -> c.id, 'segment -> segment), SQLTerms('asset -> id)).ensure
-    .map(_ => SlotAsset.make(this, segment, c, None))
+  def link(slot : Slot) : Future[SlotAsset] =
+    Audit.changeOrAdd("slot_asset", SQLTerms('container -> slot.containerId, 'segment -> slot.segment), SQLTerms('asset -> id)).ensure
+    .map(_ => SlotAsset(this, slot.segment, slot.context, None))
   def unlink : Future[Boolean] =
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
@@ -160,7 +160,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def json(options : JsonOptions.Options) : Future[JsonRecord] =
     JsonOptions(json, options,
-      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(_.slot.json.js))),
+      "slot" -> (opt => slot.map(_.fold[JsValue](JsNull)(sa => (sa.json - "asset").js))),
       "revisions" -> (opt => Asset.getRevisions(this).map(JsonArray.map(_.json))),
       "creation" -> (opt => if (checkPermission(Permission.EDIT))
         creation.map { case (date, name) => JsonObject.flatten(
@@ -234,9 +234,6 @@ final case class TimeseriesSample private[models] (val parent : TimeseriesData, 
   override def format = parent.source.format.sampleFormat
 }
 
-object PendingAsset extends TableId[Asset]("asset") {
-}
-
 object Asset extends TableId[Asset]("asset") {
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
@@ -254,7 +251,7 @@ object Asset extends TableId[Asset]("asset") {
     }
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Asset] = columns
-    .join(volume, "asset.volume = volume.id").map(tupleApply)
+    .join(volume on "asset.volume = volume.id").map(tupleApply)
   private[models] def rowVolume(volume : Volume) : Selector[Asset] =
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =

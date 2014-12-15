@@ -56,8 +56,21 @@ package object macros {
   def max[A](x : A, y : A)(implicit o : Ordering[A]) = o.max(x, y)
   def min[A](x : A, y : A)(implicit o : Ordering[A]) = o.min(x, y)
 
-  def either[A](a : scala.util.Try[A]) : Either[Throwable, A] = a match {
-    case scala.util.Success(a) => Right(a)
-    case scala.util.Failure(e) => Left(e)
+  implicit final class AnyOps[A](a : A) {
+    def |>[B](f : A => B) : B = f(a)
+  }
+
+  implicit final class TryOps[A](t : scala.util.Try[A]) {
+    import scala.util.{Success,Failure}
+    def toEither : Either[Throwable, A] = t match {
+      case Success(a) => Right(a)
+      case Failure(e) => Left(e)
+    }
+
+    import scala.concurrent.Future
+    def toFuture : Future[A] = t match {
+      case Success(a) => Future.successful(a)
+      case Failure(e) => Future.failed(e)
+    }
   }
 }

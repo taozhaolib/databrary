@@ -1,4 +1,4 @@
-@(asset : SlotAsset, comments : Seq[Comment])(implicit request : RequestObject[SlotAsset]#Site[_])
+@(asset : AssetSlot, comments : Seq[Comment])(implicit request : AssetSlotHtml.Request[_])
 
 @html("Asset" + asset.asset.name.fold("")(": " + _), None) {
 <article class="wrap">
@@ -26,12 +26,12 @@
                     <dd>@Classification.message(asset.classification)</dd>
 
                     <dt>Format</dt>
-                    <dd>@cast[SlotFileAsset](asset).map(_.format.name)</dd>
+                    <dd>asset.format.name</dd>
 
                     <dt>Position</dt>
-                    <dd>@asset.relativeSegment</dd>
+                    <dd>@asset.segment</dd>
 
-                    @cast[SlotTimeseriesAsset](asset).map { ts =>
+                    @cast[TimeseriesAssetSlot](asset).map { ts =>
                         <dt>Duration</dt>
                         <dd>@ts.duration</dd>
                     }
@@ -42,6 +42,5 @@
 }
 
     @widget.panel.materials(Seq(asset))
-    @widget.panel.comments(Some(asset.slot), Some(new CommentController.SlotForm), comments)
 </article>
 }

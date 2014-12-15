@@ -12,13 +12,10 @@ import site._
   * @param name descriptive name to help with organization by contributors.
   * @param date the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
   */
-final class Container protected (override val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val consent : Consent.Value = Consent.NONE) extends ContextSlot with TableRowId[Container] with InVolume {
+final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val consent : Consent.Value)
+  extends ContextSlot with TableRowId[Container] {
   override def container = this
-  val segment = Segment.full
-  override def isFull = true
-
-  private[models] def withConsent(consent : Consent.Value) =
-    new Container(id, volume, top, name, date, consent)
+  def segment = Segment.full
 
   def ===(a : Container) = super[TableRowId].===(a)
 
@@ -26,7 +23,7 @@ final class Container protected (override val id : Container.Id, override val vo
   def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Container] =
     Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).ensure
       .map { _ =>
-        new Container(id, volume, top, name.getOrElse(this.name), date.getOrElse(this.date))
+        new Container(id, volume, top, name.getOrElse(this.name), date.getOrElse(this.date), consent)
       }
 
   def remove : Future[Boolean] =
@@ -39,11 +36,13 @@ final class Container protected (override val id : Container.Id, override val vo
         }
     }
 
+  override def pageParent = Some(volume)
+
   override lazy val json : JsonRecord = JsonRecord.flatten(id,
     Some('volume -> volumeId),
     if (top) Some('top -> top) else None,
     getDate.map(d => 'date -> org.joda.time.format.ISODateTimeFormat.date.print(d).replaceAllLiterally("\ufffd", "X")),
-    Maybe(consent).opt.map('consent -> _),
+    consentJson,
     name.map('name -> _)
   )
 }
@@ -55,20 +54,17 @@ object Container extends TableId[Container]("container") {
     , SelectColumn[Option[String]]("name")
     , SelectColumn[Option[Date]]("date")
     ).map { (id, top, name, date) =>
-      (volume : Volume) => new Container(id, volume, top, name, date)
+      (new Container(id, _ : Volume, top, name, date, _ : Consent.Value)).curried
     }
-  private[models] def columnsVolume(volume : Selector[Volume]) = columns
-    .join(volume, "container.volume = volume.id")
+  private[models] def columnsVolume(volume : Selector[Volume]) =
+    columns
+    .join(volume on "container.volume = volume.id")
     .map(tupleApply)
 
-  private val consent = Columns(
-      SelectColumn[Consent.Value]("container_consent", "consent")
-    ) from "slot_consent AS container_consent"
-  private[models] def rowVolume(volume : Selector[Volume]) : Selector[Container] = columnsVolume(volume)
-    .leftJoin(consent, "container.id = container_consent.container AND container_consent.segment = '(,)'::segment")
-    .map { case (container, consent) =>
-      consent.fold(container)(container.withConsent)
-    }
+  private def rowVolume(volume : Selector[Volume]) : Selector[Container] =
+    columnsVolume(volume)
+    .join(SlotConsent.consent on_? "container.id = slot_consent.container AND slot_consent.segment = '(,)'")
+    .map { case (container, consent) => container(consent.getOrElse(Consent.NONE)) }
   private[models] def rowVolume(volume : Volume) : Selector[Container] =
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
@@ -90,13 +86,8 @@ object Container extends TableId[Container]("container") {
     rowVolume(v).SELECT("WHERE container.top ORDER BY container.id LIMIT 1")
     .apply().single
 
-  /** Find the containers in a given volume with the given name. */
-  def findName(v : Volume, name : String) : Future[Seq[Container]] =
-    rowVolume(v).SELECT("WHERE container.name = ?")
-    .apply(name).list
-
   /** Create a new container in the specified volume. */
   def create(volume : Volume, top : Boolean = false, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
     Audit.add(table, SQLTerms('volume -> volume.id, 'top -> top, 'name -> name, 'date -> date), "id")
-    .single(SQLCols[Id].map(new Container(_, volume, top, name, date)))
+    .single(SQLCols[Id].map(new Container(_, volume, top, name, date, Consent.NONE)))
 }

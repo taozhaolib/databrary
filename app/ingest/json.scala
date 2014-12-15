@@ -251,7 +251,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           a <- asset(jc)
           pos = jc \ "position"
           l <- a.slot
-          _ <- write(a, l.map(_.segment), jc \ "position")(a.link(c, _).map(_ => true))(json.Reads {
+          _ <- write(a, l.map(_.segment), jc \ "position")(models.Slot.get(c, _).flatMap(a.link).map(_ => true))(json.Reads {
             case json.JsString("auto") => json.JsSuccess(Segment.singleton(off))
             case j => readsSegment.reads(j)
           }.map(s => s.singleton.fold(s)(o => Segment(o, o + a.duration))))

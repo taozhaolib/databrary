@@ -108,7 +108,7 @@ private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Tabl
 object TagWeight extends TagWeightView[TagWeight] {
   private def row(tag : Tag)(implicit site : Site) =
     TagUse.aggregateColumns
-    .pushArgs(SQLArgs(site.identity.id))
+    .pushArgs(site.identity.id)
     .map { case (weight, up) =>
       new TagWeight(tag, weight, up.getOrElse(false))
     }
@@ -116,8 +116,9 @@ object TagWeight extends TagWeightView[TagWeight] {
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
   private def rows(query : String*)(args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
-    .join(Tag.row, "tag_weight.tag = tag.id").map {
-      case ((weight, up), tag) => new TagWeight(tag, weight, up.getOrElse(false))
+    .join(Tag.row on "tag_weight.tag = tag.id")
+    .map { case ((weight, up), tag) =>
+      new TagWeight(tag, weight, up.getOrElse(false))
     }
     .SELECT("ORDER BY weight DESC")
     .apply().list
@@ -141,8 +142,9 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
   protected val groupColumn = SelectColumn[Container.Id]("container")
   private def rows(tag : Tag, query : String*)(args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
-    .join(Container.row, "tag_weight.container = container.id").map {
-      case ((weight, up), container) => new TagWeightContainer(tag, container, weight, up.getOrElse(false))
+    .join(Container.row on "tag_weight.container = container.id")
+    .map { case ((weight, up), container) =>
+      new TagWeightContainer(tag, container, weight, up.getOrElse(false))
     }
     .SELECT("WHERE", Volume.condition, "ORDER BY weight DESC")
     .apply().list

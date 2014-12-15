@@ -8,7 +8,8 @@ import site._
 
 /** A comment made by a particular user applied to exactly one object.
   * These are immutable (and unaudited), although the author may be considered to have ownership. */
-final class Comment private (val id : Comment.Id, val who : Account, val segment : Segment, val context : ContextSlot, val time : Timestamp, val text : String, val parents : Seq[Comment.Id]) extends TableRowId[Comment] with Slot with InVolume {
+final class Comment private (val id : Comment.Id, val who : Account, val context : ContextSlot, val segment : Segment, val time : Timestamp, val text : String, val parents : Seq[Comment.Id])
+  extends Slot with TableRowId[Comment] with InVolume {
   def whoId = who.id
 
   override def json = JsonRecord.flatten(id,
@@ -20,42 +21,48 @@ final class Comment private (val id : Comment.Id, val who : Account, val segment
 }
 
 object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
-  override protected type A = Account => Comment
-  private val columns : Selector[ContextSlot => A] = Columns(
+  private val columns = Columns(
       SelectColumn[Id]("id")
     , segment
     , SelectColumn[Timestamp]("time")
     , SelectColumn[String]("text")
     , SelectColumn[IndexedSeq[Id]]("thread")
     ).map { (id, segment, time, text, thread) =>
-      (context : ContextSlot) => (who : Account) =>
-        new Comment(id, who, segment, context, time, text, thread.tail)
+      new Comment(id, _ : Account, _ : ContextSlot, segment, time, text, thread.tail)
     } from "comment_thread AS comment"
 
-  private def row(who : Selector[Account], container : Selector[Container]) =
-    columnsSlot(columns, container, false)
-    .join(who, "comment.who = account.id")
-    .map(tupleApply)
-  private def rowContainer(container : Selector[Container]) =
-    row(Account.row, container)
+  private def row(who : Selector[Account], container : Selector[Consent.Value => Container]) =
+    columns.join(
+      who on "comment.who = account.id",
+      ContextSlot.rowContainer(
+        container on "comment.container = container.id",
+        "comment.segment")
+    ).map { case (comment, who, context) =>
+      comment(who, context)
+    }
   private val order = "ORDER BY comment.thread"
 
   /** Retrieve the set of all comments within the given volume. */
   private[models] def getVolume(volume : Volume) : Future[Seq[Comment]] =
-    rowContainer(Container.columnsVolume(Volume.fixed(volume)))
+    row(Account.row, Container.columnsVolume(Volume.fixed(volume)))
     .SELECT(order)
     .apply().list
 
   /** Retrieve the set of all comments that apply to the given target. */
   private[models] def getSlot(slot : Slot) : Future[Seq[Comment]] =
-    rowContainer(Container.fixed(slot.container))
+    columns.join(
+      Account.row on "comment.who = account.id",
+      ContextSlot.rowContainer(slot.container, "comment.container", "comment.segment")
+    ).map { case (comment, who, context) =>
+      comment(who, context)
+    }
     .SELECT("WHERE comment.segment && ?::segment", order)
     .apply(slot.segment).list
 
   /** Retrieve the set of comments written by the specified user.
     * This checks permissions on the commented object (volume). */
   private[models] def getParty(who : Account)(implicit site : Site) : Future[Seq[Comment]] =
-    row(Account.fixed(who), Container.row)
+    row(Account.fixed(who), Container.columnsVolume(Volume.row))
     .SELECT("WHERE", Volume.condition, order)
     .apply().list
 
@@ -64,6 +71,6 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
   private[models] def post(slot : Slot, text : String, parent : Option[Id] = None)(implicit site : AuthSite) : Future[Comment] =
     INSERT(slot.slotSql ++ SQLTerms('who -> site.identity.id, 'text -> text, 'parent -> parent), "id, time")
     .single(SQLCols[Id, Timestamp].map { (id, time) =>
-      new Comment(id, site.account, slot.segment, slot.context, time, text, parent.toSeq)
+      new Comment(id, site.account, slot.context, slot.segment, time, text, parent.toSeq)
     })
 }

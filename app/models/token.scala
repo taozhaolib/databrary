@@ -111,7 +111,7 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
       (account : Account) => new LoginToken(token, expires, account, password)
     }
   protected val row = columns
-    .join(Account.row, "login_token.account = account.id").map(tupleApply)
+    .join(Account.row on "login_token.account = account.id").map(tupleApply)
 
   /** Issue a new token for the given party.
     * @param password if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
@@ -140,10 +140,9 @@ object SessionToken extends TokenTable[SessionToken]("session") {
       (account : Account, access : Access) =>
         new SessionToken(token, expires, account, access)
     }
-  protected val row = columns
-    .join(Account.row, "session.account = account.id")
-    .leftJoin(Authorization.columns, "authorize_view.child = session.account AND authorize_view.parent = 0")
-    .map { case ((t, a), p) => t(a, Authorization.make(a.party)(p)) }
+  protected val row = columns.join(
+      Authorization.rowParent() on "session.account = account.id"
+    ).map { case (t, auth) => t(auth.child.account.get, auth) }
 
   /** Issue a new token for the given party. */
   def create(account : Account) : Future[SessionToken] =
@@ -167,7 +166,7 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
       (account : Account) => new UploadToken(token, filename, expires, account)
     }
   protected val row = columns
-    .join(Account.row, "session.account = account.id")
+    .join(Account.row on "session.account = account.id")
     .map(tupleApply)
   protected def rowAccount(account : Account) = columns
     .map(_(account))

@@ -174,7 +174,7 @@ object Party extends TableId[Party]("party") {
       new Party(id, name, orcid, affiliation, url)
     }
   private[models] val row : Selector[Party] =
-    columns.leftJoin(Account.columns, using = 'id)
+    columns.join(Account.columns using_? 'id)
     .map { case (party, acct) =>
       acct.foreach(_(party))
       party
@@ -198,10 +198,9 @@ object Party extends TableId[Party]("party") {
 
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
-    row
-    .leftJoin(Authorization.columns, "authorize_view.child = party.id AND authorize_view.parent = 0")
-    .map { case (a, p) => Authorization.make(a)(p) }
-    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name").apply().list
+    Authorization.rowParent()
+    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
+    .apply().list
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
@@ -256,12 +255,8 @@ object Party extends TableId[Party]("party") {
 
 object SiteParty {
   private[models] def row(implicit site : Site) =
-    Party.row
-    .leftJoin(Authorization.columns, "authorize_view.parent = party.id AND authorize_view.child = ?")
-    .pushArgs(SQLArgs(site.identity.id))
-    .map {
-      case (party, access) => new SiteParty(Authorization.make(site.identity, party)(access))
-    }
+    Authorization.rowChild(site.identity)
+    .map(new SiteParty(_))
 
   def get(p : Party)(implicit site : Site) : Future[SiteParty] =
     if (p.id === Party.ROOT) async(new SiteParty(site.access))
@@ -284,7 +279,7 @@ object Account extends Table[Account]("account") {
       (party : Party) => new Account(party, email, password.getOrElse(""), openid)
     }
   private[models] val row : Selector[Account] =
-    Party.columns.join(columns, using = 'id) map {
+    Party.columns.join(columns using 'id) map {
       case (party, acct) => acct(party)
     }
 
@@ -301,7 +296,7 @@ object Account extends Table[Account]("account") {
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
   def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
-    row.SELECT("WHERE openid = ? AND coalesce(email = ?, 't') LIMIT 1").apply(openid, email).singleOpt
+    row.SELECT("WHERE openid = ? AND COALESCE(email = ?, true) LIMIT 1").apply(openid, email).singleOpt
 
   def create(party : Party, email : String, password : Option[String] = None, openid : Option[URL] = None)(implicit site : Site) : Future[Account] =
     Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>

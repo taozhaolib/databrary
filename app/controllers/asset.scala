@@ -31,21 +31,21 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
 
   private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
     for {
-      container <- form.container.get.mapAsync(Container.get(_).map(_ getOrElse
-        form.container.withError("object.invalid", "container")._throw))
+      slot <- form.container.get.mapAsync { c =>
+        form.position.get.fold(async(Segment.full))(p =>
+          duration(asset).map(d => Segment(p, p + d)))
+        .flatMap(Slot.get(c, _))
+        .map(_ getOrElse form.container.withError("object.invalid", "container")._throw)
+      }
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
         classification = form.classification.get)
-      sa <- container.mapAsync { c =>
-        form.position.get.fold(async(Segment.full))(p =>
-          duration(asset).map(d => Segment(p, p + d)))
-        .flatMap(asset.link(c, _))
-      }
-      _ <- form.excerpt.get.foreachAsync(c => Excerpt.set(asset, Range.full, c).map(r =>
-          if (!r && c.nonEmpty) form.excerpt.withError("error.conflict")._throw))
+      _ <- slot.foreachAsync(asset.link)
+      _ <- form.excerpt.get.foreachAsync(e => Excerpt.set(asset, Segment.full, e).map(r =>
+          if (!r && e.nonEmpty) form.excerpt.withError("error.conflict")._throw))
       /* refresh excerpt: */
       sa <- asset.slot
-    } yield (sa.fold(result(asset))(SlotAssetController.result _))
+    } yield (sa.fold(result(asset))(AssetSlotController.result _))
 
   private[this] def checkSuperseded(form : FormView)(implicit request : Request[_]) : Future[Unit] =
     request.obj.isSuperseded.map(when(_,
@@ -238,7 +238,7 @@ object AssetHtml extends AssetController with HtmlController {
   def view(o : models.Asset.Id) = Action(o, Permission.VIEW).async { implicit request =>
     request.obj.slot.map(_.fold[Result](
       throw NotFoundException /* TODO */)(
-      sa => Redirect(sa.inContainer.pageURL)))
+      sa => Redirect(sa.pageURL)))
   }
 
   def edit(o : models.Asset.Id) =

@@ -48,7 +48,7 @@ final class FutureVar[T](init : => Future[T]) extends LazyVar[Future[T]](init) w
   def set(v : T) = update(Future.successful(v))
   def map[A](f : T => A)(implicit ctx : ExecutionContext) : FutureVar[A] = {
     val v = new FutureVar[A](apply().map(f))
-    v.value = value.map(x => x.value.fold(x.map(f))(v => async(v.map(f))))
+    v.value = value.map(x => x.value.fold(x.map(f))(v => v.map(f).toFuture))
     v
   }
 }

@@ -64,22 +64,22 @@ object Authorize extends Table[Authorize]("authorize") {
     * @param all include inactive authorizations
     */
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "parent = party.id")
+    columns.join(Party.row on "parent = party.id")
       .map { case (a, p) => a(child, p) }
       .SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
-    columns.join(Party.row, "child = party.id")
+    columns.join(Party.row on "child = party.id")
       .map { case (a, c) => a(c, parent) }
       .SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
 
   def getAll() : Future[Seq[Authorize]] =
-    columns
-    .join(Party.columns.fromAlias("child"), "child = child.id")
-    .join(Party.columns.fromAlias("parent"), "parent = parent.id")
-    .map { case ((auth, child), parent) => auth(child, parent) }
+    columns.join(
+      Party.columns.fromAlias("child") on "child = child.id",
+      Party.columns.fromAlias("parent") on "parent = parent.id"
+    ).map { case (auth, child, parent) => auth(child, parent) }
     .SELECT("ORDER BY parent.id, site")
     .apply().list
 
@@ -99,7 +99,7 @@ object Authorize extends Table[Authorize]("authorize") {
 }
 
 object Authorization extends Table[Authorization]("authorize_view") {
-  private[models] val columns = Columns(
+  private val columns = Columns(
       SelectColumn[Permission.Value]("site")
     , SelectColumn[Permission.Value]("member")
     )
@@ -114,10 +114,21 @@ object Authorization extends Table[Authorization]("authorize_view") {
     if (party === Party.Nobody) Permission.NONE else Permission.ADMIN,
     if (party === Party.Nobody) Permission.NONE else Permission.ADMIN)
 
-  private[models] def make(child : Party, parent : Party = Party.Root)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
+  private def make(child : Party, parent : Party = Party.Root)(access : Option[(Permission.Value, Permission.Value)]) : Authorization = {
     val (site, member) = unOpt(access)
     new Authorization(child, parent, site, member)
   }
+
+  private[models] def rowParent(parent : Party = Party.Root) =
+    Party.row.join(
+      columns on_? "party.id = authorize_view.child AND authorize_view.parent = ?"
+    ).map { case (p, a) => make(p, parent)(a) }
+    .pushArgs(parent.id)
+  private[models] def rowChild(child : Party) =
+    Party.row.join(
+      columns on_? "party.id = authorize_view.parent AND authorize_view.child = ?"
+    ).map { case (p, a) => make(child, p)(a) }
+    .pushArgs(child.id)
 
   /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
   private[models] def get(child : Party, parent : Party = Party.Root) : Future[Authorization] =
@@ -131,9 +142,7 @@ object Authorization extends Table[Authorization]("authorize_view") {
     if (childId === parent.id) async(Some(new Self(parent))) // optimization
     else if (childId == Party.NOBODY) async(Some(Nobody))
     else if (childId == Party.ROOT) async(Some(Root))
-    else Party.row
-      .leftJoin(columns, "party.id = authorize_view.child AND authorize_view.parent = ?")
-      .map { case (p, a) => make(p)(a) }
+    else rowParent(parent)
       .SELECT("WHERE party.id = ?")
       .apply(parent.id, childId).singleOpt
 }

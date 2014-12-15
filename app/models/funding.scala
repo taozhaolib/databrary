@@ -115,7 +115,7 @@ final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = 
 object VolumeFunding extends Table[Funding]("volume_funding") {
   private val row = Columns(
       SelectColumn[IndexedSeq[String]]("awards")
-    ).join(Funder.row, "volume_funding.funder = funder.fundref_id")
+    ).join(Funder.row on "volume_funding.funder = funder.fundref_id")
     .map { case (awards, funder) =>
       new Funding(funder, awards)
     }

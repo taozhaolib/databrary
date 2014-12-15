@@ -132,11 +132,11 @@ object AngularController extends SiteController {
     , AssetApi.upload
     , AssetApi.replace
     , AssetApi.remove
-    , SlotAssetHtml.view
-    , SlotAssetController.thumb
-    , SlotAssetController.download
-    , SlotAssetApi.setExcerpt
-    , SlotAssetApi.removeExcerpt
+    , AssetSlotHtml.view
+    , AssetSlotController.thumb
+    , AssetSlotController.download
+    , AssetSlotApi.setExcerpt
+    , AssetSlotApi.removeExcerpt
     , RecordHtml.view
     , RecordHtml.edit
     , RecordApi.get
