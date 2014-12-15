@@ -220,6 +220,15 @@ object Site extends SiteController {
   def favicon =
     Assets.at("/public/icons", "favicon.ico")
 
+  def test = Action.async{
+    import play.api.libs.ws.WS
+    val urlstr = "https://ezid.cdlib.org/status"
+    /**WS.url(urlstr).get().map(r => HTTP.wsResult(r))*/
+    WS.url(urlstr).get.map(HTTP.wsResult)
+    /**WS.url(urlstr).get().map(r => Ok(r.body))*/
+
+  }
+
 }
 
 
