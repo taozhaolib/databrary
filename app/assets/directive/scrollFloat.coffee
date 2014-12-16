@@ -3,21 +3,18 @@
 app.directive 'scrollFloat', [
   '$window',
   (window) ->
-    restrict: 'EA'
+    restrict: 'E'
     transclude: true,
     templateUrl: 'directive/scrollFloat.html',
     link: ($scope, $element) ->
-      floater = $element[0]
+      floater = $element[0].firstChild
+      while floater && floater.tagName != 'DIV'
+        floater = floater.nextSibling
+
       scroll = ->
         box = floater.getBoundingClientRect()
-        return unless box.height
-        if box.top < 36
-          floater.style['min-height'] = box.height + 'px'
-          floater.firstChild.classList.add 'scroll-float'
-        else
-          delete floater.style['min-height']
-          floater.firstChild.classList.remove 'scroll-float'
-      window.addEventListener 'scroll', scroll
+        $scope.scrollFloating = box.height && box.top < 36
+      window.addEventListener 'scroll', $scope.$lift(scroll)
       $scope.$on '$destroy', ->
         window.removeEventListener 'scroll', scroll
       return
