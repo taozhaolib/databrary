@@ -114,14 +114,14 @@ object TagWeight extends TagWeightView[TagWeight] {
     }
 
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
-  private def rows(query : String*)(args : SQLArgs)(implicit site : Site) =
+  private def rows(query : String*)(limit : Int, args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Tag.row on "tag_weight.tag = tag.id")
     .map { case ((weight, up), tag) =>
       new TagWeight(tag, weight, up.getOrElse(false))
     }
-    .SELECT("ORDER BY weight DESC")
-    .apply().list
+    .SELECT("ORDER BY weight DESC LIMIT ?")
+    .apply(limit).list
 
   private[models] def getSlot(tag : Tag, slot : Slot) =
     row(tag)(slot.site)
@@ -129,13 +129,16 @@ object TagWeight extends TagWeightView[TagWeight] {
     .apply(tag.id, slot.containerId, slot.segment).single
 
   /** Summarize all tags that overlap the given slot. */
-  private[models] def getSlot(slot : Slot) =
+  private[models] def getSlot(slot : Slot, limit : Int = 64) =
     rows("WHERE tag_use.container = ? AND tag_use.segment && ?::segment")(
-      SQLArgs(slot.containerId, slot.segment))(slot.site)
+      limit, SQLArgs(slot.containerId, slot.segment))(slot.site)
 
-  private[models] def getVolume(volume : Volume) =
+  private[models] def getVolume(volume : Volume, limit : Int = 32) =
     rows("JOIN container ON tag_use.container = container.id WHERE container.volume = ?")(
-      SQLArgs(volume.id))(volume.site)
+      limit, SQLArgs(volume.id))(volume.site)
+
+  def getAll(limit : Int = 16)(implicit site : Site) =
+    rows()(limit, SQLArgs())
 }
 
 object TagWeightContainer extends TagWeightView[TagWeightContainer] {

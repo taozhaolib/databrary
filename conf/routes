@@ -206,6 +206,7 @@ POST    /api/comment                                                            
 # GET       ?containers
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
 GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
+GET     /api/tags/top                                                                             controllers.TagApi.top()
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
 # GET ?url=URL

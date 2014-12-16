@@ -147,6 +147,7 @@ object AngularController extends SiteController {
     , CommentApi.post
     , TagApi.search
     , TagApi.update
+    , TagApi.top
     , routes.javascript.AngularController.cite
     , routes.javascript.AngularController.void
     )
