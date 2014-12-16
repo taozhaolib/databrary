@@ -37,7 +37,7 @@ final case class Citation(val head : String, val title : Option[String] = None, 
       url.fold(async(this))(Citation.get(_).map(_.fold(this)(if (replace) _ orElse this else this orElse _)))
 
   override def json = super.json ++ JsonObject.flatten(
-    Some('title -> title),
+    title.map('title -> _),
     year.map('year -> _)
   )
 }

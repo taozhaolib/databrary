@@ -49,4 +49,8 @@ object TagApi extends TagController with ApiController {
   def search(name : String) = SiteAction.async { implicit request =>
     Tag.search(name).map(l => Ok(JsonArray.map[Tag, String](_.name)(l)))
   }
+
+  def top() = SiteAction.async { implicit request =>
+    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](_.json)(l)))
+  }
 }

@@ -579,7 +579,6 @@ volume.edit.citation.head.placeholder=Last, F. (2014). Title...
 volume.edit.name.help=Enter the title of the paper or study.
 volume.edit.name.placeholder=Title
 volume.edit.citation.year.help=Enter the publication year of the associated paper.
-volume.edit.citation.year.placeholder=2014
 volume.edit.body.help=Enter or paste the abstract of the associated paper or other summary description.
 volume.edit.body.placeholder=
 volume.edit.alias.help=This optional name may be how you refer to this study within your lab, and will only be shown to those with edit access.
@@ -645,8 +644,9 @@ download.zip=Download all files as zip
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
-slot.add-tab=Add new tab to dataset
-slot.add-column=Add new column to 
+spreadsheet.add.category=Add new column group
+spreadsheet.add.metric=Add new column to {0}
+spreadsheet.unlimit=Show all {0} rows...
 
 # --- Timeline
 slot.edit=Edit session

@@ -45,12 +45,12 @@
         <th colspan="{{::2+!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
         <th ng-repeat="col in recordCols track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
           <span ng-bind="col.category.name"></span>
-          <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="('slot.add-column' | message) + ' ' + col.category.name"></span>
+          <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>
         </th>
         <th ng-if="::assets" colspan="3">
           file
         </th>
-        <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'slot.add-tab' | message"></th>
+        <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
         <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
@@ -66,8 +66,11 @@
     <tbody class="spreadsheet-tbody" id="{{::id}}" ng-click="click($event)">
     </tbody>
     <tfoot>
+      <tr ng-if="more">
+        <td colspan="{{totalCols}}" class="null" ng-click="unlimit()" ng-bind="::'spreadsheet.unlimit' | message:more"></td>
+      </tr>
       <tr ng-if="::editing">
-        <td id="{{::id}}-new" colspan="{{2+!top+metricCols.length+3*assets}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
+        <td id="{{::id}}-new" colspan="{{totalCols}}" class="add null" ng-click="clickNew($event)" ng-bind="::'add ' + (top ? 'materials' : 'session' | message)"</td>
       </tr>
     </tfoot>
   </table>

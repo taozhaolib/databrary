@@ -105,6 +105,7 @@ app.directive 'spreadsheet', [
         top = $scope.top = 'top' of $attrs
         assets = if $scope.assets = 'assets' of $attrs then []
         id = $scope.id = $attrs.id ? if top then 'sst' else 'ss'
+        limit = $attrs.limit
 
         ###
         # We use the following types of data structures:
@@ -225,6 +226,7 @@ app.directive 'spreadsheet', [
               start: si
             }
           $scope.metricCols = metricCols
+          $scope.totalCols = 2 + !top + metricCols.length + 3*!!assets
           return
 
         # Call all populate functions
@@ -340,7 +342,10 @@ app.directive 'spreadsheet', [
           else
             a = a[n]
             b += '_' + n
-          generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          cell = generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
+          icon.src = a.icon
+          icon.className = "hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
           generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
           return
@@ -413,8 +418,13 @@ app.directive 'spreadsheet', [
         # Place all rows into spreadsheet.
         fill = ->
           collapse()
-          for i in order
-            tbody.appendChild(rows[i])
+          delete $scope.more
+          for i, n in order
+            if n >= limit
+              $scope.more = order.length
+              tbody.removeChild(rows[i]) if rows[i].parentNode
+            else
+              tbody.appendChild(rows[i])
           return
 
         # Populate order based on compare function applied to values.
@@ -843,6 +853,10 @@ app.directive 'spreadsheet', [
         $scope.clickNew = ($event) ->
           createSlot($event.target)
           return
+
+        $scope.unlimit = () ->
+          limit = undefined
+          fill()
 
         ################################# main
 
