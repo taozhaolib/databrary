@@ -25,6 +25,14 @@
       </article>
     </div>
 
+    <div>
+      <ol>
+        <li ng-repeat="tag in ::tags">
+          <a ng-href="{{::page.router.search()}}?query={{::tag.id}}" ng-bind="::tag.id"></a>
+        </li>
+      </ol>
+    </div>
+
     <div class="home_parties">
       <div class="row">
         <div class="col">
