@@ -19,3 +19,4 @@ target/
 unreset.dump
 /prod.conf
 /transcode/
+/conf/check-*.sql
