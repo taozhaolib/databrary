@@ -13,12 +13,17 @@ private class CSVParse {
     
   }
 
-  def csvColumnize(l: Seq[Record]): Seq[(Int, Iterable[Int], String)] = {
-    /** get the column headers  */
-    l.map(rec => (rec._id, rec.measures.list.map(_.metric._id), rec.category match{
-        case Some(thing) => thing.name
-        case _ => "what"
+  def csvColumnize(l: Seq[Record]): List[(Int, Int)] = {
+    /** get the column headers  by taking all the records and giving back only set of metrics and categories used in volume*/
+    l.map(rec => (rec.measures.list.map(_.metric._id).toList.sortWith(_ < _), rec.category match{
+        case Some(thing) => thing._id
       }))
+      .distinct
+      .filter(x => !(x._1.isEmpty))
+      .sortBy(t => t._2)
+      .map(f => f._1.map(d => (d, f._2)))
+      .flatten
+      .toList
   }
 }
 
