@@ -53,7 +53,7 @@ app.service('exportService', [
       if (input === undefined)
         return '';
       input = input.toString();
-      if (input.contains('"') || input.contains(',') || input.contains('\n'))
+      if (input.includes('"') || input.includes(',') || input.includes('\n'))
         input = '"'+input.replace(/"/g, '""')+'"';
       return input;
     }

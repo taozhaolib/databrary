@@ -23,7 +23,7 @@ app.controller('party/edit', [
 
     var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
-      if (url.contains(party.editRoute()))
+      if (url.includes(party.editRoute()))
         return;
       if (!leavingSoSoon())
         return page.display.cancelRouteChange(event);

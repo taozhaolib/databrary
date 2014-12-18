@@ -26,7 +26,7 @@ app.controller('volume/edit', [
 
     var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
-      if (url.contains(volume ? volume.editRoute() : page.router.volumeCreate()))
+      if (url.includes(volume ? volume.editRoute() : page.router.volumeCreate()))
         return;
       if (!leavingSoSoon())
         return page.display.cancelRouteChange(event); 

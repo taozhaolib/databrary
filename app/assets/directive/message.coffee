@@ -14,7 +14,7 @@ app.directive 'message', [
           ($element, $attrs) ->
             $element[0].textContent = constants.message $attrs.message
             return
-      if $attrs.message.contains('{{')
+      if $attrs.message.includes('{{')
         ($scope, $element, $attrs) ->
           fill($element, $attrs)
       else

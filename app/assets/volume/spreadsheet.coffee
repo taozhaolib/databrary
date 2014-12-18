@@ -794,7 +794,7 @@ app.directive 'spreadsheet', [
           tooltips.clear()
           $timeout ->
             input = e.children('[name=edit]')
-            input.focus()
+            input.focus() if ['text', 'long', 'date', 'number'].includes(editScope.type)
             # chrome produces spurious change events on date fields, so we rely on key-enter instead.
             input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
             return
@@ -815,7 +815,7 @@ app.directive 'spreadsheet', [
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
               selectStyles.insertRule('.' + c + '{background-color:' +
-                (if c.contains('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
+                (if c.includes('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}', selectStyles.cssRules.length)
 
           edit(cell, info) if editing

@@ -505,7 +505,7 @@ app.controller('volume/slot', [
 
     if editing
       done = $rootScope.$on '$locationChangeStart', (event, url) ->
-        return if url.contains(slot.editRoute())
+        return if url.includes(slot.editRoute())
         if $flow
           uploading = $flow.isUploading()
           $flow.pause()
