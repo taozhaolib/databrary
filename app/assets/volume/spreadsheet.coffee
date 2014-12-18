@@ -650,7 +650,7 @@ app.directive 'spreadsheet', [
               if value == 'new'
                 setRecord(cell, info)
               else if value == 'remove'
-                setRecord(cell, info, null)
+                setRecord(cell, info, null) if info.r?
               else if v = stripPrefix(value, 'add_')
                 u = v.indexOf('_')
                 m = constants.metric[v.slice(0,u)]
