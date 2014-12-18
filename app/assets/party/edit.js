@@ -21,13 +21,12 @@ app.controller('party/edit', [
 
     $scope.switchStep = leavingSoSoon;
 
-    var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
+    $scope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
       if (url.includes(party.editRoute()))
         return;
       if (!leavingSoSoon())
         return page.display.cancelRouteChange(event);
-      done();
     });
 
     $scope.$watch(function () {

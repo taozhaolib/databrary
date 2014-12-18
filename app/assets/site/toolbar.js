@@ -13,7 +13,7 @@ app.directive('toolbar', [
           if ($event)
             $event.stopPropagation();
         };
-        page.$rootScope.$on('$locationChangeStart', function () {
+        $scope.$on('$locationChangeStart', function () {
           $scope.hoverUser = false;
         });
         $scope.search = function () {

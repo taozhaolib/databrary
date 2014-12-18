@@ -24,13 +24,12 @@ app.controller('volume/edit', [
 
     $scope.switchStep = leavingSoSoon;
 
-    var done = page.$rootScope.$on('$locationChangeStart', function (event, url) {
+    $scope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
       if (url.includes(volume ? volume.editRoute() : page.router.volumeCreate()))
         return;
       if (!leavingSoSoon())
         return page.display.cancelRouteChange(event); 
-      done();
     });
 
     $scope.$watch(function () {
