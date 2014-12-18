@@ -93,29 +93,39 @@ app.provider('routerService', [
       templateUrl: 'site/home.html',
       resolve: {
         investigators: [
-          'pageService', function (page) {
-            return page.models.Party.query({
-              access: page.permission.CONTRIBUTE,
+          'modelService', 'constantService',
+          function (models, constants) {
+            return models.Party.query({
+              access: constants.permission.CONTRIBUTE,
               institution: false
             });
           }
         ],
         users: [
-          'pageService', function (page) {
-            return page.models.Party.query({
-              access: page.permission.PUBLIC,
+          'modelService', 'constantService',
+          function (models, constants) {
+            return models.Party.query({
+              access: constants.permission.PUBLIC,
               institution: false
             });
           }
         ],
         volume: [
-          'pageService', function (page) {
-            return page.models.Volume.get(9, ['access'])
+          'modelService', function (models) {
+            return models.Volume.get(9, ['access'])
               .catch(function() {
                 return {};
               });
           }
-        ]
+        ],
+        tags: [
+          'routerService',
+          function (router) {
+            return router.http(router.controllers.TagApi.top).then(function (res) {
+              return res.data;
+            });
+          }
+        ],
       },
       reloadOnSearch: false,
     });

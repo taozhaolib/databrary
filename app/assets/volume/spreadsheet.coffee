@@ -37,7 +37,7 @@ app.directive 'spreadsheet', [
     parseInfo = (id) ->
       return if id == undefined
       s = id.split '_'
-      info = {t: s[0]}
+      info = {id: id, t: s[0]}
       return if s.length > 1 && isNaN(info.i = parseInt(s[1], 10))
       switch info.t
         when 'rec'
@@ -699,8 +699,7 @@ app.directive 'spreadsheet', [
           tooltips.clear()
 
           save(cell, editScope.type, editInput.value) if event
-          return
-        editScope.unedit = unedit
+          cell
 
         edit = (cell, info, alt) ->
           return if info.slot?.id == volume.top.id
@@ -794,7 +793,7 @@ app.directive 'spreadsheet', [
             input = e.children('[name=edit]')
             input.focus()
             # chrome produces spurious change events on date fields, so we rely on key-enter instead.
-            input.one('change', $scope.$lift(unedit)) unless editScope.type == 'date'
+            input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
             return
           return
 
@@ -821,8 +820,7 @@ app.directive 'spreadsheet', [
 
         $scope.click = (event) ->
           el = event.target
-          return unless el.tagName == 'TD'
-          return unless info = parseId(el)
+          return unless el.tagName == 'TD' && info = parseId(el)
 
           select(el, info)
           if 'm' of info && metricCols[info.m].metric.id == 'age'
@@ -834,6 +832,20 @@ app.directive 'spreadsheet', [
             sortBySlot(t, $event)
           else
             unselect()
+          return
+
+        editScope.unedit = ($event) ->
+          unedit($event)
+          return
+
+        editScope.next = ($event) ->
+          cell = unedit($event)
+          return unless cell
+          while true
+            cell = if $event.shiftKey then cell.previousSibling else cell.nextSibling
+            return unless cell && cell.tagName == 'TD' && info = parseId(cell)
+            break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
+          select(cell, info)
           return
 
         $scope.clickAdd = ($event) ->
@@ -854,7 +866,7 @@ app.directive 'spreadsheet', [
           createSlot($event.target)
           return
 
-        $scope.unlimit = () ->
+        $scope.unlimit = ->
           limit = undefined
           fill()
 

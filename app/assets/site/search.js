@@ -1,8 +1,10 @@
 'use strict';
 
 app.controller('site/search', [
-  '$scope', 'volumes', 'pageService', function ($scope, volumes, page) {
+  '$scope', '$location', 'constantService', 'displayService', 'volumes',
+  function ($scope, $location, constants, display, volumes, page) {
     $scope.volumes = volumes;
-    page.display.title = page.constants.message('search.title');
+    display.title = constants.message('search.title');
+    $scope.query = $location.search().query;
   }
 ]);
