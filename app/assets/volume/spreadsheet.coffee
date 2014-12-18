@@ -477,9 +477,9 @@ app.directive 'spreadsheet', [
         saveRun = (cell, run) ->
           cell.classList.remove('error')
           cell.classList.add('saving')
-          run.then () ->
+          run.then (res) ->
               cell.classList.remove('saving')
-              return
+              res
             , (res) ->
               cell.classList.remove('saving')
               cell.classList.add('error')
@@ -758,9 +758,12 @@ app.directive 'spreadsheet', [
                 # unitary: single metric with options
                 delete editScope.options['new']
                 for o in m.options
+                  found = false
                   for ri, r of volume.records
-                    return if (r.category || 0) == c.id && r.measures[m.id] == o
-                  editScope.options['add_'+m.id+'_'+o] = o
+                    if (r.category || 0) == c.id && r.measures[m.id] == o
+                      found = true
+                      break
+                  editScope.options['add_'+m.id+'_'+o] = o unless found
             when 'category'
               editScope.type = 'metric'
               editInput.value = undefined
