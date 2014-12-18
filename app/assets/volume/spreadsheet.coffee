@@ -792,6 +792,8 @@ app.directive 'spreadsheet', [
           $timeout ->
             input = e.children('[name=edit]')
             input.focus()
+            # chrome produces spurious change events on date fields, so we rely on key-enter instead.
+            input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
             return
           return
 
