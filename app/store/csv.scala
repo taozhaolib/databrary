@@ -53,7 +53,7 @@ private class CSVCreate {
   def makeCell(rs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
     /** make a cell by locating measures with category and metric */
     rs.find(r => r.category == ocat)
-        .flatMap(r => r.measures.value(met))
+        .flatMap(r => r.measures.list.find(_.metric == met))
 
   }
 
