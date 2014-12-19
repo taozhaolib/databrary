@@ -477,9 +477,9 @@ app.directive 'spreadsheet', [
         saveRun = (cell, run) ->
           cell.classList.remove('error')
           cell.classList.add('saving')
-          run.then () ->
+          run.then (res) ->
               cell.classList.remove('saving')
-              return
+              res
             , (res) ->
               cell.classList.remove('saving')
               cell.classList.add('error')
@@ -650,7 +650,7 @@ app.directive 'spreadsheet', [
               if value == 'new'
                 setRecord(cell, info)
               else if value == 'remove'
-                setRecord(cell, info, null)
+                setRecord(cell, info, null) if info.r?
               else if v = stripPrefix(value, 'add_')
                 u = v.indexOf('_')
                 m = constants.metric[v.slice(0,u)]
@@ -758,9 +758,12 @@ app.directive 'spreadsheet', [
                 # unitary: single metric with options
                 delete editScope.options['new']
                 for o in m.options
+                  found = false
                   for ri, r of volume.records
-                    return if (r.category || 0) == c.id && r.measures[m.id] == o
-                  editScope.options['add_'+m.id+'_'+o] = o
+                    if (r.category || 0) == c.id && r.measures[m.id] == o
+                      found = true
+                      break
+                  editScope.options['add_'+m.id+'_'+o] = o unless found
             when 'category'
               editScope.type = 'metric'
               editInput.value = undefined
@@ -791,7 +794,7 @@ app.directive 'spreadsheet', [
           tooltips.clear()
           $timeout ->
             input = e.children('[name=edit]')
-            input.focus()
+            input.focus() if ['text', 'long', 'date', 'number'].includes(editScope.type)
             # chrome produces spurious change events on date fields, so we rely on key-enter instead.
             input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
             return
@@ -812,7 +815,7 @@ app.directive 'spreadsheet', [
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
               selectStyles.insertRule('.' + c + '{background-color:' +
-                (if c.contains('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
+                (if c.includes('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}', selectStyles.cssRules.length)
 
           edit(cell, info) if editing

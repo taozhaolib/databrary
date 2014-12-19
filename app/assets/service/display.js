@@ -81,8 +81,8 @@ app.factory('displayService', [
     //
 
     /* TODO: this should really use .canPlayType */
-    if (window.navigator.userAgent.toLowerCase().contains('firefox') &&
-        window.navigator.platform.toLowerCase().contains('mac'))
+    if (window.navigator.userAgent.toLowerCase().includes('firefox') &&
+        window.navigator.platform.toLowerCase().includes('mac'))
       messages.add({
         type: 'yellow',
         closeable: true,

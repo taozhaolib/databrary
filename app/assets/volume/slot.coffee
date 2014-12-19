@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$rootScope', '$location', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $rootScope, $location, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$location', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -504,8 +504,8 @@ app.controller('volume/slot', [
     editExcerpt()
 
     if editing
-      done = $rootScope.$on '$locationChangeStart', (event, url) ->
-        return if url.contains(slot.editRoute())
+      done = $scope.$on '$locationChangeStart', (event, url) ->
+        return if url.includes(slot.editRoute())
         if $flow
           uploading = $flow.isUploading()
           $flow.pause()
