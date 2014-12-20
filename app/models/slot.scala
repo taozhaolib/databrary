@@ -195,12 +195,12 @@ object Slot extends SlotTable("slot") {
   def get(container : Container, segment : Segment) : Future[Slot] =
     if (segment.isFull) async(container)
     else if (container.consent != Consent.NONE) async(new Row(container, segment))
-    else ContextSlot.rowContainer(container, "?", "?")
+    else ContextSlot.rowContainer(container, "UNUSED", "?")
       .map { context =>
         new Row(context, segment)
       }
-      .SELECT()
-      .apply(container.id, segment).single
+      .SELECT("WHERE container.id = ?")
+      .apply(segment, container.id).single
   def get(containerId : Container.Id, segment : Segment)(implicit site : Site) : Future[Option[Slot]] =
     if (segment.isFull) Container.get(containerId)
     else ContextSlot.rowContainer(Container.columnsVolume(Volume.row), "?")
