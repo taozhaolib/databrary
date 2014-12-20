@@ -48,18 +48,18 @@ object Tag extends TableId[Tag]("tag") {
   private val validRegex = """ *(\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha}) *""".r
   /** Determine if the given tag name is valid.
     * @return the normalized name if valid */
-  private[models] def valid(name : String) : Option[String] = name match
+  private[models] def validate(name : String) : Option[String] = name match
     { case validRegex(tag) => Some(tag.toLowerCase)
       case _ => None
     }
 
   /** Retrieve an individual tag by name. */
   def get(name : String) : Future[Option[Tag]] =
-    valid(name).fold[Future[Option[Tag]]](async(None))(_get(_))
+    validate(name).fold[Future[Option[Tag]]](async(None))(_get(_))
 
   /** Search for all tags names starting with the given string. */
   def search(name : String) : Future[Seq[Tag]] =
-    valid(name).fold[Future[Seq[Tag]]](async(Nil)) { name =>
+    validate(name).fold[Future[Seq[Tag]]](async(Nil)) { name =>
       row.SELECT("WHERE name LIKE ?").apply(name + "%").list
     }
 
@@ -72,7 +72,8 @@ object Tag extends TableId[Tag]("tag") {
 private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] val aggregateColumns = Columns(
       SelectAs[Int]("count(tag_use.*)::integer", "weight")
-    , SelectAs[Option[Boolean]]("bool_or(tag_use.who = ?)", "user")
+    , SelectAs[Boolean]("COALESCE(bool_or(tag_use.tableoid = ?), false)", "keyword")
+    , SelectAs[Boolean]("COALESCE(bool_or(tag_use.who = ?), false)", "user")
     )
 
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
@@ -82,43 +83,52 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
     INSERT('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
 }
 
-sealed class TagWeight protected (val tag : Tag, val weight : Int, val user : Boolean) {
+private[models] object KeywordUse extends Table[Unit]("keyword_use") {
+  private[models] def remove(tag : Tag, slot : Slot) : Future[Boolean] =
+    DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment).execute
+
+  private[models] def add(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
+    INSERT('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
+}
+
+sealed class TagWeight protected (val tag : Tag, val weight : Int, val keyword : Boolean, val user : Boolean) {
   def json : JsonRecord = tag.json ++ JsonObject.flatten(
     Some('weight -> weight),
+    if (keyword) Some('keyword -> keyword) else None,
     if (user) Some('vote -> user) else None
   )
 }
 
 /** Summary representation of tag information for a single tag and current user. */
-final class TagWeightContainer private (tag : Tag, val container : Container, weight : Int, user : Boolean) extends TagWeight(tag, weight, user) {
+final class TagWeightContainer private (tag : Tag, val container : Container, weight : Int, keyword : Boolean, user : Boolean) extends TagWeight(tag, weight, keyword, user) {
   override def json = container.json ++ super.json
 }
 
 private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Table[T]("tag_weight") {
   protected val groupColumn : SelectColumn[_]
   private[this] def groupBy = groupColumn.fromTable(FromTable("tag_use"))
-  private[this] def aggregate =
-    TagUse.aggregateColumns ~+ groupBy
+  private[this] def aggregate(implicit site : Site) =
+    (TagUse.aggregateColumns ~+ groupBy).pushArgs(KeywordUse.tableOID, site.identity.id)
   protected def columns(query : String*)(args : SQLArgs)(implicit site : Site) =
     TagUse.aggregateColumns.fromTable
     .from(aggregate.SELECT(query ++ Seq("GROUP BY", groupBy.toString) : _*))
-    .pushArgs(site.identity.id +: args)
+    .pushArgs(args)
 }
 
 object TagWeight extends TagWeightView[TagWeight] {
   private def row(tag : Tag)(implicit site : Site) =
     TagUse.aggregateColumns
-    .pushArgs(site.identity.id)
-    .map { case (weight, up) =>
-      new TagWeight(tag, weight, up.getOrElse(false))
+    .pushArgs(KeywordUse.tableOID, site.identity.id)
+    .map { case (weight, keyword, up) =>
+      new TagWeight(tag, weight, keyword, up)
     }
 
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
-  private def rows(query : String*)(limit : Int, args : SQLArgs)(implicit site : Site) =
+  private def rows(query : String*)(args : SQLArgs, limit : Int)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Tag.row on "tag_weight.tag = tag.id")
-    .map { case ((weight, up), tag) =>
-      new TagWeight(tag, weight, up.getOrElse(false))
+    .map { case ((weight, keyword, up), tag) =>
+      new TagWeight(tag, weight, keyword, up)
     }
     .SELECT("ORDER BY weight DESC LIMIT ?")
     .apply(limit).list
@@ -131,14 +141,14 @@ object TagWeight extends TagWeightView[TagWeight] {
   /** Summarize all tags that overlap the given slot. */
   private[models] def getSlot(slot : Slot, limit : Int = 64) =
     rows("WHERE tag_use.container = ? AND tag_use.segment && ?::segment")(
-      limit, SQLArgs(slot.containerId, slot.segment))(slot.site)
+      SQLArgs(slot.containerId, slot.segment), limit)(slot.site)
 
   private[models] def getVolume(volume : Volume, limit : Int = 32) =
     rows("JOIN container ON tag_use.container = container.id WHERE container.volume = ?")(
-      limit, SQLArgs(volume.id))(volume.site)
+      SQLArgs(volume.id), limit)(volume.site)
 
   def getAll(limit : Int = 16)(implicit site : Site) =
-    rows()(limit, SQLArgs())
+    rows()(SQLArgs(), limit)
 }
 
 object TagWeightContainer extends TagWeightView[TagWeightContainer] {
@@ -146,8 +156,8 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
   private def rows(tag : Tag, query : String*)(args : SQLArgs)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Container.row on "tag_weight.container = container.id")
-    .map { case ((weight, up), container) =>
-      new TagWeightContainer(tag, container, weight, up.getOrElse(false))
+    .map { case ((weight, keyword, up), container) =>
+      new TagWeightContainer(tag, container, weight, keyword, up)
     }
     .SELECT("WHERE", Volume.condition, "ORDER BY weight DESC")
     .apply().list

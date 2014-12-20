@@ -557,7 +557,7 @@ CREATE TRIGGER "comment_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON
 
 CREATE TABLE "tag" (
 	"id" serial NOT NULL Primary Key,
-	"name" varchar(32) NOT NULL Unique
+	"name" varchar(32) NOT NULL Unique Check ("name" ~ '^[a-z][-a-z ]+[a-z]$')
 );
 ALTER TABLE "tag"
 	ALTER "name" SET STORAGE EXTERNAL;
@@ -583,7 +583,7 @@ END; $$;
 
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
-	"who" integer NOT NULL References "account",
+	"who" integer References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	Primary Key ("tag", "who", "container", "segment"),
@@ -592,6 +592,13 @@ CREATE TABLE "tag_use" (
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to slots.';
+
+CREATE TABLE "keyword_use" (
+	Primary Key ("tag", "container", "segment"),
+	Exclude USING gist (singleton("tag") WITH =, singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("tag_use");
+CREATE INDEX "keyword_use_slot_idx" ON "keyword_use" ("container", "segment");
+COMMENT ON TABLE "keyword_use" IS 'Special "keyword" tags editable as volume data.';
 
 
 ----------------------------------------------------------- records
