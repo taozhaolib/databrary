@@ -124,7 +124,7 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) {
     .getOrElse(throw new SQL.TypeMismatch(datum, metric.sqlType))
   private[models] def dataType = metric.dataType
   private[models] def sqlArg : SQLTerm[_] = new SQLTerm("datum", datum) {
-    override def placeholder = "?::" + metric.sqlType.name
+    override def statement = "?::" + metric.sqlType.name
   }
 
   /** Add or update this measure in the database. */

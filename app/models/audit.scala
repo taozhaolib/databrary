@@ -47,9 +47,9 @@ object Audit extends Table[Audit[_]]("audit.audit") {
   private[models] val columns = row[Unit]()
 
   private[this] def acmd(action : Action.Value) = action match {
-    case Action.add => "INSERT INTO"
-    case Action.change => "UPDATE"
-    case Action.remove => "DELETE FROM"
+    case Action.add => "INSERT INTO "
+    case Action.change => "UPDATE "
+    case Action.remove => "DELETE FROM "
   }
 
   private[models] def aargs(action : Action.Value)(implicit site : Site) : SQLTerms =
@@ -63,7 +63,7 @@ object Audit extends Table[Audit[_]]("audit.audit") {
     (sql"INSERT INTO audit.audit" ++ SQLTerms('audit_user -> user, 'audit_ip -> ip, 'audit_action -> action).insert).run
 
   private[this] def SQLon(action : Action.Value, table : String, stmt : Statement, returning : String = "")(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
-    (lsql"WITH audit_row AS (" + acmd(action) + " " + table ++ stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP," ++ aargs(action).join(",") + ", * FROM audit_row" + Maybe.bracket(" RETURNING ", returning))
+    (lsql"WITH audit_row AS (" + acmd(action) + table + " " ++ stmt + " RETURNING *) INSERT INTO audit." + table + " SELECT CURRENT_TIMESTAMP," ++ aargs(action).join(",") + ", * FROM audit_row" + Maybe.bracket(" RETURNING ", returning))
     .run
 
   /** Record and perform an [[Action.add]] event for a particular table.

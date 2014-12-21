@@ -10,7 +10,10 @@ trait Statement {
 
   def toPrepared : PreparedStatement = PreparedStatement(statement, args)
   def toLiteral : LiteralStatement = LiteralStatement(statement, args)
-  override def toString : String = toLiteral.toString
+  override def toString : String = {
+    val a = args
+    (if (a.nonEmpty) "{" + a.length + "}" else "") + toLiteral.toString
+  }
   
   def ++(s : Statement) : Statement
   def ++:(s : Statement) : Statement
@@ -48,6 +51,8 @@ trait Query extends Statement {
   def ++:(s : Statement) : Query
   def +(s : String) : Query
   def +:(s : String) : Query
+  final def join(delim : String, s : Statement*) =
+    if (s.isEmpty) this else this + delim ++ Statement.join(delim, s : _*)
 
   protected final def send(implicit dbc : db.Connection, context : ExecutionContext) : Future[db.QueryResult] = {
     val s = statement
@@ -59,7 +64,7 @@ trait Query extends Statement {
     if (logger.isTraceEnabled) {
       val t0 = System.nanoTime
       r.onComplete { r =>
-        logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + (if (a.nonEmpty) "[" + a.length + "]" else "") + s)
+        logger.trace(((System.nanoTime - t0) / 1e9).formatted("%8.5f: ") + this)
       }
     }
     r
@@ -97,6 +102,8 @@ final class LiteralStatement(statement : String) extends SimpleStatement(stateme
 }
 
 object LiteralStatement {
+  def apply(statement : String) : LiteralStatement =
+    new LiteralStatement(statement)
   def apply(statement : String, args : Seq[Arg[_]]) : LiteralStatement = {
     if (args.isEmpty)
       return new LiteralStatement(statement)
@@ -137,6 +144,7 @@ object Statement {
   def apply(s : String, args : Seq[Arg[_]]) : Statement =
     if (args.isEmpty) new SimpleStatement(s)
     else new PreparedStatement(s, args)
+  def empty : Statement = EmptyStatement
 
   def join(delim : String, s : Statement*) =
     apply(s.map(_.statement).mkString(delim), s.flatMap(_.args))

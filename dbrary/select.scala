@@ -95,12 +95,12 @@ case class Selector[+A](selects : Seq[SelectExpr[_]], source : Statement, joined
   def cross : Selector[A] =
     joiner(" CROSS JOIN ")
 
-  private def apply(q : Query)(implicit dbc : db.Connection, executionContext : ExecutionContext) : Rows[A] =
+  private def run(q : Query)(implicit dbc : db.Connection, executionContext : ExecutionContext) : Rows[A] =
     q.run[A](parse)
-  def query(q : (Statement, Statement) => Query)(implicit dbc : db.Connection, executionContext : ExecutionContext) : Rows[A] =
-    apply(q(select, source))
+  def run(q : (Statement, Statement) => Query)(implicit dbc : db.Connection, executionContext : ExecutionContext) : Rows[A] =
+    run(q(select, source))
   def SELECT(q : Query)(implicit dbc : db.Connection, executionContext : ExecutionContext) : Rows[A] =
-    apply(statement ++: q)
+    run((statement + " ") ++: q)
 }
 
 object Selector {

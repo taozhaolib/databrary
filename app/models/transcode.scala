@@ -66,8 +66,8 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
       _ <- Audit.change("asset", SQLTerms('duration -> duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
       a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, duration, asset.name, sha1)
       _ = store.FileAsset.store(a, file)
-      _ <- SQL("UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + ?) WHERE asset = ?")
-        .immediately.apply(duration, id).execute
+      _ <- lsql"UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + $duration) WHERE asset = $id"
+        .execute
     } yield a
   }
 
@@ -101,12 +101,12 @@ object Transcode extends TableId[Asset]("transcode") {
     }
 
   def get(id : Id)(implicit exc : ExecutionContext) : Future[Option[TranscodeJob]] =
-    row.SELECT("WHERE transcode.asset = ?")
-    .immediately.apply(id).singleOpt
+    row.SELECT(lsql"WHERE transcode.asset = $id")
+    .singleOpt
 
   def getActive(implicit exc : ExecutionContext) : Future[Seq[TranscodeJob]] =
-    row.SELECT("WHERE asset.sha1 IS NULL")
-    .immediately.apply().list
+    row.SELECT(lsql"WHERE asset.sha1 IS NULL")
+    .list
 
   val defaultOptions = IndexedSeq("-vf", """pad=iw+mod(iw\,2):ih+mod(ih\,2)""")
 
@@ -115,8 +115,8 @@ object Transcode extends TableId[Asset]("transcode") {
       asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.classification, orig.name, duration)
       tc = new TranscodeJob(asset, site.identity, orig, segment, options)
       _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
-      _ <- SQL("UPDATE slot_asset SET asset = ?, segment = segment(lower(segment) + ?, COALESCE(lower(segment) + ?, upper(segment))) WHERE asset = ?")
-        .immediately.apply(asset.id, tc.offset, segment.upperBound, orig.id).execute
+      _ <- lsql"UPDATE slot_asset SET asset = ${asset.id}, segment = segment(lower(segment) + ${tc.offset}, COALESCE(lower(segment) + ${segment.upperBound}, upper(segment))) WHERE asset = ${orig.id}"
+        .execute
     } yield tc
 
   def apply(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = defaultOptions)(implicit site : Site) : Transcode =

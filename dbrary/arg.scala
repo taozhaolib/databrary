@@ -6,7 +6,7 @@ class Arg[A](val value : A)(implicit val sqlType : Type[A]) extends Statement {
   final def put : Any = sqlType.put(value)
   final def escaped = sqlType.escaped(value)
 
-  final def statement = "?::" + sqlType.name
+  def statement = "?::" + sqlType.name
   final def args = Seq(this)
   override def toLiteral = new LiteralStatement(escaped)
 

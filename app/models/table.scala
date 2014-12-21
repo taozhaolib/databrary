@@ -6,6 +6,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Any class that more-or-less corresponds to a row in a database table. */
@@ -20,16 +21,16 @@ private[models] trait TableRowId[T] extends TableRow with HasId[T] {
   private[models] def sqlKey = SQLTerms('id -> _id)
 }
 
-final class FixedRowSelector[R](val value : R, selector : Selector[R])
+final class FixedRowSelector[R](val value : R, selector : SQL.Selector[R])
   extends SQL.SelectorProxy[R](selector) {
-  override protected def joiner(join : String*) : FixedRowSelector[R] =
-    new FixedRowSelector[R](value, super.joiner(join : _*))
+  override protected def joiner(j : String, a : Statement = EmptyStatement) : FixedRowSelector[R] =
+    new FixedRowSelector[R](value, super.joiner(j, a))
 }
 
 object FixedRowSelector {
   def apply[R <: TableRow](value : R)(implicit table : SQL.FromTable) : FixedRowSelector[R] =
-    new FixedRowSelector[R](value, value.sqlKey.values.map(_ => value))
-  def get[A <: TableRow](s : Selector[A]) : Option[A] = cast[FixedRowSelector[A]](s).map(_.value)
+    new FixedRowSelector[R](value, value.sqlKey.fixed.map(_ => value))
+  def get[A <: TableRow](s : SQL.Selector[A]) : Option[A] = cast[FixedRowSelector[A]](s).map(_.value)
 }
 
 /** Factory/helper object for a particular table.  Usually these are used to produce TableRows. */
@@ -37,7 +38,7 @@ private[models] abstract class Table[R] protected (private[models] val table : S
   protected implicit def fromTable : SQL.FromTable = SQL.FromTable(table)
   /** Database OID of the table.  This is useful when dealing with inheritance or other tableoid selections. */
   private[models] lazy val tableOID : Long = async.AWAIT {
-    SQL("SELECT oid FROM pg_class WHERE relname = ?").apply(table).single(SQLCols[Long])
+    lsql"SELECT oid FROM pg_class WHERE relname = $table".run.single(SQL.Cols[Long])
   }
 
   /* Description of the database selection to produce a Row. */
@@ -45,11 +46,11 @@ private[models] abstract class Table[R] protected (private[models] val table : S
   private[models] final def fixed(r : R with TableRow) = FixedRowSelector(r)
 
   protected def INSERT(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
-    SQL("INSERT INTO", table, args.insert, Maybe.bracket("RETURNING ", returning))(dbc, exc).apply(args)
+    (sql"INSERT INTO " + table + " " ++ args.insert + Maybe.bracket(" RETURNING ", returning)).run(dbc, exc)
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
     INSERT(SQLTerms(args : _*))(dbc, exc)
   protected def DELETE(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
-    SQL("DELETE FROM ONLY", table, "WHERE", args.where, Maybe.bracket("RETURNING ", returning))(dbc, exc).immediately.apply(args)
+    (lsql"DELETE FROM ONLY " + table + " WHERE " ++ args.where + Maybe.bracket(" RETURNING ", returning)).run(dbc, exc)
   protected def DELETE(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
     DELETE(SQLTerms(args : _*))(dbc, exc)
 }

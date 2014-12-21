@@ -45,7 +45,7 @@ final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQL.A
     * @return `(VALUES (?, ...)) AS table (arg, ...)`
     */
   def fixed(implicit table : FromTable) : Selector[Unit] =
-    Columns.fromQuery(values).mapFrom(_ :+ names)
+    Columns(table).fromQuery(values).mapFrom(_ + names)
 }
 object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
@@ -70,10 +70,10 @@ object DBUtil {
     val sp = "pre_insert"
     /*@scala.annotation.tailrec*/ def loop(dbc : Site.DB) : Future[A] = select(dbc, exc).flatMap {
       case None =>
-        SQL("SAVEPOINT", sp)(dbc, exc).execute.flatMap { _ =>
+        LiteralStatement("SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
         insert(dbc, exc).recoverWith {
         case SQLDuplicateKeyException() =>
-          SQL("ROLLBACK TO SAVEPOINT", sp)(dbc, exc).execute.flatMap { _ =>
+          LiteralStatement("ROLLBACK TO SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
             loop(dbc)
           }
         }
@@ -87,10 +87,10 @@ object DBUtil {
     val sp = "pre_insert"
     /*@scala.annotation.tailrec*/ def loop(dbc : Site.DB) : Future[db.QueryResult] = update(dbc, exc).result.flatMap { r =>
       if (r.rowsAffected == 0)
-        SQL("SAVEPOINT", sp)(dbc, exc).execute.flatMap { _ =>
+        LiteralStatement("SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
         insert(dbc, exc).result.recoverWith {
           case SQLDuplicateKeyException() =>
-            SQL("ROLLBACK TO SAVEPOINT", sp)(dbc, exc).execute.flatMap { _ =>
+            LiteralStatement("ROLLBACK TO SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
               loop(dbc)
             }
         }

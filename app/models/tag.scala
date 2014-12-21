@@ -38,10 +38,10 @@ object Tag extends TableId[Tag]("tag") {
 
   /** Retrieve an individual tag by id. */
   private[models] def get(id : Id) : Future[Option[Tag]] =
-    row.SELECT("WHERE id = ?").apply(id).singleOpt
+    row.SELECT(sql"WHERE id = $id").singleOpt
 
   private def _get(name : String)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Tag]] =
-    row.SELECT("WHERE name = ?")(dbc, exc).apply(name).singleOpt
+    row.SELECT(sql"WHERE name = $name")(dbc, exc).singleOpt
 
   private val validPattern = """\p{Lower}[-\p{Lower} ]{1,30}\p{Lower}""".r.pattern
   def isValid(name : String) : Boolean = validPattern.matcher(name).matches
@@ -61,18 +61,18 @@ object Tag extends TableId[Tag]("tag") {
   /** Search for all tags names starting with the given string. */
   def search(name : String) : Future[Seq[Tag]] =
     validate(name).fold[Future[Seq[Tag]]](async(Nil)) { name =>
-      row.SELECT("WHERE name LIKE ?").apply(name + "%").list
+      row.SELECT(sql"WHERE name LIKE ${name+"%"}").list
     }
 
   /** Retrieve or, if none exists, create an individual tag by name. */
   private[models] def getOrCreate(name : String) : Future[Tag] =
-    SQL("SELECT get_tag(?)")
-      .apply(name).single(SQLCols[Id].map(new Tag(_, name)))
+    sql"SELECT get_tag($name)"
+    .run.single(SQL.Cols[Id].map(new Tag(_, name)))
 }
 
 private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] def aggregateColumns(implicit site : Site) = Columns(
-      SelectAs[Int](sql"count(tag_use.*)::integer", "weight")
+      SelectAs[Int]("count(tag_use.*)::integer", "weight")
     , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.tableoid = ${KeywordUse.tableOID}), false)", "keyword")
     , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.who = ${site.identity.id}), false)", "user")
     )
@@ -112,7 +112,7 @@ private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Tabl
     TagUse.aggregateColumns ~+ groupBy
   protected def columns(query : Statement)(implicit site : Site) =
     TagUse.aggregateColumns.fromTable
-    .from(aggregate.statement ++ query ++ (" GROUP BY " +: groupBy))
+    .fromQuery(aggregate.statement ++ query ++ (" GROUP BY " +: groupBy))
 }
 
 object TagWeight extends TagWeightView[TagWeight] {
@@ -150,16 +150,15 @@ object TagWeight extends TagWeightView[TagWeight] {
 
 object TagWeightContainer extends TagWeightView[TagWeightContainer] {
   protected val groupColumn = SelectColumn[Container.Id]("container")
-  private def rows(tag : Tag, query : String*)(args : SQL.Args)(implicit site : Site) =
-    columns(query : _*)(args)
+  private def rows(tag : Tag, query : Statement = EmptyStatement)(implicit site : Site) =
+    columns(query)
     .join(Container.row on "tag_weight.container = container.id")
     .map { case ((weight, keyword, up), container) =>
       new TagWeightContainer(tag, container, weight, keyword, up)
     }
-    .SELECT("WHERE", Volume.condition, "ORDER BY weight DESC")
-    .apply().list
+    .SELECT(sql"WHERE " + Volume.condition + " ORDER BY weight DESC")
+    .list
 
   private[models] def get(tag : Tag)(implicit site : Site) =
-    rows(tag, "WHERE tag_use.tag = ?")(
-      SQL.Args(tag.id))
+    rows(tag, sql"WHERE tag_use.tag = ${tag.id}")
 }
