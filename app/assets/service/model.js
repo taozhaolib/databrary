@@ -287,7 +287,7 @@ app.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
     Login.prototype.fields = angular.extend({
-      superuser: true,
+      superuser: false,
     }, Login.prototype.fields);
 
     Login.user = new Login({id:constants.party.NOBODY});
