@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Link between Authorize (rows in table/view) and Access. */
@@ -50,38 +51,40 @@ object Authorize extends Table[Authorize]("authorize") {
       (child : Party, parent : Party) => new Authorize(child, parent, site, member, expires)
     }
 
-  private[this] val condition = "AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] val condition = " AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
   def get(child : Party, parent : Party) : Future[Option[Authorize]] =
     columns
       .map(_(child, parent))
-      .SELECT("WHERE child = ? AND parent = ?")
-      .apply(child.id, parent.id).singleOpt
+      .SELECT(sql"WHERE child = ${child.id} AND parent = ${parent.id}")
+      .singleOpt
 
   /** Get all authorizations granted to a particular child.
     * @param all include inactive authorizations
     */
   private[models] def getParents(child : Party, all : Boolean = false) : Future[Seq[Authorize]] =
     columns.join(Party.row on "parent = party.id")
-      .map { case (a, p) => a(child, p) }
-      .SELECT("WHERE child = ?", conditionIf(all)).apply(child.id).list
+    .map { case (a, p) => a(child, p) }
+    .SELECT(sql"WHERE child = ${child.id}" + conditionIf(all))
+    .list
   /** Get all authorizations granted ba a particular parent.
     * @param all include inactive authorizations
     */
   private[models] def getChildren(parent : Party, all : Boolean = false) : Future[Seq[Authorize]] =
     columns.join(Party.row on "child = party.id")
-      .map { case (a, c) => a(c, parent) }
-      .SELECT("WHERE parent = ?", conditionIf(all)).apply(parent.id).list
+    .map { case (a, c) => a(c, parent) }
+    .SELECT(sql"WHERE parent = ${parent.id}" + conditionIf(all))
+    .list
 
   def getAll() : Future[Seq[Authorize]] =
     columns.join(
       Party.columns.fromAlias("child") on "child = child.id",
       Party.columns.fromAlias("parent") on "parent = parent.id"
     ).map { case (auth, child, parent) => auth(child, parent) }
-    .SELECT("ORDER BY parent.id, site")
-    .apply().list
+    .SELECT(sql"ORDER BY parent.id, site")
+    .list
 
   def apply(child : Party.Id, parent : Party.Id)(implicit request : Site) : Future[Boolean] =
     Audit.add(Authorize.table, SQLTerms('child -> child, 'parent -> parent)).execute
@@ -121,28 +124,25 @@ object Authorization extends Table[Authorization]("authorize_view") {
 
   private[models] def rowParent(parent : Party = Party.Root) =
     Party.row.join(
-      columns on_? "party.id = authorize_view.child AND authorize_view.parent = ?"
+      columns on_? sql"party.id = authorize_view.child AND authorize_view.parent = ${parent.id}"
     ).map { case (p, a) => make(p, parent)(a) }
-    .pushArgs(parent.id)
   private[models] def rowChild(child : Party) =
     Party.row.join(
-      columns on_? "party.id = authorize_view.parent AND authorize_view.child = ?"
+      columns on_? sql"party.id = authorize_view.parent AND authorize_view.child = ${child.id}"
     ).map { case (p, a) => make(child, p)(a) }
-    .pushArgs(child.id)
 
   /** Determine the effective inherited and direct permission levels granted to a child by a parent. */
   private[models] def get(child : Party, parent : Party = Party.Root) : Future[Authorization] =
     if (child === parent) async(new Self(parent)) // optimization
     else columns
-      .SELECT("WHERE child = ? AND parent = ?")
-      .apply(child.id, parent.id).singleOpt
-      .map(make(child, parent))
+      .SELECT(sql"WHERE child = ${child.id} AND parent = ${parent.id}")
+      .singleOpt.map(make(child, parent))
 
   def _get(childId : Party.Id, parent : Party = Party.Root) : Future[Option[Authorization]] =
     if (childId === parent.id) async(Some(new Self(parent))) // optimization
     else if (childId == Party.NOBODY) async(Some(Nobody))
     else if (childId == Party.ROOT) async(Some(Root))
     else rowParent(parent)
-      .SELECT("WHERE party.id = ?")
-      .apply(parent.id, childId).singleOpt
+      .SELECT(sql"WHERE party.id = $childId")
+      .singleOpt
 }

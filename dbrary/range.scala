@@ -246,8 +246,8 @@ object Range {
   def upperOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.UpperOrdering
   def totalOrdering[A](implicit t : RangeType[A]) : Ordering[Range[A]] = t.TotalOrdering
   def nesting[A](implicit t : RangeType[A]) : PartialOrdering[Range[A]] = t.Nesting
-  implicit val segmentSqlType : SQLType[Range[Offset]] = PGRangeType.segment.sqlType
-  implicit val dateSqlType : SQLType[Range[Date]] = PGRangeType.date.sqlType
+  implicit val segmentSqlType : SQL.Type[Range[Offset]] = PGRangeType.segment.sqlType
+  implicit val dateSqlType : SQL.Type[Range[Date]] = PGRangeType.date.sqlType
   implicit def jsonWrites[T : json.Writes] : json.Writes[Range[T]] =
     json.Writes[Range[T]] { o =>
       if (o.isEmpty) json.JsNull
@@ -400,8 +400,8 @@ object Segment {
   def apply(lb : Offset, ub : Offset) : Section = Range.apply[Offset](lb, ub)
 }
 
-abstract class PGRangeType[A](name : String)(implicit base : SQLType[A]) extends RangeType[A] {
-  implicit val sqlType = SQLType[Range[A]](name, classOf[Range[A]])({ s =>
+abstract class PGRangeType[A](name : String)(implicit base : SQL.Type[A]) extends RangeType[A] {
+  implicit val sqlType = SQL.Type[Range[A]](name, classOf[Range[A]])({ s =>
     if (s.equals("empty") || s.isEmpty)
       Some(Range.empty[A](this))
     else for {

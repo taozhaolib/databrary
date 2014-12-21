@@ -6,6 +6,7 @@ import play.api.libs.json.{JsValue,JsObject,JsNull,Json}
 import macros._
 import macros.async._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Conceptually a slot represents a segment of a container. */

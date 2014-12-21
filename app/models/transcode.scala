@@ -7,6 +7,7 @@ import play.api.mvc.RequestHeader
 import macros._
 import macros.async._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 sealed class Transcode(val owner : Party, val orig : FileAsset, val segment : Segment, val options : IndexedSeq[String])
@@ -35,8 +36,8 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
     options
 
   private[this] def update(pid : Option[Int] = None, log : Option[String] = None, lock : Option[Int] = process) =
-    SQL("UPDATE transcode SET process = ?, log = NULLIF(COALESCE(log || E'\\n', '') || COALESCE(?, ''), '') WHERE asset = ? AND COALESCE(process, 0) = ?")
-    .immediately.apply(pid, log, id, lock.getOrElse(0)).ensure
+    lsql"UPDATE transcode SET process = $pid, log = NULLIF(COALESCE(log || E'\\n', '') || COALESCE($log, ''), '') WHERE asset = $id AND COALESCE(process, 0) = ${lock.getOrElse(0)}"
+    .run.ensure
 
   def start(implicit request : RequestHeader) : Future[Int] = {
     val lock = Some(-1)

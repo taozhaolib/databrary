@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsValue,JsObject,JsNull}
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Main organizational unit or package of data, within which everything else exists.
@@ -141,11 +142,9 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
 
 object Volume extends TableId[Volume]("volume") {
   private object Permission extends Table[models.Permission.Value]("volume_permission") {
-    private val columns = Columns(
+    def columns(implicit site : Site) = Columns(
         SelectColumn[models.Permission.Value]("permission")
-      )(FromTable("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS volume_permission (permission, superuser)")).cross
-    def row(implicit site : Site) =
-      columns.pushArgs(site.identity.id, site.superuser)
+      ).from(sql"LATERAL (VALUES (volume_access_check(volume.id, ${site.identity.id}::integer), ${site.superuser}::boolean)) AS volume_permission (permission, superuser)").cross
     def condition =
       "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
@@ -157,13 +156,13 @@ object Volume extends TableId[Volume]("volume") {
     , SelectColumn[String]("name")
     , SelectColumn[Option[String]]("alias")
     , SelectColumn[Option[String]]("body")
-    , SelectAs[Option[Timestamp]]("volume_creation(volume.id)", "volume_creation")
+    , SelectAs[Option[Timestamp]](sql"volume_creation(volume.id)", "volume_creation")
     ).map { (id, name, alias, body, creation) =>
       (permission : models.Permission.Value, site : Site) =>
         new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
-    columns.join(Permission.row).map { case (v, p) => v(p, site) }
+    columns.join(Permission.columns).map { case (v, p) => v(p, site) }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
@@ -183,7 +182,7 @@ object Volume extends TableId[Volume]("volume") {
       query.fold("")(_ => "ts_rank(ts, query) DESC, "),
       party.fold("")(_ => "individual DESC,"),
       "volume.id")
-    .apply(SQLArgs.opt(query) ++ party.map(SQLArg(_))).list
+    .apply(SQL.Args.opt(query) ++ party.map(SQL.Arg(_))).list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */

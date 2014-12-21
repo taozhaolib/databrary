@@ -20,7 +20,7 @@ import models._
 private[controllers] sealed class LoginController extends SiteController {
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[Result] = {
-    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
+    Audit.actionFor(Audit.Action.open, a.id, Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
       (if (request.isApi) Ok((new SiteRequest.Auth(request, token)).json)
       else Redirect(routes.PartyHtml.profile(Some(false))))
@@ -32,7 +32,7 @@ private[controllers] sealed class LoginController extends SiteController {
     val form = new LoginController.LoginForm()._bind
     form.email.get.flatMapAsync(Account.getEmail _).flatMap { acct =>
       def bad =
-        acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
+        acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, Inet(request.remoteAddress)).execute).flatMap { _ =>
           form.withGlobalError("login.bad").Bad
         }
       if (form.password.get.nonEmpty) {

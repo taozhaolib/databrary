@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Types of Records that are relevant for data organization.
@@ -197,7 +198,7 @@ object Record extends TableId[Record]("record") {
   def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
     rowVolume(volume)
     .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
-    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+    .apply(category.fold(SQL.Args())(c => SQL.Args(c.id))).list
 
   /** Retrieve the records in the given volume with a measure of the given value.
     * @param category restrict to the specified category, or include all categories
@@ -211,11 +212,11 @@ object Record extends TableId[Record]("record") {
       val mt = m.metric.measureType
       s.join(mt.select.column.fromAlias(ma).on(
         "record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?"))
-      .pushArgs(SQLArgs(m.metric.id) :+ m.sqlArg)
+      .pushArgs(SQL.Args(m.metric.id) :+ m.sqlArg)
       .map(_._1)
     }
     .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
-    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+    .apply(category.fold(SQL.Args())(c => SQL.Args(c.id))).list
   }
 
   /** Create a new record, initially unattached. */

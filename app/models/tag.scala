@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.JsObject
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** All tags and their names used anywhere.
@@ -70,10 +71,10 @@ object Tag extends TableId[Tag]("tag") {
 }
 
 private[models] object TagUse extends Table[Unit]("tag_use") {
-  private[models] val aggregateColumns = Columns(
-      SelectAs[Int]("count(tag_use.*)::integer", "weight")
-    , SelectAs[Boolean]("COALESCE(bool_or(tag_use.tableoid = ?), false)", "keyword")
-    , SelectAs[Boolean]("COALESCE(bool_or(tag_use.who = ?), false)", "user")
+  private[models] def aggregateColumns(implicit site : Site) = Columns(
+      SelectAs[Int](sql"count(tag_use.*)::integer", "weight")
+    , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.tableoid = ${KeywordUse.tableOID}), false)", "keyword")
+    , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.who = ${site.identity.id}), false)", "user")
     )
 
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
@@ -108,52 +109,48 @@ private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Tabl
   protected val groupColumn : SelectColumn[_]
   private[this] def groupBy = groupColumn.fromTable(FromTable("tag_use"))
   private[this] def aggregate(implicit site : Site) =
-    (TagUse.aggregateColumns ~+ groupBy).pushArgs(KeywordUse.tableOID, site.identity.id)
-  protected def columns(query : String*)(args : SQLArgs)(implicit site : Site) =
+    TagUse.aggregateColumns ~+ groupBy
+  protected def columns(query : Statement)(implicit site : Site) =
     TagUse.aggregateColumns.fromTable
-    .from(aggregate.SELECT(query ++ Seq("GROUP BY", groupBy.toString) : _*))
-    .pushArgs(args)
+    .from(aggregate.statement ++ query ++ (" GROUP BY " +: groupBy))
 }
 
 object TagWeight extends TagWeightView[TagWeight] {
   private def row(tag : Tag)(implicit site : Site) =
     TagUse.aggregateColumns
-    .pushArgs(KeywordUse.tableOID, site.identity.id)
-    .map { case (weight, keyword, up) =>
+    .map { (weight, keyword, up) =>
       new TagWeight(tag, weight, keyword, up)
     }
 
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
-  private def rows(query : String*)(args : SQLArgs, limit : Int)(implicit site : Site) =
-    columns(query : _*)(args)
+  private def rows(query : Statement = EmptyStatement)(limit : Int)(implicit site : Site) =
+    columns(query)
     .join(Tag.row on "tag_weight.tag = tag.id")
     .map { case ((weight, keyword, up), tag) =>
       new TagWeight(tag, weight, keyword, up)
     }
-    .SELECT("ORDER BY weight DESC LIMIT ?")
-    .apply(limit).list
+    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
+    .list
 
   private[models] def getSlot(tag : Tag, slot : Slot) =
     row(tag)(slot.site)
-    .SELECT("WHERE tag_use.tag = ? AND tag_use.container = ? AND tag_use.segment && ?::segment")
-    .apply(tag.id, slot.containerId, slot.segment).single
+    .SELECT(sql"WHERE tag_use.tag = ${tag.id} AND tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")
+    .single
 
   /** Summarize all tags that overlap the given slot. */
   private[models] def getSlot(slot : Slot, limit : Int = 64) =
-    rows("WHERE tag_use.container = ? AND tag_use.segment && ?::segment")(
-      SQLArgs(slot.containerId, slot.segment), limit)(slot.site)
+    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")(limit)(slot.site)
 
   private[models] def getVolume(volume : Volume, limit : Int = 32) =
-    rows("JOIN container ON tag_use.container = container.id WHERE container.volume = ?")(
-      SQLArgs(volume.id), limit)(volume.site)
+    rows(sql"JOIN container ON tag_use.container = container.id WHERE container.volume = ${volume.id}")(limit)(volume.site)
 
   def getAll(limit : Int = 16)(implicit site : Site) =
-    rows()(SQLArgs(), limit)
+    rows()(limit)
 }
 
 object TagWeightContainer extends TagWeightView[TagWeightContainer] {
   protected val groupColumn = SelectColumn[Container.Id]("container")
-  private def rows(tag : Tag, query : String*)(args : SQLArgs)(implicit site : Site) =
+  private def rows(tag : Tag, query : String*)(args : SQL.Args)(implicit site : Site) =
     columns(query : _*)(args)
     .join(Container.row on "tag_weight.container = container.id")
     .map { case ((weight, keyword, up), container) =>
@@ -164,5 +161,5 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
 
   private[models] def get(tag : Tag)(implicit site : Site) =
     rows(tag, "WHERE tag_use.tag = ?")(
-      SQLArgs(tag.id))
+      SQL.Args(tag.id))
 }

@@ -40,8 +40,8 @@ object Orcid {
     def unbind(key: String, value: Orcid) = Map(key -> value.toString)
   }
 
-  implicit val sqlType : SQLType[Orcid] =
-    SQLType[Orcid]("char(16)", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
+  implicit val sqlType : SQL.Type[Orcid] =
+    SQL.Type[Orcid]("char(16)", classOf[Orcid])(s => Some(new Orcid(s)), _.orcid)
 
   implicit val jsWrites : json.Writes[Orcid] =
     json.Writes[Orcid](o => json.JsString(o.toString))

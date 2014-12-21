@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Crypto
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 trait TokenAuth {

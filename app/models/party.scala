@@ -6,6 +6,7 @@ import play.api.libs.json.{Json,JsNull}
 import java.net.URL
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Any real-world individual, group, institution, etc.
@@ -159,8 +160,8 @@ final class Account protected (val party : Party, private[this] var email_ : Str
   def clearTokens(except : Option[Token] = None) = AccountToken.clearAccount(id, except)
 
   def recentAttempts : Future[Long] =
-    SQL("SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = ? AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'")
-    .apply(id).single(SQLCols[Long])
+    sql"SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = $id AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'"
+    .run.single(SQL.Cols[Long])
 }
 
 object Party extends TableId[Party]("party") {
@@ -187,11 +188,11 @@ object Party extends TableId[Party]("party") {
     case _ => None
   }
   private[models] def _get(i : Id) : Future[Party] =
-    row.SELECT("WHERE id = ?").apply(i).single
+    row.SELECT(sql"WHERE id = $i").single
   /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] =
     getStatic(i).fold {
-      row.SELECT("WHERE id = ?").apply(i).singleOpt
+      row.SELECT(sql"WHERE id = $i").singleOpt
     } { p =>
       async(Some(p))
     }
@@ -199,8 +200,8 @@ object Party extends TableId[Party]("party") {
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
     Authorization.rowParent()
-    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
-    .apply().list
+    .SELECT(lsql"ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
+    .list
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
@@ -210,7 +211,7 @@ object Party extends TableId[Party]("party") {
       'affiliation -> affiliation,
       'url -> url),
       "id")
-    .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, url))
+    .single(SQL.Cols[Id]).map(new Party(_, name, orcid, affiliation, url))
 
   private def byName(implicit site : Site) =
     if (site.access.site >= Permission.SHARED)
@@ -218,7 +219,7 @@ object Party extends TableId[Party]("party") {
     else
       "name ILIKE ?"
   private def byNameArgs(name : String)(implicit site : Site) =
-    SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
+    SQL.Args(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
       (if (site.access.site >= Permission.SHARED) 2 else 1)
 
   /** Search for parties
@@ -240,7 +241,7 @@ object Party extends TableId[Party]("party") {
       },
       if (authorize.nonEmpty) "AND id != ? AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?)" else "",
       if (volume.nonEmpty) "AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?)" else "")
-    .immediately.apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)) ++ authorize.fold(SQLArgs())(a => SQLArgs(a.id) * 3) ++ volume.fold(SQLArgs())(v => SQLArgs(v.id)))
+    .immediately.apply(query.fold(SQL.Args())(byNameArgs(_)) ++ access.fold(SQL.Args())(SQL.Args(_)) ++ authorize.fold(SQL.Args())(a => SQL.Args(a.id) * 3) ++ volume.fold(SQL.Args())(v => SQL.Args(v.id)))
     .list
 
   /** The special party group representing everybody (including anonymous users) on the site.

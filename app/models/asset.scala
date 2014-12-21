@@ -7,6 +7,7 @@ import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.{JsValue,JsNull}
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** File formats for assets.
@@ -65,7 +66,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
     , SelectColumn[String]("name")
     ) map { (id, mimetype, extension, name) =>
       new AssetFormat(id, mimetype, extension, name)
-    } from "format"
+    }
 
   private[models] final val IMAGE : Id = asId(-700)
   private[models] final val VIDEO : Id = asId(-800)
@@ -83,7 +84,7 @@ object AssetFormat extends TableId[AssetFormat]("format") {
 
   private val list : Seq[AssetFormat] =
     Seq(Video, Image) ++ async.AWAIT {
-      row.SELECT("WHERE id > 0 ORDER BY id").apply().list
+      row.SELECT(lsql"WHERE id > 0 ORDER BY id").list
     }
   private val byId : TableIdMap[AssetFormat] =
     TableIdMap(list : _*)
@@ -122,8 +123,8 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
   def duration = _duration.getOrElse(Offset.ZERO)
 
   def creation : Future[(Option[Timestamp], Option[String])] =
-    SQL("SELECT audit_time, name FROM audit.asset WHERE id = ? AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1")
-      .apply(id).singleOpt(SQLCols[Option[Timestamp], Option[String]]).map(_.getOrElse((None, None)))
+    sql"SELECT audit_time, name FROM audit.asset WHERE id = $id AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1"
+      .run.singleOpt(SQL.Cols[Option[Timestamp], Option[String]]).map(_.getOrElse((None, None)))
 
   /** Update the given values in the database and this object in-place. */
   def change(classification : Option[Classification.Value] = None, name : Option[Option[String]] = None) : Future[Boolean] = {
@@ -143,9 +144,9 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
     Audit.remove("slot_asset", SQLTerms('asset -> id)).execute
 
   def isSuperseded : Future[Boolean] =
-    SQL("SELECT id FROM asset_revision JOIN asset ON asset = id WHERE orig = ?").apply(id).execute
+    sql"SELECT id FROM asset_revision JOIN asset ON asset = id WHERE orig = $id".run.execute
   def supersede(old : Asset) : Future[Boolean] =
-    SQL("SELECT asset_supersede(?, ?)").immediately.apply(old.id, id).execute
+    lsql"SELECT asset_supersede(${old.id}, $id)".run.execute
 
   def pageName = name.getOrElse("file")
   def pageParent = Some(volume)
@@ -260,32 +261,32 @@ object Asset extends TableId[Asset]("asset") {
     rowVolume(Volume.fixed(volume)).map(_.asInstanceOf[FileAsset])
 
   def get(a : Asset.Id)(implicit site : Site) : Future[Option[Asset]] =
-    row.SELECT("WHERE asset.id = ? AND", Volume.condition)
-      .apply(a).singleOpt
+    row.SELECT(sql"WHERE asset.id = $a AND " + Volume.condition)
+    .singleOpt
 
   /** Get the list of older versions of this asset. */
   def getRevisions(a : Asset) : Future[Seq[FileAsset]] =
     rowFileVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ?")
-    .apply(a.id).list
+    .SELECT(sql"JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ${a.id}")
+    .list
 
   /** Get a particular older version of this asset. */
   def getRevision(a : Asset, o : Id) : Future[Option[FileAsset]] =
     rowFileVolume(a.volume)
-    .SELECT("JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ? AND asset.id = ?")
-    .apply(a.id, o).singleOpt
+    .SELECT(sql"JOIN asset_revisions ON asset.id = orig WHERE asset_revisions.asset = ${a.id} AND asset.id = $o")
+    .singleOpt
 
   private[models] def createPending(volume : Volume, format : AssetFormat, classification : Classification.Value, name : Option[String], duration : Option[Offset] = None)(implicit site : Site) : Future[Asset] =
     Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'duration -> duration), "id")
-    .single(SQLCols[Id])
+    .single(SQL.Cols[Id])
     .map(new Asset(_, volume, format, classification, name, duration))
 }
 
 object FileAsset extends TableId[Asset]("asset") {
   def getAvatar(p : Party)(implicit site : Site) : Future[Option[FileAsset]] =
     Asset.rowFileVolume(Volume.Core)
-    .SELECT("JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ?")
-    .apply(p.id).singleOpt
+    .SELECT(sql"JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p.id}")
+    .singleOpt
 
   /** Create a new asset from an uploaded file.
     * @param format the format of the file, taken as given
@@ -296,7 +297,7 @@ object FileAsset extends TableId[Asset]("asset") {
     for {
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
-        .single(SQLCols[Id])
+        .single(SQL.Cols[Id])
     } yield {
       val a = new FileAsset(id, volume, format, classification, name, sha1)
       store.FileAsset.store(a, file)
@@ -313,7 +314,7 @@ object TimeseriesAsset extends TableId[Asset]("asset") {
       duration = probe.duration.get
       sha1 <- Future(store.SHA1(file.file))
       id <- Audit.add(table, SQLTerms('volume -> volume.id, 'format -> format.id, 'classification -> classification, 'duration -> duration, 'name -> name, 'sha1 -> sha1, 'size -> file.file.length), "id")
-        .single(SQLCols[Id])
+        .single(SQL.Cols[Id])
     } yield {
       val a = new TimeseriesAsset(id, volume, format, classification, duration, name, sha1)
       store.FileAsset.store(a, file)

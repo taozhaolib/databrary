@@ -4,49 +4,48 @@ import scala.concurrent.{Future,ExecutionContext}
 import com.github.mauricio.async.db
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
-class SQLTerm[A](val name : String, value : A)(implicit sqlType : SQLType[A]) extends SQLArg[A](value)(sqlType) {
+class SQLTerm[A](val name : String, value : A)(implicit sqlType : SQL.Type[A]) extends SQL.Arg[A](value)(sqlType) {
   def eq : String = "="
   def withEq(eq : String) = new SQLTermEq[A](name, eq, value)(sqlType)
 }
-class SQLTermEq[A](name : String, override val eq : String, value : A)(implicit sqlType : SQLType[A]) extends SQLTerm[A](name, value)(sqlType)
+class SQLTermEq[A](name : String, override val eq : String, value : A)(implicit sqlType : SQL.Type[A]) extends SQLTerm[A](name, value)(sqlType)
 object SQLTerm {
-  def apply[A](name : String, arg : SQLArg[A]) = new SQLTerm[A](name, arg.value)(arg.sqlType)
-  def apply[A](name : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTerm[A](name, value)(sqlType)
-  def eq[A](name : String, eq : String, value : A)(implicit sqlType : SQLType[A]) = new SQLTermEq[A](name, eq, value)(sqlType)
+  def apply[A](name : String, arg : SQL.Arg[A]) = new SQLTerm[A](name, arg.value)(arg.sqlType)
+  def apply[A](name : String, value : A)(implicit sqlType : SQL.Type[A]) = new SQLTerm[A](name, value)(sqlType)
+  def eq[A](name : String, eq : String, value : A)(implicit sqlType : SQL.Type[A]) = new SQLTermEq[A](name, eq, value)(sqlType)
   import scala.language.implicitConversions
-  implicit def ofTuple[A : SQLType](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
+  implicit def ofTuple[A : SQL.Type](x : (Symbol, A)) : SQLTerm[A] = SQLTerm[A](x._1.name, x._2)
 }
 
 /** Parameters (names and values) that may be passed to SQL queries. */
-final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQLArgs(terms) {
+final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQL.Args(terms) {
   def ++(other : SQLTerms) : SQLTerms = new SQLTerms(terms ++ other.terms)
   def :+(other : SQLTerm[_]) : SQLTerms = new SQLTerms(terms :+ other)
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
-  def :+[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(terms :+ SQLTerm.ofTuple(other))
-  def +:[A : SQLType](other : (Symbol, A)) : SQLTerms = new SQLTerms(SQLTerm.ofTuple(other) +: terms)
+  def :+[A : SQL.Type](other : (Symbol, A)) : SQLTerms = new SQLTerms(terms :+ SQLTerm.ofTuple(other))
+  def +:[A : SQL.Type](other : (Symbol, A)) : SQLTerms = new SQLTerms(SQLTerm.ofTuple(other) +: terms)
   def names = terms.map(_.name).mkString("(", ", ", ")")
-  def placeholders : String = terms.map(_.placeholder).mkString(", ")
+  def values = ("VALUES (" +: join(",")) + ")"
 
   /** Terms appropriate for INSERT INTO statements.
     * @return `(arg, ...) VALUES (?, ...)`
     */
-  def insert =
-    names + " VALUES (" + placeholders + ")"
+  def insert = names +: values
   /** Terms appropriate for UPDATE or WHERE statements.
     * @param sep separator string, ", " for UPDATE (default), " AND " for WHERE
     * @return `arg = ? sep ...`
     */
-  def set(sep : String = ", ") =
-    terms.map(t => t.name + t.eq + t.placeholder).mkString(sep)
+  def set(sep : String = ",") =
+    Statement.join(sep, terms.map(t => (t.name + t.eq) +: t) : _*)
   def where = set(" AND ")
   /** Constant table.
     * @return `(VALUES (?, ...)) AS table (arg, ...)`
     */
-  def values(implicit table : FromTable) : Selector[Unit] =
-    Columns(FromTable("(VALUES (" + placeholders + ")) AS " + table + " " + names))
-    .pushArgs(this)
+  def fixed(implicit table : FromTable) : Selector[Unit] =
+    Columns.fromQuery(values).mapFrom(_ :+ names)
 }
 object SQLTerms {
   def apply(terms : SQLTerm[_]*) = new SQLTerms(terms)
@@ -84,7 +83,7 @@ object DBUtil {
     dbc.inTransaction(loop)
   }
 
-  def updateOrInsert(update : (Site.DB, ExecutionContext) => SQLResult)(insert : (Site.DB, ExecutionContext) => SQLResult)(implicit dbc : Site.DB, exc : ExecutionContext) : SQLResult = {
+  def updateOrInsert(update : (Site.DB, ExecutionContext) => SQL.Result)(insert : (Site.DB, ExecutionContext) => SQL.Result)(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result = {
     val sp = "pre_insert"
     /*@scala.annotation.tailrec*/ def loop(dbc : Site.DB) : Future[db.QueryResult] = update(dbc, exc).result.flatMap { r =>
       if (r.rowsAffected == 0)
@@ -99,6 +98,6 @@ object DBUtil {
       else
         async(r)
     }
-    new SQLResult(dbc.inTransaction(loop))
+    new SQL.Result(dbc.inTransaction(loop))
   }
 }
