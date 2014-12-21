@@ -112,7 +112,7 @@ private[models] sealed abstract class TagWeightView[T <: TagWeight] extends Tabl
     TagUse.aggregateColumns ~+ groupBy
   protected def columns(query : Statement)(implicit site : Site) =
     TagUse.aggregateColumns.fromTable
-    .fromQuery(aggregate.statement ++ query ++ (" GROUP BY " +: groupBy))
+    .fromQuery(aggregate.statement + " " ++ query ++ (" GROUP BY " +: groupBy))
 }
 
 object TagWeight extends TagWeightView[TagWeight] {

@@ -43,5 +43,4 @@ abstract trait ArgsView[+R] extends RepeatedView[Type, Arg[_], R] {
 
 object Args extends ArgsView[Args] {
   protected def result(args : Arg[_]*) : Args = new Args(args)
-  def opt[A : Type](o : Option[A]) : Args = new Args(o.map(Arg(_)).toSeq)
 }
