@@ -18,9 +18,12 @@ body
   .row
     position relative
 
-  .icon.contact
+  .icon
+  .toolbar-avatar
     position relative
     top b8
+    margin-left b3
+    margin-right b8
 
 .toolbar-site
   font-line 1 1.5
@@ -49,29 +52,28 @@ body
 .toolbar-nav
   display inline-block
   position relative
-  top -b2
+  vertical-align top
 
   li
     margin-right f2
 
   a
-    text-transform lowercase
     position relative
     top -b24
     font-line .75 .75
+  a.button
+    text-transform lowercase
 
     .icon
       position relative
       top b12
 
 .toolbar-avatar
-  position relative
-  top b8
   display inline-block
   border 1px solid gray
   size b34
-  margin-left f8
 
+.toolbar-nav,
 .toolbar-user,
 .toolbar-hover
   a
@@ -99,8 +101,11 @@ img.toolbar-hover-avatar
   width 96px    
 
 .toolbar-user
+  font-size 0.8em
   text-align right
   position relative
+  float right
+  padding-right 1.8%
 
   form
     display inline-block
