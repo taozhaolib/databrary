@@ -2,8 +2,8 @@
   <div class="wrap">
     <div class="row">
       <div class="col">
-        <h3 ng-if="query">
-          Search results for &quot;{{::query}}&quot;
+        <h3>
+          Search <input type="search" ng-model="query" key-enter="search()"/>
         </h3>
         <volume-list data="volumes"></volume-list>
       </div>
