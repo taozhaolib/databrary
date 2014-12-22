@@ -15,8 +15,6 @@
   }
 
   <section id="toolbar" class="toolbar cf">
-    <div class="wrap">
-      <div class="row">
         <div class="title cf col-desktop-11 col-tablet-5 col-mobile-4">
           <h1 class="toolbar-site">
             <a href="@routes.Site.start(Some(false))" title="Databrary: An Open Data Library"></a>
@@ -28,7 +26,6 @@
             case request : SiteRequest.Auth[_] => {
               <a href="@routes.PartyHtml.profile(Some(false))" class="toolbar-user-link">
                 <span class="username">@request.identity.name</span>
-                <img src="@display.avatar(request.identity, 16)" class="toolbar-avatar">
               </a>
 
               @if(request.access.isAdmin) {
@@ -62,8 +59,6 @@
             }
           }
         </div>
-      </div>
-    </div>
   </section>
 
   @body
