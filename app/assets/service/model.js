@@ -1134,9 +1134,9 @@ app.factory('modelService', [
       });
     };
 
-    Slot.prototype.setTag = function (tag, vote) {
+    Slot.prototype.setTag = function (tag, vote, keyword) {
       var s = this;
-      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote})
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote,keyword:!!keyword})
         .then(function (res) {
           s.volume.clear('tags');
           s.clear('tags');

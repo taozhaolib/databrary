@@ -3,6 +3,8 @@
   <ng-include src="'volume/excerpts.html'"></ng-include>
   <ng-include src="'volume/materials.html'"></ng-include>
   <ng-include src="'volume/sessions.html'"></ng-include>
-  <ng-include src="'site/tags.html'"></ng-include>
+  <panel id="panel-tags" panel-title="tags.title" fold>
+    <tags target="volume" edit="page.models.Login.isAuthorized()"></tags>
+  </panel>
   <ng-include src="'volume/comments.html'"></ng-include>
 </article>

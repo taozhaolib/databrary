@@ -47,4 +47,9 @@
       <input type="text" name="alias" ng-model="volumeEditOverviewForm.data.alias" placeholder="{{::'volume.edit.alias.placeholder' | message}}">
     </validator>
   </fieldset>
+
+  <fieldset class="skinny">
+    <label>Keywords</label>
+    <tags target="volume" keyword edit="true"></tags>
+  </fieldset>
 </ng-form>

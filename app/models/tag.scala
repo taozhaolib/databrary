@@ -75,8 +75,8 @@ object Tag extends TableId[Tag]("tag") {
 private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] def aggregateColumns(implicit site : Site) = Columns(
       SelectAs[Int]("count(tag_use.*)::integer", "weight")
-    , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.tableoid = ${KeywordUse.tableOID}), false)", "keyword")
-    , SelectAs[Boolean](sql"COALESCE(bool_or(tag_use.who = ${site.identity.id}), false)", "user")
+    , SelectAs[Boolean]("COALESCE(bool_or(tag_use.tableoid = " + KeywordUse.tableOID + "), false)", "keyword")
+    , SelectAs[Boolean](("COALESCE(bool_or(tag_use.tableoid = " + tableOID) +: sql" AND tag_use.who = ${site.identity.id}), false)", "user")
     )
 
   private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
@@ -131,7 +131,7 @@ object TagWeight extends TagWeightView[TagWeight] {
     .map { case ((weight, keyword, up), tag) =>
       new TagWeight(tag, weight, keyword, up)
     }
-    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
+    .SELECT(sql"ORDER BY keyword DESC, weight DESC LIMIT $limit")
     .list
 
   private[models] def getSlot(tag : Tag, slot : Slot) =
@@ -158,7 +158,7 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
     .map { case ((weight, keyword, up), container) =>
       new TagWeightContainer(tag, container, weight, keyword, up)
     }
-    .SELECT(sql"WHERE " + Volume.condition + " ORDER BY weight DESC")
+    .SELECT(sql"WHERE " + Volume.condition + " ORDER BY keyword DESC, weight DESC")
     .list
 
   private[models] def get(tag : Tag)(implicit site : Site) =
