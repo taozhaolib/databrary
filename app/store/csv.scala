@@ -6,6 +6,7 @@ import macros._
 import macros.async._
 import site._
 import models._
+import dbrary._
 
 object CSV{
 
@@ -15,11 +16,10 @@ object CSV{
     val cc = new CSVCreate
     vol.records.flatMap{r => 
       vol.containers.flatMap{
-        c => c.mapAsync(_.records).map{cont => 
+        c => c.mapAsync(_.records).map{cr => 
           val header = cc.makeHeader(r)
           
-          cc.makeRow(r, header).toString
-
+          cc.makeRow(cr, header).toString
         }
       }
     }
@@ -41,16 +41,17 @@ private class CSVCreate {
        .toList
   }
 
-  def makeRow(rs: Seq[Record], hs: List[(Option[RecordCategory], Metric[_])]): Seq[Option[Measure[_]]] = { 
+  def makeRow(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Measure[_]] = { 
     /** make a row by adding cells to a list */
-    hs.map(h => makeCell(rs, h._1, h._2))
+    hs.flatMap(h => crs.flatMap(cr => makeCell(cr.map(_._2), h._1, h._2)))
   }
 
 
-  def makeCell(rs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
+  def makeCell(crs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
     /** make a cell by locating measures with category and metric */
-    rs.find(r => r.category == ocat)
-        .flatMap(r => r.measures.list.find(_.metric == met))
+    
+    crs.find(cr => cr.category == ocat)
+        .flatMap(cr => cr.measures.list.find(_.metric == met))
 
   }
 
