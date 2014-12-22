@@ -235,6 +235,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         } yield (c)
       }
 
+      // XXX this doesn't update the model
       _ <- write(c, Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
 
       _ <- (jc \ "records").children.foreachAsync { implicit jc =>
@@ -252,7 +253,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           pos = jc \ "position"
           l <- a.slot
           seg = l.map(_.segment)
-          _ <- write(a, seg, jc \ "position")(models.Slot.get(c, _).flatMap(a.link).map(_ => true))(json.Reads {
+          _ <- write(a, seg, jc \ "position")(s => a.link(new models.Slot { def context = c; def segment = s }).map(_ => true))(json.Reads {
             case json.JsString("auto") => json.JsSuccess(seg.getOrElse(Segment.singleton(off)))
             case j => readsSegment.reads(j)
           }.map(s => s.singleton.fold(s)(o => Segment(o, o + a.duration))))

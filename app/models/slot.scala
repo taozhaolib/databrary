@@ -10,7 +10,7 @@ import dbrary.SQL._
 import site._
 
 /** Conceptually a slot represents a segment of a container. */
-trait Slot extends TableRow with InVolume with SiteObject {
+trait Slot extends InVolume with SiteObject {
   def context : ContextSlot
   def container : Container = context.container
   def segment : Segment
