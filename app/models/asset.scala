@@ -283,9 +283,9 @@ object Asset extends TableId[Asset]("asset") {
 }
 
 object FileAsset extends TableId[Asset]("asset") {
-  def getAvatar(p : Party)(implicit site : Site) : Future[Option[FileAsset]] =
+  def getAvatar(p : Party.Id)(implicit site : Site) : Future[Option[FileAsset]] =
     Asset.rowFileVolume(Volume.Core)
-    .SELECT(sql"JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p.id}")
+    .SELECT(sql"JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = $p")
     .singleOpt
 
   /** Create a new asset from an uploaded file.
