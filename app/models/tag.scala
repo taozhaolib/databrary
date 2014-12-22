@@ -12,10 +12,12 @@ import site._
   * Immutable (create only).
   */
 final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] {
-  def add(slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    TagUse.add(this, slot)
-  def remove(slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    TagUse.remove(this, slot)
+  def add(slot : Slot, keyword : Boolean = false)(implicit site : AuthSite) : Future[Boolean] =
+    if (keyword) KeywordUse.add(this, slot)
+    else TagUse.add(this, slot)
+  def remove(slot : Slot, keyword : Boolean = false)(implicit site : AuthSite) : Future[Boolean] =
+    if (keyword) KeywordUse.remove(this, slot)
+    else TagUse.remove(this, slot)
   def weight(slot : Slot) : Future[TagWeight] =
     TagWeight.getSlot(this, slot)
   def containers(implicit site : Site) : Future[Seq[TagWeightContainer]] =

@@ -89,14 +89,14 @@ trait Slot extends TableRow with InVolume with SiteObject {
     * @param vole true for up, false to remove
     * @return true if the tag name is valid
     */
-  final def setTag(tag : String, vote : Boolean = true)(implicit site : AuthSite) : Future[Option[TagWeight]] =
+  final def setTag(tag : String, vote : Boolean = true, keyword : Boolean = false)(implicit site : AuthSite) : Future[Option[TagWeight]] =
     Tag.validate(tag).fold(async[Option[TagWeight]](None)) { tname =>
       (if (vote)
         Tag.getOrCreate(tname).flatMap { t =>
-          t.add(this).map(b => if (b) Some(t) else None)
+          t.add(this, keyword).map(b => if (b) Some(t) else None)
         }
       else
-        Tag.get(tname).filterAsync(_.remove(this)))
+        Tag.get(tname).filterAsync(_.remove(this, keyword)))
       .mapAsync(_.weight(this))
     }
 

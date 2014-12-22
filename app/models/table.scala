@@ -46,7 +46,7 @@ private[models] abstract class Table[R] protected (private[models] val table : S
   private[models] final def fixed(r : R with TableRow) = FixedRowSelector(r)
 
   protected def INSERT(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
-    (sql"INSERT INTO " + table + " " ++ args.insert + Maybe.bracket(" RETURNING ", returning)).run(dbc, exc)
+    (lsql"INSERT INTO " + table + " " ++ args.insert + Maybe.bracket(" RETURNING ", returning)).run(dbc, exc)
   protected def INSERT(args : SQLTerm[_]*)(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =
     INSERT(SQLTerms(args : _*))(dbc, exc)
   protected def DELETE(args : SQLTerms, returning : String = "")(implicit dbc : Site.DB, exc : ExecutionContext) : SQL.Result =

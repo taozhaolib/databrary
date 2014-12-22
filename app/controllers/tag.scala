@@ -10,8 +10,10 @@ private[controllers] sealed class TagController extends SiteController {
   def update(name : String = "", i : models.Container.Id, segment : Segment) =
     SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new TagController.SlotForm()._bind
+      if (form.keyword.get && !request.obj.checkPermission(Permission.EDIT))
+        throw ForbiddenException
       for {
-        r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])
+        r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get, form.keyword.get)(request.asInstanceOf[AuthSite])
       } yield {
         if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
         else Redirect(request.obj.pageURL)
@@ -23,6 +25,7 @@ object TagController extends TagController {
   trait Form extends StructForm {
     val name = Field(OptionMapping(Mappings.tag))
     val vote = Field(Forms.boolean)
+    val keyword = Field(Forms.boolean).fill(false)
   }
   /* annoying inheritance: */
   final class TagForm(slot : Slot)
