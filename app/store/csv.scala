@@ -11,7 +11,6 @@ object CSV{
 
   implicit val executionContext = context.foreground
 
-
   def volume(vol: Volume): Future[String] = {
     val cc = new CSVCreate
     vol.records.flatMap{r => 
@@ -46,8 +45,6 @@ private class CSVCreate {
     /** make a row by adding cells to a list */
     hs.map(h => makeCell(rs, h._1, h._2))
   }
-
-
 
 
   def makeCell(rs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
