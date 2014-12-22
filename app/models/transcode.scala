@@ -29,7 +29,7 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
 
   private[this] def args(implicit request : RequestHeader) = Seq(
     "-f", store.FileAsset.file(orig).getAbsolutePath,
-    "-r", new controllers.AssetApi.TranscodedForm(id)._action.absoluteURL(Play.isProd(Play.current)),
+    "-r", new controllers.AssetApi.TranscodedForm(id)._action.absoluteURL(request.secure),
     "--") ++
     (segment.lowerBound : Iterable[Offset]).flatMap(s => Seq("-ss", s.toString)) ++
     (segment.upperBound : Iterable[Offset]).flatMap(t => Seq("-t", (t-offset).toString)) ++
