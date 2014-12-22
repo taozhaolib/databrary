@@ -13,15 +13,13 @@ app.directive('toolbar', [
           if ($event)
             $event.stopPropagation();
         };
-        $scope.$on('$locationChangeStart', function () {
-          $scope.hoverUser = false;
-        });
         $scope.hoverSearchToggle = function ($event) {
           $scope.hoverSearch = !$scope.hoverSearch;
           if ($event)
             $event.stopPropagation();
         };
-        page.$rootScope.$on('$locationChangeStart', function () {
+        $scope.$on('$locationChangeStart', function () {
+          $scope.hoverUser = false;
           $scope.hoverSearch = false;
         });
 
