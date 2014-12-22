@@ -19,7 +19,7 @@ final class TemporaryFileLinkOrCopy(file : File) extends play.api.libs.Files.Tem
     } catch {
       case _ : UnsupportedOperationException =>
         copyTo(to, replace)
-      case e : java.nio.file.FileSystemException if e.getReason.equals("Invalid cross-device link") =>
+      case e : java.nio.file.FileSystemException if e.getReason == "Invalid cross-device link" =>
         copyTo(to, replace)
     }
   }
