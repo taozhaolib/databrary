@@ -9,7 +9,7 @@
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
             <li class="hide-tablet hide-desktop">
-              <a href="">
+              <a href="" class="toolbar-nav-toggle" ng-click="hoverNavToggle($event)">
                 <img src="/public/images/icon/navmenu.svg" class="icon">
               </a>
             </li>
@@ -105,6 +105,31 @@
           </ng-form>
         </div>  
       </section>
+
+      <section class="toolbar-hidden-navs" click-elsewhere="hoverNavToggle()" ng-if="hoverNav">
+        <div class="wrap">
+          <div class="row">
+            <nav class="toolbar-nav cf">
+              <ul class="toolbar-nav-ul inline-block flat cf">
+                <li>
+                  <a href="" class="toolbar-nav-toggle" ng-click="hoverNavToggle($event)">
+                    <img src="/public/images/icon/backarrow.svg" class="icon">
+                  </a>
+                </li>
+                <li>
+                  <a href="/search"><span>Datasets</span></a>                       
+                </li>
+                <li>
+                  <a href="http://databrary.org/access/guide.html"><span>User Guide</span></a>
+                </li>
+                <li>
+                  <a href="http://databrary.org/community.html"><span>Community</span></a>
+                </li>
+              </ul>
+            </nav>     
+          </div>
+        </div>      
+      </section>      
 
     </div>
   </div>

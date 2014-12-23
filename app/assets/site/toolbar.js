@@ -18,9 +18,15 @@ app.directive('toolbar', [
           if ($event)
             $event.stopPropagation();
         };
+        $scope.hoverNavToggle = function ($event) {
+          $scope.hoverNav = !$scope.hoverNav;
+          if ($event)
+            $event.stopPropagation();
+        };
         $scope.$on('$locationChangeStart', function () {
           $scope.hoverUser = false;
           $scope.hoverSearch = false;
+          $scope.hoverNav = false;
         });
 
         $scope.search = function () {
