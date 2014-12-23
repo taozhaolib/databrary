@@ -10,15 +10,15 @@
     <div class="bigbuttons-container">
       <div class="bigbutton">
         <span class="button-title">Browse Datasets</span>
-        <span>Some blurb here?</span>
+        <span class="hide-mobile">Some blurb here?</span>
       </div>
       <div class="bigbutton">
         <span class="button-title">Create a Dataset</span>
-        <span>Some blurb here?</span>
+        <span class="hide-mobile">Some blurb here?</span>
       </div>
       <div class="bigbutton">
         <span class="button-title">Manage/Share Datasets</span>
-        <span>Some blurb here?</span>
+        <span class="hide-mobile">Some blurb here?</span>
       </div>   
     </div>
   </div>
@@ -44,13 +44,13 @@
     </div>
 
     <div class="home-tags col-desktop-6 col-tablet-3 col-mobile-6">
-      <span>Most prevalent tags</span>
+      <span>Most Tagged</span>
       <ol>
-        <li ng-repeat="tag in ::tags">
+        <ul ng-repeat="tag in ::tags">
           <a ng-href="{{::page.router.search()}}?query={{::tag.id}}" ng-bind="::tag.id"></a>
           <span> - </span>
           <span ng-bind="::tag.weight"></span>
-        </li>
+        </ul>
       </ol>
     </div>
 
