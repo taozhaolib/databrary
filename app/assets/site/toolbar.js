@@ -10,11 +10,13 @@ app.directive('toolbar', [
         $scope.page = page;
         $scope.hoverUserToggle = function ($event) {
           $scope.hoverUser = !$scope.hoverUser;
+          $scope.hoverSearch = false;
           if ($event)
             $event.stopPropagation();
         };
         $scope.hoverSearchToggle = function ($event) {
           $scope.hoverSearch = !$scope.hoverSearch;
+          $scope.hoverUser = false;
           if ($event)
             $event.stopPropagation();
         };
