@@ -45,6 +45,7 @@ private class CSVCreate {
   def makeRow(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
     /** make a row by adding cells to a list */
     hs.map(h => crs.map(cr => makeCell(cr.map(_._2), h._1, h._2))).transpose
+
   }
 
 
