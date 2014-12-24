@@ -22,6 +22,7 @@ app.directive('toolbar', [
         };
         $scope.hoverNavToggle = function ($event) {
           $scope.hoverNav = !$scope.hoverNav;
+          $scope.hoverUser = $scope.hoverSearch = false;
           if ($event)
             $event.stopPropagation();
         };

@@ -1,25 +1,26 @@
 <section id="toolbar" class="toolbar cf">
-  <div class="wrap">
+  <div class="wrap" ng-class="{'hover-nav-bg': hoverNav}">
     <div class="row">
-      <div class="title cf col-desktop-9 col-tablet-7" ng-class="{'col-mobile-4': page.models.Login.isLoggedIn(), 'col-mobile-2': !page.models.Login.isLoggedIn()}">
+      <div class="title cf col-desktop-9 col-tablet-7" ng-class="{'col-mobile-4': !hoverNav&&page.models.Login.isLoggedIn(), 'col-mobile-2': !hoverNav&&!page.models.Login.isLoggedIn(),'col-mobile-6':hoverNav}">
         <h1 class="toolbar-site" ng-show="page.$route.current.controller!=='site/home'">
           <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
         </h1>
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
-            <li class="hide-tablet hide-desktop">
+            <li ng-class="{'hide-tablet hide-desktop': !hoverNav}">
               <a href="" class="toolbar-nav-toggle" ng-click="hoverNavToggle($event)">
-                <img src="/public/images/icon/navmenu.svg" class="icon">
+                <img src="/public/images/icon/navmenu.svg" class="icon" ng-show="!hoverNav">
+                <img src="/public/images/icon/backarrow.svg" class="icon" ng-show="hoverNav">
               </a>
             </li>
-            <li class="hide-mobile">
+            <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="/search"><span>Datasets</span></a>                       
             </li>
-            <li class="hide-mobile">
+            <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="http://databrary.org/access/guide.html"><span>User Guide</span></a>
             </li>
-            <li class="hide-mobile">
+            <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="http://databrary.org/community.html"><span>Community</span></a>
             </li>
             <li ng-repeat="link in page.display.toolbarLinks">
@@ -32,7 +33,7 @@
         </nav>
       </div>
 
-      <div class="toolbar-user" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}">
+      <div class="toolbar-user" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}" ng-if="!hoverNav">
 
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a ng-href="{{::page.router.login()}}" message="toolbar.login"></a>
@@ -109,26 +110,3 @@
     </div>
   </div>
 </section>
-
-<section class="toolbar-hidden-navs" click-elsewhere="hoverNavToggle()" ng-if="hoverNav">
-  <div class="wrap">
-      <nav class="toolbar-nav cf">
-        <ul class="toolbar-nav-ul inline-block flat cf">
-          <li>
-            <a href="" class="toolbar-nav-toggle" ng-click="hoverNavToggle($event)">
-              <img src="/public/images/icon/backarrow.svg" class="icon">
-            </a>
-          </li>
-          <li>
-            <a href="/search"><span>Datasets</span></a>                       
-          </li>
-          <li>
-            <a href="http://databrary.org/access/guide.html"><span>User Guide</span></a>
-          </li>
-          <li>
-            <a href="http://databrary.org/community.html"><span>Community</span></a>
-          </li>
-        </ul>
-      </nav>     
-  </div>      
-</section>  
