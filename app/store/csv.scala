@@ -18,8 +18,9 @@ object CSV{
       vol.containers.flatMap{
         c => c.mapAsync(_.records).map{cr => 
           val header = cc.makeHeader(r)
-          
-          cc.makeRow(cr, header).toString
+          val body = cc.makeRows(cr, header)
+
+          cc.buildCSV(header, body)
 
         }
       }
@@ -42,7 +43,7 @@ private class CSVCreate {
        .toList
   }
 
-  def makeRow(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
+  def makeRows(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
     /** make a row by adding cells to a list */
     hs.map(h => crs.map(cr => makeCell(cr.map(_._2), h._1, h._2))).transpose
 
@@ -56,7 +57,16 @@ private class CSVCreate {
 
   }
 
-  def buildCSV(h: List[(Option[RecordCategory], Metric[_])], b: List[Seq[Option[Measure[_]]]]) = {}    
+  def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]]): String = {
+    val headVals = head.map(h => h._2.name).mkString(",") + "\n"
+    val rowVals = body.map(rows => rows.map(r => r match{
+        case Some(measure) => measure.datum
+        case None => ""
+      }).mkString(",") + "\n").mkString
+
+    headVals + rowVals
+
+  }    
 
 }
 
