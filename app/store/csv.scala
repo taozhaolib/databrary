@@ -14,9 +14,10 @@ object CSV{
 
   def volume(vol: Volume): Future[String] = {
     val cc = new CSVCreate
+
     vol.records.flatMap{r => 
       vol.containers.flatMap{
-        c => c.mapAsync(_.records).map{cr => 
+        c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr => 
           val header = cc.makeHeader(r)
           val body = cc.makeRows(cr, header)
 
@@ -61,7 +62,7 @@ private class CSVCreate {
 
     val headVals = head.map(h => h._2.name).mkString(",") + "\n"
     val rowVals = body.map(rows => rows.map(r => r match{
-        case Some(measure) => escapeCSV(measure.datum)
+        case Some(measure) => measure.datum
         case None => ""
       }).mkString(",") + "\n").mkString
 
