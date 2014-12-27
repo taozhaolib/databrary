@@ -58,9 +58,10 @@ private class CSVCreate {
   }
 
   def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]]): String = {
+
     val headVals = head.map(h => h._2.name).mkString(",") + "\n"
     val rowVals = body.map(rows => rows.map(r => r match{
-        case Some(measure) => measure.datum
+        case Some(measure) => escapeCSV(measure.datum)
         case None => ""
       }).mkString(",") + "\n").mkString
 
@@ -68,6 +69,15 @@ private class CSVCreate {
 
   }    
 
+
+  def escapeCSV(s: String): String = {
+    if(s.contains("\"") || s.contains("\n") || s.contains(",")){
+      "\"" + s.replace("\"", "\"\"") + "\""
+    } else {
+      s
+    }
+
+  }
 }
 
 
