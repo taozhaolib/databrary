@@ -1,24 +1,28 @@
-{-# LANGUAGE OverloadedStrings #-}
-module Main where
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, FlexibleInstances #-}
+module Main (main) where
 
-import           Control.Applicative
-import           Snap.Core
-import           Snap.Util.FileServe
-import           Snap.Http.Server
+import qualified Data.ByteString as BS
+import Snap.Core
+import Snap.Http.Server.Config (defaultConfig)
+import Snap.Snaplet
+import Snap.Snaplet.TemplatePG (pgInit)
+import Snap.Util.FileServe (serveDirectory)
+
+import App
+import Paths_databrary (getDataDir)
+import Databrary.Volume (volume)
+
+routes :: [(BS.ByteString, Handler App App ())]
+routes =
+  [ ("/volume", pathArg volume)
+  , ("/public", serveDirectory "public")
+  ]
+
+app :: SnapletInit App App
+app = makeSnaplet "databrary" "Databrary" (Just getDataDir) $ do
+  d <- nestSnaplet "db" db pgInit
+  addRoutes routes
+  return $ App d
 
 main :: IO ()
-main = quickHttpServe site
-
-site :: Snap ()
-site =
-    ifTop (writeBS "hello world") <|>
-    route [ ("foo", writeBS "bar")
-          , ("echo/:echoparam", echoHandler)
-          ] <|>
-    dir "static" (serveDirectory ".")
-
-echoHandler :: Snap ()
-echoHandler = do
-    param <- getParam "echoparam"
-    maybe (writeBS "must specify echo/param in URL")
-          writeBS param
+main = serveSnaplet defaultConfig app
