@@ -22,7 +22,9 @@ object CSV{
           val template = cc.makeCSVTemplate(cr)
           val header = cc.makeHeader(template, r)
           val body = cc.makeRows(cr, header)
-          cc.buildCSV(header, body)
+          /**cc.buildCSV(header, body)*/
+          /**header.toString*/
+          template.toString
 
         }
       }
@@ -43,9 +45,11 @@ private class CSVCreate {
 
     }
 
-    temp.flatMap(t => rs.filter(i => t == getMatch(i.category)).map(r => 
+    def catId(rec: Record): Option[Int] = rec.category.map(_._id)
+
+    temp.flatMap(t => rs.collect{ case r if t == catId(r) => 
         (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id))
-      ))
+      })
        .map(f => f._2.map(d => (f._1, d)))
        .flatten
        .toList
@@ -53,7 +57,6 @@ private class CSVCreate {
   }
 
   def makeCSVTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Int] = {
-    /** get the column categories so that the ones where multiple values exist for a given container are added to the header*/
     val rs = crs.map(_.map(c => c._2))
 
     rs.map(_.map(f => (f.category match{ case Some(cat) => cat._id})).sorted)
@@ -66,14 +69,12 @@ private class CSVCreate {
   }
 
   def makeRows(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
-    /** make a row by adding cells to a list */
     hs.map(h => crs.map(cr => makeCell(cr.map(_._2), h._1, h._2))).transpose
 
   }
 
 
   def makeCell(crs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
-    /** make a cell by locating measures with category and metric */
     crs.find(cr => cr.category == ocat) 
         .flatMap(cr => cr.measures.list.find(_.metric == met))
 
