@@ -5,7 +5,7 @@ import qualified Data.ByteString as BS
 import Snap.Core
 import Snap.Http.Server.Config (defaultConfig)
 import Snap.Snaplet
-import Snap.Snaplet.TemplatePG (pgInit)
+import Snap.Snaplet.PostgresqlTyped (pgInit)
 import Snap.Util.FileServe (serveDirectory)
 
 import App

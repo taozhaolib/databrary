@@ -1,10 +1,10 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Volume where
 
-import qualified Data.ByteString.Char8 as BSC
 import Data.Int (Int32)
-import Snap.Core (writeBS)
-import Snap.Snaplet.TemplatePG (HasPG, pgQuery, pgSQL)
+import qualified Data.Text as T
+import Snap.Core (writeText)
+import Snap.Snaplet.PostgresqlTyped (HasPG, pgQuery, pgSQL)
 
 import App
 
@@ -14,8 +14,8 @@ newtype VolumeId = VolumeId Int32 deriving (Eq) -- PGType?
 
 data Volume = Volume
   { volumeId :: VolumeId
-  , volumeName :: String -- ByteString?
-  , volumeAlias :: Maybe String
+  , volumeName :: T.Text
+  , volumeAlias :: Maybe T.Text
   }
 
 getVolume :: HasPG m => VolumeId -> m (Maybe Volume)
@@ -29,4 +29,4 @@ getVolume (VolumeId i) = do
 volume :: Int -> AppHandler ()
 volume vi = do
   v <- getVolume (VolumeId (fromIntegral vi))
-  writeBS $ maybe "not found" (BSC.pack . volumeName) v
+  writeText $ maybe "not found" volumeName v
