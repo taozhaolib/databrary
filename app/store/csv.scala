@@ -19,43 +19,40 @@ object CSV{
     vol.records.flatMap{r => 
       vol.containers.flatMap{
         c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr=> 
-          /**val header = cc.makeHeader(r)
+          val template = cc.makeCSVTemplate(cr)
+          val header = cc.makeHeader(template, r)
           val body = cc.makeRows(cr, header)
-          cc.buildCSV(header, body)*/
+          cc.buildCSV(header, body)
 
-          val template = cc.makeTemplate(cr)
-          cc.makeHeader(r, template).toString
         }
       }
     }
   }
 }
 
-
-
-
 private class CSVCreate {
 
 
-  def makeHeader(l: Seq[Record], temp: List[Int]): /**List[(Option[RecordCategory], Metric[_])]*/ List[Seq[Object]] = {
+  def makeHeader(temp: List[Int], rs: Seq[Record]): List[(Option[RecordCategory], Metric[_])] = {
 
-    /** get the column headers  by taking all the records and giving back only set of metrics and categories used in volume*/
-    /**l.map(rec => (rec.category, rec.measures.list.map(_.metric).toList.sortWith(_._id < _._id)))
-       .distinct
-       .filter(x => !(x._2.isEmpty))
-       .sortBy(_._1 match{ case Some(thing) => thing._id})
+    def getMatch(rc: Option[RecordCategory]): Int = {
+      rc match {
+        case Some(e) => e._id
+        case None => 0
+      }
+
+    }
+
+    temp.flatMap(t => rs.filter(i => t == getMatch(i.category)).map(r => 
+        (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id))
+      ))
        .map(f => f._2.map(d => (f._1, d)))
        .flatten
-       .toList*/
-    temp.map(t => l.map(rec => if (t == (rec.category match { case Some(e) => e._id})) { (rec.category, rec.measures.list.map(_.metric).toList.sortWith(_._id < _._id)) } else doNothing)
-       /**.map(f => f._2.map(d => (f._1, d)))
-       .flatten
-       .toList*/)
-
+       .toList
 
   }
 
-  def makeTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Int] = {
+  def makeCSVTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Int] = {
     /** get the column categories so that the ones where multiple values exist for a given container are added to the header*/
     val rs = crs.map(_.map(c => c._2))
 
