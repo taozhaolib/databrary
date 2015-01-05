@@ -21,10 +21,9 @@ object CSV{
         c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr=> 
           val template = cc.makeCSVTemplate(cr)
           val header = cc.makeHeader(template, r)
-          val body = cc.makeRows(cr, header)
+          /**val body = cc.makeRows(cr, header)*/
           /**cc.buildCSV(header, body)*/
-          /**header.toString*/
-          template.toString
+          header.toString
 
         }
       }
@@ -46,13 +45,24 @@ private class CSVCreate {
     }
 
     def catId(rec: Record): Option[Int] = rec.category.map(_._id)
-
-    temp.flatMap(t => rs.collect{ case r if t == catId(r) => 
+    
+    temp.flatMap(t => rs.collect{ case r if Some(t) == catId(r) => 
         (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id))
       })
        .map(f => f._2.map(d => (f._1, d)))
        .flatten
        .toList
+
+    /**
+    rs.map(r => for { 
+      t <- temp
+      if Some(t) == catId(r)
+      } yield (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id)))
+       .flatMap(_.map(f => f._2.map(d => (f._1, d))))
+       .flatten
+       .toList
+    */
+
 
   }
 
