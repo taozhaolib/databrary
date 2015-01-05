@@ -30,6 +30,7 @@ app.directive 'volumeEditLinksForm', [
         form.$setDirty()
 
       form.save = () ->
+        page.messages.clear(form)
         data = form.data.filter (ref) ->
           !ref.removed && (ref.head != '' || ref.url != '')
         volume.save({links: data}).then(() ->
@@ -37,10 +38,10 @@ app.directive 'volumeEditLinksForm', [
             form.data = data
             blank()
 
-            form.messages.add
+            page.messages.add
               type: 'green'
-              countdown: 3000
               body: page.constants.message('volume.edit.success')
+              owner: form
 
             form.$setPristine()
           , (res) ->

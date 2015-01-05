@@ -38,6 +38,7 @@ app.directive('partyEditGrantForm', [
           return;
 
         searchForm.selectFn = function (found) {
+          page.messages.clear(searchForm);
           var exp = new Date();
           exp.setFullYear(exp.getFullYear()+2);
           form.data.push({
@@ -54,8 +55,8 @@ app.directive('partyEditGrantForm', [
         searchForm.notFoundFn = function () {
           page.messages.add({
             type: 'yellow',
-            countdown: 3000,
-            body: page.constants.message('auth.grant.notfound')
+            body: page.constants.message('auth.grant.notfound'),
+            owner: searchForm
           });
         };
 

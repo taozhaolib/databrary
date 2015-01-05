@@ -22,7 +22,7 @@ app.controller('party/network', [
               party: party,
               message: page.messages.add({
                 type: 'yellow',
-                closeable: true,
+                persist: true,
                 body: page.$sce.trustAsHtml('<span>' + page.constants.message('auth.pending.notice', {sce:page.$sce.HTML}, party.party.name) + ' <a href="' + $scope.party.editRoute('grant') + '#auth-' + party.party.id + '">Manage</a>.</span>')
               })
             };

@@ -32,16 +32,7 @@ app.directive('volumeEditAccessForm', [
         return page.constants.permission[p];
       };
 
-      form.saveAll = function () {
-        subforms.forEach(function (subform) {
-          if (subform.$dirty)
-            subform.save(false);
-        });
-        if (globalForm.$dirty)
-          form.saveGlobal();
-      };
-
-      form.saveGlobal = function () {
+      function saveGlobal() {
         form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
         $q.all(page.constants.accessGlobal.parties.map(function (party, i) {
           var p = form.global[i];
@@ -50,18 +41,30 @@ app.directive('volumeEditAccessForm', [
             children: p,
           });
         })).then(function () {
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('access.global.save.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
           form.$setPristine();
         }, function (res) {
-          form.messages.addError({
+          page.messages.addError({
             body: page.constants.message('access.global.save.error'),
             report: res,
+            owner: form
           });
         });
+      }
+
+      var msg;
+      form.saveAll = function () {
+        page.messages.clear(form);
+        subforms.forEach(function (subform) {
+          if (subform.$dirty)
+            subform.save(false);
+        });
+        if (globalForm.$dirty)
+          saveGlobal();
       };
 
       $scope.$on('accessGrantForm-init', function (event, grantForm) {

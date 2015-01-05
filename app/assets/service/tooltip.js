@@ -121,10 +121,6 @@ app.factory('tooltipService', [
       });
     };
 
-    $rootScope.$on('$routeChangeStart', Tooltip.clear);
-
-    //
-
     return Tooltip;
   }
 ]);

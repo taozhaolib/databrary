@@ -475,6 +475,7 @@ app.directive 'spreadsheet', [
         ################################# Backend saving
 
         saveRun = (cell, run) ->
+          messages.clear(cell)
           cell.classList.remove('error')
           cell.classList.add('saving')
           run.then (res) ->
@@ -486,6 +487,7 @@ app.directive 'spreadsheet', [
               messages.addError
                 body: 'error' # FIXME
                 report: res
+                owner: cell
               return
 
         createSlot = (cell) ->
@@ -513,7 +515,7 @@ app.directive 'spreadsheet', [
               messages.add
                 body: constants.message('slot.remove.notempty')
                 type: 'red'
-                countdown: 5000
+                owner: cell
               return
             unedit()
             collapse()

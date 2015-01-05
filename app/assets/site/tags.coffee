@@ -25,6 +25,7 @@ app.directive 'tags', [
         $scope.target = if target.class == 'volume' then target.top else target
 
         $scope.vote = (name, vote) ->
+          messages.clear($scope)
           $scope.target.setTag(name, vote, keyword).then (tag) ->
               i = $scope.tags.findIndex (t) -> t.id == tag.id
               if i == -1
@@ -36,11 +37,12 @@ app.directive 'tags', [
 
               messages.add
                 type: 'green'
-                countdown: 3000
                 body: constants.message('tags.vote.'+(if vote then 'up' else 'null')+'.success', {sce: $sce.HTML}, tag.id)
+                owner: $scope
               tooltips.clear() # hack for broken tooltips
             , (res) ->
               messages.addError
                 body: constants.message('tags.vote.error', {sce: $sce.HTML}, name)
                 report: res
+                owner: $scope
 ]

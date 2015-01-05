@@ -27,13 +27,14 @@ app.directive('volumeEditFundingForm', [
       });
 
       $scope.selectFn = function (found) {
+        page.messages.clear(form);
         if (form.data.some(function (funding) {
               return funding.funder.id === found.id;
             })) {
-          form.messages.add({
+          page.messages.add({
             type: 'yellow',
-            countdown: 3000,
             body: page.constants.message('funding.search.repeat', found.name),
+            owner: form
           });
           return;
         }

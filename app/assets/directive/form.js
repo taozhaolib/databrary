@@ -9,7 +9,6 @@ app.directive('ngForm', [
       if (!form)
         return;
 
-      form.messages = page.messages;
       form.$element = $element;
 
       var controls = [];
@@ -55,12 +54,14 @@ app.directive('ngForm', [
       form.validators = {};
       form.validator = {
         server: function (res, replace) {
+          page.messages.clear(form);
           if ($.isEmptyObject(res)) {
             res.data = {};
           } else if (!angular.isObject(res.data)) {
-            form.messages.addError({
+            page.messages.addError({
               body: page.constants.message('error.generic'),
               report: res,
+              owner: form
             });
             return;
           }
@@ -73,11 +74,11 @@ app.directive('ngForm', [
           for (name in res.data) {
             if (form.validators[name]) {
               form.validators[name].server(res.data[name], replace);
-            } else if (form.messages) {
-              form.messages.add({
+            } else {
+              page.messages.add({
                 type: 'red',
-                closeable: true,
                 body: Array.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+                owner: form
               });
             }
           }

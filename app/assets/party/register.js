@@ -52,14 +52,15 @@ app.controller('party/register', [
           };
 
         form.save = function () {
+          page.messages.clear(form);
           page.models.Login.passwordToken(token.party, form.data)
             .then(function () {
               form.validator.server({});
 
-              form.messages.add({
+              page.messages.add({
                 type: 'green',
-                countdown: 3000,
-                body: page.constants.message('reset.save.success', form.data.email)
+                body: page.constants.message('reset.save.success', form.data.email),
+                owner: form
               });
 
               form.sent = true;
