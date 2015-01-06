@@ -2,19 +2,19 @@
 module Main (main) where
 
 import qualified Data.ByteString as BS
-import Snap.Core
 import Snap.Http.Server.Config (defaultConfig)
 import Snap.Snaplet
-import Snap.Snaplet.PostgresqlTyped (pgInit)
 import Snap.Util.FileServe (serveDirectory)
 
-import App
 import Paths_databrary (getDataDir)
-import Databrary.Volume (volume)
+import Databrary.App
+import Databrary.Snaplet.PG (pgInit)
+import Databrary.Model.Id (pathIdArg)
+import Databrary.Model.Volume (volume)
 
 routes :: [(BS.ByteString, Handler App App ())]
 routes =
-  [ ("/volume", pathArg volume)
+  [ ("", pathIdArg volume)
   , ("/public", serveDirectory "public")
   ]
 
