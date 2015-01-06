@@ -1,6 +1,7 @@
 package store
 
 import scala.concurrent.Future
+import scala.collection._
 import play.api.libs.iteratee._
 import macros._
 import macros.async._
@@ -21,9 +22,9 @@ object CSV{
         c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr=> 
           val template = cc.makeCSVTemplate(cr)
           val header = cc.makeHeader(template, r)
-          /**val body = cc.makeRows(cr, header)*/
-          /**cc.buildCSV(header, body)*/
-          header.toString
+          val body = cc.makeRows(cr, header)
+          cc.buildCSV(header, body)
+          
 
         }
       }
@@ -34,48 +35,30 @@ object CSV{
 private class CSVCreate {
 
 
-  def makeHeader(temp: List[Int], rs: Seq[Record]): List[(Option[RecordCategory], Metric[_])] = {
+  def makeHeader(cats: List[Option[RecordCategory]], recs: Seq[Record]): List[(Option[RecordCategory], Metric[_])] = {
 
-    def getMatch(rc: Option[RecordCategory]): Int = {
-      rc match {
-        case Some(e) => e._id
-        case None => 0
-      }
+    val m = mutable.Map.empty[Option[RecordCategory], mutable.Set[Metric[_]]]
 
-    }
+    for (r <- recs){
+      val s = m.getOrElseUpdate(r.category, mutable.Set.empty[Metric[_]])
+      s ++= r.measures.list.map(_.metric)
 
-    def catId(rec: Record): Option[Int] = rec.category.map(_._id)
-    
-    temp.flatMap(t => rs.collect{ case r if Some(t) == catId(r) => 
-        (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id))
-      })
-       .map(f => f._2.map(d => (f._1, d)))
-       .flatten
-       .toList
+    } 
 
-    /**
-    rs.map(r => for { 
-      t <- temp
-      if Some(t) == catId(r)
-      } yield (r.category, r.measures.list.map(_.metric).toList.sortWith(_._id < _._id)))
-       .flatMap(_.map(f => f._2.map(d => (f._1, d))))
-       .flatten
-       .toList
-    */
-
+    cats.flatMap(c => m(c).toList.sortWith(_._id < _._id).map(m => (c, m)))
 
   }
 
-  def makeCSVTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Int] = {
+  def makeCSVTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Option[RecordCategory]] = {
     val rs = crs.map(_.map(c => c._2))
 
-    rs.map(_.map(f => (f.category match{ case Some(cat) => cat._id})).sorted)
-      .map(_.groupBy(identity))
-      .foldLeft(Map[Int, Seq[Int]]()){
+    rs.map(_.map(f => f.category))
+      .map(_.groupBy(_.map(_._id)))
+      .foldLeft(Map[Option[Int], Seq[Option[RecordCategory]]]()){
         (a, b) => a ++ b.map{
           case (k, v) => k -> ( if (v.size > a.getOrElse(k, List()).size) v else a(k))
         }
-      }.values.flatten.toList.sorted
+      }.values.flatten.toList.sortBy(_.map(_.id._id))
   }
 
   def makeRows(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
