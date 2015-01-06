@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'spreadsheet', [
-  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout',
-  (constants, display, messages, tooltips, $compile, $templateCache, $timeout) ->
+  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout', '$document',
+  (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
     byNumber = (a,b) -> a-b
@@ -517,7 +517,7 @@ app.directive 'spreadsheet', [
                 type: 'red'
                 owner: cell
               return
-            unedit()
+            unedit(false)
             collapse()
             rows[i].parentNode.removeChild(rows[i])
             slots.splice(i, 1)
@@ -700,7 +700,7 @@ app.directive 'spreadsheet', [
           cell.classList.remove('editing')
           tooltips.clear()
 
-          save(cell, editScope.type, editInput.value) if event
+          save(cell, editScope.type, editInput.value) if event != false
           cell
 
         edit = (cell, info, alt) ->
@@ -725,8 +725,8 @@ app.directive 'spreadsheet', [
                 return unless typeof m == 'number'
                 editInput.value = volume.records[info.r].measures[m] ? ''
                 if info.metric.options
-                  editScope.type = 'select'
-                  editScope.options = [''].concat(info.metric.options)
+                  editScope.type = 'options'
+                  editScope.options = info.metric.options
                 else if info.metric.long
                   editScope.type = 'long'
                 else
@@ -795,10 +795,9 @@ app.directive 'spreadsheet', [
 
           tooltips.clear()
           $timeout ->
-            input = e.children('[name=edit]')
-            input.focus() if ['text', 'long', 'date', 'number'].includes(editScope.type)
-            # chrome produces spurious change events on date fields, so we rely on key-enter instead.
-            input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
+            input = e.find('[name=edit]')
+            input.filter('input,textarea').focus()
+            input.filter('select').one('change', $scope.$lift(editScope.unedit))
             return
           return
 
@@ -843,6 +842,19 @@ app.directive 'spreadsheet', [
           unedit($event)
           return
 
+        complete = () ->
+          editInput.value = @text
+          unedit(true)
+          @text
+
+        editScope.completer = (input) ->
+          i = input.toLowerCase()
+          match = ({text:o, select: complete} for o in editScope.options when o.toLowerCase().startsWith(i))
+          if match.length == 1
+            match[0].text
+          else
+            match
+
         editScope.next = ($event) ->
           cell = unedit($event)
           return unless cell
@@ -874,6 +886,12 @@ app.directive 'spreadsheet', [
         $scope.unlimit = ->
           limit = undefined
           fill()
+
+        if editing
+          $document.on 'click', ($event) ->
+            if editCell && editCell.parentNode != $event.target && !$.contains(editCell.parentNode, $event.target)
+              $scope.$applyAsync(unedit)
+            return
 
         ################################# main
 

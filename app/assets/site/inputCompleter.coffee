@@ -13,7 +13,8 @@ app.directive 'inputCompleter', [
       submit: '&'
     link: ($scope, $element, $attrs) ->
       # this doesn't happen early enough with normal angular binding:
-      $element[0].firstChild.firstChild.setAttribute('name', $attrs.name)
+      $element[0].firstChild.setAttribute('name', $attrs.inputName)
+      min = 3 unless isFinite(min = parseInt($attrs.min))
       sent = resend = undefined
       $scope.choices = []
 
@@ -40,7 +41,7 @@ app.directive 'inputCompleter', [
       $scope.search = (input) ->
         if sent
           resend = input != sent && input
-        else if input && input.length >= 3
+        else if input?.length >= min
           resend = undefined
           sent = input
           $scope.choices.push
@@ -57,8 +58,10 @@ app.directive 'inputCompleter', [
           else
             c.select)
 
-      $scope.enter = (input) ->
-        handle($scope.submit({$input:input})) if input
+      $scope.enter = ($event, input) ->
+        handle($scope.submit({$event:$event, $input:input})) if input.length >= min
+
+      $scope.search($scope.value)
 
       return
 ]

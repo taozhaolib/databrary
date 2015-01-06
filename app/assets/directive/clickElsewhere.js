@@ -8,7 +8,7 @@ app.directive('clickElsewhere', [
       var action = $parse($attrs.clickElsewhere);
       return function ($scope, $element) {
         $document.on('click', function (event) {
-          if (!$.contains($element[0], event.target))
+          if ($element[0] != event.target && !$.contains($element[0], event.target))
             $scope.$apply(function () {
               action($scope, {$event:event});
             });
