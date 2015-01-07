@@ -150,6 +150,7 @@ object AngularController extends SiteController {
     , TagApi.top
     , routes.javascript.AngularController.cite
     , routes.javascript.AngularController.void
+    , SiteApi.activity
     )
   }
 

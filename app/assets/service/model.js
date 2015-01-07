@@ -1128,10 +1128,17 @@ app.factory('modelService', [
 
     Tag.search = function (query) {
       return router.http(router.controllers.TagApi.search, query)
-        .then(function(res){
+        .then(function(res) {
           //do other stuff?
           return res.data;
-      });
+        });
+    };
+
+    Tag.top = function () {
+      return router.http(router.controllers.TagApi.top)
+        .then(function(res) {
+          return res.data;
+        });
     };
 
     Slot.prototype.setTag = function (tag, vote, keyword) {
@@ -1169,7 +1176,18 @@ app.factory('modelService', [
       analytic: function () {
         return router.http(router.controllers.AngularController.void, {}, {cache:false});
       },
-
+      activity: function () {
+        return router.http(router.controllers.SiteApi.activity)
+          .then(function (res) {
+            for (var i = 0; i < res.data.length; i ++) {
+              if ('volume' in res.data[i])
+                res.data[i].volume = volumeMake(res.data[i].volume);
+              if ('party' in res.data[i])
+                res.data[i].party = partyMake(res.data[i].party);
+            }
+            return res.data;
+          });
+      }
     };
   }
 ]);

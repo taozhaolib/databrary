@@ -284,7 +284,7 @@ object VolumeApi extends VolumeController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  private[controllers] final val queryOpts : JsonOptions.Options = Map("access" -> Seq("ADMIN"), "citation" -> Nil)
+  private final val queryOpts : JsonOptions.Options = Map("access" -> Seq("ADMIN"), "citation" -> Nil)
   def query = SiteAction.async { implicit request =>
     for {
       vl <- searchResults._2

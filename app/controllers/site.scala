@@ -229,11 +229,11 @@ object SiteApi extends ApiController {
     for {
       va <- Activity.volumes(8)
       vl <- va.mapAsync { case (t, v) =>
-        v.json(VolumeApi.queryOpts).map((t, _))
+        v.json(Map("access" -> Seq("ADMIN"))).map(j => (t, JsonField("volume", j)))
       }
       aa <- Activity.authorizations(8)
-      al = aa.map { case (t, p) => (t, p.json) }
+      al = aa.map { case (t, p) => (t, JsonField("party", p.json)) }
       l = (vl ++ al).sortWith((a, b) => a._1.isAfter(b._1)).take(12)
-    } yield (Ok(JsonArray.map[(Timestamp, JsonObject), JsonObject] { case (t, j) => j + ('activity -> t) } (l)))
+    } yield (Ok(JsonArray.map[(Timestamp, JsonField), JsonObject] { case (t, j) => JsonObject('time -> t, j) } (l)))
   }
 }

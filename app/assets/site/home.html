@@ -54,30 +54,27 @@
       </ol>
     </div>
 
-<!--     <div class="home_parties">
-      <div class="row">
-        <div class="col">
-          <h1 class="home-parties-header"><span class="background"></span><span message="welcome.investigators"></span></h1>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in investigators">
+    <div>
+      <span>Activity</span>
+      <dl>
+        <dt ng-repeat-start="act in ::activity">
+          <time datetime="{{::act.time | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
+            {{::act.time | date}}
+          </time>
+        </dt>
+        <dd ng-if="::act.volume" ng-init="volume=act.volume">
+          <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
+          <div class="volume-list-investigators" ng-if="::volume.access">
+            <ul class="inline-block comma">
+              <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
+                <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
+              </li>
+            </ul>
+          </div>
+        </dd>
+        <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
           <portrait></portrait>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h1 class="home-parties-header"><span class="background"></span><span message="welcome.users"></span></h1>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in users">
-          <portrait></portrait>
-        </div>
-      </div>
+        </dd>
+      </dl>
     </div>
-  </div> -->
 </article>
