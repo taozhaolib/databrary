@@ -201,7 +201,10 @@ class ObjectController[O <: SiteObject] extends SiteController {
     else Redirect(o.pageURL)
 }
 
-object Site extends SiteController {
+trait ApiController extends SiteController
+trait HtmlController extends SiteController
+
+object Site extends HtmlController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
 
@@ -219,9 +222,18 @@ object Site extends SiteController {
 
   def favicon =
     Assets.at("/public/icons", "favicon.ico")
-
 }
 
-
-trait ApiController extends SiteController
-trait HtmlController extends SiteController
+object SiteApi extends ApiController {
+  def activity = SiteAction.async { implicit request =>
+    for {
+      va <- Activity.volumes(8)
+      vl <- va.mapAsync { case (t, v) =>
+        v.json(VolumeApi.queryOpts).map((t, _))
+      }
+      aa <- Activity.authorizations(8)
+      al = aa.map { case (t, p) => (t, p.json) }
+      l = (vl ++ al).sortWith((a, b) => a._1.isAfter(b._1)).take(12)
+    } yield (Ok(JsonArray.map[(Timestamp, JsonObject), JsonObject] { case (t, j) => j + ('activity -> t) } (l)))
+  }
+}

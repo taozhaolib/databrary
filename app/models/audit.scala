@@ -1,47 +1,43 @@
 package models
 
 import scala.concurrent.{Future,ExecutionContext}
+import play.api.libs.json.JsValue
 import macros._
 import dbrary._
 import dbrary.SQL._
 import site.Site
 
-abstract class AuditBase(when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value) extends TableRow {
+/** Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.
+  * @constructor Create a new unpersisted audit record. There is no reason to do this.
+  * @param when the time of this event
+  * @param who the user who generated this event. May no longer be a valid party.
+  * @param ip the ip of the client machine that generated this event
+  * @param action the type of event
+  */
+sealed class Audit(val when : Timestamp, val who : Party.Id, val ip : Inet, val action : Audit.Action.Value)
+  extends TableRow {
   private[models] def sqlKey = SQLTerms()
 
   /** Look up the party who generated this event, if still valid. */
   def party(implicit site : Site) = Party.get(who)(site)
 }
 
-/** Represents an event row in an audit table of a particular type.  Currently unused as there is intentionally no read/modify access to audit tables.
-  * @constructor Create a new unpersisted audit record. There is no reason to do this.
-  * @tparam T the type of data attached to this record. Usually this is a TableRow instance for a corresponding audit_t table.
-  * @param when the time of this event
-  * @param who the user who generated this event. May no longer be a valid party.
-  * @param ip the ip of the client machine that generated this event
-  * @param action the type of event
-  * @param row the remaining data columns
-  */
-final case class Audit[T](when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, row : T) extends AuditBase(when, who, ip, action) {
-  def withRow[A](row : A) = copy[A](row = row)
-}
-
 /** Helper for audit tables. */
-object Audit extends Table[Audit[_]]("audit.audit") {
+object Audit extends Table[Audit]("audit.audit") {
   /** The possible events or actions on the site that can be put into audit tables. */
   object Action extends SQL.Enum("audit_action") {
     val attempt, open, close, add, change, remove, superuser = Value
   }
 
-  private[models] def row[T](tableName : String = "audit", row : T = ()) = {
-    implicit val fromTable : FromTable = FromTable(tableName)
+  private[models] def row[T](tableName : String = "audit") = {
+    implicit val fromTable : FromTable = FromTable("audit." + tableName)
     Columns(
       SelectColumn[Timestamp]("audit_time"),
       SelectColumn[Party.Id]("audit_user"),
       SelectColumn[Inet]("audit_ip"),
       SelectColumn[Action.Value]("audit_action"))
       .map { (when, who, ip, action) =>
-        new Audit[T](when, who, ip, action, row)
+        new Audit(when, who, ip, action)
       }
   }
   private[models] val columns = row[Unit]()
@@ -100,4 +96,12 @@ object Audit extends Table[Audit[_]]("audit.audit") {
 
   private[models] def download(table : String, ids : SQLTerm[_]*)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : Future[Boolean] =
     action(Action.open, table, SQLTerms(ids : _*)).execute
+}
+
+final class Analytic(when : Timestamp, who : Party.Id, ip : Inet, action : Audit.Action.Value, route : String, data : JsValue)
+  extends Audit(when, who, ip, action)
+
+object Analytic extends Table[Analytic]("analytic") {
+  def add(action : Audit.Action.Value, route : String, data : JsValue)(implicit site : Site, dbc : Site.DB, exc : ExecutionContext) : Future[Boolean] =
+    Audit.action(action, table, SQLTerms('route -> route, 'data -> data)).execute
 }

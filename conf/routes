@@ -108,6 +108,7 @@ POST    /volume/$vID<[0-9]+>/ingest/json                                        
 GET     /constants.js                                                                             controllers.AngularController.constantsJs
 # takes nothing, does nothing (except side-effects: authorization, analytics, etc.), returns nothing
 GET     /api/null                                                                                 controllers.AngularController.void
+GET     /api/activity                                                                             controllers.SiteApi.activity
 
 # ----- LOGIN ----- #
 GET     /api/user                                                                                 controllers.LoginApi.get

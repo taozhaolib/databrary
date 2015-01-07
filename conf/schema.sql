@@ -163,6 +163,7 @@ COMMENT ON COLUMN "authorize"."site" IS 'Level of site access granted to child, 
 COMMENT ON COLUMN "authorize"."member" IS 'Level of permission granted to the child as a member of the parent''s group';
 
 SELECT audit.CREATE_TABLE ('authorize');
+CREATE INDEX "authorize_activity_idx" ON audit."authorize" ("audit_time" DESC) WHERE "audit_action" IN ('add', 'change') AND "site" > 'NONE';
 
 CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
@@ -232,6 +233,7 @@ CREATE TABLE "volume_access" (
 COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
 
 SELECT audit.CREATE_TABLE ('volume_access');
+CREATE INDEX "volume_share_activity_idx" ON audit."volume_access" ("audit_time" DESC) WHERE "audit_action" = 'add' AND "party" = 0 AND "children" > 'NONE';
 
 CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
 	SELECT access FROM (
