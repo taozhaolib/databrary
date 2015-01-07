@@ -24,8 +24,6 @@ object CSV{
           val header = cc.makeHeader(template, r)
           val body = cc.makeRows(cr, header)
           cc.buildCSV(header, body)
-          
-
         }
       }
     }
@@ -74,26 +72,45 @@ private class CSVCreate {
   }
 
   def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]]): String = {
+    def escapeCSV(s: String): String = {
+      if(s.contains("\"") || s.contains("\n") || s.contains(",")){
+        "\"" + s.replace("\"", "\"\"") + "\""
+      } else {
+        s
+      }
+    } 
 
-    val headVals = head.map(h => h._2.name).mkString(",") + "\n"
+    def catName(n: Option[RecordCategory]): String = {
+      n match {
+        case Some(t) => t.name
+        case None => ""
+      }
+    }
+    def incrementNames(names: List[String]): List[String] = {
+
+      names.zipWithIndex.groupBy(_._1).values.toList.flatMap{
+
+        case n :: Nil => n :: Nil
+        case ns => ns.zipWithIndex.map{
+          case((str, idx), i) =>
+
+            val Array(pref, suff) = str.split("-")
+
+            (s"$pref${i+1}-$suff", idx)
+        }
+      }.sortBy(_._2).map(_._1)
+    }
+
+    val headVals = incrementNames(head.map(h => List(catName(h._1), h._2.name).mkString("-"))).mkString(",") + "\n"
+
     val rowVals = body.map(rows => rows.map(r => r match{
         case Some(measure) => measure.datum
         case None => ""
       }).mkString(",") + "\n").mkString
 
     headVals + rowVals
-
   }    
 
-
-  def escapeCSV(s: String): String = {
-    if(s.contains("\"") || s.contains("\n") || s.contains(",")){
-      "\"" + s.replace("\"", "\"\"") + "\""
-    } else {
-      s
-    }
-
-  }
 }
 
 
