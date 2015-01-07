@@ -141,6 +141,7 @@ app.controller('volume/slot', [
       delete target.asset
       delete target.record
 
+      blank.fillData() if c == blank
       $scope.playing = 0
       editExcerpt()
       true
