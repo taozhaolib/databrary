@@ -27,7 +27,7 @@ final class SQLTerms private (private val terms : Seq[SQLTerm[_]]) extends SQL.A
   def +:(other : SQLTerm[_]) : SQLTerms = new SQLTerms(other +: terms)
   def :+[A : SQL.Type](other : (Symbol, A)) : SQLTerms = new SQLTerms(terms :+ SQLTerm.ofTuple(other))
   def +:[A : SQL.Type](other : (Symbol, A)) : SQLTerms = new SQLTerms(SQLTerm.ofTuple(other) +: terms)
-  def names = terms.map(_.name).mkString("(", ", ", ")")
+  def names = terms.map(_.name).mkString("(", ",", ")")
   def values = ("VALUES (" +: join(",")) + ")"
 
   /** Terms appropriate for INSERT INTO statements.
