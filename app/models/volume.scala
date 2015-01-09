@@ -202,7 +202,7 @@ object Volume extends TableId[Volume]("volume") {
         Container.rowVolume(vol).join(
           SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record") on_?
           "container.id = slot_record.container")
-        .SELECT(PreparedStatement("") /* should be: sql"ORDER BY container.id"*/)
+        .SELECT(sql"ORDER BY container.id")
         .list.map(fill(records, _))
       }
 
