@@ -20,10 +20,21 @@ object CSV{
     vol.records.flatMap{r => 
       vol.containers.flatMap{
         c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr=> 
+          
           val template = cc.makeCSVTemplate(cr)
+          
           val header = cc.makeHeader(template, r)
+
+          val data = c.zip(cr)
+
+          val containerData = cc.cData(c.filter(x => !(x.top)))
+
           val body = cc.makeRows(cr, header)
-          cc.buildCSV(header, body)
+
+                    
+          cc.buildCSV(header, body, containerData)
+        
+          
         }
       }
     }
@@ -71,7 +82,27 @@ private class CSVCreate {
 
   }
 
-  def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]]): String = {
+  def cData(cs: Seq[Container]): Seq[List[String]] = {
+
+    def getName(s: Option[String]): String = {
+      s match{ 
+        case Some(n) => n
+        case None => ""
+      }
+
+    }
+
+    def getDate(d: Option[Date]): String = 
+      d match{ 
+        case Some(f) => f.toString
+        case None => ""
+      }
+
+    cs.map(c => List(c._id.toString, getName(c.name), getDate(c.date)))
+
+  }
+
+  def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]], cd: Seq[List[String]]): String = {
     def escapeCSV(s: String): String = {
       if(s.contains("\"") || s.contains("\n") || s.contains(",")){
         "\"" + s.replace("\"", "\"\"") + "\""
@@ -101,12 +132,18 @@ private class CSVCreate {
       }.sortBy(_._2).map(_._1)
     }
 
-    val headVals = incrementNames(head.map(h => List(catName(h._1), h._2.name).mkString("-"))).mkString(",") + "\n"
+    val containerHeads = List("session id", "session name", "session date")
 
-    val rowVals = body.map(rows => rows.map(r => r match{
+    val headVals = (containerHeads ++ incrementNames(head.map(h => List(catName(h._1), h._2.name).mkString("-")))).mkString(",") + "\n"
+
+    
+
+    val rs = body.map(rows => rows.map(r => r match{
         case Some(measure) => measure.datum
         case None => ""
-      }).mkString(",") + "\n").mkString
+      }))
+
+    val rowVals = cd.zip(rs).flatMap(v => (v._1 ++ v._2).mkString(",")+"\n").mkString
 
     headVals + rowVals
   }    
