@@ -18,6 +18,7 @@ module Databrary.Snaplet.PG (
   , PG.pgSQL
   , pgRunQuery
   , pgExecute
+  , pgExecute1
   , pgQuery
   , pgQuery1
 
@@ -26,6 +27,7 @@ module Databrary.Snaplet.PG (
 
 import Control.Applicative ((<$>))
 import Control.Lens (set, (^#))
+import Control.Monad (when)
 import Control.Monad.CatchIO (MonadCatchIO)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.State (get)
@@ -141,6 +143,11 @@ pgRunQuery q = liftPG $ \c -> PG.pgRunQuery c q
 
 pgExecute :: (HasPG m, PG.PGQuery q ()) => q -> m Int
 pgExecute q = liftPG $ \c -> PG.pgExecute c q
+
+pgExecute1 :: (HasPG m, PG.PGQuery q ()) => q -> m ()
+pgExecute1 q = do
+  r <- pgExecute q
+  when (r /= 1) $ fail $ "pgExecute1: " ++ show r ++ " rows"
 
 pgQuery :: (HasPG m, PG.PGQuery q a) => q -> m [a]
 pgQuery q = liftPG $ \c -> PG.pgQuery c q

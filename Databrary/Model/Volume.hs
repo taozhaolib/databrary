@@ -1,8 +1,11 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
-module Databrary.Model.Volume where
+module Databrary.Model.Volume 
+  ( testVolume
+  ) where
 
 import Control.Applicative ((<$>))
 import qualified Data.Text as T
+import Data.Tuple.Curry (uncurryN)
 import Snap.Core (writeText)
 
 import Databrary.App
@@ -15,18 +18,27 @@ data Volume = Volume
   { volumeId :: Id Volume
   , volumeName :: T.Text
   , volumeAlias :: Maybe T.Text
+  , volumeBody :: Maybe T.Text
+--  , volumeCreation :: Timestamp
   }
 
 instance HasId Volume where
   key = volumeId
   kind _ = "volume"
 
+class InVolume a where
+  volume :: a -> Volume
+
+instance InVolume Volume where
+  volume = id
+
 getVolume :: (Functor m, Monad m, HasPG m) => Id Volume -> m (Maybe Volume)
 getVolume k =
-  fmap (\(i, n, a) -> Volume i n a)
-    <$> pgQuery1 [pgSQL|SELECT id, name, alias FROM volume WHERE id = ${k}|]
+  fmap (uncurryN Volume)
+    <$> pgQuery1 [pgSQL|SELECT id, name, alias, body FROM volume WHERE id = ${k}|]
 
-volume :: Id Volume -> AppHandler ()
-volume vk = do
+
+testVolume :: Id Volume -> AppHandler ()
+testVolume vk = do
   v <- getVolume vk
   writeText $ maybe "not found" volumeName v

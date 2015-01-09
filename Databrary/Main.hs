@@ -10,11 +10,12 @@ import Paths_databrary (getDataDir)
 import Databrary.App
 import Databrary.Snaplet.PG (pgInit)
 import Databrary.Model.Id (pathIdArg)
-import Databrary.Model.Volume (volume)
+import Databrary.Model.Volume (testVolume)
+import Databrary.Model.Party ()
 
 routes :: [(BS.ByteString, Handler App App ())]
 routes =
-  [ ("", pathIdArg volume)
+  [ ("", pathIdArg testVolume)
   , ("/public", serveDirectory "public")
   ]
 
