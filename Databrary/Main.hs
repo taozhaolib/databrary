@@ -11,11 +11,12 @@ import Databrary.App
 import Databrary.Snaplet.PG (pgInit)
 import Databrary.Model.Id (pathIdArg)
 import Databrary.Model.Volume (testVolume)
-import Databrary.Model.Party ()
+import Databrary.Model.Party (testParty)
 
 routes :: [(BS.ByteString, Handler App App ())]
 routes =
   [ ("", pathIdArg testVolume)
+  , ("", pathIdArg testParty)
   , ("/public", serveDirectory "public")
   ]
 

@@ -1,7 +1,12 @@
 {-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
 module Databrary.Model.SQL 
   ( SelectOutput(..)
+  , Selector
+  , select
   , makeQuery
+  , simpleQueryFlags
+  , preparedQueryFlags
+  , selectQuery
   ) where
 
 import Control.Applicative ((<$>))
@@ -10,7 +15,7 @@ import Data.Char (isLetter, toLower)
 import Data.List (intercalate)
 import qualified Language.Haskell.TH as TH
 
-import Database.PostgreSQL.Typed.Query (QueryFlags, makePGQuery)
+import Database.PostgreSQL.Typed.Query (QueryFlags(..), makePGQuery)
 
 data SelectOutput
   = SelectExpr String
@@ -41,9 +46,9 @@ data Selector = Selector
   , selectJoined :: String
   }
 
-select :: TH.Name -> [String] -> String -> Selector
-select f e t =
-  Selector (SelectMap (TH.VarE f) $ map (SelectExpr . (t ++) . ('.':)) e) t (',':t)
+select :: TH.Name -> String -> [String] -> Selector
+select f t e =
+  Selector (SelectMap (TH.ConE f) $ map (SelectExpr . (t ++) . ('.':)) e) t (',':t)
 
 joinWith :: Selector -> (String -> String) -> Selector
 joinWith sel j = sel{ selectJoined = j (selectSource sel) }
@@ -56,7 +61,7 @@ takeWhileEnd p = fst . foldr go ([], False) where
   go x (rest, done)
     | not done && p x = (x:rest, False)
     | otherwise = (rest, True)
-  
+
 makeQuery :: QueryFlags -> (String -> String) -> SelectOutput -> TH.ExpQ
 makeQuery flags sql output = do
   nl <- mapM (TH.newName . colVar) cols
@@ -68,3 +73,11 @@ makeQuery flags sql output = do
     [] -> "c"
     (h:l) -> toLower h : l
   cols = selectColumns output
+
+simpleQueryFlags, preparedQueryFlags :: QueryFlags
+simpleQueryFlags = QueryFlags False Nothing
+preparedQueryFlags = QueryFlags False (Just [])
+
+selectQuery :: Selector -> String -> TH.ExpQ
+selectQuery (Selector{ selectOutput = o, selectSource = s }) sql =
+  makeQuery preparedQueryFlags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o

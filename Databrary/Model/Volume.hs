@@ -23,8 +23,8 @@ data Volume = Volume
   }
 
 instance HasId Volume where
-  key = volumeId
-  kind _ = "volume"
+  idOf = volumeId
+  kindOf _ = "volume"
 
 class InVolume a where
   volume :: a -> Volume

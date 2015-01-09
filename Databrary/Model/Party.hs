@@ -1,32 +1,35 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Party 
-  ( Party(..)
+  ( module Databrary.Model.Types.Party
   , changeParty
+  , getParty
+  , testParty
   ) where
 
 import Data.Int (Int32)
-import qualified Data.Text as T
+import Snap.Core (writeText)
 
 import Databrary.Snaplet.PG
+import Databrary.App
 import Databrary.Model.Id
 import Databrary.Model.Inet
+import Databrary.Model.Types.Party
 import Databrary.Model.SQL.Party
+import Databrary.Model.SQL (selectQuery)
 
 useTPG
-
-data Party = Party
-  { partyId :: Id Party
-  , partyName :: T.Text
-  , partyAffiliation :: Maybe T.Text
-  , partyURL :: T.Text
-  }
-
-instance HasId Party where
-  key = partyId
-  kind _ = "party"
 
 changeParty :: HasPG m => Party -> m ()
 changeParty Party{..} = pgExecute1 $(changeQuery)
   where
   clientIP = Inet ""
   identityId = (-1 :: Int32)
+
+getParty :: HasPG m => Id Party -> m (Maybe Party)
+getParty i = pgQuery1 $(selectQuery rowSelector "WHERE id = ${i}")
+
+
+testParty :: Id Party -> AppHandler ()
+testParty i = do
+  p <- getParty i
+  writeText $ maybe "not found" partyName p
