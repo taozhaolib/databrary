@@ -667,17 +667,22 @@ app.directive 'spreadsheet', [
                   edit(cell, info, true)
               return
             when 'metric'
-              if value != undefined
+              if value
                 arr(records[info.c], value)
                 populateCols()
                 generate()
               return
             when 'category'
-              if value != undefined
+              if value
                 arr(obj(records, value), 'id')
                 populateCols()
                 generate()
               return
+            when 'options'
+              # force completion of the first match
+              # this completely prevents people from using prefixes of options but maybe that's reasonable
+              c = editCompletions(value) if value
+              value = c[0] if c?.length
 
           switch info.t
             when 'name', 'date', 'consent'
@@ -842,18 +847,24 @@ app.directive 'spreadsheet', [
           unedit($event)
           return
 
-        complete = () ->
+        editCompletions = (input) ->
+          i = input.toLowerCase()
+          (o for o in editScope.options when o.toLowerCase().startsWith(i))
+
+        editSelect = () ->
           editInput.value = @text
           unedit(true)
           @text
 
         editScope.completer = (input) ->
-          i = input.toLowerCase()
-          match = ({text:o, select: complete} for o in editScope.options when o.toLowerCase().startsWith(i))
-          if match.length == 1
-            match[0].text
-          else
-            match
+          match = editCompletions(input)
+          switch match.length
+            when 0
+              input
+            when 1
+              match[0]
+            else
+              ({text:o, select: editSelect, default: input && i==0} for o, i in match)
 
         editScope.next = ($event) ->
           cell = unedit($event)
