@@ -325,8 +325,8 @@ $$;
 -- this needs to be done as SU, so we use a placeholder:
 CREATE FUNCTION segments_union(segment[], segment[]) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union';
 	sql AS $$ SELECT NULL::segment[] $$;
-CREATE FUNCTION segments_union(segment[], segment) RETURNS segment[] IMMUTABLE STRICT LANGUAGE sql AS
-	$$ SELECT segments_union($1, segments($2)) $$;
+CREATE FUNCTION segments_union(segment[], segment) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union1';
+	sql AS $$ SELECT segments_union($1, segments($2)) $$;
 CREATE AGGREGATE "segments_union" (segment) (SFUNC = segments_union, STYPE = segment[], INITCOND = '{}');
 
 ----------------------------------------------------------- containers
