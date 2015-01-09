@@ -20,7 +20,7 @@ app.controller('volume/excerpts', [
     };
 
     $scope.jumpLink = function (excerpt) {
-      return excerpt.container.route({select:excerpt.segment.format()});
+      return excerpt.container.route({asset: excerpt.id, select:excerpt.segment.format()});
     };
   }
 ]);

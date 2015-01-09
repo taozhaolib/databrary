@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'spreadsheet', [
-  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout', '$document',
-  (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document) ->
+  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout', '$document', '$location',
+  (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document, $location) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
     byNumber = (a,b) -> a-b
@@ -345,6 +345,9 @@ app.directive 'spreadsheet', [
           cell = generateCell(row, 'asset', a.name, id + '-asset_' + b)
           icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
           icon.src = a.icon
+          icon.onclick = () ->
+            t = {asset:a.id}
+            $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
           generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
@@ -579,6 +582,16 @@ app.directive 'spreadsheet', [
             expand(info) if info.n
             record
 
+        saveAsset = (cell, info, v) ->
+          data = {}
+          t = info.t
+          t = 'name' if t == 'asset'
+          data[t] = v ? ''
+          return if info.asset[t] == data[t]
+          saveRun cell, info.asset.save(data).then () ->
+            generateText(cell, t, info.asset[t])
+            return
+
         ################################# Interaction
 
         expandedCat = undefined
@@ -689,6 +702,8 @@ app.directive 'spreadsheet', [
               saveSlot(cell, info, value)
             when 'rec'
               saveMeasure(cell, info.record, info.metric, value)
+            when 'asset'
+              saveAsset(cell, info, value)
 
         editScope = $scope.$new(true)
         editScope.constants = constants
@@ -709,18 +724,24 @@ app.directive 'spreadsheet', [
           cell
 
         edit = (cell, info, alt) ->
-          return if info.slot?.id == volume.top.id
           switch info.t
             when 'name'
+              return if info.slot.id == volume.top.id
               editScope.type = 'text'
               editInput.value = info.slot.name
             when 'date'
+              return if info.slot.id == volume.top.id
               editScope.type = 'date'
               editInput.value = info.slot.date
             when 'consent'
               editScope.type = 'consent'
               editInput.value = (info.slot.consent || 0) + ''
             when 'rec', 'add'
+              if info.c == 'asset'
+                # for now, just go to slot edit
+                $location.url(info.slot.editRoute())
+                return
+              return if info.slot.id == volume.top.id
               if info.t == 'rec' && info.metric.id == 'id'
                 setRecord(cell, info, null)
                 return
@@ -786,6 +807,9 @@ app.directive 'spreadsheet', [
                 editScope.options.push(c)
               editScope.options.sort(byId)
               editScope.options.push(pseudoCategory[0]) unless 0 of records
+            when 'asset'
+              editScope.type = 'text'
+              editInput.value = info.asset.name
             else
               return
 
