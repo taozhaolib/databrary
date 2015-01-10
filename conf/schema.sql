@@ -163,6 +163,7 @@ COMMENT ON COLUMN "authorize"."site" IS 'Level of site access granted to child, 
 COMMENT ON COLUMN "authorize"."member" IS 'Level of permission granted to the child as a member of the parent''s group';
 
 SELECT audit.CREATE_TABLE ('authorize');
+CREATE INDEX "authorize_activity_idx" ON audit."authorize" ("audit_time" DESC) WHERE "audit_action" IN ('add', 'change') AND "site" > 'NONE';
 
 CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
@@ -232,6 +233,7 @@ CREATE TABLE "volume_access" (
 COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
 
 SELECT audit.CREATE_TABLE ('volume_access');
+CREATE INDEX "volume_share_activity_idx" ON audit."volume_access" ("audit_time" DESC) WHERE "audit_action" = 'add' AND "party" = 0 AND "children" > 'NONE';
 
 CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
 	SELECT access FROM (
@@ -317,6 +319,15 @@ COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end point
 CREATE AGGREGATE "segment_union" (segment) (SFUNC = range_union, STYPE = segment, INITCOND = 'empty');
 CREATE AGGREGATE "segment_intersect" (segment) (SFUNC = range_intersect, STYPE = segment, INITCOND = '(,)');
 
+CREATE FUNCTION "segments" (segment) RETURNS segment[] LANGUAGE sql IMMUTABLE STRICT AS $$
+	SELECT CASE WHEN isempty($1) THEN ARRAY[]::segment[] ELSE ARRAY[$1] END
+$$;
+-- this needs to be done as SU, so we use a placeholder:
+CREATE FUNCTION segments_union(segment[], segment[]) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union';
+	sql AS $$ SELECT NULL::segment[] $$;
+CREATE FUNCTION segments_union(segment[], segment) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union1';
+	sql AS $$ SELECT segments_union($1, segments($2)) $$;
+CREATE AGGREGATE "segments_union" (segment) (SFUNC = segments_union, STYPE = segment[], INITCOND = '{}');
 
 ----------------------------------------------------------- containers
 
@@ -557,7 +568,7 @@ CREATE TRIGGER "comment_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON
 
 CREATE TABLE "tag" (
 	"id" serial NOT NULL Primary Key,
-	"name" varchar(32) NOT NULL Unique
+	"name" varchar(32) NOT NULL Unique Check ("name" ~ '^[a-z][-a-z ]+[a-z]$')
 );
 ALTER TABLE "tag"
 	ALTER "name" SET STORAGE EXTERNAL;
@@ -583,7 +594,7 @@ END; $$;
 
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
-	"who" integer NOT NULL References "account",
+	"who" integer References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	Primary Key ("tag", "who", "container", "segment"),
@@ -592,6 +603,13 @@ CREATE TABLE "tag_use" (
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to slots.';
+
+CREATE TABLE "keyword_use" (
+	Primary Key ("tag", "container", "segment"),
+	Exclude USING gist (singleton("tag") WITH =, singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("tag_use");
+CREATE INDEX "keyword_use_slot_idx" ON "keyword_use" ("container", "segment");
+COMMENT ON TABLE "keyword_use" IS 'Special "keyword" tags editable as volume data.';
 
 
 ----------------------------------------------------------- records

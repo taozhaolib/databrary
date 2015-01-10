@@ -6,6 +6,7 @@ import play.api.libs.json.{Json,JsNull}
 import java.net.URL
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Any real-world individual, group, institution, etc.
@@ -159,8 +160,8 @@ final class Account protected (val party : Party, private[this] var email_ : Str
   def clearTokens(except : Option[Token] = None) = AccountToken.clearAccount(id, except)
 
   def recentAttempts : Future[Long] =
-    SQL("SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = ? AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'")
-    .apply(id).single(SQLCols[Long])
+    sql"SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = $id AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'"
+    .run.single(SQL.Cols[Long])
 }
 
 object Party extends TableId[Party]("party") {
@@ -187,11 +188,11 @@ object Party extends TableId[Party]("party") {
     case _ => None
   }
   private[models] def _get(i : Id) : Future[Party] =
-    row.SELECT("WHERE id = ?").apply(i).single
+    row.SELECT(sql"WHERE id = $i").single
   /** Look up a party by id. */
   def get(i : Id)(implicit site : Site) : Future[Option[Party]] =
     getStatic(i).fold {
-      row.SELECT("WHERE id = ?").apply(i).singleOpt
+      row.SELECT(sql"WHERE id = $i").singleOpt
     } { p =>
       async(Some(p))
     }
@@ -199,8 +200,8 @@ object Party extends TableId[Party]("party") {
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
     Authorization.rowParent()
-    .SELECT("ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
-    .apply().list
+    .SELECT(lsql"ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
+    .list
 
   /** Create a new party. */
   def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
@@ -210,16 +211,15 @@ object Party extends TableId[Party]("party") {
       'affiliation -> affiliation,
       'url -> url),
       "id")
-    .single(SQLCols[Id]).map(new Party(_, name, orcid, affiliation, url))
+    .single(SQL.Cols[Id]).map(new Party(_, name, orcid, affiliation, url))
 
-  private def byName(implicit site : Site) =
+  private def byName(name : String)(implicit site : Site) = {
+    val q = name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")
     if (site.access.site >= Permission.SHARED)
-      "(name ILIKE ? OR email ILIKE ?)"
+      sql"(name || COALESCE(' ' || email, '')) ILIKE $q"
     else
-      "name ILIKE ?"
-  private def byNameArgs(name : String)(implicit site : Site) =
-    SQLArgs(name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")) *
-      (if (site.access.site >= Permission.SHARED) 2 else 1)
+      sql"name ILIKE $q"
+  }
 
   /** Search for parties
     * @param query string to match against name/email (case insensitive substring)
@@ -229,18 +229,18 @@ object Party extends TableId[Party]("party") {
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
   def search(query : Option[String], access : Option[Permission.Value] = None, institution : Option[Boolean] = None, authorize : Option[Party] = None, volume : Option[Volume] = None)(implicit site : Site) : Future[Seq[Party]] =
-    row.SELECT(if (access.nonEmpty) "JOIN authorize_view ON party.id = child AND parent = 0" else "",
-      "WHERE id > 0",
-      if (query.nonEmpty) "AND " + byName else "",
-      if (access.nonEmpty) "AND site = ?" else "",
-      institution match {
+    row.SELECT(LiteralStatement("")
+      + (if (access.nonEmpty) " JOIN authorize_view ON party.id = child AND parent = 0" else "")
+      + " WHERE id > 0"
+      ++ query.fold(Statement.empty)(" AND " +: byName(_))
+      ++ access.fold(Statement.empty)(a => lsql" AND site = $a")
+      + (institution match {
         case None => ""
-        case Some(false) => "AND account.password IS NOT NULL"
-        case Some(true) => "AND account.id IS NULL"
-      },
-      if (authorize.nonEmpty) "AND id != ? AND id NOT IN (SELECT child FROM authorize WHERE parent = ? UNION SELECT parent FROM authorize WHERE child = ?)" else "",
-      if (volume.nonEmpty) "AND id NOT IN (SELECT party FROM volume_access WHERE volume = ?)" else "")
-    .immediately.apply(query.fold(SQLArgs())(byNameArgs(_)) ++ access.fold(SQLArgs())(SQLArgs(_)) ++ authorize.fold(SQLArgs())(a => SQLArgs(a.id) * 3) ++ volume.fold(SQLArgs())(v => SQLArgs(v.id)))
+        case Some(false) => " AND account.password IS NOT NULL"
+        case Some(true) => " AND account.id IS NULL"
+      })
+      ++ authorize.fold(Statement.empty)(a => lsql" AND id != ${a.id} AND id NOT IN (SELECT child FROM authorize WHERE parent = ${a.id} UNION SELECT parent FROM authorize WHERE child = ${a.id})")
+      ++ volume.fold(Statement.empty)(v => lsql" AND id NOT IN (SELECT party FROM volume_access WHERE volume = ${v.id})"))
     .list
 
   /** The special party group representing everybody (including anonymous users) on the site.
@@ -265,7 +265,7 @@ object SiteParty {
 
   def get(i : Party.Id)(implicit site : Site) : Future[Option[SiteParty]] =
     Party.getStatic(i).fold {
-      row.SELECT("WHERE party.id = ?").apply(i).singleOpt
+      row.SELECT(sql"WHERE party.id = $i").singleOpt
     } (get(_).map(Some(_)))
 }
 
@@ -288,15 +288,15 @@ object Account extends Table[Account]("account") {
     */
   def get(i : Id)(implicit site : Site) : Future[Option[Account]] =
     if (i === site.identity.id) Future.successful(site.user) else // optimization
-    row.SELECT("WHERE id = ?").apply(i).singleOpt
+    row.SELECT(sql"WHERE id = $i").singleOpt
   /** Look up a user by email. */
   def getEmail(email : String) : Future[Option[Account]] =
-    row.SELECT("WHERE email = ?").apply(email).singleOpt
+    row.SELECT(sql"WHERE email = $email").singleOpt
   /** Look up a user by openid.
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
   def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
-    row.SELECT("WHERE openid = ? AND COALESCE(email = ?, true) LIMIT 1").apply(openid, email).singleOpt
+    row.SELECT(sql"WHERE openid = $openid AND COALESCE(email = $email, true) LIMIT 1").singleOpt
 
   def create(party : Party, email : String, password : Option[String] = None, openid : Option[URL] = None)(implicit site : Site) : Future[Account] =
     Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>

@@ -25,6 +25,7 @@ app.directive('volumeEditOverviewForm', [
       init(volume);
 
       form.save = function () {
+        page.messages.clear(form);
         if (!form.data.published)
           form.data.citation = {head:''};
 
@@ -34,10 +35,10 @@ app.directive('volumeEditOverviewForm', [
           .then(function (vol) {
             form.validator.server({});
 
-            form.messages.add({
+            page.messages.add({
               type: 'green',
-              countdown: 3000,
               body: page.constants.message('volume.edit.success'),
+              owner: form
             });
 
             init(vol);
@@ -51,6 +52,7 @@ app.directive('volumeEditOverviewForm', [
       };
 
       form.autoDOI = function () {
+        page.messages.clear(form);
         var doi = page.constants.regex.doi.exec(form.data.citation.url);
 
         if (!doi || !doi[1]) {
@@ -65,16 +67,16 @@ app.directive('volumeEditOverviewForm', [
 
             form.$setDirty();
 
-            form.messages.add({
+            page.messages.add({
               type: 'green',
-              countdown: 3000,
               body: page.constants.message('volume.edit.autodoi.citation.success'),
+              owner: form
             });
           }, function () {
-            form.messages.add({
+            page.messages.add({
               type: 'red',
-              countdown: 5000,
               body: page.constants.message('volume.edit.autodoi.citation.error'),
+              owner: form
             });
           });
       };

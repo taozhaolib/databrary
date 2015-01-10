@@ -30,21 +30,23 @@ app.directive('accessGrantForm', [
       //
 
       form.save = function () {
+        page.messages.clear(form);
         form.data.children = form.data.extend ? form.data.individual : 0;
 
         volume.accessSave(access.party.id, form.data).then(function () {
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('access.grant.save.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
 
           delete access.new;
           form.$setPristine();
         }, function (res) {
-          form.messages.addError({
+          page.messages.addError({
             body: page.constants.message('access.grant.save.error'),
             report: res,
+            owner: form
           });
 
           page.display.scrollTo(form.$element);
@@ -52,23 +54,25 @@ app.directive('accessGrantForm', [
       };
 
       form.remove = function () {
+        page.messages.clear(form);
         if (access.new) {
           form.removeSuccessFn(access);
           return;
         }
         volume.accessDelete(access.party.id).then(function () {
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('access.grant.remove.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
 
           form.$setPristine();
           form.removeSuccessFn(access);
         }, function (res) {
-          form.messages.addError({
+          page.messages.addError({
             body: page.constants.message('access.grant.remove.error'),
             report: res,
+            owner: form
           });
           page.display.scrollTo(form.$element);
         });

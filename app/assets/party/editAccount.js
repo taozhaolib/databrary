@@ -18,14 +18,15 @@ app.directive('partyEditAccountForm', [
       });
 
       form.save = function () {
+        page.messages.clear(form);
         party.save(form.data).then(
           function () {
             form.validator.server({});
 
-            form.messages.add({
+            page.messages.add({
               type: 'green',
-              countdown: 3000,
               body: page.constants.message('party.edit.profile.success'),
+              owner: form
             });
 
             init();

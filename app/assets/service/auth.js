@@ -8,6 +8,7 @@ app.factory('authService', [
     //
 
     auth.logout = function () {
+      messages.clear(auth);
       models.Login.logout().then(function () {
         $location.url('/');
         $route.reload();
@@ -15,7 +16,6 @@ app.factory('authService', [
         messages.add({
           body: constants.message('logout.success'),
           type: 'yellow',
-          countdown: 3000
         });
       }, function (res) {
         $location.url('/');
@@ -23,6 +23,8 @@ app.factory('authService', [
         messages.add({
           body: constants.message('logout.error'),
           report: res,
+          owner: auth,
+          persist: true
         });
       });
     };

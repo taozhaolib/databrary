@@ -1,29 +1,25 @@
 'use strict';
 
 app.factory('displayService', [
-  '$rootScope', 'storageService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
-  function ($rootScope, storage, $filter, messages, constants, $timeout, window) {
+  '$rootScope', 'storageService', '$filter', 'messageService', 'tooltipService', 'constantService', '$timeout', '$window',
+  function ($rootScope, storage, $filter, messages, tooltips, constants, $timeout, window) {
     var display = {};
 
-    //
-
-    display.title = 'Welcome!';
-
-    //
+    display.title = '';
 
     display.loading = false;
 
     $rootScope.$on('$routeChangeStart', function () {
       display.loading = true;
       display.error = false;
+      tooltips.clear();
+      messages.clear();
     });
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
       display.toolbarLinks = [];
     });
-
-    //
 
     display.error = undefined;
 
@@ -35,11 +31,7 @@ app.factory('displayService', [
       $rootScope.$broadcast('displayService-error', error);
     });
 
-    //
-
     display.toolbarLinks = [];
-
-    //
 
     var $scroll = $('html,body');
 
@@ -78,18 +70,15 @@ app.factory('displayService', [
       event.preventDefault();
     };
 
-    //
-
     /* TODO: this should really use .canPlayType */
     if (window.navigator.userAgent.toLowerCase().includes('firefox') &&
         window.navigator.platform.toLowerCase().includes('mac'))
       messages.add({
         type: 'yellow',
-        closeable: true,
-        body: constants.message('video.unsupported')
+        body: constants.message('video.unsupported'),
+        persist: true
       });
 
-    //
     return display;
   }
 ]);

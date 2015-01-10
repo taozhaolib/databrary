@@ -28,6 +28,7 @@ app.directive('authApplyForm', [
       };
 
       var saveQuery = function () {
+        page.messages.clear(form);
         party.authorizeSearch(true, angular.extend({
           notfound: true,
           name: auth.query
@@ -36,10 +37,10 @@ app.directive('authApplyForm', [
           form.$setPristine();
           delete auth.new;
 
-          form.messages.add({
+          page.messages.add({
             type: 'green',
-            countdown: 3000,
-            body: page.constants.message('auth.request.notfound.success')
+            body: page.constants.message('auth.request.notfound.success'),
+            owner: form
           });
 
           form.successFn();

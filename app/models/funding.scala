@@ -6,6 +6,7 @@ import play.api.Play.current
 import macros._
 import macros.async._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 final class Funder(val id : Funder.Id, val name : String) extends TableRow {
@@ -85,7 +86,7 @@ object Funder extends Table[Funder]("funder") {
     }
 
   private[models] def get(id : Id) : Future[Option[Funder]] =
-    row.SELECT("WHERE fundref_id = ?").apply(id).singleOpt.orElseAsync(
+    row.SELECT(sql"WHERE fundref_id = $id").singleOpt.orElseAsync(
       fundrefId(id).filterAsync(f => INSERT(f.sqlArgs).execute))
 
   def search(query : String, all : Boolean = false) : Future[Seq[Funder]] =
@@ -102,7 +103,7 @@ object Funder extends Table[Funder]("funder") {
           } yield (Funder(asId(id), name, alts, country))
         }))
     else
-      row.SELECT("WHERE name ILIKE ?").apply("%" + query + "%").list
+      row.SELECT(sql"WHERE name ILIKE ${"%"+query+"%"}").list
 }
 
 final case class Funding(val funder : Funder, val awards : IndexedSeq[String] = IndexedSeq.empty) {
@@ -122,8 +123,8 @@ object VolumeFunding extends Table[Funding]("volume_funding") {
 
   private[models] def get(vol : Volume) : Future[Seq[Funding]] =
     row
-    .SELECT("WHERE volume = ?")
-    .apply(vol.id).list
+    .SELECT(sql"WHERE volume = ${vol.id}")
+    .list
 
   def set(vol : Volume, funderId : Funder.Id, awards : Option[IndexedSeq[String]]) : Future[Boolean] = {
     val ids = SQLTerms('volume -> vol.id, 'funder -> funderId)
@@ -132,7 +133,7 @@ object VolumeFunding extends Table[Funding]("volume_funding") {
       Funder.get(funderId).flatMap(_.fold(async(false)) { _ =>
         val args = ('awards -> a) +: ids
         DBUtil.updateOrInsert(
-          SQL("UPDATE volume_funding SET awards = ? WHERE", ids.where)(_, _).immediately.apply(args))(
+          (lsql"UPDATE volume_funding SET awards = $a WHERE " ++ ids.where).run(_, _))(
           INSERT(args)(_, _)).execute
       })
     }

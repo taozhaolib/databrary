@@ -14,8 +14,8 @@
 
                             @widget.tag.inputHidden(form.name.fill(Some(tw.tag.name))())
                             <div class="controls">
-                                <button class="vote null" name="vote" value="" @if(!tw.user){disabled}>-</button>
-                                <button class="vote up" name="vote" value="true" @if(tw.user){disabled}>+</button>
+                                <button class="vote null" name="vote" value="" @if(!tw.vote){disabled}>-</button>
+                                <button class="vote up" name="vote" value="true" @if(tw.vote){disabled}>+</button>
                             </div>
 
                             <span class="name">@tw.tag.name</span>

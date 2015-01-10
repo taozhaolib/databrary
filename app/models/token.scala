@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.Crypto
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 trait TokenAuth {
@@ -38,7 +39,7 @@ object Token extends Table[Token]("token") {
   def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
     for {
       r <- UploadToken.clean
-      _ <- SQL("DELETE FROM", table, "WHERE expires < CURRENT_TIMESTAMP").execute
+      _ <- (lsql"DELETE FROM " + table + " WHERE expires < CURRENT_TIMESTAMP").execute
     } yield (r)
 
   private final val rawLength = store.Base64.decodedLength(length)
@@ -61,7 +62,7 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
     DELETE('token -> token.take(Token.length)).execute
 
   def get(token : String) : Future[Option[T]] =
-    row.SELECT("WHERE token = ?").apply(token.take(Token.length)).singleOpt
+    row.SELECT(sql"WHERE token = $token").singleOpt
 
   private def insert[A](f : Token.Id => Future[A]) : Future[A] = {
     /*@scala.annotation.tailrec*/ def loop : Future[A] =
@@ -73,8 +74,8 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   protected def insert[A](args : SQLTerms, returning : Selector[A]) : Future[A] =
     insert[A] { (token : Token.Id) =>
       val a = ('token -> token) +: args
-      SQL("INSERT INTO", table, a.insert, "RETURNING", returning.select)
-        .immediately.apply(a).single(returning.parse)
+      (lsql"INSERT INTO " + table + " " ++ a.insert + " RETURNING " ++ returning.select)
+      .run.single(returning.parse)
     }
 }
 
@@ -84,9 +85,8 @@ sealed abstract class AccountToken protected (id : Token.Id, expires : Timestamp
 
 object AccountToken extends Table[AccountToken]("account_token") {
   private[models] def clearAccount(account : Account.Id, except : Option[Token] = None) : Future[Boolean] =
-    SQL("DELETE FROM", table, "WHERE account = ? AND token <> ?")
-    .immediately.apply(account, except.fold("")(_.id))
-    .execute
+    (lsql"DELETE FROM " + table ++ lsql" WHERE account = $account" ++ except.fold(Statement.empty)(e => lsql" AND token <> ${e.id}"))
+    .run.execute
 }
 
 /** A token, usually sent via email, granting automatic login or registration to the given party.
@@ -172,20 +172,20 @@ object UploadToken extends TokenTable[UploadToken]("upload") {
     .map(_(account))
 
   private[models] def clean(implicit defaultContext : ExecutionContext) : Future[Boolean] =
-    SQL("DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING token")
-      .immediately.apply().list(SQLCols[String])
-      .map(_.map(store.Upload.file(_).delete).forall(identity))
+    lsql"DELETE FROM upload WHERE expires < CURRENT_TIMESTAMP RETURNING token"
+    .run.list(SQL.Cols[String])
+    .map(_.map(store.Upload.file(_).delete).forall(identity))
 
   def get(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
     rowAccount(site.account)
-    .SELECT("WHERE token = ? AND account = ?")
-    .apply(token, site.identity.id).singleOpt
+    .SELECT(sql"WHERE token = $token AND account = ${site.identity.id}")
+    .singleOpt
 
   def take(token : String)(implicit site : AuthSite) : Future[Option[UploadToken]] =
     rowAccount(site.account)
-    .SQL((select, source) =>
-      "DELETE FROM upload WHERE token = ? AND account = ? RETURNING " + select)
-    .immediately.apply(token, site.identity.id).singleOpt
+    .run((select, source) =>
+      lsql"DELETE FROM upload WHERE token = $token AND account = ${site.identity.id} RETURNING " ++ select)
+    .singleOpt
 
   /** Issue a new token for a new upload. */
   def create(filename : String)(implicit site : AuthSite) : Future[UploadToken] =

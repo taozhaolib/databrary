@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsValue,JsObject,JsNull}
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Main organizational unit or package of data, within which everything else exists.
@@ -64,26 +65,26 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
 
   /** Volumes ("datasets") which provide data included in this volume. */
   def providers : Future[Seq[Volume]] =
-    Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
+    Volume.row.run(sql"SELECT DISTINCT ON (volume.id) " ++ _ + " FROM " ++ _ ++ sql"""
       JOIN container ON volume.id = container.volume
       JOIN volume_inclusion ON container.id = volume_inclusion.container
-      WHERE volume_inclusion.volume = ? AND """ + Volume.condition)
-    .apply(id).list
+      WHERE volume_inclusion.volume = $id AND """ + Volume.condition)
+    .list
 
   /** Volumes ("studies") which include data provided by this volume. */
   def consumers : Future[Seq[Volume]] =
-    Volume.row.SQL("SELECT DISTINCT ON (volume.id) " + _ + " FROM " + _ + """
+    Volume.row.run(sql"SELECT DISTINCT ON (volume.id) " ++ _ + " FROM " ++ _ ++ sql"""
       JOIN volume_inclusion ON volume.id = volume_inclusion.volume
       JOIN container ON volume_inclusion.container = container.id
-      WHERE container.volume = ? AND """ + Volume.condition)
-    .apply(id).list
+      WHERE container.volume = $id AND """ + Volume.condition)
+    .list
 
   /** List of parties through whom the current user has the given access to this volume. */
   def adminAccessVia : Future[Seq[SiteParty]] =
     SiteParty.row
-    .SELECT("JOIN volume_access ON party.id = volume_access.party",
-      "WHERE volume_access.volume = ? AND authorize_view.member = 'ADMIN' AND volume_access.individual = 'ADMIN' AND (authorize_view.site = 'ADMIN' OR volume_access.children = 'ADMIN')")
-    .apply(id).list
+    .SELECT(sql"""JOIN volume_access ON party.id = volume_access.party
+      WHERE volume_access.volume = $id AND authorize_view.member = 'ADMIN' AND volume_access.individual = 'ADMIN' AND (authorize_view.site = 'ADMIN' OR volume_access.children = 'ADMIN')""")
+    .list
 
   final def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.download("volume", 'id -> id)
@@ -126,7 +127,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
       ("links", opt => VolumeLink.get(this).map(JsonArray.map(_.json))),
       ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
-      ("tags", opt => tags.map(JsonRecord.map(_.json))),
+      ("tags", opt => tags.map(JsonArray.map(_.json))),
       ("records", opt => records.map(JsonArray.map(_.json - "volume"))),
       ("containers", opt => containers.map(JsonArray.map { c =>
         c.json - "volume" ++ c._jsonRecords(false).peek.map[JsonField]('records -> _)
@@ -141,11 +142,9 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
 
 object Volume extends TableId[Volume]("volume") {
   private object Permission extends Table[models.Permission.Value]("volume_permission") {
-    private val columns = Columns(
+    def columns(implicit site : Site) = Columns(
         SelectColumn[models.Permission.Value]("permission")
-      )(FromTable("LATERAL (VALUES (volume_access_check(volume.id, ?::integer), ?::boolean)) AS volume_permission (permission, superuser)")).cross
-    def row(implicit site : Site) =
-      columns.pushArgs(site.identity.id, site.superuser)
+      ).from(sql"LATERAL (VALUES (volume_access_check(volume.id, ${site.identity.id}), ${site.superuser})) AS volume_permission (permission, superuser)").cross
     def condition =
       "(" + table + ".permission >= 'PUBLIC'::permission OR " + table + ".superuser)"
   }
@@ -163,33 +162,33 @@ object Volume extends TableId[Volume]("volume") {
         new Volume(id, name, alias, body, permission, creation.getOrElse(defaultCreation))(site)
     }
   private[models] def row(implicit site : Site) =
-    columns.join(Permission.row).map { case (v, p) => v(p, site) }
+    columns.join(Permission.columns).map { case (v, p) => v(p, site) }
 
   /** Retrieve an individual Volume.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Future[Option[Volume]] =
-    row.SELECT("WHERE id = ? AND", condition)
-      .apply(i).singleOpt
+    row.SELECT(sql"WHERE id = $i AND " + condition)
+    .singleOpt
 
   def search(query : Option[String], party : Option[Party.Id])(implicit site : Site) : Future[Seq[Volume]] =
-    row.SELECT(
-      party.fold("")(_ => "JOIN volume_access ON volume.id = volume_access.volume"),
-      query.fold("")(_ => "JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', ?) query"),
-      "WHERE volume.id > 0 AND",
-      party.fold("")(_ => "volume_access.party = ? AND volume_access.individual >= 'EDIT' AND"),
-      query.fold("")(_ => "ts @@ query AND"),
-      condition,
-      "ORDER BY",
-      query.fold("")(_ => "ts_rank(ts, query) DESC, "),
-      party.fold("")(_ => "individual DESC,"),
-      "volume.id")
-    .apply(SQLArgs.opt(query) ++ party.map(SQLArg(_))).list
+    row.SELECT(LiteralStatement("")
+      + party.fold("")(_ => " JOIN volume_access ON volume.id = volume_access.volume")
+      ++ query.fold(Statement.empty)(q => lsql" JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', $q) query")
+      + " WHERE volume.id > 0 AND "
+      ++ party.fold(Statement.empty)(p => lsql"volume_access.party = $p AND volume_access.individual >= 'EDIT' AND ")
+      + query.fold("")(_ => "ts @@ query AND ")
+      + condition
+      + " ORDER BY "
+      + query.fold("")(_ => "ts_rank(ts, query) DESC,")
+      + party.fold("")(_ => "individual DESC,")
+      + "volume.id")
+    .list
 
   /** Create a new, empty volume with no permissions.
     * The caller should probably add a [[VolumeAccess]] for this volume to grant [[Permission.ADMIN]] access to some user. */
   def create(name : String, alias : Option[String], body : Option[String] = None)(implicit site : Site) : Future[Volume] =
     Audit.add(table, SQLTerms('name -> name, 'alias -> alias, 'body -> body), "id")
-      .single(SQLCols[Id].map(new Volume(_, name, alias, body, models.Permission.NONE, new Timestamp)))
+      .single(SQL.Cols[Id].map(new Volume(_, name, alias, body, models.Permission.NONE, new Timestamp)))
 
   private final val CORE : Id = asId(0)
   /** The "core" volume, containing site-wide "global" assets.
@@ -203,8 +202,8 @@ object Volume extends TableId[Volume]("volume") {
         Container.rowVolume(vol).join(
           SlotRecord.columns ~+ SelectColumn[Record.Id]("slot_record", "record") on_?
           "container.id = slot_record.container")
-        .SELECT(/* should be: "ORDER BY container.id"*/).apply().list
-        .map(fill(records, _))
+        .SELECT(sql"ORDER BY container.id")
+        .list.map(fill(records, _))
       }
 
     private def fill(records : Seq[Record], l : Seq[(Container, Option[(Segment, Record.Id)])]) : Seq[Container] = {
@@ -236,7 +235,7 @@ object Volume extends TableId[Volume]("volume") {
   }
 
   def updateIndex(implicit defaultContext : ExecutionContext) : Future[Unit] =
-    SQL("SELECT volume_text_refresh()").execute
+    lsql"SELECT volume_text_refresh()".execute
 }
 
 trait InVolume extends HasPermission {

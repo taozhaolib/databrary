@@ -1,14 +1,17 @@
-// styles
-
 .home-logo
   margin 0
   margin-top 1
   float left
   line-height 3
-
   a
-    display block
     color black
+    img
+      width 260px
+  div
+    font-size 0.8em
+    line-height 100%
+    display block
+    vertical-align middle
 
 .home-feature
   margin-bottom 3
@@ -19,19 +22,22 @@
 .home-feature-thumb
   width 100%
   cursor pointer
-  box-shadow box-shadow-def
+  border 1px solid pale
 
 .home-feature-info
   position absolute
-  bottom b1
-  right b1 * -13.25
-  //width 15
   background white
   box-shadow box-shadow-def
   padding f6 f3
 
+  width auto
+  top auto
+  bottom b1 * -2
+  right b1
+  left b1
+
   h1
-    font-line 1
+    font-line f34
 
     a
       link-color black
@@ -65,10 +71,11 @@
   margin-bottom 3
 
 .home-parties-header
+  font-line 1.25 2
+  letter-spacing 1px
+  
   font-weight normal
-  letter-spacing 2px
   text-transform uppercase
-  font-line 2 3
   margin 0 2 f1 0
   padding-right f1
   display inline-block
@@ -114,37 +121,62 @@
   .affiliation
     color gray
 
-// media
+.home-tags
+  padding-left b1*2
+  ol
+    list-style-type none
+    padding 0
+    font-size 0.8em
+    ul 
+      padding 0
+  span
+    font-weight 700
 
-@media screen and (max-width: grid-mobile-width)
-  .home-feature-info
-    width auto
-    top auto
-    bottom b1 * -2
-    right b1
-    left b1
-
-    h1
-      font-line f34
-
-  .home-parties-header
-    font-line 1.25 2
-    letter-spacing 1px
-
-@media screen and (min-width: (grid-mobile-width + 1)) and (max-width: (grid-tablet-width))
-  .home-feature-info
-    top 0
-    bottom b4
-    left 100%
-    overflow hidden
-
-    h1
-      font-line f90
-
-  .home-parties-header
-    font-line 2 3
-
-@media screen and (min-width: grid-tablet-width + 1)
-  .home-feature-info
-    width 13.25
-    right b1 * -9.75
+.home-bigbuttons
+  background-color orange51
+  position relative
+  width 100%
+  margin-left 0
+  margin-right 0
+  margin-bottom b1*2
+  padding 0
+  div.bigbuttons-container
+    position relative
+    margin-right auto
+    margin-left auto
+    width 685px
+    @media screen and (max-width: grid-mobile-width+1)
+      width auto
+      padding-top b3
+      padding-bottom b3
+    div.bigbutton
+      text-align center
+      position relative
+      width 180px
+      height 150px
+      margin b1
+      padding b3
+      padding-top b1
+      border-radius b3
+      border 1px solid orange52
+      background-color white
+      display inline-table
+      box-shadow 0px 3px 3px -3px black
+      transition border 0.2s
+      @media screen and (max-width: grid-mobile-width+1)
+        display block
+        width 100%
+        height auto
+        border-radius 0
+        padding b3
+        margin 0
+        box-shadow none
+        border-collapse collapse
+      span.button-title
+        display block
+        font-weight 700
+      span:not(.button-title)
+        color orange53
+        font-size 0.8em
+    div.bigbutton:hover
+      border 1px solid #e27e6d

@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Types of Records that are relevant for data organization.
@@ -37,7 +38,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 
   private[this] val list : Seq[RecordCategory] =
     async.AWAIT {
-      row.SELECT("ORDER BY id").apply().list
+      row.SELECT(lsql"ORDER BY id").list
     }
   private[this] val byId : TableIdMap[RecordCategory] =
     TableIdMap(list : _*)
@@ -49,9 +50,8 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
   def getAll : Seq[RecordCategory] = list
 
   def getVolume(volume : Volume) : Future[Seq[RecordCategory]] =
-    SQL("SELECT DISTINCT category FROM record WHERE volume = ? AND category IS NOT NULL ORDER BY category")
-      .apply(volume.id)
-      .list(SQLCols[RecordCategory.Id].map(byId(_)))
+    sql"SELECT DISTINCT category FROM record WHERE volume = ${volume.id} AND category IS NOT NULL ORDER BY category"
+    .run.list(SQL.Cols[RecordCategory.Id].map(byId(_)))
 
   val Participant = byName("participant")
 }
@@ -133,8 +133,8 @@ object SlotRecord extends SlotTable("slot_record") {
     .map { case (segment, context) =>
       new Row(context, segment)
     }
-    .SELECT("WHERE slot_record.record = ? ORDER BY container.top DESC, slot_record.container, slot_record.segment")
-    .apply(record.id).list
+    .SELECT(sql"WHERE slot_record.record = ${record.id} ORDER BY container.top DESC, slot_record.container, slot_record.segment")
+    .list
 
   def move(record : Record, container : Container, src : Segment = Segment.empty, dst : Segment = Segment.empty) : Future[Boolean] = {
     implicit val site = record.site
@@ -157,7 +157,7 @@ object Record extends TableId[Record]("record") {
       SelectColumn[Id]("id")
     , SelectColumn[Option[RecordCategory.Id]]("category")
     , SelectColumn[Measures]("measures")
-    ).from("record_measures AS " + _)
+    ).mapFrom("record_measures AS " +: _)
   private[models] def sessionRow(vol : Volume) = columns
     .map { case (id, cat, meas) =>
       (consent : Consent.Value) =>
@@ -176,28 +176,28 @@ object Record extends TableId[Record]("record") {
 
   /** Retrieve a specific record by id. */
   def get(id : Id)(implicit site : Site) : Future[Option[Record]] =
-    row.SELECT("WHERE record.id = ? AND", Volume.condition)
-      .apply(id).singleOpt
+    row.SELECT(sql"WHERE record.id = $id AND " + Volume.condition)
+    .singleOpt
 
   /** Retrieve the list of all records that cover the given slot. */
   private[models] def getSlotFull(slot : Slot) : Future[Seq[Record]] =
     rowVolume(slot.volume)
-    .SELECT("JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ? AND slot_record.segment @> ?::segment ORDER BY record.category NULLS LAST")
-    .apply(slot.containerId, slot.segment).list
+    .SELECT(sql"JOIN slot_record ON record.id = slot_record.record WHERE slot_record.container = ${slot.containerId} AND slot_record.segment @> ${slot.segment}::segment ORDER BY record.category NULLS LAST")
+    .list
 
   /** Retrieve the list of all records that apply to the given slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[(Segment,Record)]] =
     SlotRecord.columns
     .join(rowVolume(slot.volume) on "slot_record.record = record.id")
-    .SELECT("WHERE slot_record.container = ? AND slot_record.segment && ?::segment ORDER BY record.category NULLS LAST")
-    .apply(slot.containerId, slot.segment).list
+    .SELECT(sql"WHERE slot_record.container = ${slot.containerId} AND slot_record.segment && ${slot.segment}::segment ORDER BY record.category NULLS LAST")
+    .list
 
   /** Retrieve all the categorized records associated with the given volume.
     * @param category restrict to the specified category, or include all categories */
   def getVolume(volume : Volume, category : Option[RecordCategory] = None) : Future[Seq[Record]] =
     rowVolume(volume)
-    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
-    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+    .SELECT(category.fold(PreparedStatement(""))(c => sql"WHERE record.category = ${c.id}"))
+    .list
 
   /** Retrieve the records in the given volume with a measure of the given value.
     * @param category restrict to the specified category, or include all categories
@@ -210,18 +210,17 @@ object Record extends TableId[Record]("record") {
       val ma = "m_" + i.toString
       val mt = m.metric.measureType
       s.join(mt.select.column.fromAlias(ma).on(
-        "record.id = " + ma + ".record AND " + ma + ".metric = ? AND " + ma + ".datum = ?"))
-      .pushArgs(SQLArgs(m.metric.id) :+ m.sqlArg)
+        (("record.id = " + ma + ".record AND " + ma) +: sql".metric = ${m.metric.id} AND ") + ma + ".datum = " ++ m.sqlArg))
       .map(_._1)
     }
-    .SELECT(if (category.isDefined) "WHERE record.category = ?" else "")
-    .apply(category.fold(SQLArgs())(c => SQLArgs(c.id))).list
+    .SELECT(category.fold(PreparedStatement(""))(c => sql"WHERE record.category = ${c.id}"))
+    .list
   }
 
   /** Create a new record, initially unattached. */
   def create(volume : Volume, category : Option[RecordCategory] = None) : Future[Record] = {
     implicit val site = volume.site
     Audit.add("record", SQLTerms('volume -> volume.id, 'category -> category.map(_.id)), "id")
-      .single(SQLCols[Id].map(new Record(_, volume, category)))
+    .single(SQL.Cols[Id].map(new Record(_, volume, category)))
   }
 }

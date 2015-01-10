@@ -2,11 +2,29 @@
   <div class="wrap">
     <div class="row">
         <div class="home-logo">
-          <a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary.png"></a>
+          <a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary-nav.svg"></a>
         </div>
     </div>
-    <div class="row">
-      <article class="home-feature col-desktop-11 col-tablet-6 col-mobile-6">
+  </div>
+  <div class="home-bigbuttons">
+    <div class="bigbuttons-container">
+      <div class="bigbutton">
+        <span class="button-title">Browse Datasets</span>
+        <span class="hide-mobile">Some blurb here?</span>
+      </div>
+      <div class="bigbutton">
+        <span class="button-title">Create a Dataset</span>
+        <span class="hide-mobile">Some blurb here?</span>
+      </div>
+      <div class="bigbutton">
+        <span class="button-title">Manage/Share Datasets</span>
+        <span class="hide-mobile">Some blurb here?</span>
+      </div>   
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="col-desktop-9 col-tablet-6 col-mobile-6">
+      <article class="home-feature row">
         <div class="home-feature-inner">
           <img ng-src="{{::volume.thumbRoute()}}" class="home-feature-thumb" ng-click="page.$location.url(volume.route())">
 
@@ -25,38 +43,38 @@
       </article>
     </div>
 
-    <div>
+    <div class="home-tags col-desktop-6 col-tablet-3 col-mobile-6">
+      <span>Most Tagged</span>
       <ol>
-        <li ng-repeat="tag in ::tags">
+        <ul ng-repeat="tag in ::tags">
           <a ng-href="{{::page.router.search()}}?query={{::tag.id}}" ng-bind="::tag.id"></a>
-        </li>
+          <span> - </span>
+          <span ng-bind="::tag.weight"></span>
+        </ul>
       </ol>
     </div>
 
-    <div class="home_parties">
-      <div class="row">
-        <div class="col">
-          <h1 class="home-parties-header"><span class="background"></span><span message="welcome.investigators"></span></h1>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in investigators">
+    <div>
+      <span>Activity</span>
+      <dl>
+        <dt ng-repeat-start="act in ::activity">
+          <time datetime="{{::act.time | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
+            {{::act.time | date}}
+          </time>
+        </dt>
+        <dd ng-if="::act.volume" ng-init="volume=act.volume">
+          <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
+          <div class="volume-list-investigators" ng-if="::volume.access">
+            <ul class="inline-block comma">
+              <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
+                <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
+              </li>
+            </ul>
+          </div>
+        </dd>
+        <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
           <portrait></portrait>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col">
-          <h1 class="home-parties-header"><span class="background"></span><span message="welcome.users"></span></h1>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in users">
-          <portrait></portrait>
-        </div>
-      </div>
+        </dd>
+      </dl>
     </div>
-  </div>
 </article>

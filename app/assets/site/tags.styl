@@ -21,12 +21,11 @@
   &:before
     display none
 
-  .panel-tag-weight
-  .panel-tag-controls
-  .panel-tag-name
-    position relative
+  &.keyword
+    background yellow51
 
   .panel-tag-weight
+    position relative
     font-weight bold
     float left
     background green51
@@ -39,10 +38,12 @@
     text-align center
 
   .panel-tag-controls
+    position relative
     float left
     margin-left f4
 
   .panel-tag-name
+    position relative
     float left
     height b1
     top -b12
@@ -110,24 +111,3 @@
   input
     z-index 100
     position relative
-
-.panel-tags-auto-list
-  margin 0
-  padding 0
-  position absolute
-  top b1 + b2 - 3px
-  left 0
-  right 0
-  background-color white
-  border 1px solid pale
-  border-radius 0 0 b8 b8
-  z-index 90
-
-  li
-    padding-width f4
-
-    &.active
-      background-color mix(yellow51, white, 50%)
-
-    &:before
-      display none

@@ -31,6 +31,7 @@ app.factory('Store', [
         @asset?.name ? @data.name ? @file?.file.name ? constants.message('file')
 
     remove: ->
+      messages.clear(this)
       return if @pending # sorry
       return unless confirm constants.message 'asset.remove.confirm'
       if @file
@@ -41,8 +42,8 @@ app.factory('Store', [
           Store.removedAsset = asset
           messages.add
             type: 'green'
-            countdown: 3000
             body: constants.message('asset.remove.success', @name)
+            owner: this
           delete @asset
           true
         , (res) =>
@@ -50,11 +51,13 @@ app.factory('Store', [
             type: 'red'
             body: constants.message('asset.remove.error', @name)
             report: res
+            owner: this
           false
 
     save: ->
       return if @pending # sorry
       @pending = 1
+      messages.clear(this)
       (if @file
         @data.upload = @file.uniqueIdentifier
         if @asset then @asset.replace(@data) else @slot.createAsset(@data)
@@ -68,9 +71,9 @@ app.factory('Store', [
 
           messages.add
             type: 'green'
-            countdown: 3000
             body: constants.message('asset.' + (if @file then (if first then 'upload' else 'replace') else 'update') + '.success', @name) +
               (if @file && asset.format.transcodable then ' ' + constants.message('asset.upload.transcoding') else '')
+            owner: this
 
           if @file
             asset.creation ?= {date: Date.now(), name: @file.file.name}
@@ -84,6 +87,7 @@ app.factory('Store', [
             type: 'red'
             body: constants.message('asset.update.error', @name)
             report: res
+            owner: this
           if @file
             @file.cancel()
             delete @file
@@ -92,6 +96,7 @@ app.factory('Store', [
           false
 
     upload: (file) ->
+      messages.clear(this)
       return if @file
       file.pause()
       @file = file
@@ -110,6 +115,7 @@ app.factory('Store', [
             type: 'red'
             body: constants.message('asset.upload.rejected', {sce:$sce.HTML}, @name)
             report: res
+            owner: this
           file.cancel()
           delete @file
           delete @progress
@@ -117,6 +123,7 @@ app.factory('Store', [
 
     @restore: (slot) =>
       return unless @removedAsset?.volume.id == slot.volume.id
+      messages.clear(this)
       @removedAsset.link(slot).then (a) =>
           delete @removedAsset
           a
@@ -125,6 +132,7 @@ app.factory('Store', [
             type: 'red'
             body: constants.message('asset.update.error', '[removed file]')
             report: res
+            owner: this
           return
 
     excerptOptions: () ->

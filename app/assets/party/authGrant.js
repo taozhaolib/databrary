@@ -41,12 +41,13 @@ app.directive('authGrantForm', [
       //
 
       form.save = function () {
+        page.messages.clear(form);
         party.authorizeSave(auth.party.id, form.data).then(function () {
           form.validator.server({});
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('auth.grant.save.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
 
           delete auth.new;
@@ -60,16 +61,17 @@ app.directive('authGrantForm', [
       //
 
       form.deny = function () {
+        page.messages.clear(form);
         if (auth.new) {
           form.denySuccessFn(auth);
           return;
         }
         party.authorizeDelete(auth.party.id).then(function () {
           form.validator.server({});
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('auth.grant.remove.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
           form.$setPristine();
           form.denySuccessFn(auth);

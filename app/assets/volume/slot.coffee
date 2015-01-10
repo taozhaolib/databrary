@@ -141,6 +141,7 @@ app.controller('volume/slot', [
       delete target.asset
       delete target.record
 
+      blank.fillData() if c == blank
       $scope.playing = 0
       editExcerpt()
       true
@@ -268,6 +269,7 @@ app.controller('volume/slot', [
         return
 
       saveExcerpt: () ->
+        messages.clear(this)
         @excerpt.target.setExcerpt(if @excerpt.on then @excerpt.classification else null)
           .then (excerpt) =>
               @excerpts.remove(excerpt)
@@ -278,6 +280,7 @@ app.controller('volume/slot', [
                 type: 'red'
                 body: constants.message('asset.update.error', @name)
                 report: res
+                owner: this
 
       canRestore: () ->
         Store.removedAsset if editing && this == blank && Store.removedAsset?.volume.id == slot.volume.id
@@ -369,6 +372,7 @@ app.controller('volume/slot', [
         get: -> @rec.id
 
       remove: ->
+        messages.clear(this)
         slot.removeRecord(@rec, @segment).then (r) =>
             return unless r
             records.remove(this)
@@ -380,6 +384,7 @@ app.controller('volume/slot', [
               type: 'red'
               body: 'Unable to remove'
               report: res
+              owner: this
             return
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
@@ -400,6 +405,7 @@ app.controller('volume/slot', [
         return
 
       save: ->
+        messages.clear(this)
         saves = []
         if @form.measures.$dirty
           saves.push @record.save({measures:@data.measures}).then () =>
@@ -420,11 +426,12 @@ app.controller('volume/slot', [
             delete @dirty
             $scope.form.edit.$setPristine() if this == $scope.current
             return
-          , (res) ->
+          , (res) =>
             messages.addError
               type: 'red'
               body: 'Error saving'
               report: res
+              owner: this
             return
 
       dragLeft: (event) ->

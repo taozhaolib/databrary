@@ -92,24 +92,6 @@ app.provider('routerService', [
       controller: 'site/home',
       templateUrl: 'site/home.html',
       resolve: {
-        investigators: [
-          'modelService', 'constantService',
-          function (models, constants) {
-            return models.Party.query({
-              access: constants.permission.CONTRIBUTE,
-              institution: false
-            });
-          }
-        ],
-        users: [
-          'modelService', 'constantService',
-          function (models, constants) {
-            return models.Party.query({
-              access: constants.permission.PUBLIC,
-              institution: false
-            });
-          }
-        ],
         volume: [
           'modelService', function (models) {
             return models.Volume.get(9, ['access'])
@@ -119,13 +101,17 @@ app.provider('routerService', [
           }
         ],
         tags: [
-          'routerService',
-          function (router) {
-            return router.http(router.controllers.TagApi.top).then(function (res) {
-              return res.data;
-            });
+          'modelService',
+          function (models) {
+            return models.Tag.top();
           }
         ],
+        activity: [
+          'modelService',
+          function (models) {
+            return models.activity();
+          }
+        ]
       },
       reloadOnSearch: false,
     });
@@ -262,7 +248,7 @@ app.provider('routerService', [
 
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,
-                {access:'', citation:'', links:'', top:'', funding:'', records:'', containers:''}),
+                {access:'', citation:'', links:'', top:'', funding:'', records:'', containers:'', tags:'keyword'}),
               page.permission.EDIT)
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])

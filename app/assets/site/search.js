@@ -6,5 +6,8 @@ app.controller('site/search', [
     $scope.volumes = volumes;
     display.title = constants.message('search.title');
     $scope.query = $location.search().query;
+    $scope.search = function () {
+      $location.search('query', $scope.query);
+    };
   }
 ]);

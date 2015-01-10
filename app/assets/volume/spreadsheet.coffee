@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'spreadsheet', [
-  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout',
-  (constants, display, messages, tooltips, $compile, $templateCache, $timeout) ->
+  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout', '$document', '$location',
+  (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document, $location) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
     byNumber = (a,b) -> a-b
@@ -345,6 +345,9 @@ app.directive 'spreadsheet', [
           cell = generateCell(row, 'asset', a.name, id + '-asset_' + b)
           icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
           icon.src = a.icon
+          icon.onclick = () ->
+            t = {asset:a.id}
+            $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
           generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
@@ -475,6 +478,7 @@ app.directive 'spreadsheet', [
         ################################# Backend saving
 
         saveRun = (cell, run) ->
+          messages.clear(cell)
           cell.classList.remove('error')
           cell.classList.add('saving')
           run.then (res) ->
@@ -486,6 +490,7 @@ app.directive 'spreadsheet', [
               messages.addError
                 body: 'error' # FIXME
                 report: res
+                owner: cell
               return
 
         createSlot = (cell) ->
@@ -513,9 +518,9 @@ app.directive 'spreadsheet', [
               messages.add
                 body: constants.message('slot.remove.notempty')
                 type: 'red'
-                countdown: 5000
+                owner: cell
               return
-            unedit()
+            unedit(false)
             collapse()
             rows[i].parentNode.removeChild(rows[i])
             slots.splice(i, 1)
@@ -576,6 +581,16 @@ app.directive 'spreadsheet', [
             generateRow(info.i)
             expand(info) if info.n
             record
+
+        saveAsset = (cell, info, v) ->
+          data = {}
+          t = info.t
+          t = 'name' if t == 'asset'
+          data[t] = v ? ''
+          return if info.asset[t] == data[t]
+          saveRun cell, info.asset.save(data).then () ->
+            generateText(cell, t, info.asset[t])
+            return
 
         ################################# Interaction
 
@@ -665,23 +680,30 @@ app.directive 'spreadsheet', [
                   edit(cell, info, true)
               return
             when 'metric'
-              if value != undefined
+              if value
                 arr(records[info.c], value)
                 populateCols()
                 generate()
               return
             when 'category'
-              if value != undefined
+              if value
                 arr(obj(records, value), 'id')
                 populateCols()
                 generate()
               return
+            when 'options'
+              # force completion of the first match
+              # this completely prevents people from using prefixes of options but maybe that's reasonable
+              c = editCompletions(value) if value
+              value = c[0] if c?.length
 
           switch info.t
             when 'name', 'date', 'consent'
               saveSlot(cell, info, value)
             when 'rec'
               saveMeasure(cell, info.record, info.metric, value)
+            when 'asset'
+              saveAsset(cell, info, value)
 
         editScope = $scope.$new(true)
         editScope.constants = constants
@@ -698,22 +720,28 @@ app.directive 'spreadsheet', [
           cell.classList.remove('editing')
           tooltips.clear()
 
-          save(cell, editScope.type, editInput.value) if event
+          save(cell, editScope.type, editInput.value) if event != false
           cell
 
         edit = (cell, info, alt) ->
-          return if info.slot?.id == volume.top.id
           switch info.t
             when 'name'
+              return if info.slot.id == volume.top.id
               editScope.type = 'text'
               editInput.value = info.slot.name
             when 'date'
+              return if info.slot.id == volume.top.id
               editScope.type = 'date'
               editInput.value = info.slot.date
             when 'consent'
               editScope.type = 'consent'
               editInput.value = (info.slot.consent || 0) + ''
             when 'rec', 'add'
+              if info.c == 'asset'
+                # for now, just go to slot edit
+                $location.url(info.slot.editRoute())
+                return
+              return if info.slot.id == volume.top.id
               if info.t == 'rec' && info.metric.id == 'id'
                 setRecord(cell, info, null)
                 return
@@ -723,8 +751,8 @@ app.directive 'spreadsheet', [
                 return unless typeof m == 'number'
                 editInput.value = volume.records[info.r].measures[m] ? ''
                 if info.metric.options
-                  editScope.type = 'select'
-                  editScope.options = [''].concat(info.metric.options)
+                  editScope.type = 'options'
+                  editScope.options = info.metric.options
                 else if info.metric.long
                   editScope.type = 'long'
                 else
@@ -779,6 +807,9 @@ app.directive 'spreadsheet', [
                 editScope.options.push(c)
               editScope.options.sort(byId)
               editScope.options.push(pseudoCategory[0]) unless 0 of records
+            when 'asset'
+              editScope.type = 'text'
+              editInput.value = info.asset.name
             else
               return
 
@@ -793,10 +824,9 @@ app.directive 'spreadsheet', [
 
           tooltips.clear()
           $timeout ->
-            input = e.children('[name=edit]')
-            input.focus() if ['text', 'long', 'date', 'number'].includes(editScope.type)
-            # chrome produces spurious change events on date fields, so we rely on key-enter instead.
-            input.one('change', $scope.$lift(editScope.unedit)) unless editScope.type == 'date'
+            input = e.find('[name=edit]')
+            input.filter('input,textarea').focus()
+            input.filter('select').one('change', $scope.$lift(editScope.unedit))
             return
           return
 
@@ -841,6 +871,25 @@ app.directive 'spreadsheet', [
           unedit($event)
           return
 
+        editCompletions = (input) ->
+          i = input.toLowerCase()
+          (o for o in editScope.options when o.toLowerCase().startsWith(i))
+
+        editSelect = () ->
+          editInput.value = @text
+          unedit(true)
+          @text
+
+        editScope.completer = (input) ->
+          match = editCompletions(input)
+          switch match.length
+            when 0
+              input
+            when 1
+              match[0]
+            else
+              ({text:o, select: editSelect, default: input && i==0} for o, i in match)
+
         editScope.next = ($event) ->
           cell = unedit($event)
           return unless cell
@@ -872,6 +921,12 @@ app.directive 'spreadsheet', [
         $scope.unlimit = ->
           limit = undefined
           fill()
+
+        if editing
+          $document.on 'click', ($event) ->
+            if editCell && editCell.parentNode != $event.target && !$.contains(editCell.parentNode, $event.target)
+              $scope.$applyAsync(unedit)
+            return
 
         ################################# main
 

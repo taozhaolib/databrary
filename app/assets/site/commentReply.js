@@ -15,14 +15,15 @@ app.directive('commentReplyForm', [
       form.successFn = undefined;
 
       form.save = function () {
+        page.messages.clear(form);
         (form.target || $scope.volume.top).postComment(form.data)
           .then(function () {
             form.validator.server({});
 
-            form.messages.add({
+            page.messages.add({
               body: page.constants.message('comments.add.success'),
               type: 'green',
-              countdown: 3000
+              owner: form
             });
 
             if (angular.isFunction(form.successFn)) {
@@ -40,6 +41,7 @@ app.directive('commentReplyForm', [
       form.cancelFn = undefined;
 
       form.cancel = function () {
+        page.messages.clear(form);
         if (angular.isFunction(form.cancelFn)) {
           form.cancelFn();
         }

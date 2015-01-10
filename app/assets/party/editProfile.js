@@ -18,6 +18,7 @@ app.directive('partyEditProfileForm', [
       init();
 
       form.save = function () {
+        page.messages.clear(form);
         var fd, upload;
         if (angular.isObject(form.data.avatar)) {
           fd = new FormData();
@@ -28,9 +29,10 @@ app.directive('partyEditProfileForm', [
             if (form.data.hasOwnProperty(prop) && form.data[prop] !== undefined)
               fd.append(prop, form.data[prop]);
 
-          upload = form.messages.add({
+          upload = page.messages.add({
             type: 'yellow',
             body: page.constants.message('party.edit.avatar.upload', page.constants.message('avatar')),
+            owner: form
           });
         } else
           fd = form.data;
@@ -39,10 +41,10 @@ app.directive('partyEditProfileForm', [
           .then(function () {
             form.validator.server({});
 
-            form.messages.add({
+            page.messages.add({
               type: 'green',
-              countdown: 3000,
               body: page.constants.message('party.edit.profile.success'),
+              owner: form
             });
 
             if (upload)

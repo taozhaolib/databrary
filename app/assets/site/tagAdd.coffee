@@ -20,6 +20,7 @@ app.directive 'tagAdd', [
               l.push
                 text: 'Create tag: ' + input
                 select: select(input)
+                default: true
             l
           , (res) ->
             page.messages.addError
