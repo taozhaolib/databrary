@@ -131,17 +131,38 @@ object Type {
   implicit val url : Type[java.net.URL] =
     string.transform("text", classOf[java.net.URL])(dbrary.url.parse, _.toString)
 
-  /* can be generalized to any traversable/array (but read as IndexedSeq) */
+  /* can be generalized to any traversable/array (but read as IndexedSeq)
+   * only works for 1-dimentional arrays */
   final class array[A](implicit t : Type[A]) extends Type[IndexedSeq[A]](t.name + "[]", classOf[IndexedSeq[A]]) {
     private[this] def quote(s : String) =
       if (s == null) "null"
       else "\"" + s.replaceAllLiterally("\\", """\\""").replaceAllLiterally("\"", """\"""") + "\""
+    private[this] class delegate extends db.postgresql.util.ArrayStreamingParserDelegate {
+      private val builder = IndexedSeq.newBuilder[A]
+      private var failed = false
+      def result = if (failed) None else Some(builder.result)
+
+      override def elementFound(element : String) {
+        t.read(element) match {
+          case Some(x) => builder += x
+          case None => failed = true
+        }
+      }
+      override def nullElementFound {
+        elementFound(null)
+      }
+    }
     def show(a : IndexedSeq[A]) : String = a.map(a => quote(t.show(a))).mkString("{", ",", "}")
     override def put(a : IndexedSeq[A]) : Any = a.map(t.put)
-    def read(s : String) = ??? // could be implemented with db.postgresql.util.ArrayStreamingParser
+    def read(s : String) = {
+      val d = new delegate
+      db.postgresql.util.ArrayStreamingParser.parse(s, d)
+      d.result
+    }
     override def get(x : Any, where : String = "") : IndexedSeq[A] = x match {
       case null => throw new UnexpectedNull(this, where)
       case a : IndexedSeq[Any] => a.map(t.get(_, where))
+      case s : String => read(s).getOrElse(throw new TypeMismatch(x, this, where))
       case _ => throw new TypeMismatch(x, this, where)
     }
   }
@@ -149,7 +170,9 @@ object Type {
 
   final class option[A](implicit t : Type[A]) extends Type[Option[A]](t.name, classOf[Option[A]]) {
     def show(a : Option[A]) : String = a.fold[String](null)(t.show)
-    def read(s : String) : Option[Option[A]] = Option(s).map(t.read)
+    def read(s : String) : Option[Option[A]] =
+      if (s == null) Some(None)
+      else t.read(s).map(Some(_))
     override def get(x : Any, where : String = "") : Option[A] = Option(x).map(t.get(_, where))
     override def put(a : Option[A]) = a.map(t.put)//.orNull
     override def escaped(a : Option[A]) : String = a.fold("null")(t.escaped)
