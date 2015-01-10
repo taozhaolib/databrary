@@ -26,8 +26,10 @@ changeParty Party{..} = pgExecute1 $(changeQuery)
   identityId = (-1 :: Int32)
 
 getParty :: HasPG m => Id Party -> m (Maybe Party)
-getParty i = pgQuery1 $(selectQuery rowSelector "WHERE id = ${i}")
+getParty i = pgQuery1 $(selectQuery partySelector "WHERE party.id = ${i}")
 
+getAccount :: HasPG m => Id Party -> m (Maybe Account)
+getAccount i = pgQuery1 $(selectQuery accountSelector "WHERE account.id = ${i}")
 
 testParty :: Id Party -> AppHandler ()
 testParty i = do

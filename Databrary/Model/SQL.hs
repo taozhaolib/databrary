@@ -1,8 +1,12 @@
-{-# LANGUAGE MultiParamTypeClasses, ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
 module Databrary.Model.SQL 
   ( SelectOutput(..)
+  , selectColumn
   , Selector
-  , select
+  , selectColumns
+  , onJoin
+  , onMaybeJoin
+  , selectJoin
   , makeQuery
   , simpleQueryFlags
   , preparedQueryFlags
@@ -10,35 +14,66 @@ module Databrary.Model.SQL
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Arrow (first)
+import Control.Arrow (first, second)
+import Control.Monad (when)
 import Data.Char (isLetter, toLower)
-import Data.List (intercalate)
+import Data.List (intercalate, unfoldr)
 import qualified Language.Haskell.TH as TH
 
 import Database.PostgreSQL.Typed.Query (QueryFlags(..), makePGQuery)
 
 data SelectOutput
-  = SelectExpr String
-  | SelectMap TH.Exp [SelectOutput]
+  = OutputExpr String
+  | OutputMap !Bool TH.Name [SelectOutput]
 
-selectTuple :: [SelectOutput] -> SelectOutput
-selectTuple l = SelectMap (TH.VarE $ TH.tupleDataName $ length l) l
+selectColumn :: String -> String -> SelectOutput
+selectColumn t c = OutputExpr $ t ++ '.' : c
 
-selectMaybe :: SelectOutput -> SelectOutput
-selectMaybe (SelectMap e l) =
-  SelectMap (TH.VarE (TH.mkName ("Control.Monad.liftM" ++ show (length l))) `TH.AppE` e) l
-selectMaybe s = s
+outputTuple :: [SelectOutput] -> SelectOutput
+outputTuple l = OutputMap False (TH.tupleDataName $ length l) l
 
-selectColumns :: SelectOutput -> [String]
-selectColumns (SelectExpr s) = [s]
-selectColumns (SelectMap _ o) = concatMap selectColumns o
+outputMaybe :: SelectOutput -> SelectOutput
+outputMaybe (OutputMap False f l) = OutputMap True f l
+outputMaybe s = s
 
-selectParser :: SelectOutput -> [TH.Exp] -> (TH.Exp, [TH.Exp])
-selectParser (SelectExpr _) (i:l) = (i, l)
-selectParser (SelectExpr _) [] = error "selectParser: insufficient values"
-selectParser (SelectMap m ol) il =
-  foldl (\(a, i) o -> first (TH.AppE a) $ selectParser o i) (m, il) ol
+outputColumns :: SelectOutput -> [String]
+outputColumns (OutputExpr s) = [s]
+outputColumns (OutputMap _ _ o) = concatMap outputColumns o
 
+outputParser :: SelectOutput -> [TH.Name] -> TH.Q (TH.Exp, [TH.Name])
+outputParser (OutputExpr _) (i:l) = return (TH.VarE i, l)
+outputParser (OutputExpr _) [] = fail "outputParser: insufficient values"
+outputParser (OutputMap mb f ol) il = do
+  (al, rl) <- subArgs ol il
+  fi <- TH.reify f
+  (fe, ft) <- case fi of
+    TH.ClassOpI _ t _ _ -> return (TH.VarE f, t)
+    TH.DataConI _ t _ _ -> return (TH.ConE f, t)
+    TH.VarI _ t _ _ -> return (TH.VarE f, t)
+    _ -> die "wrong kind"
+  let am = unfoldr argMaybe ft
+  flip (,) rl <$> if mb
+    then do
+      (bl, ae) <- bindArgs am al
+      when (null bl) $ die "function with at least one non-Maybe argument required"
+      return $ TH.DoE $ bl ++ [TH.NoBindS $ TH.AppE (TH.ConE 'Just) $ foldl TH.AppE fe ae]
+    else return $ foldl TH.AppE fe al
+  where
+  subArgs [] i = return ([], i)
+  subArgs (o:l) i = do
+    (a, r) <- outputParser o i
+    first (a :) <$> subArgs l r
+  bindArgs (True:m) (a:l) = second (a:) <$> bindArgs m l
+  bindArgs (False:m) (a:l) = do
+    n <- TH.newName "cm"
+    (bl, al) <- bindArgs m l
+    return $ (TH.BindS (TH.VarP n) a : bl, TH.VarE n : al)
+  bindArgs _ a = return ([], a)
+  argMaybe (TH.ArrowT `TH.AppT` a `TH.AppT` r) = Just (isMaybeT a, r)
+  argMaybe _ = Nothing
+  isMaybeT (TH.AppT (TH.ConT m) _) = m == ''Maybe
+  isMaybeT _ = False
+  die s = fail $ "outputParser " ++ show f ++ ": " ++ s
 
 data Selector = Selector
   { selectOutput :: SelectOutput
@@ -46,15 +81,35 @@ data Selector = Selector
   , selectJoined :: String
   }
 
-select :: TH.Name -> String -> [String] -> Selector
-select f t e =
-  Selector (SelectMap (TH.ConE f) $ map (SelectExpr . (t ++) . ('.':)) e) t (',':t)
+selector :: String -> SelectOutput -> Selector
+selector t o = Selector o t (',':t)
 
-joinWith :: Selector -> (String -> String) -> Selector
-joinWith sel j = sel{ selectJoined = j (selectSource sel) }
+selectColumns :: TH.Name -> String -> [String] -> Selector
+selectColumns f t c =
+  selector t (OutputMap False f $ map (selectColumn t) c)
 
-joinOn :: Selector -> String -> Selector
-joinOn sel on = joinWith sel (\s -> " JOIN " ++ s ++ " ON " ++ on)
+withJoin :: (String -> String) -> Selector -> Selector
+withJoin j sel = sel{ selectJoined = j (selectSource sel) }
+
+withMaybeJoin :: (String -> String) -> Selector -> Selector
+withMaybeJoin j sel = sel
+  { selectJoined = j (selectSource sel)
+  , selectOutput = outputMaybe (selectOutput sel) }
+
+onJoin :: String -> Selector -> Selector
+onJoin on = withJoin (\s -> " JOIN " ++ s ++ " ON " ++ on)
+
+onMaybeJoin :: String -> Selector -> Selector
+onMaybeJoin on = withMaybeJoin (\s -> " LEFT JOIN " ++ s ++ " ON " ++ on)
+
+selectJoin :: TH.Name -> [Selector] -> Selector
+selectJoin f l@(h:t) = Selector
+  { selectOutput = OutputMap False f $ map selectOutput l
+  , selectSource = selectSource h ++ joins
+  , selectJoined = selectJoined h ++ joins
+  } where joins = concatMap selectJoined t
+selectJoin _ [] = error "selectJoin: empty list"
+
 
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]
 takeWhileEnd p = fst . foldr go ([], False) where
@@ -65,14 +120,14 @@ takeWhileEnd p = fst . foldr go ([], False) where
 makeQuery :: QueryFlags -> (String -> String) -> SelectOutput -> TH.ExpQ
 makeQuery flags sql output = do
   nl <- mapM (TH.newName . colVar) cols
-  let (parse, []) = selectParser output $ map TH.VarE nl
+  (parse, []) <- outputParser output nl
   TH.AppE (TH.VarE 'fmap `TH.AppE` TH.LamE [TH.TupP $ map TH.VarP nl] parse)
     <$> makePGQuery flags (sql $ intercalate "," cols)
   where
   colVar s = case takeWhileEnd isLetter s of
     [] -> "c"
     (h:l) -> toLower h : l
-  cols = selectColumns output
+  cols = outputColumns output
 
 simpleQueryFlags, preparedQueryFlags :: QueryFlags
 simpleQueryFlags = QueryFlags False Nothing

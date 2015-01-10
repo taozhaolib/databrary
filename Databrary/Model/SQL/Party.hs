@@ -1,13 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.SQL.Party 
   ( changeQuery
-  , rowSelector
+  , partySelector
+  , accountSelector
   ) where
 
 import Data.Char (toLower)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL (Selector, select)
+import Databrary.Model.SQL (Selector, selectColumns, selectJoin, onJoin, onMaybeJoin)
 import Databrary.Model.SQL.Audit (auditChangeQuery)
 import Databrary.Model.Types.Party
 
@@ -17,5 +18,22 @@ changeQuery = auditChangeQuery "party"
   "id = ${partyId}"
   Nothing
 
-rowSelector :: Selector
-rowSelector = select 'Party "party" ["id", "name", "affiliation", "url"]
+partyRow :: Selector
+partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]
+
+accountRow :: Selector
+accountRow = selectColumns 'Account "account" ["email", "password"]
+
+makeParty :: (Maybe Account -> Party) -> Maybe (Party -> Account) -> Party
+makeParty pc ac = p where
+  p = pc (fmap ($ p) ac)
+
+partySelector :: Selector
+partySelector = selectJoin 'makeParty [partyRow, onMaybeJoin "party.id = account.id" accountRow]
+
+makeAccount :: (Maybe Account -> Party) -> (Party -> Account) -> Account
+makeAccount pc ac = a where
+  a = ac (pc (Just a))
+
+accountSelector :: Selector
+accountSelector = selectJoin 'makeAccount [partyRow, onJoin "party.id = account.id" accountRow]
