@@ -19,22 +19,14 @@ object CSV{
 
     vol.records.flatMap{r => 
       vol.containers.flatMap{
-        c => c.filter(x => !(x.top)).mapAsync(_.records).map{cr=> 
+        c => c.filter(x => !(x.top)).mapAsync(_.records).map{crs => 
           
-          val template = cc.makeCSVTemplate(cr)
-          
+          val template = cc.makeCSVTemplate(crs)
           val header = cc.makeHeader(template, r)
-
-          val data = c.zip(cr)
-
-          val containerData = cc.cData(c.filter(x => !(x.top)))
-
-          val body = cc.makeRows(cr, header)
-
-                    
+          val body = cc.makeRows(crs, header)
+          val containerData = cc.cData(c.filter(x => !(x.top)))          
           cc.buildCSV(header, body, containerData)
-        
-          
+      
         }
       }
     }
@@ -71,15 +63,29 @@ private class CSVCreate {
   }
 
   def makeRows(crs: Seq[Seq[(Segment, Record)]], hs: List[(Option[RecordCategory], Metric[_])]): List[Seq[Option[Measure[_]]]] = { 
+    
+
     hs.map(h => crs.map(cr => makeCell(cr.map(_._2), h._1, h._2))).transpose
 
   }
 
 
-  def makeCell(crs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
-    crs.find(cr => cr.category == ocat) 
-        .flatMap(cr => cr.measures.list.find(_.metric == met))
+  def makeCell(rs: Seq[Record], ocat: Option[RecordCategory], met: Metric[_]): Option[Measure[_]] = {
+    
+    rs.find(r => r.category == ocat) 
+      .flatMap(r => r.measures.list.find(_.metric == met))  
+    
 
+    /**
+    val groups = rs.groupBy(_.category).values.toList
+    
+    groups.filter(g => g.map(_.category) == ocat).flatMap {
+      case r :: Nil => r.measures.list.find(_.metric == met)
+      case rs => for (r <- rs) r.measures.list.find(_.metric == met)
+    }
+    */
+    
+   
   }
 
   def cData(cs: Seq[Container]): Seq[List[String]] = {
