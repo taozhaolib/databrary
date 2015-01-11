@@ -29,11 +29,17 @@ makeParty pc ac = p where
   p = pc (fmap ($ p) ac)
 
 partySelector :: Selector
-partySelector = selectJoin 'makeParty [partyRow, maybeJoinOn "party.id = account.id" accountRow]
+partySelector = selectJoin 'makeParty 
+  [ partyRow
+  , maybeJoinOn "party.id = account.id" accountRow
+  ]
 
 makeAccount :: (Maybe Account -> Party) -> (Party -> Account) -> Account
 makeAccount pc ac = a where
   a = ac (pc (Just a))
 
 accountSelector :: Selector
-accountSelector = selectJoin 'makeAccount [partyRow, joinOn "party.id = account.id" accountRow]
+accountSelector = selectJoin 'makeAccount 
+  [ partyRow
+  , joinOn "party.id = account.id" accountRow
+  ]
