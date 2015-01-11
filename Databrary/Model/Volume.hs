@@ -32,7 +32,7 @@ class InVolume a where
 instance InVolume Volume where
   volume = id
 
-getVolume :: (Functor m, Monad m, HasPG m) => Id Volume -> m (Maybe Volume)
+getVolume :: Id Volume -> AppHandler (Maybe Volume)
 getVolume k =
   fmap (uncurryN Volume)
     <$> pgQuery1 [pgSQL|SELECT id, name, alias, body FROM volume WHERE id = ${k}|]

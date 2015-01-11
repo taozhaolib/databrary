@@ -19,16 +19,16 @@ import Databrary.Model.SQL (selectQuery)
 
 useTPG
 
-changeParty :: HasPG m => Party -> m ()
+changeParty :: Party -> AppHandler ()
 changeParty Party{..} = pgExecute1 $(changeQuery)
   where
   clientIP = Inet ""
   identityId = (-1 :: Int32)
 
-getParty :: HasPG m => Id Party -> m (Maybe Party)
+getParty :: Id Party -> AppHandler (Maybe Party)
 getParty i = pgQuery1 $(selectQuery partySelector "WHERE party.id = ${i}")
 
-getAccount :: HasPG m => Id Party -> m (Maybe Account)
+getAccount :: Id Party -> AppHandler (Maybe Account)
 getAccount i = pgQuery1 $(selectQuery accountSelector "WHERE account.id = ${i}")
 
 testParty :: Id Party -> AppHandler ()

@@ -4,8 +4,8 @@ module Databrary.Model.SQL
   , selectColumn
   , Selector
   , selectColumns
-  , onJoin
-  , onMaybeJoin
+  , joinOn
+  , maybeJoinOn
   , selectJoin
   , makeQuery
   , simpleQueryFlags
@@ -88,19 +88,19 @@ selectColumns :: TH.Name -> String -> [String] -> Selector
 selectColumns f t c =
   selector t (OutputMap False f $ map (selectColumn t) c)
 
-withJoin :: (String -> String) -> Selector -> Selector
-withJoin j sel = sel{ selectJoined = j (selectSource sel) }
+joinWith :: (String -> String) -> Selector -> Selector
+joinWith j sel = sel{ selectJoined = j (selectSource sel) }
 
-withMaybeJoin :: (String -> String) -> Selector -> Selector
-withMaybeJoin j sel = sel
+maybeJoinWith :: (String -> String) -> Selector -> Selector
+maybeJoinWith j sel = sel
   { selectJoined = j (selectSource sel)
   , selectOutput = outputMaybe (selectOutput sel) }
 
-onJoin :: String -> Selector -> Selector
-onJoin on = withJoin (\s -> " JOIN " ++ s ++ " ON " ++ on)
+joinOn :: String -> Selector -> Selector
+joinOn on = joinWith (\s -> " JOIN " ++ s ++ " ON " ++ on)
 
-onMaybeJoin :: String -> Selector -> Selector
-onMaybeJoin on = withMaybeJoin (\s -> " LEFT JOIN " ++ s ++ " ON " ++ on)
+maybeJoinOn :: String -> Selector -> Selector
+maybeJoinOn on = maybeJoinWith (\s -> " LEFT JOIN " ++ s ++ " ON " ++ on)
 
 selectJoin :: TH.Name -> [Selector] -> Selector
 selectJoin f l@(h:t) = Selector

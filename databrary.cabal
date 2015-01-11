@@ -19,7 +19,6 @@ Executable databrary
     containers,
     configurator,
     lens,
-    MonadCatchIO-transformers,
     mtl,
     snap-core,
     snap-server,
@@ -31,7 +30,8 @@ Executable databrary
     time,
     network,
     tuple,
-    postgresql-typed
+    postgresql-typed,
+    entropy
 
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind
