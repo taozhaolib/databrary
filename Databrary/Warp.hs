@@ -2,12 +2,13 @@ module Main (main) where
 
 import qualified Network.Wai.Handler.Warp as Warp
 
-import Databrary.Resource
-import Databrary.App
-import Databrary.Action
+import Databrary.Resource (initResource)
+import Databrary.App (runApp)
+import Databrary.Routes (routes)
+import Databrary.Wai (routeWai)
 
 main :: IO ()
 main = do
   res <- initResource
   Warp.run 8642 $ \r s ->
-    runApp (runAction defaultAction r s) res
+    runApp (routeWai routes r s) res

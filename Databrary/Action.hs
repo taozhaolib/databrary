@@ -1,5 +1,6 @@
 module Databrary.Action
-  ( runAction
+  ( Action
+  , runAction
   , defaultAction
   ) where
 

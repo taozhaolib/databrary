@@ -3,8 +3,10 @@ module Databrary.Wai
   , runWaiT
   , WaiResult
   , WaiApplication
+  , Wai.Request
   , ResponseHeaders
   , Status
+  , routeWai
   ) where
 
 import Blaze.ByteString.Builder (Builder)
@@ -15,8 +17,12 @@ import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
 import Network.HTTP.Types (ResponseHeaders, Status)
 
+import Databrary.Route
+
 type WaiT = RWST Wai.Request ResponseHeaders
 type WaiM r = WaiT r IO
+type WaiR r m = WaiT r m Status
+type Wai r = WaiT r IO Status
 
 class WaiResult r where
   resultEmpty :: r
@@ -32,7 +38,11 @@ instance WaiResult ByteString where
 
 type WaiApplication m = Wai.Request -> (Wai.Response -> IO Wai.ResponseReceived) -> m Wai.ResponseReceived
 
-runWaiT :: (MonadIO m, WaiResult r) => WaiT r m Status -> WaiApplication m
-runWaiT (RWST wt) request send = do
-  (s, r, h) <- wt request resultEmpty
+runWaiT :: (MonadIO m, WaiResult r) => WaiR r m -> WaiApplication m
+runWaiT (RWST wai) request send = do
+  (s, r, h) <- wai request resultEmpty
   liftIO $ send $ resultResponse s h r
+
+routeWai :: (MonadIO m, WaiResult r) => RouteM (WaiR r m) -> WaiApplication m
+routeWai route request = runWaiT wai request
+  where Just wai = runRoute route request
