@@ -17,7 +17,7 @@ import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
 import Network.HTTP.Types (ResponseHeaders, Status)
 
-import Databrary.Route
+import Databrary.Route (RouteM, routeRequest)
 
 type WaiT = RWST Wai.Request ResponseHeaders
 type WaiM r = WaiT r IO
@@ -45,4 +45,4 @@ runWaiT (RWST wai) request send = do
 
 routeWai :: (MonadIO m, WaiResult r) => RouteM (WaiR r m) -> WaiApplication m
 routeWai route request = runWaiT wai request
-  where Just wai = runRoute route request
+  where Just wai = routeRequest route request
