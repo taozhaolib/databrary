@@ -1,6 +1,6 @@
 package models
 
-import scala.concurrent.Future
+import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsNull}
 import java.net.URL
@@ -36,6 +36,14 @@ final class Party protected (val id : Party.Id, private[this] var name_ : String
       affiliation.foreach(affiliation_ = _)
       url.foreach(url_ = _)
     }
+
+  def remove(implicit site : Site) : Future[Boolean] = {
+    implicitly[Site.DB].inTransaction { implicit dbc =>
+      Audit.remove("account", sqlKey)(site, dbc, implicitly[ExecutionContext]).execute.flatMap { _ =>
+        Audit.remove("party", sqlKey)(site, dbc, implicitly[ExecutionContext]).execute
+      }
+    }
+  }
 
   /** List of authorizations granted to this user.
     * @param all include inactive authorizations */

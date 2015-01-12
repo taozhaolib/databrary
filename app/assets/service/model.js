@@ -269,9 +269,9 @@ app.factory('modelService', [
         });
     };
 
-    Party.prototype.authorizeDelete = function (target) {
+    Party.prototype.authorizeRemove = function (target) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
+      return router.http(router.controllers.PartyApi.authorizeRemove, this.id, target)
         .then(function (res) {
           p.clear('children');
           return p.update(res.data);
@@ -521,9 +521,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.accessDelete = function (target) {
+    Volume.prototype.accessRemove = function (target) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
+      return router.http(router.controllers.VolumeApi.accessRemove, this.id, target)
         .then(function (res) {
           v.clear('access');
           return v.update(res.data);
@@ -539,9 +539,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.fundingDelete = function (funder) {
+    Volume.prototype.fundingRemove = function (funder) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
+      return router.http(router.controllers.VolumeApi.fundingRemove, this.id, funder)
         .then(function (res) {
           v.clear('funding');
           return v.update(res.data);

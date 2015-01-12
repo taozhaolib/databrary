@@ -72,6 +72,9 @@
             }
             }
             }
+            @helper.form(routes.PartyHtml.remove(party.id)) {
+              <button type="submit">delete</button>
+            }
           </td>
         </tr>
     }

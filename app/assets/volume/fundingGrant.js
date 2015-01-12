@@ -47,7 +47,7 @@ app.directive('fundingGrantForm', [
 
       form.remove = function () {
         page.messages.clear(form);
-        volume.fundingDelete(funding.funder.id).then(function () {
+        volume.fundingRemove(funding.funder.id).then(function () {
           page.messages.add({
             body: page.constants.message('funding.remove.success'),
             type: 'green',

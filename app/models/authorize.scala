@@ -97,7 +97,7 @@ object Authorize extends Table[Authorize]("authorize") {
   /** Remove a particular authorization from the database.
     * @return true if a matching authorization was found and deleted
     */
-  def delete(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
+  def remove(child : Party.Id, parent : Party.Id)(implicit site : Site) : Future[Boolean] =
     Audit.remove("authorize", SQLTerms('child -> child, 'parent -> parent)).execute
 }
 

@@ -58,7 +58,7 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
     )
   protected def row : Selector[T]
 
-  def delete(token : String) : Future[Boolean] =
+  def remove(token : String) : Future[Boolean] =
     DELETE('token -> token.take(Token.length)).execute
 
   def get(token : String) : Future[Option[T]] =
@@ -94,7 +94,7 @@ object AccountToken extends Table[AccountToken]("account_token") {
   * @param password allow a password reset if true; just login (and require a password for changes) otherwise
   */
 final class LoginToken protected (id : Token.Id, expires : Timestamp, account : Account, val password : Boolean) extends AccountToken(id, expires, account) {
-  def remove = LoginToken.delete(id)
+  def remove = LoginToken.remove(id)
 
   def json = JsonRecord(id
     , 'party -> accountId
@@ -131,7 +131,7 @@ final class SessionToken protected (id : Token.Id, expires : Timestamp, account 
   def superuser(implicit request : play.api.mvc.Request[_]) : Boolean =
     access.isAdmin &&
       request.session.get("superuser").flatMap(Maybe.toLong _).exists(_ > System.currentTimeMillis)
-  def remove = SessionToken.delete(id)
+  def remove = SessionToken.remove(id)
 }
 
 object SessionToken extends TokenTable[SessionToken]("session") {
@@ -156,7 +156,7 @@ object SessionToken extends TokenTable[SessionToken]("session") {
   */
 final class UploadToken protected (id : Token.Id, val filename : String, expires : Timestamp, account : Account) extends AccountToken(id, expires, account) {
   def file = store.Upload.file(id)
-  def remove = UploadToken.delete(id)
+  def remove = UploadToken.remove(id)
 }
 
 object UploadToken extends TokenTable[UploadToken]("upload") {

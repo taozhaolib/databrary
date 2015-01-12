@@ -109,12 +109,19 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     } yield (result(s))
   }
 
+  def remove(id : Party.Id) =
+    SiteAction.rootAccess().andThen(adminAction(id)).async { implicit request =>
+      request.obj.party.remove.map { ok =>
+        Ok(request.obj.party.name + (if (ok) "" else " not") + " deleted")
+      }
+    }
+
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
     AdminAction(id).async { implicit request =>
       models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
         val form = new PartyController.AuthorizeChildForm(child)._bind
         if (form.delete.get)
-          models.Authorize.delete(childId, id)
+          models.Authorize.remove(childId, id)
             .map(_ => result(request.obj))
         else for {
           c <- Authorize.get(child, request.obj.party)
@@ -131,11 +138,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       })
     }
 
-  def authorizeDelete(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
+  def authorizeRemove(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
     for {
       /* users can remove themselves from any relationship */
-      _ <- models.Authorize.delete(id, other)
-      _ <- models.Authorize.delete(other, id)
+      _ <- models.Authorize.remove(id, other)
+      _ <- models.Authorize.remove(other, id)
     } yield (result(request.obj))
   }
 

@@ -98,7 +98,7 @@ object AngularController extends SiteController {
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
     , PartyApi.authorizeChange
-    , PartyApi.authorizeDelete
+    , PartyApi.authorizeRemove
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add
@@ -112,10 +112,10 @@ object AngularController extends SiteController {
     , VolumeApi.create
     , VolumeApi.accessSearch
     , VolumeApi.accessChange
-    , VolumeApi.accessDelete
+    , VolumeApi.accessRemove
     , VolumeApi.funderSearch
     , VolumeApi.fundingChange
-    , VolumeApi.fundingDelete
+    , VolumeApi.fundingRemove
     , SlotHtml.view
     , SlotHtml.edit
     , SlotController.zip

@@ -299,7 +299,7 @@ object VolumeApi extends VolumeController with ApiController {
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
   }
 
-  def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
+  def accessRemove(volumeId : Volume.Id, partyId : Party.Id) =
     Action(volumeId, Permission.ADMIN).async { implicit request =>
       (if (!(partyId === request.identity.id))
         VolumeAccess.set(request.obj, partyId)
@@ -327,7 +327,7 @@ object VolumeApi extends VolumeController with ApiController {
       }
     }
 
-  def fundingDelete(volumeId : Volume.Id, funderId : Funder.Id) =
+  def fundingRemove(volumeId : Volume.Id, funderId : Funder.Id) =
     Action(volumeId, Permission.EDIT).async { implicit request =>
       VolumeFunding.set(request.obj, funderId, None).map { _ =>
         result(request.obj)
