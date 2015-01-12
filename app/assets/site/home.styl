@@ -8,13 +8,16 @@
     img
       width 260px
   div
-    font-size 0.8em
+    font-size 1.2em
     line-height 100%
     display block
     vertical-align middle
+    margin-left 2
+    margin-right 2
 
 .home-feature
-  margin-bottom 3
+  margin-bottom 1
+  box-shadow box-shadow-def
 
 .home-feature-inner
   position relative
@@ -22,27 +25,19 @@
 .home-feature-thumb
   width 100%
   cursor pointer
-  border 1px solid pale
+  border-top solid b3 orange53
 
-.home-feature-info
-  position absolute
+.home-section-text
+  position relative
   background white
-  box-shadow box-shadow-def
   padding f6 f3
-
-  width auto
-  top auto
-  bottom b1 * -2
-  right b1
-  left b1
-
+  width 100%
   h1
     font-line f34
-
     a
       link-color black
 
-.home-feature-message
+.home-sections-title
   font-weight bold
   text-transform uppercase
   color gray
@@ -133,18 +128,34 @@
     font-weight 700
 
 .home-bigbuttons
-  background-color orange51
+  background-color neutral51
   position relative
   width 100%
   margin-left 0
   margin-right 0
   margin-bottom b1*2
   padding 0
+  padding-bottom b1
+  div.bigbuttons-text
+    position relative
+    margin-right auto
+    margin-left auto
+    width 100%
+    padding-top b1
+    font-size b1
+    line-height b1*1.5
+    @media screen and (max-width: grid-tablet-width+1)
+      font-size 20px
+      line-height 30px
+    p
+      text-align center
+      margin-bottom 0
+      padding-bottom 0
   div.bigbuttons-container
     position relative
     margin-right auto
     margin-left auto
-    width 685px
+    width 500px
     @media screen and (max-width: grid-mobile-width+1)
       width auto
       padding-top b3
@@ -152,7 +163,7 @@
     div.bigbutton
       text-align center
       position relative
-      width 180px
+      width 200px
       height 150px
       margin b1
       padding b3
@@ -180,3 +191,30 @@
         font-size 0.8em
     div.bigbutton:hover
       border 1px solid #e27e6d
+      
+.home-activity
+  box-shadow box-shadow-def
+  border-top b3 solid green53
+  dl.home-section-text
+    width 100%
+    dt
+      float right
+      font-size b2
+      margin-top b3
+    dd
+      margin-left 0
+      margin-top b3
+      border-bottom 1px pale solid
+      p
+        margin-bottom 0
+        font-size b2
+    dd.home-activity-dataset
+      padding-bottom b3
+      .volume-list-investigators
+        ul
+          padding-left 0
+          a
+            color black
+          a:hover
+            color pale
+        
