@@ -71,7 +71,7 @@ object AngularController extends SiteController {
   private val routesJs = {
     import routes.javascript._
     play.api.Routes.javascriptRouter("routes", None, site.Site.url.stripPrefix("http://")
-    , Site.start
+    , SiteHtml.start
     , LoginHtml.view
     , LoginHtml.registration
     , LoginHtml.register
@@ -86,13 +86,14 @@ object AngularController extends SiteController {
     , TokenHtml.token
     , TokenApi.token
     , TokenApi.password
+    , PartyHtml.search
     , PartyHtml.profile
     , PartyHtml.view
     , PartyHtml.edit
     , PartyHtml.avatar
     , PartyApi.profile
     , PartyApi.get
-    , PartyApi.query
+    , PartyApi.search
     , PartyApi.update
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
@@ -106,7 +107,7 @@ object AngularController extends SiteController {
     , VolumeController.thumb
     , VolumeController.zip
     , VolumeApi.get
-    , VolumeApi.query
+    , VolumeApi.search
     , VolumeApi.update
     , VolumeApi.create
     , VolumeApi.accessSearch

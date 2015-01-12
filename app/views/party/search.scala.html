@@ -1,0 +1,7 @@
+@(list : Seq[Party])(implicit request : SiteRequest[_])
+
+@html("Databrary users", Some(routes.PartyHtml.search())) {
+  <article class="view">
+    @widget.frame.parties(list)
+  </article>
+}

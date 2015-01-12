@@ -204,13 +204,9 @@ class ObjectController[O <: SiteObject] extends SiteController {
 trait ApiController extends SiteController
 trait HtmlController extends SiteController
 
-object Site extends HtmlController {
+object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
-
-  def start(js : Option[Boolean]) = SiteAction.js.async { implicit request =>
-    VolumeHtml.viewSearch(request)
-  }
 
   def tinyUrl(prefix : String, path : String) = Action {
     MovedPermanently("/" + prefix + "/" + path)
@@ -222,6 +218,19 @@ object Site extends HtmlController {
 
   def favicon =
     Assets.at("/public/icons", "favicon.ico")
+}
+
+object SiteHtml extends HtmlController {
+  assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
+    "Application is insecure. You must set application.secret appropriately (see README).")
+
+  def start(js : Option[Boolean]) =
+    SiteAction.js.async { implicit request =>
+      VolumeHtml.viewSearch(request)
+    }
+
+  def search(js : Option[Boolean]) =
+    VolumeHtml.search(js)
 }
 
 object SiteApi extends ApiController {

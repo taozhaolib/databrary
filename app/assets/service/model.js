@@ -207,8 +207,8 @@ app.factory('modelService', [
         });
     };
 
-    Party.query = function (data) {
-      return router.http(router.controllers.PartyApi.query, data)
+    Party.search = function (data) {
+      return router.http(router.controllers.PartyApi.search, data)
         .then(function (res) {
           return res.data.map(partyMake);
         });
@@ -471,8 +471,8 @@ app.factory('modelService', [
         });
     };
     
-    Volume.query = function (data) {
-      return router.http(router.controllers.VolumeApi.query, data)
+    Volume.search = function (data) {
+      return router.http(router.controllers.VolumeApi.search, data)
         .then(function (res) {
           return res.data.map(volumeMake);
         });

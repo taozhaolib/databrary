@@ -60,7 +60,7 @@ private[controllers] sealed class LoginController extends SiteController {
       case _ =>
     }
     (if (request.isApi) Ok((new SiteRequest.Anon(request)).json)
-    else Redirect(routes.Site.start(Some(false))))
+    else Redirect(routes.SiteHtml.start(Some(false))))
       .withNewSession
   }
 
@@ -71,13 +71,13 @@ private[controllers] sealed class LoginController extends SiteController {
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> true))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.SiteHtml.start(Some(false)).url)))
       .withSession(request.session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> false))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.SiteHtml.start(Some(false)).url)))
       .withSession(request.session - "superuser")
   }
 
@@ -212,7 +212,7 @@ object LoginHtml extends LoginController with HtmlController {
           if (request.access.site == Permission.NONE)
             routes.PartyHtml.profile(Some(false))
           else
-            routes.Site.start(Some(false))).url))
+            routes.SiteHtml.start(Some(false))).url))
       else
         new RegistrationForm().Ok
     }

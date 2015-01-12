@@ -4,7 +4,8 @@
 # ~~~~
 
 # static
-GET     /                                                                                         controllers.Site.start(js : Option[Boolean] ?= None)
+GET     /                                                                                         controllers.SiteHtml.start(js : Option[Boolean] ?= None)
+GET     /search                                                                                   controllers.SiteHtml.search(js : Option[Boolean] ?= None)
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view(js : Option[Boolean] ?= None)
@@ -22,6 +23,7 @@ GET     /token/:token                                                           
 GET     /profile                                                                                  controllers.PartyHtml.profile(js : Option[Boolean] ?= None)
 
 # parties
+GET     /party                                                                                    controllers.PartyHtml.search(js : Option[Boolean] ?= None)
 GET     /party/create                                                                             controllers.PartyHtml.createNew()
 POST    /party/create                                                                             controllers.PartyHtml.create()
 GET     /party/$pID<-?[0-9]+>                                                                     controllers.PartyHtml.view(pID : models.Party.Id, js : Option[Boolean] ?= None)
@@ -41,7 +43,7 @@ POST    /party/$pID<-?[0-9]+>/investigator                                      
 POST    /party/$pID<-?[0-9]+>/reissue                                                             controllers.PartyHtml.reissue(pID : models.Account.Id)
 
 # volumes
-GET     /search                                                                                   controllers.VolumeHtml.search(js : Option[Boolean] ?= None)
+GET     /volume                                                                                   controllers.VolumeHtml.search(js : Option[Boolean] ?= None)
 GET     /volume/create                                                                            controllers.VolumeHtml.add(owner : Option[models.Party.Id] ?= None, js : Option[Boolean] ?= None)
 POST    /volume/create                                                                            controllers.VolumeHtml.create(owner : Option[models.Party.Id] ?= None)
 GET     /volume/$vID<[0-9]+>                                                                      controllers.VolumeHtml.view(vID : models.Volume.Id, js : Option[Boolean] ?= None)
@@ -123,7 +125,7 @@ GET     /api/token/:token                                                       
 
 # ----- PARTY ----- #
 # QUERY ?access=LEVEL;query=terms
-GET     /api/party                                                                                controllers.PartyApi.query
+GET     /api/party                                                                                controllers.PartyApi.search
 # GET       ?volumes;comments;parents[=all];children[=all]                                        TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # equivalent to /api/party/<currentUser>:
@@ -140,7 +142,7 @@ DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                  
 
 # ----- VOLUME ----- #
 # QUERY     ?query=search+terms;party=id
-GET     /api/volume                                                                               controllers.VolumeApi.query
+GET     /api/volume                                                                               controllers.VolumeApi.search
 # GET       ?summary;access;citations;tags;comments;funding;categories;records;sessions;assets;top
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 POST    /api/volume                                                                               controllers.VolumeApi.create(owner : Option[models.Party.Id] ?= None)
@@ -170,7 +172,7 @@ DELETE  /api/slot/$containerId<[0-9]+>                                          
 
 # ----- RECORD ----- #
 # QUERY     ?volume=ID;category=ID                                                                TODO: container=ID;asset=ID
-GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
+GET     /api/record                                                                               controllers.RecordApi.search(volume : models.Volume.Id)
 # GET       ?slots;                                                                               TODO: assets
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)

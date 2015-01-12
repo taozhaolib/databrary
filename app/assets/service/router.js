@@ -88,7 +88,7 @@ app.provider('routerService', [
 
     var routes = {};
 
-    routes.index = makeRoute(controllers.Site.start, [], {
+    routes.index = makeRoute(controllers.SiteHtml.start, [], {
       controller: 'site/home',
       templateUrl: 'site/home.html',
       resolve: {
@@ -189,7 +189,7 @@ app.provider('routerService', [
       resolve: {
         volumes: [
           'pageService', function (page) {
-            return page.models.Volume.query(page.$route.current.params);
+            return page.models.Volume.search(page.$route.current.params);
           }
         ]
       },
@@ -234,7 +234,17 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    //
+    routes.partySearch = makeRoute(controllers.PartyHtml.search, [], {
+      controller: 'party/search',
+      templateUrl: 'party/search.html',
+      resolve: {
+        parties: [
+          'pageService', function (page) {
+            return page.models.Party.search(page.$route.current.params);
+          }
+        ]
+      },
+    });
 
     var volumeEdit = {
       controller: 'volume/edit',

@@ -38,6 +38,19 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction andThen action(i, p)
 
+  protected def searchResults(implicit request : SiteRequest[AnyContent]) : Future[Seq[Party]] = {
+    val form = new PartyController.SearchForm()._bind
+    val query = form.query.get
+    var access = form.access.get
+    var institution = form.institution.get
+    if (query.isEmpty && access.isEmpty && institution.isEmpty) {
+      /* set some reasonable defaults */
+      access = Some(Permission.EDIT)
+      institution = Some(false)
+    }
+    Party.search(query, access = access, institution = institution)
+  }
+
   protected def adminAction(i : models.Party.Id, delegate : Boolean = true) =
     action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
@@ -172,7 +185,15 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 }
 
 object PartyController extends PartyController {
-  private final val maxExpiration = org.joda.time.Years.years(2)
+  final class SearchForm(implicit request : SiteRequest[_])
+    extends HtmlForm[SearchForm](
+      routes.PartyHtml.search(),
+      _ => views.html.party.search(Nil))
+    with NoCsrfForm {
+    val query = Field(Mappings.maybeText)
+    val access = Field(OptionMapping(Mappings.enum(Permission)))
+    val institution = Field(OptionMapping(Forms.boolean))
+  }
 
   abstract sealed class PartyForm(action : Call)(implicit request : SiteRequest[_])
     extends HtmlForm[PartyForm](action,
@@ -224,8 +245,10 @@ object PartyController extends PartyController {
   final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {
     val email = Field(Mappings.some(Forms.email))
   }
-  sealed trait AuthorizeBaseForm extends StructForm
 
+  private final val maxExpiration = org.joda.time.Years.years(2)
+
+  sealed trait AuthorizeBaseForm extends StructForm
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
     val site = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val member = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
@@ -304,6 +327,11 @@ object PartyHtml extends PartyController with HtmlController {
   def view(i : models.Party.Id, js : Option[Boolean]) =
     SiteAction.js.andThen(action(Some(i), Some(Permission.NONE))).async(viewParty(_))
 
+  def search(js : Option[Boolean]) =
+    SiteAction.js.async { implicit request =>
+      searchResults.map(l => Ok(views.html.party.search(l)))
+    }
+
   private[controllers] def viewAdmin(
     authorizeForms : Seq[AuthorizeForm] = Nil)(
     implicit request : Request[_]) = {
@@ -376,16 +404,9 @@ object PartyApi extends PartyController with ApiController {
       request.obj.json(request.apiOptions).map(Ok(_))
     }
 
-  final class SearchForm(implicit request : SiteRequest[_])
-    extends ApiForm(routes.PartyApi.query) {
-    val query = Field(Mappings.maybeText)
-    val access = Field(OptionMapping(Mappings.enum(Permission)))
-    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
-  }
+  def search =
+    SiteAction.async { implicit request =>
+      searchResults.map(l => Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
+    }
 
-  def query = SiteAction.async { implicit request =>
-    val form = new SearchForm()._bind
-    Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
-      Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
-  }
 }
