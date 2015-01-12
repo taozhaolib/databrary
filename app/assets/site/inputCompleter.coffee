@@ -12,11 +12,19 @@ app.directive 'inputCompleter', [
       pattern: '@ngPattern'
       submit: '&'
     link: ($scope, $element, $attrs) ->
+      input = $element[0].firstChild
       # this doesn't happen early enough with normal angular binding:
-      $element[0].firstChild.setAttribute('name', $attrs.inputName)
+      input.setAttribute('name', $attrs.inputName)
       min = 3 unless isFinite(min = parseInt($attrs.min))
       sent = resend = undefined
       $scope.choices = []
+
+      setValue = (v) ->
+        # we bypass the angular model here to change text and selection...
+        old = input.value
+        input.value = v
+        if v.toLowerCase().startsWith(old.toLowerCase())
+          input.setSelectionRange(old.length, v.length)
 
       handle = (r) ->
         if r && typeof r.then == 'function'
@@ -25,7 +33,7 @@ app.directive 'inputCompleter', [
           sent = undefined
           if Array.isArray(r)
             if 'input' of r
-              $scope.value = r.input
+              setValue(r.input)
               delete r.input
             if r.length
               $scope.choices = r
@@ -34,7 +42,7 @@ app.directive 'inputCompleter', [
                 text: constants.message('search.none')
               ]
           else if r || r == ''
-            $scope.value = r
+            setValue(r)
             $scope.choices = []
           $scope.search(resend) if resend
 
@@ -61,7 +69,7 @@ app.directive 'inputCompleter', [
       $scope.enter = ($event, input) ->
         handle($scope.submit({$event:$event, $input:input})) if input.length >= min
 
-      $scope.search($scope.value)
+      $scope.search(input.value)
 
       return
 ]
