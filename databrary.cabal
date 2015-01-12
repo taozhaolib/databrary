@@ -11,27 +11,26 @@ Build-type:          Simple
 Cabal-version:       >=1.2
 
 Executable databrary
-  main-is: Databrary/Main.hs
+  main-is: Databrary/Warp.hs
 
   Build-depends:
     base,
     bytestring,
     containers,
-    configurator,
-    lens,
-    mtl,
-    snap-core,
-    snap-server,
-    snap,
-    text,
     transformers,
+    mtl,
     template-haskell,
-    resource-pool-catchio,
     time,
+    text,
+    blaze-builder,
+    wai,
+    http-types,
     network,
-    tuple,
+    lens,
+    resource-pool,
     postgresql-typed,
-    entropy
+    entropy,
+    warp
 
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind

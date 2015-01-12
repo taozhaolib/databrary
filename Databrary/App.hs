@@ -1,22 +1,14 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, FlexibleInstances #-}
-module Databrary.App where
+module Databrary.App 
+  ( AppT
+  , AppM
+  , runApp
+  ) where
 
-import Control.Lens (makeLenses)
-import Snap.Snaplet (Snaplet, Handler)
+import Databrary.Resource
 
-import Databrary.Snaplet.PG (PG, HasPG(..))
-import Databrary.Snaplet.Entropy (Entropy, HasEntropy(..))
+type AppT = ResourceT
+type AppM = AppT IO
 
-data App = App
-  { _db :: Snaplet PG
-  , _entropy :: Snaplet Entropy
-  }
-
-makeLenses ''App
-
-instance HasPG App where
-  pgLens = db
-instance HasEntropy App where
-  entropyLens = entropy
-
-type AppHandler = Handler App App
+runApp :: AppT m a -> Resource -> m a
+runApp = runResource
