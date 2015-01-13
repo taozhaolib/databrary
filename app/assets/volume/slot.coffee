@@ -366,6 +366,7 @@ app.controller('volume/slot', [
       fillData: ->
         @data =
           measures: angular.extend({}, @record.measures)
+          add: ''
         return
 
       Object.defineProperty @prototype, 'id',
