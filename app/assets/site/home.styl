@@ -62,60 +62,6 @@
         &:after
           content none
 
-.home-parties
-  margin-bottom 3
-
-.home-parties-header
-  font-line 1.25 2
-  letter-spacing 1px
-  
-  font-weight normal
-  text-transform uppercase
-  margin 0 2 f1 0
-  padding-right f1
-  display inline-block
-  background-color orange52
-  position relative
-  text-shadow -1px 0 2px orange51
-
-  span.background
-    background-color orange52
-    position absolute
-    left -50px
-    right 0px
-    top 0
-    bottom 0
-    z-index -100
-
-.home-party
-  margin-bottom f1
-  transition transition
-
-  &:hover
-    box-shadow box-shadow-def
-
-  img
-    display block
-    cursor pointer
-    width 100%
-    max-width none
-
-  .info
-    padding f6 f3
-    text-align center
-
-    a
-      color black
-
-      &:hover
-        color gray
-
-  h1
-    font-line 1
-
-  .affiliation
-    color gray
-
 .home-tags
   padding-left b1*2
   ol
@@ -124,8 +70,51 @@
     font-size 0.8em
     ul 
       padding 0
+      padding-left b3
   span
     font-weight 700
+
+.home-tags-item
+  font-line 1 1.25
+  height b1 + b4
+  display block
+  margin-right f2
+  border-radius b1
+  border 1px solid pale
+  padding-width f3
+  margin-bottom f2
+  max-width 250px
+  overflow hidden
+
+  &:before
+    display none
+
+  &.keyword
+    background yellow51
+
+  .home-tag-weight
+    position relative
+    font-weight bold
+    float left
+    background green51
+    border-radius b3
+    margin-right f4
+    margin-top f4
+    margin-bottom f4
+    min-width b1
+    font-line f34 f23
+    text-align center
+    
+  .home-tag-name
+    position relative
+    float left
+    height b1
+    top -b12
+    word-break break-all
+    overflow hidden
+    text-overflow ellipsis
+    max-width 200px
+    width 80%
 
 .home-bigbuttons
   background-color neutral51
@@ -161,6 +150,7 @@
       padding-top b3
       padding-bottom b3
     div.bigbutton
+      color orange53
       text-align center
       position relative
       width 200px
@@ -187,8 +177,8 @@
         display block
         font-weight 700
       span:not(.button-title)
-        color orange53
         font-size 0.8em
+        line-height 1em
     div.bigbutton:hover
       border 1px solid #e27e6d
       
@@ -208,6 +198,7 @@
       p
         margin-bottom 0
         font-size b2
+        color green53
     dd.home-activity-dataset
       padding-bottom b3
       .volume-list-investigators
