@@ -2,8 +2,8 @@
 'use strict';
 
 app.directive('wizard', [
-  'pageService',
-  function (page) {
+  '$location', '$timeout', 'tooltipService', 'messageService',
+  function ($location, $timeout, tooltips, messages) {
     return {
       restrict: 'E',
       templateUrl: 'site/wizard.html',
@@ -14,7 +14,7 @@ app.directive('wizard', [
         $scope.step = {};
         $scope.activeStep = undefined;
 
-        var target = page.$location.search().page;
+        var target = $location.search().page;
         this.addStep = function (step) {
           $scope.steps.push(step);
           $scope.step[step.name] = step;
@@ -34,10 +34,12 @@ app.directive('wizard', [
 
           if ($scope.activeStep)
             $scope.activeStep.active = false;
-          page.$location.replace().search('page', newStep.name);
+          $location.replace().search('page', newStep.name);
           $scope.activeStep = newStep;
           newStep.active = true;
-          page.$timeout(function() {
+          tooltips.clear();
+          messages.clear();
+          $timeout(function() {
             window.dispatchEvent(new Event('scroll'));
           });
         };
