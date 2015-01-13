@@ -40,7 +40,7 @@ error.report=If this is unexpected, <a href="mailto:feedback@databrary.org?subje
 error.report.subject=[Error {0}] {1}
 error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
 
-video.unsupported=Unfortunately, playing videos may not yet work in Firefox on OS X. If you have trouble, please try Safari or Chrome.
+video.unsupported=Unfortunately, playing videos may not work in older Firefox versions on OS X. Please upgrade or try Safari or Chrome.
 
 error.title=Error
 error.resolve=<strong>Error</strong>: An error occurred accessing this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
