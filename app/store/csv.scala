@@ -21,12 +21,30 @@ object CSV{
       vol.containers.flatMap{
         c => c.filter(x => !(x.top)).mapAsync(_.records).map{crs => 
           
+          /**
           val template = cc.makeCSVTemplate(crs)
           val header = cc.makeHeader(template, r)
           val body = cc.makeRows(crs, header)
           val containerData = cc.cData(c.filter(x => !(x.top)))          
           cc.buildCSV(header, body, containerData)
-      
+          */
+         
+          def rmf(rs: Seq[Record]): Map[Option[RecordCategory], Seq[Record]] = {
+
+            rs.groupBy(r => r.category)
+
+          }
+
+          val rl: Seq[Seq[Record]] = crs.map(z => z.map(_._2))         
+          val cl: Seq[Container] = c
+          val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = rl.map(rmf)
+
+          val rcsize: Seq[Map[Option[RecordCategory], Int]] = rml.map(_.mapValues(_.size))
+
+          val rcmax: Map[Option[RecordCategory], Int] = rcsize.fold(Map.empty)(cc.maxCats)
+
+          rcmax.toString
+          
         }
       }
     }
@@ -35,6 +53,16 @@ object CSV{
 
 private class CSVCreate {
 
+  def maxCats[A](m1: Map[A, Int], m2: Map[A, Int]): Map[A, Int] = {
+
+    m1.foldLeft(m2){case (m, (k, v)) =>
+
+      val x = m.getOrElse(k, 0)
+
+      m.updated(k, x.max(v))
+    }
+
+  }
 
   def makeHeader(cats: List[Option[RecordCategory]], recs: Seq[Record]): List[(Option[RecordCategory], Metric[_])] = {
 
