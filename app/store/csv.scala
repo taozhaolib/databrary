@@ -29,21 +29,16 @@ object CSV{
           cc.buildCSV(header, body, containerData)
           */
          
-          def rmf(rs: Seq[Record]): Map[Option[RecordCategory], Seq[Record]] = {
-
-            rs.groupBy(r => r.category)
-
-          }
-
           val rl: Seq[Seq[Record]] = crs.map(z => z.map(_._2))         
           val cl: Seq[Container] = c
-          val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = rl.map(rmf)
-
+          val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = rl.map(cc.groupCats)
           val rcsize: Seq[Map[Option[RecordCategory], Int]] = rml.map(_.mapValues(_.size))
-
           val rcmax: Map[Option[RecordCategory], Int] = rcsize.fold(Map.empty)(cc.maxCats)
+          val rmets: Map[Option[RecordCategory], Set[Metric[_]]] = cc.headerData(r)
+          val header: Seq[(Option[RecordCategory], Int, List[Metric[_]])] = cc.makeHeader(rcmax, rmets)
+          val body: Seq[Seq[String]] = rml.map(r => cc.row(header, r))
+          body.toString
 
-          rcmax.toString
           
         }
       }
@@ -52,6 +47,11 @@ object CSV{
 }
 
 private class CSVCreate {
+
+  def groupCats(rs: Seq[Record]): Map[Option[RecordCategory], Seq[Record]] = {
+    rs.groupBy(r => r.category)
+  }
+
 
   def maxCats[A](m1: Map[A, Int], m2: Map[A, Int]): Map[A, Int] = {
 
@@ -64,6 +64,49 @@ private class CSVCreate {
 
   }
 
+  def headerData(rs: Seq[Record]): Map[Option[RecordCategory], Set[Metric[_]]] = {
+
+    val m = mutable.Map.empty[Option[RecordCategory], mutable.Set[Metric[_]]]
+
+    for (r <- rs) { 
+      val s = m.getOrElseUpdate(r.category, mutable.Set.empty[Metric[_]])
+      s ++= r.measures.list.map(_.metric)
+    } 
+
+    m
+
+  }
+
+  def makeHeader(rc: Map[Option[RecordCategory], Int], rm: Map[Option[RecordCategory], Set[Metric[_]]]): Seq[(Option[RecordCategory], Int, List[Metric[_]])] = {
+
+    val rcsorted = rc.keys.toSeq.sortBy(_.map(_.id._id))
+
+    rcsorted.map {  r =>
+
+      (r, rc(r), rm(r).toSeq.sortBy(_._id).toList)
+
+    }
+
+  }
+
+  def row(h: Seq[(Option[RecordCategory], Int, List[Metric[_]])], data: Map[Option[RecordCategory], Seq[Record]]): Seq[String] = {
+
+      h.flatMap { case (c, i, ml) => 
+        val recList:Seq[Record] = data.getOrElse(c, Nil)
+        recList.flatMap{ r => 
+          ml.map{ m => 
+
+            r.measures(m).fold("")(_.datum)
+
+          } ++ List.fill((i - recList.length) * ml.length)("")
+
+        } 
+
+
+      }
+
+  }
+  /**
   def makeHeader(cats: List[Option[RecordCategory]], recs: Seq[Record]): List[(Option[RecordCategory], Metric[_])] = {
 
     val m = mutable.Map.empty[Option[RecordCategory], mutable.Set[Metric[_]]]
@@ -77,7 +120,8 @@ private class CSVCreate {
     cats.flatMap(c => m(c).toList.sortWith(_._id < _._id).map(m => (c, m)))
 
   }
-
+  */
+  /**
   def makeCSVTemplate(crs: Seq[Seq[(Segment, Record)]]): List[Option[RecordCategory]] = {
     val rs = crs.map(_.map(c => c._2))
 
@@ -104,14 +148,14 @@ private class CSVCreate {
       .flatMap(r => r.measures.list.find(_.metric == met))  
     
 
-    /**
+    
     val groups = rs.groupBy(_.category).values.toList
     
     groups.filter(g => g.map(_.category) == ocat).flatMap {
       case r :: Nil => r.measures.list.find(_.metric == met)
       case rs => for (r <- rs) r.measures.list.find(_.metric == met)
     }
-    */
+    
     
    
   }
@@ -135,6 +179,7 @@ private class CSVCreate {
     cs.map(c => List(c._id.toString, getName(c.name), getDate(c.date)))
 
   }
+  */
 
   def buildCSV(head: List[(Option[RecordCategory], Metric[_])], body: List[Seq[Option[Measure[_]]]], cd: Seq[List[String]]): String = {
     def escapeCSV(s: String): String = {
