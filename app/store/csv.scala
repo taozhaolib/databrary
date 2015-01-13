@@ -83,16 +83,18 @@ private class CSVCreate {
 
   def row(h: Seq[(Option[RecordCategory], Int, List[Metric[_]])], data: Map[Option[RecordCategory], Seq[Record]]): Seq[String] = {
 
+  
       h.flatMap { case (c, i, ml) => 
         val recList:Seq[Record] = data.getOrElse(c, Nil)
-        recList.flatMap{ r => 
-          ml.map{ m => 
+        recList.flatMap{
+          case r => ml.map{ m => 
 
             r.measures(m).fold("")(_.datum)
 
-          } ++ List.fill((i - recList.length) * ml.length)("")
-        } 
+          } 
+        } ++ List.fill((i - recList.length) * ml.length)("")
       }
+
   }
 
   def cData(cs: Seq[Container]): Seq[List[String]] = {
@@ -116,7 +118,16 @@ private class CSVCreate {
   
 
   def buildCSV(header: Seq[(Option[RecordCategory], Int, List[Metric[_]])], body: Seq[Seq[String]], cd: Seq[List[String]]): String = {
+  
+    def escapeCSV(s: String): String = {
+      if(s.contains("\"") || s.contains("\n") || s.contains(",")){
+        "\"" + s.replace("\"", "\"\"") + "\""
+      } else {
+        s
+      }
+    }   
     
+    val cleanCSV: Seq[Seq[String]] = body.map(_.map(s => escapeCSV(s)))
     
     def expandHeader(h: Seq[(Option[RecordCategory], Int, List[Metric[_]])]): Seq[String] = {
 
@@ -161,17 +172,10 @@ private class CSVCreate {
 
     }
 
-    def escapeCSV(s: String): String = {
-      if(s.contains("\"") || s.contains("\n") || s.contains(",")){
-        "\"" + s.replace("\"", "\"\"") + "\""
-      } else {
-        s
-      }
-    } 
 
     val containerHeads = List("session id", "session name", "session date")
     val headVals: String = (containerHeads ++ expandHeader(header)).mkString(",") + "\n"
-    val rowVals: String = cd.zip(body).flatMap(v => (v._1 ++ v._2).mkString(",")+"\n").mkString
+    val rowVals: String = cd.zip(cleanCSV).flatMap(v => (v._1 ++ v._2).mkString(",")+"\n").mkString
 
     headVals + rowVals
   }    
