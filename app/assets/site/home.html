@@ -55,7 +55,7 @@
             </dt>
             <dd class="home-activity-dataset" ng-if="::act.volume" ng-init="volume=act.volume">
               <p>New dataset shared</p>
-              <span class="icon dataset"></span>
+              <img class="dataset-icon" ng-src="{{::volume.thumbRoute()}}">
               <div>
                 <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
                 <div class="volume-list-investigators" ng-if="::volume.access">
