@@ -46,15 +46,16 @@ app.directive 'inputCompleter', [
             $scope.choices = []
           $scope.search(resend) if resend
 
-      $scope.search = (input) ->
+      $scope.search = () ->
+        value = input.value
         if sent
-          resend = input != sent && input
-        else if input?.length >= min
+          resend = value != sent && value
+        else if value?.length >= min
           resend = undefined
-          sent = input
+          sent = value
           $scope.choices.push
             text: constants.message('search.active')
-          handle($scope.completer({$input:input}))
+          handle($scope.completer({$input:value}))
         else
           $scope.choices = []
 
@@ -66,8 +67,10 @@ app.directive 'inputCompleter', [
           else
             c.select)
 
-      $scope.enter = ($event, input) ->
-        handle($scope.submit({$event:$event, $input:input})) if input?.length >= min
+      $scope.enter = ($event) ->
+        # bypass debounce
+        $scope.value = value = input.value
+        handle($scope.submit({$event:$event, $input:value})) if value?.length >= min
 
       $scope.search(input.value)
 
