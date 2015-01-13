@@ -6,18 +6,23 @@
       <button ng-if="::!volume" ng-click="page.router.back()" message="volume.edit.cancel"></a>
     </fieldset>
   </scroll-float>
+  <fieldset ng-if="::!volume">
+    <validator name="owner" label="volume.owner">
+      <select name="owner" ng-model="volumeEditOverviewForm.data.owner" ng-options="p.id as p.name for p in ::volumeEditOverviewForm.owners"/>
+    </validator>
+  </fieldset>
   <fieldset>
     <div>Does this study represent a published paper or resource?</div>
     <label class="line-option">
-      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="true">Yes
+      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="true" required>Yes
     </label>
     <label class="line-option">
-      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="false">No
+      <input type="radio" name="published" ng-model="volumeEditOverviewForm.data.published" ng-value="false" required>No
     </label>
   </fieldset>
   <fieldset ng-if="volumeEditOverviewForm.data.published===true">
     <validator name="citation.url" label="volume.edit.autodoi">
-      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{::'volume.edit.autodoi.placeholder' | message}}"  ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//">
+      <input type="text" name="citation.url" ng-model="volumeEditOverviewForm.data.citation.url" placeholder="{{::'volume.edit.autodoi.placeholder' | message}}" ng-pattern="/^((doi:)?10\.[\.0-9]+|ftp:/|http:/|https:/)//">
     </validator>
     <div message="volume.edit.autodoi.instructions"></div>
     <button class="mini" ng-disabled="!page.constants.regex.doi.test(volumeEditOverviewForm.data.citation.url) || volumeEditOverviewForm.$pristine" ng-click="volumeEditOverviewForm.autoDOI()" message="volume.edit.autodoi.lookup"></button>
@@ -26,7 +31,7 @@
   <fieldset class="skinny" ng-if="volumeEditOverviewForm.data.published !== undefined">
     <!-- title -->  
     <validator name="name" label="volume.name" required>
-      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}">
+      <input type="text" name="name" ng-model="volumeEditOverviewForm.data.name" placeholder="{{::'volume.edit.name.placeholder' | message}}" required>
     </validator>
     <!-- citation -->
     <div ng-if="volumeEditOverviewForm.data.published===true">

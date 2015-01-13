@@ -1,16 +1,16 @@
 'use strict';
 
 app.controller('volume/edit', [
-  '$scope', 'volume', 'pageService', 'Store',
-  function ($scope, volume, page, Store) {
+  '$scope', 'constantService', 'displayService', 'routerService', 'Store', 'volume',
+  function ($scope, constants, display, router, Store, volume) {
     $scope.flowOptions = Store.flowOptions;
     $scope.volume = volume;
-    page.display.title = volume ? volume.title : page.constants.message('volume.edit.create');
+    display.title = volume ? volume.title : constants.message('volume.edit.create');
 
     if (volume)
-      page.display.toolbarLinks.push({
+      display.toolbarLinks.push({
         type: 'yellow',
-        html: page.constants.message('volume.edit.exit'),
+        html: constants.message('volume.edit.exit'),
         url: volume.route()
       });
 
@@ -26,10 +26,10 @@ app.controller('volume/edit', [
 
     $scope.$on('$locationChangeStart', function (event, url) {
       /* hacky: */
-      if (url.includes(volume ? volume.editRoute() : page.router.volumeCreate()))
+      if (url.includes(volume ? volume.editRoute() : router.volumeCreate()))
         return;
       if (!leavingSoSoon())
-        return page.display.cancelRouteChange(event); 
+        return display.cancelRouteChange(event); 
     });
 
     $scope.$watch(function () {

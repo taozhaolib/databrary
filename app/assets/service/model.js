@@ -195,10 +195,6 @@ app.factory('modelService', [
       return partyGet(this.id, this, options);
     };
 
-    Party.profile = function (options) {
-      return Party.get(Login.user.id, options);
-    };
-
     Party.prototype.save = function (data) {
       var p = this;
       return router.http(router.controllers.PartyApi.update, this.id, data)

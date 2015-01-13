@@ -67,7 +67,7 @@ app.directive 'inputCompleter', [
             c.select)
 
       $scope.enter = ($event, input) ->
-        handle($scope.submit({$event:$event, $input:input})) if input.length >= min
+        handle($scope.submit({$event:$event, $input:input})) if input?.length >= min
 
       $scope.search(input.value)
 

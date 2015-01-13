@@ -1,8 +1,8 @@
 'use strict';
 
 app.directive('volumeEditOverviewForm', [
-  'pageService', '$routeParams',
-  function (page, $routeParams) {
+  '$location', 'constantService', 'messageService', 'modelService', '$routeParams',
+  function ($location, constants, messages, models, $routeParams) {
     var link = function ($scope) {
       var volume = $scope.volume;
       var form = $scope.volumeEditOverviewForm;
@@ -23,21 +23,32 @@ app.directive('volumeEditOverviewForm', [
         };
       }
       init(volume);
+      if (!volume) {
+        form.data.owner = parseInt($routeParams.owner) || models.Login.user.id;
+        form.owners = models.Login.user.parents.filter(function (p) {
+            return Math.min(p.site, p.member) >= constants.permission.EDIT;
+          }).map(function (p) {
+            return p.party;
+          });
+        form.owners.unshift(models.Login.user);
+      }
 
       form.save = function () {
-        page.messages.clear(form);
+        messages.clear(form);
         if (!form.data.published)
           form.data.citation = {head:''};
+        var owner = form.data.owner;
+        delete form.data.owner;
 
         (volume ?
           volume.save(form.data) :
-          page.models.Volume.create(form.data, $routeParams.owner))
+          models.Volume.create(form.data, owner))
           .then(function (vol) {
             form.validator.server({});
 
-            page.messages.add({
+            messages.add({
               type: 'green',
-              body: page.constants.message('volume.edit.success'),
+              body: constants.message('volume.edit.success'),
               owner: form
             });
 
@@ -45,21 +56,21 @@ app.directive('volumeEditOverviewForm', [
             form.$setPristine();
 
             if (!volume)
-              page.$location.url(vol.editRoute());
+              $location.url(vol.editRoute());
           }, function (res) {
             form.validator.server(res);
           });
       };
 
       form.autoDOI = function () {
-        page.messages.clear(form);
-        var doi = page.constants.regex.doi.exec(form.data.citation.url);
+        messages.clear(form);
+        var doi = constants.regex.doi.exec(form.data.citation.url);
 
         if (!doi || !doi[1]) {
           return;
         }
 
-        page.models.cite(doi[1])
+        models.cite(doi[1])
           .then(function (res) {
             form.data.name = res.title;
             form.data.citation = res;
@@ -67,15 +78,15 @@ app.directive('volumeEditOverviewForm', [
 
             form.$setDirty();
 
-            page.messages.add({
+            messages.add({
               type: 'green',
-              body: page.constants.message('volume.edit.autodoi.citation.success'),
+              body: constants.message('volume.edit.autodoi.citation.success'),
               owner: form
             });
           }, function () {
-            page.messages.add({
+            messages.add({
               type: 'red',
-              body: page.constants.message('volume.edit.autodoi.citation.error'),
+              body: constants.message('volume.edit.autodoi.citation.error'),
               owner: form
             });
           });
@@ -84,7 +95,7 @@ app.directive('volumeEditOverviewForm', [
       var validate = {};
       ['name', 'body', 'alias', 'citation.head', 'citation.url', 'citation.year'].forEach(function (f) {
         validate[f] = {
-          tips: page.constants.message('volume.edit.' + f + '.help')
+          tips: constants.message('volume.edit.' + f + '.help')
         };
       });
       form.validator.client(validate, true);
