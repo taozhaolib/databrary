@@ -54,7 +54,7 @@ fi
 IFS='
 '
 if [[ -n $hpc ]] ; then
-	rate=131072
+	rate=100000
 	sec=$[60+`stat -c %s "$IN"`/$rate]
 	echo "${args[*]}" > $id.args
 	exec qsub -N "$id" -v "dir=$PWD,id=$id,url=$url" -l walltime=$sec "$PBS"
