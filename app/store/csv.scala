@@ -173,7 +173,7 @@ private class CSVCreate {
     }
 
 
-    val containerHeads = List("session id", "session name", "session date")
+    val containerHeads = List("session-id", "session-name", "session-date")
     val headVals: String = (containerHeads ++ expandHeader(header)).mkString(",") + "\n"
     val rowVals: String = cd.zip(cleanCSV).flatMap(v => (v._1 ++ v._2).mkString(",")+"\n").mkString
 
