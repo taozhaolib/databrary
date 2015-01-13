@@ -55,13 +55,16 @@
             </dt>
             <dd class="home-activity-dataset" ng-if="::act.volume" ng-init="volume=act.volume">
               <p>New dataset shared</p>
-              <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
-              <div class="volume-list-investigators" ng-if="::volume.access">
-                <ul class="inline-block comma">
-                  <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
-                    <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
-                  </li>
-                </ul>
+              <span class="icon dataset"></span>
+              <div>
+                <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
+                <div class="volume-list-investigators" ng-if="::volume.access">
+                  <ul class="inline-block comma">
+                    <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
+                      <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </dd>
             <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
