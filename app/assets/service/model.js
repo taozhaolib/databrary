@@ -327,6 +327,10 @@ app.factory('modelService', [
       return Login.isLoggedIn() && Login.checkAccess(constants.permission.PUBLIC);
     };
 
+    Login.prototype.route = function () {
+      return router.profile();
+    };
+
     angular.forEach({
       get: 'get',
       login: 'post',
