@@ -71,8 +71,7 @@ app.factory('displayService', [
     };
 
     /* TODO: this should really use .canPlayType */
-    if (window.navigator.userAgent.toLowerCase().includes('firefox') &&
-        window.navigator.platform.toLowerCase().includes('mac'))
+    if (window.navigator.userAgent.search(/^Mozilla\/.* \(Macintosh; .* Firefox\/([0-2]|[3][0-4])/) === 0)
       messages.add({
         type: 'yellow',
         body: constants.message('video.unsupported'),

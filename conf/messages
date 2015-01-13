@@ -40,7 +40,7 @@ error.report=If this is unexpected, <a href="mailto:feedback@databrary.org?subje
 error.report.subject=[Error {0}] {1}
 error.report.body=Describe what you were doing, what went wrong, and what you expected to happen:\n\n\n\n----\n\n{0}
 
-video.unsupported=Unfortunately, playing videos may not yet work in Firefox on OS X. If you have trouble, please try Safari or Chrome.
+video.unsupported=Unfortunately, playing videos may not work in older Firefox versions on OS X. Please upgrade or try Safari or Chrome.
 
 error.title=Error
 error.resolve=<strong>Error</strong>: An error occurred accessing this page. Please <a href="mailto:feedback@databrary.org">contact us</a> and try again later.
@@ -68,7 +68,7 @@ mail.reissue.body=Your email confirmation link has now expired. Please use this 
 mail.register.subject=Databrary account created
 mail.register.body=Thank you for registering with Databrary. Please use this link to complete your registration:\n\n{0}\n\nBy clicking the above link, you also indicate that you have read and understand the Databrary Access agreement, which you can download here:\n\nhttp://databrary.org/policies/agreement.pdf\n\nOnce you''ve validated your e-mail, you will be able to request authorization in order to be granted full access to Databrary.
 mail.authorize.subject=Databrary authorization request
-mail.authorize.body={1} has requested to be authorized by {2}.\n\nTo approve or reject this authorization request, go to: {0} Plesae use this link to find more information on authorizing and managing affiliates:\n\nhttp://databrary.org/access/guide/investigators/authorization/affiliates.html
+mail.authorize.body={1} has requested to be authorized by {2}.\n\nTo approve or reject this authorization request, go to: {0}\n\nPlease use this link to find more information about authorizing and managing affiliates:\n\nhttp://databrary.org/access/guide/investigators/authorization/affiliates.html
 mail.authorized.subject=Databrary authorization approved
 mail.authorized.body=You have been authorized for Databrary access by {0}.
 
