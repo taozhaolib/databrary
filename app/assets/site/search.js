@@ -2,7 +2,7 @@
 
 app.controller('site/search', [
   '$scope', '$location', 'constantService', 'displayService', 'volumes',
-  function ($scope, $location, constants, display, volumes, page) {
+  function ($scope, $location, constants, display, volumes) {
     $scope.volumes = volumes;
     display.title = constants.message('search.title');
     $scope.query = $location.search().query;
