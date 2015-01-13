@@ -1,34 +1,51 @@
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances #-}
 module Databrary.DB
-  ( dbRunQuery
-  , dbExcute
+  ( MonadDB(..)
+  , dbRunQuery
+  , dbExecute
   , dbExecute1
   , dbQuery
   , dbQuery1
   , useTPG
   ) where
 
+import Control.Monad (when)
+import Control.Monad.IO.Class (MonadIO, liftIO)
+import Data.IORef (IORef, newIORef, atomicModifyIORef')
 import Database.PostgreSQL.Typed
-import Network (PortID(..))
+import Database.PostgreSQL.Typed.TH (withTPGConnection)
+import Database.PostgreSQL.Typed.Query
+import qualified Language.Haskell.TH as TH
+import System.IO.Unsafe (unsafePerformIO)
 
 import Databrary.Resource.DB
+import Databrary.Resource
 
-dbRunQuery :: (MonadIO m, MonadReader b m, HasDB b, PG.PGQuery q a) => q -> m (Int, Seq a)
+class MonadDB m where
+  liftDB :: (PGConnection -> IO a) -> m a
+
+instance (MonadIO m, HasResource m) => MonadDB m where
+  liftDB f = do
+    db <- getResource resourceDB
+    liftIO $ withDB db f
+
+dbRunQuery :: (MonadDB m, PGQuery q a) => q -> m (Int, [a])
 dbRunQuery q = liftDB $ \c -> pgRunQuery c q
 
-dbExecute :: (MonadIO m, MonadReader b m, HasPG b, PG.PGQuery q ()) => q -> m Int
-dbExecute q = liftDB $ \c -> PG.pgExecute c q
+dbExecute :: (MonadDB m, PGQuery q ()) => q -> m Int
+dbExecute q = liftDB $ \c -> pgExecute c q
 
-dbExecute1 :: (MonadIO m, MonadReader b m, HasPG b, PG.PGQuery q ()) => q -> m ()
+dbExecute1 :: (Monad m, MonadDB m, PGQuery q ()) => q -> m ()
 dbExecute1 q = do
-  r <- pgExecute q
+  r <- dbExecute q
   when (r /= 1) $ fail $ "pgExecute1: " ++ show r ++ " rows"
 
-dbQuery :: (MonadIO m, MonadReader b m, HasPG b, PG.PGQuery q a) => q -> m [a]
-dbQuery q = liftDB $ \c -> PG.pgQuery c q
+dbQuery :: (MonadDB m, PGQuery q a) => q -> m [a]
+dbQuery q = liftDB $ \c -> pgQuery c q
 
-dbQuery1 :: (MonadIO m, MonadReader b m, HasPG b, PG.PGQuery q a) => q -> m (Maybe a)
+dbQuery1 :: (Monad m, MonadDB m, PGQuery q a) => q -> m (Maybe a)
 dbQuery1 q = do
-  r <- pgQuery q
+  r <- dbQuery q
   case r of
     [] -> return $ Nothing
     [x] -> return $ Just x
@@ -43,3 +60,8 @@ useTPG = do
   if d
     then return []
     else loadTPG
+
+instance MonadDB TH.Q where
+  liftDB f = do
+    _ <- useTPG
+    TH.runIO $ withTPGConnection f

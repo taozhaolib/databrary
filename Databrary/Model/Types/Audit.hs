@@ -6,10 +6,8 @@ module Databrary.Model.Types.Audit
 import Data.Char (toUpper)
 import Database.PostgreSQL.Typed.Enum (makePGEnum)
 
-import Databrary.Snaplet.PG (useTPG)
+import Databrary.DB (useTPG)
 
 useTPG
 
 makePGEnum "audit_action" "AuditAction" (\(h:r) -> "AuditAction" ++ toUpper h:r)
-
-deriving instance Show AuditAction

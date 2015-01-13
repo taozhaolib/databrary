@@ -26,7 +26,6 @@ Executable databrary
     wai,
     http-types,
     network,
-    lens,
     resource-pool,
     postgresql-typed,
     entropy,

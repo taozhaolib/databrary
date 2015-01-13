@@ -1,14 +1,13 @@
+{-# LANGUAGE FlexibleInstances #-}
 module Databrary.Resource.Entropy
   ( Entropy
   , HasEntropy(..)
   , initEntropy
-  , liftEntropy
+  , withEntropy
   ) where
  
 import Control.Applicative ((<$>))
-import Control.Lens (Lens', view)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader)
+import Control.Monad.Trans.Class (MonadTrans, lift)
 import qualified System.Entropy as Entropy
 
 newtype Entropy = Entropy Entropy.CryptHandle
@@ -16,10 +15,11 @@ newtype Entropy = Entropy Entropy.CryptHandle
 initEntropy :: IO Entropy
 initEntropy = Entropy <$> Entropy.openHandle
 
-class HasEntropy b where
-  entropyLens :: Lens' b Entropy
+class HasEntropy m where
+  getEntropy :: m Entropy
 
-liftEntropy :: (MonadIO m, MonadReader b m, HasEntropy b) => (Entropy.CryptHandle -> IO a) -> m a
-liftEntropy f = do
-  Entropy h <- view entropyLens
-  liftIO $ f h
+instance (MonadTrans t, Monad m, HasEntropy m) => HasEntropy (t m) where
+  getEntropy = lift getEntropy
+
+withEntropy :: Entropy -> (Entropy.CryptHandle -> IO a) -> IO a
+withEntropy (Entropy h) f = f h

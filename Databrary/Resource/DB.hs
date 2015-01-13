@@ -1,15 +1,11 @@
 module Databrary.Resource.DB
   ( DBConn
   , initDB
-  , HasDB(..)
-  , liftDB
+  , withDB
   , loadTPG
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Lens (Lens', view)
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Reader (MonadReader)
 import Data.Pool (Pool, withResource, createPool)
 import Database.PostgreSQL.Typed
 import qualified Language.Haskell.TH as TH
@@ -32,13 +28,8 @@ initDB = do
     pgDisconnect
     1 60 16
 
-class HasDB b where
-  dbLens :: Lens' b DBConn
-
-liftDB :: (MonadIO m, MonadReader b m, HasDB b) => (PGConnection -> IO a) -> m a
-liftDB f = do
-  PGPool p <- view dbLens
-  liftIO $ withResource p f
+withDB :: DBConn -> (PGConnection -> IO a) -> IO a
+withDB (PGPool p) = withResource p
 
 loadTPG :: TH.DecsQ
 loadTPG = useTPGDatabase =<< TH.runIO pgDatabase

@@ -1,48 +1,55 @@
+{-# LANGUAGE FlexibleInstances #-}
 module Databrary.Wai
   ( WaiT
   , runWaiT
-  , WaiResult
+  , Result
   , WaiApplication
   , Wai.Request
   , ResponseHeaders
   , Status
-  , routeWai
   ) where
 
 import Blaze.ByteString.Builder (Builder)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.RWS (RWST(..))
-import Data.ByteString.Lazy (ByteString)
+import qualified Data.ByteString.Lazy as BSL
 import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
 import Network.HTTP.Types (ResponseHeaders, Status)
 
-import Databrary.Route (RouteM, routeRequest)
-
 type WaiT = RWST Wai.Request ResponseHeaders
-type WaiM r = WaiT r IO
-type WaiR r m = WaiT r m Status
-type Wai r = WaiT r IO Status
 
-class WaiResult r where
+class Result r where
   resultEmpty :: r
   resultResponse :: Status -> ResponseHeaders -> r -> Wai.Response
 
-instance WaiResult Builder where
+instance Result (Status -> ResponseHeaders -> Wai.Response) where
+  resultEmpty s h = Wai.responseBuilder s h mempty
+  resultResponse s h r = r s h
+
+instance Result Builder where
   resultEmpty = mempty
   resultResponse = Wai.responseBuilder
 
-instance WaiResult ByteString where
+instance Result BSL.ByteString where
   resultEmpty = mempty
   resultResponse = Wai.responseLBS
 
+instance Result Wai.StreamingBody where
+  resultEmpty _ _ = return ()
+  resultResponse = Wai.responseStream
+
+instance Result FilePath where
+  resultEmpty = "/dev/null"
+  resultResponse s h f = Wai.responseFile s h f Nothing
+
+instance Result (FilePath, Wai.FilePart) where
+  resultEmpty = ("/dev/null", Wai.FilePart 0 0 0)
+  resultResponse s h (f, p) = Wai.responseFile s h f (Just p)
+
 type WaiApplication m = Wai.Request -> (Wai.Response -> IO Wai.ResponseReceived) -> m Wai.ResponseReceived
 
-runWaiT :: (MonadIO m, WaiResult r) => WaiR r m -> WaiApplication m
+runWaiT :: (MonadIO m, Result r) => WaiT r m Status -> WaiApplication m
 runWaiT (RWST wai) request send = do
   (s, r, h) <- wai request resultEmpty
   liftIO $ send $ resultResponse s h r
-
-routeWai :: (MonadIO m, WaiResult r) => RouteM (WaiR r m) -> WaiApplication m
-routeWai route request = runWaiT wai request
-  where Just wai = routeRequest route request

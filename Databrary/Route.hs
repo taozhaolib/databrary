@@ -17,7 +17,7 @@ module Databrary.Route
 
 import Prelude hiding (read, maybe)
 
-import Control.Applicative (Applicative, Alternative)
+import Control.Applicative (Applicative, Alternative, (<$))
 import Control.Monad (MonadPlus, mzero, mfilter)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Reader (MonadReader, ReaderT(..), ask)
@@ -50,8 +50,8 @@ maybe = Data.Maybe.maybe mzero return
 fixed :: Text -> RouteM Text
 fixed p = mfilter (p ==) text
 
-instance IsString (RouteM Text) where
-  fromString = fixed . fromString
+instance IsString (RouteM a) where
+  fromString s = undefined <$ fixed (fromString s)
 
 path :: RouteM [Text]
 path = RouteM $ lift $ StateT $ \p -> Just (p, [])

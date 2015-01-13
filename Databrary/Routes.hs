@@ -4,14 +4,22 @@ module Databrary.Routes
   ) where
 
 import Control.Monad (msum)
+import Control.Monad.Writer (tell)
 import Data.ByteString.Lazy (ByteString)
-import Network.HTTP.Types (status200)
+import Network.HTTP.Types (ok200)
 
-import Databrary.Route
+import qualified Databrary.Route as R
 import Databrary.Action
+import Databrary.Model.Id
+import Databrary.Model.Party
 
-routes :: RouteM (Action ByteString)
+testParty :: Id Party -> BAction
+testParty i = do
+  p <- getParty i
+  respond $ maybe "not found" partyName p
+  return ok200
+
+routes :: R.RouteM SomeAction
 routes = msum 
-  [ fixed "foo" >> return (return status200)
-  , path >> return defaultAction
-  ] 
+  [ "party" >> routeId >>= action . testParty
+  ]

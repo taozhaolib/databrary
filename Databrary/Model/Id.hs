@@ -1,12 +1,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 module Databrary.Model.Id 
   ( module Databrary.Model.Types.Id
-  , pathIdArg
+  , routeId
   ) where
 
-import Snap.Core (MonadSnap, dir, pathArg)
-
+import Control.Applicative ((<$>))
 import Databrary.Model.Types.Id
+import qualified Data.Text.Read as T
+import qualified Databrary.Route as R
 
-pathIdArg :: forall a b m . (MonadSnap m, HasId a) => (Id a -> m b) -> m b
-pathIdArg f = dir (kindOf (undefined :: a)) $ pathArg f
+routeId :: HasId a => R.RouteM (Id a)
+routeId = Id <$> R.reader T.decimal

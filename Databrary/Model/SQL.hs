@@ -18,9 +18,10 @@ import Control.Arrow (first, second)
 import Control.Monad (when)
 import Data.Char (isLetter, toLower)
 import Data.List (intercalate, unfoldr)
+import Database.PostgreSQL.Typed.Query (QueryFlags(..), simpleQueryFlags, makePGQuery)
 import qualified Language.Haskell.TH as TH
 
-import Database.PostgreSQL.Typed.Query (QueryFlags(..), makePGQuery)
+import Databrary.DB (useTPG)
 
 data SelectOutput
   = OutputExpr String
@@ -119,6 +120,7 @@ takeWhileEnd p = fst . foldr go ([], False) where
 
 makeQuery :: QueryFlags -> (String -> String) -> SelectOutput -> TH.ExpQ
 makeQuery flags sql output = do
+  _ <- useTPG
   nl <- mapM (TH.newName . colVar) cols
   (parse, []) <- outputParser output nl
   TH.AppE (TH.VarE 'fmap `TH.AppE` TH.LamE [TH.TupP $ map TH.VarP nl] parse)
@@ -129,9 +131,8 @@ makeQuery flags sql output = do
     (h:l) -> toLower h : l
   cols = outputColumns output
 
-simpleQueryFlags, preparedQueryFlags :: QueryFlags
-simpleQueryFlags = QueryFlags False Nothing
-preparedQueryFlags = QueryFlags False (Just [])
+preparedQueryFlags :: QueryFlags
+preparedQueryFlags = simpleQueryFlags{ flagPrepare = Just [] }
 
 selectQuery :: Selector -> String -> TH.ExpQ
 selectQuery (Selector{ selectOutput = o, selectSource = s }) sql =
