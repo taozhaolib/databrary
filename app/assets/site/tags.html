@@ -1,5 +1,5 @@
 <div class="panel-tags-list">
-  <ng-form name="tagForm">
+  <ng-form name="tagForm" isolate>
     <ul class="panel-tags-items">
       <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'keyword': tag.keyword}">
         <div class="panel-tag-weight" ng-if="::!keyword">{{tag.weight}}</div>
