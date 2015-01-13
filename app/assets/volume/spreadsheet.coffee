@@ -680,13 +680,13 @@ app.directive 'spreadsheet', [
                   edit(cell, info, true)
               return
             when 'metric'
-              if value
+              if value != undefined
                 arr(records[info.c], value)
                 populateCols()
                 generate()
               return
             when 'category'
-              if value
+              if value != undefined
                 arr(obj(records, value), 'id')
                 populateCols()
                 generate()
