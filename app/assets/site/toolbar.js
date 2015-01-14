@@ -33,7 +33,7 @@ app.directive('toolbar', [
         });
 
         $scope.search = function () {
-          page.$location.path(page.router.search()).search($scope.search.data);
+          page.$location.url(page.router.volumeSearch()).search($scope.search.data);
         };
         $scope.search.data = {};
       }

@@ -45,4 +45,5 @@ app.directive 'tags', [
                 body: constants.message('tags.vote.error', {sce: $sce.HTML}, name)
                 report: res
                 owner: $scope
+      return
 ]
