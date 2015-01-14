@@ -343,6 +343,7 @@ app.provider('routerService', [
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
+    routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
     routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
     routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['sid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['sid', 'segment', 'id', 'inline']);

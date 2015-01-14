@@ -19,7 +19,7 @@
   <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
     |
   </span>
-  <a ng-if="::!editing && !top" href="" ng-click="page.dataExport.downloadCSV(volume)">export data</a>
+  <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
 </div>
 
 <div class="spreadsheet" ng-class="::{'edit': editing, 'view': !editing}">

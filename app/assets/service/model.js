@@ -505,6 +505,10 @@ app.factory('modelService', [
       return router.volumeZip([this.id]);
     };
 
+    Volume.prototype.csvRoute = function () {
+      return router.volumeCSV([this.id]);
+    };
+
     Volume.prototype.accessSearch = function (param) {
       return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
         .then(function (res) {
