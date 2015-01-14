@@ -205,10 +205,12 @@ object VolumeController extends VolumeController {
   }
 
   def csv(i : Volume.Id) = Action(i).async { implicit request =>
-
-   store.CSV.volume(request.obj).map(Ok(_).withHeaders(
+    for {
+      csv <- store.CSV.volume(request.obj)
+      name <- request.obj.fileName
+    } yield (Ok(csv).withHeaders(
       CONTENT_TYPE -> "text/csv",
-      CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote("databrary-export-vol-" + request.obj.id + ".csv"))))
+      CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".csv"))))
   }
 
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =

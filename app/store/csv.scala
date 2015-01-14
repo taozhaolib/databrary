@@ -1,7 +1,7 @@
 package store
 
 import scala.concurrent.Future
-import scala.collection._
+import scala.collection.mutable
 import play.api.libs.iteratee._
 import macros._
 import macros.async._
@@ -9,159 +9,82 @@ import site._
 import models._
 import dbrary._
 
-object CSV{
-
-  implicit val executionContext = context.foreground
+object CSV {
+  implicit private val executionContext = context.foreground
 
   def volume(vol: Volume): Future[String] = {
-    val cc = new CSVCreate
-    
-
     vol.records.flatMap{r => 
-      vol.containers.flatMap{
-        c => c.filter(x => !(x.top)).mapAsync(_.records).map{crs => 
-         
-          val rl: Seq[Seq[Record]] = crs.map(z => z.map(_._2))         
-          val cl: Seq[Container] = c
-          val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = rl.map(cc.groupCats)
-          val rcsize: Seq[Map[Option[RecordCategory], Int]] = rml.map(_.mapValues(_.size))
-          val rcmax: Map[Option[RecordCategory], Int] = rcsize.fold(Map.empty)(cc.maxCats)
-          val rmets: Map[Option[RecordCategory], Set[Metric[_]]] = cc.headerData(r)
-          val header: Seq[(Option[RecordCategory], Int, List[Metric[_]])] = cc.makeHeader(rcmax, rmets)
-          val body: Seq[Seq[String]] = rml.map(r => cc.row(header, r))
-          val containerData: Seq[List[String]] = cc.cData(c.filter(x => !(x.top))) 
-          cc.buildCSV(header, body, containerData)
-          
+      vol.containers.flatMap{ ca =>
+        val c = ca.filter(!_.top)
+        c.mapAsync(_.records).map{crs => 
+          val rml: Seq[Map[Option[RecordCategory], Seq[Record]]] = crs.map(_.map(_._2).groupBy(_.category))
+          val header: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])] = makeHeader(maxCats(rml), headerData(r))
+          val body: Seq[Seq[String]] = rml.map(row(header, _))
+          buildCSV(header, body, cData(c))
         }
       }
     }
   }
-}
 
-private class CSVCreate {
-
-  def groupCats(rs: Seq[Record]): Map[Option[RecordCategory], Seq[Record]] = {
-    rs.groupBy(r => r.category)
-  }
-
-
-  def maxCats[A](m1: Map[A, Int], m2: Map[A, Int]): Map[A, Int] = {
-
-    m1.foldLeft(m2){case (m, (k, v)) =>
-
-      val x = m.getOrElse(k, 0)
-
-      m.updated(k, x.max(v))
+  private def maxCats[A](ml: Seq[Map[A, Seq[_]]]): collection.Map[A, Int] = {
+    val r = mutable.Map.empty[A, Int]
+    for (m <- ml ; (k, v) <- m) {
+      r.update(k, v.size.max(r.getOrElse(k, 0)))
     }
-
+    r
   }
 
-  def headerData(rs: Seq[Record]): Map[Option[RecordCategory], Set[Metric[_]]] = {
-
+  private def headerData(rs: Seq[Record]): collection.Map[Option[RecordCategory], collection.Set[Metric[_]]] = {
     val m = mutable.Map.empty[Option[RecordCategory], mutable.Set[Metric[_]]]
-
-    for (r <- rs) { 
+    for (r <- rs) {
       val s = m.getOrElseUpdate(r.category, mutable.Set.empty[Metric[_]])
       s ++= r.measures.list.map(_.metric)
-    } 
-
+    }
     m
-
   }
 
-  def makeHeader(rc: Map[Option[RecordCategory], Int], rm: Map[Option[RecordCategory], Set[Metric[_]]]): Seq[(Option[RecordCategory], Int, List[Metric[_]])] = {
-
-    val rcsorted = rc.keys.toSeq.sortBy(_.map(_.id._id))
-
-    rcsorted.map {  r =>
-
-      (r, rc(r), rm(r).toSeq.sortBy(_._id).toList)
-
+  private def makeHeader(rc: collection.Map[Option[RecordCategory], Int], rm: collection.Map[Option[RecordCategory], collection.Set[Metric[_]]]): Seq[(Option[RecordCategory], Int, Seq[Metric[_]])] = {
+    rc.keys.toSeq.sortBy(_.map(_.id._id)).map { r =>
+      (r, rc(r), rm(r).toSeq.sortBy(_._id))
     }
-
   }
 
-  def row(h: Seq[(Option[RecordCategory], Int, List[Metric[_]])], data: Map[Option[RecordCategory], Seq[Record]]): Seq[String] = {
-
-  
-      h.flatMap { case (c, i, ml) => 
-        val recList:Seq[Record] = data.getOrElse(c, Nil)
-        recList.flatMap{
-          case r => ml.map{ m => 
-
-            r.measures(m).fold("")(_.datum)
-
-          } 
-        } ++ List.fill((i - recList.length) * ml.length)("")
-      }
-
+  private def row(h: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])], data: Map[Option[RecordCategory], Seq[Record]]): Seq[String] = {
+    h.flatMap { case (c, i, ml) => 
+      val recList:Seq[Record] = data.getOrElse(c, Nil)
+      recList.flatMap { r =>
+        ml.map { m => 
+          r.measures(m).fold("")(_.datum)
+        }
+      } ++ Seq.fill((i - recList.length) * ml.length)("")
+    }
   }
 
-  def cData(cs: Seq[Container]): Seq[List[String]] = {
-
-    cs.map(c => List(c._id.toString, c.name.fold("")(_.toString), c.getDate.fold("")(_.toString)))
-
+  private def cData(cs: Seq[Container]): Seq[Seq[String]] = {
+    cs.map(c => Seq(c._id.toString, c.name.getOrElse(""), c.getDate.fold("")(_.toString)))
   }
   
-
-  def buildCSV(header: Seq[(Option[RecordCategory], Int, List[Metric[_]])], body: Seq[Seq[String]], cd: Seq[List[String]]): String = {
-  
-    def escapeCSV(s: String): String = {
-      if(s.contains("\"") || s.contains("\n") || s.contains(",")){
-        "\"" + s.replace("\"", "\"\"") + "\""
-      } else {
-        s
-      }
-    }   
+  private def escapeCSV(s: String): String = {
+    if (s.contains("\"") || s.contains("\n") || s.contains(","))
+      "\"" + s.replaceAllLiterally("\"", "\"\"") + "\""
+    else
+      s
+  }   
     
-    val cleanCSV: Seq[Seq[String]] = body.map(_.map(s => escapeCSV(s)))
-    
-    def expandHeader(h: Seq[(Option[RecordCategory], Int, List[Metric[_]])]): Seq[String] = {
-
-      val h2: Seq[(Option[RecordCategory], Int, List[Metric[_]])] = h.flatMap{ case (c, i, ml) =>
-
-        List.range(1, i+1).map{ n =>
-
-          (c, n, ml)
-
-        }
-
-      }
-
-      def incName(c: String, i: Int, m: String): List[String] = {
-
-        val z = List.range(1, i + 1)
-        z.map { n =>
-
-          (c + n.toString + "-" + m)
-
-        }
-      }
-      
-      h2.flatMap{
-        case (c, i, ml) => ml.map{ m =>  
-          
-          if ( i > 1){
-            (c.fold("")(_.name) + i.toString + "-" + m.name)
-          } else {
-            (c.fold("")(_.name) + "-" + m.name)
-
-          }
-        }
+  private def expandHeader(h: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])]): Seq[String] = {
+    h.flatMap { case (c, n, ml) =>
+      val cn = c.fold("")(_.name)
+      Seq.range(0, n).flatMap{ i =>
+        val ci = cn + (if (i > 0) (i+1).toString else "") + "-"
+        ml.map(ci + _.name)
       }
     }
+  }
 
-
-    val containerHeads = List("session-id", "session-name", "session-date")
-    val headVals: String = (containerHeads ++ expandHeader(header)).mkString(",") + "\n"
-    val rowVals: String = cd.zip(cleanCSV).flatMap(v => (v._1 ++ v._2).mkString(",")+"\n").mkString
-
-    headVals + rowVals
+  private def buildCSV(header: Seq[(Option[RecordCategory], Int, Seq[Metric[_]])], body: Seq[Seq[String]], cd: Seq[Seq[String]]): String = {
+    val containerHeads = Seq("session-id", "session-name", "session-date")
+    ((containerHeads, expandHeader(header)) +: cd.zip(body))
+      .map(v => (v._1 ++ v._2).map(escapeCSV).mkString(",")).mkString("", "\n", "\n")
   }    
 
 }
-
-
-
-
-
