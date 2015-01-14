@@ -99,20 +99,7 @@ private class CSVCreate {
 
   def cData(cs: Seq[Container]): Seq[List[String]] = {
 
-    def getName(s: Option[String]): String = {
-      s match{ 
-        case Some(r) => r
-        case None => ""
-      }
-    }
-
-    def getDate(d: Option[Date]): String = 
-      d match{ 
-        case Some(r) => r.toString
-        case None => ""
-      }
-
-    cs.map(c => List(c._id.toString, getName(c.name), getDate(c.date)))
+    cs.map(c => List(c._id.toString, c.name.fold("")(_.toString), c.getDate.fold("")(_.toString)))
 
   }
   
@@ -141,13 +128,6 @@ private class CSVCreate {
 
       }
 
-      def catName(n: Option[RecordCategory]): String = {
-       n match {
-        case Some(t) => t.name
-        case None => ""
-       }
-      }
-
       def incName(c: String, i: Int, m: String): List[String] = {
 
         val z = List.range(1, i + 1)
@@ -162,14 +142,13 @@ private class CSVCreate {
         case (c, i, ml) => ml.map{ m =>  
           
           if ( i > 1){
-            (catName(c)+ i.toString + "-" + m.name)
+            (c.fold("")(_.name) + i.toString + "-" + m.name)
           } else {
-            (catName(c) + "-" + m.name)
+            (c.fold("")(_.name) + "-" + m.name)
 
           }
         }
       }
-
     }
 
 
