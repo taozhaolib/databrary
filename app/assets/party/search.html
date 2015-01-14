@@ -1,13 +1,16 @@
-<div class="home_parties">
-  <div class="row">
-    <div class="col">
-      <h1 class="home-parties-header"><span class="background"></span>Databrary Users</h1>
+<article class="view search-view">
+  <div class="wrap">
+    <div class="row">
+      <div class="col">
+        <h1 class="home-parties-header"><span class="background"></span>Users</h1>
+        <search-form type='party'></search-form>
+      </div>
     </div>
-  </div>
 
-  <div class="row">
-    <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in parties">
-      <portrait></portrait>
+    <div class="row">
+      <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in parties">
+        <portrait></portrait>
+      </div>
     </div>
   </div>
-</div>
+</article>

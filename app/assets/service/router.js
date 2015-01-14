@@ -183,9 +183,9 @@ app.provider('routerService', [
 
     //
 
-    routes.search = makeRoute(controllers.VolumeHtml.search, [], {
-      controller: 'site/search',
-      templateUrl: 'site/search.html',
+    routes.volumeSearch = makeRoute(controllers.VolumeHtml.search, [], {
+      controller: 'volume/search',
+      templateUrl: 'volume/search.html',
       resolve: {
         volumes: [
           'pageService', function (page) {
