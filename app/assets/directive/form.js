@@ -45,10 +45,18 @@ app.directive('ngForm', [
         $setPristine: checkDirty
       };
 
+      if ('isolate' in $attrs) {
+        form.$$parentForm.$removeControl(form);
+        form.$setDirty = function() {
+          $animate.removeClass($element, 'ng-pristine');
+          $animate.addClass($element, 'ng-dirty');
+          form.$dirty = true;
+          form.$pristine = false;
+        };
+      }
       /* it'd be nicer to handle this in $addControl, but it happens too early */
-      var parentForm = $element.parent().controller('form');
-      if (parentForm && parentForm.subformControl)
-        form.$addControl(parentForm.subformControl);
+      else if (form.$$parentForm.subformControl)
+        form.$addControl(form.$$parentForm.subformControl);
 
       var unclaimed = {};
       form.validators = {};

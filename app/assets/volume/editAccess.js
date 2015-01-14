@@ -56,7 +56,6 @@ app.directive('volumeEditAccessForm', [
         });
       }
 
-      var msg;
       form.saveAll = function () {
         page.messages.clear(form);
         subforms.forEach(function (subform) {

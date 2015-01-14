@@ -66,7 +66,7 @@ app.directive('authGrantForm', [
           form.denySuccessFn(auth);
           return;
         }
-        party.authorizeDelete(auth.party.id).then(function () {
+        party.authorizeRemove(auth.party.id).then(function () {
           form.validator.server({});
           page.messages.add({
             body: page.constants.message('auth.grant.remove.success'),

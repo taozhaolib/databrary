@@ -18,7 +18,7 @@
       <div>
         <fieldset class="clean radio-set access-grant-radioset" ng-disabled="::!accessGrantForm.canChange">
           <div ng-repeat="(val, name) in page.constants.permission" ng-if="::accessGrantForm.canGrantAccess(val)">
-            <input type="radio" ng-model="accessGrantForm.data.individual" name="access-{{access.party.id}}-individual" ng-value="val" ng-required>
+            <input type="radio" ng-model="accessGrantForm.data.individual" name="access-{{access.party.id}}-individual" ng-value="val" required>
             <label ng-bind="::'access.edit.'+name | message:access.party.name" class="option" hint="access-edit-{{::name}}"></label>
           </div>
         </fieldset>

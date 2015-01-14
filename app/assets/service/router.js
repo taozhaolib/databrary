@@ -88,7 +88,7 @@ app.provider('routerService', [
 
     var routes = {};
 
-    routes.index = makeRoute(controllers.Site.start, [], {
+    routes.index = makeRoute(controllers.SiteHtml.start, [], {
       controller: 'site/home',
       templateUrl: 'site/home.html',
       resolve: {
@@ -134,7 +134,7 @@ app.provider('routerService', [
           'modelService',
           function (models) {
             if (models.Login.isLoggedIn())
-              return models.Party.profile(['parents']);
+              return models.Login.user.get(['parents']);
             else
               return models.Login.user;
           }
@@ -189,7 +189,7 @@ app.provider('routerService', [
       resolve: {
         volumes: [
           'pageService', function (page) {
-            return page.models.Volume.query(page.$route.current.params);
+            return page.models.Volume.search(page.$route.current.params);
           }
         ]
       },
@@ -207,7 +207,7 @@ app.provider('routerService', [
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else
-              return page.models.Party.profile(req);
+              return page.models.Login.user.get(req);
           }
         ],
       },
@@ -234,7 +234,17 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    //
+    routes.partySearch = makeRoute(controllers.PartyHtml.search, [], {
+      controller: 'party/search',
+      templateUrl: 'party/search.html',
+      resolve: {
+        parties: [
+          'pageService', function (page) {
+            return page.models.Party.search(page.$route.current.params);
+          }
+        ]
+      },
+    });
 
     var volumeEdit = {
       controller: 'volume/edit',
@@ -242,9 +252,14 @@ app.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            if (!('id' in page.$route.current.params))
-              return page.models.Login.isAuthorized() ? undefined :
-                page.$q.reject({status: 403});
+            if (!('id' in page.$route.current.params)) {
+              if (!page.models.Login.isAuthorized())
+                return page.$q.reject({status: 403});
+              return page.models.Login.user.get(['parents'])
+                .then(function () {
+                  return undefined;
+                });
+            }
 
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,

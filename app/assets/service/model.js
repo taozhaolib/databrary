@@ -195,10 +195,6 @@ app.factory('modelService', [
       return partyGet(this.id, this, options);
     };
 
-    Party.profile = function (options) {
-      return Party.get(Login.user.id, options);
-    };
-
     Party.prototype.save = function (data) {
       var p = this;
       return router.http(router.controllers.PartyApi.update, this.id, data)
@@ -207,8 +203,8 @@ app.factory('modelService', [
         });
     };
 
-    Party.query = function (data) {
-      return router.http(router.controllers.PartyApi.query, data)
+    Party.search = function (data) {
+      return router.http(router.controllers.PartyApi.search, data)
         .then(function (res) {
           return res.data.map(partyMake);
         });
@@ -269,9 +265,9 @@ app.factory('modelService', [
         });
     };
 
-    Party.prototype.authorizeDelete = function (target) {
+    Party.prototype.authorizeRemove = function (target) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
+      return router.http(router.controllers.PartyApi.authorizeRemove, this.id, target)
         .then(function (res) {
           p.clear('children');
           return p.update(res.data);
@@ -325,6 +321,10 @@ app.factory('modelService', [
 
     Login.isAuthorized = function () {
       return Login.isLoggedIn() && Login.checkAccess(constants.permission.PUBLIC);
+    };
+
+    Login.prototype.route = function () {
+      return router.profile();
     };
 
     angular.forEach({
@@ -471,8 +471,8 @@ app.factory('modelService', [
         });
     };
     
-    Volume.query = function (data) {
-      return router.http(router.controllers.VolumeApi.query, data)
+    Volume.search = function (data) {
+      return router.http(router.controllers.VolumeApi.search, data)
         .then(function (res) {
           return res.data.map(volumeMake);
         });
@@ -521,9 +521,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.accessDelete = function (target) {
+    Volume.prototype.accessRemove = function (target) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
+      return router.http(router.controllers.VolumeApi.accessRemove, this.id, target)
         .then(function (res) {
           v.clear('access');
           return v.update(res.data);
@@ -539,9 +539,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.fundingDelete = function (funder) {
+    Volume.prototype.fundingRemove = function (funder) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
+      return router.http(router.controllers.VolumeApi.fundingRemove, this.id, funder)
         .then(function (res) {
           v.clear('funding');
           return v.update(res.data);
