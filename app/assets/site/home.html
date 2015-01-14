@@ -14,13 +14,13 @@
     </div>
     <div class="bigbuttons-container">
       <div class="bigbutton">
-        <span class="button-title">Browse Datasets</span>
+        <span class="button-title">Browse Data</span>
         <span class="hide-mobile"><a href="/volume">By search term</a><br></span>
         <span class="hide-mobile"><a href="/party">By contributor</a><br></span>
       </div>
       <div class="bigbutton">
-        <span class="button-title">Share Dataset</span>
-        <span class="hide-mobile"><a href="/volume/create">Create a Dataset</a></br></span>
+        <span class="button-title">Share Data</span>
+        <span class="hide-mobile"><a href="/volume/create">Create a Study</a></br></span>
         <span class="hide-mobile"><a href="http://databrary.org/access/guide/investigators/access.html">Learn more</a> about sharing your data.</span>
       </div> 
     </div>
@@ -53,9 +53,9 @@
                 {{::act.time | date}}
               </time>
             </dt>
-            <dd class="home-activity-dataset" ng-if="::act.volume" ng-init="volume=act.volume">
-              <p>New dataset shared</p>
-              <img class="dataset-icon" ng-src="{{::volume.thumbRoute()}}">
+            <dd class="home-activity-volume" ng-if="::act.volume" ng-init="volume=act.volume">
+              <p>New Shared Data</p>
+              <img class="volume-thumb" ng-src="{{::volume.thumbRoute()}}">
               <div>
                 <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
                 <div class="volume-list-investigators" ng-if="::volume.access">
@@ -68,14 +68,14 @@
               </div>
             </dd>
             <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
-              <p>New authorized user</p>
+              <p>New Authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">Investigator</span></p>
               <portrait></portrait>
             </dd>
           </dl>
         </article>        
       </div>
       <div class="home-tags col-desktop-5 col-tablet-3 col-mobile-6">
-        <span class="home-sections-title">Top Tagged</span>
+        <span class="home-sections-title">Top Tags</span>
         <ol>
           <ul ng-repeat="tag in ::tags" class="home-tags-item">
             <div class="home-tag-weight" ng-bind="::tag.weight"></div>
