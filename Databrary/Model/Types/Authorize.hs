@@ -1,10 +1,12 @@
 module Databrary.Model.Types.Authorize
   ( Access(..)
   , Authorization(..)
+  , Authorize(..)
   ) where
 
-import Databary.Model.Permission
-import Databary.Model.Types.Party
+import Databrary.Model.Permission
+import Databrary.Model.Types.Party
+import Data.Time (UTCTime)
 
 data Access = Access
   { accessSite :: !Permission

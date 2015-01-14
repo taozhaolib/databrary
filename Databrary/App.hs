@@ -6,6 +6,7 @@ module Databrary.App
   ) where
 
 import Databrary.Resource
+import Databrary.Types.Identity
 
 type AppT = ResourceT
 type AppM = AppT IO

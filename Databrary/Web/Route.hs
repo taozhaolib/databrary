@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving #-}
-module Databrary.Route
+module Databrary.Web.Route
   ( RouteM
 
   , method

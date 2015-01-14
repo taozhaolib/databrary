@@ -1,14 +1,12 @@
 module Databrary.Identity
-  (
+  ( module Databrary.Types.Identity
+  , getIdentity
   ) where
 
-import Databrary.Model.Types.Authorize
+import Databrary.Action
+import Databrary.Web.Cookies
 
-data Identity = Identity
-  { identityAuthorization :: Authorization
-  , identitySuperuser :: Bool
-  }
-
-getIdentity :: AppHandler Identity
+getIdentity :: ActionM Identity
 getIdentity = do
-  getSession 
+  session <- getSignedCookie "session"
+  getSession session

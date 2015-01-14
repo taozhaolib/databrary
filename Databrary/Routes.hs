@@ -4,11 +4,9 @@ module Databrary.Routes
   ) where
 
 import Control.Monad (msum)
-import Control.Monad.Writer (tell)
-import Data.ByteString.Lazy (ByteString)
 import Network.HTTP.Types (ok200)
 
-import qualified Databrary.Route as R
+import qualified Databrary.Web.Route as R
 import Databrary.Action
 import Databrary.Model.Id
 import Databrary.Model.Party

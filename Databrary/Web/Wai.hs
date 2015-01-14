@@ -1,6 +1,7 @@
-{-# LANGUAGE FlexibleInstances #-}
-module Databrary.Wai
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, TypeSynonymInstances, DefaultSignatures, TypeFamilies #-}
+module Databrary.Web.Wai
   ( WaiT
+  , HasRequest(..)
   , runWaiT
   , Result
   , WaiApplication
@@ -10,14 +11,27 @@ module Databrary.Wai
   ) where
 
 import Blaze.ByteString.Builder (Builder)
+import Control.Monad (liftM)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.RWS (RWST(..))
+import Control.Monad.RWS (RWST(..), ask)
+import Control.Monad.Trans.Class (MonadTrans, lift)
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
-import Network.HTTP.Types (ResponseHeaders, Status)
+import Network.HTTP.Types (ResponseHeaders, HeaderName, Status)
 
 type WaiT = RWST Wai.Request ResponseHeaders
+
+class Monad m => HasRequest m where
+  getRequest :: m Wai.Request
+  default getRequest :: (MonadTrans t, HasRequest b, m ~ t b) => t b Wai.Request
+  getRequest = lift getRequest
+  getRequestHeader :: HeaderName -> m (Maybe BS.ByteString)
+  getRequestHeader h = liftM (lookup h . Wai.requestHeaders) getRequest
+
+instance Monad m => HasRequest (WaiT r m) where
+  getRequest = ask
 
 class Result r where
   resultEmpty :: r

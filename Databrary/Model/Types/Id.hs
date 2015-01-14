@@ -4,7 +4,6 @@ module Databrary.Model.Types.Id
   , HasId(..)
   ) where
 
-import Control.Monad (liftM)
 import qualified Data.ByteString as BS
 import Data.Int (Int32)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))

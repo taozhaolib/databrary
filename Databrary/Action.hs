@@ -22,8 +22,8 @@ import qualified Data.Text.Lazy as TL
 import Network.HTTP.Types (notFound404)
 
 import Databrary.App
-import Databrary.Wai
-import Databrary.Route (RouteM, routeRequest)
+import Databrary.Web.Wai
+import Databrary.Web.Route (RouteM, routeRequest)
 
 type ActionM r = WaiT r AppM
 type Action r = ActionM r Status

@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Permission 
   ( Permission(..)
   , Consent(..)
@@ -6,15 +6,15 @@ module Databrary.Model.Permission
   , HasPermission(..)
   ) where
 
-import Database.PostgreSQL.Typed.Enum (makeEnum)
+import Database.PostgreSQL.Typed.Enum (makePGEnum)
 
-import Databrary.App
+import Databrary.DB (useTPG)
 
 useTPG
 
-makeEnum "permission" "Permission" ("Permission" ++)
-makeEnum "consent" "Consent" ("Consent" ++)
-makeEnum "classification" "Classification" ("Classification" ++)
+makePGEnum "permission" "Permission" ("Permission" ++)
+makePGEnum "consent" "Consent" ("Consent" ++)
+makePGEnum "classification" "Classification" ("Classification" ++)
 
 class HasPermission a where
   permission :: a -> Permission

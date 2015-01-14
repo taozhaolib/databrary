@@ -23,11 +23,14 @@ Executable databrary
     time,
     text,
     blaze-builder,
-    wai,
     http-types,
     network,
+    wai,
+    cryptohash,
+    cookie,
+    configurator,
     resource-pool,
-    postgresql-typed,
+    postgresql-typed == 0.3.1,
     entropy,
     warp
 
