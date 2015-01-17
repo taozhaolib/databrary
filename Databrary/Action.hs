@@ -1,56 +1,58 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ExistentialQuantification #-}
+{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
 module Databrary.Action
-  ( ActionM
-  , Action
-  , BAction
-  , Result
+  ( getRequest
+  , getRequestHeader
+  , HasResource(..)
   , respond
-  , runAction
-  , SomeAction(..)
+  , SomeAction
   , action
-  , routeAction
+  , routeApp
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
-import qualified Blaze.ByteString.Builder.Char.Utf8 as Blaze
-import Control.Monad.State (modify)
+import Control.Monad (liftM)
+import Control.Monad.Reader.Class (ask, asks)
+import Control.Monad.Trans.Class (MonadTrans, lift)
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Lazy as BSL
-import Data.Monoid (Monoid, mappend)
-import qualified Data.Text as T
-import qualified Data.Text.Lazy as TL
-import Network.HTTP.Types (notFound404)
+import Data.Maybe (fromMaybe)
+import Network.HTTP.Types (HeaderName)
+import qualified Network.Wai as Wai
 
-import Databrary.App
-import Databrary.Web.Wai
 import Databrary.Web.Route (RouteM, routeRequest)
+import Databrary.Action.Types
+import Databrary.Action.Wai
+import Databrary.Action.App
+import Databrary.Resource
 
-type ActionM r = WaiT r AppM
-type Action r = ActionM r Status
-type BAction = Action Blaze.Builder
+class Monad m => HasRequest m where
+  getRequest :: m Wai.Request
+  default getRequest :: (MonadTrans t, HasRequest b, m ~ t b) => t b Wai.Request
+  getRequest = lift getRequest
+  getRequestHeader :: HeaderName -> m (Maybe BS.ByteString)
+  getRequestHeader h = liftM (lookup h . Wai.requestHeaders) getRequest
 
-class Result r => Respond r b where
-  respond :: b -> ActionM r ()
+instance Monad m => HasRequest (WaiT r m) where getRequest = ask
+instance Monad m => HasRequest (AppT r m) where getRequest = asks appRequest
 
-instance (Result r, Monoid r) => Respond r r where respond = modify . mappend
-instance Respond Blaze.Builder T.Text where respond = respond . Blaze.fromText
-instance Respond Blaze.Builder TL.Text where respond = respond . Blaze.fromLazyText
-instance Respond Blaze.Builder BS.ByteString where respond = respond . Blaze.fromByteString
-instance Respond Blaze.Builder BSL.ByteString where respond = respond . Blaze.fromLazyByteString
+class Monad m => HasResource m where
+  getResource :: (Resource -> a) -> m a
+  default getResource :: (MonadTrans t, HasResource b, m ~ t b) => (Resource -> a) -> t b a
+  getResource = lift . getResource
 
-runAction :: Result r => Action r -> WaiApplication AppM
-runAction = runWaiT
+instance Monad m => HasResource (ResourceT m) where getResource = asks
+instance Monad m => HasResource (AppT r m) where getResource f = asks (f . appResource)
 
-defaultAction :: Action Blaze.Builder
-defaultAction = return notFound404
+data SomeAction q = forall r . Result r => SomeAction (Action q r)
 
-data SomeAction = forall r . Result r => SomeAction (Action r)
-
-action :: Result r => Action r -> RouteM SomeAction
+action :: Result r => Action q r -> RouteM (SomeAction q)
 action = return . SomeAction
 
-routeAction :: RouteM SomeAction -> WaiApplication AppM
-routeAction route request send =
-  case routeRequest route request of
-    Just (SomeAction r) -> runAction r request send
-    Nothing -> runAction defaultAction request send
+withSomeAction :: (q -> q') -> SomeAction q' -> SomeAction q
+withSomeAction f (SomeAction a) = SomeAction $ withAction f a
+
+routeWai :: RouteM (SomeAction Wai.Request) -> Wai.Application
+routeWai route request send = 
+  case fromMaybe (SomeAction notFound) (routeRequest route request) of
+    SomeAction w -> runWai w request send
+
+routeApp :: Resource -> RouteM (SomeAction AppRequest) -> Wai.Application
+routeApp rc = routeWai . fmap (withSomeAction (initApp rc))

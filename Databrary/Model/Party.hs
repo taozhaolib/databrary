@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Party 
   ( module Databrary.Model.Types.Party
+  , nobodyParty
+  , rootParty
   , changeParty
   , getParty
   ) where
@@ -15,6 +17,24 @@ import Databrary.Model.SQL.Party
 import Databrary.Model.SQL (selectQuery)
 
 useTPG
+
+nobodyParty :: Party
+nobodyParty = Party
+  { partyId = Id (-1)
+  , partyName = "Everybody"
+  , partyAffiliation = Nothing
+  , partyURL = Nothing
+  , partyAccount = Nothing
+  }
+
+rootParty :: Party
+rootParty = Party
+  { partyId = Id 0
+  , partyName = "Databrary"
+  , partyAffiliation = Nothing
+  , partyURL = Nothing
+  , partyAccount = Nothing
+  }
 
 changeParty :: (Monad m, MonadDB m) => Party -> m ()
 changeParty Party{..} = dbExecute1 $(changeQuery)

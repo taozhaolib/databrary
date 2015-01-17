@@ -6,7 +6,12 @@ module Databrary.Identity
 import Databrary.Action
 import Databrary.Web.Cookies
 
+nobodyIdentity :: Identity
+nobodyIdentity = Identity
+  { identityAuthorization = nobodyAuthorization
+  , identitySuperuser = False
+  }
+
 getIdentity :: ActionM Identity
-getIdentity = do
-  session <- getSignedCookie "session"
-  getSession session
+getIdentity =
+  fromMaybe nobodyIdentity <$> mapM getSession =<< getSignedCookie "session"

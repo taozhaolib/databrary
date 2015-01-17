@@ -20,6 +20,7 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Databrary.Resource.DB
 import Databrary.Resource
+import Databrary.Action
 
 class MonadDB m where
   liftDB :: (PGConnection -> IO a) -> m a

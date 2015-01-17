@@ -12,5 +12,5 @@ import Databrary.Web.Wai
 getCookies :: HasRequest m => m Cook.Cookies
 getCookies = maybe [] Cook.parseCookies <$> getRequestHeader "cookie"
 
-getSignedCookie :: HasRequest m => BS.ByteString -> m (Maybe T.Text)
-getSignedCookie c = unSignText . lookup c <$> getCookies
+getSignedCookie :: BS.ByteString -> Cook.Cookies -> Maybe T.Text
+getSignedCookie c = unSignText . lookup c
