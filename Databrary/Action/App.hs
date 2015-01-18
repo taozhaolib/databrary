@@ -1,7 +1,7 @@
-{-# LANGUAGE LiberalTypeSynonyms #-}
 module Databrary.Action.App 
   ( AppRequest(..)
   , AppT
+  , AppM
   , AppAction
   , AppBAction
   , initApp
@@ -13,9 +13,15 @@ import Databrary.Resource
 import Databrary.Action.Types
 
 data AppRequest = AppRequest
-  { appResource :: Resource
-  , appRequest :: Wai.Request
+  { appResource :: !Resource
+  , appRequest :: !Wai.Request
   }
+
+instance HasResource AppRequest where
+  toResource = toResource . appResource
+
+instance HasRequest AppRequest where
+  toRequest = toRequest . appRequest
 
 type AppT = ActionT AppRequest
 type AppM r = ActionM AppRequest r

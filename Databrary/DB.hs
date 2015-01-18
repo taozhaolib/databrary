@@ -1,6 +1,6 @@
 {-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances #-}
 module Databrary.DB
-  ( MonadDB(..)
+  ( DBM
   , dbRunQuery
   , dbExecute
   , dbExecute1
@@ -20,31 +20,30 @@ import System.IO.Unsafe (unsafePerformIO)
 
 import Databrary.Resource.DB
 import Databrary.Resource
-import Databrary.Action
 
-class MonadDB m where
+class Monad m => DBM m where
   liftDB :: (PGConnection -> IO a) -> m a
 
-instance (MonadIO m, HasResource m) => MonadDB m where
+instance (MonadIO m, ResourceM m) => DBM m where
   liftDB f = do
     db <- getResource resourceDB
     liftIO $ withDB db f
 
-dbRunQuery :: (MonadDB m, PGQuery q a) => q -> m (Int, [a])
+dbRunQuery :: (DBM m, PGQuery q a) => q -> m (Int, [a])
 dbRunQuery q = liftDB $ \c -> pgRunQuery c q
 
-dbExecute :: (MonadDB m, PGQuery q ()) => q -> m Int
+dbExecute :: (DBM m, PGQuery q ()) => q -> m Int
 dbExecute q = liftDB $ \c -> pgExecute c q
 
-dbExecute1 :: (Monad m, MonadDB m, PGQuery q ()) => q -> m ()
+dbExecute1 :: (Monad m, DBM m, PGQuery q ()) => q -> m ()
 dbExecute1 q = do
   r <- dbExecute q
   when (r /= 1) $ fail $ "pgExecute1: " ++ show r ++ " rows"
 
-dbQuery :: (MonadDB m, PGQuery q a) => q -> m [a]
+dbQuery :: (DBM m, PGQuery q a) => q -> m [a]
 dbQuery q = liftDB $ \c -> pgQuery c q
 
-dbQuery1 :: (Monad m, MonadDB m, PGQuery q a) => q -> m (Maybe a)
+dbQuery1 :: (Monad m, DBM m, PGQuery q a) => q -> m (Maybe a)
 dbQuery1 q = do
   r <- dbQuery q
   case r of
@@ -62,7 +61,7 @@ useTPG = do
     then return []
     else loadTPG
 
-instance MonadDB TH.Q where
+instance DBM TH.Q where
   liftDB f = do
     _ <- useTPG
     TH.runIO $ withTPGConnection f

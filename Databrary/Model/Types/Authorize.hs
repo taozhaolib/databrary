@@ -22,9 +22,9 @@ instance Monoid Access where
 -- consider: makeClassy ''Access
 
 data Authorization = Authorization
-  { authorizeChild :: Party
+  { authorizeAccess :: !Access
+  , authorizeChild :: Party
   , authorizeParent :: Party
-  , authorizeAccess :: !Access
   }
 
 data Authorize = Authorize

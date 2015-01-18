@@ -10,6 +10,7 @@ module Databrary.Model.SQL
   , makeQuery
   , simpleQueryFlags
   , preparedQueryFlags
+  , selectQuery'
   , selectQuery
   ) where
 
@@ -134,6 +135,12 @@ makeQuery flags sql output = do
 preparedQueryFlags :: QueryFlags
 preparedQueryFlags = simpleQueryFlags{ flagPrepare = Just [] }
 
+selectQueryWithFlags :: QueryFlags -> Selector -> String -> TH.ExpQ
+selectQueryWithFlags flags (Selector{ selectOutput = o, selectSource = s }) sql =
+  makeQuery flags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o
+
 selectQuery :: Selector -> String -> TH.ExpQ
-selectQuery (Selector{ selectOutput = o, selectSource = s }) sql =
-  makeQuery preparedQueryFlags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o
+selectQuery = selectQueryWithFlags preparedQueryFlags
+
+selectQuery' :: Selector -> String -> TH.ExpQ
+selectQuery' = selectQueryWithFlags preparedQueryFlags{ flagNullable = Just False }

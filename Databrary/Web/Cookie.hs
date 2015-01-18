@@ -1,16 +1,18 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Cookie
   ( getSignedCookie
   ) where
 
+import Control.Monad (liftM)
 import qualified Data.ByteString as BS
-import qualified Data.Text as T
 import qualified Web.Cookie as Cook
 
 import Databrary.Crypto
-import Databrary.Web.Wai
+import Databrary.Resource
+import Databrary.Action
 
-getCookies :: HasRequest m => m Cook.Cookies
-getCookies = maybe [] Cook.parseCookies <$> getRequestHeader "cookie"
+getCookies :: RequestM m => m Cook.Cookies
+getCookies = maybe [] Cook.parseCookies `liftM` getRequestHeader "cookie"
 
-getSignedCookie :: BS.ByteString -> Cook.Cookies -> Maybe T.Text
-getSignedCookie c = unSignText . lookup c
+getSignedCookie :: (ResourceM m, RequestM m) => BS.ByteString -> m (Maybe BS.ByteString)
+getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< getCookies

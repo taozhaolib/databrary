@@ -4,7 +4,8 @@ module Databrary.Model.Party
   , nobodyParty
   , rootParty
   , changeParty
-  , getParty
+  , lookupParty
+  , lookupAccount
   ) where
 
 import Data.Int (Int32)
@@ -36,14 +37,14 @@ rootParty = Party
   , partyAccount = Nothing
   }
 
-changeParty :: (Monad m, MonadDB m) => Party -> m ()
+changeParty :: DBM m => Party -> m ()
 changeParty Party{..} = dbExecute1 $(changeQuery)
   where
   clientIP = Inet ""
   identityId = (-1 :: Int32)
 
-getParty :: (Monad m, MonadDB m) => Id Party -> m (Maybe Party)
-getParty i = dbQuery1 $(selectQuery partySelector "WHERE party.id = ${i}")
+lookupParty :: DBM m => Id Party -> m (Maybe Party)
+lookupParty i = dbQuery1 $(selectQuery partySelector "WHERE party.id = ${i}")
 
-getAccount :: (Monad m, MonadDB m) => Id Party -> m (Maybe Account)
-getAccount i = dbQuery1 $(selectQuery accountSelector "WHERE account.id = ${i}")
+lookupAccount :: DBM m => Id Party -> m (Maybe Account)
+lookupAccount i = dbQuery1 $(selectQuery accountSelector "WHERE account.id = ${i}")

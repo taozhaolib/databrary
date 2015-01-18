@@ -5,8 +5,6 @@ module Databrary.Model.Volume
 
 import Control.Applicative ((<$>))
 import qualified Data.Text as T
-import Data.Tuple.Curry (uncurryN)
-import Snap.Core (writeText)
 
 import Databrary.App
 import Databrary.Snaplet.PG

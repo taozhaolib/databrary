@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Permission 
   ( Permission(..)
   , Consent(..)

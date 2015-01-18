@@ -1,4 +1,5 @@
 {-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, DataKinds #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Inet
   ( Inet(..)
   ) where

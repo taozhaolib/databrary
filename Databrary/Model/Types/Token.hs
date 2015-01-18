@@ -8,6 +8,7 @@ module Databrary.Model.Types.Token
 
 import qualified Data.ByteString as BS
 
+import Databrary.Types
 import Databrary.Model.Types.Party
 import Databrary.Model.Types.Authorize
 
@@ -15,7 +16,7 @@ type TokenId = BS.ByteString
 
 data Token = Token
   { tokenId :: TokenId
-  , tokenExpires :: UTCTime
+  , tokenExpires :: Timestamp
   }
 
 data AccountToken = AccountToken
@@ -26,6 +27,7 @@ data AccountToken = AccountToken
 data SessionToken = SessionToken
   { sessionToken :: !AccountToken
   , sessionAccess :: Access
+  -- TODO , sessionSuperuser :: Maybe Timestamp
   }
 
 sessionAccount :: SessionToken -> Account
