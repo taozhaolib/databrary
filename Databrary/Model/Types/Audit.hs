@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, DataKinds, TemplateHaskell, StandaloneDeriving #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Types.Audit
   ( AuditAction(..)

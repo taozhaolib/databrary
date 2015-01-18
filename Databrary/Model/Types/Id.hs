@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, FlexibleContexts, ScopedTypeVariables, DataKinds #-}
+{-# LANGUAGE ScopedTypeVariables, DataKinds #-}
 module Databrary.Model.Types.Id 
   ( Id(..)
   , HasId(..)

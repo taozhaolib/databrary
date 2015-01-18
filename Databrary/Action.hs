@@ -1,6 +1,8 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
+{-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
 module Databrary.Action
-  ( RequestM(..)
+  ( RequestM
+  , getRequest
+  , getRequestHeader
   , respond
   , SomeAction
   , action

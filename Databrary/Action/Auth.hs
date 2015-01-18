@@ -4,6 +4,8 @@ module Databrary.Action.Auth
   , appAuth
   ) where
 
+import Control.Monad.Has
+
 import Databrary.Resource
 import Databrary.Action.Types
 import Databrary.Action.App
@@ -14,11 +16,14 @@ data AuthRequest = AuthRequest
   , authIdentity :: Identity
   }
 
-instance HasResource AuthRequest where
-  toResource = toResource . authApp
+instance Has Resource AuthRequest where
+  had = had . authApp
 
-instance HasRequest AuthRequest where
-  toRequest = toRequest . authApp
+instance Has Request AuthRequest where
+  had = had . authApp
+
+instance Has Identity AuthRequest where
+  had = authIdentity
 
 type AuthT = ActionT AuthRequest
 type AuthM r = ActionM AuthRequest r

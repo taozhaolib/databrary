@@ -36,5 +36,7 @@ Executable databrary
     entropy,
     warp
 
+  Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
+
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind

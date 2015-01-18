@@ -9,6 +9,7 @@ module Databrary.Action.App
 
 import qualified Network.Wai as Wai
 
+import Control.Monad.Has
 import Databrary.Resource
 import Databrary.Action.Types
 
@@ -17,11 +18,11 @@ data AppRequest = AppRequest
   , appRequest :: !Wai.Request
   }
 
-instance HasResource AppRequest where
-  toResource = toResource . appResource
+instance Has Resource AppRequest where
+  had = appResource
 
-instance HasRequest AppRequest where
-  toRequest = toRequest . appRequest
+instance Has Wai.Request AppRequest where
+  had = appRequest
 
 type AppT = ActionT AppRequest
 type AppM r = ActionM AppRequest r

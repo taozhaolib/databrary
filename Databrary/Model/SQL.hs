@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
+{-# LANGUAGE ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
 module Databrary.Model.SQL 
   ( SelectOutput(..)
   , selectColumn

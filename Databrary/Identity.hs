@@ -1,19 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ConstraintKinds #-}
 module Databrary.Identity
   ( module Databrary.Types.Identity
+  , IdentityM
   , getIdentity
   ) where
 
-import Control.Monad (liftM)
-import Data.Maybe (fromMaybe)
-import qualified Data.Traversable as Trav
-
-import Databrary.Resource
+import Control.Monad.Has
 import Databrary.Model.Authorize
 import Databrary.Model.Token
 import Databrary.Action.App
 import Databrary.Web.Cookie
 import Databrary.Types.Identity
+
+type IdentityM = HasM Identity
 
 nobodyIdentity :: Identity
 nobodyIdentity = Identity

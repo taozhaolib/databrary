@@ -10,9 +10,18 @@ import Databrary.Model.Types.Audit
 import Databrary.Model.SQL.Audit
 import Databrary.Model.Party
 
+data AuditIdentity = AuditIdentity
+  { auditWho :: !(Id Party)
+  , auditIp :: !Inet
+  }
+
 data Audit = Audit
   { auditWhen :: !Timestamp
-  , auditWho :: Id Party
-  , auditIp :: !Inet
+  , auditIdentity :: !AuditIdentity
   , auditAction :: !AuditAction
   }
+
+class AuditM m where
+  getAuditIdentity :: m AuditIdentity
+
+instance (HasRequest m, HasIdentity m) => AuditM m

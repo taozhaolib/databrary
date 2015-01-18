@@ -1,21 +1,20 @@
-{-# LANGUAGE OverloadedStrings, FlexibleInstances, FlexibleContexts, TypeSynonymInstances, DefaultSignatures, TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings, FlexibleContexts, ConstraintKinds #-}
 module Databrary.Resource
   ( Resource(..)
-  , HasResource(..)
-  , ResourceM(..)
+  , ResourceM
+  , getResource
   , ResourceT
   , initResource
   , runResource
   ) where
 
 import Control.Monad (liftM3)
-import Control.Monad.Reader (MonadReader, ReaderT, runReaderT, asks)
-import Control.Monad.RWS.Strict (RWST)
+import Control.Monad.Reader (ReaderT, runReaderT)
 import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
-import Data.Monoid (Monoid)
 
+import Control.Monad.Has
 import Databrary.Resource.DB
 import Databrary.Resource.Entropy
 
@@ -26,19 +25,10 @@ data Resource = Resource
   , resourceEntropy :: Entropy
   }
 
-class HasResource r where
-  toResource :: r -> Resource
+type ResourceM = HasM Resource
 
-instance HasResource Resource where
-  toResource = id
-
-class Monad m => ResourceM m where
-  getResource :: (Resource -> a) -> m a
-  default getResource :: (MonadReader r m, HasResource r) => (Resource -> a) -> m a
-  getResource f = asks (f . toResource)
-
-instance (Monad m, HasResource r) => ResourceM (ReaderT r m)
-instance (Monad m, Monoid w, HasResource r) => ResourceM (RWST r w s m)
+getResource :: ResourceM m => (Resource -> a) -> m a
+getResource = pulls
 
 initResource :: IO Resource
 initResource = do

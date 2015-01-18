@@ -1,4 +1,4 @@
-{-# LANGUAGE MultiParamTypeClasses, FlexibleInstances, FlexibleContexts, TypeSynonymInstances #-}
+{-# LANGUAGE TypeSynonymInstances #-}
 module Databrary.Action.Wai
   ( WaiT
   , Result
