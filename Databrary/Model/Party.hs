@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, ConstraintKinds #-}
 module Databrary.Model.Party 
   ( module Databrary.Model.Types.Party
   , nobodyParty
@@ -8,14 +8,12 @@ module Databrary.Model.Party
   , lookupAccount
   ) where
 
-import Data.Int (Int32)
-
 import Databrary.DB
 import Databrary.Model.Id
-import Databrary.Model.Inet
-import Databrary.Model.Types.Party
 import Databrary.Model.SQL.Party
 import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.Audit
+import Databrary.Model.Types.Party
 
 useTPG
 
@@ -37,11 +35,8 @@ rootParty = Party
   , partyAccount = Nothing
   }
 
-changeParty :: DBM m => Party -> m ()
-changeParty Party{..} = dbExecute1 $(changeQuery)
-  where
-  clientIP = Inet ""
-  identityId = (-1 :: Int32)
+changeParty :: AuditM m => Party -> m ()
+changeParty p = dbExecute1 =<< $(changeQuery "p")
 
 lookupParty :: DBM m => Id Party -> m (Maybe Party)
 lookupParty i = dbQuery1 $(selectQuery partySelector "WHERE party.id = ${i}")

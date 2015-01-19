@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.SQL.Authorize
   ( accessRow
+  , rootAuthorizationSelector
   ) where
 
 import Databrary.Model.SQL

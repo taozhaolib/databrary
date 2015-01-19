@@ -1,18 +1,16 @@
-{-# LANGUAGE OverloadedStrings, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Identity
   ( module Databrary.Types.Identity
-  , IdentityM
   , getIdentity
+  , identityParty
   ) where
 
-import Control.Monad.Has
+import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Token
 import Databrary.Action.App
 import Databrary.Web.Cookie
 import Databrary.Types.Identity
-
-type IdentityM = HasM Identity
 
 nobodyIdentity :: Identity
 nobodyIdentity = Identity
@@ -31,3 +29,6 @@ getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c
   return $ maybe nobodyIdentity makeIdentity s
+
+identityParty :: Identity -> Party
+identityParty = authorizeChild . identityAuthorization

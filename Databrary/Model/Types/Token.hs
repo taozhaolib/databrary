@@ -8,7 +8,7 @@ module Databrary.Model.Types.Token
 
 import qualified Data.ByteString as BS
 
-import Databrary.Types
+import Databrary.Types.Time
 import Databrary.Model.Types.Party
 import Databrary.Model.Types.Authorize
 

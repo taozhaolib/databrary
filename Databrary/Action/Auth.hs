@@ -1,25 +1,25 @@
+{-# LANGUAGE UndecidableInstances #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
+  , AuthT
+  , AuthM
+  , AuthAction
   , AuthBAction
   , appAuth
   ) where
 
 import Control.Monad.Has
 
-import Databrary.Resource
 import Databrary.Action.Types
 import Databrary.Action.App
 import Databrary.Identity
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest
-  , authIdentity :: Identity
+  , authIdentity :: !Identity
   }
 
-instance Has Resource AuthRequest where
-  had = had . authApp
-
-instance Has Request AuthRequest where
+instance Has a AppRequest => Has a AuthRequest where
   had = had . authApp
 
 instance Has Identity AuthRequest where

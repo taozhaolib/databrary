@@ -1,14 +1,36 @@
-{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving, ConstraintKinds #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Types.Audit
   ( AuditAction(..)
+  , AuditIdentity(..)
+  , Audit(..)
+  , AuditM
   ) where
 
 import Data.Char (toUpper)
 import Database.PostgreSQL.Typed.Enum (makePGEnum)
+import Database.PostgreSQL.Typed.Inet (PGInet)
 
-import Databrary.DB (useTPG)
+import Databrary.Types.Time
+import Databrary.DB
+import Databrary.Model.Types.Id
+import Databrary.Model.Types.Party
+import Databrary.Types.Identity
+import Databrary.Action.Types
 
 useTPG
 
 makePGEnum "audit_action" "AuditAction" (\(h:r) -> "AuditAction" ++ toUpper h:r)
+
+data AuditIdentity = AuditIdentity
+  { auditWho :: !(Id Party)
+  , auditIp :: !PGInet
+  }
+
+data Audit = Audit
+  { auditWhen :: !Timestamp
+  , auditIdentity :: !AuditIdentity
+  , auditAction :: !AuditAction
+  }
+
+type AuditM m = (RequestM m, IdentityM m, DBM m)

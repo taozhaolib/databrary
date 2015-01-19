@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.SQL.Audit
   ( auditAddQuery
   , auditRemoveQuery
@@ -9,8 +10,8 @@ import Database.PostgreSQL.Typed.Query (makePGQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.Types.Audit
 import Databrary.Model.SQL
+import Databrary.Model.Types.Audit
 
 actionCmd :: AuditAction -> String
 actionCmd AuditActionAdd = "INSERT INTO"
@@ -19,13 +20,21 @@ actionCmd AuditActionRemove = "DELETE FROM"
 actionCmd a = error $ "actionCmd: " ++ show a
 
 auditQuery :: AuditAction -> String -> String -> Maybe SelectOutput -> TH.ExpQ
-auditQuery action table stmt returning =
-  maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++))) returning
+auditQuery action table stmt returning = do
+  who <- TH.newName "who"
+  ip <- TH.newName "ip"
+  let sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
+        ++ " RETURNING *) INSERT INTO audit." ++ table
+        ++ " SELECT CURRENT_TIMESTAMP, ${" ++ TH.nameBase who ++ "}, ${" ++ TH.nameBase ip ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
+  TH.doE
+    [ return $ TH.BindS
+      (TH.RecP 'AuditIdentity [('auditWho, TH.VarP who), ('auditIp, TH.VarP ip)])
+      (TH.VarE (TH.mkName "Databrary.Model.Audit.getAuditIdentity"))
+    , TH.noBindS $ TH.appE (TH.varE 'return) $
+      maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++))) returning
+    ]
   where
   flags = simpleQueryFlags
-  sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
-    ++ " RETURNING *) INSERT INTO audit." ++ table
-    ++ " SELECT CURRENT_TIMESTAMP, ${identityId}, ${clientIP}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
 
 auditAddQuery :: String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
 auditAddQuery table args =
