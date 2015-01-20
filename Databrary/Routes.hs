@@ -28,6 +28,7 @@ testVolume i = do
 
 routes :: R.RouteM (SomeAction AppRequest)
 routes = msum 
-  [ "party" >> routeId >>= action . testParty
-  , "volme" >> routeId >>= action . appAuth . testVolume
+  [
+    "party" >> routeId >>= action . testParty
+  , "volume" >> routeId >>= action . appAuth . testVolume
   ]

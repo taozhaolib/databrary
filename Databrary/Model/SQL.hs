@@ -1,9 +1,9 @@
 {-# LANGUAGE ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
 module Databrary.Model.SQL 
   ( SelectOutput(..)
-  , selectColumn
   , Selector
   , selectColumns
+  , addSelects
   , joinOn
   , maybeJoinOn
   , selectJoin
@@ -19,6 +19,7 @@ import Control.Arrow (first, second)
 import Control.Monad (when)
 import Data.Char (isLetter, toLower)
 import Data.List (intercalate, unfoldr)
+import Data.String (IsString(..))
 import Database.PostgreSQL.Typed.Query (QueryFlags(..), simpleQueryFlags, makePGQuery)
 import qualified Language.Haskell.TH as TH
 
@@ -27,6 +28,9 @@ import Databrary.DB (useTPG)
 data SelectOutput
   = OutputExpr String
   | OutputMap !Bool TH.Name [SelectOutput]
+
+instance IsString SelectOutput where
+  fromString = OutputExpr
 
 selectColumn :: String -> String -> SelectOutput
 selectColumn t c = OutputExpr $ t ++ '.' : c
@@ -89,6 +93,10 @@ selector t o = Selector o t (',':t)
 selectColumns :: TH.Name -> String -> [String] -> Selector
 selectColumns f t c =
   selector t (OutputMap False f $ map (selectColumn t) c)
+
+addSelects :: TH.Name -> Selector -> [SelectOutput] -> Selector
+addSelects f s c = s
+  { selectOutput = OutputMap False f (selectOutput s : c) }
 
 joinWith :: (String -> String) -> Selector -> Selector
 joinWith j sel = sel{ selectJoined = j (selectSource sel) }

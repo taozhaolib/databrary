@@ -10,6 +10,7 @@ module Databrary.Action
   ) where
 
 import Data.Maybe (fromMaybe)
+import Data.Time (getCurrentTime)
 import qualified Network.Wai as Wai
 
 import Databrary.Web.Route (RouteM, routeRequest)
@@ -32,4 +33,6 @@ routeWai route request send =
     SomeAction w -> runWai w request send
 
 routeApp :: Resource -> RouteM (SomeAction AppRequest) -> Wai.Application
-routeApp rc = routeWai . fmap (withSomeAction (initApp rc))
+routeApp rc route request send = do
+  ts <- getCurrentTime
+  routeWai (fmap (withSomeAction (\rq -> AppRequest rc rq ts)) route) request send

@@ -5,6 +5,10 @@ module Databrary.Identity
   , identityParty
   ) where
 
+import qualified Data.Foldable as Fold
+
+import Control.Monad.Has (HasM, pull)
+import Databrary.Types.Time
 import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Token
@@ -18,17 +22,19 @@ nobodyIdentity = Identity
   , identitySuperuser = False
   }
 
-makeIdentity :: SessionToken -> Identity
-makeIdentity tok = Identity
-  { identityAuthorization = sessionAuthorization tok
-  , identitySuperuser = False
-  }
+makeIdentity :: HasM Timestamp m => SessionToken -> m Identity
+makeIdentity tok = do
+  t <- pull
+  return $ Identity
+    { identityAuthorization = sessionAuthorization tok
+    , identitySuperuser = Fold.any (t <) $ sessionSuperuser tok
+    }
 
 getIdentity :: AppM r Identity
 getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c
-  return $ maybe nobodyIdentity makeIdentity s
+  maybe (return nobodyIdentity) makeIdentity s
 
 identityParty :: Identity -> Party
 identityParty = authorizeChild . identityAuthorization

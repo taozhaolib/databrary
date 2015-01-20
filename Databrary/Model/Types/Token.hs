@@ -26,8 +26,8 @@ data AccountToken = AccountToken
 
 data SessionToken = SessionToken
   { sessionToken :: !AccountToken
+  , sessionSuperuser :: Maybe Timestamp
   , sessionAccess :: Access
-  -- TODO , sessionSuperuser :: Maybe Timestamp
   }
 
 sessionAccount :: SessionToken -> Account

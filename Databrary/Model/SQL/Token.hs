@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 module Databrary.Model.SQL.Token
   ( sessionTokenSelector
   ) where
@@ -18,7 +18,7 @@ accountTokenRow table = selectJoin 'AccountToken
   ]
 
 sessionTokenSelector :: Selector
-sessionTokenSelector = selectJoin 'SessionToken 
-  [ accountTokenRow "session"
+sessionTokenSelector = selectJoin '($)
+  [ addSelects 'SessionToken (accountTokenRow "session") ["session.superuser"]
   , joinOn "session.account = authorize_view.child AND authorize_view.parent = 0" (accessRow "authorize_view")
   ]

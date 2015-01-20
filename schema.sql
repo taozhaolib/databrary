@@ -872,9 +872,11 @@ COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register
 CREATE TABLE "session" (
 	"token" char(32) Primary Key,
 	"expires" timestamptz NOT NULL,
-	"account" integer NOT NULL References "account" ON DELETE CASCADE
+	"account" integer NOT NULL References "account" ON DELETE CASCADE,
+	"superuser" timestamptz
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
+COMMENT ON COLUMN "session"."superuser" IS 'Time at which permission-bypassing sudo mode expires, if not null.';
 
 CREATE TABLE "upload" (
 	"token" char(32) Primary Key,
