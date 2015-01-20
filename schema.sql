@@ -3,8 +3,6 @@
 
 -- Whenever you make changes to this file, you must also write a new evolution
 -- in evolutions/default and check the result using "tools/runsql check".
--- Note that this while this file is valid SQL, evolutions require semi-colons
--- to be doubled when they do not terminate statements.
 
 -- A general convention is that hard-coded fixtures get non-positive ids.
 
@@ -36,7 +34,7 @@ END; $set$;
 COMMENT ON FUNCTION audit.SET_PRIVILEGES (name) IS 'REVOKE UPDATE, DELETE, TRUNCATE ON TABLE audit.$1 FROM current_user.  Unfortunately you cannot remove default privileges per-schema, so we do this instead for each audit table.  The function is necessary to interpolate current_user.';
 
 CREATE TABLE audit."audit" (
-	"audit_time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"audit_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"audit_user" int NOT NULL, -- References "account" ("party"),
 	"audit_ip" inet NOT NULL,
 	"audit_action" audit_action NOT NULL
@@ -152,7 +150,7 @@ CREATE TABLE "authorize" (
 	"parent" integer NOT NULL References "party",
 	"site" permission NOT NULL DEFAULT 'NONE',
 	"member" permission NOT NULL DEFAULT 'NONE',
-	"expires" timestamp,
+	"expires" timestamptz,
 	Primary Key ("parent", "child"),
 	Check ("child" <> "parent" AND "child" > 0 AND "parent" >= 0)
 );
@@ -219,7 +217,7 @@ ALTER TABLE audit."volume" ALTER "name" DROP NOT NULL;
 CREATE INDEX "volume_creation_idx" ON audit."volume" ("id") WHERE "audit_action" = 'add';
 COMMENT ON INDEX audit."volume_creation_idx" IS 'Allow efficient retrieval of volume creation information, specifically date.';
 
-CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamp LANGUAGE sql STABLE STRICT AS
+CREATE FUNCTION "volume_creation" ("volume" integer) RETURNS timestamptz LANGUAGE sql STABLE STRICT AS
 	$$ SELECT max("audit_time") FROM audit."volume" WHERE "id" = $1 AND "audit_action" = 'add' $$;
 
 CREATE TABLE "volume_access" (
@@ -523,7 +521,7 @@ CREATE TABLE "transcode" (
 	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Default '(,)',
 	"options" text[] NOT NULL Default '{}',
-	"start" timestamp Default now(),
+	"start" timestamptz Default now(),
 	"process" integer,
 	"log" text
 ) INHERITS ("asset_revision");
@@ -536,7 +534,7 @@ CREATE TABLE "comment" (
 	"who" integer NOT NULL References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
-	"time" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	"time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"text" text NOT NULL,
 	"parent" integer References "comment",
 	Check ("parent" < "id")
@@ -847,7 +845,7 @@ COMMENT ON FUNCTION "record_daterange" (integer) IS 'Range of container dates co
 
 CREATE TABLE "token" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL,
+	"expires" timestamptz NOT NULL,
 	Check (false) NO INHERIT
 );
 ALTER TABLE "token"
@@ -856,7 +854,7 @@ COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform acti
 
 CREATE TABLE "account_token" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
+	"expires" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	Check (false) NO INHERIT
 ) INHERITS ("token");
@@ -864,7 +862,7 @@ COMMENT ON TABLE "account_token" IS 'Generic tokens associated with particular a
 
 CREATE TABLE "login_token" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL,
+	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"password" boolean NOT NULL DEFAULT false
 ) INHERITS ("account_token");
@@ -873,14 +871,14 @@ COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register
 
 CREATE TABLE "session" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL,
+	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
 
 CREATE TABLE "upload" (
 	"token" char(32) Primary Key,
-	"expires" timestamp NOT NULL,
+	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"filename" text NOT NULL
 ) INHERITS ("account_token");
@@ -956,22 +954,16 @@ COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by t
 ----------------------------------------------------------- bootstrap/test data
 
 INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
 INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
 INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
 INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (2, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'EDIT', 'NONE');
-INSERT INTO authorize (child, parent, site, member) VALUES (4, 0, 'EDIT', 'NONE');
+INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'ADMIN', 'ADMIN');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
@@ -979,7 +971,7 @@ The Databrary project is dedicated to transforming the culture of developmental 
 SELECT setval('volume_id_seq', 1);
 
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
