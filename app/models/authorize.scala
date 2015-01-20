@@ -137,12 +137,4 @@ object Authorization extends Table[Authorization]("authorize_view") {
     else columns
       .SELECT(sql"WHERE child = ${child.id} AND parent = ${parent.id}")
       .singleOpt.map(make(child, parent))
-
-  def _get(childId : Party.Id, parent : Party = Party.Root) : Future[Option[Authorization]] =
-    if (childId === parent.id) async(Some(new Self(parent))) // optimization
-    else if (childId == Party.NOBODY) async(Some(Nobody))
-    else if (childId == Party.ROOT) async(Some(Root))
-    else rowParent(parent)
-      .SELECT(sql"WHERE party.id = $childId")
-      .singleOpt
 }
