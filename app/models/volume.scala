@@ -170,7 +170,7 @@ object Volume extends TableId[Volume]("volume") {
     row.SELECT(sql"WHERE id = $i AND " + condition)
     .singleOpt
 
-  def search(query : Option[String], party : Option[Party.Id])(implicit site : Site) : Future[Seq[Volume]] =
+  def search(query : Option[String], party : Option[Party.Id], limit : Int = 24)(implicit site : Site) : Future[Seq[Volume]] =
     row.SELECT(LiteralStatement("")
       + party.fold("")(_ => " JOIN volume_access ON volume.id = volume_access.volume")
       ++ query.fold(Statement.empty)(q => lsql" JOIN volume_text_idx ON volume.id = volume_text_idx.volume, plainto_tsquery('english', $q) query")
@@ -181,7 +181,7 @@ object Volume extends TableId[Volume]("volume") {
       + " ORDER BY "
       + query.fold("")(_ => "ts_rank(ts, query) DESC,")
       + party.fold("")(_ => "individual DESC,")
-      + "volume.id")
+      ++ lsql"volume.id LIMIT $limit")
     .list
 
   /** Create a new, empty volume with no permissions.

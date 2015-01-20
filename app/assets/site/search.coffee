@@ -9,9 +9,8 @@ app.directive 'searchForm', [
     link: ($scope, $element, $attrs) ->
       $scope.types =
         volume: 'Data'
-        principal: 'Authorized Investigators'
-        affiliate: 'Affiliate Investigators'
-        institution: 'Authorized Institutions'
+        principal: 'Authorized investigators'
+        institution: 'Authorized institutions'
         party: 'All users and groups'
       params = $location.search()
       $scope.type = $attrs.type
@@ -20,8 +19,6 @@ app.directive 'searchForm', [
           $scope.type = 'institution'
         else if `params.access == constants.permission.EDIT` || $.isEmptyObject(params)
           $scope.type = 'principal'
-        else if `params.access == constants.permission.READ`
-          $scope.type = 'affiliate'
       $scope.query = params.query
       $scope.search = ->
         (switch $scope.type
@@ -31,8 +28,6 @@ app.directive 'searchForm', [
             $location.url(routes.partySearch()).search({institution:'true',access:constants.permission.ADMIN})
           when 'principal'
             $location.url(routes.partySearch()).search({institution:'false',access:constants.permission.EDIT})
-          when 'affiliate'
-            $location.url(routes.partySearch()).search({institution:'false',access:constants.permission.READ})
           when 'party'
             $location.url(routes.partySearch())
           ).search('query', $scope.query)
