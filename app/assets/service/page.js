@@ -9,8 +9,7 @@ app.factory('pageService', [
       messages: $injector.get('messageService'),
       models: $injector.get('modelService'),
       router: $injector.get('routerService'),
-      tooltips: $injector.get('tooltipService'),
-      dataExport: $injector.get('exportService')
+      tooltips: $injector.get('tooltipService')
     };
 
     //
