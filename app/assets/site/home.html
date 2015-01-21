@@ -14,7 +14,7 @@
     </div>
     <div class="bigbuttons-container">
       <div class="bigbutton">
-        <img ng-if="!page.models.Login.isLoggedIn()" src="public/images/icon/home-profile.svg">
+        <img ng-if="page.models.Login.isLoggedIn()" src="public/images/icon/home-profile.svg">
         <span class="button-title" ng-if="!page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.register()}}" message="toolbar.register"></a></span>
         <span class="button-title" ng-if="page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
         <p class="hide-mobile">Manage studies and authorizations here.</p>
