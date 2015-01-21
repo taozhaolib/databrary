@@ -14,14 +14,15 @@
     </div>
     <div class="bigbuttons-container">
       <div class="bigbutton">
-        <span class="button-title">Browse Data</span>
-        <span class="hide-mobile"><a href="/volume">By search term</a><br></span>
-        <span class="hide-mobile"><a href="/party">By contributor</a><br></span>
+        <span class="button-title" ng-if="!page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.register()}}" message="toolbar.register"></a></span>
+        <span class="button-title" ng-if="page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
+        <p class="hide-mobile">Manage studies and authorizations here.</p>
       </div>
       <div class="bigbutton">
-        <span class="button-title">Share Data</span>
-        <span class="hide-mobile"><a href="/volume/create">Create a Study</a></br></span>
-        <span class="hide-mobile"><a href="http://databrary.org/access/guide/investigators/access.html">Learn more</a> about sharing your data.</span>
+        <span class="button-title"><a href="/volume">Browse Data by Search Term</a></span>
+      </div>
+      <div class="bigbutton">
+        <span class="button-title"><a href="/party">Browser Data by Contributors</a></span>
       </div> 
     </div>
   </div>

@@ -158,22 +158,20 @@
     position relative
     margin-right auto
     margin-left auto
-    width 500px
+    width 625px
     @media screen and (max-width: grid-mobile-width+1)
       width auto
       padding-top b3
       padding-bottom b3
     div.bigbutton
-      color orange53
       text-align center
       position relative
-      width 200px
-      height 150px
+      size 160px 150px
       margin b1
       padding b3
       padding-top b1
       border-radius b3
-      border 1px solid orange52
+      border 1px solid #bbb
       background-color white
       display inline-table
       box-shadow 0px 3px 3px -3px black
@@ -190,11 +188,18 @@
       span.button-title
         display block
         font-weight 700
-      span:not(.button-title)
-        font-size 0.8em
-        line-height 1em
+        a
+          color orange53
+        a:hover
+          color orange52
+      p
+        font-size f34
+        line-height b23
+        padding 0
+        margin b4
+        text-align center
     div.bigbutton:hover
-      border 1px solid #e27e6d
+      border 1px solid orange53
       
 .home-activity
   dl.home-section-text
