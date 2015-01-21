@@ -148,7 +148,7 @@ trait Slot extends InVolume with SiteObject {
     JsonOptions(slotJson.obj, options
     , "assets" -> (opt => assets.map(JsonArray.map(_.json - "container")))
     , "records" -> (opt => jsonRecords)
-    , "tags" -> (opt => TagCoverage.getSlot(this).map(JsonRecord.map(_.json)))
+    , "tags" -> (opt => TagCoverage.getSlot(this).map(JsonArray.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     , "consents" -> (opt => consents.map {
         case Seq() => JsNull

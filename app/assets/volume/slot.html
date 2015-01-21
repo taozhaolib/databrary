@@ -20,6 +20,10 @@
           </a>
         </div>
 
+        <div id="slot-tags" class="slot-tags">
+          <tags target="slot" edit="page.models.Login.isAuthorized()" keyword="editing" click="toggleTag(tag)"></tags>
+        </div>
+
         <section id="slot-timeline" class="slot-timeline" mouse-drag-region>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
@@ -38,6 +42,15 @@
             <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
               <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-class="{select: t === current}">
+              <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
+              <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
+              <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
+              <div class="slot-tag-name" ng-bind="t.id"></div>
             </div>
           </div>
 

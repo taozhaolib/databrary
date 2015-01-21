@@ -1151,7 +1151,8 @@ app.factory('modelService', [
         .then(function (res) {
           s.volume.clear('tags');
           s.clear('tags');
-          return res.data;
+          var tag = res.data;
+          return tag;
         });
     };
 

@@ -487,6 +487,21 @@ app.controller('volume/slot', [
         cls.push('slot-consent-select') if $scope.current == this
         cls
 
+    class Tag
+      constructor: (t) ->
+        @id = t.id
+        @coverage = (Segment.make(s) for s in t.coverage) if t.coverage
+        @vote     = (Segment.make(s) for s in t.vote)     if t.vote
+        @keyword  = (Segment.make(s) for s in t.keyword)  if t.keyword
+
+    $scope.tags = {}
+
+    $scope.toggleTag = (t) ->
+      if t.id of $scope.tags
+        delete $scope.tags[t.id]
+      else
+        $scope.tags[t.id] = new Tag(t)
+
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
 

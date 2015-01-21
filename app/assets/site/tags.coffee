@@ -8,9 +8,11 @@ app.directive 'tags', [
     scope:
       targetFn: '&target'
       editFn: '&?edit'
+      keywordFn: '&?keyword'
+      click: '&?'
     link: ($scope, $element, $attrs) ->
       target = $scope.targetFn()
-      $scope.keyword = keyword = 'keyword' of $attrs
+      $scope.keyword = keyword = $scope.keywordFn() != false if $scope.keywordFn
       edit = $scope.editFn?()
 
       include =
