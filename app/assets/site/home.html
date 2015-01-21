@@ -33,7 +33,7 @@
             <img ng-src="{{::volume.thumbRoute()}}" class="home-feature-thumb" ng-click="page.$location.url(volume.route())">
 
             <div class="home-section-text">
-              <div class="home-sections-title" message="welcome.featured"></div>
+              <div class="home-sections-title"><span class="icon study"></span><span message="welcome.featured"></span></div>
               <h1><a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a></h1>
 
               <div class="home-feature-investigators">
@@ -46,7 +46,7 @@
           </div>
         </article>
         <article class="home-panel home-activity row">
-          <span class="home-section-text home-sections-title">Recent Activity</span>
+          <span class="home-section-text home-sections-title"><span class="icon activity"></span>Recent Activity</span>
           <dl class="home-section-text">
             <dt ng-repeat-start="act in ::activity">
               <time datetime="{{::act.time | date:'yyyy-MM-dd HH:mm:ss Z'}}" pubdate>
@@ -75,7 +75,7 @@
         </article>        
       </div>
       <div class="home-tags col-desktop-5 col-tablet-3 col-mobile-6">
-        <span class="home-sections-title">Top Tags</span>
+        <span class="home-sections-title"><span class="icon tag"></span>Top Tags</span>
         <ol>
           <ul ng-repeat="tag in ::tags" class="home-tags-item">
             <div class="home-tag-weight" ng-bind="::tag.weight"></div>
