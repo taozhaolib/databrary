@@ -1,22 +1,25 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.SQL.Authorize
   ( accessRow
-  , rootAuthorizationSelector
+  , partyAuthorizationSelector
   ) where
+
+import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL
 import Databrary.Model.SQL.Party (partySelector)
-import Databrary.Model.Party (Party, rootParty)
+import Databrary.Model.Types.Party
 import Databrary.Model.Types.Authorize
 
 accessRow :: String -> Selector
 accessRow table = selectColumns 'Access table ["site", "member"]
 
-makeRootAuthorization :: Access -> Party -> Authorization
-makeRootAuthorization a c = Authorization a c rootParty
+makePartyAuthorization :: Access -> Party -> Party -> Authorization
+makePartyAuthorization a p c = Authorization a c p
 
-rootAuthorizationSelector :: Selector
-rootAuthorizationSelector = selectJoin 'makeRootAuthorization
-  [ accessRow "authorize_view"
-  , joinOn "authorize_view.parent = 0 AND authorize_view.child = party.id" partySelector 
-  ]
+partyAuthorizationSelector :: TH.Name -> Selector
+partyAuthorizationSelector child =
+  selectMap (`TH.AppE` TH.VarE child) $ selectJoin 'makePartyAuthorization
+    [ accessRow "authorize_view"
+    , joinOn ("authorize_view.parent = party.id AND authorize_view.child = ${partyId " ++ TH.nameBase child ++ "}") partySelector 
+    ]

@@ -27,6 +27,7 @@ Executable databrary
     http-types,
     network,
     wai,
+    aeson,
     byteable,
     cryptohash,
     cookie,

@@ -12,11 +12,12 @@ import Databrary.Model.SQL (Selector, selectColumns, selectJoin, joinOn, maybeJo
 import Databrary.Model.SQL.Audit (auditChangeQuery)
 import Databrary.Model.Types.Party
 
-changeQuery :: String -> TH.ExpQ
+changeQuery :: TH.Name -> TH.ExpQ
 changeQuery p = auditChangeQuery "party"
-  (map (\c -> (map toLower c, "${party" ++ c ++ " (" ++ p ++ ")}")) ["Name", "Affiliation", "URL"])
-  ("id = ${partyId (" ++ p ++ ")}")
+  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
+  ("id = ${partyId " ++ ps ++ "}")
   Nothing
+  where ps = TH.nameBase p -- show $ TH.pprExp 3 $ TH.VarE p
 
 partyRow :: Selector
 partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]

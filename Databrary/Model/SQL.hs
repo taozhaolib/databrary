@@ -7,6 +7,7 @@ module Databrary.Model.SQL
   , joinOn
   , maybeJoinOn
   , selectJoin
+  , selectMap
   , makeQuery
   , simpleQueryFlags
   , preparedQueryFlags
@@ -27,7 +28,8 @@ import Databrary.DB (useTPG)
 
 data SelectOutput
   = OutputExpr String
-  | OutputMap !Bool TH.Name [SelectOutput]
+  | OutputJoin !Bool TH.Name [SelectOutput]
+  | OutputMap (TH.Exp -> TH.Exp) SelectOutput
 
 instance IsString SelectOutput where
   fromString = OutputExpr
@@ -36,20 +38,21 @@ selectColumn :: String -> String -> SelectOutput
 selectColumn t c = OutputExpr $ t ++ '.' : c
 
 outputTuple :: [SelectOutput] -> SelectOutput
-outputTuple l = OutputMap False (TH.tupleDataName $ length l) l
+outputTuple l = OutputJoin False (TH.tupleDataName $ length l) l
 
 outputMaybe :: SelectOutput -> SelectOutput
-outputMaybe (OutputMap False f l) = OutputMap True f l
+outputMaybe (OutputJoin False f l) = OutputJoin True f l
 outputMaybe s = s
 
 outputColumns :: SelectOutput -> [String]
 outputColumns (OutputExpr s) = [s]
-outputColumns (OutputMap _ _ o) = concatMap outputColumns o
+outputColumns (OutputJoin _ _ o) = concatMap outputColumns o
+outputColumns (OutputMap _ o) = outputColumns o
 
 outputParser :: SelectOutput -> [TH.Name] -> TH.Q (TH.Exp, [TH.Name])
 outputParser (OutputExpr _) (i:l) = return (TH.VarE i, l)
 outputParser (OutputExpr _) [] = fail "outputParser: insufficient values"
-outputParser (OutputMap mb f ol) il = do
+outputParser (OutputJoin mb f ol) il = do
   (al, rl) <- subArgs ol il
   fi <- TH.reify f
   (fe, ft) <- case fi of
@@ -80,6 +83,8 @@ outputParser (OutputMap mb f ol) il = do
   isMaybeT (TH.AppT (TH.ConT m) _) = m == ''Maybe
   isMaybeT _ = False
   die s = fail $ "outputParser " ++ show f ++ ": " ++ s
+outputParser (OutputMap f o) il =
+  first f <$> outputParser o il
 
 data Selector = Selector
   { selectOutput :: SelectOutput
@@ -92,11 +97,11 @@ selector t o = Selector o t (',':t)
 
 selectColumns :: TH.Name -> String -> [String] -> Selector
 selectColumns f t c =
-  selector t (OutputMap False f $ map (selectColumn t) c)
+  selector t (OutputJoin False f $ map (selectColumn t) c)
 
 addSelects :: TH.Name -> Selector -> [SelectOutput] -> Selector
 addSelects f s c = s
-  { selectOutput = OutputMap False f (selectOutput s : c) }
+  { selectOutput = OutputJoin False f (selectOutput s : c) }
 
 joinWith :: (String -> String) -> Selector -> Selector
 joinWith j sel = sel{ selectJoined = j (selectSource sel) }
@@ -114,11 +119,14 @@ maybeJoinOn on = maybeJoinWith (\s -> " LEFT JOIN " ++ s ++ " ON " ++ on)
 
 selectJoin :: TH.Name -> [Selector] -> Selector
 selectJoin f l@(h:t) = Selector
-  { selectOutput = OutputMap False f $ map selectOutput l
+  { selectOutput = OutputJoin False f $ map selectOutput l
   , selectSource = selectSource h ++ joins
   , selectJoined = selectJoined h ++ joins
   } where joins = concatMap selectJoined t
 selectJoin _ [] = error "selectJoin: empty list"
+
+selectMap :: (TH.Exp -> TH.Exp) -> Selector -> Selector
+selectMap f s = s{ selectOutput = OutputMap f (selectOutput s) }
 
 
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]
