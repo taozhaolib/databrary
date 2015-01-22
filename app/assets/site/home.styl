@@ -15,17 +15,24 @@
     margin-left 2
     margin-right 2
 
-.home-feature
+.home-panel
   margin-bottom 1
   box-shadow box-shadow-def
+  border-top solid b3 green53
 
 .home-feature-inner
   position relative
+  background-color black
 
 .home-feature-thumb
   width 100%
+  max-width 720px
+  display block
+  margin-right auto
+  margin-left auto
+  margin-bottom 0
   cursor pointer
-  border-top solid b3 orange53
+ 
 
 .home-section-text
   position relative
@@ -35,16 +42,19 @@
   h1
     font-line f34
     a
-      link-color black
+      link-color grey
 
 .home-sections-title
   font-weight bold
   text-transform uppercase
-  color gray
   font-size b23
   line-height b23*1.2
   display inline-block
   padding-bottom b3
+  .icon
+    background-size b23 b23
+    size b23
+    margin-right b4
 
 .home-feature-investigators
   font-size f90
@@ -65,6 +75,7 @@
           content none
 
 .home-tags
+  overflow hidden
   padding-left b1*2
   ol
     list-style-type none
@@ -119,7 +130,7 @@
     width 80%
 
 .home-bigbuttons
-  background-color neutral51
+  background-color #cccbcb
   position relative
   width 100%
   margin-left 0
@@ -142,26 +153,25 @@
       text-align center
       margin-bottom 0
       padding-bottom 0
+      color white
   div.bigbuttons-container
     position relative
     margin-right auto
     margin-left auto
-    width 500px
+    width 625px
     @media screen and (max-width: grid-mobile-width+1)
       width auto
       padding-top b3
       padding-bottom b3
     div.bigbutton
-      color orange53
       text-align center
       position relative
-      width 200px
-      height 150px
+      size 160px 160px
       margin b1
       padding b3
       padding-top b1
       border-radius b3
-      border 1px solid orange52
+      border 1px solid #bbb
       background-color white
       display inline-table
       box-shadow 0px 3px 3px -3px black
@@ -175,18 +185,25 @@
         margin 0
         box-shadow none
         border-collapse collapse
-      span.button-title
+      .button-title
         display block
         font-weight 700
-      span:not(.button-title)
-        font-size 0.8em
-        line-height 1em
+        a
+          color orange53
+        a:hover
+          color orange52
+      p
+        font-size f34
+        line-height b23
+        padding 0
+        margin b4
+        text-align center
+      img
+        height b1*2
     div.bigbutton:hover
-      border 1px solid #e27e6d
-      
+      border 1px solid orange53
+
 .home-activity
-  box-shadow box-shadow-def
-  border-top b3 solid green53
   dl.home-section-text
     width 100%
     dt
@@ -200,7 +217,7 @@
       p
         margin-bottom 0
         font-size b2
-        color green53
+        color grey
     dd.home-activity-volume
       padding-bottom b2
       .volume-thumb
@@ -212,7 +229,7 @@
         ul
           padding-left 0
           a
-            color black
+            color grey
           a:hover
             color pale
         
