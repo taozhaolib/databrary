@@ -20,6 +20,8 @@ app.directive('hint', [
     angular.forEach(page.constants.classification, function (a) {
       hints['classification-' + a] =
         page.constants.message('classification.' + a);
+      hints['excerpt-' + a] =
+        page.constants.message('classification.excerpt.' + a);
     });
 
     angular.forEach(page.constants.format, function (a) {

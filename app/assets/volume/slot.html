@@ -93,12 +93,13 @@
               <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
                 <div ng-if="editing && t === current" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
               </div>
-              <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
+              <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="!excerpt.segment.full" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
               </div>
               <div class="slot-track-asset-info">
                 <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
-                <div class="slot-track-asset-info-name" ng-bind="t.name" ng-class="{ 'uploading' : !!t.file }"></div>
+                <div class="slot-track-asset-info-name" ng-bind="t.name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length}"></div>
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
+                <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
               </div>
             </div>
           </div>
