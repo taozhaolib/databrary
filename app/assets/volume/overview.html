@@ -4,10 +4,10 @@
       <hgroup class="panel-overview-volume-header">
         <div class="panel-overview-volume-header-fill grid-outside"></div>
         <div ng-if="::!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
-        <div class="panel-overview-volume-type">
-          <span class="icon" ng-class="::volume.type" hint="object-{{volume.type}}"></span>&nbsp;<span message="{{::volume.type}}"></span>
-        </div>
-        <h1 class="panel-title smaller" ng-bind="::volume.name"></h1>
+        <h1 class="panel-title smaller">
+          <span class="icon" ng-class="::volume.type" hint="object-{{volume.type}}"></span>
+          <span ng-bind="::volume.name"></span>
+        </h1>
       </hgroup>
     </div>
 
