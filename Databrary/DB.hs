@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances, ConstraintKinds #-}
 module Databrary.DB
   ( DBM
   , dbRunQuery
@@ -24,7 +24,7 @@ import Databrary.Resource
 class Monad m => DBM m where
   liftDB :: (PGConnection -> IO a) -> m a
 
-instance (MonadIO m, ResourceM m) => DBM m where
+instance (MonadIO m, ResourceM c m) => DBM m where
   liftDB f = do
     db <- getResource resourceDB
     liftIO $ withDB db f

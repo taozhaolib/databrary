@@ -33,4 +33,4 @@ data Audit = Audit
   , auditAction :: !AuditAction
   }
 
-type AuditM m = (RequestM m, IdentityM m, DBM m)
+type AuditM c m = (RequestM c m, IdentityM c m, DBM m)

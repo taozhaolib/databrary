@@ -14,7 +14,7 @@ import Databrary.Model.Types.Authorize
 import Databrary.Types.Identity
 import Databrary.Model.Types.Audit
 
-getAuditIdentity :: AuditM m => m AuditIdentity
+getAuditIdentity :: AuditM c m => m AuditIdentity
 getAuditIdentity = do
   req <- pull
   ident <- pull

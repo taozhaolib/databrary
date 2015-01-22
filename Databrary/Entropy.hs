@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances #-}
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, UndecidableInstances, ConstraintKinds #-}
 module Databrary.Entropy
   ( EntropyM
   , entropyBytes
@@ -14,7 +14,7 @@ import Databrary.Resource
 class Monad m => EntropyM m where
   liftEntropy :: (Entropy.CryptHandle -> IO a) -> m a
 
-instance (MonadIO m, ResourceM m) => EntropyM m where
+instance (MonadIO m, ResourceM c m) => EntropyM m where
   liftEntropy f = do
     e <- getResource resourceEntropy
     liftIO $ withEntropy e f

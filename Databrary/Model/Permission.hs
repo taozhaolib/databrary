@@ -1,24 +1,14 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, ConstraintKinds #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Permission 
-  ( Permission(..)
-  , Consent(..)
-  , Classification(..)
-  , HasPermission(..)
+  ( module Databrary.Model.Types.Permission
+  , checkPermission
   ) where
 
-import Database.PostgreSQL.Typed.Enum (makePGEnum)
+import Control.Monad.Has (pulls)
+import Databrary.Types.Identity
+import Databrary.Model.Types.Permission
 
-import Databrary.DB (useTPG)
-
-useTPG
-
-makePGEnum "permission" "Permission" ("Permission" ++)
-makePGEnum "consent" "Consent" ("Consent" ++)
-makePGEnum "classification" "Classification" ("Classification" ++)
-
-class HasPermission a where
-  permission :: a -> Permission
-
-instance HasPermission Permission where
-  permission = id
+checkPermission :: IdentityM c m => Bool -> m Bool
+checkPermission True = return True
+checkPermission False = pulls identitySuperuser

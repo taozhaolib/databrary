@@ -25,9 +25,9 @@ data Resource = Resource
   , resourceEntropy :: Entropy
   }
 
-type ResourceM = HasM Resource
+type ResourceM c m = HasM Resource c m
 
-getResource :: ResourceM m => (Resource -> a) -> m a
+getResource :: ResourceM c m => (Resource -> a) -> m a
 getResource = pulls
 
 initResource :: IO Resource

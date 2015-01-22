@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ConstraintKinds #-}
 module Databrary.Web.Cookie
   ( getSignedCookie
   ) where
@@ -11,8 +11,8 @@ import Databrary.Crypto
 import Databrary.Resource
 import Databrary.Action
 
-getCookies :: RequestM m => m Cook.Cookies
+getCookies :: RequestM c m => m Cook.Cookies
 getCookies = maybe [] Cook.parseCookies `liftM` getRequestHeader "cookie"
 
-getSignedCookie :: (ResourceM m, RequestM m) => BS.ByteString -> m (Maybe BS.ByteString)
+getSignedCookie :: (ResourceM c m, RequestM c m) => BS.ByteString -> m (Maybe BS.ByteString)
 getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< getCookies

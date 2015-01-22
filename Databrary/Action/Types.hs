@@ -21,12 +21,12 @@ import Network.Wai (Request, requestHeaders)
 
 import Control.Monad.Has
 
-type RequestM = HasM Request
+type RequestM c m = HasM Request c m
 
-getRequest :: RequestM m => m Request
+getRequest :: RequestM c m => m Request
 getRequest = pull
 
-getRequestHeader :: RequestM m => HeaderName -> m (Maybe BS.ByteString)
+getRequestHeader :: RequestM c m => HeaderName -> m (Maybe BS.ByteString)
 getRequestHeader h = liftM (lookup h . requestHeaders) getRequest
 
 type ActionT q = RWST q ResponseHeaders
