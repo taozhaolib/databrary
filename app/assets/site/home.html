@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="row">
       <div class="home-logo">
-        <a ng-href="{{page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary-nav.svg"></a>
+        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary-nav.svg"></a>
       </div>
     </div>
   </div>
@@ -13,19 +13,22 @@
       </p>
     </div>
     <div class="bigbuttons-container">
-      <div class="bigbutton">
-        <img ng-if="page.models.Login.isLoggedIn()" src="public/images/icon/home-profile.svg">
-        <span class="button-title" ng-if="!page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.register()}}" message="toolbar.register"></a></span>
-        <span class="button-title" ng-if="page.models.Login.isLoggedIn()"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
-        <p class="hide-mobile">Manage studies and authorizations here.</p>
+      <div class="bigbutton" ng-if="::!page.models.Login.isLoggedIn()">
+        <span class="button-title"><a ng-href="{{::page.router.login()}}">Login</a></span>
+        <span class="button-title"><a ng-href="{{::page.router.register()}}">Register</a></span>
+      </div>
+      <div class="bigbutton" ng-if="::page.models.Login.isLoggedIn()">
+        <img src="/public/images/icon/home-profile.svg">
+        <span class="button-title"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
+        <p class="hide-mobile">Manage your data and authorizations.</p>
       </div>
       <div class="bigbutton">
         <img src="public/images/icon/home-searchstudy.svg">
-        <span class="button-title"><a href="/volume">Browse Data by Search Term</a></span>
+        <span class="button-title"><a ng-href="{{::page.router.volumeSearch()}}">Browse Data</a></span>
       </div>
       <div class="bigbutton">
         <img src="public/images/icon/home-userstudy.svg">
-        <span class="button-title"><a href="/party">Browser Data by Contributors</a></span>
+        <span class="button-title"><a ng-href="{{::page.router.partySearch()}}">Browse People</a></span>
       </div> 
     </div>
   </div>
