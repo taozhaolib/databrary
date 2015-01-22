@@ -551,9 +551,8 @@ app.controller('volume/slot', [
       else
         []
 
-    $scope.tags = []
     ### jshint ignore:start #### fixed in jshint 2.5.7
-    # $scope.tags = (new Tag(tag) for tag of slot.tags)
+    $scope.tags = (new Tag(tag) for tag of slot.tags)
     ### jshint ignore:end ###
 
     $scope.playing = 0
