@@ -10,14 +10,16 @@ private[controllers] sealed class TagController extends SiteController {
   def update(name : String = "", i : models.Container.Id, segment : Segment) =
     SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new TagController.SlotForm()._bind
+      val tag = form.name.get orElse TagName.validate(name) getOrElse form.name.withError("tag.invalid")._throw
       if (form.keyword.get && !request.obj.checkPermission(Permission.EDIT))
         throw ForbiddenException
-      for {
-        r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get, form.keyword.get)(request.asInstanceOf[AuthSite])
-      } yield {
-        if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
-        else Redirect(request.obj.pageURL)
-      }
+      tag.set(request.obj, form.vote.get, form.keyword.get)
+      .flatMap(_.fold(form.vote.withError("error.conflict")._throw) { t =>
+        if (request.isApi)
+          t.coverage(request.obj).map(t => Ok(t.json.js))
+        else
+          ARedirect(request.obj.pageURL)
+      })
     }
 }
 

@@ -98,7 +98,7 @@ object SlotHtml extends SlotController with HtmlController {
       records <- slot.records
       assets <- SlotAsset.getSlot(slot)
       comments <- slot.comments
-      tags <- slot.tags
+      tags <- TagWeight.getSlot(slot)
     } yield (views.html.slot.view(records, assets, comments, commentForm.getOrElse(new CommentController.SlotForm), tags, tagForm.getOrElse(new TagController.SlotForm)))
   }
 

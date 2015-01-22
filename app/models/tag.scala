@@ -4,24 +4,56 @@ import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.JsObject
 import macros._
+import macros.async._
 import dbrary._
 import dbrary.SQL._
 import site._
 
+sealed trait AbstractTag extends Any {
+  def name : String
+  private[models] def get : Future[Tag]
+  def add(slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
+    TagUse.add(this, slot, keyword)
+  def remove(slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
+    TagUse.remove(this, slot, keyword)
+  def set(slot : Slot, vote : Boolean, keyword : Boolean = false) : Future[Option[Tag]] =
+    if (vote) add(slot, keyword) else remove(slot, keyword)
+}
+
+final class TagName private (val name : String) extends AnyVal with AbstractTag {
+  override def toString = name
+  private[models] def get = Tag.getOrCreate(this)
+}
+
+object TagName {
+  private val validPattern = """\p{Lower}[-\p{Lower} ]{1,30}\p{Lower}""".r.pattern
+  private val validRegex = """ *(\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha}) *""".r
+
+  def validate(name : String) : Option[TagName] = name match
+    { case validRegex(tag) => Some(new TagName(tag.toLowerCase))
+      case _ => None
+    }
+
+  /** Determine if the given tag name is valid.
+    * @return the normalized name if valid or throw IllegalArgumentException */
+  def apply(name : String) : TagName = 
+    validate(name).getOrElse(throw new IllegalArgumentException("invalid tag name"))
+
+  implicit val sqlType : SQL.Type[TagName] = SQL.Type.transform[String,TagName]("varchar(32)", classOf[TagName])(n => Some(new TagName(n)), _.name)
+}
+
 /** All tags and their names used anywhere.
   * Immutable (create only).
   */
-final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] {
-  def add(slot : Slot, keyword : Boolean = false)(implicit site : AuthSite) : Future[Boolean] =
-    if (keyword) KeywordUse.add(this, slot)
-    else TagUse.add(this, slot)
-  def remove(slot : Slot, keyword : Boolean = false)(implicit site : AuthSite) : Future[Boolean] =
-    if (keyword) KeywordUse.remove(this, slot)
-    else TagUse.remove(this, slot)
+final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[Tag] with AbstractTag {
+  private[models] def get = async(this)
+
   def weight(slot : Slot) : Future[TagWeight] =
     TagWeight.getSlot(this, slot)
   def containers(implicit site : Site) : Future[Seq[TagWeightContainer]] =
     TagWeightContainer.get(this)
+  def coverage(slot : Slot) : Future[TagCoverage] =
+    TagCoverage.getSlot(this, slot)
 
   def json : JsonRecord = JsonRecord(name)
   def json(options : JsonOptions.Options)(implicit site : Site) : Future[JsonRecord] =
@@ -31,6 +63,9 @@ final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[
 }
 
 object Tag extends TableId[Tag]("tag") {
+  private[models] def colId(t : AbstractTag) =
+    Cols[Id].map(new Tag(_, t.name))
+
   private[models] val row = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
@@ -39,53 +74,56 @@ object Tag extends TableId[Tag]("tag") {
     }
 
   /** Retrieve an individual tag by id. */
-  private[models] def get(id : Id) : Future[Option[Tag]] =
+  def get(id : Id) : Future[Option[Tag]] =
     row.SELECT(sql"WHERE id = $id").singleOpt
 
-  private def _get(name : String)(implicit dbc : Site.DB, exc : ExecutionContext) : Future[Option[Tag]] =
-    row.SELECT(sql"WHERE name = $name")(dbc, exc).singleOpt
-
-  private val validPattern = """\p{Lower}[-\p{Lower} ]{1,30}\p{Lower}""".r.pattern
-  def isValid(name : String) : Boolean = validPattern.matcher(name).matches
-
-  private val validRegex = """ *(\p{Alpha}[-\p{Alpha} ]{1,30}\p{Alpha}) *""".r
-  /** Determine if the given tag name is valid.
-    * @return the normalized name if valid */
-  private[models] def validate(name : String) : Option[String] = name match
-    { case validRegex(tag) => Some(tag.toLowerCase)
-      case _ => None
-    }
+  def _get(name : TagName) : Future[Option[Tag]] =
+    row.SELECT(sql"WHERE name = $name").singleOpt
 
   /** Retrieve an individual tag by name. */
   def get(name : String) : Future[Option[Tag]] =
-    validate(name).fold[Future[Option[Tag]]](async(None))(_get(_))
+    TagName.validate(name).flatMapAsync(_get)
 
   /** Search for all tags names starting with the given string. */
   def search(name : String) : Future[Seq[Tag]] =
-    validate(name).fold[Future[Seq[Tag]]](async(Nil)) { name =>
+    TagName.validate(name).fold[Future[Seq[Tag]]](async(Nil)) { name =>
       row.SELECT(sql"WHERE name LIKE ${name+"%"}").list
     }
 
   /** Retrieve or, if none exists, create an individual tag by name. */
-  private[models] def getOrCreate(name : String) : Future[Tag] =
+  private[models] def getOrCreate(name : TagName) : Future[Tag] =
     sql"SELECT get_tag($name)"
-    .run.single(SQL.Cols[Id].map(new Tag(_, name)))
+    .run.single(colId(name))
 }
 
 private[models] object TagUse extends Table[Unit]("tag_use") {
-  private[models] def remove(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
+  private def table(keyword : Boolean = false) = if (keyword) "keyword_use" else "tag_use"
 
-  private[models] def add(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
+  private[models] def add(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
+    (lsql"INSERT INTO " + table(keyword) ++ lsql" (tag, container, segment, who) VALUES ("
+      ++ (tag match {
+        case n : TagName => lsql"get_tag($n)"
+        case t : Tag => lsql"${t.id}"
+      }) ++ lsql", ${slot.containerId}, ${slot.segment}, ${slot.site.identity.id}) RETURNING tag")
+    .run.singleOpt(Tag.colId(tag)).recover {
+      case SQLDuplicateKeyException() => None
+    }
+
+  private[models] def remove(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
+    (lsql"DELETE FROM ONLY " + table(keyword) 
+      ++ (tag match {
+        case n : TagName => lsql" USING tag WHERE tag_use.tag = tag.id AND name = $n"
+        case t : Tag => lsql" WHERE tag = ${t.id}"
+      }) ++ lsql" AND container = ${slot.containerId} AND segment <@ ${slot.segment}"
+      ++ (if (keyword) "" else lsql" AND who = ${slot.site.identity.id}") + " RETURNING tag")
+    .run.singleOpt(Tag.colId(tag))
 }
 
 private[models] object KeywordUse extends Table[Unit]("keyword_use") {
-  private[models] def remove(tag : Tag, slot : Slot) : Future[Boolean] =
-    DELETE('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment).execute
-
-  private[models] def add(tag : Tag, slot : Slot)(implicit site : AuthSite) : Future[Boolean] =
-    INSERT('tag -> tag.id, 'container -> slot.containerId, 'segment -> slot.segment, 'who -> site.account.id).execute
+  private[models] def add(tag : Tag, slot : Slot) = TagUse.add(tag, slot, true)
+  private[models] def add(name : TagName, slot : Slot) = TagUse.add(name, slot, true)
+  private[models] def remove(tag : Tag, slot : Slot) = TagUse.remove(tag, slot, true)
+  private[models] def remove(name : TagName, slot : Slot) = TagUse.remove(name, slot, true)
 }
 
 sealed class TagWeight protected (val tag : Tag, val weight : Int, val keyword : Boolean, val vote : Boolean) {
@@ -124,7 +162,7 @@ object TagWeight extends TagWeightView[TagWeight] {
     }
 
   protected val groupColumn = SelectColumn[Tag.Id]("tag")
-  private def rows(query : Statement = EmptyStatement)(limit : Int)(implicit site : Site) =
+  private def rows(query : Statement = EmptyStatement, limit : Int = 64)(implicit site : Site) =
     columns(query)
     .join(Tag.row on "tag_weight.tag = tag.id")
     .map { case ((weight, keyword, up), tag) =>
@@ -139,14 +177,14 @@ object TagWeight extends TagWeightView[TagWeight] {
     .single
 
   /** Summarize all tags that overlap the given slot. */
-  private[models] def getSlot(slot : Slot, limit : Int = 64) =
-    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")(limit)(slot.site)
+  def getSlot(slot : Slot, limit : Int = 64) =
+    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment", limit)(slot.site)
 
   private[models] def getVolume(volume : Volume, limit : Int = 32) =
-    rows(sql"JOIN container ON tag_use.container = container.id WHERE container.volume = ${volume.id}")(limit)(volume.site)
+    rows(sql"JOIN container ON tag_use.container = container.id WHERE container.volume = ${volume.id}", limit)(volume.site)
 
   def getAll(limit : Int = 16)(implicit site : Site) =
-    rows()(limit)
+    rows(limit = limit)
 }
 
 object TagWeightContainer extends TagWeightView[TagWeightContainer] {
@@ -187,15 +225,23 @@ object TagCoverage extends Table[TagCoverage]("tag_coverage") {
     aggregateColumns.fromTable
     .fromQuery((aggregateColumns ~+ groupBy).statement + " " ++ query ++ (" GROUP BY " +: groupBy))
 
-  private def rows(query : Statement = EmptyStatement)(implicit site : Site) =
+  private def rows(query : Statement = EmptyStatement, limit : Int = 64)(implicit site : Site) =
     columns(query)
     .join(Tag.row on "tag_coverage.tag = tag.id")
     .map { case ((weight, coverage, keywords, votes), tag) =>
       new TagCoverage(tag, weight, coverage, keywords, votes)
     }
-    .SELECT(sql"ORDER BY weight DESC")
+    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
     .list
 
-  private[models] def getSlot(slot : Slot) =
-    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")(slot.site)
+  private[models] def getSlot(tag : Tag, slot : Slot) =
+    aggregateColumns(slot.site)
+    .map { (weight, coverage, keywords, votes) =>
+      new TagCoverage(tag, weight, coverage, keywords, votes)
+    }
+    .SELECT(sql"WHERE tag_use.tag = ${tag.id} AND tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")
+    .single
+
+  private[models] def getSlot(slot : Slot, limit : Int = 64) =
+    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment", limit)(slot.site)
 }
