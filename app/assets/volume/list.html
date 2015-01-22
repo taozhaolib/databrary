@@ -6,7 +6,7 @@
     <li ng-repeat="volume in volumes">
       <article class="volume-list-result cf" ng-class="::{study: volume.citation, dataset: !volume.citation}">
         <h1>
-          <span class="icon" ng-class="::{study: volume.citation, dataset: !volume.citation}" hint="object-{{volume.type}}"></span>
+          <span class="icon study"></span>
           <a ng-href="{{::volume.route()}}" ng-bind="::name(volume)"></a>
         </h1>
 
