@@ -61,7 +61,7 @@
               </time>
             </dt>
             <dd class="home-activity-volume" ng-if="::act.volume" ng-init="volume=act.volume">
-              <p>New shared data!</p>
+              <p>New shared data</p>
               <img class="volume-thumb" ng-src="{{::volume.thumbRoute(72)}}">
               <div>
                 <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
@@ -75,7 +75,7 @@
               </div>
             </dd>
             <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
-              <p>New authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">investigator</span>!</p>
+              <p>New authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">investigator</span></p>
               <portrait></portrait>
             </dd>
           </dl>
