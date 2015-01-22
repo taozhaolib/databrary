@@ -15,7 +15,7 @@
     <div class="bigbuttons-container">
       <div class="bigbutton" ng-if="::!page.models.Login.isLoggedIn()">
         <img src="/public/images/icon/login.svg"/>
-        <span class="button-title"><a ng-href="{{::page.router.login()}}">Login/</a></span>
+        <span class="button-title"><a ng-href="{{::page.router.login()}}">Login</a> or</span>
         <span class="button-title"><a ng-href="{{::page.router.register()}}">Register</a></span>
       </div>
       <div class="bigbutton" ng-if="::page.models.Login.isLoggedIn()">
