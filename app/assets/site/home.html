@@ -14,20 +14,21 @@
     </div>
     <div class="bigbuttons-container">
       <div class="bigbutton" ng-if="::!page.models.Login.isLoggedIn()">
-        <span class="button-title"><a ng-href="{{::page.router.login()}}">Login</a></span>
+        <img src="/public/images/icon/login.svg"/>
+        <span class="button-title"><a ng-href="{{::page.router.login()}}">Login/</a></span>
         <span class="button-title"><a ng-href="{{::page.router.register()}}">Register</a></span>
       </div>
       <div class="bigbutton" ng-if="::page.models.Login.isLoggedIn()">
-        <img src="/public/images/icon/home-profile.svg">
+        <img src="/public/images/icon/home-profile.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.profile()}}">Your Profile</a></span>
         <p class="hide-mobile">Manage your data and authorizations.</p>
       </div>
       <div class="bigbutton">
-        <img src="public/images/icon/home-searchstudy.svg">
+        <img src="public/images/icon/home-searchstudy.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.volumeSearch()}}">Browse Data</a></span>
       </div>
       <div class="bigbutton">
-        <img src="public/images/icon/home-userstudy.svg">
+        <img src="public/images/icon/home-userstudy.svg"/>
         <span class="button-title"><a ng-href="{{::page.router.partySearch()}}">Browse People</a></span>
       </div> 
     </div>
@@ -61,7 +62,7 @@
               </time>
             </dt>
             <dd class="home-activity-volume" ng-if="::act.volume" ng-init="volume=act.volume">
-              <p>New shared data!</p>
+              <p>New shared data</p>
               <img class="volume-thumb" ng-src="{{::volume.thumbRoute(72)}}">
               <div>
                 <a ng-href="{{::volume.route()}}" ng-bind="::volume.name"></a>
@@ -75,7 +76,7 @@
               </div>
             </dd>
             <dd ng-repeat-end ng-if="::act.party" ng-init="party=act.party">
-              <p>New authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">investigator</span>!</p>
+              <p>New authorized <span ng-if="::party.institution">institution</span><span ng-if="::!party.institution">investigator</span></p>
               <portrait></portrait>
             </dd>
           </dl>
