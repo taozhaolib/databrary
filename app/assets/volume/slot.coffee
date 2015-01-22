@@ -513,7 +513,6 @@ app.controller('volume/slot', [
 
     $scope.vote = (name, vote) ->
       new TagName(name).vote(vote)
-      return
 
     class Tag extends TagName
       constructor: (t) ->

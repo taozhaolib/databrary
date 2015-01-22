@@ -102,7 +102,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] def add(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
     (lsql"INSERT INTO " + table(keyword) ++ lsql" (tag, container, segment, who) VALUES ("
       ++ (tag match {
-        case n : TagName => lsql"get_name($n)"
+        case n : TagName => lsql"get_tag($n)"
         case t : Tag => lsql"${t.id}"
       }) ++ lsql", ${slot.containerId}, ${slot.segment}, ${slot.site.identity.id}) RETURNING tag")
     .run.singleOpt(Tag.colId(tag)).recover {
@@ -239,7 +239,7 @@ object TagCoverage extends Table[TagCoverage]("tag_coverage") {
     .map { (weight, coverage, keywords, votes) =>
       new TagCoverage(tag, weight, coverage, keywords, votes)
     }
-    .SELECT(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")
+    .SELECT(sql"WHERE tag_use.tag = ${tag.id} AND tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")
     .single
 
   private[models] def getSlot(slot : Slot, limit : Int = 64) =

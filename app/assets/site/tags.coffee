@@ -27,6 +27,10 @@ app.directive 'tags', [
         $scope.vote = (name, vote) ->
           messages.clear($scope)
           $scope.target.setTag(name, vote, keyword).then (tag) ->
+              if tag.keyword?.length
+                tag.keyword = true
+              if tag.vote?.length
+                tag.vote = true
               i = $scope.tags.findIndex (t) -> t.id == tag.id
               if i == -1
                 i = $scope.tags.length
@@ -47,6 +51,5 @@ app.directive 'tags', [
                 report: res
                 owner: $scope
               return
-          return
       return
 ]
