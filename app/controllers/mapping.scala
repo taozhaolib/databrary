@@ -19,9 +19,10 @@ object Mappings {
   val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
   val maybeText : Mapping[Option[String]] =
     Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt), identity)
-  val tag : Mapping[String] =
-    Forms.text.transform[String](_.trim.toLowerCase, identity)
-    .verifying("tag.invalid", models.Tag.isValid _)
+  import models.{AbstractTag,TagName}
+  val tag : Mapping[AbstractTag] = Forms.text
+    .verifying("tag.invalid", t => TagName.validate(t).nonEmpty)
+    .transform[AbstractTag](TagName(_), _.name)
 
   private def arrayLength(length : Int) : Constraint[Array[_]] =
     Constraint[Array[_]]("constraint.length", length) { a =>

@@ -8,11 +8,9 @@ app.directive 'tags', [
     scope:
       targetFn: '&target'
       editFn: '&?edit'
-      keywordFn: '&?keyword'
-      click: '&?'
     link: ($scope, $element, $attrs) ->
       target = $scope.targetFn()
-      $scope.keyword = keyword = $scope.keywordFn() != false if $scope.keywordFn
+      $scope.keyword = keyword = 'keyword' of $attrs
       edit = $scope.editFn?()
 
       include =
@@ -42,10 +40,13 @@ app.directive 'tags', [
                 body: constants.message('tags.vote.'+(if vote then 'up' else 'null')+'.success', {sce: $sce.HTML}, tag.id)
                 owner: $scope
               tooltips.clear() # hack for broken tooltips
+              return
             , (res) ->
               messages.addError
                 body: constants.message('tags.vote.error', {sce: $sce.HTML}, name)
                 report: res
                 owner: $scope
+              return
+          return
       return
 ]

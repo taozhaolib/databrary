@@ -1149,9 +1149,10 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote,keyword:!!keyword})
         .then(function (res) {
-          s.volume.clear('tags');
-          s.clear('tags');
           var tag = res.data;
+          s.volume.clear('tags');
+          if ('tags' in s)
+            s.tags[tag.id] = tag;
           return tag;
         });
     };

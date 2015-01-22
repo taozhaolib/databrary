@@ -80,25 +80,8 @@ trait Slot extends InVolume with SiteObject {
   /** The list of comments that apply to this slot. */
   final def comments = Comment.getSlot(this)
   /** Post a new comment this object. */
-  final def postComment(text : String, parent : Option[Comment.Id] = None)(implicit site : AuthSite) : Future[Comment] =
+  final def postComment(text : String, parent : Option[Comment.Id] = None) : Future[Comment] =
     Comment.post(this, text, parent)
-
-  /** The list of tags on the current slot along with the current user's applications. */
-  final def tags = TagWeight.getSlot(this)
-  /** Tag this slot.
-    * @param vole true for up, false to remove
-    * @return true if the tag name is valid
-    */
-  final def setTag(tag : String, vote : Boolean = true, keyword : Boolean = false)(implicit site : AuthSite) : Future[Option[TagWeight]] =
-    Tag.validate(tag).fold(async[Option[TagWeight]](None)) { tname =>
-      (if (vote)
-        Tag.getOrCreate(tname).flatMap { t =>
-          t.add(this, keyword).map(b => if (b) Some(t) else None)
-        }
-      else
-        Tag.get(tname).filterAsync(_.remove(this, keyword)))
-      .mapAsync(_.weight(this))
-    }
 
   def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.download("slot", 'container -> containerId, 'segment -> segment)
@@ -148,7 +131,7 @@ trait Slot extends InVolume with SiteObject {
     JsonOptions(slotJson.obj, options
     , "assets" -> (opt => assets.map(JsonArray.map(_.json - "container")))
     , "records" -> (opt => jsonRecords)
-    , "tags" -> (opt => TagCoverage.getSlot(this).map(JsonArray.map(_.json)))
+    , "tags" -> (opt => TagCoverage.getSlot(this).map(JsonRecord.map(_.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
     , "consents" -> (opt => consents.map {
         case Seq() => JsNull

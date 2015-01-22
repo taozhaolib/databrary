@@ -11,7 +11,7 @@ private[controllers] sealed class CommentController extends ObjectController[Com
     SiteAction.access(Permission.PUBLIC).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new CommentController.SlotForm()._bind
       for {
-        c <- request.obj.postComment(form.text.get, parent orElse form.parent.get)(request.asInstanceOf[AuthSite])
+        c <- request.obj.postComment(form.text.get, parent orElse form.parent.get)
       } yield (result(c))
     }
 }

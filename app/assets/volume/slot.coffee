@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$location', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $location, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $sce, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -487,20 +487,49 @@ app.controller('volume/slot', [
         cls.push('slot-consent-select') if $scope.current == this
         cls
 
-    class Tag
+    class TagName
+      constructor: (name) ->
+        @id = name
+        return
+
+      vote: (vote) ->
+        tag = this
+        slot.setTag(@id, vote, editing).then (data) ->
+            unless tag instanceof Tag
+              tag = $scope.tags.find (t) -> t.id == data.id
+              unless tag
+                tag = new Tag(data)
+                tag.active = true
+                $scope.tags.push(tag)
+            tag.fillData(data)
+            $scope.tags.remove(tag) unless tag.weight
+            return
+          , (res) ->
+            messages.addError
+              body: constants.message('tags.vote.error', {sce: $sce.HTML}, name)
+              report: res
+              owner: $scope
+            return
+
+    $scope.vote = (name, vote) ->
+      new TagName(name).vote(vote)
+      return
+
+    class Tag extends TagName
       constructor: (t) ->
         @id = t.id
-        @coverage = (Segment.make(s) for s in t.coverage) if t.coverage
-        @vote     = (Segment.make(s) for s in t.vote)     if t.vote
-        @keyword  = (Segment.make(s) for s in t.keyword)  if t.keyword
+        @active = false
+        @fillData(t)
 
-    $scope.tags = {}
+      fillData: (t) ->
+        @weight = t.weight
+        @coverage = (Segment.make(s) for s in t.coverage) if t.coverage?.length
+        @vote     = (Segment.make(s) for s in t.vote)     if t.vote?.length
+        @keyword  = (Segment.make(s) for s in t.keyword)  if t.keyword?.length
+        return
 
-    $scope.toggleTag = (t) ->
-      if t.id of $scope.tags
-        delete $scope.tags[t.id]
-      else
-        $scope.tags[t.id] = new Tag(t)
+      toggle: ->
+        @active = !@active
 
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
@@ -522,6 +551,11 @@ app.controller('volume/slot', [
         [new Consent(consents)]
       else
         []
+
+    $scope.tags = []
+    ### jshint ignore:start #### fixed in jshint 2.5.7
+    # $scope.tags = (new Tag(tag) for tag of slot.tags)
+    ### jshint ignore:end ###
 
     $scope.playing = 0
     editExcerpt()

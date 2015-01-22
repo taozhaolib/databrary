@@ -20,9 +20,27 @@
           </a>
         </div>
 
-        <div id="slot-tags" class="slot-tags">
-          <tags target="slot" edit="page.models.Login.isAuthorized()" keyword="editing" click="toggleTag(tag)"></tags>
+        <!--
+        <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
+          <ul class="panel-tags-items">
+            <li ng-repeat="tag in tags" ng-if="!editing || tag.keyword" class="panel-tags-item" ng-class="{'keyword': tag.keyword}">
+              <div class="panel-tag-weight" ng-if="::!editing" ng-bind="tag.weight"></div>
+              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="tag.id"></div>
+              <div class="panel-tag-controls" ng-if="!ruler.selection.empty && page.models.Login.isAuthorized()">
+                <button class="panel-tag-vote available null" name="vote" ng-click="tag.vote(false)" ng-if="editing || tag.vote" hint="tags-vote-null">
+                  -
+                </button>
+                <button class="panel-tag-vote available up" name="vote" ng-click="tag.vote(true)" ng-if="!editing && !tag.vote" hint="tags-vote-up">
+                  +
+                </button>
+              </div>
+            </li>
+          </ul>
+          <div id="tag-add" class="panel-tags-form" ng-if="!ruler.selection.empty && page.models.Login.isAuthorized()">
+            <tag-add></tag-add>
+          </div>
         </div>
+        -->
 
         <section id="slot-timeline" class="slot-timeline" mouse-drag-region>
           <div class="slot-timeline-now-zone">
@@ -46,7 +64,7 @@
           </div>
 
           <div>
-            <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-class="{select: t === current}">
+            <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-if="t.active" ng-class="{select: t === current}">
               <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
               <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
               <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})" mouse-drag="dragSelection($down, $up, t)"></div>
