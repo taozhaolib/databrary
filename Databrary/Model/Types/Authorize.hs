@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Types.Authorize
   ( Access(..)
   , accessSite, accessMember
@@ -6,10 +7,11 @@ module Databrary.Model.Types.Authorize
   , Authorize(..)
   ) where
 
+import Control.Lens (Lens', makeLensesFor)
 import Data.Monoid (Monoid(..))
 import Data.Time (UTCTime)
 
-import Control.Monad.Has (Has(..))
+import Control.Has (Has(..), makeHasFor)
 import Databrary.Model.Types.Permission
 import Databrary.Model.Types.Party
 
@@ -18,19 +20,21 @@ data Access = Access
   , _accessMember :: !Permission
   }
 
+makeLensesFor [("_accessSite", "accessSite'"), ("_accessMember", "accessMember'")] ''Access
+
+accessSite, accessMember :: Has Access a => Lens' a Permission
+accessSite = view . accessSite'
+accessMember = view . accessMember'
+
 _accessPermission :: Access -> Permission
 _accessPermission (Access s m) = min s m
 
-accessSite, accessMember, accessPermission :: Has Access a => a -> Permission
-accessSite = _accessSite . had
-accessMember = _accessMember . had
-accessPermission = _accessPermission . had
+accessPermission :: Has Access a => a -> Permission
+accessPermission = _accessPermission . see
 
 instance Monoid Access where
   mempty = Access PermissionNONE PermissionNONE
   mappend (Access s1 m1) (Access s2 m2) = Access (max s1 s2) (max m1 m2)
-
--- consider: makeClassy ''Access
 
 data Authorization = Authorization
   { authorizeAccess :: !Access
@@ -38,13 +42,15 @@ data Authorization = Authorization
   , authorizeParent :: Party
   }
 
-instance Has Access Authorization where
-  had = had . authorizeAccess
+makeHasFor 
+  [ ('authorizeAccess, [])
+  ] ''Authorization
 
 data Authorize = Authorize
   { authorization :: Authorization
   , authorizeExpires :: UTCTime
   }
 
-instance Has Access Authorize where
-  had = had . authorization
+makeHasFor 
+  [ ('authorization, [''Access])
+  ] ''Authorize

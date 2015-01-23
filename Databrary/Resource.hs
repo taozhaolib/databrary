@@ -14,7 +14,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
-import Control.Monad.Has
+import Control.Has (HasM, peeks)
 import Databrary.Resource.DB
 import Databrary.Resource.Entropy
 
@@ -28,7 +28,7 @@ data Resource = Resource
 type ResourceM c m = HasM Resource c m
 
 getResource :: ResourceM c m => (Resource -> a) -> m a
-getResource = pulls
+getResource = peeks
 
 initResource :: IO Resource
 initResource = do

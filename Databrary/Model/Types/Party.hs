@@ -7,7 +7,7 @@ module Databrary.Model.Types.Party
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
-import Control.Monad.Has (Has(..))
+import Control.Has (Has(..))
 import Databrary.Model.Types.Id
 
 data Party = Party
@@ -29,4 +29,5 @@ instance HasId Party where
   kindOf _ = "party"
 
 instance Has Party Account where
-  had = accountParty
+  view f a = fmap (\p -> a{ accountParty = p }) $ f $ accountParty a
+  see = accountParty

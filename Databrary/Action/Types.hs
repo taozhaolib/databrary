@@ -19,12 +19,12 @@ import qualified Data.ByteString as BS
 import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
 import Network.Wai (Request, requestHeaders)
 
-import Control.Monad.Has
+import Control.Has (HasM, peek)
 
 type RequestM c m = HasM Request c m
 
 getRequest :: RequestM c m => m Request
-getRequest = pull
+getRequest = peek
 
 getRequestHeader :: RequestM c m => HeaderName -> m (Maybe BS.ByteString)
 getRequestHeader h = liftM (lookup h . requestHeaders) getRequest

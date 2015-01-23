@@ -1,4 +1,4 @@
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
   , AuthT
@@ -8,22 +8,25 @@ module Databrary.Action.Auth
   , appAuth
   ) where
 
-import Control.Monad.Has
+import qualified Network.Wai as Wai
 
+import Control.Has (makeHasFor)
 import Databrary.Action.Types
 import Databrary.Action.App
+import Databrary.Model.Authorize
 import Databrary.Identity
+import Databrary.Resource
+import Databrary.Types.Time
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest
   , authIdentity :: !Identity
   }
 
-instance Has a AppRequest => Has a AuthRequest where
-  had = had . authApp
-
-instance Has Identity AuthRequest where
-  had = authIdentity
+makeHasFor 
+  [ ('authApp, [''Resource, ''Wai.Request, ''Timestamp])
+  , ('authIdentity, [''Authorization, ''Access])
+  ] ''AuthRequest
 
 type AuthT = ActionT AuthRequest
 type AuthM r = ActionM AuthRequest r

@@ -1,10 +1,10 @@
-{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE ConstraintKinds, TemplateHaskell #-}
 module Databrary.Types.Identity
   ( Identity(..)
   , IdentityM
   ) where
 
-import Control.Monad.Has (Has(..), HasM)
+import Control.Has (HasM, makeHasFor)
 import Databrary.Model.Types.Authorize
 
 data Identity = Identity
@@ -12,7 +12,8 @@ data Identity = Identity
   , identitySuperuser :: Bool
   }
 
-type IdentityM c m = HasM Identity c m
+makeHasFor 
+  [ ('identityAuthorization, [''Access])
+  ] ''Identity
 
-instance Has Access Identity where
-  had = had . identityAuthorization
+type IdentityM c m = HasM Identity c m

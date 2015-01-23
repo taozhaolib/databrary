@@ -5,10 +5,10 @@ module Databrary.Model.Permission
   , checkPermission
   ) where
 
-import Control.Monad.Has (pulls)
+import Control.Has (peeks)
 import Databrary.Types.Identity
 import Databrary.Model.Types.Permission
 
 checkPermission :: IdentityM c m => Bool -> m Bool
 checkPermission True = return True
-checkPermission False = pulls identitySuperuser
+checkPermission False = peeks identitySuperuser

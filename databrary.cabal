@@ -36,7 +36,8 @@ Executable databrary
     resource-pool,
     postgresql-typed == 0.3.2,
     entropy,
-    warp
+    warp,
+    lens
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
 

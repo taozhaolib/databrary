@@ -1,3 +1,4 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.App 
   ( AppRequest(..)
   , AppT
@@ -8,7 +9,7 @@ module Databrary.Action.App
 
 import qualified Network.Wai as Wai
 
-import Control.Monad.Has
+import Control.Has
 import Databrary.Resource
 import Databrary.Types.Time
 import Databrary.Action.Types
@@ -19,14 +20,11 @@ data AppRequest = AppRequest
   , appTimestamp :: !Timestamp
   }
 
-instance Has Resource AppRequest where
-  had = appResource
-
-instance Has Wai.Request AppRequest where
-  had = appRequest
-
-instance Has Timestamp AppRequest where
-  had = appTimestamp
+makeHasFor 
+  [ ('appResource, [])
+  , ('appRequest, [])
+  , ('appTimestamp, [])
+  ] ''AppRequest
 
 type AppT = ActionT AppRequest
 type AppM r = ActionM AppRequest r

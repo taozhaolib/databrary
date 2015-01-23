@@ -7,7 +7,7 @@ module Databrary.Identity
 
 import qualified Data.Foldable as Fold
 
-import Control.Monad.Has (pulls)
+import Control.Has (peeks)
 import Databrary.Types.Time
 import Databrary.Model.Party
 import Databrary.Model.Authorize
@@ -32,7 +32,7 @@ getIdentity :: AppM r Identity
 getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c
-  pulls $ maybe (return nobodyIdentity) makeIdentity s
+  peeks $ maybe (return nobodyIdentity) makeIdentity s
 
 identityParty :: Identity -> Party
 identityParty = authorizeChild . identityAuthorization
