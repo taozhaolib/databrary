@@ -27,7 +27,7 @@
     <legend message="party.edit.confirm"></legend>
 
     <validator name="auth" label="party.edit.auth.title">
-      <input type="password" name="auth" ng-model="partyEditAccountForm.data.auth" ng-required="partyEditAccountForm.$dirty" key-enter="partyEditAccountForm.save()">
+      <input type="password" name="auth" ng-model="partyEditAccountForm.data.auth" required key-enter="partyEditAccountForm.save()">
     </validator>
   </fieldset>
 </ng-form>
