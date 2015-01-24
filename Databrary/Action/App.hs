@@ -20,7 +20,7 @@ data AppRequest = AppRequest
   , appTimestamp :: !Timestamp
   }
 
-makeHasFor 
+makeHasFor
   [ ('appResource, [])
   , ('appRequest, [])
   , ('appTimestamp, [])

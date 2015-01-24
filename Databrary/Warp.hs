@@ -4,7 +4,7 @@ import qualified Network.Wai.Handler.Warp as Warp
 
 import Databrary.Resource (initResource)
 import Databrary.Routes (routes)
-import Databrary.Action (routeApp)
+import Databrary.Action.Route (routeApp)
 
 main :: IO ()
 main = do

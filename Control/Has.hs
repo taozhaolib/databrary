@@ -40,6 +40,7 @@ makeHasFor fs tn = concatM
     let ln = TH.mkName (TH.nameBase fn ++ "'")
     TH.VarI _ (TH.ArrowT `TH.AppT` t@(TH.ConT tn') `TH.AppT` ft) _ _ <- TH.reify fn
     unless (tn' == tn) $ fail $ "makeHasFor " ++ show tn ++ "." ++ show fn ++ ": field from wrong type: " ++ show tn'
+    -- ts' <- TH.reifyInstances ''Has [TH.VarT (TH.mkName "a"), t]
     concatM
       [d| instance Has $(return ft) $(return t) where
             view = $(TH.varE ln)

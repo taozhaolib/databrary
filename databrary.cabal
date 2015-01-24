@@ -1,10 +1,10 @@
 Name:                databrary
 Version:             0
-Synopsis:            Project Synopsis Here
-Description:         Project Description Here
-License:             AllRightsReserved
-Author:              Author
-Maintainer:          maintainer@example.com
+Synopsis:            Databrary
+Description:         An experimental rewrite of Databrary (http://databrary.org, http://github.com/databrary/databrary) in Haskell.
+License:             GPL-3
+Author:              Dylan Simon
+Maintainer:          dylan@dylex.net
 Stability:           Experimental
 Category:            Web
 Build-type:          Simple
