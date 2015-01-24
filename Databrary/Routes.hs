@@ -13,6 +13,7 @@ import Databrary.Action.Auth
 import Databrary.Action.Route
 import Databrary.Model.Id
 import Databrary.Model.Party
+import Databrary.Controller.Login
 
 testParty :: Id Party -> AppBAction
 testParty i = do
@@ -31,4 +32,5 @@ routes = msum
   [
     "party" >> routeId >>= action . testParty
   , "volume" >> routeId >>= action . appAuth . testVolume
+  , "login" >> action postLogin
   ]

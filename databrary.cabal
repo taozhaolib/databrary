@@ -28,16 +28,20 @@ Executable databrary
     network,
     wai,
     unordered-containers,
+    vector,
+    attoparsec,
     aeson,
     byteable,
     cryptohash,
+    wai-extra,
     cookie,
     configurator,
     resource-pool,
     postgresql-typed == 0.3.2,
     entropy,
     warp,
-    lens
+    lens,
+    digestive-functors
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
 
