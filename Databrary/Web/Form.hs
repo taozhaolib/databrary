@@ -4,7 +4,7 @@ module Databrary.Web.Form
   ) where
 
 import Control.Arrow (second)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson as JSON
 import qualified Data.HashMap.Strict as HM
 import Data.Maybe (fromMaybe)
@@ -14,10 +14,9 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as TR
 import qualified Data.Vector as V
 import qualified Network.Wai as Wai
-import qualified Network.Wai.Parse as WaiP
 import qualified Text.Digestive as Form
 
-import Control.Has (peek)
+import Control.Has (peeks)
 import Databrary.Web.Parse
 import Databrary.Action.Types
 
@@ -34,13 +33,13 @@ lookupJson (h:p) v = lookupJson p =<< idx v where
 
 postForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form v m a -> m (Form.View v, Maybe a)
 postForm name form = do
-  rq <- peek
-  (p, f) <- liftIO $ WaiP.parseRequestBody (dynamicBackEnd $ 4*1024*1024) rq
-  let q = map (second $ fromMaybe "") $ Wai.queryString rq
+  q <- peeks $ map (second $ fromMaybe "") . Wai.queryString
+  c <- parseRequestContent
+  let (p, j) = case c of
+        ContentForm pp _ -> (pp, Nothing)
+        ContentJSON jj -> ([], Just jj)
+        _ -> ([], Nothing)
       qm = HM.fromListWith (++) $ map (second return) $ q <> p
-      (j, _f') = case (p, f) of
-        ([], (_, WaiP.FileInfo{ WaiP.fileContent = DynamicJSON jj@(Just _) }) : f') -> (jj, f')
-        _ -> (Nothing, f)
       env i =
         map (Form.TextInput . TE.decodeUtf8) (HM.lookupDefault [] (TE.encodeUtf8 $ Form.fromPath i) qm)
         <> maybe [] (return . Form.TextInput) (lookupJson i =<< j)

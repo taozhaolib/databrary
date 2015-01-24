@@ -1,6 +1,5 @@
 module Databrary.Action
   ( RequestM
-  , getRequest
   , getRequestHeader
   , respond
   , AppBAction

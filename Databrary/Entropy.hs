@@ -11,7 +11,7 @@ import qualified System.Entropy as Entropy
 import Databrary.Resource.Entropy
 import Databrary.Resource
 
-class Monad m => EntropyM m where
+class (Functor m, Monad m) => EntropyM m where
   liftEntropy :: (Entropy.CryptHandle -> IO a) -> m a
 
 instance (MonadIO m, ResourceM c m) => EntropyM m where

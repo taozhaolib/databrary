@@ -5,7 +5,7 @@ module Databrary.Model.Token
   , sessionAuthorization
   ) where
 
-import Control.Monad (liftM)
+import Control.Applicative ((<$>))
 import qualified Data.ByteString.Base64.URL as Base64
 
 import Databrary.Model.SQL.Token
@@ -17,7 +17,7 @@ import Databrary.DB
 import Databrary.Model.Types.Token
 
 generateToken :: EntropyM m => m TokenId
-generateToken = Base64.encode `liftM` entropyBytes 24
+generateToken = Base64.encode <$> entropyBytes 24
 
 lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
 lookupSession tok = dbQuery1 $(selectQuery' sessionTokenSelector "WHERE session.token = ${tok}")

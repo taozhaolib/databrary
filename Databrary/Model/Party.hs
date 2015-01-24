@@ -118,5 +118,5 @@ lookupAuthParty i@(Id n) = lap n . identityAuthorization =<< peek where
   lap 0 a =
     return $ Just $ AuthParty a
   lap _ a =
-    fmap AuthParty `liftM` dbQuery1 $(selectQuery' (partyAuthorizationSelector 'up) "WHERE party.id = ${i}")
+    fmap AuthParty <$> dbQuery1 $(selectQuery' (partyAuthorizationSelector 'up) "WHERE party.id = ${i}")
     where up = authorizeChild a

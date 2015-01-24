@@ -2,7 +2,6 @@
 module Databrary.Action.Types
   ( RequestM
   , Request
-  , getRequest
   , getRequestHeader
   , ActionT
   , ActionM
@@ -13,21 +12,17 @@ module Databrary.Action.Types
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
-import Control.Monad (liftM)
 import Control.Monad.RWS.Strict (RWST, withRWST)
 import qualified Data.ByteString as BS
 import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
 import Network.Wai (Request, requestHeaders)
 
-import Control.Has (HasM, peek)
+import Control.Has (HasM, peeks)
 
 type RequestM c m = HasM Request c m
 
-getRequest :: RequestM c m => m Request
-getRequest = peek
-
 getRequestHeader :: RequestM c m => HeaderName -> m (Maybe BS.ByteString)
-getRequestHeader h = liftM (lookup h . requestHeaders) getRequest
+getRequestHeader h = peeks (lookup h . requestHeaders)
 
 type ActionT q = RWST q ResponseHeaders
 type ActionM q r = ActionT q r IO

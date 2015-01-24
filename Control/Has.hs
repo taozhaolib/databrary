@@ -22,7 +22,7 @@ instance Has a a where
   view = id
   see = id
 
-type HasM a c m = (MonadReader c m, Has a c)
+type HasM a c m = (Functor m, MonadReader c m, Has a c)
 
 peek :: HasM a c m => m a
 peek = reader see
