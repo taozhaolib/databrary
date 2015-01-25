@@ -8,13 +8,12 @@ module Databrary.Action.Types
   , Action
   , BAction
   , withAction
-  , notFound
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.RWS.Strict (RWST, withRWST)
 import qualified Data.ByteString as BS
-import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
+import Network.HTTP.Types (ResponseHeaders, HeaderName, Status)
 import Network.Wai (Request, requestHeaders)
 
 import Control.Has (HasM, peeks)
@@ -31,6 +30,3 @@ type BAction q = Action q Blaze.Builder
 
 withAction :: (q -> q') -> ActionT q' r m a -> ActionT q r m a
 withAction f = withRWST $ (,) . f
-
-notFound :: BAction q
-notFound = return notFound404

@@ -41,7 +41,8 @@ Executable databrary
     entropy,
     warp,
     lens,
-    digestive-functors
+    digestive-functors,
+    regex-posix
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
 

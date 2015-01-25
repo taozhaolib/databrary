@@ -13,11 +13,12 @@ import Databrary.Web.Route (RouteM, routeRequest)
 import Databrary.Action.Types
 import Databrary.Action.Wai
 import Databrary.Action.App
+import Databrary.Action.Response
 import Databrary.Resource
 
-data SomeAction q = forall r . Result r => SomeAction (Action q r)
+data SomeAction q = forall r . Response r => SomeAction (Action q r)
 
-action :: Result r => Action q r -> RouteM (SomeAction q)
+action :: Response r => Action q r -> RouteM (SomeAction q)
 action = return . SomeAction
 
 withSomeAction :: (q -> q') -> SomeAction q' -> SomeAction q
@@ -25,7 +26,7 @@ withSomeAction f (SomeAction a) = SomeAction $ withAction f a
 
 routeWai :: RouteM (SomeAction Wai.Request) -> Wai.Application
 routeWai route request send = 
-  case fromMaybe (SomeAction notFound) (routeRequest route request) of
+  case fromMaybe (SomeAction notFoundResult) (routeRequest route request) of
     SomeAction w -> runWai w request send
 
 routeApp :: Resource -> RouteM (SomeAction AppRequest) -> Wai.Application
