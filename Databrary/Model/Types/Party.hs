@@ -24,10 +24,15 @@ data Account = Account
   , accountParty :: Party
   }
 
+instance Has (Id Party) Party where
+  view f p = fmap (\i -> p{ partyId = i }) $ f $ partyId p
+  see = partyId
 instance HasId Party where
-  idOf = partyId
   kindOf _ = "party"
 
 instance Has Party Account where
   view f a = fmap (\p -> a{ accountParty = p }) $ f $ accountParty a
   see = accountParty
+instance Has (Id Party) Account where
+  view f a = fmap (\i -> a{ accountParty = (accountParty a){ partyId = i } }) $ f $ partyId $ accountParty a
+  see = partyId . accountParty

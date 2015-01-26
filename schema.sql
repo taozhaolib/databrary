@@ -25,8 +25,8 @@ CREATE FUNCTION singleton (int4) RETURNS int4range LANGUAGE sql IMMUTABLE STRICT
 
 CREATE SCHEMA audit;
 
-CREATE TYPE audit_action AS ENUM ('attempt', 'open', 'close', 'add', 'change', 'remove', 'superuser');
-COMMENT ON TYPE audit_action IS 'The various activities for which we keep audit records (in audit or a derived table).  This is not kept in the audit schema due to jdbc type search limitations.';
+CREATE TYPE audit.action AS ENUM ('attempt', 'open', 'close', 'add', 'change', 'remove', 'superuser');
+COMMENT ON TYPE audit.action IS 'The various activities for which we keep audit records (in audit or a derived table).';
 
 CREATE FUNCTION audit.SET_PRIVILEGES (name) RETURNS void LANGUAGE plpgsql AS $set$ BEGIN
 	EXECUTE $$REVOKE UPDATE, DELETE, TRUNCATE ON TABLE audit.$$ || quote_ident($1) || $$ FROM $$ || quote_ident(current_user);
@@ -37,12 +37,10 @@ CREATE TABLE audit."audit" (
 	"audit_time" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	"audit_user" int NOT NULL, -- References "account" ("party"),
 	"audit_ip" inet NOT NULL,
-	"audit_action" audit_action NOT NULL
+	"audit_action" audit.action NOT NULL
 ) WITH (OIDS = FALSE);
 COMMENT ON TABLE audit."audit" IS 'Logs of all activities on the site, including access and modifications to any data. Each table has an associated audit table inheriting from this one.';
 SELECT audit.SET_PRIVILEGES ('audit');
-CREATE INDEX "audit_login_idx" ON audit."audit" ("audit_user", "audit_time") WHERE "audit_action" IN ('attempt', 'open');
-COMMENT ON INDEX audit."audit_login_idx" IS 'Allow efficient determination of recent login attempts for security.';
 
 CREATE FUNCTION audit.CREATE_TABLE (name, "parent" name = 'audit') RETURNS void LANGUAGE plpgsql AS $create$
 DECLARE
@@ -77,9 +75,8 @@ SELECT audit.CREATE_TABLE ('party');
 
 CREATE TABLE "account" (
 	"id" integer NOT NULL Primary Key References "party",
-	"email" varchar(256) NOT NULL, -- split out (multiple/user)?
-	"password" varchar(60), -- standard unix-style hash, currently $2a$ bcrypt
-	"openid" varchar(256) -- split out (multiple/user)?
+	"email" varchar(256) NOT NULL Unique, -- split out (multiple/user)?
+	"password" varchar(60) -- standard unix-style hash, currently $2a$ bcrypt
 );
 ALTER TABLE "account"
 	ALTER "email" SET STORAGE EXTERNAL,
@@ -87,6 +84,8 @@ ALTER TABLE "account"
 COMMENT ON TABLE "account" IS 'Login information for parties associated with registered individuals.';
 
 SELECT audit.CREATE_TABLE ('account');
+CREATE INDEX "audit_login_idx" ON audit."account" ("id", "audit_time") WHERE "audit_action" IN ('attempt', 'open');
+COMMENT ON INDEX audit."audit_login_idx" IS 'Allow efficient determination of recent login attempts for security.';
 
 ----------------------------------------------------------- permissions
 
@@ -873,10 +872,9 @@ CREATE TABLE "session" (
 	"token" char(32) Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
-	"superuser" timestamptz
+	"superuser" boolean NOT NULL DEFAULT false
 ) INHERITS ("account_token");
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
-COMMENT ON COLUMN "session"."superuser" IS 'Time at which permission-bypassing sudo mode expires, if not null.';
 
 CREATE TABLE "upload" (
 	"token" char(32) Primary Key,

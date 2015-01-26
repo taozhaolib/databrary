@@ -42,7 +42,8 @@ Executable databrary
     warp,
     lens,
     digestive-functors,
-    regex-posix
+    regex-posix,
+    bcrypt
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
 

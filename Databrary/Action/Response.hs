@@ -6,6 +6,7 @@ module Databrary.Action.Response
   , clearResponse
   , runAction
   , BResult
+  , okResult
   , notFoundResult
   , jsonResult
   , Result(..)
@@ -31,7 +32,7 @@ import Data.Monoid (Monoid, mempty, mappend)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Data.Typeable (Typeable)
-import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
+import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, ok200, notFound404)
 import qualified Network.Wai as Wai
 
 import Databrary.Action.Types
@@ -87,6 +88,9 @@ runAction (RWST act) q = do
   return $ response s h r
 
 type BResult q m = ActionT q Blaze.Builder m Status
+
+okResult :: Monad m => ActionT q r m Status
+okResult = return ok200
 
 notFoundResult :: Monad m => BResult q m
 notFoundResult = return notFound404

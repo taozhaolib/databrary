@@ -5,6 +5,7 @@ module Databrary.Action
   , getRequestHeader
   , responseHeader
   , respond
+  , okResult
   , notFoundResult
   , jsonResult
   , resultWith

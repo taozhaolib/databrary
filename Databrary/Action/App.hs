@@ -17,11 +17,11 @@ data AppRequest = AppRequest
   , appTimestamp :: !Timestamp
   }
 
-makeHasFor
+makeHasFor ''AppRequest
   [ ('appResource, [])
   , ('appRequest, [])
   , ('appTimestamp, [])
-  ] ''AppRequest
+  ]
 
 type AppM r = ActionM AppRequest r
 type AppAction r = Action AppRequest r

@@ -21,7 +21,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Databrary.Resource.DB
 import Databrary.Resource
 
-class Monad m => DBM m where
+class (Functor m, Monad m) => DBM m where
   liftDB :: (PGConnection -> IO a) -> m a
 
 instance (MonadIO m, ResourceM c m) => DBM m where

@@ -1,24 +1,22 @@
-{-# LANGUAGE ConstraintKinds #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, ConstraintKinds #-}
 module Databrary.Model.Audit
   ( module Databrary.Model.Types.Audit
+  , getRemoteIp
   , getAuditIdentity
   ) where
 
+import Control.Applicative ((<$>), (<*>))
 import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Typed.Inet (PGInet(..), sockAddrPGInet)
 import Network.Wai (remoteHost)
 
-import Control.Has (peek)
-import Databrary.Model.Types.Party
-import Databrary.Model.Types.Authorize
+import Control.Has (peeks)
+import Databrary.Action.Types
 import Databrary.Types.Identity
 import Databrary.Model.Types.Audit
 
-getAuditIdentity :: AuditM c m => m AuditIdentity
-getAuditIdentity = do
-  req <- peek
-  ident <- peek
-  return $ AuditIdentity
-    { auditWho = partyId $ authorizeChild $ identityAuthorization ident
-    , auditIp = fromMaybe (PGInet 0 32) $ sockAddrPGInet $ remoteHost req
-    }
+getRemoteIp :: RequestM c m => m PGInet
+getRemoteIp = peeks (fromMaybe (PGInet 0 32) . sockAddrPGInet . remoteHost)
+
+getAuditIdentity :: (RequestM c m, IdentityM c m) => m AuditIdentity
+getAuditIdentity = AuditIdentity <$> peeks identityId <*> getRemoteIp

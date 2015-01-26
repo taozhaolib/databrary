@@ -6,7 +6,7 @@ module Databrary.Model.SQL.Audit
   ) where
 
 import Data.List (intercalate)
-import Database.PostgreSQL.Typed.Query (makePGQuery)
+import Database.PostgreSQL.Typed.Query (makePGQuery, simpleQueryFlags)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import qualified Language.Haskell.TH as TH
 

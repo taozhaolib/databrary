@@ -9,9 +9,6 @@ module Databrary.Model.SQL
   , selectJoin
   , selectMap
   , makeQuery
-  , simpleQueryFlags
-  , preparedQueryFlags
-  , selectQuery'
   , selectQuery
   ) where
 
@@ -21,7 +18,7 @@ import Control.Monad (when)
 import Data.Char (isLetter, toLower)
 import Data.List (intercalate, unfoldr)
 import Data.String (IsString(..))
-import Database.PostgreSQL.Typed.Query (QueryFlags(..), simpleQueryFlags, makePGQuery)
+import Database.PostgreSQL.Typed.Query (QueryFlags, parseQueryFlags, makePGQuery)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.DB (useTPG)
@@ -148,15 +145,7 @@ makeQuery flags sql output = do
     (h:l) -> toLower h : l
   cols = outputColumns output
 
-preparedQueryFlags :: QueryFlags
-preparedQueryFlags = simpleQueryFlags{ flagPrepare = Just [] }
-
-selectQueryWithFlags :: QueryFlags -> Selector -> String -> TH.ExpQ
-selectQueryWithFlags flags (Selector{ selectOutput = o, selectSource = s }) sql =
-  makeQuery flags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o
-
 selectQuery :: Selector -> String -> TH.ExpQ
-selectQuery = selectQueryWithFlags preparedQueryFlags
-
-selectQuery' :: Selector -> String -> TH.ExpQ
-selectQuery' = selectQueryWithFlags preparedQueryFlags{ flagNullable = Just False }
+selectQuery (Selector{ selectOutput = o, selectSource = s }) sqlf =
+  makeQuery flags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o
+  where (flags, sql) = parseQueryFlags sqlf

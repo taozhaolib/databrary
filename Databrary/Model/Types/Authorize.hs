@@ -5,6 +5,8 @@ module Databrary.Model.Types.Authorize
   , accessPermission
   , Authorization(..)
   , Authorize(..)
+  , AuthParty(..)
+  , PartyAuth(..)
   ) where
 
 import Control.Lens (Lens', makeLensesFor)
@@ -42,15 +44,40 @@ data Authorization = Authorization
   , authorizeParent :: Party
   }
 
-makeHasFor 
+makeHasFor ''Authorization
   [ ('authorizeAccess, [])
-  ] ''Authorization
+  ]
 
 data Authorize = Authorize
   { authorization :: Authorization
   , authorizeExpires :: UTCTime
   }
 
-makeHasFor 
+makeHasFor ''Authorize
   [ ('authorization, [''Access])
-  ] ''Authorize
+  ]
+
+-- |'Authorization' representing (access to) the parent
+newtype AuthParty = AuthParty { authPartyAuthorization :: Authorization }
+
+makeHasFor ''AuthParty
+  [ ('authPartyAuthorization, [''Access])
+  ]
+
+instance Has Party AuthParty where
+  view f (AuthParty (Authorization a c p)) =
+    fmap (\p' -> AuthParty (Authorization a c p')) (f p)
+  see (AuthParty a) = authorizeParent a
+
+-- |'Authorization' representing the child('s access)
+newtype PartyAuth = PartyAuth { partyAuthAuthorization :: Authorization }
+
+makeHasFor ''PartyAuth
+  [ ('partyAuthAuthorization, [''Access])
+  ]
+
+instance Has Party PartyAuth where
+  view f (PartyAuth (Authorization a c p)) =
+    fmap (\c' -> PartyAuth (Authorization a c' p)) (f c)
+  see (PartyAuth a) = authorizeChild a
+

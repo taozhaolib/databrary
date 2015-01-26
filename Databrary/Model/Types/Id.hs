@@ -8,6 +8,8 @@ import qualified Data.ByteString as BS
 import Data.Int (Int32)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 
+import Control.Has (Has(..))
+
 newtype Id a = Id { unId :: Int32 } deriving (Eq, Ord)
 
 instance PGParameter "integer" (Id a) where
@@ -18,6 +20,5 @@ instance PGColumn "integer" (Id a) where
   pgDecode t i = Id (pgDecode t i)
   pgDecodeValue e t i = Id (pgDecodeValue e t i)
 
-class HasId a where
-  idOf :: a -> Id a
+class Has (Id a) a => HasId a where
   kindOf :: a -> BS.ByteString

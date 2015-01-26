@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings, ConstraintKinds #-}
 module Databrary.Web.Form 
   ( runForm
+  , formAddError
+  , resultFormError
   , emailTextForm
   ) where
 
@@ -53,26 +55,33 @@ postForm name form = do
         ContentJSON jj -> ([], Just jj)
         _ -> ([], Nothing)
       qm = HM.fromListWith (++) $ map (second return) $ q <> p
-      env i =
+      env (h:i) | h == name =
         map (Form.TextInput . TE.decodeUtf8) (HM.lookupDefault [] (TE.encodeUtf8 $ Form.fromPath i) qm)
         <> maybe [] (return . Form.TextInput) (lookupJson i =<< j)
         -- <> fmap FileInput (lookup p f')
+      env _ = []
   Form.postForm name form (const $ return $ return . env)
 
 jsonFormErrors :: Form.View T.Text -> JSON.Value
 jsonFormErrors = foldl' (uncurry . putJson) JSON.Null . Form.viewErrors
 
-runForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form T.Text m a -> m a
+resultFormError :: MonadIO m => Form.View T.Text -> m a
+resultFormError v = liftIO $ resultWith $
+  jsonResult badRequest400 $ jsonFormErrors v
+
+formAddError :: Form.Path -> v -> Form.View v -> Form.View v
+formAddError p e v = v{ Form.viewErrors = (p, e) : Form.viewErrors v }
+
+runForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form T.Text m a -> m (a, Form.View T.Text)
 runForm name form = do
   (v, f) <- postForm name form
   case f of
-    Nothing -> liftIO $ resultWith $
-      jsonResult badRequest400 $ jsonFormErrors v
-    Just x -> return x
+    Nothing -> resultFormError v
+    Just x -> return (x, v)
 
 emailRegex :: Regex.Regex
 emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
-  ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][\\w\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
+  ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][a-z0-9\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
 
 emailTextForm :: Monad m => Form.Form T.Text m T.Text
 emailTextForm = Form.check "Invalid email address" (Regex.matchTest emailRegex . T.unpack) (Form.text Nothing)

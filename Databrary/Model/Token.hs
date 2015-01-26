@@ -19,12 +19,16 @@ import Databrary.Model.Types.Token
 generateToken :: EntropyM m => m TokenId
 generateToken = Base64.encode <$> entropyBytes 24
 
-lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
-lookupSession tok = dbQuery1 $(selectQuery' sessionTokenSelector "WHERE session.token = ${tok}")
-
-sessionAuthorization :: SessionToken -> Authorization
-sessionAuthorization tok = Authorization
+sessionAuthorization :: SessionToken -> PartyAuth
+sessionAuthorization tok = PartyAuth $ Authorization
   { authorizeChild = accountParty (sessionAccount tok)
   , authorizeParent = rootParty
   , authorizeAccess = sessionAccess tok
   }
+
+lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
+lookupSession tok = dbQuery1 $(selectQuery sessionTokenSelector "$!WHERE session.token = ${tok}")
+
+createSession :: DBM m => PartyAuth -> m SessionToken
+createSession a = do
+  return undefined

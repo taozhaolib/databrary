@@ -10,6 +10,7 @@ module Databrary.Action.Auth
 import Control.Has (makeHasFor)
 import Databrary.Action.Types
 import Databrary.Action.App
+import Databrary.Model.Types.Party
 import Databrary.Model.Authorize
 import Databrary.Identity
 import Databrary.Resource
@@ -20,10 +21,10 @@ data AuthRequest = AuthRequest
   , authIdentity :: !Identity
   }
 
-makeHasFor 
+makeHasFor ''AuthRequest
   [ ('authApp, [''Resource, ''Request, ''Timestamp])
-  , ('authIdentity, [''Authorization, ''Access])
-  ] ''AuthRequest
+  , ('authIdentity, [''PartyAuth, ''Authorization, ''Party, ''Access])
+  ]
 
 type AuthM r = ActionM AuthRequest r
 type AuthAction r = Action AuthRequest r

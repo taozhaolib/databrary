@@ -8,7 +8,7 @@ module Databrary.Resource
   , runResource
   ) where
 
-import Control.Monad (liftM3)
+import Control.Applicative ((<$>), (<*>))
 import Control.Monad.Reader (ReaderT, runReaderT)
 import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
@@ -33,10 +33,10 @@ getResource = peeks
 initResource :: IO Resource
 initResource = do
   conf <- C.load [C.Required "databrary.conf"]
-  liftM3 (Resource conf)
-    (C.require conf "secret")
-    (initDB $ C.subconfig "db" conf)
-    initEntropy
+  Resource conf
+    <$> C.require conf "secret"
+    <*> initDB (C.subconfig "db" conf)
+    <*> initEntropy
 
 type ResourceT = ReaderT Resource
 

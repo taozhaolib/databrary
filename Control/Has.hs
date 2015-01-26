@@ -8,6 +8,7 @@ module Control.Has
   , makeHasFor
   ) where
 
+import Control.Applicative (Applicative)
 import Control.Lens hiding (view)
 import Control.Monad (unless, liftM, liftM2)
 import Control.Monad.Reader (MonadReader, reader, local)
@@ -22,7 +23,7 @@ instance Has a a where
   view = id
   see = id
 
-type HasM a c m = (Functor m, MonadReader c m, Has a c)
+type HasM a c m = (Functor m, Applicative m, MonadReader c m, Has a c)
 
 peek :: HasM a c m => m a
 peek = reader see
@@ -33,8 +34,8 @@ peeks f = reader (f . see)
 poke :: HasM a c m => (a -> a) -> m r -> m r
 poke = local . over view
 
-makeHasFor :: [(TH.Name, [TH.Name])] -> TH.Name -> TH.DecsQ
-makeHasFor fs tn = concatM
+makeHasFor :: TH.Name -> [(TH.Name, [TH.Name])] -> TH.DecsQ
+makeHasFor tn fs = concatM
   (makeLensesFor [(f, f ++ "'") | (fn, _) <- fs, let f = TH.nameBase fn] tn)
   (\(fn, ts) -> do
     let ln = TH.mkName (TH.nameBase fn ++ "'")
