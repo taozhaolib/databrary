@@ -168,7 +168,7 @@ final class Account protected (val party : Party, private[this] var email_ : Str
   def clearTokens(except : Option[Token] = None) = AccountToken.clearAccount(id, except)
 
   def recentAttempts : Future[Long] =
-    sql"SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = $id AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'"
+    lsql"SELECT count(*) FROM ONLY audit.audit WHERE audit_action = 'attempt' AND audit_user = $id AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'"
     .run.single(SQL.Cols[Long])
 }
 
@@ -300,12 +300,12 @@ object Account extends Table[Account]("account") {
     row.SELECT(sql"WHERE id = $i").singleOpt
   /** Look up a user by email. */
   def getEmail(email : String) : Future[Option[Account]] =
-    row.SELECT(sql"WHERE email = $email").singleOpt
+    row.SELECT(lsql"WHERE email = $email").singleOpt
   /** Look up a user by openid.
     * @param email optionally limit results to the given email
     * @return an arbitrary account with the given openid, or the account for email if the openid matches */
   def getOpenid(openid : String, email : Option[String] = None) : Future[Option[Account]] =
-    row.SELECT(sql"WHERE openid = $openid AND COALESCE(email = $email, true) LIMIT 1").singleOpt
+    row.SELECT(lsql"WHERE openid = $openid AND COALESCE(email = $email, true) LIMIT 1").singleOpt
 
   def create(party : Party, email : String, password : Option[String] = None, openid : Option[URL] = None)(implicit site : Site) : Future[Account] =
     Audit.add("account", SQLTerms('id -> party.id, 'email -> email, 'password -> password, 'openid -> openid)).map { _ =>
