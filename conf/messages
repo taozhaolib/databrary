@@ -95,10 +95,10 @@ password=Password
 required=(required)
 
 toolbar.login=login
-toolbar.logout=logout
+toolbar.logout=Logout
 toolbar.register=register
 toolbar.reregister=get authorized
-toolbar.profile=view profile
+toolbar.profile=View profile
 
 toolbar.contact=Send us your comments, questions, and suggestions.
 
