@@ -4,11 +4,14 @@ module Databrary.Model.Types.Id
   , HasId(..)
   ) where
 
-import qualified Data.ByteString as BS
+import Control.Applicative ((<$>))
 import Data.Int (Int32)
+import qualified Data.Text as T
+import qualified Data.Text.Read as T
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 
 import Control.Has (Has(..))
+import qualified Databrary.Web.Route as R
 
 newtype Id a = Id { unId :: Int32 } deriving (Eq, Ord)
 
@@ -21,4 +24,8 @@ instance PGColumn "integer" (Id a) where
   pgDecodeValue e t i = Id (pgDecodeValue e t i)
 
 class Has (Id a) a => HasId a where
-  kindOf :: a -> BS.ByteString
+  kindOf :: a -> T.Text
+
+instance HasId a => R.Routable (Id a) where
+  route = R.fixed (kindOf (undefined :: a)) >> Id <$> R.reader T.decimal
+  toRoute (Id i) = [kindOf (undefined :: a), T.pack $ show i]

@@ -4,33 +4,21 @@ module Databrary.Routes
   ) where
 
 import Control.Monad (msum)
-import Network.HTTP.Types (ok200)
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
-import Databrary.Action.App
-import Databrary.Action.Auth
-import Databrary.Action.Route
 import Databrary.Model.Id
 import Databrary.Model.Party
 import Databrary.Controller.Login
 
-testParty :: Id Party -> AppBAction
-testParty i = do
+testParty :: Id Party -> AppRAction
+testParty i = bAction GET (toRoute i) $ do
   p <- lookupParty i
   respond $ maybe "not found" partyName p
-  return ok200
+  okResult
 
-testVolume :: Id Party -> AuthBAction
-testVolume i = do
-  p <- lookupParty i -- getVolume i
-  respond $ maybe "not found" partyName p
-  return ok200
-
-routes :: R.RouteM (SomeAction AppRequest)
+routes :: R.RouteM AppRAction
 routes = msum 
-  [
-    "party" >> routeId >>= action . testParty
-  , "volume" >> routeId >>= action . appAuth . testVolume
-  , "login" >> action postLogin
+  [ R.on GET >> R.route >>= return . testParty
+  , R.on POST >> "login" >> return postLogin
   ]

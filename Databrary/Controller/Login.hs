@@ -40,8 +40,8 @@ loginForm = LoginForm
   <*> "password"  Form..: Form.text Nothing
   <*> "superuser" Form..: Form.bool (Just False)
 
-postLogin :: AppBAction
-postLogin = do
+postLogin :: AppRAction
+postLogin = bAction POST ["login"] $ do
   (LoginForm email password superuser, form) <- runForm "login" loginForm
   auth <- lookupPartyAuthByEmail email
   let p = fmap see auth

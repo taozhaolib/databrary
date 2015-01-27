@@ -64,6 +64,7 @@ reader r = either (const mzero) (return . fst) . r =<< text
 
 class Routable a where
   route :: RouteM a
+  toRoute :: a -> [Text]
 
 routeRequest :: RouteM a -> Request -> Maybe a
 routeRequest r q = case runStateT (runReaderT (runRoute r) (requestMethod q)) (pathInfo q) of

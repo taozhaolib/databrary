@@ -1,35 +1,47 @@
 {-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
 module Databrary.Action.Route
-  ( SomeAction
+  ( RouteAction
   , action
+  , toRoute
   , routeApp
   ) where
 
-import Data.Maybe (fromMaybe)
+import qualified Blaze.ByteString.Builder as Blaze
+import qualified Data.Text as T
 import Data.Time (getCurrentTime)
+import Network.HTTP.Types (Method, StdMethod, renderStdMethod, encodePathSegments)
 import qualified Network.Wai as Wai
 
-import Databrary.Web.Route (RouteM, routeRequest)
+import Databrary.Web.Route (RouteM, routeRequest, toRoute)
 import Databrary.Action.Types
 import Databrary.Action.Wai
 import Databrary.Action.App
 import Databrary.Action.Response
 import Databrary.Resource
 
-data SomeAction q = forall r . Response r => SomeAction (Action q r)
+data RouteAction q = forall r . Response r => RouteAction 
+  { actionMethod :: Method
+  , actionRoute :: Blaze.Builder
+  , routeAction :: Action q r
+  }
 
-action :: Response r => Action q r -> RouteM (SomeAction q)
-action = return . SomeAction
+action :: Response r => StdMethod -> [T.Text] -> Action q r -> RouteAction q
+action meth path act = RouteAction
+  { actionMethod = renderStdMethod meth
+  , actionRoute = encodePathSegments path
+  , routeAction = act
+  }
 
-withSomeAction :: (q -> q') -> SomeAction q' -> SomeAction q
-withSomeAction f (SomeAction a) = SomeAction $ withAction f a
+withRouteAction :: (q -> q') -> RouteAction q' -> RouteAction q
+withRouteAction f (RouteAction m r a) = RouteAction m r $ withAction f a
 
-routeWai :: RouteM (SomeAction Wai.Request) -> Wai.Application
+routeWai :: RouteM (RouteAction Wai.Request) -> Wai.Application
 routeWai route request send = 
-  case fromMaybe (SomeAction notFoundResult) (routeRequest route request) of
-    SomeAction w -> runWai w request send
+  case routeRequest route request of
+    Just (RouteAction _ _ w) -> runWai w request send
+    Nothing -> runWai notFoundResult request send
 
-routeApp :: Resource -> RouteM (SomeAction AppRequest) -> Wai.Application
+routeApp :: Resource -> RouteM (RouteAction AppRequest) -> Wai.Application
 routeApp rc route request send = do
   ts <- getCurrentTime
-  routeWai (fmap (withSomeAction (\rq -> AppRequest rc rq ts)) route) request send
+  routeWai (fmap (withRouteAction (\rq -> AppRequest rc rq ts)) route) request send
