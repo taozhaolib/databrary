@@ -1,13 +1,14 @@
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Types.Token
   ( TokenId
   , Token(..)
   , AccountToken(..)
   , SessionToken(..)
-  , sessionAccount
   ) where
 
 import qualified Data.ByteString as BS
 
+import Control.Has (makeHasFor)
 import Databrary.Types.Time
 import Databrary.Model.Types.Party
 import Databrary.Model.Types.Authorize
@@ -24,11 +25,18 @@ data AccountToken = AccountToken
   , tokenAccount :: Account
   }
 
+makeHasFor ''AccountToken
+  [ ('accountToken, [])
+  , ('tokenAccount, [''Party])
+  ]
+
 data SessionToken = SessionToken
-  { sessionToken :: !AccountToken
-  , sessionSuperuser :: Maybe Timestamp
+  { sessionAccountToken :: !AccountToken
+  , sessionSuperuser :: Bool
   , sessionAccess :: Access
   }
 
-sessionAccount :: SessionToken -> Account
-sessionAccount = tokenAccount . sessionToken
+makeHasFor ''SessionToken
+  [ ('sessionAccountToken, [''Token, ''Account, ''Party])
+  , ('sessionAccess, [])
+  ]

@@ -959,8 +959,8 @@ INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York U
 INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
-INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
+INSERT INTO account (id, email, password) VALUES (1, 'dylan@databrary.org', '$2a$10$X5mY45HXhBHz/1SmtWHVMOGbmPA.qjqX59A5d7RKwr0K9Wl.G/Pfq');
+INSERT INTO account (id, email) VALUES (3, 'lisa@databrary.org');
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
 INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'ADMIN', 'ADMIN');

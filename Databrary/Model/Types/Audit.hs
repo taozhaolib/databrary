@@ -20,7 +20,7 @@ import Databrary.Action.Types
 
 useTPG
 
-makePGEnum "audit_action" "AuditAction" (\(h:r) -> "AuditAction" ++ toUpper h:r)
+makePGEnum "audit.action" "AuditAction" (\(h:r) -> "AuditAction" ++ toUpper h:r)
 
 data AuditIdentity = AuditIdentity
   { auditWho :: !(Id Party)

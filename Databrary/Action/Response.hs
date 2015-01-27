@@ -21,7 +21,7 @@ import Control.Exception (Exception, throwIO)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.RWS.Strict (RWST(..))
 import Control.Monad.State.Class (MonadState, get, modify, put)
-import Control.Monad.Writer.Class (MonadWriter, tell)
+import Control.Monad.Writer.Class (tell)
 import qualified Data.Aeson as JSON
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString as BS
@@ -65,7 +65,7 @@ instance Response (FilePath, Wai.FilePart) where
   emptyResponse = ("/dev/null", Wai.FilePart 0 0 0)
   response s h (f, p) = Wai.responseFile s h f (Just p)
 
-responseHeader :: MonadWriter ResponseHeaders m => HeaderName -> BS.ByteString -> m ()
+responseHeader :: ResponseHeaderM m => HeaderName -> BS.ByteString -> m ()
 responseHeader k v = tell [(k, v)]
 
 class Response r => Respond r b where

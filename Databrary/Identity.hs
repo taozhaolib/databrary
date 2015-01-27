@@ -4,10 +4,6 @@ module Databrary.Identity
   , getIdentity
   ) where
 
-import qualified Data.Foldable as Fold
-
-import Control.Has (peeks)
-import Databrary.Types.Time
 import Databrary.Model.Authorize
 import Databrary.Model.Token
 import Databrary.Action.App
@@ -20,14 +16,14 @@ nobodyIdentity = Identity
   , identitySuperuser = False
   }
 
-makeIdentity :: SessionToken -> Timestamp -> Identity
-makeIdentity tok t = Identity
+makeIdentity :: SessionToken -> Identity
+makeIdentity tok = Identity
   { identityAuthorization = sessionAuthorization tok
-  , identitySuperuser = Fold.any (t <) $ sessionSuperuser tok
+  , identitySuperuser = sessionSuperuser tok
   }
 
 getIdentity :: AppM r Identity
 getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c
-  peeks $ maybe (return nobodyIdentity) makeIdentity s
+  return $ maybe nobodyIdentity makeIdentity s
