@@ -112,7 +112,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
   private[models] def remove(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =
     (lsql"DELETE FROM ONLY " + table(keyword) 
       ++ (tag match {
-        case n : TagName => lsql" USING tag WHERE tag_use.tag = tag.id AND name = $n"
+        case n : TagName => lsql" USING tag WHERE tag = tag.id AND name = $n"
         case t : Tag => lsql" WHERE tag = ${t.id}"
       }) ++ lsql" AND container = ${slot.containerId} AND segment <@ ${slot.segment}"
       ++ (if (keyword) "" else lsql" AND who = ${slot.site.identity.id}") + " RETURNING tag")
