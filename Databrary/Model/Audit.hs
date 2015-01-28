@@ -11,7 +11,7 @@ import Database.PostgreSQL.Typed.Inet (PGInet(..), sockAddrPGInet)
 import Network.Wai (remoteHost)
 
 import Control.Has (peeks)
-import Databrary.Action.Types
+import Databrary.Action.Request
 import Databrary.Types.Identity
 import Databrary.Model.Types.Audit
 

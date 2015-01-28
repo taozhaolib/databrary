@@ -1,16 +1,19 @@
-{-# LANGUAGE TypeSynonymInstances, DeriveDataTypeable, OverloadedStrings #-}
+{-# LANGUAGE TypeSynonymInstances, DeriveDataTypeable, OverloadedStrings, ConstraintKinds #-}
 module Databrary.Action.Response
   ( Response(..)
+  , ResponseHeaderM
   , responseHeader
   , Respond(..)
   , clearResponse
   , runAction
   , BResult
-  , okResult
   , notFoundResult
   , jsonResult
+  , htmlResult
   , Result(..)
   , resultIO
+  , ResultM
+  , BResultM
   , resultWith
   , result
   ) where
@@ -18,10 +21,10 @@ module Databrary.Action.Response
 import qualified Blaze.ByteString.Builder as Blaze
 import qualified Blaze.ByteString.Builder.Char.Utf8 as Blaze
 import Control.Exception (Exception, throwIO)
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.RWS.Strict (RWST(..))
 import Control.Monad.State.Class (MonadState, get, modify, put)
-import Control.Monad.Writer.Class (tell)
+import Control.Monad.Writer.Class (MonadWriter, tell)
 import qualified Data.Aeson as JSON
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString as BS
@@ -32,8 +35,10 @@ import Data.Monoid (Monoid, mempty, mappend)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Data.Typeable (Typeable)
-import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, ok200, notFound404)
+import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
 import qualified Network.Wai as Wai
+import qualified Text.Blaze.Html as Html
+import qualified Text.Blaze.Html.Renderer.Utf8 as Html
 
 import Databrary.Action.Types
 
@@ -65,6 +70,8 @@ instance Response (FilePath, Wai.FilePart) where
   emptyResponse = ("/dev/null", Wai.FilePart 0 0 0)
   response s h (f, p) = Wai.responseFile s h f (Just p)
 
+type ResponseHeaderM m = MonadWriter ResponseHeaders m
+
 responseHeader :: ResponseHeaderM m => HeaderName -> BS.ByteString -> m ()
 responseHeader k v = tell [(k, v)]
 
@@ -89,16 +96,19 @@ runAction (RWST act) q = do
 
 type BResult q m = ActionT q Blaze.Builder m Status
 
-okResult :: Monad m => ActionT q r m Status
-okResult = return ok200
-
 notFoundResult :: Monad m => BResult q m
 notFoundResult = return notFound404
 
-jsonResult :: Monad m => Status -> JSON.Value -> BResult q m
-jsonResult s j = do
+jsonResult :: Monad m => JSON.Value -> Status -> BResult q m
+jsonResult j s = do
   responseHeader "content-type" "text/json"
   respond $ JSON.encodeToByteStringBuilder j
+  return s
+
+htmlResult :: Monad m => Html.Html -> Status -> BResult q m
+htmlResult h s = do
+  responseHeader "content-type" "text/html"
+  respond $ Html.renderHtmlBuilder h
   return s
 
 
@@ -111,8 +121,11 @@ instance Exception Result
 resultIO :: Response r => Status -> ResponseHeaders -> r -> IO a
 resultIO s h r = throwIO $ Result $ response s h r
 
-resultWith :: Response r => RWST () ResponseHeaders r Identity Status -> IO a
-resultWith r = throwIO $ Result $ runIdentity $ runAction r ()
+type ResultM r = ActionT () r Identity Status 
+type BResultM = ActionT () Blaze.Builder Identity Status 
+
+resultWith :: (MonadIO m, Response r) => ResultM r -> m a
+resultWith r = liftIO $ throwIO $ Result $ runIdentity $ runAction r ()
 
 result :: Response r => Status -> ResponseHeaders -> ActionM q r a
 result s h = liftIO . resultIO s h =<< get

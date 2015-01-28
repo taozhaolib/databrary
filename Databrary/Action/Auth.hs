@@ -9,6 +9,7 @@ module Databrary.Action.Auth
 
 import Control.Has (makeHasFor)
 import Databrary.Action.Types
+import Databrary.Action.Request
 import Databrary.Action.App
 import Databrary.Model.Types.Party
 import Databrary.Model.Authorize

@@ -41,7 +41,10 @@ Executable databrary
     entropy,
     warp,
     lens,
+    blaze-markup,
+    blaze-html,
     digestive-functors,
+    -- digestive-functors-blaze,
     regex-posix,
     bcrypt
 

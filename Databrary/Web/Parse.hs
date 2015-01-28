@@ -17,7 +17,7 @@ import Network.Wai
 import Network.Wai.Parse
 
 import Control.Has (peek, peeks)
-import Databrary.Action.Types
+import Databrary.Action.Request
 import Databrary.Action.Response
 
 requestTooLarge :: Monad m => BResult q m
@@ -25,8 +25,8 @@ requestTooLarge = return requestEntityTooLarge413
 
 type ChunkParser a = IO BS.ByteString -> IO a
 
-mapChunks :: (a -> b) -> ChunkParser a -> ChunkParser b
-mapChunks f parse next = f <$> parse next
+_mapChunks :: (a -> b) -> ChunkParser a -> ChunkParser b
+_mapChunks f parse next = f <$> parse next
 
 nullChunks :: ChunkParser Word64
 nullChunks next = go 0 where
@@ -57,21 +57,21 @@ parserChunks parser next = run (AP.parse parser) where
       else run $ AP.feed r
 
 
-mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
-mapBackEnd f back param info next = f <$> back param info next
+_mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
+_mapBackEnd f back param info next = f <$> back param info next
 
 nullBackEnd :: BackEnd Word64
 nullBackEnd _ _ = nullChunks
 
-limitBackEnd :: Word64 -> BackEnd a -> BackEnd a
-limitBackEnd lim back param info = limitChunks lim $ back param info
+_limitBackEnd :: Word64 -> BackEnd a -> BackEnd a
+_limitBackEnd lim back param info = limitChunks lim $ back param info
 
-parserBackEnd :: AP.Parser a -> BackEnd (AP.Result a)
-parserBackEnd parser _ _ = parserChunks parser
+_parserBackEnd :: AP.Parser a -> BackEnd (AP.Result a)
+_parserBackEnd parser _ _ = parserChunks parser
 
 
-parseRequestChunks :: (MonadIO m, RequestM c m) => ChunkParser a -> m a
-parseRequestChunks p = liftIO . p =<< peeks requestBody
+_parseRequestChunks :: (MonadIO m, RequestM c m) => ChunkParser a -> m a
+_parseRequestChunks p = liftIO . p =<< peeks requestBody
 
 limitRequestChunks :: (MonadIO m, RequestM c m) => Word64 -> ChunkParser a -> m a
 limitRequestChunks lim p = do

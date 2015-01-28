@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Login
   ( postLogin
+  , viewLogin
   ) where
 
 import Control.Applicative ((<$>), (<*>))
@@ -10,6 +11,7 @@ import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe, fromJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import Network.HTTP.Types (ok200)
 import qualified Text.Digestive as Form
 
 import Control.Has (see)
@@ -20,13 +22,15 @@ import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Authorize
 import Databrary.Model.Token
+import Databrary.View.Form
+import Databrary.Controller.Form
 
 loginAccount :: PartyAuth -> Bool -> AppBAction
 loginAccount auth su = do
   sess <- createSession auth su
   let Token tok ex = see sess
   setSignedCookie "session" tok ex
-  okResult
+  return ok200
 
 data LoginForm = LoginForm
   { _loginEmail :: T.Text
@@ -40,9 +44,21 @@ loginForm = LoginForm
   <*> "password"  Form..: Form.text Nothing
   <*> "superuser" Form..: Form.bool (Just False)
 
-postLogin :: AppRAction
-postLogin = bAction POST ["login"] $ do
-  (LoginForm email password superuser, form) <- runForm "login" loginForm
+displayLogin :: Monad m => Bool -> Form.View T.Text -> BResult q m
+displayLogin api = displayForm api $
+  renderForm (postLogin api)
+    [ ("email", inputText)
+    , ("password", inputPassword)
+    ]
+
+viewLogin :: Bool -> AppRAction
+viewLogin api = bAction GET (apiRoute api ["login"]) $ do
+  form <- Form.getForm "login" loginForm
+  displayLogin api form
+
+postLogin :: Bool -> AppRAction
+postLogin api = bAction POST (apiRoute api ["login"]) $ do
+  (LoginForm email password superuser, form) <- runForm "login" disp loginForm
   auth <- lookupPartyAuthByEmail email
   let p = fmap see auth
       a = partyAccount =<< p
@@ -51,6 +67,7 @@ postLogin = bAction POST ["login"] $ do
   let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 password)) (accountPasswd =<< a)
       block = attempts > 4
   auditAccountLogin pass (fromMaybe nobodyParty p) email
-  when block $ resultFormError $ formAddError [] "Too many login attempts. Try again later." form
-  unless pass $ resultFormError $ formAddError [] "Incorrect login." form
+  when block $ resultWith $ disp $ formAddError ["email"] "Too many login attempts. Try again later." form
+  unless pass $ resultWith $ disp $ formAddError ["password"] "Incorrect login." form
   loginAccount (fromJust auth) su
+  where disp = displayLogin api

@@ -7,6 +7,7 @@ module Databrary.Web.Route
 
   , text
   , fixed
+  , switch
   , path
   , read
   , reader
@@ -22,7 +23,7 @@ import Control.Monad (MonadPlus, mzero, mfilter)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Reader (MonadReader, ReaderT(..), ask)
 import Control.Monad.State (MonadState, StateT(..))
-import qualified Data.Maybe
+import Data.Maybe (maybe, fromMaybe)
 import Data.String (IsString(..))
 import Data.Text (Text, unpack)
 import qualified Data.Text.Read as Text
@@ -44,20 +45,20 @@ text = RouteM $ lift $ StateT f where
   f (p:l) = Just (p, l)
   f [] = Nothing
 
-maybe :: MonadPlus m => Maybe a -> m a
-maybe = Data.Maybe.maybe mzero return
-
 fixed :: Text -> RouteM Text
 fixed p = mfilter (p ==) text
 
 instance IsString (RouteM a) where
   fromString s = undefined <$ fixed (fromString s)
 
+switch :: Eq a => [(a, RouteM b)] -> a -> RouteM b
+switch l x = fromMaybe mzero $ lookup x l
+
 path :: RouteM [Text]
 path = RouteM $ lift $ StateT $ \p -> Just (p, [])
 
 read :: Read a => RouteM a
-read = maybe . readMaybe . unpack =<< text
+read = maybe mzero return . readMaybe . unpack =<< text
 
 reader :: Text.Reader a -> RouteM a
 reader r = either (const mzero) (return . fst) . r =<< text

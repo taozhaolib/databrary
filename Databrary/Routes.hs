@@ -3,22 +3,22 @@ module Databrary.Routes
   ( routes
   ) where
 
+import Control.Applicative ((<$), (<|>))
 import Control.Monad (msum)
+import Network.HTTP.Types (methodGet, methodPost)
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
-import Databrary.Model.Id
-import Databrary.Model.Party
 import Databrary.Controller.Login
-
-testParty :: Id Party -> AppRAction
-testParty i = bAction GET (toRoute i) $ do
-  p <- lookupParty i
-  respond $ maybe "not found" partyName p
-  okResult
+import Databrary.Controller.Party
 
 routes :: R.RouteM AppRAction
-routes = msum 
-  [ R.on GET >> R.route >>= return . testParty
-  , R.on POST >> "login" >> return postLogin
-  ]
+routes = do
+  api <- True <$ R.fixed "api" <|> return False
+  msum 
+    [ "login" >> R.method >>= R.switch
+      [ (methodGet,  return $ viewLogin api)
+      , (methodPost, return $ postLogin api)
+      ]
+    , R.route >>= \party -> R.on GET >> return (getParty api party)
+    ]

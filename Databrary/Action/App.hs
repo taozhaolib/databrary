@@ -10,6 +10,7 @@ import Control.Has
 import Databrary.Resource
 import Databrary.Types.Time
 import Databrary.Action.Types
+import Databrary.Action.Request
 
 data AppRequest = AppRequest
   { appResource :: !Resource

@@ -28,7 +28,7 @@ import Database.PostgreSQL.Typed (pgSQL)
 import Control.Has (Has(..), peek, peeks, poke)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
-import Databrary.Action.Types
+import Databrary.Action.Request
 import Databrary.Model.Id
 import Databrary.Model.SQL.Party
 import Databrary.Model.SQL.Authorize
@@ -71,8 +71,8 @@ authPartyPermission :: AuthParty -> Identity -> Permission
 authPartyPermission a i =
   accessPermission a `max` (peeks _accessSite i `min` PermissionREAD)
 
-authPartyEmail :: AuthParty -> Identity -> Maybe T.Text
-authPartyEmail p =
+_authPartyEmail :: AuthParty -> Identity -> Maybe T.Text
+_authPartyEmail p =
   poke ((see p :: Access) <>) $ partyEmail (see p)
 
 partyJSON :: Party -> Identity -> JSON.Object

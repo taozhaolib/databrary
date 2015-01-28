@@ -16,7 +16,7 @@ import Databrary.DB
 import Databrary.Model.Types.Id
 import Databrary.Model.Types.Party
 import Databrary.Types.Identity
-import Databrary.Action.Types
+import Databrary.Action.Request
 
 useTPG
 

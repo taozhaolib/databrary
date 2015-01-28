@@ -2,25 +2,20 @@
 module Databrary.Web.Form 
   ( runForm
   , formAddError
-  , resultFormError
-  , emailTextForm
   ) where
 
 import Control.Arrow (second)
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson as JSON
 import qualified Data.HashMap.Strict as HM
-import Data.List (foldl')
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as TR
 import qualified Data.Vector as V
-import Network.HTTP.Types (badRequest400)
 import qualified Network.Wai as Wai
 import qualified Text.Digestive as Form
-import qualified Text.Regex.Posix as Regex
 
 import Control.Has (peeks)
 import Databrary.Web.Parse
@@ -36,15 +31,6 @@ lookupJson (h:p) v = lookupJson p =<< idx v where
   idx _ = Nothing
   tr (Right (x, "")) = Just x
   tr _ = Nothing
-
-putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
-putJson JSON.Null [] v = JSON.String v
-putJson (JSON.Object o) [] v = JSON.Object $ HM.insertWith (\_ x -> putJson x [] v) "" (JSON.String v) o
-putJson (JSON.Array a) [] v = JSON.Array $ V.snoc a $ JSON.String v
-putJson o [] v = JSON.Array $ V.fromListN 2 [o, JSON.String v]
-putJson (JSON.Object o) (h:p) v = JSON.Object $ HM.insertWith (\_ x -> putJson x p v) h (putJson JSON.Null p v) o
-putJson JSON.Null (h:p) v = JSON.Object $ HM.singleton h (putJson JSON.Null p v)
-putJson o (h:p) v = JSON.Object $ HM.fromList [("", o), (h, putJson JSON.Null p v)]
 
 postForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form v m a -> m (Form.View v, Maybe a)
 postForm name form = do
@@ -62,26 +48,12 @@ postForm name form = do
       env _ = []
   Form.postForm name form (const $ return $ return . env)
 
-jsonFormErrors :: Form.View T.Text -> JSON.Value
-jsonFormErrors = foldl' (uncurry . putJson) JSON.Null . Form.viewErrors
-
-resultFormError :: MonadIO m => Form.View T.Text -> m a
-resultFormError v = liftIO $ resultWith $
-  jsonResult badRequest400 $ jsonFormErrors v
-
 formAddError :: Form.Path -> v -> Form.View v -> Form.View v
 formAddError p e v = v{ Form.viewErrors = (p, e) : Form.viewErrors v }
 
-runForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form T.Text m a -> m (a, Form.View T.Text)
-runForm name form = do
+runForm :: (MonadIO m, RequestM c m) => T.Text -> (Form.View T.Text -> BResultM) -> Form.Form T.Text m a -> m (a, Form.View T.Text)
+runForm name bad form = do
   (v, f) <- postForm name form
   case f of
-    Nothing -> resultFormError v
+    Nothing -> resultWith $ bad v
     Just x -> return (x, v)
-
-emailRegex :: Regex.Regex
-emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
-  ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][a-z0-9\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
-
-emailTextForm :: Monad m => Form.Form T.Text m T.Text
-emailTextForm = Form.check "Invalid email address" (Regex.matchTest emailRegex . T.unpack) (Form.text Nothing)

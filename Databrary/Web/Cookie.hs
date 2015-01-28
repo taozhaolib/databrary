@@ -14,7 +14,7 @@ import Control.Has (peeks)
 import Databrary.Crypto
 import Databrary.Resource
 import Databrary.Types.Time
-import Databrary.Action.Types
+import Databrary.Action.Request
 import Databrary.Action.Response
 
 getCookies :: RequestM c m => m Cook.Cookies

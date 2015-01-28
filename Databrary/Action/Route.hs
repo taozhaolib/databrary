@@ -1,12 +1,15 @@
 {-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
 module Databrary.Action.Route
   ( RouteAction
+  , actionMethod
+  , actionRoute
   , action
   , toRoute
   , routeApp
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
+import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (Method, StdMethod, renderStdMethod, encodePathSegments)
@@ -21,14 +24,14 @@ import Databrary.Resource
 
 data RouteAction q = forall r . Response r => RouteAction 
   { actionMethod :: Method
-  , actionRoute :: Blaze.Builder
+  , actionRoute :: BS.ByteString
   , routeAction :: Action q r
   }
 
 action :: Response r => StdMethod -> [T.Text] -> Action q r -> RouteAction q
 action meth path act = RouteAction
   { actionMethod = renderStdMethod meth
-  , actionRoute = encodePathSegments path
+  , actionRoute = Blaze.toByteString $ encodePathSegments path
   , routeAction = act
   }
 
