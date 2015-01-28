@@ -25,7 +25,7 @@
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'keyword': tag.keyword.length}">
               <div class="panel-tag-weight" ng-if="::!editing" ng-bind="tag.weight"></div>
               <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="tag.id"></div>
-              <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()" ng-show="!ruler.selection.empty">
+              <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
                 <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="editing || tag.vote.length" hint="tags-vote-null">
                   -
                 </button>
@@ -34,7 +34,7 @@
                 </button>
               </div>
             </li>
-            <li class="panel-tags-item" ng-if="::page.models.Login.isAuthorized()" ng-show="!ruler.selection.empty">
+            <li class="panel-tags-item" ng-if="::page.models.Login.isAuthorized()">
               <tag-add></tag-add>
             </li>
           </ul>
@@ -193,7 +193,7 @@
 
             <div class="player-main-viewport" ng-if="::current.type === 'asset'">
               <asset-display ng-if="::!editing && current.asset" asset="current.asset"></asset-display>
-              <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true"  flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
+              <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{::current.asset ? '.replace' : ''}}"></span>
               </div>

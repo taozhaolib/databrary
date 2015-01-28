@@ -147,7 +147,7 @@ app.controller('volume/slot', [
       true
 
     $scope.selectAll = (event, c) ->
-      ruler.selection = range = c.segment
+      ruler.selection = range = new Segment(c.segment)
       editExcerpt()
       if range && isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
@@ -495,9 +495,11 @@ app.controller('volume/slot', [
         return
 
       save: (vote) ->
-        return if ruler.selection.empty
+        seg = ruler.selection
+        if seg.empty
+          seg = new Segment(ruler.position)
         tag = this
-        slot.setTag(@id, vote, editing, ruler.selection).then (data) ->
+        slot.setTag(@id, vote, editing, seg).then (data) ->
             unless tag instanceof Tag
               tag = $scope.tags.find (t) -> t.id == data.id
               unless tag

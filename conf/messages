@@ -1,5 +1,5 @@
 # --- App
-app.title=Databrary: The Open Data Library for Developmental Science
+app.title=Databrary
 app.update=The Databrary website has been updated.
 app.reload=Please save your work and <a href="" onclick="window.location.reload()">reload</a> your browser tab.
 
