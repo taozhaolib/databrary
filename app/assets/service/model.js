@@ -1145,9 +1145,11 @@ app.factory('modelService', [
         });
     };
 
-    Slot.prototype.setTag = function (tag, vote, keyword) {
+    Slot.prototype.setTag = function (tag, vote, keyword, segment) {
+      if (arguments.length < 4)
+        segment = this.segment;
       var s = this;
-      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote,keyword:!!keyword})
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, segment.format(), {vote:vote,keyword:!!keyword})
         .then(function (res) {
           var tag = res.data;
           s.volume.clear('tags');

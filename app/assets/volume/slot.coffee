@@ -172,6 +172,8 @@ app.controller('volume/slot', [
           new Segment(endPos, startPos)
         else if startPos = endPos
           new Segment(startPos)
+        else
+          Segment.empty
       editExcerpt() if up.type != 'mousemove'
       return
 
@@ -492,9 +494,10 @@ app.controller('volume/slot', [
         @id = name
         return
 
-      vote: (vote) ->
+      save: (vote) ->
+        return if ruler.selection.empty
         tag = this
-        slot.setTag(@id, vote, editing).then (data) ->
+        slot.setTag(@id, vote, editing, ruler.selection).then (data) ->
             unless tag instanceof Tag
               tag = $scope.tags.find (t) -> t.id == data.id
               unless tag
@@ -502,7 +505,7 @@ app.controller('volume/slot', [
                 tag.active = true
                 $scope.tags.push(tag)
             tag.fillData(data)
-            $scope.tags.remove(tag) unless tag.weight
+            $scope.tags.remove(tag) unless (if editing then tag.keyword else tag.weight)
             return
           , (res) ->
             messages.addError
@@ -512,19 +515,22 @@ app.controller('volume/slot', [
             return
 
     $scope.vote = (name, vote) ->
-      new TagName(name).vote(vote)
+      new TagName(name).save(vote)
 
     class Tag extends TagName
       constructor: (t) ->
         @id = t.id
         @active = false
         @fillData(t)
+        return
 
       fillData: (t) ->
         @weight = t.weight
-        @coverage = (Segment.make(s) for s in t.coverage) if t.coverage?.length
-        @vote     = (Segment.make(s) for s in t.vote)     if t.vote?.length
-        @keyword  = (Segment.make(s) for s in t.keyword)  if t.keyword?.length
+        for f in ['coverage','vote','keyword']
+          this[f] = []
+          if t[f]
+            for s in t[f]
+              this[f].push(Segment.make(s))
         return
 
       toggle: ->
@@ -552,7 +558,7 @@ app.controller('volume/slot', [
         []
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
-    $scope.tags = (new Tag(tag) for tag of slot.tags)
+    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     ### jshint ignore:end ###
 
     $scope.playing = 0

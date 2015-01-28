@@ -116,7 +116,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
         case t : Tag => lsql" WHERE tag = ${t.id}"
       }) ++ lsql" AND container = ${slot.containerId} AND segment <@ ${slot.segment}"
       ++ (if (keyword) "" else lsql" AND who = ${slot.site.identity.id}") + " RETURNING tag")
-    .run.singleOpt(Tag.colId(tag))
+    .run.list(Tag.colId(tag)).map(_.headOption)
 }
 
 private[models] object KeywordUse extends Table[Unit]("keyword_use") {
