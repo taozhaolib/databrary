@@ -25,10 +25,10 @@
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'keyword': tag.keyword.length}">
               <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="tag.id"></div>
               <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
-                <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="editing || tag.vote.length" hint="tags-vote-null">
+                <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="tag.state === true" hint="tags-vote-null">
                   -
                 </button>
-                <button class="panel-tag-vote available up" name="vote" ng-click="tag.save(true)" ng-if="!editing" hint="tags-vote-up">
+                <button class="panel-tag-vote available up" name="vote" ng-click="tag.save(true)" ng-if="tag.state === false" hint="tags-vote-up">
                   +
                 </button>
               </div>

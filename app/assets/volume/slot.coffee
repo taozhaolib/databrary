@@ -143,12 +143,12 @@ app.controller('volume/slot', [
 
       blank.fillData() if c == blank
       $scope.playing = 0
-      editExcerpt()
+      finalizeSelection()
       true
 
     $scope.selectAll = (event, c) ->
       ruler.selection = range = new Segment(c.segment)
-      editExcerpt()
+      finalizeSelection()
       if range && isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
       event.stopPropagation()
@@ -174,13 +174,19 @@ app.controller('volume/slot', [
           new Segment(startPos)
         else
           Segment.empty
-      editExcerpt() if up.type != 'mousemove'
+      finalizeSelection() if up.type != 'mousemove'
       return
 
     removed = (track) ->
       return if track.asset || track.file || track == blank
       select() if track == $scope.current
       $scope.tracks.remove(track)
+      return
+
+    finalizeSelection = ->
+      $scope.current.editExcerpt() if $scope.current?.excerpts
+      for t in $scope.tags
+        t.update()
       return
 
     addBlank = () ->
@@ -292,10 +298,6 @@ app.controller('volume/slot', [
           @setAsset(a)
           addBlank()
           return
-
-    editExcerpt = ->
-      $scope.current.editExcerpt() if $scope.current?.excerpts
-      return
 
     $scope.fileAdded = (file) ->
       $flow = file.flowObj
@@ -538,6 +540,17 @@ app.controller('volume/slot', [
       toggle: ->
         @active = !@active
 
+      update: ->
+        state = false
+        sel = ruler.selection
+        for s in (if editing then @keyword else @vote)
+          if sel.contains(s)
+            state = true
+          else if sel.overlaps(s)
+            state = undefined
+            break
+        @state = state
+
     # implicitly initialize from slot.segment
     updateRange(Segment.full)
 
@@ -549,7 +562,6 @@ app.controller('volume/slot', [
     fillExcerpts()
 
     records = slot.records.map((r) -> new Record(r))
-    placeRecords()
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
@@ -564,7 +576,8 @@ app.controller('volume/slot', [
     ### jshint ignore:end ###
 
     $scope.playing = 0
-    editExcerpt()
+    placeRecords()
+    finalizeSelection()
 
     if editing
       done = $scope.$on '$locationChangeStart', (event, url) ->
