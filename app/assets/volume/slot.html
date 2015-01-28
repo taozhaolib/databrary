@@ -191,11 +191,11 @@
             </div>
 
             <div class="player-main-viewport" ng-if="::current.type === 'asset'">
-              <asset-display ng-if="::!editing && current.asset" asset="current.asset"></asset-display>
               <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{::current.asset ? '.replace' : ''}}"></span>
               </div>
+              <asset-display ng-if="!!current.asset" asset="current.asset"></asset-display>
             </div>
           </div>
 
