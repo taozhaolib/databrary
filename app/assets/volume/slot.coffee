@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $location, $sce, $q, constants, display, messages, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'tooltipService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $sce, $q, constants, display, messages, tooltips, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -99,8 +99,9 @@ app.controller('volume/slot', [
     seekPosition = (pos) ->
       if o = positionOffset(pos)
         seekOffset(o)
-        unless ruler.selection.empty || ruler.selection.contains(o) || ruler.selection.u == o # "loose" contains
+        unless ruler.selection.contains(o) || ruler.selection.u == o # "loose" contains
           ruler.selection = Segment.empty
+          finalizeSelection()
       return
 
     $scope.play = ->
@@ -189,6 +190,13 @@ app.controller('volume/slot', [
         t.update()
       return
 
+    getSelection = ->
+      sel = ruler.selection
+      if ruler.selection.empty
+        new Segment(ruler.position)
+      else
+        ruler.selection
+
     addBlank = () ->
       $scope.tracks.push(blank = new Track())
       return
@@ -260,7 +268,7 @@ app.controller('volume/slot', [
 
       editExcerpt: () ->
         @excerpt = undefined
-        seg = ruler.selection
+        seg = getSelection()
         return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg) || !@asset.checkPermission(constants.permission.EDIT)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
@@ -497,9 +505,7 @@ app.controller('volume/slot', [
         return
 
       save: (vote) ->
-        seg = ruler.selection
-        if seg.empty
-          seg = new Segment(ruler.position)
+        seg = getSelection()
         tag = this
         slot.setTag(@id, vote, editing, seg).then (data) ->
             unless tag instanceof Tag
@@ -509,7 +515,11 @@ app.controller('volume/slot', [
                 tag.active = true
                 $scope.tags.push(tag)
             tag.fillData(data)
-            $scope.tags.remove(tag) unless (if editing then tag.keyword else tag.weight)
+            if (if editing then tag.keyword else tag.weight)
+              tag.update()
+              tooltips.clear() # hack for broken tooltips
+            else
+              $scope.tags.remove(tag)
             return
           , (res) ->
             messages.addError
@@ -542,7 +552,7 @@ app.controller('volume/slot', [
 
       update: ->
         state = false
-        sel = ruler.selection
+        sel = getSelection()
         for s in (if editing then @keyword else @vote)
           if sel.contains(s)
             state = true
@@ -555,6 +565,7 @@ app.controller('volume/slot', [
     updateRange(Segment.full)
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
+    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     ### jshint ignore:end ###
     addBlank() if editing
@@ -570,10 +581,6 @@ app.controller('volume/slot', [
         [new Consent(consents)]
       else
         []
-
-    ### jshint ignore:start #### fixed in jshint 2.5.7
-    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
-    ### jshint ignore:end ###
 
     $scope.playing = 0
     placeRecords()
