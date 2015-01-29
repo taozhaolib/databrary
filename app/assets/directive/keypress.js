@@ -21,8 +21,8 @@ angular.forEach(keys, function (key, name) {
               (event.keyIdentifier == name) ||
               (event.keyCode == key) ||
               (event.which == key))
-              $scope.$apply(function () {
-                action($scope, {$event:event});
+              return $scope.$apply(function () {
+                return action($scope, {$event:event});
               });
           });
         };

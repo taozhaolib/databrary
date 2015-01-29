@@ -825,7 +825,7 @@ app.directive 'spreadsheet', [
           tooltips.clear()
           $timeout ->
             input = e.find('[name=edit]')
-            input.filter('input,textarea').focus()
+            input.filter('input,textarea').select()
             input.filter('select').one('change', $scope.$lift(editScope.unedit))
             return
           return
@@ -869,7 +869,7 @@ app.directive 'spreadsheet', [
 
         editScope.unedit = ($event) ->
           unedit($event)
-          return
+          false
 
         editCompletions = (input) ->
           i = input.toLowerCase()
@@ -898,7 +898,7 @@ app.directive 'spreadsheet', [
             return unless cell && cell.tagName == 'TD' && info = parseId(cell)
             break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
           select(cell, info)
-          return
+          false
 
         $scope.clickAdd = ($event) ->
           unselect()
