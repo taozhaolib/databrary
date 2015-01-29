@@ -7,6 +7,7 @@ module Databrary.Web.Cookie
 import qualified Blaze.ByteString.Builder as Blaze
 import Control.Applicative ((<$>))
 import qualified Data.ByteString as BS
+import Network.HTTP.Types (hCookie)
 import qualified Network.Wai as Wai
 import qualified Web.Cookie as Cook
 
@@ -18,7 +19,7 @@ import Databrary.Action.Request
 import Databrary.Action.Response
 
 getCookies :: RequestM c m => m Cook.Cookies
-getCookies = maybe [] Cook.parseCookies <$> getRequestHeader "cookie"
+getCookies = maybe [] Cook.parseCookies <$> getRequestHeader hCookie
 
 getSignedCookie :: (ResourceM c m, RequestM c m) => BS.ByteString -> m (Maybe BS.ByteString)
 getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< getCookies

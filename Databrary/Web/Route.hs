@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving, OverloadedStrings #-}
 module Databrary.Web.Route
   ( RouteM
 
@@ -12,6 +12,7 @@ module Databrary.Web.Route
   , read
   , reader
   , Routable(..)
+  , query
 
   , routeRequest
   ) where
@@ -21,31 +22,32 @@ import Prelude hiding (read, maybe)
 import Control.Applicative (Applicative, Alternative, (<$))
 import Control.Monad (MonadPlus, mzero, mfilter)
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Reader (MonadReader, ReaderT(..), ask)
+import Control.Monad.Reader (MonadReader, ReaderT(..), asks)
 import Control.Monad.State (MonadState, StateT(..))
+import qualified Data.ByteString as BS
 import Data.Maybe (maybe, fromMaybe)
 import Data.String (IsString(..))
-import Data.Text (Text, unpack)
+import qualified Data.Text as T
 import qualified Data.Text.Read as Text
 import Network.HTTP.Types (Method, StdMethod(..), renderStdMethod)
-import Network.Wai (Request, pathInfo, requestMethod)
+import qualified Network.Wai as Wai
 import Text.Read (readMaybe)
 
-newtype RouteM a = RouteM { runRoute :: ReaderT Method (StateT [Text] Maybe) a }
-  deriving (Functor, Monad, MonadPlus, Applicative, Alternative, MonadReader Method, MonadState [Text])
+newtype RouteM a = RouteM { runRoute :: ReaderT Wai.Request (StateT [T.Text] Maybe) a }
+  deriving (Functor, Monad, MonadPlus, Applicative, Alternative, MonadReader Wai.Request, MonadState [T.Text])
 
 method :: RouteM Method
-method = ask
+method = asks Wai.requestMethod
 
 on :: StdMethod -> RouteM Method
 on s = mfilter (renderStdMethod s ==) method
 
-text :: RouteM Text
+text :: RouteM T.Text
 text = RouteM $ lift $ StateT f where
   f (p:l) = Just (p, l)
   f [] = Nothing
 
-fixed :: Text -> RouteM Text
+fixed :: T.Text -> RouteM T.Text
 fixed p = mfilter (p ==) text
 
 instance IsString (RouteM a) where
@@ -54,20 +56,23 @@ instance IsString (RouteM a) where
 switch :: Eq a => [(a, RouteM b)] -> a -> RouteM b
 switch l x = fromMaybe mzero $ lookup x l
 
-path :: RouteM [Text]
+path :: RouteM [T.Text]
 path = RouteM $ lift $ StateT $ \p -> Just (p, [])
 
 read :: Read a => RouteM a
-read = maybe mzero return . readMaybe . unpack =<< text
+read = maybe mzero return . readMaybe . T.unpack =<< text
 
 reader :: Text.Reader a -> RouteM a
 reader r = either (const mzero) (return . fst) . r =<< text
 
 class Routable a where
   route :: RouteM a
-  toRoute :: a -> [Text]
+  toRoute :: a -> [T.Text]
 
-routeRequest :: RouteM a -> Request -> Maybe a
-routeRequest r q = case runStateT (runReaderT (runRoute r) (requestMethod q)) (pathInfo q) of
+query :: BS.ByteString -> RouteM BS.ByteString
+query k = maybe mzero (return . fromMaybe "") . lookup k =<< asks Wai.queryString
+
+routeRequest :: RouteM a -> Wai.Request -> Maybe a
+routeRequest r q = case runStateT (runReaderT (runRoute r) q) (Wai.pathInfo q) of
   Just (a, []) -> Just a
   _ -> Nothing

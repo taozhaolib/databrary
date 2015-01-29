@@ -1,4 +1,4 @@
-{-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies #-}
+{-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies, RankNTypes #-}
 module Databrary.Action.Route
   ( RouteAction
   , actionMethod
@@ -10,8 +10,8 @@ module Databrary.Action.Route
 
 import qualified Blaze.ByteString.Builder as Blaze
 import qualified Data.ByteString as BS
+import Data.Functor.Contravariant (Contravariant(..))
 import qualified Data.Text as T
-import Data.Time (getCurrentTime)
 import Network.HTTP.Types (Method, StdMethod, renderStdMethod, encodePathSegments)
 import qualified Network.Wai as Wai
 
@@ -35,8 +35,11 @@ action meth path act = RouteAction
   , routeAction = act
   }
 
-withRouteAction :: (q -> q') -> RouteAction q' -> RouteAction q
-withRouteAction f (RouteAction m r a) = RouteAction m r $ withAction f a
+mapRouteAction :: (forall r . Response r => Action q r -> Action q' r) -> RouteAction q -> RouteAction q'
+mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
+
+instance Contravariant RouteAction where
+  contramap f = mapRouteAction (withAction f)
 
 routeWai :: RouteM (RouteAction Wai.Request) -> Wai.Application
 routeWai route request send = 
@@ -46,5 +49,4 @@ routeWai route request send =
 
 routeApp :: Resource -> RouteM (RouteAction AppRequest) -> Wai.Application
 routeApp rc route request send = do
-  ts <- getCurrentTime
-  routeWai (fmap (withRouteAction (\rq -> AppRequest rc rq ts)) route) request send
+  routeWai (fmap (mapRouteAction (runApp rc)) route) request send

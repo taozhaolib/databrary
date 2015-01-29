@@ -35,7 +35,7 @@ import Data.Monoid (Monoid, mempty, mappend)
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Data.Typeable (Typeable)
-import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404)
+import Network.HTTP.Types (ResponseHeaders, HeaderName, Status, notFound404, hContentType)
 import qualified Network.Wai as Wai
 import qualified Text.Blaze.Html as Html
 import qualified Text.Blaze.Html.Renderer.Utf8 as Html
@@ -101,13 +101,13 @@ notFoundResult = return notFound404
 
 jsonResult :: Monad m => JSON.Value -> Status -> BResult q m
 jsonResult j s = do
-  responseHeader "content-type" "text/json"
+  responseHeader hContentType "text/json;charset=utf-8"
   respond $ JSON.encodeToByteStringBuilder j
   return s
 
 htmlResult :: Monad m => Html.Html -> Status -> BResult q m
 htmlResult h s = do
-  responseHeader "content-type" "text/html"
+  responseHeader hContentType "text/html;charset=utf-8"
   respond $ Html.renderHtmlBuilder h
   return s
 

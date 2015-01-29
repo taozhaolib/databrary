@@ -12,7 +12,7 @@ import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.ByteString as BS
 import Data.IORef (newIORef, readIORef, writeIORef)
 import Data.Word (Word64)
-import Network.HTTP.Types (requestEntityTooLarge413)
+import Network.HTTP.Types (requestEntityTooLarge413, hContentType)
 import Network.Wai
 import Network.Wai.Parse
 
@@ -101,7 +101,7 @@ parseJSONContent = maybe ContentUnknown ContentJSON . AP.maybeResult
 
 parseRequestContent :: (MonadIO m, RequestM c m) => m Content
 parseRequestContent = do
-  ct <- getRequestHeader "content-type"
+  ct <- getRequestHeader hContentType
   case fmap parseContentType ct of
     Just ("application/x-www-form-urlencoded", _) ->
       parseFormContent UrlEncoded

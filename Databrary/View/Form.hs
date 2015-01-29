@@ -5,7 +5,6 @@ module Databrary.View.Form
   , renderForm
   ) where
 
-import Control.Monad (forM_, when)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
@@ -44,8 +43,15 @@ inputPassword ref view = H.input
 errorList :: [H.Html] -> H.Html
 errorList [] = mempty
 errorList errs =
-  H.ul H.! HA.class_ "error-list" $ forM_ errs $
-    H.li H.! HA.class_ "error"
+  H.ul H.! HA.class_ "error-list" $ mapM_
+    (H.li H.! HA.class_ "error") errs
+
+errorLists :: [(T.Text, H.Html)] -> H.Html
+errorLists [] = mempty
+errorLists errs =
+  H.dl H.! HA.class_ "error-list" $ mapM_ (\(n,e) -> do
+    H.dt $ H.toHtml n
+    H.dd H.! HA.class_ "error" $ e) errs
 
 renderForm :: AppRAction -> [(T.Text, T.Text -> F.View H.Html -> H.Html)] -> F.View H.Html -> H.Html
 renderForm act inputs form = H.form
@@ -60,10 +66,9 @@ renderForm act inputs form = H.form
       inputs
     H.input
       H.! HA.type_ "submit"
-    H.dl H.! HA.class_ "error-list" $ mapM_ (\(p,e) ->
-      let f = F.fromPath p in
-      when (f `notElem` names) $ do
-        H.dt $ H.toHtml f
-        H.dd H.! HA.class_ "error" $ e)
-      $ F.viewErrors form
+    errorLists [ (n, e) 
+      | (p, e) <- F.viewErrors form
+      , let n = F.fromPath p
+      , n `notElem` names
+      ]
   where names = map fst inputs

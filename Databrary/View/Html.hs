@@ -1,6 +1,7 @@
 module Databrary.View.Html
   ( lazyByteStringValue
   , byteStringValue
+  , builderValue
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
@@ -15,3 +16,6 @@ lazyByteStringValue = Markup.unsafeLazyByteStringValue . Blaze.toLazyByteString 
 
 byteStringValue :: BS.ByteString -> Markup.AttributeValue
 byteStringValue = Markup.unsafeByteStringValue . Blaze.toByteString . fromHtmlEscapedByteString
+
+builderValue :: Blaze.Builder -> Markup.AttributeValue
+builderValue = lazyByteStringValue . Blaze.toLazyByteString

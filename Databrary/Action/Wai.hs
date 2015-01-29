@@ -1,6 +1,6 @@
 module Databrary.Action.Wai
   ( WaiM
-  , Wai
+  , WaiAction
   , runWai
   ) where
 
@@ -11,9 +11,9 @@ import Databrary.Action.Types
 import Databrary.Action.Response
 
 type WaiM r = ActionM Wai.Request r
-type Wai r = Action Wai.Request r
+type WaiAction r = Action Wai.Request r
 
-runWai :: Response r => Wai r -> Wai.Application
+runWai :: Response r => WaiAction r -> Wai.Application
 runWai wai request send =
   send =<< catch
     (runAction wai request)
