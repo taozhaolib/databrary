@@ -11,12 +11,12 @@
 .panel-tags-item
   font-line 1 1.25
   height b1 + b4
-  display inline-block
+  display inline-flex
   margin-right f2
+  margin-bottom b3
   border-radius b1
   border 1px solid pale
   padding-width f3
-  margin-bottom f2
 
   &:before
     display none
@@ -102,12 +102,15 @@
     &:focus
       outline 0
 
-.panel-tags-form
-  max-width 10
-
 .panel-tags-new-form
   position relative
+  width 10
 
   input
     z-index 100
     position relative
+    width 6
+    border none
+    box-shadow none
+    background none
+    margin 0

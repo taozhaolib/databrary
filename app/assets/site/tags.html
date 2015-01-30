@@ -12,10 +12,9 @@
           </button>
         </div>
       </li>
+      <li class="panel-tags-item" ng-if="::target">
+        <tag-add></tag-add>
+      </li>
     </ul>
   </ng-form>
-</div>
-
-<div id="tag-add" class="panel-tags-form" ng-if="::target">
-  <tag-add></tag-add>
 </div>
