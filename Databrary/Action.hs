@@ -1,30 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Action
   ( Request
-  , RequestM
-
-  , ActionM
   , Action
-  , AppBAction
-  , AuthBAction
-  , BResult
-
+  , ActionM
   , getRequestHeader
-  , responseHeader
-  , respond
-  , notFoundResult
-  , jsonResult
-  , htmlResult
-  , ResultM
-  , BResultM
-  , resultWith
+  , AppAction
+  , AuthAction
 
-  , bAction
+  , Response
+  , returnResponse
+  , notFoundResponse
+  , okResponse
+  , result
+
   , StdMethod(GET, POST)
   , toRoute
   , apiRoute
   , AppRAction
   , AuthRAction
+  , action
   , actionMethod
   , actionRoute
   ) where
@@ -38,9 +32,7 @@ import Databrary.Action.Response
 import Databrary.Action.App
 import Databrary.Action.Auth
 import Databrary.Action.Route
-
-bAction :: StdMethod -> [T.Text] -> BAction q -> RouteAction q
-bAction = action
+import Databrary.Web.Route (toRoute)
 
 apiRoute :: Bool -> [T.Text] -> [T.Text]
 apiRoute False = id

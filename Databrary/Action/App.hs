@@ -1,9 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.App 
   ( AppRequest(..)
-  , AppM
   , AppAction
-  , AppBAction
   , runApp
   ) where
 
@@ -11,12 +9,11 @@ import Control.Monad.IO.Class (liftIO)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
-import Control.Has
+import Control.Has (makeHasFor, peek)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Types.Time
 import Databrary.Action.Types
-import Databrary.Action.Wai
 import Databrary.Action.Request
 import Databrary.Action.Response
 
@@ -32,12 +29,14 @@ makeHasFor ''AppRequest
   , ('appRequest, [])
   ]
 
-type AppM r = ActionM AppRequest r
-type AppAction r = Action AppRequest r
-type AppBAction = BAction AppRequest
+type AppAction = Action AppRequest
 
-runApp :: Response r => Resource -> AppAction r -> WaiAction r
+runApp :: Resource -> AppAction -> WaiAction
 runApp rc act = do
   ts <- liftIO getCurrentTime
-  responseHeader hDate $ httpTimestamp ts
   withAction (AppRequest rc ts) act
+
+instance ActionData AppRequest where
+  returnResponse s h r = do
+    ts <- peek
+    return $ response s ((hDate, httpTimestamp ts) : h) r

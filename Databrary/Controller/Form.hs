@@ -14,7 +14,7 @@ import qualified Text.Blaze.Html5 as Html
 import qualified Text.Digestive as Form
 import qualified Text.Regex.Posix as Regex
 
-import Databrary.Action.Response
+import Databrary.Action
 
 putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
 putJson JSON.Null [] v = JSON.String v
@@ -28,15 +28,15 @@ putJson o (h:p) v = JSON.Object $ HM.fromList [("", o), (h, putJson JSON.Null p 
 jsonFormErrors :: Form.View T.Text -> JSON.Value
 jsonFormErrors = foldl' (uncurry . putJson) JSON.Null . Form.viewErrors
 
-
-displayForm :: Monad m => Bool -> (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> BResult q m
+displayForm :: ActionM c m => Bool -> (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> m Response
 displayForm api view form =
-  (if api
-    then jsonResult . jsonFormErrors
-    else htmlResult . view . fmap Html.toHtml)
-    form
-    $ if null $ Form.viewErrors form
-      then ok200 else badRequest400
+  if api
+    then returnResponse s h $ jsonFormErrors form
+    else returnResponse s h $ view $ fmap Html.toHtml form
+  where
+  s = if null $ Form.viewErrors form
+    then ok200 else badRequest400
+  h = []
 
 
 emailRegex :: Regex.Regex

@@ -50,7 +50,7 @@ Executable databrary
     regex-posix,
     bcrypt
 
-  Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances
+  Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ConstraintKinds
 
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind

@@ -4,21 +4,24 @@ module Databrary.Routes
   ) where
 
 import Control.Applicative ((<$), (<|>))
-import Control.Monad (msum)
-import Network.HTTP.Types (methodGet, methodPost)
+import Control.Monad (msum, mfilter)
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
+import Databrary.Action.Route
 import Databrary.Controller.Login
 import Databrary.Controller.Party
 
-routes :: R.RouteM AppRAction
+act :: RouteAction q -> R.RouteM (Action q)
+act ra = do
+  _ <- mfilter (actionMethod ra ==) R.method
+  return $ routeAction ra
+
+routes :: R.RouteM AppAction
 routes = do
   api <- True <$ R.fixed "api" <|> return False
   msum 
-    [ "login" >> R.method >>= R.switch
-      [ (methodGet,  return $ viewLogin api)
-      , (methodPost, return $ postLogin api)
-      ]
-    , R.route >>= \party -> R.on GET >> return (getParty api party)
+    [ "login" >> act (viewLogin api) 
+             <|> act (postLogin api)
+    , R.route >>= \party -> act (getParty api party)
     ]

@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds, TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
   ( module Databrary.Model.Types.Token
   , lookupSession

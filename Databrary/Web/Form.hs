@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Form 
   ( runForm
   , formAddError
@@ -32,7 +32,7 @@ lookupJson (h:p) v = lookupJson p =<< idx v where
   tr (Right (x, "")) = Just x
   tr _ = Nothing
 
-postForm :: (MonadIO m, RequestM c m) => T.Text -> Form.Form v m a -> m (Form.View v, Maybe a)
+postForm :: (MonadIO m, ActionM c m) => T.Text -> Form.Form v m a -> m (Form.View v, Maybe a)
 postForm name form = do
   q <- peeks $ map (second $ fromMaybe "") . Wai.queryString
   c <- parseRequestContent
@@ -51,9 +51,9 @@ postForm name form = do
 formAddError :: Form.Path -> v -> Form.View v -> Form.View v
 formAddError p e v = v{ Form.viewErrors = (p, e) : Form.viewErrors v }
 
-runForm :: (MonadIO m, RequestM c m) => T.Text -> (Form.View T.Text -> BResultM) -> Form.Form T.Text m a -> m (a, Form.View T.Text)
+runForm :: (MonadIO m, ActionM c m) => T.Text -> (Form.View T.Text -> m Response) -> Form.Form T.Text m a -> m (a, Form.View T.Text)
 runForm name bad form = do
   (v, f) <- postForm name form
   case f of
-    Nothing -> resultWith $ bad v
+    Nothing -> result =<< bad v
     Just x -> return (x, v)

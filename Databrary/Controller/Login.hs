@@ -4,14 +4,15 @@ module Databrary.Controller.Login
   , viewLogin
   ) where
 
+import qualified Blaze.ByteString.Builder as Blaze
 import Control.Applicative ((<$>), (<*>))
 import Control.Monad (when, unless)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe, fromJust)
+import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import Network.HTTP.Types (ok200)
 import qualified Text.Digestive as Form
 
 import Control.Has (see)
@@ -25,12 +26,12 @@ import Databrary.Model.Token
 import Databrary.View.Form
 import Databrary.Controller.Form
 
-loginAccount :: PartyAuth -> Bool -> AppBAction
+loginAccount :: PartyAuth -> Bool -> AppAction
 loginAccount auth su = do
   sess <- createSession auth su
   let Token tok ex = see sess
-  setSignedCookie "session" tok ex
-  return ok200
+  cook <- setSignedCookie "session" tok ex
+  okResponse [cook] (mempty :: Blaze.Builder)
 
 data LoginForm = LoginForm
   { _loginEmail :: T.Text
@@ -44,7 +45,7 @@ loginForm = LoginForm
   <*> "password"  Form..: Form.text Nothing
   <*> "superuser" Form..: Form.bool (Just False)
 
-displayLogin :: Monad m => Bool -> Form.View T.Text -> BResult q m
+displayLogin :: ActionM c m => Bool -> Form.View T.Text -> m Response
 displayLogin api = displayForm api $
   renderForm (postLogin api)
     [ ("email", inputText)
@@ -52,12 +53,12 @@ displayLogin api = displayForm api $
     ]
 
 viewLogin :: Bool -> AppRAction
-viewLogin api = bAction GET (apiRoute api ["login"]) $ do
+viewLogin api = action GET (apiRoute api ["login"]) $ do
   form <- Form.getForm "login" loginForm
   displayLogin api form
 
 postLogin :: Bool -> AppRAction
-postLogin api = bAction POST (apiRoute api ["login"]) $ do
+postLogin api = action POST (apiRoute api ["login"]) $ do
   (LoginForm email password superuser, form) <- runForm "login" disp loginForm
   auth <- lookupPartyAuthByEmail email
   let p = fmap see auth
@@ -67,7 +68,7 @@ postLogin api = bAction POST (apiRoute api ["login"]) $ do
   let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 password)) (accountPasswd =<< a)
       block = attempts > 4
   auditAccountLogin pass (fromMaybe nobodyParty p) email
-  when block $ resultWith $ disp $ formAddError ["email"] "Too many login attempts. Try again later." form
-  unless pass $ resultWith $ disp $ formAddError ["password"] "Incorrect login." form
+  when block $ result =<< disp (formAddError ["email"] "Too many login attempts. Try again later." form)
+  unless pass $ result =<< disp (formAddError ["password"] "Incorrect login." form)
   loginAccount (fromJust auth) su
   where disp = displayLogin api

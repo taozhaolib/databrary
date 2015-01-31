@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Resource
   ( Resource(..)
   , ResourceM

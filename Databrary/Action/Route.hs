@@ -1,52 +1,40 @@
 {-# LANGUAGE ExistentialQuantification, DefaultSignatures, TypeFamilies, RankNTypes #-}
 module Databrary.Action.Route
-  ( RouteAction
-  , actionMethod
-  , actionRoute
+  ( RouteAction(..)
   , action
-  , toRoute
-  , routeApp
+  , runRoute
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
 import qualified Data.ByteString as BS
 import Data.Functor.Contravariant (Contravariant(..))
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Network.HTTP.Types (Method, StdMethod, renderStdMethod, encodePathSegments)
-import qualified Network.Wai as Wai
 
-import Databrary.Web.Route (RouteM, routeRequest, toRoute)
+import Control.Has (peek)
+import qualified Databrary.Web.Route as R
 import Databrary.Action.Types
-import Databrary.Action.Wai
-import Databrary.Action.App
-import Databrary.Action.Response
-import Databrary.Resource
 
-data RouteAction q = forall r . Response r => RouteAction 
+data RouteAction q = RouteAction 
   { actionMethod :: Method
   , actionRoute :: BS.ByteString
-  , routeAction :: Action q r
+  , routeAction :: Action q
   }
 
-action :: Response r => StdMethod -> [T.Text] -> Action q r -> RouteAction q
+action :: StdMethod -> [T.Text] -> Action q -> RouteAction q
 action meth path act = RouteAction
   { actionMethod = renderStdMethod meth
   , actionRoute = Blaze.toByteString $ encodePathSegments path
   , routeAction = act
   }
 
-mapRouteAction :: (forall r . Response r => Action q r -> Action q' r) -> RouteAction q -> RouteAction q'
+mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
 
 instance Contravariant RouteAction where
   contramap f = mapRouteAction (withAction f)
 
-routeWai :: RouteM (RouteAction Wai.Request) -> Wai.Application
-routeWai route request send = 
-  case routeRequest route request of
-    Just (RouteAction _ _ w) -> runWai w request send
-    Nothing -> runWai notFoundResult request send
-
-routeApp :: Resource -> RouteM (RouteAction AppRequest) -> Wai.Application
-routeApp rc route request send = do
-  routeWai (fmap (mapRouteAction (runApp rc)) route) request send
+runRoute :: ActionData q => R.RouteM (Action q) -> Action q
+runRoute route =
+  fromMaybe notFoundResponse . R.routeRequest route =<< peek

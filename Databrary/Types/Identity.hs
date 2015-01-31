@@ -1,4 +1,4 @@
-{-# LANGUAGE ConstraintKinds, TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Types.Identity
   ( Identity(..)
   , identityId

@@ -1,4 +1,4 @@
-{-# LANGUAGE DefaultSignatures, ConstraintKinds, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE DefaultSignatures, GeneralizedNewtypeDeriving #-}
 module Databrary.DB
   ( DBM
   , dbRunQuery

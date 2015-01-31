@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts, ConstraintKinds #-}
 module Databrary.Entropy
   ( EntropyM
   , entropyBytes

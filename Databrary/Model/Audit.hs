@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes, ConstraintKinds #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Audit
   ( module Databrary.Model.Types.Audit
   , getRemoteIp

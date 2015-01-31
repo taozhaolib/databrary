@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleContexts, ConstraintKinds, OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Action.Request
   ( RequestM
   , Request

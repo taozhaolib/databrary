@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Permission 
   ( module Databrary.Model.Types.Permission

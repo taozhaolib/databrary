@@ -6,7 +6,9 @@ module Databrary.Identity
 
 import Databrary.Model.Authorize
 import Databrary.Model.Token
-import Databrary.Action.App
+import Databrary.Action.Request
+import Databrary.Resource
+import Databrary.DB
 import Databrary.Web.Cookie
 import Databrary.Types.Identity
 
@@ -22,7 +24,7 @@ makeIdentity tok = Identity
   , identitySuperuser = sessionSuperuser tok
   }
 
-getIdentity :: AppM r Identity
+getIdentity :: (ResourceM c m, RequestM c m, DBM m) => m Identity
 getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c

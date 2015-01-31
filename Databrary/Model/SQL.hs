@@ -34,8 +34,8 @@ instance IsString SelectOutput where
 selectColumn :: String -> String -> SelectOutput
 selectColumn t c = OutputExpr $ t ++ '.' : c
 
-outputTuple :: [SelectOutput] -> SelectOutput
-outputTuple l = OutputJoin False (TH.tupleDataName $ length l) l
+_outputTuple :: [SelectOutput] -> SelectOutput
+_outputTuple l = OutputJoin False (TH.tupleDataName $ length l) l
 
 outputMaybe :: SelectOutput -> SelectOutput
 outputMaybe (OutputJoin False f l) = OutputJoin True f l

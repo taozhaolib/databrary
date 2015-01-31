@@ -1,9 +1,10 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings, PatternGuards #-}
 module Databrary.Web.Parse
   ( Content(..)
   , parseRequestContent
   ) where
 
+import qualified Blaze.ByteString.Builder as Blaze
 import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
@@ -11,17 +12,18 @@ import qualified Data.Aeson as JSON
 import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.ByteString as BS
 import Data.IORef (newIORef, readIORef, writeIORef)
+import Data.Monoid (mempty)
 import Data.Word (Word64)
 import Network.HTTP.Types (requestEntityTooLarge413, hContentType)
 import Network.Wai
 import Network.Wai.Parse
 
 import Control.Has (peek, peeks)
-import Databrary.Action.Request
-import Databrary.Action.Response
+import Databrary.Action
+import Databrary.Action.Response (response)
 
-requestTooLarge :: Monad m => BResult q m
-requestTooLarge = return requestEntityTooLarge413
+requestTooLarge :: Response
+requestTooLarge = response requestEntityTooLarge413 [] (mempty :: Blaze.Builder)
 
 type ChunkParser a = IO BS.ByteString -> IO a
 
@@ -43,7 +45,7 @@ limitChunks lim parse next = do
     n <- readIORef len
     b <- next
     let n' = n + fromIntegral (BS.length b)
-    when (n' > lim) $ resultWith requestTooLarge
+    when (n' > lim) $ result requestTooLarge
     writeIORef len n'
     return b
 
@@ -70,14 +72,14 @@ _parserBackEnd :: AP.Parser a -> BackEnd (AP.Result a)
 _parserBackEnd parser _ _ = parserChunks parser
 
 
-_parseRequestChunks :: (MonadIO m, RequestM c m) => ChunkParser a -> m a
+_parseRequestChunks :: (MonadIO m, ActionM c m) => ChunkParser a -> m a
 _parseRequestChunks p = liftIO . p =<< peeks requestBody
 
-limitRequestChunks :: (MonadIO m, RequestM c m) => Word64 -> ChunkParser a -> m a
+limitRequestChunks :: (MonadIO m, ActionM c m) => Word64 -> ChunkParser a -> m a
 limitRequestChunks lim p = do
   rq <- peek
   liftIO $ case requestBodyLength rq of
-    KnownLength l | l > lim -> resultWith requestTooLarge
+    KnownLength l | l > lim -> result requestTooLarge
     _ -> limitChunks lim p $ requestBody rq
 
 data Content
@@ -91,15 +93,15 @@ data Content
 maxTextSize :: Word64
 maxTextSize = 1024*1024
 
-parseFormContent :: (MonadIO m, RequestM c m) => RequestBodyType -> m Content
+parseFormContent :: (MonadIO m, ActionM c m) => RequestBodyType -> m Content
 parseFormContent t = uncurry ContentForm
   <$> limitRequestChunks maxTextSize (sinkRequestBody nullBackEnd t)
 
-parseJSONContent :: (MonadIO m, RequestM c m) => m Content
+parseJSONContent :: (MonadIO m, ActionM c m) => m Content
 parseJSONContent = maybe ContentUnknown ContentJSON . AP.maybeResult
   <$> limitRequestChunks maxTextSize (parserChunks JSON.json)
 
-parseRequestContent :: (MonadIO m, RequestM c m) => m Content
+parseRequestContent :: (MonadIO m, ActionM c m) => m Content
 parseRequestContent = do
   ct <- getRequestHeader hContentType
   case fmap parseContentType ct of

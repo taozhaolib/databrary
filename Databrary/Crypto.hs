@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, FlexibleContexts, ConstraintKinds #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Crypto
   ( sign
   , unSign

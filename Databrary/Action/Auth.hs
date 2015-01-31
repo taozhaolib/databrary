@@ -1,13 +1,12 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
-  , AuthM
   , AuthAction
-  , AuthBAction
-  , appAuth
+  , AuthM
+  , runAuth
   ) where
 
-import Control.Has (makeHasFor)
+import Control.Has (HasM, makeHasFor)
 import Databrary.Action.Types
 import Databrary.Action.Request
 import Databrary.Action.App
@@ -27,11 +26,11 @@ makeHasFor ''AuthRequest
   , ('authIdentity, [''PartyAuth, ''Authorization, ''Party, ''Access])
   ]
 
-type AuthM r = ActionM AuthRequest r
-type AuthAction r = Action AuthRequest r
-type AuthBAction = BAction AuthRequest
+type AuthAction = Action AuthRequest
 
-appAuth :: AuthM r a -> AppM r a
-appAuth f = do
+type AuthM c m = HasM AuthRequest c m
+
+runAuth :: AuthAction -> AppAction
+runAuth f = do
   i <- getIdentity
   withAction (\a -> AuthRequest a i) f

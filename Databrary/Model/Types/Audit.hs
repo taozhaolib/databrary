@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving, ConstraintKinds #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Types.Audit
   ( AuditAction(..)
