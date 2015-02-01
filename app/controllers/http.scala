@@ -8,7 +8,7 @@ import dbrary._
 import site._
 
 object HTTP extends HeaderNames {
-  def quote(s : String) = '"' + s.replaceAll("([\\p{Cntrl}\"\\\\])", "\\\\$2") + '"'
+  def quote(s : String) = '"' + s.replaceAll("""([\p{Cntrl}"\\])""", "\\\\$1") + '"'
   def unquote(s : String) =
     if (s.length >= 2 && s.head == '"' && s.last == '"')
       s.tail.init.replaceAll("\\\\(.)", "$1")
