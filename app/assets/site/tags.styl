@@ -17,12 +17,12 @@
   border-radius b1
   border 1px solid pale
   padding-width f3
+  
+  &.active
+    background-color blue51
 
   &:before
     display none
-
-  &.keyword
-    background yellow51
 
   .panel-tag-weight
     position relative
@@ -114,3 +114,6 @@
     box-shadow none
     background none
     margin 0
+
+.keyword::before
+  content "*"
