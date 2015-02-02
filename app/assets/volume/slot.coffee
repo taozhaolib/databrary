@@ -538,6 +538,8 @@ app.controller('volume/slot', [
         @fillData(t)
         return
 
+      type: 'tag'
+
       fillData: (t) ->
         @weight = t.weight
         for f in (if editing then ['keyword'] else ['coverage','vote','keyword'])
