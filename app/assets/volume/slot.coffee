@@ -540,7 +540,7 @@ app.controller('volume/slot', [
 
       fillData: (t) ->
         @weight = t.weight
-        for f in ['coverage','vote','keyword']
+        for f in (if editing then ['keyword'] else ['coverage','vote','keyword'])
           this[f] = []
           if t[f]
             for s in t[f]
