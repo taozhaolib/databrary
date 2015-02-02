@@ -375,7 +375,7 @@ object AssetApi extends AssetController with ApiController {
         Iteratee.foreach[Array[Byte]](f.write(_))
         .map[Result] { _ =>
           f.close
-          Ok
+          NoContent
         }
         .recover[Result] { case e : Throwable =>
           f.close
