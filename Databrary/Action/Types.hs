@@ -5,16 +5,12 @@ module Databrary.Action.Types
   , ActionM
   , WaiAction
   , runWai
-  , notFoundResponse
-  , okResponse
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import Control.Exception (catch)
 import Control.Monad (liftM)
-import Data.Monoid (mempty)
 import Control.Monad.Reader (ReaderT, runReaderT, withReaderT)
-import Network.HTTP.Types (ResponseHeaders, Status, ok200, notFound404)
+import Network.HTTP.Types (ResponseHeaders, Status)
 import qualified Network.Wai as Wai
 
 import Control.Has (Has, HasM, peek)
@@ -43,10 +39,3 @@ runWai wai request send =
 
 instance ActionData Request where
   returnResponse s h = return . response s h
-
-
-notFoundResponse :: ActionM q m => m Response
-notFoundResponse = returnResponse notFound404 [] (mempty :: Blaze.Builder)
-
-okResponse :: (ActionM q m, ResponseData r) => ResponseHeaders -> r -> m Response
-okResponse = returnResponse ok200

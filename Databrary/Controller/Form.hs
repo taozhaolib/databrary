@@ -4,7 +4,7 @@ module Databrary.Controller.Form
   , emailTextForm
   ) where
 
-import qualified Data.Aeson as JSON
+import qualified Data.Aeson.Types as JSON
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
 import qualified Data.Text as T
@@ -26,7 +26,7 @@ putJson JSON.Null (h:p) v = JSON.Object $ HM.singleton h (putJson JSON.Null p v)
 putJson o (h:p) v = JSON.Object $ HM.fromList [("", o), (h, putJson JSON.Null p v)]
 
 jsonFormErrors :: Form.View T.Text -> JSON.Value
-jsonFormErrors = foldl' (uncurry . putJson) JSON.Null . Form.viewErrors
+jsonFormErrors = foldl' (uncurry . putJson) JSON.emptyObject . Form.viewErrors
 
 displayForm :: ActionM c m => Bool -> (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> m Response
 displayForm api view form =

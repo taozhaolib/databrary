@@ -39,4 +39,4 @@ runApp rc act = do
 instance ActionData AppRequest where
   returnResponse s h r = do
     ts <- peek
-    return $ response s ((hDate, httpTimestamp ts) : h) r
+    return $ response s ((hDate, formatHTTPTimestamp ts) : h) r

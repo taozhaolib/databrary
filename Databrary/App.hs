@@ -5,10 +5,8 @@ module Databrary.App
 import Network.Wai (Application)
 
 import Databrary.Resource
-import Databrary.Action.Types
-import Databrary.Action.App
-import Databrary.Action.Route
+import Databrary.Action
 import Databrary.Routes
 
 application :: Resource -> Application
-application rc = runWai $ runApp rc $ runRoute routes
+application = runAppRoute routes

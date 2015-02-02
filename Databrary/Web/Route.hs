@@ -2,9 +2,8 @@
 module Databrary.Web.Route
   ( RouteM
 
+  , maybe
   , method
-  , on, StdMethod(..)
-
   , text
   , fixed
   , switch
@@ -25,22 +24,22 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.Reader (MonadReader, ReaderT(..), asks)
 import Control.Monad.State (MonadState, StateT(..))
 import qualified Data.ByteString as BS
-import Data.Maybe (maybe, fromMaybe)
+import Data.Maybe (fromMaybe)
 import Data.String (IsString(..))
 import qualified Data.Text as T
 import qualified Data.Text.Read as Text
-import Network.HTTP.Types (Method, StdMethod(..), renderStdMethod)
+import Network.HTTP.Types (Method)
 import qualified Network.Wai as Wai
 import Text.Read (readMaybe)
 
 newtype RouteM a = RouteM { runRoute :: ReaderT Wai.Request (StateT [T.Text] Maybe) a }
   deriving (Functor, Monad, MonadPlus, Applicative, Alternative, MonadReader Wai.Request, MonadState [T.Text])
 
+maybe :: Maybe a -> RouteM a
+maybe = RouteM . lift . lift
+
 method :: RouteM Method
 method = asks Wai.requestMethod
-
-on :: StdMethod -> RouteM Method
-on s = mfilter (renderStdMethod s ==) method
 
 text :: RouteM T.Text
 text = RouteM $ lift $ StateT f where
@@ -60,7 +59,7 @@ path :: RouteM [T.Text]
 path = RouteM $ lift $ StateT $ \p -> Just (p, [])
 
 read :: Read a => RouteM a
-read = maybe mzero return . readMaybe . T.unpack =<< text
+read = maybe . readMaybe . T.unpack =<< text
 
 reader :: Text.Reader a -> RouteM a
 reader r = either (const mzero) (return . fst) . r =<< text
@@ -70,7 +69,7 @@ class Routable a where
   toRoute :: a -> [T.Text]
 
 query :: BS.ByteString -> RouteM BS.ByteString
-query k = maybe mzero (return . fromMaybe "") . lookup k =<< asks Wai.queryString
+query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString
 
 routeRequest :: RouteM a -> Wai.Request -> Maybe a
 routeRequest r q = case runStateT (runReaderT (runRoute r) q) (Wai.pathInfo q) of
