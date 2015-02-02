@@ -155,7 +155,7 @@
   height 0
   pointer-events none
   .selection
-    background-color rgba(193,177,177,0.5)
+    background-color rgba(180,180,180,0.3)
     height 100%
     position absolute
     min-width 1px
@@ -210,18 +210,6 @@
     float right
     margin-right b12
 
-.slot-timeline-track
-  border-top 1px solid pale
-  width 100%
-
-  &.select
-    background-color fade-out(green52, 60%)
-
-  &.dirty
-    background-color fade-out(red, 90%)
-    &.select
-      background-color fade-out(red,70%)
-
 .slot-track
   height b1 + b3 + b12
   position relative
@@ -262,6 +250,7 @@
       width 40%
     &.excerpt
       font-weight bold
+      color pitch
   .classification-info
   .upload-progress-info
     position absolute
@@ -312,9 +301,18 @@
     left -b6
     background-color green
 
+.slot-timeline-track
 .slot-tag-track
   &.select
-    background-color fade-out(neutral51, 60%)
+    background-color rgba(180,180,180,0.3)
+
+.slot-timeline-track
+  border-top 1px solid pale
+  width 100%
+  &.dirty
+    background-color fade-out(red, 90%)
+    &.select
+      background-color fade-out(red,70%)
 
 .slot-tag-segment
 .slot-tag-keyword
