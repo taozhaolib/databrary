@@ -236,7 +236,7 @@ object Party extends TableId[Party]("party") {
     * @param authorize party doing the authorization, to exclude parties already authorized
     * @param volume volume to which to grant access, to exclude parties with access already.
     */
-  def search(query : Option[String], access : Option[Permission.Value] = None, institution : Option[Boolean] = None, authorize : Option[Party] = None, volume : Option[Volume] = None, limit : Int = 48)(implicit site : Site) : Future[Seq[Party]] =
+  def search(query : Option[String], access : Option[Permission.Value] = None, institution : Option[Boolean] = None, authorize : Option[Party] = None, volume : Option[Volume] = None, limit : Int = 24, offset : Int = 0)(implicit site : Site) : Future[Seq[Party]] =
     row.SELECT(LiteralStatement("")
       + (if (access.nonEmpty) " JOIN authorize_view ON party.id = child AND parent = 0" else "")
       + " WHERE id > 0"
@@ -249,7 +249,7 @@ object Party extends TableId[Party]("party") {
       })
       ++ authorize.fold(Statement.empty)(a => lsql" AND id != ${a.id} AND id NOT IN (SELECT child FROM authorize WHERE parent = ${a.id} UNION SELECT parent FROM authorize WHERE child = ${a.id})")
       ++ volume.fold(Statement.empty)(v => lsql" AND id NOT IN (SELECT party FROM volume_access WHERE volume = ${v.id})")
-      ++ lsql" LIMIT $limit")
+      ++ lsql" LIMIT $limit OFFSET $offset")
     .list
 
   /** The special party group representing everybody (including anonymous users) on the site.

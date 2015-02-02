@@ -22,7 +22,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   protected def searchResults(implicit request : SiteRequest[AnyContent]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
     val form = new VolumeController.SearchForm()._bind
-    (form, Volume.search(form.query.get, form.party.get))
+    (form, Volume.search(form.query.get, form.party.get, limit = form.limit.get, offset = form.offset.get))
   }
 
   private[this] def setLinks(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
@@ -106,6 +106,8 @@ object VolumeController extends VolumeController {
     with NoCsrfForm {
     val query = Field(Mappings.maybeText)
     val party = Field(OptionMapping(Forms.of[Party.Id]))
+    val limit = Field(Forms.default(Forms.number(1,65),13))
+    val offset = Field(Forms.default(Forms.number(0),0))
   }
 
   private val linkMapping = Forms.tuple(

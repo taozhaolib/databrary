@@ -48,7 +48,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       access = Some(Permission.EDIT)
       institution = Some(false)
     }
-    Party.search(query, access = access, institution = institution)
+    Party.search(query, access = access, institution = institution, limit = form.limit.get, offset = form.offset.get)
   }
 
   protected def adminAction(i : models.Party.Id, delegate : Boolean = true) =
@@ -200,6 +200,8 @@ object PartyController extends PartyController {
     val query = Field(Mappings.maybeText)
     val access = Field(OptionMapping(Mappings.enum(Permission)))
     val institution = Field(OptionMapping(Forms.boolean))
+    val limit = Field(Forms.default(Forms.number(1,129),25))
+    val offset = Field(Forms.default(Forms.number(0),0))
   }
 
   abstract sealed class PartyForm(action : Call)(implicit request : SiteRequest[_])

@@ -5,6 +5,15 @@
         <h3>Search</h3>
         <search-form type='volume'></search-form>
         <volume-list data="volumes"></volume-list>
+        <span ng-if="::prev">
+          <a ng-if="::prev" ng-click="prev()">&lt; {{::page-1}}</a>
+          |
+        </span>
+        <b ng-bind="::page"></b>
+        <span ng-if="::next">
+          |
+          <a ng-click="next()">{{::page+1}} &gt;</a>
+        </span>
       </div>
     </div>
   </div>
