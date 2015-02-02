@@ -96,7 +96,7 @@
                 <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
                 <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length}">
                   <span ng-bind="t.name"></span>
-                  <span ng-if="t.asset && !t.asset.duration"> (converting)</span>
+                  <span ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (converting)</span>
                 </div>
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
