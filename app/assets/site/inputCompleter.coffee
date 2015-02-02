@@ -18,13 +18,15 @@ app.directive 'inputCompleter', [
       min = 3 unless isFinite(min = parseInt($attrs.min))
       sent = resend = undefined
       $scope.choices = []
+      $scope.selected = undefined
 
       setValue = (v) ->
         # we bypass the angular model here to change text and selection...
         old = input.value
-        input.value = v
+        $scope.value = input.value = v
         if v.toLowerCase().startsWith(old.toLowerCase())
           input.setSelectionRange(old.length, v.length)
+        return
 
       handle = (r) ->
         if r && typeof r.then == 'function'
@@ -45,8 +47,10 @@ app.directive 'inputCompleter', [
             setValue(r)
             $scope.choices = []
           $scope.search(resend) if resend
+        return
 
       $scope.search = () ->
+        $scope.selected = undefined
         value = input.value
         if sent
           resend = value != sent && value
@@ -58,19 +62,36 @@ app.directive 'inputCompleter', [
           handle($scope.completer({$input:value}))
         else
           $scope.choices = []
+        return
 
       $scope.choose = (c) ->
+        $scope.selected = undefined
         resend = undefined
         handle(
           if typeof c.select == 'function'
             c.select()
           else
             c.select)
+        return
 
       $scope.enter = ($event) ->
-        # bypass debounce
+        if $scope.selected?
+          $scope.choose($scope.choices[$scope.selected])
+          return
+        # bypass debounce:
         $scope.value = value = input.value
         handle($scope.submit({$event:$event, $input:value})) if value?.length >= min
+        return
+
+      $scope.select = (i) ->
+        return unless $scope.choices.length
+        $scope.selected ?= -(i > 0)
+        $scope.selected += i
+        $scope.selected %= $scope.choices.length
+        if $scope.selected < 0
+          $scope.selected += $scope.choices.length
+        setValue($scope.choices[$scope.selected].text)
+        return
 
       $scope.search(input.value)
 
