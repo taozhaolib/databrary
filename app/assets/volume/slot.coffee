@@ -517,9 +517,9 @@ app.controller('volume/slot', [
             tag.fillData(data)
             if (if editing then tag.keyword else tag.weight)
               tag.update()
-              tooltips.clear() # hack for broken tooltips
             else
               $scope.tags.remove(tag)
+            tooltips.clear() # hack for broken tooltips
             return
           , (res) ->
             messages.addError
