@@ -34,7 +34,7 @@
                   @defining(new LoginController.SuperuserForm()(request)) { form =>
                     @widget.tag.form(form) {
                       @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
-                        @widget.tag.inputPassword(form.auth(), 'class -> "mini toolbar-static-input password")
+                        @widget.tag.inputPassword(form.auth(), 'class -> "mini password")
                         <button type="submit" class="link toolbar-superuser off">SU</button>
                       }
                     }(request)

@@ -44,7 +44,7 @@
         </span>
 
         <span ng-if="page.models.Login.isLoggedIn()">
-          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
+          <a href="" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
             <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> 
             <span class="username hide-mobile hide-tablet" ng-bind="::page.models.Login.user.name"></span>
           </a>
@@ -67,10 +67,10 @@
             <ul class="flat">
               <li><strong ng-bind="::page.models.Login.user.name"></strong></li>
               <li ng-if="::!page.models.Login.isAuthorized()">
-                <a ng-href="{{::page.router.register()}}" class="toolbar-user-link" message="toolbar.reregister"></a>
+                <a ng-href="{{::page.router.register()}}" message="toolbar.reregister"></a>
               </li>
               <li>
-                <a ng-href="{{::page.router.profile()}}" class="toolbar-user-link" message="toolbar.profile"></a>
+                <a ng-href="{{::page.router.profile()}}" message="toolbar.profile"></a>
               </li>
               <li>
                 <a ng-href="{{::page.router.volumeCreate()}}" message="volume.edit.create" ng-if="::page.models.Login.isAuthorized()"></a>
