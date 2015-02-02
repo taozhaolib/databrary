@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Audit
-  ( module Databrary.Model.Types.Audit
+  ( module Databrary.Model.Audit.Types
   , getRemoteIp
   , getAuditIdentity
   ) where
@@ -12,8 +12,8 @@ import Network.Wai (remoteHost)
 
 import Control.Has (peeks)
 import Databrary.Action.Request
-import Databrary.Types.Identity
-import Databrary.Model.Types.Audit
+import Databrary.Identity.Types
+import Databrary.Model.Audit.Types
 
 getRemoteIp :: RequestM c m => m PGInet
 getRemoteIp = peeks (fromMaybe (PGInet 0 32) . sockAddrPGInet . remoteHost)

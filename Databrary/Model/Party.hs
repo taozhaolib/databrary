@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, GeneralizedNewtypeDeriving #-}
 module Databrary.Model.Party 
-  ( module Databrary.Model.Types.Party
+  ( module Databrary.Model.Party.Types
   , PartyAuth
   , AuthParty
   , nobodyParty
@@ -30,14 +30,14 @@ import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Request
 import Databrary.Model.Id
-import Databrary.Model.SQL.Party
-import Databrary.Model.SQL.Authorize
 import Databrary.Model.SQL
 import Databrary.Model.Permission
 import Databrary.Model.Audit
-import Databrary.Types.Identity
-import Databrary.Model.Types.Authorize
-import Databrary.Model.Types.Party
+import Databrary.Identity.Types
+import Databrary.Model.Authorize.Types
+import Databrary.Model.Authorize.SQL
+import Databrary.Model.Party.Types
+import Databrary.Model.Party.SQL
 
 useTPG
 

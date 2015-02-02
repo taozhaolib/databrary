@@ -1,12 +1,12 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
-module Databrary.Model.SQL.Token
+module Databrary.Model.Token.SQL
   ( sessionTokenSelector
   ) where
 
 import Databrary.Model.SQL
-import Databrary.Model.SQL.Party (accountSelector)
-import Databrary.Model.SQL.Authorize (accessRow)
-import Databrary.Model.Types.Token
+import Databrary.Model.Party.SQL (accountSelector)
+import Databrary.Model.Authorize.SQL (accessRow)
+import Databrary.Model.Token.Types
 
 tokenRow :: String -> Selector
 tokenRow table = selectColumns 'Token table ["token", "expires"]

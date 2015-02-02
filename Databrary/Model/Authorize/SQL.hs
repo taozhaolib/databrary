@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Model.SQL.Authorize
+module Databrary.Model.Authorize.SQL
   ( accessRow
   , parentAuthorizationSelector
   , childAuthorizationSelector
@@ -8,9 +8,9 @@ module Databrary.Model.SQL.Authorize
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL
-import Databrary.Model.SQL.Party (partySelector)
-import Databrary.Model.Types.Party
-import Databrary.Model.Types.Authorize
+import Databrary.Model.Party.SQL (partySelector)
+import Databrary.Model.Party.Types
+import Databrary.Model.Authorize.Types
 
 accessRow :: String -> Selector
 accessRow table = selectColumns 'Access table ["site", "member"]

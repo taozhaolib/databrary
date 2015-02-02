@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Model.SQL.Party 
+module Databrary.Model.Party.SQL
   ( changeQuery
   , partySelector
   , accountSelector
@@ -9,8 +9,8 @@ import Data.Char (toLower)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL (Selector, selectColumns, selectJoin, joinOn, maybeJoinOn)
-import Databrary.Model.SQL.Audit (auditChangeQuery)
-import Databrary.Model.Types.Party
+import Databrary.Model.Audit.SQL (auditChangeQuery)
+import Databrary.Model.Party.Types
 
 changeQuery :: TH.Name -> TH.ExpQ
 changeQuery p = auditChangeQuery "party"

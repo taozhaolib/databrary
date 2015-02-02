@@ -1,6 +1,6 @@
 {-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-module Databrary.Model.Types.Audit
+module Databrary.Model.Audit.Types
   ( AuditAction(..)
   , AuditIdentity(..)
   , Audit(..)
@@ -11,11 +11,11 @@ import Data.Char (toUpper)
 import Database.PostgreSQL.Typed.Enum (makePGEnum)
 import Database.PostgreSQL.Typed.Inet (PGInet)
 
-import Databrary.Types.Time
+import Databrary.Time
 import Databrary.DB
-import Databrary.Model.Types.Id
-import Databrary.Model.Types.Party
-import Databrary.Types.Identity
+import Databrary.Model.Id.Types
+import Databrary.Model.Party.Types
+import Databrary.Identity.Types
 import Databrary.Action.Request
 
 useTPG

@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Model.Types.Token
+module Databrary.Model.Token.Types
   ( TokenId
   , Token(..)
   , AccountToken(..)
@@ -9,9 +9,9 @@ module Databrary.Model.Types.Token
 import qualified Data.ByteString as BS
 
 import Control.Has (makeHasFor)
-import Databrary.Types.Time
-import Databrary.Model.Types.Party
-import Databrary.Model.Types.Authorize
+import Databrary.Time
+import Databrary.Model.Party.Types
+import Databrary.Model.Authorize.Types
 
 type TokenId = BS.ByteString
 

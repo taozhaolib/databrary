@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Identity
-  ( module Databrary.Types.Identity
+  ( module Databrary.Identity.Types
   , getIdentity
   ) where
 
@@ -10,7 +10,7 @@ import Databrary.Action.Request
 import Databrary.Resource
 import Databrary.DB
 import Databrary.Web.Cookie
-import Databrary.Types.Identity
+import Databrary.Identity.Types
 
 nobodyIdentity :: Identity
 nobodyIdentity = Identity

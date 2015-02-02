@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Model.SQL.Audit
+module Databrary.Model.Audit.SQL
   ( auditAddQuery
   , auditRemoveQuery
   , auditChangeQuery
@@ -11,7 +11,7 @@ import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL
-import Databrary.Model.Types.Audit
+import Databrary.Model.Audit.Types
 
 actionCmd :: AuditAction -> String
 actionCmd AuditActionAdd = "INSERT INTO"

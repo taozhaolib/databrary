@@ -10,11 +10,11 @@ import Control.Has (HasM, makeHasFor)
 import Databrary.Action.Types
 import Databrary.Action.Request
 import Databrary.Action.App
-import Databrary.Model.Types.Party
+import Databrary.Model.Party.Types
 import Databrary.Model.Authorize
 import Databrary.Identity
 import Databrary.Resource
-import Databrary.Types.Time
+import Databrary.Time
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest

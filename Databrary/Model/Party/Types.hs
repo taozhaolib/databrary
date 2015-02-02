@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Model.Types.Party 
+module Databrary.Model.Party.Types 
   ( Party(..)
   , Account(..)
   ) where
@@ -8,7 +8,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
 import Control.Has (Has(..))
-import Databrary.Model.Types.Id
+import Databrary.Model.Id.Types
 
 data Party = Party
   { partyId :: Id Party

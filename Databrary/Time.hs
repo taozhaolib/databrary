@@ -1,4 +1,4 @@
-module Databrary.Types.Time
+module Databrary.Time
   ( Date
   , Timestamp
   , Offset

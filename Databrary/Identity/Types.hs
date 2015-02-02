@@ -1,14 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Types.Identity
+module Databrary.Identity.Types
   ( Identity(..)
   , identityId
   , IdentityM
   ) where
 
 import Control.Has (HasM, makeHasFor, see)
-import Databrary.Model.Types.Authorize
-import Databrary.Model.Types.Party
-import Databrary.Model.Types.Id
+import Databrary.Model.Authorize.Types
+import Databrary.Model.Party.Types
+import Databrary.Model.Id.Types
 
 data Identity = Identity
   { identityAuthorization :: PartyAuth

@@ -14,7 +14,7 @@ import qualified Web.Cookie as Cook
 import Control.Has (peeks)
 import Databrary.Crypto
 import Databrary.Resource
-import Databrary.Types.Time
+import Databrary.Time
 import Databrary.Action.Request
 
 getCookies :: RequestM c m => m Cook.Cookies

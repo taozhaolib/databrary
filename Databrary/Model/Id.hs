@@ -1,5 +1,5 @@
 module Databrary.Model.Id 
-  ( module Databrary.Model.Types.Id
+  ( module Databrary.Model.Id.Types
   ) where
 
-import Databrary.Model.Types.Id
+import Databrary.Model.Id.Types

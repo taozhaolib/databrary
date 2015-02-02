@@ -1,6 +1,6 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
-  ( module Databrary.Model.Types.Token
+  ( module Databrary.Model.Token.Types
   , lookupSession
   , sessionAuthorization
   , createSession
@@ -13,14 +13,14 @@ import Data.Maybe (fromJust)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (see)
-import Databrary.Types.Time
-import Databrary.Model.SQL.Token
+import Databrary.Time
 import Databrary.Model.SQL
 import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Entropy
 import Databrary.DB
-import Databrary.Model.Types.Token
+import Databrary.Model.Token.Types
+import Databrary.Model.Token.SQL
 
 useTPG
 

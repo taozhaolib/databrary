@@ -12,7 +12,7 @@ import Network.HTTP.Types (hDate)
 import Control.Has (makeHasFor, peek)
 import Databrary.Web.HTTP
 import Databrary.Resource
-import Databrary.Types.Time
+import Databrary.Time
 import Databrary.Action.Types
 import Databrary.Action.Request
 import Databrary.Action.Response

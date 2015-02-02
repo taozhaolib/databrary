@@ -1,5 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables, DataKinds #-}
-module Databrary.Model.Types.Id 
+module Databrary.Model.Id.Types 
   ( Id(..)
   , HasId(..)
   ) where

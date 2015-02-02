@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
-module Databrary.Model.Types.Authorize
+module Databrary.Model.Authorize.Types
   ( Access(..)
   , accessSite, accessMember
   , accessPermission
@@ -14,8 +14,8 @@ import Data.Monoid (Monoid(..))
 import Data.Time (UTCTime)
 
 import Control.Has (Has(..), makeHasFor)
-import Databrary.Model.Types.Permission
-import Databrary.Model.Types.Party
+import Databrary.Model.Permission.Types
+import Databrary.Model.Party.Types
 
 data Access = Access
   { _accessSite :: !Permission
