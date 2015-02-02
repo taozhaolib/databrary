@@ -3,9 +3,13 @@
 (function () {
 
 var keys = {
-  Enter: 13,
   Tab: 9,
-  Escape: 27
+  Enter: 13,
+  Escape: 27,
+  Left: 37,
+  Up: 38,
+  Right: 39,
+  Down: 40,
 };
 angular.forEach(keys, function (key, name) {
   var directive = 'key' + name;
