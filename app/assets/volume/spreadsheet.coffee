@@ -825,7 +825,7 @@ app.directive 'spreadsheet', [
           tooltips.clear()
           $timeout ->
             input = e.find('[name=edit]')
-            input.filter('input,textarea').select()
+            input.filter('input,textarea').focus().select()
             input.filter('select').one('change', $scope.$lift(editScope.unedit))
             return
           return
