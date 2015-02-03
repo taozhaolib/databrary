@@ -348,7 +348,7 @@ app.directive 'spreadsheet', [
           icon.onclick = () ->
             t = {asset:a.id}
             $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
-          icon.className = "hint-format-" + a.format.extension
+          icon.className = "format hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
           generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
           return
