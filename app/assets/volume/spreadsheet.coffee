@@ -677,7 +677,7 @@ app.directive 'spreadsheet', [
                 if v != info.r
                   setRecord(cell, info, volume.records[v])
                 else
-                  edit(cell, info, true)
+                  #edit(cell, info, true) # broken and/or unreachable for most events
               return
             when 'metric'
               if value != undefined
@@ -826,7 +826,7 @@ app.directive 'spreadsheet', [
           $timeout ->
             input = e.find('[name=edit]')
             input.filter('input,textarea').focus().select()
-            input.filter('select').one('change', $scope.$lift(editScope.unedit))
+            input.filter('select').focus().one('change', $scope.$lift(editScope.unedit))
             return
           return
 
