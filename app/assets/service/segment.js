@@ -23,6 +23,7 @@ app.factory('Segment', [
         this.l = l.l;
         this.u = l.u;
       } else if (typeof l === 'string') {
+        /* this is not a full parser as the backend has, but just needs to be sufficient to parse the output of .format */
         var i = l.indexOf(',');
         if (i === -1) {
           i = l.indexOf('-', 1);

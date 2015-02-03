@@ -11,10 +11,12 @@ app.controller('volume/slot', [
     $scope.mode = if editing then 'edit' else 'view'
     target = $location.search()
     $scope.form = {}
+    fullRange = new Segment(0, 0)
     ruler = $scope.ruler =
-      range: new Segment(Infinity, -Infinity)
+      range: if 'range' of target then new Segment(target.range) else fullRange
       selection: if 'select' of target then new Segment(target.select) else Segment.empty
       position: Offset.parse(target.pos)
+      zoomed: 'range' of target
 
     $flow = $scope.$flow # not really in this scope
     video = undefined
@@ -26,6 +28,7 @@ app.controller('volume/slot', [
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
         .search('select', ruler.selection?.format())
+        .search('range', if ruler.zoomed then ruler.range.format() else undefined)
 
     if editing || slot.checkPermission(constants.permission.EDIT)
       url = if editing then slot.route() else slot.editRoute()
@@ -39,18 +42,16 @@ app.controller('volume/slot', [
 
     byId = (a, b) -> a.id - b.id
     byPosition = (a, b) -> a.segment.l - b.segment.l
+    finite = (args...) -> args.find(isFinite)
 
-    updateRange = (segment) ->
-      if isFinite(slot.segment.l)
-        ruler.range.l = slot.segment.l
-      else if isFinite(segment.l) && segment.l < ruler.range.l
-        ruler.range.l = segment.l
-      
-      if isFinite(slot.segment.u)
-        ruler.range.u = slot.segment.u
-      else if isFinite(segment.u) && segment.u > ruler.range.u
-        ruler.range.u = segment.u
-
+    updateRange = () ->
+      l = Infinity
+      u = -Infinity
+      for t in $scope.tracks.concat(records, $scope.consents)
+        l = t.segment.l if isFinite(t.segment.l) && t.segment.l < l
+        u = t.segment.u if isFinite(t.segment.u) && t.segment.u > u
+      fullRange.l = finite(slot.segment.l, l, 0)
+      fullRange.u = finite(slot.segment.u, u, 0)
       return
 
     offsetPosition = (offset) ->
@@ -138,6 +139,7 @@ app.controller('volume/slot', [
       return false if stayDirty()
 
       $scope.current = c
+      $scope.asset = c.asset if c.asset
       searchLocation($location.replace())
       delete target.asset
       delete target.record
@@ -178,6 +180,13 @@ app.controller('volume/slot', [
       finalizeSelection() if up.type != 'mousemove'
       return
 
+    $scope.zoom = (seg) ->
+      seg ?= fullRange
+      ruler.range = seg
+      ruler.zoomed = seg != fullRange
+      searchLocation($location.replace())
+      return
+
     removed = (track) ->
       return if track.asset || track.file || track == blank
       select() if track == $scope.current
@@ -212,7 +221,7 @@ app.controller('volume/slot', [
       setAsset: (asset) ->
         super asset
         return unless asset
-        updateRange(@segment = new Segment(asset.segment))
+        @segment = new Segment(asset.segment)
         select(this) if `asset.id == target.asset`
         return
 
@@ -243,6 +252,7 @@ app.controller('volume/slot', [
             for e in @excerpts
               e.segment.l -= shift
               e.segment.u -= shift
+          updateRange()
           sortTracks()
           return
 
@@ -368,7 +378,7 @@ app.controller('volume/slot', [
         @record = r.record || slot.volume.records[r.id]
         for f in ['age'] when f of r
           @[f] = r[f]
-        updateRange(@segment = new Segment(r.segment))
+        @segment = new Segment(r.segment)
         if editing
           @fillData()
         return
@@ -428,11 +438,12 @@ app.controller('volume/slot', [
           saves.push slot.moveRecord(@rec, @rec.segment, @segment).then (r) =>
             @form.position.$setPristine()
             return unless r # nothing happened
-            updateRange(@segment = new Segment(r.segment))
+            @segment = new Segment(r.segment)
             if @segment.empty
               records.remove(this)
               select() if this == $scope.current
             placeRecords()
+            updateRange()
             return
         $q.all(saves).then =>
             @fillData()
@@ -563,9 +574,6 @@ app.controller('volume/slot', [
             break
         @state = state
 
-    # implicitly initialize from slot.segment
-    updateRange(Segment.full)
-
     ### jshint ignore:start #### fixed in jshint 2.5.7
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
@@ -586,6 +594,7 @@ app.controller('volume/slot', [
 
     $scope.playing = 0
     placeRecords()
+    updateRange()
     finalizeSelection()
 
     if editing
