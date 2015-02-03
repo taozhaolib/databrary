@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Party.SQL
   ( changeQuery
+  , partyRow
   , partySelector
   , accountSelector
   ) where

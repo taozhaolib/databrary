@@ -20,6 +20,8 @@ Executable databrary
     transformers,
     mtl,
     template-haskell,
+    th-lift,
+    th-lift-instances,
     time,
     old-locale,
     unix,
@@ -48,7 +50,6 @@ Executable databrary
     blaze-markup,
     blaze-html,
     digestive-functors,
-    -- digestive-functors-blaze,
     regex-posix,
     bcrypt
 

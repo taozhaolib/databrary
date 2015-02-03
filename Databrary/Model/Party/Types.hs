@@ -1,14 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Party.Types 
   ( Party(..)
   , Account(..)
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Int (Int32)
 import qualified Data.Text as T
+import Instances.TH.Lift ()
+import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (Has(..))
 import Databrary.Model.Id.Types
+
+type instance IdType Party = Int32
 
 data Party = Party
   { partyId :: Id Party
@@ -36,3 +41,5 @@ instance Has Party Account where
 instance Has (Id Party) Account where
   view f a = fmap (\i -> a{ accountParty = (accountParty a){ partyId = i } }) $ f $ partyId $ accountParty a
   see = partyId . accountParty
+
+deriveLiftMany [''Party, ''Account]

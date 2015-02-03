@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving, OverloadedStrings #-}
+{-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving, OverloadedStrings, UndecidableInstances #-}
 module Databrary.Web.Route
   ( RouteM
 
@@ -24,6 +24,7 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.Reader (MonadReader, ReaderT(..), asks)
 import Control.Monad.State (MonadState, StateT(..))
 import qualified Data.ByteString as BS
+import Data.Int (Int32, Int16)
 import Data.Maybe (fromMaybe)
 import Data.String (IsString(..))
 import qualified Data.Text as T
@@ -67,6 +68,22 @@ reader r = either (const mzero) (return . fst) . r =<< text
 class Routable a where
   route :: RouteM a
   toRoute :: a -> [T.Text]
+
+instance Routable Integer where
+  route = reader (Text.signed Text.decimal)
+  toRoute  = return . T.pack . show
+
+instance Routable Int where
+  route = reader (Text.signed Text.decimal)
+  toRoute  = return . T.pack . show
+
+instance Routable Int32 where
+  route = reader (Text.signed Text.decimal)
+  toRoute  = return . T.pack . show
+
+instance Routable Int16 where
+  route = reader (Text.signed Text.decimal)
+  toRoute  = return . T.pack . show
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString

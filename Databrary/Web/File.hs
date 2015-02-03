@@ -12,9 +12,10 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
 import qualified Data.Foldable as Fold
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
-import Network.HTTP.Types (hLastModified, hIfModifiedSince, notModified304, hIfRange)
+import Network.HTTP.Types (hLastModified, hContentType, hIfModifiedSince, notModified304, hIfRange)
 import qualified Network.Wai as Wai
 import System.FilePath (joinPath, splitDirectories, (</>))
 import System.IO.Error (tryIOError)
@@ -23,6 +24,7 @@ import System.Posix.Files (getFileStatus, modificationTimeHiRes, fileSize)
 import Databrary.Action
 import Databrary.Web.HTTP
 import qualified Databrary.Web.Route as R
+import Databrary.Model.Format (Format, getFormatByFilename, unknownFormat, formatMimeType)
 
 newtype StaticPath = StaticPath FilePath
 
@@ -38,15 +40,15 @@ instance R.Routable StaticPath where
   route = R.maybe . staticPath =<< R.path
   toRoute (StaticPath p) = map T.pack $ splitDirectories p
 
-serveFile :: (ActionM c m, MonadIO m) => FilePath -> BS.ByteString -> m Response
-serveFile file etag = do
+serveFile :: (ActionM c m, MonadIO m) => FilePath -> Format -> BS.ByteString -> m Response
+serveFile file fmt etag = do
   minfo <- liftIO $ tryIOError $ getFileStatus file
   info <- either (\_ -> result =<< notFoundResponse) return minfo
   let mt = posixSecondsToUTCTime $ modificationTimeHiRes info
       fh = 
         [ ("etag", quoteHTTP etag)
         , (hLastModified, formatHTTPTimestamp mt)
-        -- , (hContentType, ???)
+        , (hContentType, formatMimeType fmt)
         -- , (hContentDisposition, ???)
         -- , (hCacheControl, ???)
         ]
@@ -63,4 +65,5 @@ serveFile file etag = do
   okResponse fh (file, part)
 
 serveStaticFile :: (ActionM c m, MonadIO m) => FilePath -> StaticPath -> m Response
-serveStaticFile dir (StaticPath rel) = serveFile (dir </> rel) (BSC.pack rel)
+serveStaticFile dir (StaticPath rel) =
+  serveFile (dir </> rel) (fromMaybe unknownFormat $ getFormatByFilename rel) (BSC.pack rel)

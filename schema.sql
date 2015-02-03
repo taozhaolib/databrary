@@ -394,38 +394,44 @@ SELECT audit.CREATE_TABLE ('volume_inclusion', 'slot');
 CREATE TABLE "format" (
 	"id" smallserial NOT NULL Primary Key,
 	"mimetype" varchar(128) NOT NULL Unique,
-	"extension" varchar(8),
+	"extension" varchar(8)[] NOT NULL,
 	"name" text NOT NULL
 );
 ALTER TABLE "format"
-	ALTER "mimetype" SET STORAGE EXTERNAL,
-	ALTER "extension" SET STORAGE EXTERNAL;
+	ALTER "mimetype" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "format" IS 'Possible types for assets, sufficient for producing download headers.';
 
 -- The above video format will change to reflect internal storage, these are used for uploaded files:
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain', 'txt', 'Plain text');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv', 'csv', 'Comma-separated values');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html', 'html', 'Hypertext markup');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/rtf', 'rtf', 'Rich text format');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('image/png', 'png', 'Portable network graphics');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf', 'pdf', 'Portable document');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/msword', 'doc', 'Microsoft Word document');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.text', 'odf', 'OpenDocument text');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'docx', 'Microsoft Word (Office Open XML) document');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-excel', 'xls', 'Microsoft Excel spreadsheet');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.spreadsheet', 'ods', 'OpenDocument spreadsheet');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'xlsx', 'Microsoft Excel (Office Open XML) workbook');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint', 'ppt', 'Microsoft PowerPoint presentation');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation', 'odp', 'OpenDocument presentation');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation', 'pptx', 'Microsoft PowerPoint (Office Open XML) presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/plain',									ARRAY['txt'], 'Plain text');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/csv',									ARRAY['csv'], 'Comma-separated values');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/html',									ARRAY['html','htm'], 'Hypertext markup');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/rtf',									ARRAY['rtf'], 'Rich text format');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('image/png',									ARRAY['png'], 'Portable network graphics');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/pdf',								ARRAY['pdf'], 'Portable document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/msword',								ARRAY['doc'], 'Microsoft Word document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.text',					ARRAY['odf'], 'OpenDocument text');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.wordprocessingml.document',	ARRAY['docx'], 'Microsoft Word (Office Open XML) document');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-excel',							ARRAY['xls'], 'Microsoft Excel spreadsheet');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.spreadsheet',				ARRAY['ods'], 'OpenDocument spreadsheet');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',		ARRAY['xlsx'], 'Microsoft Excel (Office Open XML) workbook');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.ms-powerpoint',							ARRAY['ppt'], 'Microsoft PowerPoint presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.oasis.opendocument.presentation',				ARRAY['odp'], 'OpenDocument presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.openxmlformats-officedocument.presentationml.presentation',	ARRAY['pptx'], 'Microsoft PowerPoint (Office Open XML) presentation');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/vnd.datavyu',							ARRAY['opf'], 'Datavyu');
 SELECT nextval('format_id_seq'); -- placeholder for old video/mp4
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm', 'webm', 'WebM video');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg', 'mpg', 'MPEG program stream (MPEG-1/MPEG-2 video)');
-INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime', 'mov', 'QuickTime video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/webm',									ARRAY['webm'], 'WebM video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mpeg',									ARRAY['mpg','mpeg'], 'MPEG program stream (MPEG-1/MPEG-2 video)');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/quicktime',								ARRAY['mov'], 'QuickTime video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/mp2t',									ARRAY['mts','m2ts'], 'MPEG transport stream');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/avi',									ARRAY['avi'], 'Audio Video Interleave');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('application/x-spss-sav',							ARRAY['sav'], 'SPSS System File');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('audio/wav',									ARRAY['wav'], 'Waveform audio');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('video/x-ms-wmv',								ARRAY['wmv'], 'Windows Media Video');
+INSERT INTO "format" ("mimetype", "extension", "name") VALUES ('text/x-chat',									ARRAY['cha','chat'], 'Codes for the Human Analysis of Transcripts');
 
 -- The privledged formats with special handling (image and video for now) have hard-coded IDs:
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4', 'mp4', 'MPEG-4 video');
-INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg', 'jpg', 'JPEG image');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'video/mp4',								ARRAY['mp4'], 'MPEG-4 video');
+INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg',							ARRAY['jpg','jpeg'], 'JPEG image');
 
 CREATE TABLE "asset" (
 	"id" serial Primary Key,

@@ -38,26 +38,13 @@ import Databrary.Model.Authorize.Types
 import Databrary.Model.Authorize.SQL
 import Databrary.Model.Party.Types
 import Databrary.Model.Party.SQL
+import Databrary.Model.Party.Boot
 
 useTPG
 
-nobodyParty :: Party
-nobodyParty = Party
-  { partyId = Id (-1)
-  , partyName = "Everybody"
-  , partyAffiliation = Nothing
-  , partyURL = Nothing
-  , partyAccount = Nothing
-  }
-
-rootParty :: Party
-rootParty = Party
-  { partyId = Id 0
-  , partyName = "Databrary"
-  , partyAffiliation = Nothing
-  , partyURL = Nothing
-  , partyAccount = Nothing
-  }
+nobodyParty, rootParty :: Party
+nobodyParty = $(loadParty (Id (-1)))
+rootParty = $(loadParty (Id 0))
 
 partyEmail :: Party -> Identity -> Maybe T.Text
 partyEmail p = do
