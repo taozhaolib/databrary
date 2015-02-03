@@ -53,7 +53,9 @@
             <div class="position-input" ng-if="!ruler.selection.empty">
               <input input-position="Infinity" id="position-edit" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l"></input>
               <input input-position="-Infinity" id="position-edit" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u"></input>
+              <a ng-click="zoom(ruler.selection)">zoom</a>
             </div>
+            <a ng-if="ruler.zoomed" ng-click="zoom()">unzoom</a>
             <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
               <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>
