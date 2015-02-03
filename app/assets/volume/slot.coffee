@@ -139,6 +139,7 @@ app.controller('volume/slot', [
       return false if stayDirty()
 
       $scope.current = c
+      $scope.asset = c.asset if c.asset
       searchLocation($location.replace())
       delete target.asset
       delete target.record
