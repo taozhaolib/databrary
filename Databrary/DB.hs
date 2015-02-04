@@ -16,9 +16,7 @@ import Control.Exception (onException)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
-import Control.Monad.RWS.Strict (RWST)
 import Data.IORef (IORef, newIORef, atomicModifyIORef')
-import Data.Monoid (Monoid)
 import Database.PostgreSQL.Typed.TH (withTPGConnection)
 import Database.PostgreSQL.Typed.Query
 import Database.PostgreSQL.Typed.Protocol (PGConnection, pgSimpleQuery)
@@ -37,7 +35,6 @@ class (Functor m, Applicative m, Monad m) => DBM m where
     liftIO $ withDB db f
 
 instance (Functor m, Applicative m, MonadIO m, Has Resource c) => DBM (ReaderT c m)
-instance (Functor m, Applicative m, MonadIO m, Monoid w, Has Resource c) => DBM (RWST c w s m)
 
 dbRunQuery :: (DBM m, PGQuery q a) => q -> m (Int, [a])
 dbRunQuery q = liftDB $ \c -> pgRunQuery c q

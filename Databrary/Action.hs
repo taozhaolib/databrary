@@ -14,12 +14,14 @@ module Databrary.Action
   , notFoundResponse
   , okResponse
   , result
+  , maybeAction
 
   , StdMethod(GET, POST)
   , RouteAction(..)
   , AppRAction
   , AuthRAction
   , action
+  , withAuth
   , R.toRoute
   , apiRoute
 
@@ -27,6 +29,7 @@ module Databrary.Action
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
+import Control.Monad.IO.Class (MonadIO)
 import qualified Data.ByteString as BS
 import Data.Functor.Contravariant (Contravariant(..))
 import Data.Maybe (fromMaybe)
@@ -52,6 +55,10 @@ notFoundResponse = emptyResponse notFound404 []
 
 okResponse :: (ActionM q m, ResponseData r) => ResponseHeaders -> r -> m Response
 okResponse = returnResponse ok200
+
+maybeAction :: (ActionM q m, MonadIO m) => Maybe a -> m a
+maybeAction (Just a) = return a
+maybeAction Nothing = result =<< notFoundResponse
 
 data RouteAction q = RouteAction 
   { actionMethod :: Method

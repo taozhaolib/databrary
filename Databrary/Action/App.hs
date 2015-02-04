@@ -6,10 +6,11 @@ module Databrary.Action.App
   ) where
 
 import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Reader (asks)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
-import Control.Has (makeHasFor, peek)
+import Control.Has (makeHasFor)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Time
@@ -38,5 +39,5 @@ runApp rc act = do
 
 instance ActionData AppRequest where
   returnResponse s h r = do
-    ts <- peek
+    ts <- asks appTimestamp
     return $ response s ((hDate, formatHTTPTimestamp ts) : h) r

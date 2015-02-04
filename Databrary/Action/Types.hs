@@ -8,12 +8,11 @@ module Databrary.Action.Types
   ) where
 
 import Control.Exception (catch)
-import Control.Monad (liftM)
 import Control.Monad.Reader (ReaderT, runReaderT, withReaderT)
 import Network.HTTP.Types (ResponseHeaders, Status)
 import qualified Network.Wai as Wai
 
-import Control.Has (Has, HasM, peek)
+import Control.Has (Has, HasM, peeks)
 import Databrary.Action.Request
 import Databrary.Action.Response
 
@@ -24,7 +23,7 @@ withAction = withReaderT
 
 class Has Request q => ActionData q where
   returnResponse :: (HasM Request q m, ResponseData r) => Status -> ResponseHeaders -> r -> m Response
-  returnResponse s h r = liftM (returnResponse s h r :: Request -> Response) peek
+  returnResponse s h r = peeks (returnResponse s h r :: Request -> Response)
 
 type ActionM q m = (HasM Request q m, ActionData q)
 

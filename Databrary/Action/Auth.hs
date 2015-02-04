@@ -2,11 +2,12 @@
 module Databrary.Action.Auth
   ( AuthRequest(..)
   , AuthAction
-  , AuthM
-  , runAuth
+  , withAuth
   ) where
 
-import Control.Has (HasM, makeHasFor)
+import Control.Monad.Reader (asks)
+
+import Control.Has (makeHasFor)
 import Databrary.Action.Types
 import Databrary.Action.Request
 import Databrary.Action.App
@@ -28,9 +29,10 @@ makeHasFor ''AuthRequest
 
 type AuthAction = Action AuthRequest
 
-type AuthM c m = HasM AuthRequest c m
+instance ActionData AuthRequest where
+  returnResponse s h r = asks (returnResponse s h r . authApp)
 
-runAuth :: AuthAction -> AppAction
-runAuth f = do
+withAuth :: AuthAction -> AppAction
+withAuth f = do
   i <- getIdentity
   withAction (\a -> AuthRequest a i) f

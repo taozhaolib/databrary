@@ -1,11 +1,11 @@
-{-# LANGUAGE ConstraintKinds, TemplateHaskell #-}
+{-# LANGUAGE ConstraintKinds, TemplateHaskell, TypeSynonymInstances, LiberalTypeSynonyms #-}
 module Control.Has
   ( Has(..)
   , HasM
   , peek
   , peeks
   , poke
-  , focusReaderT
+  , focus
   , makeHasFor
   ) where
 
@@ -35,8 +35,8 @@ peeks f = reader (f . see)
 poke :: HasM a c m => (a -> a) -> m r -> m r
 poke = local . over view
 
-focusReaderT :: Has a c => ReaderT a m r -> ReaderT c m r
-focusReaderT = withReaderT peek
+focus :: Has a c => ReaderT a m r -> ReaderT c m r
+focus = withReaderT peek
 
 makeHasFor :: TH.Name -> [(TH.Name, [TH.Name])] -> TH.DecsQ
 makeHasFor tn fs = concatM

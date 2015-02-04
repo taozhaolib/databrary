@@ -56,6 +56,9 @@ instance ResponseData JSON.Value where
   response s h =
     response s ((hContentType, "text/json;charset=utf-8") : h) . JSON.encode
 
+instance ResponseData JSON.Object where
+  response s h = response s h . JSON.Object
+
 instance ResponseData Html.Html where
   response s h =
     response s ((hContentType, "text/html;charset=utf-8") : h) . Html.renderHtmlBuilder
