@@ -168,10 +168,10 @@
           </div>
 
           <div>
-            <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-if="t.active" ng-class="{select: t === current}" mouse-drag="dragSelection($down, $up, t)">
-              <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})"></div>
-              <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})"></div>
-              <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="positionStyle(ts)" ng-click="select($event, t)" ng-dblclick="selectAll($event, {segment:ts})"></div>
+            <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-if="t.active" ng-class="{select: t === current}" ng-click="select($event, t)" mouse-drag="dragSelection($down, $up, t)">
+              <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
+              <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
+              <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
               <div class="slot-tag-name" ng-bind="t.id"></div>
             </div>
           </div>
