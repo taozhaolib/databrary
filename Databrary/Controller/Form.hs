@@ -43,5 +43,5 @@ emailRegex :: Regex.Regex
 emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
   ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][a-z0-9\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
 
-emailTextForm :: Monad m => Form.Form T.Text m T.Text
-emailTextForm = Form.check "Invalid email address" (Regex.matchTest emailRegex . T.unpack) (Form.text Nothing)
+emailTextForm :: Monad m => Maybe T.Text -> Form.Form T.Text m T.Text
+emailTextForm = Form.check "Invalid email address" (Regex.matchTest emailRegex . T.unpack) . Form.text

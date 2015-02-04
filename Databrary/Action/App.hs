@@ -2,7 +2,7 @@
 module Databrary.Action.App 
   ( AppRequest(..)
   , AppAction
-  , runApp
+  , withApp
   ) where
 
 import Control.Monad.IO.Class (liftIO)
@@ -32,8 +32,8 @@ makeHasFor ''AppRequest
 
 type AppAction = Action AppRequest
 
-runApp :: Resource -> AppAction -> WaiAction
-runApp rc act = do
+withApp :: Resource -> AppAction -> WaiAction
+withApp rc act = do
   ts <- liftIO getCurrentTime
   withAction (AppRequest rc ts) act
 

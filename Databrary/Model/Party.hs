@@ -12,6 +12,7 @@ module Databrary.Model.Party
   , lookupParty
   , lookupAccount
   , lookupAuthParty
+  , selfAuthParty
   , lookupPartyAuthByEmail
   , auditAccountLogin
   , recentAccountLogins
@@ -56,7 +57,7 @@ partyEmail p = do
 
 authPartyPermission :: AuthParty -> Identity -> Permission
 authPartyPermission a i =
-  accessPermission a `max` (peeks _accessSite i `min` PermissionREAD)
+  see a `max` (peeks _accessSite i `min` PermissionREAD)
 
 _authPartyEmail :: AuthParty -> Identity -> Maybe T.Text
 _authPartyEmail p =
@@ -104,6 +105,13 @@ lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorizatio
   lap _ a =
     fmap AuthParty <$> dbQuery1 $(selectQuery (parentAuthorizationSelector 'up) "$!WHERE party.id = ${i}")
     where up = authorizeChild a
+
+selfAuthParty :: Party -> AuthParty
+selfAuthParty p = AuthParty Authorization
+  { authorizeAccess = maxBound
+  , authorizeChild = p
+  , authorizeParent = p
+  }
 
 lookupPartyAuthByEmail :: DBM m => T.Text -> m (Maybe PartyAuth)
 lookupPartyAuthByEmail e = fmap PartyAuth <$>

@@ -11,6 +11,7 @@ module Databrary.Action
   , Response
   , returnResponse
   , emptyResponse
+  , forbiddenResponse
   , notFoundResponse
   , okResponse
   , result
@@ -35,7 +36,7 @@ import Data.Functor.Contravariant (Contravariant(..))
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
-import Network.HTTP.Types (Method, StdMethod(..), renderStdMethod, encodePathSegments, Status, ok200, notFound404, ResponseHeaders)
+import Network.HTTP.Types (Method, StdMethod(..), renderStdMethod, encodePathSegments, Status, ok200, forbidden403, notFound404, ResponseHeaders)
 import qualified Network.Wai as Wai
 
 import Control.Has (peek)
@@ -49,6 +50,9 @@ import qualified Databrary.Web.Route as R
 
 emptyResponse :: ActionM q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
+
+forbiddenResponse :: ActionM q m => m Response
+forbiddenResponse = emptyResponse forbidden403 []
 
 notFoundResponse :: ActionM q m => m Response
 notFoundResponse = emptyResponse notFound404 []
@@ -87,5 +91,5 @@ type AppRAction = RouteAction AppRequest
 type AuthRAction = RouteAction AuthRequest
 
 runAppRoute :: R.RouteM AppAction -> Resource -> Wai.Application
-runAppRoute route rc = runWai $ runApp rc $
+runAppRoute route rc = runWai $ withApp rc $
   fromMaybe notFoundResponse . R.routeRequest route =<< peek

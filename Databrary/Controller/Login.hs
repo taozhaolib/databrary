@@ -21,7 +21,6 @@ import Databrary.Web.Form
 import Databrary.Web.Cookie
 import Databrary.Model.Party
 import Databrary.Model.Permission
-import Databrary.Model.Authorize
 import Databrary.Model.Token
 import Databrary.View.Form
 import Databrary.Controller.Form
@@ -34,14 +33,14 @@ loginAccount auth su = do
   okResponse [cook] (mempty :: Blaze.Builder)
 
 data LoginForm = LoginForm
-  { _loginEmail :: T.Text
-  , _loginPassword :: T.Text
-  , _loginSuperuser :: Bool
+  { loginEmail :: T.Text
+  , loginPassword :: T.Text
+  , loginSuperuser :: Bool
   }
 
 loginForm :: Monad m => Form.Form T.Text m LoginForm
 loginForm = LoginForm
-  <$> "email"     Form..: emailTextForm
+  <$> "email"     Form..: emailTextForm Nothing
   <*> "password"  Form..: Form.text Nothing
   <*> "superuser" Form..: Form.bool (Just False)
 
@@ -59,15 +58,15 @@ viewLogin api = action GET (apiRoute api ["login"]) $ do
 
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
-  (LoginForm email password superuser, form) <- runForm "login" disp loginForm
-  auth <- lookupPartyAuthByEmail email
+  (login, form) <- runForm "login" disp loginForm
+  auth <- lookupPartyAuthByEmail (loginEmail login)
   let p = fmap see auth
       a = partyAccount =<< p
-      su = superuser && Fold.any ((PermissionADMIN ==) . accessPermission) auth
+      su = loginSuperuser login && Fold.any ((PermissionADMIN ==) . see) auth
   attempts <- maybe (return 0) recentAccountLogins p
-  let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 password)) (accountPasswd =<< a)
+  let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 (loginPassword login))) (accountPasswd =<< a)
       block = attempts > 4
-  auditAccountLogin pass (fromMaybe nobodyParty p) email
+  auditAccountLogin pass (fromMaybe nobodyParty p) (loginEmail login)
   when block $ result =<< disp (formAddError ["email"] "Too many login attempts. Try again later." form)
   unless pass $ result =<< disp (formAddError ["password"] "Incorrect login." form)
   loginAccount (fromJust auth) su

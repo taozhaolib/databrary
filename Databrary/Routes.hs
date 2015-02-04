@@ -23,6 +23,7 @@ routes = do
   msum 
     [ "login" >> act (viewLogin api) 
              <|> act (postLogin api)
-    , R.route >>= \party -> act (getParty api party)
+    , R.route >>= \party -> act (viewParty api party)
+                        <|> act (postParty api party)
     , "public" >> R.route >>= act . staticPublicFile
     ]

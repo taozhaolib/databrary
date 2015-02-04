@@ -2,13 +2,13 @@
 module Databrary.Model.Authorize.Types
   ( Access(..)
   , accessSite, accessMember
-  , accessPermission
   , Authorization(..)
   , Authorize(..)
   , AuthParty(..)
   , PartyAuth(..)
   ) where
 
+import Control.Monad (join)
 import Control.Lens (Lens', makeLensesFor)
 import Data.Monoid (Monoid(..))
 import Data.Time (UTCTime)
@@ -28,11 +28,13 @@ accessSite, accessMember :: Has Access a => Lens' a Permission
 accessSite = view . accessSite'
 accessMember = view . accessMember'
 
-_accessPermission :: Access -> Permission
-_accessPermission (Access s m) = min s m
+instance Has Permission Access where
+  view f = fmap (join Access) . f . see
+  see (Access s m) = min s m
 
-accessPermission :: Has Access a => a -> Permission
-accessPermission = _accessPermission . see
+instance Bounded Access where
+  minBound = Access minBound minBound
+  maxBound = Access maxBound maxBound
 
 instance Monoid Access where
   mempty = Access PermissionNONE PermissionNONE
@@ -45,7 +47,7 @@ data Authorization = Authorization
   }
 
 makeHasFor ''Authorization
-  [ ('authorizeAccess, [])
+  [ ('authorizeAccess, [''Permission])
   ]
 
 data Authorize = Authorize
@@ -54,14 +56,14 @@ data Authorize = Authorize
   }
 
 makeHasFor ''Authorize
-  [ ('authorization, [''Access])
+  [ ('authorization, [''Access, ''Permission])
   ]
 
 -- |'Authorization' representing (access to) the parent
 newtype AuthParty = AuthParty { authPartyAuthorization :: Authorization }
 
 makeHasFor ''AuthParty
-  [ ('authPartyAuthorization, [''Access])
+  [ ('authPartyAuthorization, [''Access, ''Permission])
   ]
 
 instance Has Party AuthParty where
@@ -73,7 +75,7 @@ instance Has Party AuthParty where
 newtype PartyAuth = PartyAuth { partyAuthAuthorization :: Authorization }
 
 makeHasFor ''PartyAuth
-  [ ('partyAuthAuthorization, [''Access])
+  [ ('partyAuthAuthorization, [''Access, ''Permission])
   ]
 
 instance Has Party PartyAuth where
