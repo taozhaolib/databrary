@@ -48,8 +48,8 @@ app.controller('volume/slot', [
       l = Infinity
       u = -Infinity
       for t in $scope.tracks.concat(records, $scope.consents)
-        l = t.segment.l if isFinite(t.segment.l) && t.segment.l < l
-        u = t.segment.u if isFinite(t.segment.u) && t.segment.u > u
+        l = t.segment.l if isFinite(t.segment?.l) && t.segment.l < l
+        u = t.segment.u if isFinite(t.segment?.u) && t.segment.u > u
       fullRange.l = finite(slot.segment.l, l, 0)
       fullRange.u = finite(slot.segment.u, u, 0)
       return
