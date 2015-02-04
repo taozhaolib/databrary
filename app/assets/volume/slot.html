@@ -51,9 +51,9 @@
           <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
             <div class="slot-timeline-control">
               <input input-position="Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l"></input>
-              <button id="setOnset" ng-disabled="!ruler.position" ng-click="setSelection(ruler.position,true)">&lt;</button>
+              <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,true)">&lt;</button>
               <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position" name="position"></input>
-              <button id="setOffset" ng-disabled="!ruler.position" ng-click="setSelection(ruler.position,false)">&gt;</button>
+              <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,false)">&gt;</button>
               <input input-position="-Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u"></input>
             </div>
             
