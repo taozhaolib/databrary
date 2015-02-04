@@ -163,6 +163,20 @@ app.controller('volume/slot', [
         select(c)
       return
 
+    $scope.setSelection = (pos,onset) ->
+      ruler.selection = 
+        if ruler.selection.empty
+          if onset == true
+            new Segment(pos,ruler.range.u)
+          else
+            new Segment(ruler.range.l,pos)
+        else
+          if onset == true
+            new Segment(pos,ruler.selection.u)
+          else
+            new Segment(ruler.selection.l,pos)
+      return
+
     $scope.dragSelection = (down, up, c) ->
       return false if c && $scope.current != c
 
