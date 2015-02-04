@@ -17,8 +17,8 @@ app.factory('Segment', [
         this.l = l;
         this.u = l+0.1; // this is floored out later
       } else if (l === null || l === '') {
-        this.l = 0;
-        this.u = 0;
+        this.l = Infinity;
+        this.u = -Infinity;
       } else if (typeof l === 'object' && 'l' in l && 'u' in l) {
         this.l = l.l;
         this.u = l.u;
