@@ -20,29 +20,29 @@
           </a>
         </div>
 
-        <section class="slot-player" ng-repeat="current in [current]" ng-if="!!current">
+        <section class="slot-player" ng-if="!!current">
           <div class="player-main">
             <div class="player-main-info">
               <nav class="player-main-info-actions">
-                <img ng-if="!editing && !!current.asset" ng-src="{{::current.asset.icon}}" hint="format-{{::current.asset.format.extension}}" class="player-main-info-file-icon">
-                <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="::page.constants.classification[current.asset.classification]" hint="classification-{{::page.constants.classification[current.asset.classification]}}"></span>
+                <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+                <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>
                 <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></a>
-                <a ng-href="{{::current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></a>
+                <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></a>
                 <span ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></span>
               </nav>
               <h1 class="player-main-info-name">
-                <span class="filename" ng-if="::!editing && !!current.asset" ng-bind="::current.name"></span>
-                <span class="category" ng-if="::!editing && !!current.record" ng-bind="::current.record.displayName"></span>
-                <span class="category" ng-if="::editing && !!current.record.category" ng-bind="::page.constants.category[current.record.category].name"></span>
+                <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
+                <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
+                <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
               </h1>
               <div ng-if="::!editing">
                 <dl class="player-main-info-list cf">
                   <dt ng-if="!!current.asset" message="asset.format"></dt>
-                  <dd ng-if="!!current.asset" ng-bind="::(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
+                  <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                   <dt ng-if="current.segment.full === false || current.asset.duration">Position</dt>
                   <dd>
-                    <span ng-if="current.segment.full === false"><span ng-if="::current.segment.lBounded" ng-bind="::current.segment.l | timecode:true"></span> &ndash; <span ng-if="::current.segment.uBounded" ng-bind="::current.segment.u | timecode:true"></span></span>
-                    <span ng-if="current.asset.duration"> (<span ng-bind="::current.asset.duration | timecode:true"></span>)</span>
+                    <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
+                    <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                   </dd>
                   <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
                   <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
@@ -51,7 +51,7 @@
                 </dl>
               </div>
 
-              <ng-form ng-if="::editing" name="form.edit" ng-switch="::current.type">
+              <ng-form ng-if="::editing" name="form.edit" ng-switch="current.type">
                 <div ng-switch-when="asset">
                   <validator name="name" label="asset.name">
                     <input type="text" name="name" ng-model="current.data.name" placeholder="{{::'asset.name.placeholder' | message}}">
@@ -82,13 +82,13 @@
                 <div ng-switch-when="record">
                   <ng-form name="current.form.measures">
                   <dl class="cf">
-                    <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="metric.display || metric.name"></dt><br>
-                    <dd ng-repeat-end ng-switch="metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
-                      <select ng-switch-when="select" name="{{m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
-                      <input ng-switch-when="text" type="text" name="{{m}}" ng-model="current.data.measures[m]"/>
+                    <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
+                    <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
+                      <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
+                      <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                       <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
-                      <input ng-switch-when="date" input-date name="{{m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
-                      <input ng-switch-when="number" type="text" name="{{m}}" ng-model="current.data.measures[m]"/>
+                      <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
+                      <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                     </dd>
                     <dt>
                       <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
@@ -111,7 +111,7 @@
             <div class="player-main-viewport">
               <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
-                <span class="vem-float-dropzone-message" message="asset.add-drop{{::current.asset ? '.replace' : ''}}"></span>
+                <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
               <asset-display ng-if="!!asset" asset="asset"></asset-display>
             </div>
@@ -122,7 +122,7 @@
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
           <ul class="panel-tags-items">
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'active': tag.active}">
-              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="tag.id" ng-class="{'keyword': tag.keyword.length}"></div>
+              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="::tag.id" ng-class="{'keyword': tag.keyword.length}"></div>
               <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
                 <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="tag.state === true" hint="tags-vote-null">
                   -
