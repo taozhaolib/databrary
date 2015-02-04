@@ -27,8 +27,8 @@ app.controller('volume/slot', [
         .search('asset', undefined)
         .search('record', undefined)
         .search($scope.current?.type || '', $scope.current?.id)
-        .search('select', ruler.selection?.format())
-        .search('range', if ruler.zoomed then ruler.range.format() else undefined)
+        .search('select', if !ruler.selection.empty then ruler.selection.format())
+        .search('range', if ruler.zoomed then ruler.range.format())
 
     if editing || slot.checkPermission(constants.permission.EDIT)
       url = if editing then slot.route() else slot.editRoute()
@@ -64,6 +64,10 @@ app.controller('volume/slot', [
       p = (position - tlr.left) / tlr.width
       if p >= 0 && p <= 1
         ruler.range.l + p * (ruler.range.u - ruler.range.l)
+      else if p < 0
+        -Infinity
+      else if p > 1
+        Infinity
 
     $scope.positionStyle = (p) ->
       styles = {}
@@ -98,7 +102,7 @@ app.controller('volume/slot', [
       return
 
     seekPosition = (pos) ->
-      if o = positionOffset(pos)
+      if isFinite(o = positionOffset(pos))
         seekOffset(o)
         unless ruler.selection.contains(o) || ruler.selection.u == o # "loose" contains
           ruler.selection = Segment.empty
@@ -163,15 +167,14 @@ app.controller('volume/slot', [
         select(c)
       return
 
-    $scope.setSelection = (pos, onset) ->
+    $scope.setSelection = (pos, u) ->
       sel = ruler.selection
-      if ruler.selection.empty
-        sel = slot.segment
+      sel = slot.segment if sel.empty
       ruler.selection =
-        if onset
-          new Segment(pos, Math.max(sel.u, pos+0.1))
-        else
+        if u
           new Segment(Math.min(sel.l, pos), pos+0.1)
+        else
+          new Segment(pos, Math.max(sel.u, pos+0.1))
       finalizeSelection()
       return
 
@@ -212,11 +215,7 @@ app.controller('volume/slot', [
       return
 
     getSelection = ->
-      sel = ruler.selection
-      if ruler.selection.empty
-        new Segment(ruler.position)
-      else
-        ruler.selection
+      if ruler.selection.empty then new Segment(ruler.position) else ruler.selection
 
     addBlank = () ->
       $scope.tracks.push(blank = new Track())
@@ -280,7 +279,7 @@ app.controller('volume/slot', [
 
       dragMove: (event) ->
         pos = positionOffset(event.clientX)
-        return unless pos?
+        return unless isFinite(pos)
         @segment.u = pos + @segment.length
         @segment.l = pos
         if event.type != 'mousemove'
@@ -471,15 +470,13 @@ app.controller('volume/slot', [
             return
 
       dragLeft: (event) ->
-        pos = positionOffset(event.clientX)
-        @segment.l = pos ? -Infinity
+        @segment.l = positionOffset(event.clientX)
         if event.type != 'mousemove'
           @form.position.$setDirty()
         return
 
       dragRight: (event) ->
-        pos = positionOffset(event.clientX)
-        @segment.u = pos ? Infinity
+        @segment.u = positionOffset(event.clientX)
         if event.type != 'mousemove'
           @form.position.$setDirty()
         return
