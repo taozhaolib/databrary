@@ -250,7 +250,6 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         implicit val jc = ajc
         for {
           a <- asset(jc)
-          pos = jc \ "position"
           l <- a.slot
           seg = l.map(_.segment)
           _ <- write(a, seg, jc \ "position")(s => a.link(new models.Slot { def context = c; def segment = s }).map(_ => true))(json.Reads {
