@@ -53,8 +53,8 @@ sessionDuration True = 30*60
 
 createSession :: (DBM m, EntropyM c m) => PartyAuth -> Bool -> m SessionToken
 createSession auth su = do
-  Just (tok, ex) <- createToken $ \tok -> do
-    dbQuery1 [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${partyId p}, ${su}) RETURNING token, expires|]
+  (tok, ex) <- createToken $ \tok -> do
+    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${partyId p}, ${su}) RETURNING token, expires|]
   return $ SessionToken
     { sessionAccountToken = AccountToken
       { accountToken = Token tok ex

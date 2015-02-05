@@ -2,6 +2,7 @@
 module Databrary.Model.SQL 
   ( SelectOutput(..)
   , Selector
+  , selectOutput
   , selectColumns
   , addSelects
   , joinOn

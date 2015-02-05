@@ -6,6 +6,7 @@ module Databrary.DB
   , dbExecute1
   , dbQuery
   , dbQuery1
+  , dbQuery1'
   , dbTransaction
   , DBTransaction
   , useTPG
@@ -13,7 +14,7 @@ module Databrary.DB
 
 import Control.Applicative (Applicative)
 import Control.Exception (onException)
-import Control.Monad (when)
+import Control.Monad (when, (<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
 import Data.IORef (IORef, newIORef, atomicModifyIORef')
@@ -57,6 +58,9 @@ dbQuery1 q = do
     [] -> return $ Nothing
     [x] -> return $ Just x
     _ -> fail "pgQuery1: too many results"
+
+dbQuery1' :: (DBM m, PGQuery q a) => q -> m a
+dbQuery1' = maybe (fail "pgQuery1': no results") return <=< dbQuery1
 
 newtype DBTransaction a = DBTransaction { runDBTransaction :: ReaderT PGConnection IO a } deriving (Functor, Applicative, Monad, MonadIO)
 

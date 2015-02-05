@@ -9,6 +9,7 @@ module Databrary.Model.Party
   , authPartyJSON
 
   , changeParty
+  , createParty
   , lookupParty
   , lookupAccount
   , lookupAuthParty
@@ -82,6 +83,9 @@ authPartyJSON a i = partyJSON p i
 
 changeParty :: AuditM c m => Party -> m ()
 changeParty p = dbExecute1 =<< $(changeQuery 'p)
+
+createParty :: AuditM c m => Party -> m Party
+createParty p = dbQuery1' =<< $(createQuery 'p)
 
 lookupParty :: DBM m => Id Party -> m (Maybe Party)
 lookupParty (Id (-1)) = return $ Just nobodyParty

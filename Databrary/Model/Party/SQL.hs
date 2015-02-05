@@ -1,24 +1,18 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Party.SQL
-  ( changeQuery
-  , partyRow
+  ( partyRow
   , partySelector
   , accountSelector
+  , changeQuery
+  , createQuery
   ) where
 
 import Data.Char (toLower)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL (Selector, selectColumns, selectJoin, joinOn, maybeJoinOn)
-import Databrary.Model.Audit.SQL (auditChangeQuery)
+import Databrary.Model.SQL
+import Databrary.Model.Audit.SQL
 import Databrary.Model.Party.Types
-
-changeQuery :: TH.Name -> TH.ExpQ
-changeQuery p = auditChangeQuery "party"
-  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
-  ("id = ${partyId " ++ ps ++ "}")
-  Nothing
-  where ps = TH.nameBase p -- show $ TH.pprExp 3 $ TH.VarE p
 
 partyRow :: Selector
 partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]
@@ -45,3 +39,16 @@ accountSelector = selectJoin 'makeAccount
   [ partyRow
   , joinOn "party.id = account.id" accountRow
   ]
+
+changeQuery :: TH.Name -> TH.ExpQ
+changeQuery p = auditChangeQuery "party"
+  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
+  ("id = ${partyId " ++ ps ++ "}")
+  Nothing
+  where ps = TH.nameBase p
+
+createQuery :: TH.Name -> TH.ExpQ
+createQuery p = auditAddQuery "party"
+  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
+  (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
+  where ps = TH.nameBase p
