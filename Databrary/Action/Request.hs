@@ -11,9 +11,9 @@ import qualified Data.ByteString as BS
 import Network.HTTP.Types (HeaderName)
 import Network.Wai (Request, requestHeaders, pathInfo)
 
-import Control.Has (HasM, peeks)
+import Control.Has (MonadHas, peeks)
 
-type RequestM c m = HasM Request c m
+type RequestM c m = MonadHas Request c m
 
 getRequestHeader :: RequestM c m => HeaderName -> m (Maybe BS.ByteString)
 getRequestHeader h = peeks $ lookup h . requestHeaders

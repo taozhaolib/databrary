@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, DataKinds, TemplateHaskell, TypeFamilies, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, TypeFamilies, UndecidableInstances #-}
 module Databrary.Model.Id.Types 
   ( IdType
   , Id(..)

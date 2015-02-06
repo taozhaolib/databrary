@@ -2,6 +2,7 @@
 module Databrary.Controller.Party
   ( viewParty
   , postParty
+  , createParty
   ) where
 
 import Control.Applicative ((<$>), (<*>))
@@ -13,11 +14,13 @@ import qualified Text.Digestive as Form
 
 import Control.Has (view, see, peek, peeks)
 import Databrary.Action
-import Databrary.Action.Object
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Party
 import Databrary.Web.Form
+import Databrary.Controller.Permission
+import Databrary.Controller.Form
+import Databrary.View.Form
 
 withParty :: Maybe Permission -> Id Party -> (AuthParty -> AuthAction) -> AppAction
 withParty Nothing i f = withAuth $ do
@@ -25,7 +28,7 @@ withParty Nothing i f = withAuth $ do
   unless (partyId u == i) $ result =<< forbiddenResponse
   f $ selfAuthParty u
 withParty (Just p) i f = withAuth $
-  f =<< checkObject p (lookupAuthParty i)
+  f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
 
 displayParty :: Bool -> AuthParty -> AuthAction
 displayParty True = okResponse [] <=< peeks . authPartyJSON
@@ -57,10 +60,27 @@ partyForm p = up
     , partyURL = url
     }
 
+displayPartyForm :: Bool -> Maybe (Id Party) -> Form.View T.Text -> AuthAction
+displayPartyForm api i = displayForm api $
+  renderForm (maybe (createParty api) (postParty api) i)
+    [ ("name", inputText)
+    , ("affiliation", inputText)
+    , ("url", inputText)
+    ]
+
 postParty :: Bool -> Id Party -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
   withParty (Just PermissionADMIN) i $ \p -> do
+    let disp = displayPartyForm api (Just i)
     (p', _) <- runForm "party" disp (partyForm $ Just $ see p)
     changeParty p'
     displayParty api $ Lens.set view p' p
-  where disp = undefined
+
+createParty :: Bool -> AppRAction
+createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
+  perm :: Permission <- peek
+  _ <- checkPermission PermissionADMIN perm
+  let disp = displayPartyForm api Nothing
+  (bp, _) <- runForm "party" disp (partyForm Nothing)
+  p <- addParty bp
+  displayParty api p

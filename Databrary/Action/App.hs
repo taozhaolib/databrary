@@ -10,7 +10,7 @@ import Control.Monad.Reader (asks)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
-import Control.Has (makeHasFor)
+import Control.Has (makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Time
@@ -24,11 +24,7 @@ data AppRequest = AppRequest
   , appRequest :: !Request
   }
 
-makeHasFor ''AppRequest
-  [ ('appResource, [])
-  , ('appTimestamp, [])
-  , ('appRequest, [])
-  ]
+makeHasRec ''AppRequest ['appResource, 'appTimestamp, 'appRequest]
 
 type AppAction = Action AppRequest
 

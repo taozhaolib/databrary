@@ -1,10 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Party.SQL
   ( partyRow
-  , partySelector
-  , accountSelector
-  , changeQuery
-  , createQuery
+  , selectParty
+  , selectAccount
+  , updateParty
+  , insertParty
   ) where
 
 import Data.Char (toLower)
@@ -24,8 +24,8 @@ makeParty :: (Maybe Account -> Party) -> Maybe (Party -> Account) -> Party
 makeParty pc ac = p where
   p = pc (fmap ($ p) ac)
 
-partySelector :: Selector
-partySelector = selectJoin 'makeParty 
+selectParty :: Selector
+selectParty = selectJoin 'makeParty 
   [ partyRow
   , maybeJoinOn "party.id = account.id" accountRow
   ]
@@ -34,21 +34,21 @@ makeAccount :: (Maybe Account -> Party) -> (Party -> Account) -> Account
 makeAccount pc ac = a where
   a = ac (pc (Just a))
 
-accountSelector :: Selector
-accountSelector = selectJoin 'makeAccount 
+selectAccount :: Selector
+selectAccount = selectJoin 'makeAccount 
   [ partyRow
   , joinOn "party.id = account.id" accountRow
   ]
 
-changeQuery :: TH.Name -> TH.ExpQ
-changeQuery p = auditChangeQuery "party"
+updateParty :: TH.Name -> TH.ExpQ
+updateParty p = auditUpdate "party"
   (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
   ("id = ${partyId " ++ ps ++ "}")
   Nothing
   where ps = TH.nameBase p
 
-createQuery :: TH.Name -> TH.ExpQ
-createQuery p = auditAddQuery "party"
+insertParty :: TH.Name -> TH.ExpQ
+insertParty p = auditInsert "party"
   (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
   (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
   where ps = TH.nameBase p

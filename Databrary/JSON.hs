@@ -1,4 +1,3 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 module Databrary.JSON
   ( module Data.Aeson.Types
   , object

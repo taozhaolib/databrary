@@ -15,6 +15,7 @@ module Databrary.Action
   , notFoundResponse
   , okResponse
   , result
+  , guardAction
   , maybeAction
 
   , StdMethod(GET, POST)
@@ -59,6 +60,10 @@ notFoundResponse = emptyResponse notFound404 []
 
 okResponse :: (ActionM q m, ResponseData r) => ResponseHeaders -> r -> m Response
 okResponse = returnResponse ok200
+
+guardAction :: (ActionM q m, MonadIO m) => Bool -> m Response -> m ()
+guardAction True _ = return ()
+guardAction False r = result =<< r
 
 maybeAction :: (ActionM q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a

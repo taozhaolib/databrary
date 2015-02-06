@@ -21,9 +21,10 @@ routes :: R.RouteM AppAction
 routes = do
   api <- True <$ R.fixed "api" <|> return False
   msum 
-    [ "login" >> act (viewLogin api) 
-             <|> act (postLogin api)
-    , R.route >>= \party -> act (viewParty api party)
-                        <|> act (postParty api party)
+    [ "login" >>              act (viewLogin api) 
+                          <|> act (postLogin api)
+    , R.route >>= \party ->   act (viewParty api party)
+                          <|> act (postParty api party)
+    , "party" >>              act (createParty api)
     , "public" >> R.route >>= act . staticPublicFile
     ]

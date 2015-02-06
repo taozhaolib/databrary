@@ -4,7 +4,6 @@ module Databrary.Model.Audit.Types
   ( AuditAction(..)
   , AuditIdentity(..)
   , Audit(..)
-  , AuditM
   ) where
 
 import Data.Char (toUpper)
@@ -15,8 +14,6 @@ import Databrary.Time
 import Databrary.DB
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
-import Databrary.Identity.Types
-import Databrary.Action.Request
 
 useTPG
 
@@ -32,5 +29,3 @@ data Audit = Audit
   , auditIdentity :: !AuditIdentity
   , auditAction :: !AuditAction
   }
-
-type AuditM c m = (RequestM c m, IdentityM c m, DBM m)

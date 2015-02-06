@@ -45,7 +45,7 @@ sessionAuthorization tok = PartyAuth $ Authorization
   }
 
 lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
-lookupSession tok = dbQuery1 $(selectQuery sessionTokenSelector "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
+lookupSession tok = dbQuery1 $(selectQuery selectSessionToken "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
 
 sessionDuration :: Bool -> Offset
 sessionDuration False = 7*24*60*60

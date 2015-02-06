@@ -9,7 +9,7 @@ module Databrary.Model.Party
   , authPartyJSON
 
   , changeParty
-  , createParty
+  , addParty
   , lookupParty
   , lookupAccount
   , lookupAuthParty
@@ -23,7 +23,7 @@ import Control.Applicative ((<$>), (<$))
 import Control.Monad (guard)
 import Data.Int (Int64)
 import Data.Maybe (catMaybes, isNothing, fromMaybe)
-import Data.Monoid ((<>))
+import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 
@@ -50,8 +50,7 @@ rootParty = $(loadParty (Id 0))
 
 partyEmail :: Party -> Identity -> Maybe T.Text
 partyEmail p = do
-  s <- peeks _accessSite
-  r <- checkPermission (s >= PermissionSHARED)
+  r <- testPermission PermissionSHARED =<< peeks _accessSite
   return $ do
     guard r
     accountEmail <$> partyAccount p
@@ -82,19 +81,22 @@ authPartyJSON a i = partyJSON p i
   l = authPartyPermission a i
 
 changeParty :: AuditM c m => Party -> m ()
-changeParty p = dbExecute1 =<< $(changeQuery 'p)
+changeParty p = dbExecute1 =<< $(updateParty 'p)
 
-createParty :: AuditM c m => Party -> m Party
-createParty p = dbQuery1' =<< $(createQuery 'p)
+addParty :: AuditM c m => Party -> m AuthParty
+addParty bp = do
+  p <- dbQuery1' =<< $(insertParty 'bp)
+  i <- peek
+  return $ AuthParty (Authorization mempty i p)
 
 lookupParty :: DBM m => Id Party -> m (Maybe Party)
 lookupParty (Id (-1)) = return $ Just nobodyParty
 lookupParty (Id 0) = return $ Just rootParty
-lookupParty i = dbQuery1 $(selectQuery partySelector "$WHERE party.id = ${i}")
+lookupParty i = dbQuery1 $(selectQuery selectParty "$WHERE party.id = ${i}")
 
 lookupAccount :: DBM m => Id Party -> m (Maybe Account)
 lookupAccount (Id i) | i <= 0 = return Nothing
-lookupAccount i = dbQuery1 $(selectQuery accountSelector "$WHERE account.id = ${i}")
+lookupAccount i = dbQuery1 $(selectQuery selectAccount "$WHERE account.id = ${i}")
 
 lookupAuthParty :: (DBM m, IdentityM c m) => Id Party -> m (Maybe AuthParty)
 lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorization =<< peek where
@@ -107,7 +109,7 @@ lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorizatio
   lap 0 a =
     return $ Just $ AuthParty a
   lap _ a =
-    fmap AuthParty <$> dbQuery1 $(selectQuery (parentAuthorizationSelector 'up) "$!WHERE party.id = ${i}")
+    fmap AuthParty <$> dbQuery1 $(selectQuery (selectParentAuthorization 'up) "$!WHERE party.id = ${i}")
     where up = authorizeChild a
 
 selfAuthParty :: Party -> AuthParty
@@ -119,7 +121,7 @@ selfAuthParty p = AuthParty Authorization
 
 lookupPartyAuthByEmail :: DBM m => T.Text -> m (Maybe PartyAuth)
 lookupPartyAuthByEmail e = fmap PartyAuth <$>
-  dbQuery1 $(selectQuery (childAuthorizationSelector 'rootParty) "!WHERE account.email = ${e}")
+  dbQuery1 $(selectQuery (selectChildAuthorization 'rootParty) "!WHERE account.email = ${e}")
 
 auditAccountLogin :: (RequestM c m, DBM m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do

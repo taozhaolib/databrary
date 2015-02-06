@@ -7,25 +7,17 @@ module Databrary.Action.Auth
 
 import Control.Monad.Reader (asks)
 
-import Control.Has (makeHasFor)
+import Control.Has (makeHasRec)
 import Databrary.Action.Types
-import Databrary.Action.Request
 import Databrary.Action.App
-import Databrary.Model.Party.Types
-import Databrary.Model.Authorize
 import Databrary.Identity
-import Databrary.Resource
-import Databrary.Time
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest
   , authIdentity :: !Identity
   }
 
-makeHasFor ''AuthRequest
-  [ ('authApp, [''Resource, ''Request, ''Timestamp])
-  , ('authIdentity, [''PartyAuth, ''Authorization, ''Party, ''Access])
-  ]
+makeHasRec ''AuthRequest ['authApp, 'authIdentity]
 
 type AuthAction = Action AuthRequest
 

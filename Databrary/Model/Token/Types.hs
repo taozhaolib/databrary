@@ -8,7 +8,7 @@ module Databrary.Model.Token.Types
 
 import qualified Data.ByteString as BS
 
-import Control.Has (makeHasFor)
+import Control.Has (makeHasRec)
 import Databrary.Time
 import Databrary.Model.Party.Types
 import Databrary.Model.Authorize.Types
@@ -25,10 +25,7 @@ data AccountToken = AccountToken
   , tokenAccount :: Account
   }
 
-makeHasFor ''AccountToken
-  [ ('accountToken, [])
-  , ('tokenAccount, [''Party])
-  ]
+makeHasRec ''AccountToken ['accountToken, 'tokenAccount]
 
 data SessionToken = SessionToken
   { sessionAccountToken :: !AccountToken
@@ -36,7 +33,4 @@ data SessionToken = SessionToken
   , sessionAccess :: Access
   }
 
-makeHasFor ''SessionToken
-  [ ('sessionAccountToken, [''Token, ''Account, ''Party])
-  , ('sessionAccess, [])
-  ]
+makeHasRec ''SessionToken ['sessionAccountToken, 'sessionAccess]

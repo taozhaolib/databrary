@@ -1,4 +1,4 @@
-{-# LANGUAGE ScopedTypeVariables, FunctionalDependencies, TemplateHaskell #-}
+{-# LANGUAGE FunctionalDependencies, TemplateHaskell #-}
 module Databrary.Model.SQL 
   ( SelectOutput(..)
   , Selector

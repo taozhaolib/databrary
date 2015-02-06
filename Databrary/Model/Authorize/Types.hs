@@ -13,7 +13,7 @@ import Control.Lens (Lens', makeLensesFor)
 import Data.Monoid (Monoid(..))
 import Data.Time (UTCTime)
 
-import Control.Has (Has(..), makeHasFor)
+import Control.Has (Has(..), makeHasRec)
 import Databrary.Model.Permission.Types
 import Databrary.Model.Party.Types
 
@@ -46,25 +46,19 @@ data Authorization = Authorization
   , authorizeParent :: Party
   }
 
-makeHasFor ''Authorization
-  [ ('authorizeAccess, [''Permission])
-  ]
+makeHasRec ''Authorization ['authorizeAccess]
 
 data Authorize = Authorize
   { authorization :: Authorization
   , authorizeExpires :: UTCTime
   }
 
-makeHasFor ''Authorize
-  [ ('authorization, [''Access, ''Permission])
-  ]
+makeHasRec ''Authorize ['authorization]
 
 -- |'Authorization' representing (access to) the parent
 newtype AuthParty = AuthParty { authPartyAuthorization :: Authorization }
 
-makeHasFor ''AuthParty
-  [ ('authPartyAuthorization, [''Access, ''Permission])
-  ]
+makeHasRec ''AuthParty ['authPartyAuthorization]
 
 instance Has Party AuthParty where
   view f (AuthParty (Authorization a c p)) =
@@ -74,9 +68,7 @@ instance Has Party AuthParty where
 -- |'Authorization' representing the child('s access)
 newtype PartyAuth = PartyAuth { partyAuthAuthorization :: Authorization }
 
-makeHasFor ''PartyAuth
-  [ ('partyAuthAuthorization, [''Access, ''Permission])
-  ]
+makeHasRec ''PartyAuth ['partyAuthAuthorization]
 
 instance Has Party PartyAuth where
   view f (PartyAuth (Authorization a c p)) =

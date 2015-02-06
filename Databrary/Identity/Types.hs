@@ -5,7 +5,7 @@ module Databrary.Identity.Types
   , IdentityM
   ) where
 
-import Control.Has (HasM, makeHasFor, see)
+import Control.Has (makeHasRec, see)
 import Databrary.Model.Authorize.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.Id.Types
@@ -15,11 +15,9 @@ data Identity = Identity
   , identitySuperuser :: Bool
   }
 
-makeHasFor ''Identity
-  [ ('identityAuthorization, [''Authorization, ''Party, ''Access])
-  ]
+makeHasRec ''Identity ['identityAuthorization]
 
 identityId :: Identity -> Id Party
 identityId = partyId . see
 
-type IdentityM c m = HasM Identity c m
+type IdentityM c m = MonadHasIdentity c m

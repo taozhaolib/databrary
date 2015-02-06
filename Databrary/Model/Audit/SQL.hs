@@ -1,8 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Audit.SQL
-  ( auditAddQuery
-  , auditRemoveQuery
-  , auditChangeQuery
+  ( auditInsert
+  , auditDelete
+  , auditUpdate
   ) where
 
 import Data.List (intercalate)
@@ -36,16 +36,16 @@ auditQuery action table stmt returning = do
   where
   flags = simpleQueryFlags
 
-auditAddQuery :: String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
-auditAddQuery table args =
+auditInsert :: String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
+auditInsert table args =
   auditQuery AuditActionAdd table 
     ('(' : intercalate "," (map fst args) ++ ") VALUES (" ++ intercalate "," (map snd args) ++ ")")
 
-auditRemoveQuery :: String -> String -> Maybe SelectOutput -> TH.ExpQ
-auditRemoveQuery table wher =
+auditDelete :: String -> String -> Maybe SelectOutput -> TH.ExpQ
+auditDelete table wher =
   auditQuery AuditActionRemove table ("WHERE " ++ wher)
 
-auditChangeQuery :: String -> [(String, String)] -> String -> Maybe SelectOutput -> TH.ExpQ
-auditChangeQuery table sets wher =
+auditUpdate :: String -> [(String, String)] -> String -> Maybe SelectOutput -> TH.ExpQ
+auditUpdate table sets wher =
   auditQuery AuditActionChange table
     ("SET " ++ intercalate "," (map (\(c,v) -> c ++ "=" ++ v) sets) ++ " WHERE " ++ wher)
