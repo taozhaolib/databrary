@@ -31,11 +31,10 @@ app.directive 'volumeEditLinksForm', [
 
       form.save = () ->
         page.messages.clear(form)
-        data = form.data.filter (ref) ->
-          !ref.removed && (ref.head != '' || ref.url != '')
+        data = form.data.filter (ref) -> !ref.removed
         volume.save({links: data}).then(() ->
             form.validator.server {}
-            form.data = data
+            form.data = data.filter (ref) -> ref.head != '' || ref.url != ''
             blank()
 
             page.messages.add
