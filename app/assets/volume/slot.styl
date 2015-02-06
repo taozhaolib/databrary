@@ -1,7 +1,22 @@
-
-.slot-player
-.slot-timeline
+.frame
   margin-bottom b4
+  background-color white
+  box-shadow box-shadow-def
+  position relative
+  .slot-header.folder
+    &:before
+      top b4
+    span
+      text-transform uppercase
+      font-size b2
+
+//SLOT-HEADER
+.slot-header
+  width 100%
+  background mix(neutral51,white,50)
+  border-bottom 1px solid mix(neutral41,white,25)
+  height b1
+  padding-left b3
 
 .slot-download
   width 100%
@@ -13,12 +28,12 @@
     .download
       margin-left b3 
 
-//SLOT-TIMELINE
-.slot-timeline
-  background-color white
-  box-shadow box-shadow-def
-  position relative
+//SLOT-TOOLBAR
+.slot-toolbar  
+  height 2.5
+  border-bottom 1px solid neutral53
 
+//SLOT-TIMELINE
 .slot-timeline-selection
   height 0
   pointer-events none
@@ -280,11 +295,8 @@
 
 .player-main
   width 100%
-  background white
   padding b2
-  box-shadow box-shadow-def
   text-align center
-  position relative
 
   &:hover
     .player-main-float

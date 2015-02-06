@@ -20,8 +20,11 @@
           </a>
         </div>
 
-        <section class="slot-player" ng-if="!!current">
-          <div class="player-main">
+        <section class="slot-player frame" fold ng-if="!!current">
+          <div class="slot-header folder" folder ng-click="toggleFold()">
+            <span>Viewer</span>
+          </div>
+          <div class="player-main" folded>
             <div class="player-main-info">
               <nav class="player-main-info-actions">
                 <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
@@ -138,7 +141,8 @@
           </ul>
         </div>
 
-        <section id="slot-timeline" class="slot-timeline" mouse-drag-region>
+        <section id="slot-timeline" class="slot-timeline frame" mouse-drag-region>
+          <div class="slot-toolbar"></div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
           </div>
