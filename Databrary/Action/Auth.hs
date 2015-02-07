@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
+  , MonadHasAuthRequest
   , AuthAction
   , withAuth
   ) where

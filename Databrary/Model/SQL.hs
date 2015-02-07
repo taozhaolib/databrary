@@ -6,7 +6,9 @@ module Databrary.Model.SQL
   , selectColumns
   , addSelects
   , joinOn
+  , joinUsing
   , maybeJoinOn
+  , maybeJoinUsing
   , selectJoin
   , selectMap
   , makeQuery
@@ -112,8 +114,14 @@ maybeJoinWith j sel = sel
 joinOn :: String -> Selector -> Selector
 joinOn on = joinWith (\s -> " JOIN " ++ s ++ " ON " ++ on)
 
+joinUsing :: [String] -> Selector -> Selector
+joinUsing using = joinWith (\s -> " JOIN " ++ s ++ " USING (" ++ intercalate "," using ++ ")")
+
 maybeJoinOn :: String -> Selector -> Selector
 maybeJoinOn on = maybeJoinWith (\s -> " LEFT JOIN " ++ s ++ " ON " ++ on)
+
+maybeJoinUsing :: [String] -> Selector -> Selector
+maybeJoinUsing using = maybeJoinWith (\s -> " LEFT JOIN " ++ s ++ " USING (" ++ intercalate "," using ++ ")")
 
 selectJoin :: TH.Name -> [Selector] -> Selector
 selectJoin f l@(h:t) = Selector

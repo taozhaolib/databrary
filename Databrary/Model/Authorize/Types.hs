@@ -3,9 +3,13 @@ module Databrary.Model.Authorize.Types
   ( Access(..)
   , accessSite, accessMember
   , Authorization(..)
+  , MonadHasAuthorization
   , Authorize(..)
+  , MonadHasAuthorize
   , AuthParty(..)
+  , MonadHasAuthParty
   , PartyAuth(..)
+  , MonadHasPartyAuth
   ) where
 
 import Control.Monad (join)

@@ -11,6 +11,7 @@ import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (Has(..))
+import Databrary.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Party = Int32
@@ -32,7 +33,7 @@ data Account = Account
 instance Has (Id Party) Party where
   view f p = fmap (\i -> p{ partyId = i }) $ f $ partyId p
   see = partyId
-instance HasId Party where
+instance Kinded Party where
   kindOf _ = "party"
 
 instance Has Party Account where

@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, TemplateHaskell, StandaloneDeriving #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, DeriveDataTypeable, OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Audit.Types
   ( AuditAction(..)
@@ -6,18 +6,17 @@ module Databrary.Model.Audit.Types
   , Audit(..)
   ) where
 
-import Data.Char (toUpper)
-import Database.PostgreSQL.Typed.Enum (makePGEnum)
 import Database.PostgreSQL.Typed.Inet (PGInet)
 
 import Databrary.Time
-import Databrary.DB
+import Databrary.DB (useTPG)
+import Databrary.Enum
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 
 useTPG
 
-makePGEnum "audit.action" "AuditAction" (\(h:r) -> "AuditAction" ++ toUpper h:r)
+makeDBEnum "audit.action" "AuditAction"
 
 data AuditIdentity = AuditIdentity
   { auditWho :: !(Id Party)

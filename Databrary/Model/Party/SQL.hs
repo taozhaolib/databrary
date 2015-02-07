@@ -27,7 +27,7 @@ makeParty pc ac = p where
 selectParty :: Selector
 selectParty = selectJoin 'makeParty 
   [ partyRow
-  , maybeJoinOn "party.id = account.id" accountRow
+  , maybeJoinUsing ["id"] accountRow
   ]
 
 makeAccount :: (Maybe Account -> Party) -> (Party -> Account) -> Account
@@ -37,7 +37,7 @@ makeAccount pc ac = a where
 selectAccount :: Selector
 selectAccount = selectJoin 'makeAccount 
   [ partyRow
-  , joinOn "party.id = account.id" accountRow
+  , joinUsing ["id"] accountRow
   ]
 
 updateParty :: TH.Name -> TH.ExpQ

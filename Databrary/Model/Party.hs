@@ -17,15 +17,22 @@ module Databrary.Model.Party
   , lookupPartyAuthByEmail
   , auditAccountLogin
   , recentAccountLogins
+  , PartyFilter(..)
+  , findParties
   ) where
 
 import Control.Applicative ((<$>), (<$))
+import Control.Lens ((^.), set)
 import Control.Monad (guard)
 import Data.Int (Int64)
+import Data.List (intercalate)
 import Data.Maybe (catMaybes, isNothing, fromMaybe)
 import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
+import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
+import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
+import Database.PostgreSQL.Typed.Types (pgQuote)
 
 import Control.Has (Has(..), peek, peeks, poke)
 import Databrary.DB
@@ -38,6 +45,7 @@ import Databrary.Model.Audit
 import Databrary.Identity.Types
 import Databrary.Model.Authorize.Types
 import Databrary.Model.Authorize.SQL
+import Databrary.Model.Volume.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.Party.SQL
 import Databrary.Model.Party.Boot
@@ -48,16 +56,19 @@ nobodyParty, rootParty :: Party
 nobodyParty = $(loadParty (Id (-1)))
 rootParty = $(loadParty (Id 0))
 
+emailPermission :: Permission
+emailPermission = PermissionSHARED
+
+showEmail :: Identity -> Bool
+showEmail i = i ^. accessSite >= emailPermission
+
 partyEmail :: Party -> Identity -> Maybe T.Text
-partyEmail p = do
-  r <- testPermission PermissionSHARED =<< peeks _accessSite
-  return $ do
-    guard r
-    accountEmail <$> partyAccount p
+partyEmail p i =
+  guard (showEmail i) >> accountEmail <$> partyAccount p
 
 authPartyPermission :: AuthParty -> Identity -> Permission
 authPartyPermission a i =
-  see a `max` (peeks _accessSite i `min` PermissionREAD)
+  see a `max` ((i ^. accessSite) `min` PermissionREAD)
 
 _authPartyEmail :: AuthParty -> Identity -> Maybe T.Text
 _authPartyEmail p =
@@ -75,7 +86,7 @@ partyJSON p i = JSON.object $ catMaybes
 authPartyJSON :: AuthParty -> Identity -> JSON.Object
 authPartyJSON a i = partyJSON p i
   JSON..+ ("permission" JSON..= l)
-  JSON..+? (guard (l >= PermissionSHARED) >> ("email" JSON..=) . accountEmail <$> partyAccount p)
+  JSON..+? (guard (l >= emailPermission) >> ("email" JSON..=) . accountEmail <$> partyAccount p)
   where
   p = see a
   l = authPartyPermission a i
@@ -101,11 +112,8 @@ lookupAccount i = dbQuery1 $(selectQuery selectAccount "$WHERE account.id = ${i}
 lookupAuthParty :: (DBM m, IdentityM c m) => Id Party -> m (Maybe AuthParty)
 lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorization =<< peek where
   lap (-1) a =
-    return $ Just $ AuthParty a
-      { authorizeParent = nobodyParty
-      , authorizeAccess = (authorizeAccess a)
-        { _accessMember = PermissionNONE }
-      }
+    return $ Just $ AuthParty $ set accessMember PermissionNONE a
+      { authorizeParent = nobodyParty }
   lap 0 a =
     return $ Just $ AuthParty a
   lap _ a =
@@ -131,3 +139,33 @@ auditAccountLogin success who email = do
 recentAccountLogins :: DBM m => Party -> m Int64
 recentAccountLogins who = fromMaybe 0 <$>
   dbQuery1 [pgSQL|!SELECT count(*) FROM audit.account WHERE audit_action = 'attempt' AND id = ${partyId who} AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'|]
+
+data PartyFilter = PartyFilter
+  { partyFilterQuery :: Maybe String
+  , partyFilterAccess :: Maybe Permission
+  , partyFilterInstitution :: Maybe Bool
+  , partyFilterAuthorize :: Maybe Party
+  , partyFilterVolume :: Maybe Volume
+  }
+
+partyFilter :: PartyFilter -> Identity -> String
+partyFilter PartyFilter{..} ident =
+  withq partyFilterAccess (const " JOIN authorize_view ON party.id = child AND parent = 0")
+  ++ " WHERE id > 0"
+  ++ withq partyFilterQuery (\n -> " AND " ++ queryVal ++ " ILIKE " ++ pgQuote (wordPat n))
+  ++ withq partyFilterAccess (\a -> " AND site = " ++ pgSafeLiteral a)
+  ++ withq partyFilterInstitution (\i -> if i then " AND account.id IS NULL" else " AND account.password IS NOT NULL")
+  ++ withq partyFilterAuthorize (\a -> let i = pgSafeLiteral (partyId a) in " AND party.id <> " ++ i ++ " AND id NOT IN (SELECT child FROM authorize WHERE parent = " ++ i ++ " UNION SELECT parent FROM authorize WHERE child = " ++ i ++ ")")
+  ++ withq partyFilterVolume (\v -> " AND id NOT IN (SELECT party FROM volume_access WHERE volume = " ++ pgSafeLiteral (volumeId v) ++ ")")
+  where
+  withq v f = maybe "" f v
+  wordPat = intercalate "%" . ("":) . (++[""]) . words
+  queryVal
+    | showEmail ident = "(name || COALESCE(' ' || email, ''))"
+    | otherwise = "name"
+
+findParties :: (IdentityM c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
+findParties pf limit offset = do
+  q <- peeks $ partyFilter pf
+  dbQuery $ $(selectQuery selectParty "") `unsafeModifyQuery`
+    (++ q ++ [pgSQL|# LIMIT ${fromIntegral limit :: Int64} OFFSET ${fromIntegral offset :: Int64}|])

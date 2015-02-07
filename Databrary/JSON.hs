@@ -4,7 +4,6 @@ module Databrary.JSON
   , (.+)
   , (.+?)
   , (.++)
-  , parseEnum
   ) where
 
 import Data.Aeson.Types hiding (object)
@@ -24,11 +23,3 @@ o .+? Just p = o .+ p
 
 (.++) :: Object -> [Pair] -> Object
 (.++) = foldl' (.+)
-
-parseEnum :: forall a . (Bounded a, Enum a) => String -> Value -> Parser a
-parseEnum s = withScientific s (p . floor) where
-  p i
-    | i < fe minBound || i > fe maxBound = fail $ s ++ " out of range"
-    | otherwise = return $ toEnum i
-  fe :: a -> Int
-  fe = fromEnum

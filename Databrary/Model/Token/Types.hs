@@ -3,7 +3,9 @@ module Databrary.Model.Token.Types
   ( TokenId
   , Token(..)
   , AccountToken(..)
+  , MonadHasAccountToken
   , SessionToken(..)
+  , MonadHasSessionToken
   ) where
 
 import qualified Data.ByteString as BS

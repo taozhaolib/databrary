@@ -3,17 +3,20 @@ module Databrary.Controller.Party
   ( viewParty
   , postParty
   , createParty
+  , searchParty
   ) where
 
-import Control.Applicative ((<$>), (<*>))
+import Control.Applicative ((<$>), (<*>), pure)
 import qualified Control.Lens as Lens (set)
 import Control.Monad (unless, (<=<))
+import qualified Data.Aeson.Types as JSON
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Text.Digestive as Form
 
 import Control.Has (view, see, peek, peeks)
 import Databrary.Action
+import Databrary.Kind
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Party
@@ -84,3 +87,33 @@ createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   (bp, _) <- runForm "party" disp (partyForm Nothing)
   p <- addParty bp
   displayParty api p
+
+paginationForm :: Monad m => Form.Form T.Text m (Int, Int)
+paginationForm = (,)
+  <$> "limit" Form..: checkReadForm "invalid limit" (\l -> l > 0 && l <= 129) (Just 32)
+  <*> "offset" Form..: checkReadForm "invalid offset" (>= 0) (Just 0)
+
+partySearchForm :: Monad m => Form.Form T.Text m PartyFilter
+partySearchForm = PartyFilter
+  <$> "query" Form..: Form.optionalString Nothing
+  <*> "access" Form..: optionalEnumForm Nothing
+  <*> "institution" Form..: (Just <$> Form.bool Nothing)
+  <*> pure Nothing
+  <*> pure Nothing
+
+displayPartySearchForm :: Bool -> Form.View T.Text -> AuthAction
+displayPartySearchForm api = displayForm api $
+  renderForm (searchParty api)
+    [ ("query", inputText)
+    , ("access", inputEnum PermissionNONE)
+    , ("institution", inputCheckbox)
+    ]
+
+searchParty :: Bool -> AppRAction
+searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
+  let disp = displayPartySearchForm api
+  ((pf, (limit, offset)), form) <- runForm "party" disp ((,) <$> partySearchForm <*> paginationForm)
+  p <- findParties pf limit offset
+  if api
+    then okResponse [] . JSON.toJSON =<< peeks (mapM partyJSON p)
+    else displayPartySearchForm api form

@@ -35,6 +35,7 @@ Executable databrary
     unordered-containers,
     vector,
     attoparsec,
+    case-insensitive,
     aeson,
     byteable,
     cryptohash,

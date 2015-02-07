@@ -26,5 +26,6 @@ routes = do
     , R.route >>= \party ->   act (viewParty api party)
                           <|> act (postParty api party)
     , "party" >>              act (createParty api)
+                          <|> act (searchParty api)
     , "public" >> R.route >>= act . staticPublicFile
     ]

@@ -2,6 +2,9 @@
 module Databrary.View.Form
   ( inputText
   , inputPassword
+  , inputCheckbox
+  , inputSelect
+  , inputEnum
   , renderForm
   ) where
 
@@ -11,6 +14,7 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
 import qualified Text.Digestive as F
 
+import Databrary.Enum
 import Databrary.View.Html
 import Databrary.Action
 
@@ -19,26 +23,50 @@ absoluteRef ref F.View{ F.viewContext = [] } = ref
 absoluteRef ref F.View{ F.viewContext = ctx } =
   T.concat $ (concatMap (\x -> [x,"."]) ctx) ++ [ref]
 
+refId :: T.Text -> F.View v -> H.AttributeValue
+refId ref view = H.toValue $ absoluteRef ref view
+
 label :: T.Text -> F.View v -> H.Html -> H.Html
 label ref view = H.label
-  H.! HA.for (H.toValue ref')
-  where ref' = absoluteRef ref view
+  H.! HA.for ref'
+  where ref' = refId ref view
 
 inputText :: T.Text -> F.View v -> H.Html
 inputText ref view = H.input
   H.! HA.type_ "text"
-  H.! HA.id    (H.toValue ref')
-  H.! HA.name  (H.toValue ref')
+  H.! HA.id    ref'
+  H.! HA.name  ref'
   H.! HA.value (H.toValue $ F.fieldInputText ref view)
-  where ref' = absoluteRef ref view
+  where ref' = refId ref view
 
 inputPassword :: T.Text -> F.View v -> H.Html
 inputPassword ref view = H.input
   H.! HA.type_ "password"
-  H.! HA.id    (H.toValue ref')
-  H.! HA.name  (H.toValue ref')
+  H.! HA.id    ref'
+  H.! HA.name  ref'
   H.! HA.value (H.toValue $ F.fieldInputText ref view)
-  where ref' = absoluteRef ref view
+  where ref' = refId ref view
+
+inputCheckbox :: T.Text -> F.View v -> H.Html
+inputCheckbox ref view = H.input
+  H.! HA.type_ "checkbox"
+  H.! HA.id    ref'
+  H.! HA.name  ref'
+  H.!? (F.fieldInputBool ref view, HA.checked "checked")
+  where ref'     = refId ref view
+
+inputSelect :: (H.ToValue a, H.ToMarkup b) => [(a, b, Bool)] -> T.Text -> F.View v -> H.Html
+inputSelect choices ref view = H.select
+  H.! HA.id   ref'
+  H.! HA.name ref'
+  $ mapM_ (\(i, c, sel) -> H.option
+    H.!  HA.value (H.toValue i)
+    H.!? (sel, HA.selected "selected")
+    $ H.toHtml c) choices
+  where ref' = refId ref view
+
+inputEnum :: DBEnum a => a -> T.Text -> F.View v -> H.Html
+inputEnum a = inputSelect $ map (\(x, v) -> (fromEnum x, v, x == a)) $ pgEnumValues
 
 errorList :: [H.Html] -> H.Html
 errorList [] = mempty

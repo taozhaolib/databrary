@@ -10,6 +10,7 @@ import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLift)
 
 import Control.Has (Has(..))
+import Databrary.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Format = Int16
@@ -24,7 +25,7 @@ data Format = Format
 instance Has (Id Format) Format where
   view f a = fmap (\i -> a{ formatId = i }) $ f $ formatId a
   see = formatId
-instance HasId Format where
+instance Kinded Format where
   kindOf _ = "format"
 
 deriveLift ''Format
