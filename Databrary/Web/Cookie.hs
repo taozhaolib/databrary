@@ -17,13 +17,13 @@ import Databrary.Resource
 import Databrary.Time
 import Databrary.Action.Request
 
-getCookies :: RequestM c m => m Cook.Cookies
+getCookies :: MonadHasRequest c m => m Cook.Cookies
 getCookies = maybe [] Cook.parseCookies <$> getRequestHeader hCookie
 
-getSignedCookie :: (ResourceM c m, RequestM c m) => BS.ByteString -> m (Maybe BS.ByteString)
+getSignedCookie :: (MonadHasResource c m, MonadHasRequest c m) => BS.ByteString -> m (Maybe BS.ByteString)
 getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< getCookies
 
-setSignedCookie :: (ResourceM c m, RequestM c m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
+setSignedCookie :: (MonadHasResource c m, MonadHasRequest c m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
 setSignedCookie c val ex = do
   val' <- sign val
   sec <- peeks Wai.isSecure

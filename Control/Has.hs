@@ -46,11 +46,11 @@ getFieldType tn fn = do
   unless (tn' == tn) $ fail $ show tn ++ "." ++ show fn ++ ": field from wrong type: " ++ show tn'
   return ft
 
-makeHasFor :: TH.Name -> [(TH.Name, [TH.Name])] -> TH.DecsQ
+makeHasFor :: TH.Name -> [(TH.Name, [TH.Type])] -> TH.DecsQ
 makeHasFor tn fs = concatM
   ((++)
     [ TH.TySynD ht [TH.PlainTV cv] $ tupleT $
-        map (\t -> TH.ConT ''Has `TH.AppT` t `TH.AppT` TH.VarT cv) (tt : concatMap (map TH.ConT . snd) fs)
+        map (\t -> TH.ConT ''Has `TH.AppT` t `TH.AppT` TH.VarT cv) (tt : concatMap snd fs)
     , TH.TySynD (TH.mkName ("MonadHas" ++ TH.nameBase tn)) [TH.PlainTV cv, TH.PlainTV mv] $ tupleT $
         [ TH.ConT ''Functor `TH.AppT` TH.VarT mv
         , TH.ConT ''Applicative `TH.AppT` TH.VarT mv
@@ -67,7 +67,7 @@ makeHasFor tn fs = concatM
             view = $(TH.varE ln)
             see = $(TH.varE fn) |]
       (\st ->
-        [d| instance Has $(TH.conT st) $(return tt) where
+        [d| instance Has $(return st) $(return tt) where
               view = $(TH.varE ln) . view
               see = see . $(TH.varE fn) |])
       ts)
@@ -86,7 +86,7 @@ makeHasRec tn fs = do
   makeHasFor tn =<< mapM (\fn -> do
     ft <- getFieldType tn fn
     return (fn, [ st
-      | TH.InstanceD _ (TH.ConT hs `TH.AppT` TH.ConT st `TH.AppT` ft') _ <- il
+      | TH.InstanceD _ (TH.ConT hs `TH.AppT` st `TH.AppT` ft') _ <- il
       , hs == ''Has
       , ft' == ft 
       ]))

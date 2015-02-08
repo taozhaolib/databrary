@@ -1,22 +1,19 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 module Databrary.Resource
   ( Resource(..)
-  , ResourceM
+  , MonadHasResource
   , getResource
-  , ResourceT
   , initResource
-  , runResource
   ) where
 
 import Control.Applicative ((<$>), (<*>))
-import Control.Monad.Reader (ReaderT, runReaderT)
 import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
-import Control.Has (MonadHas, peeks)
-import Databrary.Resource.DB
-import Databrary.Resource.Entropy
+import Control.Has (makeHasRec, peeks)
+import Databrary.DB
+import Databrary.Entropy
 
 data Resource = Resource
   { resourceConfig :: C.Config
@@ -25,9 +22,9 @@ data Resource = Resource
   , resourceEntropy :: Entropy
   }
 
-type ResourceM c m = MonadHas Resource c m
+makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy]
 
-getResource :: ResourceM c m => (Resource -> a) -> m a
+getResource :: MonadHasResource c m => (Resource -> a) -> m a
 getResource = peeks
 
 initResource :: IO Resource
@@ -37,8 +34,3 @@ initResource = do
     <$> C.require conf "secret"
     <*> initDB (C.subconfig "db" conf)
     <*> initEntropy
-
-type ResourceT = ReaderT Resource
-
-runResource :: ResourceT m a -> Resource -> m a
-runResource = runReaderT

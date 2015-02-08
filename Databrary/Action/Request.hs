@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Action.Request
-  ( RequestM
-  , Request
+  ( Request
+  , MonadHasRequest
   , getRequestHeader
   , getRequestHeaders
   , isApi
@@ -13,15 +13,15 @@ import Network.Wai (Request, requestHeaders, pathInfo)
 
 import Control.Has (MonadHas, peeks)
 
-type RequestM c m = MonadHas Request c m
+type MonadHasRequest c m = MonadHas Request c m
 
-getRequestHeader :: RequestM c m => HeaderName -> m (Maybe BS.ByteString)
+getRequestHeader :: MonadHasRequest c m => HeaderName -> m (Maybe BS.ByteString)
 getRequestHeader h = peeks $ lookup h . requestHeaders
 
-getRequestHeaders :: RequestM c m => HeaderName -> m [BS.ByteString]
+getRequestHeaders :: MonadHasRequest c m => HeaderName -> m [BS.ByteString]
 getRequestHeaders h = peeks $ map snd . filter ((h ==) . fst) . requestHeaders
 
-isApi :: RequestM c m => m Bool
+isApi :: MonadHasRequest c m => m Bool
 isApi = peeks (isapi . pathInfo) where
   isapi ("api":_) = True
   isapi _ = False

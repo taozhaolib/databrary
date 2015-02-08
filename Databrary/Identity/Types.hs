@@ -1,14 +1,11 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Identity.Types
   ( Identity(..)
-  , identityId
-  , IdentityM
+  , MonadHasIdentity
   ) where
 
-import Control.Has (makeHasRec, see)
+import Control.Has (makeHasRec)
 import Databrary.Model.Authorize.Types
-import Databrary.Model.Party.Types
-import Databrary.Model.Id.Types
 
 data Identity = Identity
   { identityAuthorization :: PartyAuth
@@ -16,8 +13,3 @@ data Identity = Identity
   }
 
 makeHasRec ''Identity ['identityAuthorization]
-
-identityId :: Identity -> Id Party
-identityId = partyId . see
-
-type IdentityM c m = MonadHasIdentity c m

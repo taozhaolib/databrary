@@ -15,7 +15,7 @@ type instance IdType Record = Int32
 data Record = Record
   { recordId :: Id Record
   , recordVolume :: Volume
-  , recordCategory :: RecordCategory
+  , recordCategory :: Maybe RecordCategory
   }
 
 instance Kinded Record where

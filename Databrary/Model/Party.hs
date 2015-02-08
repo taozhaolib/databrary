@@ -109,7 +109,7 @@ lookupAccount :: DBM m => Id Party -> m (Maybe Account)
 lookupAccount (Id i) | i <= 0 = return Nothing
 lookupAccount i = dbQuery1 $(selectQuery selectAccount "$WHERE account.id = ${i}")
 
-lookupAuthParty :: (DBM m, IdentityM c m) => Id Party -> m (Maybe AuthParty)
+lookupAuthParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe AuthParty)
 lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorization =<< peek where
   lap (-1) a =
     return $ Just $ AuthParty $ set accessMember PermissionNONE a
@@ -131,7 +131,7 @@ lookupPartyAuthByEmail :: DBM m => T.Text -> m (Maybe PartyAuth)
 lookupPartyAuthByEmail e = fmap PartyAuth <$>
   dbQuery1 $(selectQuery (selectChildAuthorization 'rootParty) "!WHERE account.email = ${e}")
 
-auditAccountLogin :: (RequestM c m, DBM m) => Bool -> Party -> T.Text -> m ()
+auditAccountLogin :: (MonadHasRequest c m, DBM m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do
   ip <- getRemoteIp
   dbExecute1 [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES (${if success then AuditActionOpen else AuditActionAttempt}, -1, ${ip}, ${partyId who}, ${email})|]
@@ -164,7 +164,7 @@ partyFilter PartyFilter{..} ident =
     | showEmail ident = "(name || COALESCE(' ' || email, ''))"
     | otherwise = "name"
 
-findParties :: (IdentityM c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
+findParties :: (MonadHasIdentity c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
 findParties pf limit offset = do
   q <- peeks $ partyFilter pf
   dbQuery $ $(selectQuery selectParty "") `unsafeModifyQuery`

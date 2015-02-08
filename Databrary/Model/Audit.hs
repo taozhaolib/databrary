@@ -11,16 +11,16 @@ import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Typed.Inet (PGInet(..), sockAddrPGInet)
 import Network.Wai (remoteHost)
 
-import Control.Has (peeks)
+import Control.Has (peek, peeks)
 import Databrary.DB
 import Databrary.Action.Request
 import Databrary.Identity.Types
 import Databrary.Model.Audit.Types
 
-type AuditM c m = (RequestM c m, IdentityM c m, DBM m)
+type AuditM c m = (MonadHasRequest c m, MonadHasIdentity c m, DBM m)
 
-getRemoteIp :: RequestM c m => m PGInet
+getRemoteIp :: MonadHasRequest c m => m PGInet
 getRemoteIp = peeks (fromMaybe (PGInet 0 32) . sockAddrPGInet . remoteHost)
 
-getAuditIdentity :: (RequestM c m, IdentityM c m) => m AuditIdentity
-getAuditIdentity = AuditIdentity <$> peeks identityId <*> getRemoteIp
+getAuditIdentity :: (MonadHasRequest c m, MonadHasIdentity c m) => m AuditIdentity
+getAuditIdentity = AuditIdentity <$> peek <*> getRemoteIp

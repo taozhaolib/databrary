@@ -3,6 +3,7 @@ module Databrary.Model.SQL
   ( SelectOutput(..)
   , Selector
   , selectOutput
+  , selector
   , selectColumns
   , addSelects
   , joinOn
@@ -13,6 +14,7 @@ module Databrary.Model.SQL
   , selectMap
   , makeQuery
   , selectQuery
+  , nameRef
   ) where
 
 import Control.Applicative ((<$>))
@@ -158,3 +160,6 @@ selectQuery :: Selector -> String -> TH.ExpQ
 selectQuery (Selector{ selectOutput = o, selectSource = s }) sqlf =
   makeQuery flags (\c -> "SELECT " ++ c ++ " FROM " ++ s ++ ' ':sql) o
   where (flags, sql) = parseQueryFlags sqlf
+
+nameRef :: TH.Name -> String
+nameRef n = maybe b (++ '.' : b) $ TH.nameModule n where b = TH.nameBase n

@@ -10,6 +10,7 @@ import qualified Databrary.Web.Route as R
 import Databrary.Action
 import Databrary.Controller.Login
 import Databrary.Controller.Party
+import Databrary.Controller.Volume
 import Databrary.Controller.Record
 import Databrary.Controller.Static
 
@@ -24,9 +25,11 @@ routes = do
   msum 
     [ "login" >>              act (viewLogin api) 
                           <|> act (postLogin api)
-    , R.route >>= \party ->   act (viewParty api party)
-                          <|> act (postParty api party)
+    , R.route >>= \p ->       act (viewParty api p)
+                          <|> act (postParty api p)
     , "party" >>              act (createParty api)
                           <|> act (searchParty api)
+    , R.route >>= \v ->       act (viewVolume api v)
+    , R.route >>= \r ->       act (viewRecord api r)
     , "public" >> R.route >>= act . staticPublicFile
     ]

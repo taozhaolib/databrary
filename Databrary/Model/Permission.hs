@@ -9,7 +9,7 @@ import Control.Has (Has, see, peeks)
 import Databrary.Identity.Types
 import Databrary.Model.Permission.Types
 
-testPermission :: IdentityM c m => Has Permission a => Permission -> a -> m Bool
+testPermission :: (MonadHasIdentity c m, Has Permission a) => Permission -> a -> m Bool
 testPermission p o
   | see o >= p = return True
   | otherwise = peeks identitySuperuser

@@ -1,7 +1,10 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Party.Types 
   ( Party(..)
+  , partyId'
+  , MonadHasParty
   , Account(..)
+  , MonadHasAccount
   ) where
 
 import qualified Data.ByteString as BS
@@ -9,7 +12,7 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (makeHasRec, Has(..))
+import Control.Has (makeHasRec)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 

@@ -24,7 +24,7 @@ makeIdentity tok = Identity
   , identitySuperuser = sessionSuperuser tok
   }
 
-getIdentity :: (ResourceM c m, RequestM c m, DBM m) => m Identity
+getIdentity :: (MonadHasResource c m, MonadHasRequest c m, DBM m) => m Identity
 getIdentity = do
   c <- getSignedCookie "session"
   s <- maybe (return Nothing) lookupSession c

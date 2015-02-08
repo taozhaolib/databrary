@@ -22,12 +22,12 @@ selectParentAuthorization :: TH.Name -> Selector
 selectParentAuthorization child =
   selectMap (`TH.AppE` TH.VarE child) $ selectJoin 'makePartyAuthorization
     [ accessRow "authorize_view"
-    , joinOn ("authorize_view.parent = party.id AND authorize_view.child = ${partyId " ++ TH.nameBase child ++ "}") selectParty 
+    , joinOn ("authorize_view.parent = party.id AND authorize_view.child = ${partyId " ++ nameRef child ++ "}") selectParty 
     ]
 
 selectChildAuthorization :: TH.Name -> Selector
 selectChildAuthorization parent =
   selectMap (`TH.AppE` TH.VarE parent) $ selectJoin 'Authorization
     [ accessRow "authorize_view"
-    , joinOn ("authorize_view.child = party.id AND authorize_view.parent = ${partyId " ++ TH.nameBase parent ++ "}") selectParty
+    , joinOn ("authorize_view.child = party.id AND authorize_view.parent = ${partyId " ++ nameRef parent ++ "}") selectParty
     ]

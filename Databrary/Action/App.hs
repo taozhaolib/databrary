@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.App 
   ( AppRequest(..)
+  , MonadHasAppRequest
   , AppAction
   , withApp
   ) where

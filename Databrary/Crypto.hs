@@ -18,17 +18,17 @@ hmac key = Base64.encode . (toBytes :: Hash.HMAC Hash.Skein256_224 -> BS.ByteStr
 hmacLength :: Int
 hmacLength = BS.length $ hmac "" ""
 
-signature :: ResourceM c m => BS.ByteString -> m BS.ByteString
+signature :: MonadHasResource c m => BS.ByteString -> m BS.ByteString
 signature msg = do
   secret <- getResource resourceSecret
   return $ hmac secret msg
 
-sign :: ResourceM c m => BS.ByteString -> m BS.ByteString
+sign :: MonadHasResource c m => BS.ByteString -> m BS.ByteString
 sign msg = do
   sig <- signature msg
   return $ sig `BS.append` msg
 
-unSign :: ResourceM c m => BS.ByteString -> m (Maybe BS.ByteString)
+unSign :: MonadHasResource c m => BS.ByteString -> m (Maybe BS.ByteString)
 unSign sigmsg = do
   sig' <- signature msg
   return $ do

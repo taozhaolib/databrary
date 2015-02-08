@@ -25,7 +25,7 @@ auditQuery action table stmt returning = do
   ip <- TH.newName "ip"
   let sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
         ++ " RETURNING *) INSERT INTO audit." ++ table
-        ++ " SELECT CURRENT_TIMESTAMP, ${" ++ TH.nameBase who ++ "}, ${" ++ TH.nameBase ip ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
+        ++ " SELECT CURRENT_TIMESTAMP, ${" ++ nameRef who ++ "}, ${" ++ nameRef ip ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
   TH.doE
     [ return $ TH.BindS
       (TH.RecP 'AuditIdentity [('auditWho, TH.VarP who), ('auditIp, TH.VarP ip)])
