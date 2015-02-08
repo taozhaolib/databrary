@@ -3,7 +3,6 @@ module Databrary.Model.Volume.Types
   ( Volume(..)
   ) where
 
-import Data.Int (Int32)
 import qualified Data.Text as T
 
 import Control.Has (Has(..))

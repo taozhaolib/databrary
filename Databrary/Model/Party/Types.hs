@@ -5,7 +5,6 @@ module Databrary.Model.Party.Types
   ) where
 
 import qualified Data.ByteString as BS
-import Data.Int (Int32)
 import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)

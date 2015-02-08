@@ -10,6 +10,7 @@ import qualified Databrary.Web.Route as R
 import Databrary.Action
 import Databrary.Controller.Login
 import Databrary.Controller.Party
+import Databrary.Controller.Record
 import Databrary.Controller.Static
 
 act :: RouteAction q -> R.RouteM (Action q)

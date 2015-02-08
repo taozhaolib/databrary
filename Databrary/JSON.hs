@@ -1,6 +1,8 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.JSON
   ( module Data.Aeson.Types
   , object
+  , record
   , (.+)
   , (.+?)
   , (.++)
@@ -12,6 +14,9 @@ import Data.List (foldl')
 
 object :: [Pair] -> Object
 object = HM.fromList
+
+record :: ToJSON k => k -> [Pair] -> Object
+record k = object . (("id" .= k) :)
 
 infixl 4 .+, .+?, .++
 (.+) :: Object -> Pair -> Object

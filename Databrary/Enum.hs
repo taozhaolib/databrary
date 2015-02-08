@@ -11,7 +11,7 @@ import qualified Data.Aeson.Types as JSON
 import qualified Data.CaseInsensitive as CI (mk)
 import Data.Char (toUpper)
 import qualified Data.Text as T
-import Database.PostgreSQL.Typed.Enum (PGEnum(..), makePGEnum)
+import Database.PostgreSQL.Typed.Enum (PGEnum, pgEnumValues, makePGEnum)
 import Text.Read (readMaybe)
 
 import qualified Language.Haskell.TH as TH

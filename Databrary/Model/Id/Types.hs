@@ -2,9 +2,12 @@
 module Databrary.Model.Id.Types 
   ( IdType
   , Id(..)
+  , Int32
   ) where
 
 import Control.Applicative ((<$>))
+import qualified Data.Aeson as JSON
+import Data.Int (Int32)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 import Database.PostgreSQL.Typed.Dynamic (PGRep)
 import qualified Language.Haskell.TH as TH
@@ -42,6 +45,11 @@ instance (PGParameter t (IdType a), PGColumn t (IdType a), PGRep t (IdType a)) =
 instance (R.Routable (IdType a), Has (Id a) a, Kinded a) => R.Routable (Id a) where
   route = R.fixed (kindOf (undefined :: a)) >> Id <$> R.route
   toRoute (Id i) = kindOf (undefined :: a) : R.toRoute i
+
+instance JSON.ToJSON (IdType a) => JSON.ToJSON (Id a) where
+  toJSON (Id a) = JSON.toJSON a
+instance JSON.FromJSON (IdType a) => JSON.FromJSON (Id a) where
+  parseJSON = fmap Id . JSON.parseJSON
 
 instance TH.Lift (IdType a) => TH.Lift (Id a) where
   lift (Id i) = TH.conE 'Id `TH.appE` TH.lift i

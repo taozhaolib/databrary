@@ -75,13 +75,13 @@ _authPartyEmail p =
   poke ((see p :: Access) <>) $ partyEmail (see p)
 
 partyJSON :: Party -> Identity -> JSON.Object
-partyJSON p i = JSON.object $ catMaybes
-  [ Just $ "name" JSON..= partyName p
-  , ("affiliation" JSON..=) <$> partyAffiliation p
-  , ("url" JSON..=) <$> partyURL p
-  , "institution" JSON..= True <$ guard (isNothing a)
+partyJSON p@Party{..} i = JSON.record partyId $ catMaybes
+  [ Just $ "name" JSON..= partyName
+  , ("affiliation" JSON..=) <$> partyAffiliation
+  , ("url" JSON..=) <$> partyURL
+  , "institution" JSON..= True <$ guard (isNothing partyAccount)
   , ("email" JSON..=) <$> partyEmail p i
-  ] where a = partyAccount p
+  ]
 
 authPartyJSON :: AuthParty -> Identity -> JSON.Object
 authPartyJSON a i = partyJSON p i
