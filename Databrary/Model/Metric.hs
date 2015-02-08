@@ -2,6 +2,7 @@
 module Databrary.Model.Metric
   ( module Databrary.Model.Metric.Types
   , getMetric
+  , getMetric'
   , metricJSON
   ) where
 
@@ -26,6 +27,9 @@ metricsById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ metricId a,
 
 getMetric :: Id Metric -> Maybe Metric
 getMetric (Id i) = IntMap.lookup (fromIntegral i) metricsById
+
+getMetric' :: Id Metric -> Metric
+getMetric' (Id i) = metricsById IntMap.! fromIntegral i
 
 -- this is a hack, should be in database
 metricLong :: Metric -> Bool

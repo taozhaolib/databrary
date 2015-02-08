@@ -434,7 +434,7 @@ INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-800, 'vide
 INSERT INTO "format" ("id", "mimetype", "extension", "name") VALUES (-700, 'image/jpeg',							ARRAY['jpg','jpeg'], 'JPEG image');
 
 CREATE TABLE "asset" (
-	"id" serial Primary Key,
+	"id" serial NOT NULL Primary Key,
 	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
 	"classification" classification NOT NULL,
@@ -618,7 +618,7 @@ COMMENT ON TABLE "keyword_use" IS 'Special "keyword" tags editable as volume dat
 ----------------------------------------------------------- records
 
 CREATE TABLE "record_category" (
-	"id" smallserial Primary Key,
+	"id" smallserial NOT NULL Primary Key,
 	"name" varchar(64) NOT NULL Unique
 );
 ALTER TABLE "record_category"
@@ -646,7 +646,7 @@ CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
 COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
 
 CREATE TABLE "metric" (
-	"id" serial Primary Key,
+	"id" serial NOT NULL Primary Key,
 	"name" varchar(64) NOT NULL Unique,
 	"classification" classification NOT NULL,
 	"type" data_type NOT NULL,
@@ -673,8 +673,8 @@ INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES 
 INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-150, 'country', 'SHARED', 'text', 'US');
 
 CREATE TABLE "record_template" (
-	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
-	"metric" integer References "metric" ON UPDATE CASCADE ON DELETE CASCADE,
+	"category" smallint NOT NULL References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
+	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE ON DELETE CASCADE,
 	"ident" boolean NOT NULL Default false,
 	Primary Key ("category", "metric")
 );
@@ -849,7 +849,7 @@ COMMENT ON FUNCTION "record_daterange" (integer) IS 'Range of container dates co
 ----------------------------------------------------------- tokens
 
 CREATE TABLE "token" (
-	"token" char(32) Primary Key,
+	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	Check (false) NO INHERIT
 );
@@ -858,7 +858,7 @@ ALTER TABLE "token"
 COMMENT ON TABLE "token" IS 'Generic tokens issued to automatically perform actions such as logins or authorizations.';
 
 CREATE TABLE "account_token" (
-	"token" char(32) Primary Key,
+	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP + interval '1 week',
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	Check (false) NO INHERIT
@@ -866,7 +866,7 @@ CREATE TABLE "account_token" (
 COMMENT ON TABLE "account_token" IS 'Generic tokens associated with particular accounts.';
 
 CREATE TABLE "login_token" (
-	"token" char(32) Primary Key,
+	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"password" boolean NOT NULL DEFAULT false
@@ -875,7 +875,7 @@ CREATE UNIQUE INDEX "login_token_account_idx" ON "login_token" ("account") WHERE
 COMMENT ON TABLE "login_token" IS 'Tokens issued to automatically login/register users or reset passwords.';
 
 CREATE TABLE "session" (
-	"token" char(32) Primary Key,
+	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"superuser" boolean NOT NULL DEFAULT false
@@ -883,7 +883,7 @@ CREATE TABLE "session" (
 COMMENT ON TABLE "session" IS 'Tokens associated with currently logged-in sessions.';
 
 CREATE TABLE "upload" (
-	"token" char(32) Primary Key,
+	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
 	"filename" text NOT NULL
@@ -918,7 +918,7 @@ CREATE VIEW "volume_text" ("volume", "text") AS
 COMMENT ON VIEW "volume_text" IS 'All (searchable) text data associated with a volume.';
 
 CREATE TABLE "volume_text_idx" (
-	"volume" integer Primary Key References "volume" ON DELETE CASCADE ON UPDATE CASCADE,
+	"volume" integer NOT NULL Primary Key References "volume" ON DELETE CASCADE ON UPDATE CASCADE,
 	"ts" tsvector NOT NULL
 );
 COMMENT ON TABLE "volume_text_idx" IS 'Overall tsvector for each volume, automatically updated to represent "SELECT volume, tsvector_agg(to_tsvector(text)) FROM volume_text GROUP BY volume".';

@@ -1,4 +1,4 @@
-module Databrary.Kind
+module Databrary.Model.Kind
   ( Kinded(..)
   ) where
 

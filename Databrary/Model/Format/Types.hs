@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings, TypeFamilies #-}
 module Databrary.Model.Format.Types
   ( Format(..)
+  , MonadHasFormat
   ) where
 
 import qualified Data.ByteString as BS
@@ -9,8 +10,8 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLift)
 
-import Control.Has (Has(..))
-import Databrary.Kind
+import Control.Has (makeHasRec)
+import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Format = Int16
@@ -22,10 +23,8 @@ data Format = Format
   , formatName :: T.Text
   }
 
-instance Has (Id Format) Format where
-  view f a = fmap (\i -> a{ formatId = i }) $ f $ formatId a
-  see = formatId
 instance Kinded Format where
   kindOf _ = "format"
 
+makeHasRec ''Format ['formatId]
 deriveLift ''Format

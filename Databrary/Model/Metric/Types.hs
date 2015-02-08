@@ -4,6 +4,7 @@ module Databrary.Model.Metric.Types
   ( MeasureDatum
   , MeasureType(..)
   , Metric(..)
+  , MonadHasMetric
   ) where
 
 import qualified Data.Aeson as JSON
@@ -12,10 +13,10 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (Has(..))
+import Control.Has (makeHasRec)
 import Databrary.DB
 import Databrary.Enum
-import Databrary.Kind
+import Databrary.Model.Kind
 import Databrary.Model.Permission.Types
 import Databrary.Model.Id.Types
 
@@ -39,10 +40,8 @@ data Metric = Metric
   , metricAssumed :: Maybe MeasureDatum
   }
 
-instance Has (Id Metric) Metric where
-  view f a = fmap (\i -> a{ metricId = i }) $ f $ metricId a
-  see = metricId
 instance Kinded Metric where
   kindOf _ = "metric"
 
+makeHasRec ''Metric ['metricId, 'metricType]
 deriveLiftMany [''MeasureType, ''Metric]

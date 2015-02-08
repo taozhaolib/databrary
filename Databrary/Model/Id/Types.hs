@@ -14,7 +14,7 @@ import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
 import Control.Has (Has(..))
-import Databrary.Kind
+import Databrary.Model.Kind
 import qualified Databrary.Web.Route as R
 
 type family IdType a

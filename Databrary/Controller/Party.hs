@@ -16,7 +16,7 @@ import qualified Text.Digestive as Form
 
 import Control.Has (view, see, peek, peeks)
 import Databrary.Action
-import Databrary.Kind
+import Databrary.Model.Kind
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Party

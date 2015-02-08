@@ -16,7 +16,7 @@ import Text.Read (readMaybe)
 
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Kind
+import Databrary.Model.Kind
 
 class (PGEnum a, Kinded a) => DBEnum a
 

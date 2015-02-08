@@ -9,8 +9,8 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (Has(..))
-import Databrary.Kind
+import Control.Has (makeHasRec, Has(..))
+import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Party = Int32
@@ -29,17 +29,9 @@ data Account = Account
   , accountParty :: Party
   }
 
-instance Has (Id Party) Party where
-  view f p = fmap (\i -> p{ partyId = i }) $ f $ partyId p
-  see = partyId
 instance Kinded Party where
   kindOf _ = "party"
 
-instance Has Party Account where
-  view f a = fmap (\p -> a{ accountParty = p }) $ f $ accountParty a
-  see = accountParty
-instance Has (Id Party) Account where
-  view f a = fmap (\i -> a{ accountParty = (accountParty a){ partyId = i } }) $ f $ partyId $ accountParty a
-  see = partyId . accountParty
-
+makeHasRec ''Party ['partyId]
+makeHasRec ''Account ['accountParty]
 deriveLiftMany [''Party, ''Account]

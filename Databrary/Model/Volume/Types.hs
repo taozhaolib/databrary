@@ -5,8 +5,8 @@ module Databrary.Model.Volume.Types
 
 import qualified Data.Text as T
 
-import Control.Has (Has(..))
-import Databrary.Kind
+import Control.Has (makeHasRec, Has(..))
+import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Volume = Int32
@@ -19,8 +19,7 @@ data Volume = Volume
 --  , volumeCreation :: Timestamp
   }
 
-instance Has (Id Volume) Volume where
-  view f v = fmap (\i -> v{ volumeId = i }) $ f $ volumeId v
-  see = volumeId
 instance Kinded Volume where
   kindOf _ = "volume"
+
+makeHasRec ''Volume ['volumeId]

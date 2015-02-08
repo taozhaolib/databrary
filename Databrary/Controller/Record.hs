@@ -2,4 +2,4 @@ module Databrary.Controller.Record
   (
   ) where
 
-import Databrary.Model.Metric
+import Databrary.Model.Record

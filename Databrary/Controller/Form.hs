@@ -20,7 +20,7 @@ import qualified Text.Digestive as Form
 import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
-import Databrary.Kind
+import Databrary.Model.Kind
 import Databrary.Enum
 
 putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
