@@ -6,6 +6,7 @@ module Databrary.Model.SQL
   , selector
   , selectColumns
   , addSelects
+  , fromMap
   , joinOn
   , joinUsing
   , maybeJoinOn
@@ -104,6 +105,12 @@ selectColumns f t c =
 addSelects :: TH.Name -> Selector -> [SelectOutput] -> Selector
 addSelects f s c = s
   { selectOutput = OutputJoin False f (selectOutput s : c) }
+
+fromMap :: (String -> String) -> Selector -> Selector
+fromMap f sel = sel
+  { selectSource = f $ selectSource sel
+  , selectJoined = f $ selectJoined sel
+  }
 
 joinWith :: (String -> String) -> Selector -> Selector
 joinWith j sel = sel{ selectJoined = j (selectSource sel) }

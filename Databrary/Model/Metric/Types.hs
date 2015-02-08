@@ -43,5 +43,5 @@ data Metric = Metric
 instance Kinded Metric where
   kindOf _ = "metric"
 
-makeHasRec ''Metric ['metricId, 'metricType]
+makeHasRec ''Metric ['metricId, 'metricClassification, 'metricType]
 deriveLiftMany [''MeasureType, ''Metric]
