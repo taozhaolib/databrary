@@ -143,7 +143,7 @@ app.controller('volume/slot', [
       return false if stayDirty()
 
       $scope.current = c
-      $scope.asset = c.asset if c?.asset
+      $scope.asset = c.asset if c.type == 'asset'
       searchLocation($location.replace())
       delete target.asset
       delete target.record
@@ -234,6 +234,7 @@ app.controller('volume/slot', [
         return unless asset
         @segment = new Segment(asset.segment)
         select(this) if `asset.id == target.asset`
+        $scope.asset = asset if $scope.current == this
         return
 
       fillData: ->
