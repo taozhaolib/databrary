@@ -122,6 +122,8 @@
                 <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></a>
                 <a ng-href="{{::current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></a>
                 <span ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></span>
+                &nbsp;
+                <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="save-slot green mini" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </nav>
               <h1 class="player-main-info-name">
                 <span class="filename" ng-if="::!editing && !!current.asset" ng-bind="::current.name"></span>
@@ -196,8 +198,6 @@
                   </validator>
                   </ng-form>
                 </div>
-
-                <button ng-if="!!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="save-slot green mini" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               </ng-form>
             </div>
 
