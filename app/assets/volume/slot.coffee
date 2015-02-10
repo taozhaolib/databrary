@@ -96,8 +96,8 @@ app.controller('volume/slot', [
       styles
 
     seekOffset = (o) ->
-      if video && $scope.current?.asset?.segment.contains(o) && isFinite($scope.current.asset.segment.l)
-        video[0].currentTime = (o - $scope.current.asset.segment.l) / 1000
+      if video && $scope.asset?.segment.contains(o) && isFinite($scope.asset.segment.l)
+        video[0].currentTime = (o - $scope.asset.segment.l) / 1000
       ruler.position = o
       return
 
@@ -356,8 +356,8 @@ app.controller('volume/slot', [
         $scope.playing = video[0].playbackRate
         return
       timeupdate: ->
-        if $scope.current?.asset && isFinite($scope.current.asset.segment.l)
-          ruler.position = $scope.current.asset.segment.l + 1000*video[0].currentTime
+        if $scope.asset && isFinite($scope.asset.segment.l)
+          ruler.position = $scope.asset.segment.l + 1000*video[0].currentTime
           if ruler.selection.uBounded && ruler.position >= ruler.selection.u
             video[0].pause()
             seekOffset(ruler.selection.l) if ruler.selection.lBounded
