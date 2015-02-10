@@ -123,7 +123,7 @@ app.directive 'spreadsheet', [
         slots = (container for containerId, container of volume.containers when top != !container.top) # [Row] = Slot
         ### jshint ignore:end ###
 
-        order = Object.keys(slots)  # Permutation Array of Row in display order
+        order = [0..slots.length-1] # Permutation Array of Row in display order
 
         records = {}                # [Category_id][Metric_id][Count] :: Data
         counts = new Array(slots.length) # [Row][Category_id] :: Count

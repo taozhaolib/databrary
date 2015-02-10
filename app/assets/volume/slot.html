@@ -124,7 +124,7 @@
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
           <ul class="panel-tags-items">
             <li ng-repeat="tag in tags" class="panel-tags-item" ng-class="{'active': tag.active}">
-              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="::tag.id" ng-class="{'keyword': tag.keyword.length}"></div>
+              <div class="panel-tag-name" ng-click="tag.toggle()" ng-bind="::tag.id" ng-class="::{'keyword': tag.keyword.length}"></div>
               <div class="panel-tag-controls" ng-if="::page.models.Login.isAuthorized()">
                 <button class="panel-tag-vote available null" name="vote" ng-click="tag.save(false)" ng-if="tag.state === true" hint="tags-vote-null">
                   -
@@ -153,14 +153,14 @@
           <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
             <div class="slot-timeline-control">
               <input input-position="-Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l"></input>
-              <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,0)">&lt;</button>
+              <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,0)">&larr;</button>
               <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position" name="position"></input>
-              <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,1)">&gt;</button>
+              <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,1)">&rarr;</button>
               <input input-position="Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u"></input>
             </div>
             
             <div class="slot-timeline-zoom">
-              <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty"></span>
+              <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
               <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
             </div>
 
@@ -206,7 +206,7 @@
                 <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{::t.asset.thumbRoute(24)}}">
                 <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length}">
                   <span ng-bind="t.name"></span>
-                  <span ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (converting)</span>
+                  <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
                 </div>
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
@@ -214,7 +214,6 @@
             </div>
           </div>
         </section>
-
       </div>
     </div>
   </div>
