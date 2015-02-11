@@ -179,12 +179,6 @@
             </div>
           </div>
 
-          <div>
-            <div class="slot-consent-track slot-track">
-              <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-click="select($event, c)" ng-dblclick="selectAll($event, c)" mouse-drag="dragSelection($down, $up, c)"></div>
-            </div>
-          </div>
-
           <div class="slot-annotations">
             <div class="slot-record-track slot-track" ng-repeat="rs in records">
               <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
@@ -211,6 +205,12 @@
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
               </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="slot-consent-track slot-track">
+              <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-click="select($event, c)" ng-dblclick="selectAll($event, c)" mouse-drag="dragSelection($down, $up, c)"></div>
             </div>
           </div>
         </section>
