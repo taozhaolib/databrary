@@ -20,7 +20,7 @@
           </a>
         </div>
 
-        <section class="slot-player frame" fold ng-if="!!current">
+        <section class="slot-player slot frame" fold ng-if="!!current">
           <div class="slot-header folder" folder ng-click="toggleFold()">
             <span>Viewer</span>
           </div>
@@ -140,7 +140,7 @@
           </ul>
         </div>
 
-        <section id="slot-timeline" class="slot-timeline frame" mouse-drag-region>
+        <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
           <div class="slot-toolbar"></div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>

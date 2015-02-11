@@ -1,4 +1,4 @@
-.frame
+.slot.frame
   margin-bottom b4
   background-color white
   box-shadow box-shadow-def
@@ -39,7 +39,8 @@
   pointer-events none
   .selection
     background-color rgba(180,180,180,0.3)
-    height 100%
+    top b2*5
+    bottom 0
     position absolute
     min-width 1px
 
@@ -184,19 +185,10 @@
 .slot-timeline-now
   position absolute
   z-index 100
-  top 2 * b1
+  top b2*5
   bottom 0%
   border-left 1px solid green
   transition left .05s linear
-
-  &:before
-    content ''
-    border-radius b1
-    size b3
-    position absolute
-    top -b3
-    left -b6
-    background-color green
 
 .slot-timeline-track
 .slot-tag-track
