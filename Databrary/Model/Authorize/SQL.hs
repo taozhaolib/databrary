@@ -12,20 +12,23 @@ import Databrary.Model.Party.SQL (selectParty)
 import Databrary.Model.Party.Types
 import Databrary.Model.Authorize.Types
 
-accessRow :: String -> Selector
+accessRow :: String -- ^ Table name
+  -> Selector -- ^ 'Access'
 accessRow table = selectColumns 'Access table ["site", "member"]
 
 makePartyAuthorization :: Access -> Party -> Party -> Authorization
 makePartyAuthorization a p c = Authorization a c p
 
-selectParentAuthorization :: TH.Name -> Selector
+selectParentAuthorization :: TH.Name -- ^ child 'Party'
+  -> Selector -- ^ 'Authorization'
 selectParentAuthorization child =
   selectMap (`TH.AppE` TH.VarE child) $ selectJoin 'makePartyAuthorization
     [ accessRow "authorize_view"
     , joinOn ("authorize_view.parent = party.id AND authorize_view.child = ${partyId " ++ nameRef child ++ "}") selectParty 
     ]
 
-selectChildAuthorization :: TH.Name -> Selector
+selectChildAuthorization :: TH.Name  -- ^ parent 'Party'
+  -> Selector -- ^ 'Authorization'
 selectChildAuthorization parent =
   selectMap (`TH.AppE` TH.VarE parent) $ selectJoin 'Authorization
     [ accessRow "authorize_view"
