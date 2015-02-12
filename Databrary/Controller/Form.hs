@@ -1,8 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Form
-  ( displayForm
+  ( displayHtmlForm
+  , displayJsonForm
+  , displayForm
   , emailTextForm
   , optionalEnumForm
+  , urlForm
   , checkReadForm
   , optionalCheckReadForm
   ) where
@@ -14,13 +17,14 @@ import Data.List (foldl')
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Vector as V
-import Network.HTTP.Types (ok200, badRequest400)
+import Network.HTTP.Types (Status, ok200, badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Digestive as Form
 import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
 import Databrary.Model.Kind
+import Databrary.URL
 import Databrary.Enum
 
 putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
@@ -35,16 +39,20 @@ putJson o (h:p) v = JSON.Object $ HM.fromList [("", o), (h, putJson JSON.Null p 
 jsonFormErrors :: Form.View T.Text -> JSON.Value
 jsonFormErrors = foldl' (uncurry . putJson) JSON.emptyObject . Form.viewErrors
 
-displayForm :: ActionM c m => Bool -> (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> m Response
-displayForm api view form =
-  if api
-    then returnResponse s h $ jsonFormErrors form
-    else returnResponse s h $ view $ fmap Html.toHtml form
-  where
-  s = if null $ Form.viewErrors form
-    then ok200 else badRequest400
-  h = []
+formStatus :: Form.View v -> Status
+formStatus form 
+  | null $ Form.viewErrors form = ok200
+  | otherwise = badRequest400
 
+displayHtmlForm :: ActionM c m => (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> m Response
+displayHtmlForm view form = returnResponse (formStatus form) [] $ view $ fmap Html.toHtml form
+
+displayJsonForm :: ActionM c m => Form.View T.Text -> m Response
+displayJsonForm form = returnResponse (formStatus form) [] $ jsonFormErrors form
+
+displayForm :: ActionM c m => Bool -> (Form.View Html.Html -> Html.Html) -> Form.View T.Text -> m Response
+displayForm False = displayHtmlForm
+displayForm True = const displayJsonForm
 
 {-
 class Formable a where
@@ -63,6 +71,11 @@ optionalEnumForm :: forall a m . (DBEnum a, Monad m) => Maybe a -> Form.Form T.T
 optionalEnumForm = Form.validateOptional
   (maybe (Form.Error $ "Invalid " <> kindOf (undefined :: a)) Form.Success . readDBEnum)
   . Form.optionalString . fmap (show . fromEnum)
+
+urlForm :: Monad m => Maybe URI -> Form.Form T.Text m URI
+urlForm = Form.validate
+  (maybe (Form.Error "Invalid URL") Form.Success . parseURL)
+  . Form.string . fmap show
 
 checkReadForm :: (Monad m, Read a, Show a) => v -> (a -> Bool) -> Maybe a -> Form.Form v m a
 checkReadForm e c = Form.check e c . Form.stringRead e

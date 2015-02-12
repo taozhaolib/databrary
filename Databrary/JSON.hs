@@ -1,16 +1,26 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.JSON
-  ( module Data.Aeson.Types
+  ( module Data.Aeson
+  , module Data.Aeson.Types
   , object
   , record
   , (.+)
   , (.+?)
   , (.++)
+  , (.!)
+  , (.!?)
   ) where
 
+import Data.Aeson hiding (object)
 import Data.Aeson.Types hiding (object)
+import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
+import qualified Data.Text.Encoding as TE
+import qualified Data.Traversable as Trav
+import qualified Data.Vector as V
+import Network.URI (URI)
 
 object :: [Pair] -> Object
 object = HM.fromList
@@ -28,3 +38,15 @@ o .+? Just p = o .+ p
 
 (.++) :: Object -> [Pair] -> Object
 (.++) = foldl' (.+)
+
+(.!) :: FromJSON a => Array -> Int -> Parser a
+a .! i = maybe (fail $ "index " ++ show i ++ " out of range") parseJSON $ a V.!? i
+
+(.!?) :: FromJSON a => Array -> Int -> Parser (Maybe a)
+a .!? i = Trav.mapM parseJSON $ a V.!? i
+
+instance ToJSON BS.ByteString where
+  toJSON = String . TE.decodeUtf8
+
+instance ToJSON URI where
+  toJSON = toJSON . show

@@ -4,7 +4,7 @@ module Databrary.Routes
   ) where
 
 import Control.Applicative ((<$), (<|>))
-import Control.Monad (msum, mfilter)
+import Control.Monad (msum, mfilter, guard)
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
@@ -12,6 +12,7 @@ import Databrary.Controller.Login
 import Databrary.Controller.Party
 import Databrary.Controller.Volume
 import Databrary.Controller.Record
+import Databrary.Controller.Citation
 import Databrary.Controller.Static
 
 act :: RouteAction q -> R.RouteM (Action q)
@@ -31,5 +32,6 @@ routes = do
                           <|> act (searchParty api)
     , R.route >>= \v ->       act (viewVolume api v)
     , R.route >>= \r ->       act (viewRecord api r)
+    , guard api >> "cite"  >> act getCitation
     , "public" >> R.route >>= act . staticPublicFile
     ]

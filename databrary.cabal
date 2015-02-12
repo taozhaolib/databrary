@@ -30,6 +30,7 @@ Executable databrary
     blaze-builder,
     base64-bytestring,
     network,
+    network-uri,
     http-types,
     wai,
     unordered-containers,
@@ -52,7 +53,8 @@ Executable databrary
     blaze-html,
     digestive-functors,
     regex-posix,
-    bcrypt
+    bcrypt,
+    http-client
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds
 

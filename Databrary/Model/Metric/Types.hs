@@ -7,10 +7,8 @@ module Databrary.Model.Metric.Types
   , MonadHasMetric
   ) where
 
-import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (makeHasRec)
@@ -25,9 +23,6 @@ useTPG
 makeDBEnum "data_type" "MeasureType"
 
 type MeasureDatum = BS.ByteString
-
-instance JSON.ToJSON MeasureDatum where
-  toJSON = JSON.String . TE.decodeUtf8
 
 type instance IdType Metric = Int32
 
