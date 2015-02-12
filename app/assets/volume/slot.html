@@ -28,9 +28,9 @@
             <div class="player-main-info">
               <nav class="player-main-info-actions">
                 <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="save-slot green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
-                <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></a>
-                <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></a>
-                <span ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></span>
+                <button ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></button>
+                <button ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></button>
+                <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
               </nav>
               <h1 class="player-main-info-name">
                 <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
@@ -141,7 +141,12 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
-          <div class="slot-toolbar"></div>
+          <div class="slot-toolbar">
+            <button ng-if="editing" ng-click="" class="mini">Excerpt</button>
+            <button ng-if="editing" ng-click="" class="mini">Keyword</button>
+            <button ng-if="editing" ng-click="" class="mini">Record</button>
+            <button ng-if="editing" ng-click="" class="mini">Asset</button>
+          </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
           </div>

@@ -30,8 +30,8 @@
 
 //SLOT-TOOLBAR
 .slot-toolbar  
-  height 2.5
   border-bottom 1px solid neutral53
+  padding b3
 
 //SLOT-TIMELINE
 .slot-timeline-selection
@@ -45,12 +45,16 @@
     min-width 1px
 
 .slot-timeline-temporal
+  position relative
   text-align center
   margin-top f3
+  width 100%
 
 .slot-timeline-control
-  display inline
-  width auto
+  position absolute
+  left 0
+  right 0
+  z-index 600
   button
     margin 0
     padding-top 0
@@ -73,8 +77,8 @@
   padding-right b1
   margin-right auto
   margin-left auto
-  margin-top f3
-  margin-bottom f3
+  margin-top 0
+  margin-bottom 0
   border-radius 0
   &.stop
     border-top-right-radius b1
@@ -85,20 +89,21 @@
 
 .slot-timeline-zoom
   position absolute
-  top 0
+  top b2*5
   right 0
   margin-top f3
   margin-right f4
 
 .slot-timeline-ruler
+  position relative
   z-index 500
   width 100%
   box-shadow 0 b8 b8 -b8 black
-  height 2
+  height 3
   cursor default
 
 .slot-timeline-ruler-time
-  margin-top b1 + b8
+  margin-top 2
   font-size f23
 
   &.left
@@ -337,12 +342,16 @@
   position relative
   float right
   
-  .save-slot
-    height 17px
+  button
+    height 24px
+    min-width 26px
+    background-position center center
+    background-repeat no-repeat
     font-line b2
     position relative
     top -b6
-    padding 0 b8
+    padding 0 b8 
+    margin 0 b8
 
 .player-main-info-name
   font-line 1
