@@ -5,6 +5,7 @@ app.directive 'spreadsheet', [
   (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document, $location) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
+    byDefault = (a,b) -> +(a > b) || +(a == b) - 1
     byNumber = (a,b) -> a-b
     byId = (a,b) -> a.id-b.id
     byType = (a,b) ->
@@ -13,7 +14,7 @@ app.directive 'spreadsheet', [
       if ta != tb
         a = ta
         b = tb
-      if a>b then 1 else if a<b then -1 else 0
+      byDefault(a,b)
     byMagic = (a,b) ->
       na = parseFloat(a)
       nb = parseFloat(b)
@@ -434,11 +435,15 @@ app.directive 'spreadsheet', [
         sort = (values, compare) ->
           return unless values
           compare ?= byMagic
+          idx = new Array(slots.length)
+          for o, i in order
+            idx[o] = i
           order.sort (i, j) ->
-            compare(values[i], values[j])
+            compare(values[i], values[j]) || idx[i] - idx[j]
           return
 
-        currentSort = undefined
+        sort(slots.map((s) -> s.date), byDefault)
+        currentSort = 'date'
         currentSortDirection = false
   
         # Sort by values, called name.
