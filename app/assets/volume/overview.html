@@ -73,7 +73,7 @@
         </div>
       </div>
 
-      <div frame id="frame-access" frame-title="volume.access.title" fold>
+      <div frame id="frame-access" frame-title="{{::shared ? 'volume.shared.title' : 'volume.private.title'}}" fold>
         <div class="row">
           <div ng-repeat="access in ::volume.access" ng-if="::access.individual < page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
             <portrait tooltip="'access.' + page.constants.permission[access.individual] | message:party.name"></portrait>
