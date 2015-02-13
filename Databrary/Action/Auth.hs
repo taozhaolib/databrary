@@ -11,7 +11,7 @@ import Control.Monad.Reader (asks)
 import Control.Has (makeHasRec)
 import Databrary.Action.Types
 import Databrary.Action.App
-import Databrary.Identity
+import Databrary.Model.Identity
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest
@@ -27,5 +27,5 @@ instance ActionData AuthRequest where
 
 withAuth :: AuthAction -> AppAction
 withAuth f = do
-  i <- getIdentity
+  i <- determineIdentity
   withAction (\a -> AuthRequest a i) f

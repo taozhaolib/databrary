@@ -10,7 +10,7 @@ module Databrary.Model.Permission
   ) where
 
 import Control.Has (Has, see, peeks)
-import Databrary.Identity.Types
+import Databrary.Model.Identity.Types
 import Databrary.Model.Permission.Types
 
 -- |Level at which things become visible.

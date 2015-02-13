@@ -4,7 +4,10 @@ module Databrary.Model.VolumeAccess.Types
   , MonadHasVolumeAccess
   ) where
 
-import Control.Has (makeHasRec)
+import qualified Language.Haskell.TH as TH
+
+import Control.Has (makeHasFor)
+import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Party.Types
@@ -15,4 +18,7 @@ data VolumeAccess = VolumeAccess
   , volumeAccessVolume :: Volume
   }
 
-makeHasRec ''VolumeAccess ['volumeAccessVolume, 'volumeAccessParty]
+makeHasFor ''VolumeAccess
+  [ ('volumeAccessVolume, [TH.ConT ''Id `TH.AppT` TH.ConT ''Volume])
+  , ('volumeAccessParty, [TH.ConT ''Id `TH.AppT` TH.ConT ''Party])
+  ]

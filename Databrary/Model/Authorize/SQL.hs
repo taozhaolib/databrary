@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Authorize.SQL
-  ( accessRow
-  , selectParentAuthorization
+  ( selectParentAuthorization
   , selectChildAuthorization
   ) where
 
@@ -10,11 +9,9 @@ import qualified Language.Haskell.TH as TH
 import Databrary.Model.SQL
 import Databrary.Model.Party.SQL (selectParty)
 import Databrary.Model.Party.Types
+import Databrary.Model.Permission.Types
+import Databrary.Model.Permission.SQL
 import Databrary.Model.Authorize.Types
-
-accessRow :: String -- ^ Table name
-  -> Selector -- ^ 'Access'
-accessRow table = selectColumns 'Access table ["site", "member"]
 
 makePartyAuthorization :: Access -> Party -> Party -> Authorization
 makePartyAuthorization a p c = Authorization a c p

@@ -17,12 +17,12 @@ import Network.HTTP.Types (Query)
 import Control.Has (peek, see)
 import Databrary.DB
 import Databrary.Enum
-import Databrary.Identity
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Party.Types
+import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
 
@@ -47,9 +47,8 @@ volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
 
 volumeJSONField :: (DBM m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 volumeJSONField vol "access" ma = do
-  i <- peek
   Just . JSON.toJSON . map (\va -> 
-    volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va) i))
+    volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va)))
     <$> volumeVolumeAccess vol (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
 volumeJSONField _ _ _ = return Nothing
 

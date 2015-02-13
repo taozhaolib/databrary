@@ -11,11 +11,11 @@ import qualified Data.Text as T
 
 import Control.Has (peek, see)
 import Databrary.DB
-import Databrary.Identity
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id
 import Databrary.Model.Permission
+import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.RecordCategory

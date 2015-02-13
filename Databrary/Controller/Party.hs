@@ -7,14 +7,15 @@ module Databrary.Controller.Party
   ) where
 
 import Control.Applicative ((<$>), (<*>), pure)
-import qualified Control.Lens as Lens (set)
-import Control.Monad (unless, (<=<))
+import qualified Control.Lens as Lens (set, (^.))
+import Control.Monad (unless)
+import Control.Monad.Reader (reader)
 import qualified Data.Aeson.Types as JSON
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Text.Digestive as Form
 
-import Control.Has (view, see, peek, peeks)
+import Control.Has (view, see, peek)
 import Databrary.Action
 import Databrary.Model.Kind
 import Databrary.Model.Id
@@ -25,17 +26,17 @@ import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.View.Form
 
-withParty :: Maybe Permission -> Id Party -> (AuthParty -> AuthAction) -> AppAction
+withParty :: Maybe Permission -> Id Party -> (Party -> AuthAction) -> AppAction
 withParty Nothing i f = withAuth $ do
   u <- peek
   unless (partyId u == i) $ result =<< forbiddenResponse
-  f $ selfAuthParty u
+  f u
 withParty (Just p) i f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
 
-displayParty :: Bool -> AuthParty -> AuthAction
-displayParty True = okResponse [] <=< peeks . authPartyJSON
-displayParty False = okResponse [] . partyName . see -- TODO
+displayParty :: Bool -> Party -> AuthAction
+displayParty True = okResponse [] . partyJSON
+displayParty False = okResponse [] . partyName -- TODO
 
 viewParty :: Bool -> Id Party -> AppRAction
 viewParty api i = action GET (apiRoute api $ toRoute i) $
@@ -49,6 +50,7 @@ emptyParty = Party
   , partyAffiliation = Nothing
   , partyURL = Nothing
   , partyAccount = Nothing
+  , partyPermission = PermissionREAD
   }
 
 partyForm :: Monad m => Maybe Party -> Form.Form T.Text m Party
@@ -81,7 +83,7 @@ postParty api i = action POST (apiRoute api $ toRoute i) $
 
 createParty :: Bool -> AppRAction
 createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
-  perm :: Permission <- peek
+  perm <- reader (Lens.^. accessPermission)
   _ <- checkPermission PermissionADMIN perm
   let disp = displayPartyForm api Nothing
   (bp, _) <- runForm "party" disp (partyForm Nothing)
@@ -115,5 +117,5 @@ searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   ((pf, (limit, offset)), form) <- runForm "party" disp ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset
   if api
-    then okResponse [] . JSON.toJSON =<< peeks (mapM partyJSON p)
+    then okResponse [] $ JSON.toJSON $ map partyJSON p
     else displayPartySearchForm api form

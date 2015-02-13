@@ -1,43 +1,75 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Party.SQL
   ( partyRow
   , selectParty
-  , selectAccount
+  , selectAuthParty
+  , selectSiteAuth
   , updateParty
   , insertParty
   ) where
 
+import Control.Lens ((^.))
 import Data.Char (toLower)
+import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL
 import Databrary.Model.Audit.SQL
+import Databrary.Model.Permission.Types
+import Databrary.Model.Permission.SQL
+import Databrary.Model.Identity.Types
 import Databrary.Model.Party.Types
 
-partyRow :: Selector -- ^ @Maybe 'Account' -> 'Party'
+partyRow :: Selector -- ^ @Maybe 'Account' -> 'Permission' -> 'Party'
 partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]
 
 accountRow :: Selector -- ^ @'Party' -> 'Account'@
 accountRow = selectColumns 'Account "account" ["email", "password"]
 
-makeParty :: (Maybe Account -> Party) -> Maybe (Party -> Account) -> Party
-makeParty pc ac = p where
-  p = pc (fmap ($ p) ac)
+makeParty :: (Maybe Account -> Permission -> Party) -> Maybe (Party -> Account) -> Permission -> Party
+makeParty pc ac perm = p where
+  p = pc (fmap ($ p) ac) perm
 
-selectParty :: Selector -- ^ @'Party'@
-selectParty = selectJoin 'makeParty 
+selectUnpermissionedParty :: Selector -- ^ @'Permission' -> 'Party'@
+selectUnpermissionedParty = selectJoin 'makeParty 
   [ partyRow
   , maybeJoinUsing ["id"] accountRow
   ]
 
-makeAccount :: (Maybe Account -> Party) -> (Party -> Account) -> Account
-makeAccount pc ac = a where
-  a = ac (pc (Just a))
+permissionParty :: (Permission -> Party) -> Maybe Permission -> Identity -> Party
+permissionParty pf perm ident = pf $ maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ ident ^. accessSite
 
-selectAccount :: Selector -- ^ @'Account'@
-selectAccount = selectJoin 'makeAccount 
+selectParty :: TH.Name -- ^ 'Identity'
+  -> Selector -- ^ @'Party'@
+selectParty ident = selectMap ((`TH.AppE` TH.VarE ident) . (`TH.AppE` TH.ConE 'Nothing) . (TH.VarE 'permissionParty `TH.AppE`)) $
+  selectUnpermissionedParty
+
+selectAuthParty :: TH.Name -- ^ 'Identity`
+  -> Selector -- ^ @'Party'@
+selectAuthParty ident = selectMap (`TH.AppE` TH.VarE ident) $ selectJoin 'permissionParty
+  [ selectUnpermissionedParty
+  , maybeJoinOn ("party.id = authorize_view.parent AND authorize_view.child = ${see " ++ nameRef ident ++ " :: Id Party}")
+    $ selector "authorize_view" "LEAST(site, member)"
+  ]
+
+makeAccount :: (Maybe Account -> Permission -> Party) -> (Party -> Account) -> Permission -> Account
+makeAccount pc ac perm = a where
+  a = ac (pc (Just a) perm)
+
+selectUnpermissionedAccount :: Selector -- ^ @'Permission' -> 'Account'@
+selectUnpermissionedAccount = selectJoin 'makeAccount 
   [ partyRow
   , joinUsing ["id"] accountRow
+  ]
+
+makeSiteAuth :: (Permission -> Account) -> Maybe Access -> SiteAuth
+makeSiteAuth p a = SiteAuth (p maxBound) (Fold.fold a)
+
+selectSiteAuth :: Selector -- @'SiteAuth'@
+selectSiteAuth = selectJoin 'makeSiteAuth
+  [ selectUnpermissionedAccount
+  , maybeJoinOn "party.id = authorize_view.child AND authorize_view.parent = 0"
+    $ accessRow "authorize_view"
   ]
 
 updateParty :: TH.Name -> TH.ExpQ -- ()
@@ -48,7 +80,7 @@ updateParty p = auditUpdate "party"
   where ps = nameRef p
 
 insertParty :: TH.Name -- ^ @'Party'@
-  -> TH.ExpQ -- ^ @'Party'@
+  -> TH.ExpQ -- ^ @'Permission' -> 'Party'@
 insertParty p = auditInsert "party"
   (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
   (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)

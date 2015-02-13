@@ -9,12 +9,12 @@ module Databrary.Model.Token
 import Control.Applicative ((<$>))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString.Base64.URL as Base64
-import Data.Maybe (fromJust)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (see)
 import Databrary.Time
-import Databrary.Model.SQL
+import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Entropy
@@ -41,7 +41,7 @@ sessionAuthorization :: SessionToken -> PartyAuth
 sessionAuthorization tok = PartyAuth $ Authorization
   { authorizeChild = see tok
   , authorizeParent = rootParty
-  , authorizeAccess = sessionAccess tok
+  , authorizeAccess = see tok
   }
 
 lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
@@ -51,16 +51,14 @@ sessionDuration :: Bool -> Offset
 sessionDuration False = 7*24*60*60
 sessionDuration True = 30*60
 
-createSession :: (DBM m, EntropyM c m) => PartyAuth -> Bool -> m SessionToken
+createSession :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m SessionToken
 createSession auth su = do
   (tok, ex) <- createToken $ \tok -> do
-    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${partyId p}, ${su}) RETURNING token, expires|]
+    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${see auth :: Id Party}, ${su}) RETURNING token, expires|]
   return $ SessionToken
     { sessionAccountToken = AccountToken
       { accountToken = Token tok ex
-      , tokenAccount = fromJust (partyAccount p)
+      , tokenAccount = auth
       }
     , sessionSuperuser = su
-    , sessionAccess = see auth
     }
-  where p = see auth

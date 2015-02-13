@@ -1,20 +1,15 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, GeneralizedNewtypeDeriving #-}
 module Databrary.Model.Party 
   ( module Databrary.Model.Party.Types
-  , PartyAuth
-  , AuthParty
   , nobodyParty
   , rootParty
   , partyJSON
-  , authPartyJSON
 
   , changeParty
   , addParty
   , lookupParty
-  , lookupAccount
   , lookupAuthParty
-  , selfAuthParty
-  , lookupPartyAuthByEmail
+  , lookupSiteAuthByEmail
   , auditAccountLogin
   , recentAccountLogins
   , PartyFilter(..)
@@ -22,19 +17,18 @@ module Databrary.Model.Party
   ) where
 
 import Control.Applicative ((<$>), (<$))
-import Control.Lens ((^.), set)
+import Control.Lens ((^.))
 import Control.Monad (guard)
 import Data.Int (Int64)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes, isNothing, fromMaybe)
-import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
 
-import Control.Has (Has(..), peek, peeks, poke)
+import Control.Has (Has(..), peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Request
@@ -42,19 +36,17 @@ import Databrary.Model.Id
 import Databrary.Model.SQL
 import Databrary.Model.Permission
 import Databrary.Model.Audit
-import Databrary.Identity.Types
-import Databrary.Model.Authorize.Types
-import Databrary.Model.Authorize.SQL
+import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
-import Databrary.Model.Party.Types
+import Databrary.Model.Party.Types hiding (nobodyParty)
 import Databrary.Model.Party.SQL
 import Databrary.Model.Party.Boot
 
 useTPG
 
 nobodyParty, rootParty :: Party
-nobodyParty = $(loadParty (Id (-1)))
-rootParty = $(loadParty (Id 0))
+nobodyParty = $(loadParty (Id (-1)) PermissionREAD)
+rootParty = $(loadParty (Id 0) PermissionSHARED)
 
 emailPermission :: Permission
 emailPermission = PermissionSHARED
@@ -62,74 +54,50 @@ emailPermission = PermissionSHARED
 showEmail :: Identity -> Bool
 showEmail i = i ^. accessSite >= emailPermission
 
-partyEmail :: Party -> Identity -> Maybe T.Text
-partyEmail p i =
-  guard (showEmail i) >> accountEmail <$> partyAccount p
+partyEmail :: Party -> Maybe T.Text
+partyEmail p =
+  guard (partyPermission p >= emailPermission) >> accountEmail <$> partyAccount p
 
-authPartyPermission :: AuthParty -> Identity -> Permission
-authPartyPermission a i =
-  see a `max` ((i ^. accessSite) `min` PermissionREAD)
-
-_authPartyEmail :: AuthParty -> Identity -> Maybe T.Text
-_authPartyEmail p =
-  poke ((see p :: Access) <>) $ partyEmail (see p)
-
-partyJSON :: Party -> Identity -> JSON.Object
-partyJSON p@Party{..} i = JSON.record partyId $ catMaybes
+partyJSON :: Party -> JSON.Object
+partyJSON p@Party{..} = JSON.record partyId $ catMaybes
   [ Just $ "name" JSON..= partyName
   , ("affiliation" JSON..=) <$> partyAffiliation
   , ("url" JSON..=) <$> partyURL
   , "institution" JSON..= True <$ guard (isNothing partyAccount)
-  , ("email" JSON..=) <$> partyEmail p i
+  , ("email" JSON..=) <$> partyEmail p
+  , Just $ "permission" JSON..= partyPermission
   ]
-
-authPartyJSON :: AuthParty -> Identity -> JSON.Object
-authPartyJSON a i = partyJSON p i
-  JSON..+ ("permission" JSON..= l)
-  JSON..+? (guard (l >= emailPermission) >> ("email" JSON..=) . accountEmail <$> partyAccount p)
-  where
-  p = see a
-  l = authPartyPermission a i
 
 changeParty :: AuditM c m => Party -> m ()
 changeParty p = dbExecute1 =<< $(updateParty 'p)
 
-addParty :: AuditM c m => Party -> m AuthParty
+addParty :: AuditM c m => Party -> m Party
 addParty bp = do
   p <- dbQuery1' =<< $(insertParty 'bp)
-  i <- peek
-  return $ AuthParty (Authorization mempty i p)
+  return $ p PermissionREAD
 
-lookupParty :: DBM m => Id Party -> m (Maybe Party)
-lookupParty (Id (-1)) = return $ Just nobodyParty
-lookupParty (Id 0) = return $ Just rootParty
-lookupParty i = dbQuery1 $(selectQuery selectParty "$WHERE party.id = ${i}")
+lookupFixedParty :: Id Party -> Identity -> Maybe Party
+lookupFixedParty (Id (-1)) _ = Just nobodyParty
+lookupFixedParty (Id 0) _ = Just rootParty
+lookupFixedParty i a = see a <$ guard (i == see a)
 
-lookupAccount :: DBM m => Id Party -> m (Maybe Account)
-lookupAccount (Id i) | i <= 0 = return Nothing
-lookupAccount i = dbQuery1 $(selectQuery selectAccount "$WHERE account.id = ${i}")
+lookupParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
+lookupParty i = do
+  ident <- peek
+  maybe
+    (dbQuery1 $(selectQuery (selectParty 'ident) "$WHERE party.id = ${i}"))
+    (return . Just) $ lookupFixedParty i ident
 
-lookupAuthParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe AuthParty)
-lookupAuthParty i@(Id n) = lap n . partyAuthAuthorization . identityAuthorization =<< peek where
-  lap (-1) a =
-    return $ Just $ AuthParty $ set accessMember PermissionNONE a
-      { authorizeParent = nobodyParty }
-  lap 0 a =
-    return $ Just $ AuthParty a
-  lap _ a =
-    fmap AuthParty <$> dbQuery1 $(selectQuery (selectParentAuthorization 'up) "$!WHERE party.id = ${i}")
-    where up = authorizeChild a
+lookupAuthParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
+lookupAuthParty i = do
+  ident <- peek
+  maybe
+    (dbQuery1 $(selectQuery (selectAuthParty 'ident) "$WHERE party.id = ${i}"))
+    (return . Just) $ lookupFixedParty i ident
 
-selfAuthParty :: Party -> AuthParty
-selfAuthParty p = AuthParty Authorization
-  { authorizeAccess = maxBound
-  , authorizeChild = p
-  , authorizeParent = p
-  }
-
-lookupPartyAuthByEmail :: DBM m => T.Text -> m (Maybe PartyAuth)
-lookupPartyAuthByEmail e = fmap PartyAuth <$>
-  dbQuery1 $(selectQuery (selectChildAuthorization 'rootParty) "!WHERE account.email = ${e}")
+lookupSiteAuthByEmail :: DBM m => T.Text -> m (Maybe SiteAuth)
+lookupSiteAuthByEmail e =
+  dbQuery1 $(selectQuery selectSiteAuth "WHERE account.email = ${e}")
 
 auditAccountLogin :: (MonadHasRequest c m, DBM m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do
@@ -166,6 +134,6 @@ partyFilter PartyFilter{..} ident =
 
 findParties :: (MonadHasIdentity c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
 findParties pf limit offset = do
-  q <- peeks $ partyFilter pf
-  dbQuery $ $(selectQuery selectParty "") `unsafeModifyQuery`
-    (++ q ++ [pgSQL|# LIMIT ${fromIntegral limit :: Int64} OFFSET ${fromIntegral offset :: Int64}|])
+  ident <- peek
+  dbQuery $ $(selectQuery (selectParty 'ident) "") `unsafeModifyQuery`
+    (++ partyFilter pf ident ++ [pgSQL|# LIMIT ${fromIntegral limit :: Int64} OFFSET ${fromIntegral offset :: Int64}|])

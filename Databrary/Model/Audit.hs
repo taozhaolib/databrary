@@ -14,7 +14,7 @@ import Network.Wai (remoteHost)
 import Control.Has (peek, peeks)
 import Databrary.DB
 import Databrary.Action.Request
-import Databrary.Identity.Types
+import Databrary.Model.Identity.Types
 import Databrary.Model.Audit.Types
 
 type AuditM c m = (MonadHasRequest c m, MonadHasIdentity c m, DBM m)

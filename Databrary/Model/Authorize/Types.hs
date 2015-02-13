@@ -1,8 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Authorize.Types
-  ( Access(..)
-  , accessSite, accessMember
-  , Authorization(..)
+  ( Authorization(..)
   , MonadHasAuthorization
   , Authorize(..)
   , MonadHasAuthorize
@@ -12,38 +10,12 @@ module Databrary.Model.Authorize.Types
   , MonadHasPartyAuth
   ) where
 
-import Control.Monad (join)
-import Control.Lens (Lens', makeLensesFor)
-import Data.Monoid (Monoid(..))
 import Data.Time (UTCTime)
 
 import Control.Has (Has(..), makeHasRec)
 import Databrary.Model.Permission.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
-
-data Access = Access
-  { _accessSite :: !Permission
-  , _accessMember :: !Permission
-  }
-
-makeLensesFor [("_accessSite", "accessSite'"), ("_accessMember", "accessMember'")] ''Access
-
-accessSite, accessMember :: Has Access a => Lens' a Permission
-accessSite = view . accessSite'
-accessMember = view . accessMember'
-
-instance Has Permission Access where
-  view f = fmap (join Access) . f . see
-  see (Access s m) = min s m
-
-instance Bounded Access where
-  minBound = Access minBound minBound
-  maxBound = Access maxBound maxBound
-
-instance Monoid Access where
-  mempty = Access PermissionNONE PermissionNONE
-  mappend (Access s1 m1) (Access s2 m2) = Access (max s1 s2) (max m1 m2)
 
 data Authorization = Authorization
   { authorizeAccess :: !Access

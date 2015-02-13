@@ -25,7 +25,7 @@ import Databrary.Model.Token
 import Databrary.View.Form
 import Databrary.Controller.Form
 
-loginAccount :: PartyAuth -> Bool -> AppAction
+loginAccount :: SiteAuth -> Bool -> AppAction
 loginAccount auth su = do
   sess <- createSession auth su
   let Token tok ex = see sess
@@ -59,7 +59,7 @@ viewLogin api = action GET (apiRoute api ["login"]) $ do
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
   (login, form) <- runForm "login" disp loginForm
-  auth <- lookupPartyAuthByEmail (loginEmail login)
+  auth <- lookupSiteAuthByEmail (loginEmail login)
   let p = fmap see auth
       a = partyAccount =<< p
       su = loginSuperuser login && Fold.any ((PermissionADMIN ==) . see) auth

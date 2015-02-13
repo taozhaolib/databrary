@@ -13,7 +13,6 @@ import qualified Data.ByteString as BS
 import Control.Has (makeHasRec)
 import Databrary.Time
 import Databrary.Model.Party.Types
-import Databrary.Model.Authorize.Types
 
 type TokenId = BS.ByteString
 
@@ -24,7 +23,7 @@ data Token = Token
 
 data AccountToken = AccountToken
   { accountToken :: !Token
-  , tokenAccount :: Account
+  , tokenAccount :: SiteAuth
   }
 
 makeHasRec ''AccountToken ['accountToken, 'tokenAccount]
@@ -32,7 +31,6 @@ makeHasRec ''AccountToken ['accountToken, 'tokenAccount]
 data SessionToken = SessionToken
   { sessionAccountToken :: !AccountToken
   , sessionSuperuser :: Bool
-  , sessionAccess :: Access
   }
 
-makeHasRec ''SessionToken ['sessionAccountToken, 'sessionAccess]
+makeHasRec ''SessionToken ['sessionAccountToken]
