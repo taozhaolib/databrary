@@ -6,21 +6,30 @@ module Databrary.Controller.Party
   , searchParty
   ) where
 
-import Control.Applicative ((<$>), (<*>), pure)
+import Control.Applicative ((<$>), (<$), (<*>), pure)
 import qualified Control.Lens as Lens (set, (^.))
-import Control.Monad (unless)
+import Control.Monad (unless, guard)
 import Control.Monad.Reader (reader)
-import qualified Data.Aeson.Types as JSON
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
+import qualified Network.Wai as Wai
 import qualified Text.Digestive as Form
 
-import Control.Has (view, see, peek)
+import Control.Has (view, see, peek, peeks)
+import qualified Databrary.JSON as JSON
 import Databrary.Action
+import Databrary.DB
+import Databrary.Model.Enum
 import Databrary.Model.Kind
 import Databrary.Model.Id
 import Databrary.Model.Permission
+import Databrary.Model.Identity
 import Databrary.Model.Party
+import Databrary.Model.Authorize
+import Databrary.Model.Volume
+import Databrary.Model.VolumeAccess
 import Databrary.Web.Form
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
@@ -34,14 +43,35 @@ withParty Nothing i f = withAuth $ do
 withParty (Just p) i f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
 
-displayParty :: Bool -> Party -> AuthAction
-displayParty True = okResponse [] . partyJSON
-displayParty False = okResponse [] . partyName -- TODO
+partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+partyJSONField p "parents" _ = do
+  al <- testPermission PermissionADMIN p
+  Just . JSON.toJSON . map (\a ->
+    authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeParent (authorization a))))
+    <$> getAuthorizedParents p al
+partyJSONField p "children" _ = do
+  al <- testPermission PermissionADMIN p
+  Just . JSON.toJSON . map (\a ->
+    authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeChild (authorization a))))
+    <$> getAuthorizedChildren p al
+partyJSONField p "volumes" ma = do
+  Just . JSON.toJSON . map (\va -> 
+    volumeAccessJSON va JSON..+ ("volume" JSON..= volumeJSON (volumeAccessVolume va)))
+    <$> partyVolumeAccess p (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
+partyJSONField _ _ _ = return Nothing
+
+partyJSONQuery :: (DBM m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
+partyJSONQuery p = JSON.jsonQuery (partyJSON p) (partyJSONField p)
+
+displayParty :: Maybe JSON.Query -> Party -> AuthAction
+displayParty (Just q) p = okResponse [] =<< partyJSONQuery p q
+displayParty Nothing p = okResponse [] $ partyName p -- TODO
 
 viewParty :: Bool -> Id Party -> AppRAction
-viewParty api i = action GET (apiRoute api $ toRoute i) $
+viewParty api i = action GET (apiRoute api $ toRoute i) $ do
+  q <- peeks Wai.queryString
   withParty (Just PermissionNONE) i $
-    displayParty api
+    displayParty (q <$ guard api)
 
 emptyParty :: Party
 emptyParty = Party
@@ -79,7 +109,7 @@ postParty api i = action POST (apiRoute api $ toRoute i) $
     let disp = displayPartyForm api (Just i)
     (p', _) <- runForm "party" disp (partyForm $ Just $ see p)
     changeParty p'
-    displayParty api $ Lens.set view p' p
+    displayParty ([] <$ guard api) $ Lens.set view p' p
 
 createParty :: Bool -> AppRAction
 createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
@@ -88,7 +118,7 @@ createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   let disp = displayPartyForm api Nothing
   (bp, _) <- runForm "party" disp (partyForm Nothing)
   p <- addParty bp
-  displayParty api p
+  displayParty ([] <$ guard api) p
 
 paginationForm :: Monad m => Form.Form T.Text m (Int, Int)
 paginationForm = (,)

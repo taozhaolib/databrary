@@ -1,5 +1,5 @@
 {-# LANGUAGE TemplateHaskell, PatternGuards #-}
-module Databrary.Enum
+module Databrary.Model.Enum
   ( DBEnum
   , readDBEnum
   , makeDBEnum

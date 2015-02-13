@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Permission 
   ( module Databrary.Model.Permission.Types
@@ -7,9 +7,11 @@ module Databrary.Model.Permission
   , readPermission
   , readClassification
   , testPermission
+  , accessJSON
   ) where
 
 import Control.Has (Has, see, peeks)
+import qualified Databrary.JSON as JSON
 import Databrary.Model.Identity.Types
 import Databrary.Model.Permission.Types
 
@@ -49,3 +51,8 @@ testPermission p o
   | see o >= p = return True
   | otherwise = peeks identitySuperuser
 
+accessJSON :: Access -> JSON.Object
+accessJSON Access{..} = JSON.object
+  [ "site" JSON..= _accessSite
+  , "member" JSON..= _accessMember
+  ]

@@ -10,8 +10,11 @@ module Databrary.JSON
   , (.++)
   , (.!)
   , (.!?)
+  , Query
+  , jsonQuery
   ) where
 
+import Control.Applicative (Applicative, (<$>))
 import Data.Aeson hiding (object)
 import Data.Aeson.Types hiding (object)
 import qualified Data.ByteString as BS
@@ -20,6 +23,7 @@ import Data.List (foldl')
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
 import qualified Data.Vector as V
+import Network.HTTP.Types (Query)
 import Network.URI (URI)
 
 object :: [Pair] -> Object
@@ -50,3 +54,9 @@ instance ToJSON BS.ByteString where
 
 instance ToJSON URI where
   toJSON = toJSON . show
+
+jsonQuery :: (Applicative m, Monad m) => Object -> (BS.ByteString -> Maybe BS.ByteString -> m (Maybe Value)) -> Query -> m Object
+jsonQuery j _ [] = return j
+jsonQuery j f ((k,v):q) = do
+  o <- f k v
+  (.+? fmap ((,) (TE.decodeLatin1 k)) o) <$> jsonQuery j f q

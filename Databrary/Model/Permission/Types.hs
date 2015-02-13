@@ -15,7 +15,7 @@ import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (Has(..))
 import Databrary.DB (useTPG)
-import Databrary.Enum
+import Databrary.Model.Enum
 
 useTPG
 

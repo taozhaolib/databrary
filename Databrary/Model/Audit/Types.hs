@@ -10,7 +10,7 @@ import Database.PostgreSQL.Typed.Inet (PGInet)
 
 import Databrary.Time
 import Databrary.DB (useTPG)
-import Databrary.Enum
+import Databrary.Model.Enum
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 

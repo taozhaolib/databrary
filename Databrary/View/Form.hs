@@ -14,7 +14,7 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
 import qualified Text.Digestive as F
 
-import Databrary.Enum
+import Databrary.Model.Enum
 import Databrary.View.Html
 import Databrary.Action
 

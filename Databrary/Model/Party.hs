@@ -3,15 +3,14 @@ module Databrary.Model.Party
   ( module Databrary.Model.Party.Types
   , nobodyParty
   , rootParty
-  , partyJSON
-
-  , changeParty
-  , addParty
   , lookupParty
   , lookupAuthParty
   , lookupSiteAuthByEmail
+  , changeParty
+  , addParty
   , auditAccountLogin
   , recentAccountLogins
+  , partyJSON
   , PartyFilter(..)
   , findParties
   ) where
@@ -33,7 +32,7 @@ import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Request
 import Databrary.Model.Id
-import Databrary.Model.SQL
+import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Permission
 import Databrary.Model.Audit
 import Databrary.Model.Identity.Types
@@ -135,5 +134,5 @@ partyFilter PartyFilter{..} ident =
 findParties :: (MonadHasIdentity c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
 findParties pf limit offset = do
   ident <- peek
-  dbQuery $ $(selectQuery (selectParty 'ident) "") `unsafeModifyQuery`
+  dbQuery $ unsafeModifyQuery $(selectQuery (selectParty 'ident) "")
     (++ partyFilter pf ident ++ [pgSQL|# LIMIT ${fromIntegral limit :: Int64} OFFSET ${fromIntegral offset :: Int64}|])

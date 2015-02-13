@@ -25,7 +25,7 @@ import qualified Text.Regex.Posix as Regex
 import Databrary.Action
 import Databrary.Model.Kind
 import Databrary.URL
-import Databrary.Enum
+import Databrary.Model.Enum
 
 putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
 putJson JSON.Null [] v = JSON.String v

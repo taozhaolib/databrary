@@ -2,7 +2,6 @@
 module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
   , lookupSession
-  , sessionAuthorization
   , createSession
   ) where
 
@@ -16,7 +15,6 @@ import Databrary.Time
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
-import Databrary.Model.Authorize
 import Databrary.Entropy
 import Databrary.DB
 import Databrary.Model.Token.Types
@@ -36,13 +34,6 @@ createToken insert = do
   dbTransaction $ do
     dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
-
-sessionAuthorization :: SessionToken -> PartyAuth
-sessionAuthorization tok = PartyAuth $ Authorization
-  { authorizeChild = see tok
-  , authorizeParent = rootParty
-  , authorizeAccess = see tok
-  }
 
 lookupSession :: DBM m => TokenId -> m (Maybe SessionToken)
 lookupSession tok = dbQuery1 $(selectQuery selectSessionToken "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")

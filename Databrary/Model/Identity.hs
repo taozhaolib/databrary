@@ -4,7 +4,6 @@ module Databrary.Model.Identity
   , determineIdentity
   ) where
 
-import Databrary.Model.Authorize
 import Databrary.Model.Token
 import Databrary.Action.Request
 import Databrary.Resource

@@ -1,11 +1,12 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Authorize.SQL
-  ( selectParentAuthorization
-  , selectChildAuthorization
+  ( selectAuthorizeParent
+  , selectAuthorizeChild
   ) where
 
 import qualified Language.Haskell.TH as TH
 
+import Databrary.Time
 import Databrary.Model.SQL
 import Databrary.Model.Party.SQL (selectParty)
 import Databrary.Model.Party.Types
@@ -13,21 +14,34 @@ import Databrary.Model.Permission.Types
 import Databrary.Model.Permission.SQL
 import Databrary.Model.Authorize.Types
 
-makePartyAuthorization :: Access -> Party -> Party -> Authorization
-makePartyAuthorization a p c = Authorization a c p
+makeAuthorize :: Access -> Maybe Timestamp -> Party -> Party -> Authorize
+makeAuthorize a e c p = Authorize
+  { authorization = Authorization
+    { authorizeAccess = a
+    , authorizeChild = c
+    , authorizeParent = p
+    }
+  , authorizeExpires = e
+  }
 
-selectParentAuthorization :: TH.Name -- ^ child 'Party'
-  -> Selector -- ^ 'Authorization'
-selectParentAuthorization child =
-  selectMap (`TH.AppE` TH.VarE child) $ selectJoin 'makePartyAuthorization
-    [ accessRow "authorize_view"
-    , joinOn ("authorize_view.parent = party.id AND authorize_view.child = ${partyId " ++ nameRef child ++ "}") selectParty 
-    ]
+authorizeRow :: Selector -- @'Party' -> 'Party' -> 'Authorize'@
+authorizeRow = addSelects 'makeAuthorize
+  (accessRow "authorize") ["expires"]
 
-selectChildAuthorization :: TH.Name  -- ^ parent 'Party'
-  -> Selector -- ^ 'Authorization'
-selectChildAuthorization parent =
-  selectMap (`TH.AppE` TH.VarE parent) $ selectJoin 'Authorization
-    [ accessRow "authorize_view"
-    , joinOn ("authorize_view.child = party.id AND authorize_view.parent = ${partyId " ++ nameRef parent ++ "}") selectParty
-    ]
+selectAuthorizeParent :: TH.Name -- ^ child 'Party'
+  -> TH.Name -- ^ 'Identity'
+  -> Selector -- ^ 'Authorize'
+selectAuthorizeParent child ident = selectJoin '($)
+  [ selectMap (`TH.AppE` TH.VarE child) authorizeRow
+  , joinOn ("authorize.parent = party.id AND authorize.child = ${partyId " ++ nameRef child ++ "}") 
+    $ selectParty ident
+  ]
+
+selectAuthorizeChild :: TH.Name -- ^ parent 'Party'
+  -> TH.Name -- ^ 'Identity'
+  -> Selector -- ^ 'Authorize'
+selectAuthorizeChild parent ident = selectMap (`TH.AppE` TH.VarE parent) $ selectJoin '($)
+  [ authorizeRow
+  , joinOn ("authorize.child = party.id AND authorize.parent = ${partyId " ++ nameRef parent ++ "}") 
+    $ selectParty ident
+  ]

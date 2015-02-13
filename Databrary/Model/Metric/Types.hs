@@ -13,7 +13,7 @@ import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (makeHasRec)
 import Databrary.DB
-import Databrary.Enum
+import Databrary.Model.Enum
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types
 import Databrary.Model.Id.Types
