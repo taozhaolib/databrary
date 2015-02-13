@@ -48,8 +48,8 @@ selectAuthParty :: TH.Name -- ^ 'Identity`
   -> Selector -- ^ @'Party'@
 selectAuthParty ident = selectMap (`TH.AppE` TH.VarE ident) $ selectJoin 'permissionParty
   [ selectUnpermissionedParty
-  , maybeJoinOn ("party.id = authorize_view.parent AND authorize_view.child = ${see " ++ nameRef ident ++ " :: Id Party}")
-    $ selector "authorize_view" "LEAST(site, member)"
+  , maybeJoinOn ("party.id = authorize_valid.parent AND authorize_valid.child = ${see " ++ nameRef ident ++ " :: Id Party}")
+    $ selector "authorize_valid" "LEAST(site, member)"
   ]
 
 makeAccount :: (Maybe Account -> Permission -> Party) -> (Party -> Account) -> Permission -> Account
