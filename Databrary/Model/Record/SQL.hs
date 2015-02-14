@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Record.SQL
-  ( selectRecord
+  ( selectVolumeRecord
+  , selectRecord
   ) where
 
 import Control.Arrow ((***))
@@ -33,9 +34,12 @@ recordRow :: Selector -- ^ @'Consent' -> 'Volume' -> 'Record'@
 recordRow = fromMap ("record_measures AS " ++) $
   selectColumns 'makeRecord "record" ["id", "category", "measures"]
 
+selectVolumeRecord :: Selector -- ^ @'Volume' -> 'Record'@
+selectVolumeRecord = addSelects '($) recordRow ["record_consent(record.id)"]
+
 selectRecord :: TH.Name -- ^ @'Identity'@
   -> Selector -- ^ @'Record'@
-selectRecord i = selectJoin '($)
-  [ addSelects '($) recordRow ["record_consent(record.id)"]
-  , joinOn "record.volume = volume.id" $ selectVolume i
+selectRecord ident = selectJoin '($)
+  [ selectVolumeRecord
+  , joinOn "record.volume = volume.id" $ selectVolume ident
   ]

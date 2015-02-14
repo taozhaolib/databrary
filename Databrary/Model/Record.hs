@@ -2,6 +2,7 @@
 module Databrary.Model.Record
   ( module Databrary.Model.Record.Types
   , lookupRecord
+  , volumeRecords
   , recordJSON
   ) where
 
@@ -26,9 +27,13 @@ import Databrary.Model.Record.SQL
 useTPG
 
 lookupRecord :: (MonadHasIdentity c m, DBM m) => Id Record -> m (Maybe Record)
-lookupRecord i = do
+lookupRecord ri = do
   ident <- peek
-  dbQuery1 $ $(selectQuery (selectRecord 'ident) "$WHERE record.id = ${i}")
+  dbQuery1 $(selectQuery (selectRecord 'ident) "$WHERE record.id = ${ri}")
+
+volumeRecords :: DBM m => Volume -> m [Record]
+volumeRecords vol =
+  dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
 
 getRecordMeasures :: Record -> Measures
 getRecordMeasures r = maybe [] filt $ readClassification (see r) (see r) where

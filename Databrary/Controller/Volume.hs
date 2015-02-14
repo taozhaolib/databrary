@@ -24,6 +24,7 @@ import Databrary.Model.Party
 import Databrary.Model.Citation
 import Databrary.Model.Funding
 import Databrary.Model.Container
+import Databrary.Model.Record
 import Databrary.Controller.Permission
 
 withVolume :: Permission -> Id Volume -> (Volume -> AuthAction) -> AppAction
@@ -43,6 +44,8 @@ volumeJSONField vol "funding" _ =
   Just . JSON.toJSON <$> volumeFunding vol
 volumeJSONField vol "containers" _ =
   Just . JSON.toJSON . map containerJSON <$> volumeContainers vol
+volumeJSONField vol "records" _ =
+  Just . JSON.toJSON . map recordJSON <$> volumeRecords vol
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
