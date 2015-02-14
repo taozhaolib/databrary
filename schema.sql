@@ -267,8 +267,7 @@ SELECT audit.CREATE_TABLE ('volume_citation');
 
 CREATE TABLE "funder" (
 	"fundref_id" bigint NOT NULL Primary Key,
-	"name" text NOT NULL,
-	"party" integer References "party"
+	"name" text NOT NULL
 );
 COMMENT ON TABLE "funder" IS 'Sources of funding, basically a mirror of fundref data, with local party associations (primarily for transition).';
 COMMENT ON COLUMN "funder"."fundref_id" IS 'Identifiers from fundref.org, under the http://dx.doi.org/10.13039/ namespace. Specifications suggest these may not be numeric, but they seem to be.';

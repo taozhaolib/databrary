@@ -47,6 +47,7 @@ Executable databrary
     postgresql-typed == 0.3.2,
     entropy,
     warp,
+    exceptions,
     contravariant,
     lens,
     blaze-markup,

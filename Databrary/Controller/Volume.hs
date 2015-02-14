@@ -22,6 +22,7 @@ import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Model.Party
 import Databrary.Model.Citation
+import Databrary.Model.Funding
 import Databrary.Controller.Permission
 
 withVolume :: Permission -> Id Volume -> (Volume -> AuthAction) -> AppAction
@@ -37,6 +38,8 @@ volumeJSONField vol "citation" _ =
   Just . maybe JSON.Null JSON.toJSON <$> volumeCitation vol
 volumeJSONField vol "links" _ =
   Just . JSON.toJSON <$> volumeLinks vol
+volumeJSONField vol "funding" _ =
+  Just . JSON.toJSON <$> volumeFunding vol
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object

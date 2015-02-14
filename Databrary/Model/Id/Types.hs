@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds, TemplateHaskell, TypeFamilies, UndecidableInstances #-}
+{-# LANGUAGE DataKinds, TemplateHaskell, TypeFamilies, UndecidableInstances, StandaloneDeriving #-}
 module Databrary.Model.Id.Types 
   ( IdType
   , Id(..)
@@ -20,18 +20,8 @@ import qualified Databrary.Web.Route as R
 type family IdType a
 newtype Id a = Id { unId :: IdType a }
 
-instance Eq (IdType a) => Eq (Id a) where
-  Id a == Id b = a == b
-  Id a /= Id b = a /= b
-
-instance Ord (IdType a) => Ord (Id a) where
-  Id a `compare` Id b = a `compare` b
-  Id a < Id b = a < b
-  Id a <= Id b = a <= b
-  Id a >= Id b = a >= b
-  Id a > Id b = a > b
-  Id a `min` Id b = Id $ a `min` b
-  Id a `max` Id b = Id $ a `max` b
+deriving instance Eq (IdType a) => Eq (Id a)
+deriving instance Ord (IdType a) => Ord (Id a)
 
 instance PGParameter t (IdType a) => PGParameter t (Id a) where
   pgEncode t (Id i) = pgEncode t i
