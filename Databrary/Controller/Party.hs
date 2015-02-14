@@ -44,16 +44,14 @@ withParty (Just p) i f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
 
 partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
-partyJSONField p "parents" _ = do
-  al <- testPermission PermissionADMIN p
+partyJSONField p "parents" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeParent (authorization a))))
-    <$> getAuthorizedParents p al
-partyJSONField p "children" _ = do
-  al <- testPermission PermissionADMIN p
+    <$> getAuthorizedParents p (see p >= PermissionADMIN)
+partyJSONField p "children" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeChild (authorization a))))
-    <$> getAuthorizedChildren p al
+    <$> getAuthorizedChildren p (see p >= PermissionADMIN)
 partyJSONField p "volumes" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("volume" JSON..= volumeJSON (volumeAccessVolume va)))

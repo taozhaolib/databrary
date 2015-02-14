@@ -6,13 +6,12 @@ module Databrary.Model.Permission
   , permissionPRIVATE
   , readPermission
   , readClassification
-  , testPermission
+  , dataPermission
   , accessJSON
   ) where
 
-import Control.Has (Has, see, peeks)
+import Control.Has (Has, see)
 import qualified Databrary.JSON as JSON
-import Databrary.Model.Identity.Types
 import Databrary.Model.Permission.Types
 
 -- |Level at which things become visible.
@@ -46,10 +45,13 @@ readClassification PermissionSHARED (Just c) | c >= ConsentSHARED
 readClassification PermissionSHARED _ = Just ClassificationSHARED
 readClassification _ _                = Just ClassificationPRIVATE
 
-testPermission :: (MonadHasIdentity c m, Has Permission a) => Permission -> a -> m Bool
-testPermission p o
-  | see o >= p = return True
-  | otherwise = peeks identitySuperuser
+-- |The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.
+dataPermission :: Has Permission a => a -> Classification -> Maybe Consent -> Permission
+dataPermission o c = dp (see o) . readPermission c where
+  dp p r
+    | p >= PermissionREAD = p
+    | p >= r = PermissionREAD
+    | otherwise = PermissionNONE
 
 accessJSON :: Access -> JSON.Object
 accessJSON Access{..} = JSON.object

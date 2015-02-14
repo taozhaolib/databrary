@@ -4,13 +4,11 @@ module Databrary.Controller.Permission
 
 import Control.Monad.IO.Class (MonadIO)
 
-import Control.Has (Has)
+import Control.Has (Has, see)
 import Databrary.Model.Permission
 import Databrary.Action
-import Databrary.Model.Identity
 
-checkPermission :: (ActionM c m, MonadHasIdentity c m, MonadIO m, Has Permission a) => Permission -> a -> m a
+checkPermission :: (ActionM c m, MonadIO m, Has Permission a) => Permission -> a -> m a
 checkPermission p o = do
-  c <- testPermission p o
-  guardAction c forbiddenResponse
+  guardAction (see o >= p) forbiddenResponse
   return o

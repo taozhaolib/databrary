@@ -37,7 +37,9 @@ selectUnpermissionedParty = selectJoin 'makeParty
   ]
 
 permissionParty :: (Permission -> Party) -> Maybe Permission -> Identity -> Party
-permissionParty pf perm ident = pf $ maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ ident ^. accessSite
+permissionParty pf perm ident = pf $ if identitySuperuser ident
+  then maxBound
+  else maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ ident ^. accessSite
 
 selectParty :: TH.Name -- ^ 'Identity'
   -> Selector -- ^ @'Party'@
