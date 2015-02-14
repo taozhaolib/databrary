@@ -8,7 +8,6 @@ import Control.Monad (guard)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
-import Network.HTTP.Types (Query)
 import qualified Network.Wai as Wai
 
 import Control.Has (peeks)
@@ -22,6 +21,7 @@ import Databrary.Model.Identity
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Model.Party
+import Databrary.Model.Citation
 import Databrary.Controller.Permission
 
 withVolume :: Permission -> Id Volume -> (Volume -> AuthAction) -> AppAction
@@ -33,6 +33,10 @@ volumeJSONField vol "access" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va)))
     <$> volumeVolumeAccess vol (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
+volumeJSONField vol "citation" _ =
+  Just . maybe JSON.Null JSON.toJSON <$> volumeCitation vol
+volumeJSONField vol "links" _ =
+  Just . JSON.toJSON <$> volumeLinks vol
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
