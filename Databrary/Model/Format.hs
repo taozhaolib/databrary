@@ -3,6 +3,7 @@ module Databrary.Model.Format
   ( module Databrary.Model.Format.Types
   , unknownFormat
   , getFormat
+  , getFormat'
   , getFormatByFilename
   ) where
 
@@ -31,6 +32,9 @@ formatsById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ formatId a,
 
 getFormat :: Id Format -> Maybe Format
 getFormat (Id i) = IntMap.lookup (fromIntegral i) formatsById
+
+getFormat' :: Id Format -> Format
+getFormat' (Id i) = formatsById IntMap.! fromIntegral i
 
 formatsByExtension :: Map.Map String Format
 formatsByExtension = Map.fromList [ (e, a) | a <- formats, e <- formatExtension a ]

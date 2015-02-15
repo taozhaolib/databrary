@@ -15,7 +15,7 @@ withRecord p i f = withAuth $
 
 displayRecord :: Bool -> Record -> AuthAction
 displayRecord True = okResponse [] . recordJSON
--- displayRecord False = okResponse [] -- TODO
+displayRecord False = okResponse [] . show . recordId -- TODO
 
 viewRecord :: Bool -> Id Record -> AppRAction
 viewRecord api i = action GET (apiRoute api $ toRoute i) $

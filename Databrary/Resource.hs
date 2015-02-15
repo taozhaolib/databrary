@@ -2,7 +2,6 @@
 module Databrary.Resource
   ( Resource(..)
   , MonadHasResource
-  , getResource
   , initResource
   ) where
 
@@ -11,10 +10,11 @@ import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
-import Control.Has (makeHasRec, peeks)
-import Databrary.DB
-import Databrary.Entropy
+import Control.Has (makeHasRec)
+import Databrary.DB (DBConn, initDB)
+import Databrary.Entropy (Entropy, initEntropy)
 import Databrary.Web.Client (HTTPClient, initHTTPClient)
+import Databrary.Store.Storage (Storage, initStorage)
 
 data Resource = Resource
   { resourceConfig :: C.Config
@@ -22,12 +22,10 @@ data Resource = Resource
   , resourceDB :: DBConn
   , resourceEntropy :: Entropy
   , resourceHTTPClient :: HTTPClient
+  , resourceStorage :: Storage
   }
 
-makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy, 'resourceHTTPClient]
-
-getResource :: MonadHasResource c m => (Resource -> a) -> m a
-getResource = peeks
+makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy, 'resourceHTTPClient, 'resourceStorage]
 
 initResource :: IO Resource
 initResource = do
@@ -37,3 +35,4 @@ initResource = do
     <*> initDB (C.subconfig "db" conf)
     <*> initEntropy
     <*> initHTTPClient
+    <*> initStorage (C.subconfig "store" conf)

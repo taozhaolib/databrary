@@ -10,6 +10,7 @@ import Data.Byteable (toBytes)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
 
+import Control.Has (peeks)
 import Databrary.Resource
 
 hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString
@@ -20,7 +21,7 @@ hmacLength = BS.length $ hmac "" ""
 
 signature :: MonadHasResource c m => BS.ByteString -> m BS.ByteString
 signature msg = do
-  secret <- getResource resourceSecret
+  secret <- peeks resourceSecret
   return $ hmac secret msg
 
 sign :: MonadHasResource c m => BS.ByteString -> m BS.ByteString
