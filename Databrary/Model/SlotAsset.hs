@@ -7,7 +7,7 @@ module Databrary.Model.SlotAsset
 
 import Database.PostgreSQL.Typed (pgSQL)
 
-import Control.Has (peek, see)
+import Control.Has (peek, view)
 import Databrary.DB
 import Databrary.Model.Time
 import Databrary.Model.Id.Types
@@ -29,4 +29,4 @@ auditSlotAssetDownload :: AuditM c m => Bool -> SlotAsset -> m ()
 auditSlotAssetDownload success sa = do
   ai <- getAuditIdentity
   dbExecute1 [pgSQL|INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES
-    (${if success then AuditActionOpen else AuditActionAttempt}, ${auditWho ai}, ${auditIp ai}, ${see sa :: Id Container}, ${see sa :: Segment}, ${see sa :: Id Asset})|]
+    (${if success then AuditActionOpen else AuditActionAttempt}, ${auditWho ai}, ${auditIp ai}, ${view sa :: Id Container}, ${view sa :: Segment}, ${view sa :: Id Asset})|]

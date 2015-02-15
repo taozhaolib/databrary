@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Party.Types 
   ( Party(..)
-  , partyId'
   , nobodyParty
   , MonadHasParty
   , Account(..)

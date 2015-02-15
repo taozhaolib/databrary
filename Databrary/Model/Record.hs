@@ -10,7 +10,7 @@ import Control.Applicative ((<$>))
 import Data.Maybe (catMaybes)
 import qualified Data.Text as T
 
-import Control.Has (peek, see)
+import Control.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
@@ -36,8 +36,8 @@ volumeRecords vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
 
 getRecordMeasures :: Record -> Measures
-getRecordMeasures r = maybe [] filt $ readClassification (see r) (see r) where
-  filt c = filter ((>= c) . see) $ recordMeasures r
+getRecordMeasures r = maybe [] filt $ readClassification (view r) (view r) where
+  filt c = filter ((>= c) . view) $ recordMeasures r
 
 measureJSONPair :: Measure -> JSON.Pair
 measureJSONPair m = T.pack (show (metricId (measureMetric m))) JSON..= measureDatum m

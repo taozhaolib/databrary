@@ -8,7 +8,7 @@ module Databrary.Model.SlotAsset.SQL
 
 import qualified Language.Haskell.TH as TH
 
-import Control.Has (see)
+import Control.Has (view)
 import Databrary.Model.Time.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
@@ -38,7 +38,7 @@ selectAssetContainerSlotAsset = selectJoin 'makeSlotAsset
   ]
 
 makeContainerSlotAsset :: (Asset -> Container -> SlotAsset) -> (Volume -> Asset) -> Container -> SlotAsset
-makeContainerSlotAsset f af c = f (af (see c)) c
+makeContainerSlotAsset f af c = f (af (view c)) c
 
 selectContainerSlotAsset :: Selector -- ^ @'Container' -> 'SlotAsset'@
 selectContainerSlotAsset = selectJoin 'makeContainerSlotAsset
@@ -48,7 +48,7 @@ selectContainerSlotAsset = selectJoin 'makeContainerSlotAsset
   ]
 
 makeAssetSlotAsset :: (Asset -> Container -> SlotAsset) -> (Volume -> Container) -> Asset -> SlotAsset
-makeAssetSlotAsset f cf a = f a (cf (see a))
+makeAssetSlotAsset f cf a = f a (cf (view a))
 
 selectAssetSlotAsset :: Selector -- ^ @'Asset' -> 'SlotAsset'@
 selectAssetSlotAsset = selectJoin 'makeAssetSlotAsset

@@ -37,7 +37,7 @@ footer = mempty
 htmlTemplate :: AuthRequest -> Maybe T.Text -> H.Html -> H.Html
 htmlTemplate req title body = H.docTypeHtml $ do
   H.head $ do
-    header (see req)
+    header (view req)
     H.title $ do
       mapM_ (>> " || ") title
       "Databrary"

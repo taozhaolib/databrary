@@ -10,7 +10,7 @@ import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString.Base64.URL as Base64
 import Database.PostgreSQL.Typed (pgSQL)
 
-import Control.Has (see)
+import Control.Has (view)
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
@@ -45,7 +45,7 @@ sessionDuration True = 30*60
 createSession :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m SessionToken
 createSession auth su = do
   (tok, ex) <- createToken $ \tok -> do
-    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${see auth :: Id Party}, ${su}) RETURNING token, expires|]
+    dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}) RETURNING token, expires|]
   return $ SessionToken
     { sessionAccountToken = AccountToken
       { accountToken = Token tok ex

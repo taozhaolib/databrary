@@ -5,7 +5,7 @@ module Databrary.Controller.SlotAsset
 
 import Data.Maybe (fromJust)
 
-import Control.Has (see)
+import Control.Has (view)
 import Databrary.Action
 import Databrary.Model.Id
 import Databrary.Model.Permission
@@ -23,7 +23,7 @@ withSlotAsset p ci ai f = withAuth $
 downloadSlotAsset :: Id Container -> Id Asset -> AppRAction
 downloadSlotAsset ci ai = action GET (toRoute ci ++ toRoute ai) $
   withSlotAsset PermissionREAD ci ai $ \sa -> do
-    let a = see sa
+    let a = view sa
     store <- maybeAction =<< getAssetFile a
     auditSlotAssetDownload True sa
-    serveFile store (see a) (fromJust $ assetSHA1 a)
+    serveFile store (view a) (fromJust $ assetSHA1 a)

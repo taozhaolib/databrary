@@ -6,7 +6,6 @@ module Databrary.Model.Identity.Types
   ) where
 
 import Control.Applicative (Applicative)
-import Control.Lens (set)
 import Control.Monad.Reader (MonadReader)
 import Data.Monoid (mempty)
 
@@ -23,22 +22,16 @@ data Identity
 -- makeLensesFor [("identitySession", "identitySession'")] ''Identity
 
 instance Has Party Identity where
-  view f UnIdentified = fmap (const UnIdentified) $ f nobodyParty
-  view f (Identified t) = fmap (\p -> Identified (set view p t)) $ f $ see t
-  see UnIdentified = nobodyParty
-  see (Identified t) = see t
+  view UnIdentified = nobodyParty
+  view (Identified t) = view t
 
 instance Has (Id Party) Identity where
-  view f UnIdentified = fmap (const UnIdentified) $ f $ partyId nobodyParty
-  view f (Identified t) = fmap (\p -> Identified (set view p t)) $ f $ see t
-  see UnIdentified = partyId nobodyParty
-  see (Identified t) = see t
+  view UnIdentified = partyId nobodyParty
+  view (Identified t) = view t
 
 instance Has Access Identity where
-  view f UnIdentified = fmap (const UnIdentified) $ f mempty
-  view f (Identified t) = fmap (\p -> Identified (set view p t)) $ f $ see t
-  see UnIdentified = mempty
-  see (Identified t) = see t
+  view UnIdentified = mempty
+  view (Identified t) = view t
 
 identitySuperuser :: Identity -> Bool
 identitySuperuser UnIdentified = False

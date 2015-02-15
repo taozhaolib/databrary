@@ -7,9 +7,7 @@ module Databrary.Controller.Party
   ) where
 
 import Control.Applicative ((<$>), (<$), (<*>), pure)
-import qualified Control.Lens as Lens (set, (^.))
 import Control.Monad (unless, guard)
-import Control.Monad.Reader (reader)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
@@ -17,7 +15,7 @@ import qualified Data.Text as T
 import qualified Network.Wai as Wai
 import qualified Text.Digestive as Form
 
-import Control.Has (view, see, peek, peeks)
+import Control.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action
 import Databrary.DB
@@ -47,11 +45,11 @@ partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> May
 partyJSONField p "parents" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeParent (authorization a))))
-    <$> getAuthorizedParents p (see p >= PermissionADMIN)
+    <$> getAuthorizedParents p (view p >= PermissionADMIN)
 partyJSONField p "children" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeChild (authorization a))))
-    <$> getAuthorizedChildren p (see p >= PermissionADMIN)
+    <$> getAuthorizedChildren p (view p >= PermissionADMIN)
 partyJSONField p "volumes" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("volume" JSON..= volumeJSON (volumeAccessVolume va)))
@@ -105,13 +103,13 @@ postParty :: Bool -> Id Party -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
   withParty (Just PermissionADMIN) i $ \p -> do
     let disp = displayPartyForm api (Just i)
-    (p', _) <- runForm "party" disp (partyForm $ Just $ see p)
+    (p', _) <- runForm "party" disp (partyForm $ Just p)
     changeParty p'
-    displayParty ([] <$ guard api) $ Lens.set view p' p
+    displayParty ([] <$ guard api) p'
 
 createParty :: Bool -> AppRAction
 createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
-  perm <- reader (Lens.^. accessPermission)
+  perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
   let disp = displayPartyForm api Nothing
   (bp, _) <- runForm "party" disp (partyForm Nothing)

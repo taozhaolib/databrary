@@ -9,7 +9,7 @@ import Control.Applicative ((<$))
 import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 
-import Control.Has (peek, see)
+import Control.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)

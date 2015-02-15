@@ -4,38 +4,30 @@ module Control.Has
   , MonadHas
   , peek
   , peeks
-  , poke
   , focus
   , makeHasFor
   , makeHasRec
   ) where
 
-import Control.Applicative (Applicative, (<$>))
-import Control.Lens hiding (view)
+import Control.Applicative (Applicative)
 import Control.Monad (unless, liftM, liftM2)
-import Control.Monad.Reader (MonadReader, ReaderT, reader, local, withReaderT)
+import Control.Monad.Reader (MonadReader, ReaderT, reader, withReaderT)
 import Data.List (foldl')
 import qualified Language.Haskell.TH as TH
 
 class Has a c where
-  view :: Lens' c a
-  see :: c -> a
-  see = (^. view)
+  view :: c -> a
 
 instance Has a a where
   view = id
-  see = id
 
 type MonadHas a c m = (Functor m, Applicative m, MonadReader c m, Has a c)
 
 peek :: MonadHas a c m => m a
-peek = reader see
+peek = reader view
 
 peeks :: MonadHas a c m => (a -> b) -> m b
-peeks f = reader (f . see)
-
-poke :: MonadHas a c m => (a -> a) -> m r -> m r
-poke = local . over view
+peeks f = reader (f . view)
 
 focus :: Has a c => ReaderT a m r -> ReaderT c m r
 focus = withReaderT peek
@@ -48,7 +40,7 @@ getFieldType tn fn = do
 
 makeHasFor :: TH.Name -> [(TH.Name, [TH.Type])] -> TH.DecsQ
 makeHasFor tn fs = concatM
-  ((++)
+  (return
     [ TH.TySynD ht [TH.PlainTV cv] $ tupleT $
         map (\t -> TH.ConT ''Has `TH.AppT` t `TH.AppT` TH.VarT cv) (tt : concatMap snd fs)
     , TH.TySynD (TH.mkName ("MonadHas" ++ TH.nameBase tn)) [TH.PlainTV cv, TH.PlainTV mv] $ tupleT $
@@ -57,19 +49,15 @@ makeHasFor tn fs = concatM
         , TH.ConT ''MonadReader `TH.AppT` TH.VarT cv `TH.AppT` TH.VarT mv
         , TH.ConT ht `TH.AppT` TH.VarT cv
         ]
-    ]
-    <$> makeLensesFor [(f, f ++ "'") | (fn, _) <- fs, let f = TH.nameBase fn] tn)
+    ])
   (\(fn, ts) -> do
-    let ln = TH.mkName (TH.nameBase fn ++ "'")
     ft <- getFieldType tn fn
     concatM
       [d| instance Has $(return ft) $(return tt) where
-            view = $(TH.varE ln)
-            see = $(TH.varE fn) |]
+            view = $(TH.varE fn) |]
       (\st ->
         [d| instance Has $(return st) $(return tt) where
-              view = $(TH.varE ln) . view
-              see = see . $(TH.varE fn) |])
+              view = view . $(TH.varE fn) |])
       ts)
   fs
   where

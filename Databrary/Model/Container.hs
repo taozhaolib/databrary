@@ -12,7 +12,7 @@ import Data.Maybe (catMaybes)
 import Data.Time.Format (formatTime)
 import System.Locale (defaultTimeLocale)
 
-import Control.Has (see, peek)
+import Control.Has (view, peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
@@ -38,7 +38,7 @@ volumeContainers vol =
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where
   fmt
-    | dataPermission c ClassificationRESTRICTED (see c) >= PermissionREAD = "%Y-%m-%d"
+    | dataPermission c ClassificationRESTRICTED (view c) >= PermissionREAD = "%Y-%m-%d"
     | otherwise = "%Y-XX-XX"
 
 containerJSON :: Container -> JSON.Object

@@ -49,7 +49,6 @@ Executable databrary
     warp,
     exceptions,
     contravariant,
-    lens,
     blaze-markup,
     blaze-html,
     digestive-functors,

@@ -4,12 +4,10 @@ module Databrary.Model.Permission.Types
   ( Permission(..)
   , Consent(..)
   , Classification(..)
-  , Access(..)
+  , Access(..), accessPermission'
   , accessSite, accessMember, accessPermission
   ) where
 
-import Control.Lens (Lens', makeLensesFor)
-import Control.Monad (join)
 import Data.Monoid (Monoid(..))
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
@@ -26,18 +24,17 @@ makeDBEnum "classification" "Classification"
 deriveLiftMany [''Permission, ''Consent, ''Classification]
 
 data Access = Access
-  { _accessSite :: !Permission
-  , _accessMember :: !Permission
+  { accessSite' :: !Permission
+  , accessMember' :: !Permission
   }
 
-makeLensesFor [("_accessSite", "accessSite'"), ("_accessMember", "accessMember'")] ''Access
-accessPermission' :: Lens' Access Permission
-accessPermission' f (Access s m) = fmap (join Access) $ f $ min s m
+accessPermission' :: Access -> Permission
+accessPermission' (Access s m) = min s m
 
-accessSite, accessMember, accessPermission :: Has Access a => Lens' a Permission
-accessSite = view . accessSite'
-accessMember = view . accessMember'
-accessPermission = view . accessPermission'
+accessSite, accessMember, accessPermission :: Has Access a => a -> Permission
+accessSite = accessSite' . view
+accessMember = accessMember' . view
+accessPermission = accessPermission' . view
 
 instance Bounded Access where
   minBound = Access minBound minBound

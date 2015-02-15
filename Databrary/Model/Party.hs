@@ -16,7 +16,6 @@ module Databrary.Model.Party
   ) where
 
 import Control.Applicative ((<$>), (<$))
-import Control.Lens ((^.))
 import Control.Monad (guard)
 import Data.Int (Int64)
 import Data.List (intercalate)
@@ -51,7 +50,7 @@ emailPermission :: Permission
 emailPermission = PermissionSHARED
 
 showEmail :: Identity -> Bool
-showEmail i = i ^. accessSite >= emailPermission
+showEmail i = accessSite i >= emailPermission
 
 partyEmail :: Party -> Maybe T.Text
 partyEmail p =
@@ -78,7 +77,7 @@ addParty bp = do
 lookupFixedParty :: Id Party -> Identity -> Maybe Party
 lookupFixedParty (Id (-1)) _ = Just nobodyParty
 lookupFixedParty (Id 0) _ = Just rootParty
-lookupFixedParty i a = see a <$ guard (i == see a)
+lookupFixedParty i a = view a <$ guard (i == view a)
 
 lookupParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupParty i = do

@@ -15,7 +15,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Text.Digestive as Form
 
-import Control.Has (see)
+import Control.Has (view)
 import Databrary.Action
 import Databrary.Web.Form
 import Databrary.Web.Cookie
@@ -28,7 +28,7 @@ import Databrary.Controller.Form
 loginAccount :: SiteAuth -> Bool -> AppAction
 loginAccount auth su = do
   sess <- createSession auth su
-  let Token tok ex = see sess
+  let Token tok ex = view sess
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 
@@ -60,9 +60,9 @@ postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
   (login, form) <- runForm "login" disp loginForm
   auth <- lookupSiteAuthByEmail (loginEmail login)
-  let p = fmap see auth
+  let p = fmap view auth
       a = partyAccount =<< p
-      su = loginSuperuser login && Fold.any ((PermissionADMIN ==) . see) auth
+      su = loginSuperuser login && Fold.any ((PermissionADMIN ==) . view) auth
   attempts <- maybe (return 0) recentAccountLogins p
   let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 (loginPassword login))) (accountPasswd =<< a)
       block = attempts > 4

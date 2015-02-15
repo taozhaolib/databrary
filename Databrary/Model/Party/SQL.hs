@@ -8,7 +8,6 @@ module Databrary.Model.Party.SQL
   , insertParty
   ) where
 
-import Control.Lens ((^.))
 import Data.Char (toLower)
 import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
@@ -39,7 +38,7 @@ selectUnpermissionedParty = selectJoin 'makeParty
 permissionParty :: (Permission -> Party) -> Maybe Permission -> Identity -> Party
 permissionParty pf perm ident = pf $ if identitySuperuser ident
   then maxBound
-  else maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ ident ^. accessSite
+  else maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ accessSite ident
 
 selectParty :: TH.Name -- ^ 'Identity'
   -> Selector -- ^ @'Party'@
@@ -50,7 +49,7 @@ selectAuthParty :: TH.Name -- ^ 'Identity`
   -> Selector -- ^ @'Party'@
 selectAuthParty ident = selectMap (`TH.AppE` TH.VarE ident) $ selectJoin 'permissionParty
   [ selectUnpermissionedParty
-  , maybeJoinOn ("party.id = authorize_valid.parent AND authorize_valid.child = ${see " ++ nameRef ident ++ " :: Id Party}")
+  , maybeJoinOn ("party.id = authorize_valid.parent AND authorize_valid.child = ${view " ++ nameRef ident ++ " :: Id Party}")
     $ selector "authorize_valid" "LEAST(site, member)"
   ]
 
