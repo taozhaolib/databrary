@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Party 
   ( module Databrary.Model.Party.Types
   , nobodyParty
@@ -101,7 +101,8 @@ lookupSiteAuthByEmail e =
 auditAccountLogin :: (MonadHasRequest c m, DBM m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do
   ip <- getRemoteIp
-  dbExecute1 [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES (${if success then AuditActionOpen else AuditActionAttempt}, -1, ${ip}, ${partyId who}, ${email})|]
+  dbExecute1 [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES
+    (${if success then AuditActionOpen else AuditActionAttempt}, -1, ${ip}, ${partyId who}, ${email})|]
 
 recentAccountLogins :: DBM m => Party -> m Int64
 recentAccountLogins who = fromMaybe 0 <$>

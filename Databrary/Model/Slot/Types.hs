@@ -4,18 +4,13 @@ module Databrary.Model.Slot.Types
   , MonadHasSlot
   ) where
 
-import qualified Data.Text as T
-
 import Control.Has (makeHasRec)
-import Databrary.Time
-import Databrary.Model.Kind
-import Databrary.Model.Permission.Types
-import Databrary.Model.Id.Types
-import Databrary.Model.Volume.Types
+import Databrary.Model.Time.Types
+import Databrary.Model.Container.Types
 
 data Slot = Slot
-  { slotSegment :: Segment
-  , slotContainer :: Container
+  { slotContainer :: Container
+  , slotSegment :: Segment
   }
 
-makeHasRec ''Slot ['slotContainer]
+makeHasRec ''Slot ['slotContainer, 'slotSegment]

@@ -8,7 +8,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Text as T
 
 import Control.Has (makeHasRec)
-import Databrary.Time
+import Databrary.Model.Time.Types
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types
 import Databrary.Model.Id.Types

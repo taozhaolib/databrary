@@ -13,7 +13,7 @@ import Data.Char (isSpace, isControl)
 import Data.Time.Format (formatTime, parseTime)
 import System.Locale (defaultTimeLocale)
 
-import Databrary.Time
+import Databrary.Model.Time.Types
 
 splitHTTP :: BS.ByteString -> [BS.ByteString]
 splitHTTP = filter (not . BS.null) . map trim . BSC.split ',' where

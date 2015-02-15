@@ -11,8 +11,8 @@ import qualified Data.ByteString.Base64.URL as Base64
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (see)
-import Databrary.Time
 import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Entropy

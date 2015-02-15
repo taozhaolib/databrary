@@ -4,11 +4,17 @@ module Databrary.Model.Asset.SQL
   , selectAsset
   ) where
 
+import qualified Data.ByteString as BS
+import qualified Data.Text as T
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
-import Databrary.Model.Volume.SQL
+import Databrary.Model.Time.Types
 import Databrary.Model.Format
+import Databrary.Model.Id.Types
+import Databrary.Model.Permission.Types
+import Databrary.Model.SQL
+import Databrary.Model.Volume.Types
+import Databrary.Model.Volume.SQL
 import Databrary.Model.Asset.Types
 
 makeAsset :: Id Asset -> Id Format -> Classification -> Maybe T.Text -> Maybe Offset -> Maybe BS.ByteString -> Volume -> Asset

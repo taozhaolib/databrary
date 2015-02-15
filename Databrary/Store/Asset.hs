@@ -1,5 +1,5 @@
 module Databrary.Store.Asset
-  (
+  ( getAssetFile
   ) where
 
 import Control.Monad ((<=<))

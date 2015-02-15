@@ -11,7 +11,7 @@ module Databrary.Model.Token.Types
 import qualified Data.ByteString as BS
 
 import Control.Has (makeHasRec)
-import Databrary.Time
+import Databrary.Model.Time.Types
 import Databrary.Model.Party.Types
 
 type TokenId = BS.ByteString
