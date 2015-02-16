@@ -885,6 +885,7 @@ CREATE TABLE "upload" (
 	"token" char(32) NOT NULL Primary Key,
 	"expires" timestamptz NOT NULL,
 	"account" integer NOT NULL References "account" ON DELETE CASCADE,
+	"volume" integer NOT NULL References "volume" ON DELETE CASCADE,
 	"filename" text NOT NULL
 ) INHERITS ("account_token");
 COMMENT ON TABLE "upload" IS 'Tokens issued to track active uploads.';

@@ -19,6 +19,7 @@ import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
+import Databrary.Model.Volume.Types
 import Databrary.Model.Party
 import Databrary.Entropy
 import Databrary.DB
@@ -65,11 +66,11 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => T.Text -> m UploadToken
-createUpload name = do
+createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m UploadToken
+createUpload vol name = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->
-    dbQuery1' [pgSQL|INSERT INTO upload (token, account, filename) VALUES (${tok}, ${view auth :: Id Party}, ${name}) RETURNING token, expires|]
+    dbQuery1' [pgSQL|INSERT INTO upload (token, account, volume, filename) VALUES (${tok}, ${view auth :: Id Party}, ${volumeId vol}, ${name}) RETURNING token, expires|]
   return $ UploadToken
     { uploadAccountToken = AccountToken
       { accountToken = Token tok ex
