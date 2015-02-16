@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Volume
-  ( viewVolume
+  ( withVolume
+  , viewVolume
   ) where
 
 import Control.Applicative ((<$>), (<$))

@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Token.Types
   ( Token(..)
+  , MonadHasToken
   , AccountToken(..)
   , MonadHasAccountToken
   , SessionToken(..)
@@ -23,6 +24,8 @@ data Token = Token
   { tokenId :: Id Token
   , tokenExpires :: Timestamp
   }
+
+makeHasRec ''Token ['tokenId]
 
 data AccountToken = AccountToken
   { accountToken :: !Token
