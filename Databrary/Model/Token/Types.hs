@@ -1,23 +1,26 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Token.Types
-  ( TokenId
-  , Token(..)
+  ( Token(..)
   , AccountToken(..)
   , MonadHasAccountToken
   , SessionToken(..)
   , MonadHasSessionToken
+  , UploadToken(..)
+  , MonadHasUploadToken
   ) where
 
+import qualified Data.Text as T
 import qualified Data.ByteString as BS
 
 import Control.Has (makeHasRec)
 import Databrary.Model.Time.Types
+import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 
-type TokenId = BS.ByteString
+type instance IdType Token = BS.ByteString
 
 data Token = Token
-  { tokenId :: TokenId
+  { tokenId :: Id Token
   , tokenExpires :: Timestamp
   }
 
@@ -34,3 +37,10 @@ data SessionToken = SessionToken
   }
 
 makeHasRec ''SessionToken ['sessionAccountToken]
+
+data UploadToken = UploadToken
+  { uploadAccountToken :: AccountToken
+  , uploadFilename :: T.Text
+  }
+
+makeHasRec ''UploadToken ['uploadAccountToken]

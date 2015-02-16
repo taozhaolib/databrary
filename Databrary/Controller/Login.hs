@@ -19,6 +19,7 @@ import Control.Has (view)
 import Databrary.Action
 import Databrary.Web.Form
 import Databrary.Web.Cookie
+import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Token
@@ -28,7 +29,7 @@ import Databrary.Controller.Form
 loginAccount :: SiteAuth -> Bool -> AppAction
 loginAccount auth su = do
   sess <- createSession auth su
-  let Token tok ex = view sess
+  let Token (Id tok) ex = view sess
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 

@@ -36,7 +36,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Audit
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
-import Databrary.Model.Party.Types hiding (nobodyParty)
+import Databrary.Model.Party.Types
 import Databrary.Model.Party.SQL
 import Databrary.Model.Party.Boot
 

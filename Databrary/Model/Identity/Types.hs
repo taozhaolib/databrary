@@ -7,7 +7,6 @@ module Databrary.Model.Identity.Types
 
 import Control.Applicative (Applicative)
 import Control.Monad.Reader (MonadReader)
-import Data.Monoid (mempty)
 
 import Control.Has (Has(..))
 import Databrary.Model.Id.Types
@@ -19,22 +18,19 @@ data Identity
   = UnIdentified
   | Identified { identitySession :: SessionToken }
 
--- makeLensesFor [("identitySession", "identitySession'")] ''Identity
+instance Has SiteAuth Identity where
+  view UnIdentified = nobodySiteAuth
+  view (Identified SessionToken{ sessionAccountToken = AccountToken{ tokenAccount = t } }) = t
 
 instance Has Party Identity where
-  view UnIdentified = nobodyParty
-  view (Identified t) = view t
-
+  view = view . (view :: Identity -> SiteAuth)
 instance Has (Id Party) Identity where
-  view UnIdentified = partyId nobodyParty
-  view (Identified t) = view t
-
+  view = view . (view :: Identity -> SiteAuth)
 instance Has Access Identity where
-  view UnIdentified = mempty
-  view (Identified t) = view t
+  view = view . (view :: Identity -> SiteAuth)
 
 identitySuperuser :: Identity -> Bool
 identitySuperuser UnIdentified = False
 identitySuperuser (Identified t) = sessionSuperuser t
 
-type MonadHasIdentity c m = (Functor m, Applicative m, MonadReader c m, Has Identity c, Has Party c, Has (Id Party) c)
+type MonadHasIdentity c m = (Functor m, Applicative m, MonadReader c m, Has Identity c, Has SiteAuth c, Has Party c, Has (Id Party) c, Has Access c)

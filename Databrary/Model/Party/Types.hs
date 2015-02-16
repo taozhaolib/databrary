@@ -1,15 +1,16 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.Party.Types 
   ( Party(..)
-  , nobodyParty
   , MonadHasParty
   , Account(..)
   , MonadHasAccount
   , SiteAuth(..)
   , MonadHasSiteAuth
+  , nobodySiteAuth
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Monoid (mempty)
 import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
@@ -45,14 +46,21 @@ data SiteAuth = SiteAuth
   }
 
 -- this is unfortunate, mainly to avoid untangling Party.SQL
-nobodyParty :: Party
-nobodyParty = Party
-  { partyId = Id (-1)
-  , partyName = "Nobody"
-  , partyAffiliation = Nothing
-  , partyURL = Nothing
-  , partyAccount = Nothing
-  , partyPermission = PermissionREAD
+nobodySiteAuth :: SiteAuth
+nobodySiteAuth = SiteAuth
+  { siteAccount = Account
+    { accountEmail = "nobody@databrary.org"
+    , accountPasswd = Nothing
+    , accountParty = Party
+      { partyId = Id (-1)
+      , partyName = "Nobody"
+      , partyAffiliation = Nothing
+      , partyURL = Nothing
+      , partyAccount = Nothing
+      , partyPermission = PermissionREAD
+      }
+    }
+  , siteAccess = mempty
   }
 
 makeHasRec ''Party ['partyId, 'partyPermission]

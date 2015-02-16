@@ -9,6 +9,7 @@ import Control.Monad (guard)
 import Data.Maybe (catMaybes, isNothing)
 
 import qualified Databrary.JSON as JSON
+import Databrary.Model.Time ()
 import Databrary.Model.Format.Types
 import Databrary.Model.Asset.Types
 
