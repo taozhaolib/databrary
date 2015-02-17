@@ -203,8 +203,9 @@ app.controller('volume/slot', [
       return
 
     removed = (track) ->
-      return if track.asset || track.file || track == blank
+      return if track.asset || track.file
       select() if track == $scope.current
+      blank = undefined if track == blank
       $scope.tracks.remove(track)
       return
 
@@ -218,9 +219,10 @@ app.controller('volume/slot', [
       if ruler.selection.empty then new Segment(ruler.position) else ruler.selection
 
     $scope.addBlank = () ->
-      $scope.tracks.push(blank = new Track()) unless blank
+      unless blank
+        $scope.tracks.push(blank = new Track())
       select(blank)
-      return blank
+      blank
 
     class Track extends Store
       constructor: (asset) ->
@@ -270,7 +272,7 @@ app.controller('volume/slot', [
           return
 
       upload: (file) ->
-        $scope.addBlank() if this == blank
+        blank = undefined if this == blank
         super(file).then (done) =>
           return removed this unless done
           ### jshint ignore:start ###
@@ -327,12 +329,12 @@ app.controller('volume/slot', [
       restore: () ->
         Store.restore(slot).then (a) =>
           @setAsset(a)
-          $scope.addBlank()
+          blank = undefined if this == blank
           return
 
     $scope.fileAdded = (file) ->
       $flow = file.flowObj
-      (!$scope.current?.file && $scope.current || blank).upload(file) if editing
+      (!$scope.current?.file && $scope.current || $scope.addBlank()).upload(file) if editing
       return
 
     $scope.fileSuccess = Store.fileSuccess
@@ -589,7 +591,6 @@ app.controller('volume/slot', [
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     ### jshint ignore:end ###
-    #addBlank() if editing
     sortTracks()
     fillExcerpts()
 

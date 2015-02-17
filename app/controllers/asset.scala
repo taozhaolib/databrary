@@ -230,8 +230,6 @@ object AssetController extends AssetController {
         CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".zip")),
         CACHE_CONTROL -> "max-age=31556926, private")),
       body = zip)
-
-
 }
 
 object AssetHtml extends AssetController with HtmlController {
