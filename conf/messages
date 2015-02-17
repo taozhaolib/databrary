@@ -447,7 +447,7 @@ tags.new.placeholder=Add new tag...
 access.global.legend=Share this study
 access.global.save.success=Sharing settings updated.
 access.global.save.error=Unable to update sharing settings.
-access.global.NONE.NONE=Private: Share with collaborators selected below.
+access.global.NONE.NONE=Private: Share only with collaborators selected below.
 access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
@@ -620,7 +620,7 @@ wizard.volume-edit-funding.description=Specify funding sources.
 wizard.volume-edit-funding.instructions=Add or manage sources of funding that supported this research here.
 
 wizard.volume-edit-access.name=Access
-wizard.volume-edit-access.description=Set access and sharing levels.
+wizard.volume-edit-access.description=Share your study with collaborators, authorized researchers, and the public.
 wizard.volume-edit-access.instructions=Specify with whom you want to share the data contained in this volume by adding collaborators and what level of access you wish them to have.
 
 volume.edit.access.success=Volume access updated successfully.
