@@ -217,9 +217,10 @@ app.controller('volume/slot', [
     getSelection = ->
       if ruler.selection.empty then new Segment(ruler.position) else ruler.selection
 
-    addBlank = () ->
-      $scope.tracks.push(blank = new Track())
-      return
+    $scope.addBlank = () ->
+      $scope.tracks.push(blank = new Track()) unless blank
+      select(blank)
+      return blank
 
     class Track extends Store
       constructor: (asset) ->
@@ -269,7 +270,7 @@ app.controller('volume/slot', [
           return
 
       upload: (file) ->
-        addBlank() if this == blank
+        $scope.addBlank() if this == blank
         super(file).then (done) =>
           return removed this unless done
           ### jshint ignore:start ###
@@ -326,7 +327,7 @@ app.controller('volume/slot', [
       restore: () ->
         Store.restore(slot).then (a) =>
           @setAsset(a)
-          addBlank()
+          $scope.addBlank()
           return
 
     $scope.fileAdded = (file) ->
@@ -588,7 +589,7 @@ app.controller('volume/slot', [
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     ### jshint ignore:end ###
-    addBlank() if editing
+    #addBlank() if editing
     sortTracks()
     fillExcerpts()
 

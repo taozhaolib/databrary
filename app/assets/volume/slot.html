@@ -148,11 +148,16 @@
 
         <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
           <div class="slot-toolbar" ng-if="editing">
-            <span>Add: </span>
-            <button ng-click="current.excerpt.toggle()" class="mini">Excerpt</button>
-            <button ng-click="" class="mini">Keyword</button>
-            <button ng-click="" class="mini">Record</button>
-            <button ng-click="" class="mini">File</button>
+            <!-- button only appears if possible to add excerpt/ clear an existing one -->
+            <button ng-click="someToggleFunction()" class="mini">Add Excerpt</button>
+            <!-- button only appears if possible to add keyword/ clear an existing one -->
+            <button ng-click="" class="mini">Add Keyword</button>
+            <button ng-click="" class="mini">Add Record</button>
+            <button ng-click="addBlank()" class="mini">Add File</button>
+
+            <select ng-if="new excerpt or existing excerpt selected"></select>
+            <input ng-if="new keyword"></input>
+            <input ng-if="new record"></input>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
