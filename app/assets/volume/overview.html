@@ -13,6 +13,11 @@
 
     <div class="col-desktop-9 col-tablet-6 col-mobile-6">
       <div>
+        <dl ng-if="::!shared" class="flat">
+          <dt>Access</dt>
+          <dd>Private to selected collaborators</dd>
+        </dl>
+
         <div ng-if="::!!volume.citation" frame id="frame-citation" frame-title="volume.citation.title" fold>
           <p class="panel-overview-volume-citation">
             <span ng-bind="::volume.citation.head"></span>&nbsp;<a ng-if="::volume.citation.url" ng-href="{{::volume.citation.url | handle}}" ng-title="::volume.citation.title" target="_blank" message="link.link"></a>
