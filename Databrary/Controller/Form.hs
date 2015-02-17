@@ -19,15 +19,16 @@ import qualified Data.Text as T
 import qualified Data.Vector as V
 import Network.HTTP.Types (Status, ok200, badRequest400)
 import qualified Text.Blaze.Html5 as Html
-import qualified Text.Digestive as Form
 import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
 import Databrary.Model.Kind
 import Databrary.URL
 import Databrary.Model.Enum
+import Databrary.Web.Form
+import Databrary.Action.Form
 
-putJson :: JSON.Value -> Form.Path -> T.Text -> JSON.Value
+putJson :: JSON.Value -> FormPath -> T.Text -> JSON.Value
 putJson JSON.Null [] v = JSON.String v
 putJson (JSON.Object o) [] v = JSON.Object $ HM.insertWith (\_ x -> putJson x [] v) "" (JSON.String v) o
 putJson (JSON.Array a) [] v = JSON.Array $ V.snoc a $ JSON.String v
@@ -36,8 +37,9 @@ putJson (JSON.Object o) (h:p) v = JSON.Object $ HM.insertWith (\_ x -> putJson x
 putJson JSON.Null (h:p) v = JSON.Object $ HM.singleton h (putJson JSON.Null p v)
 putJson o (h:p) v = JSON.Object $ HM.fromList [("", o), (h, putJson JSON.Null p v)]
 
-jsonFormErrors :: Form.View T.Text -> JSON.Value
-jsonFormErrors = foldl' (uncurry . putJson) JSON.emptyObject . Form.viewErrors
+jsonFormErrors :: FormErrors -> JSON.Value
+jsonFormErrors = foldl' (uncurry . putJson) JSON.emptyObject
+
 
 formStatus :: Form.View v -> Status
 formStatus form 
