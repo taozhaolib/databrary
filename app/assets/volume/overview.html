@@ -5,7 +5,7 @@
         <div class="panel-overview-volume-header-fill grid-outside"></div>
         <div ng-if="::!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
         <h1 class="panel-title smaller">
-          <span class="icon" ng-class="::volume.type" hint="object-{{volume.type}}"></span>
+          <span class="volume icon"></span>
           <span ng-bind="::volume.name"></span>
         </h1>
       </hgroup>
@@ -13,6 +13,11 @@
 
     <div class="col-desktop-9 col-tablet-6 col-mobile-6">
       <div>
+        <dl ng-if="::!shared" class="flat">
+          <dt>Access</dt>
+          <dd>Private to selected collaborators</dd>
+        </dl>
+
         <div ng-if="::!!volume.citation" frame id="frame-citation" frame-title="volume.citation.title" fold>
           <p class="panel-overview-volume-citation">
             <span ng-bind="::volume.citation.head"></span>&nbsp;<a ng-if="::volume.citation.url" ng-href="{{::volume.citation.url | handle}}" ng-title="::volume.citation.title" target="_blank" message="link.link"></a>
@@ -73,7 +78,7 @@
         </div>
       </div>
 
-      <div frame id="frame-access" frame-title="volume.access.title" fold>
+      <div frame id="frame-access" frame-title="{{::shared ? 'volume.shared.title' : 'volume.private.title'}}" fold>
         <div class="row">
           <div ng-repeat="access in ::volume.access" ng-if="::access.individual < page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
             <portrait tooltip="'access.' + page.constants.permission[access.individual] | message:party.name"></portrait>
@@ -96,7 +101,8 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in ::volume.consumers">
-                  <a ng-href="{{::ext.route()}}"> <img src="/public/images/browser/icon-study.png">&nbsp;
+                  <a ng-href="{{::ext.route()}}">
+                    <span class="icon volume"></span>
                     <span ng-bind="::ext.name"></span>
                   </a>
                 </li>
@@ -108,7 +114,8 @@
 
               <ul class="panel-overview-volume-reuses">
                 <li ng-repeat="ext in ::volume.providers">
-                  <a ng-href="{{::ext.route()}}"> <img src="/public/images/browser/icon-dataset.png">&nbsp;
+                  <a ng-href="{{::ext.route()}}">
+                    <span class="icon volume"></span>
                     <span ng-bind="::ext.name"></span>
                   </a>
                 </li>
