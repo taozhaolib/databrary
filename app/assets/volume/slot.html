@@ -206,7 +206,7 @@
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
-              <asset-display ng-if="!!asset" asset="asset"></asset-display>
+              <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
             </div>
           </div>
 
