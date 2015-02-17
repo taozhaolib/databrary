@@ -128,18 +128,18 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
   if (!directory.isDirectory)
     throw new IngestException("stage directory not found: " + directory)
 
-  private[this] def update[A](target : site.SitePage, current : Option[A], jc : JsContext, change : Option[A => Future[Boolean]] = None)(implicit read : json.Reads[A]) : Future[Unit] =
-    jc.asOpt[A](read).fold(void) { v =>
+  private[this] def update[A](target : site.SitePage, current : Option[A], jc : JsContext, change : Option[A => Future[Boolean]] = None)(implicit read : json.Reads[A]) : Future[Option[A]] =
+    jc.asOpt[A](read).fold[Future[Option[A]]](async(None)) { v =>
       if (current.exists(_.equals(v)))
-        void
+        async(Some(v))
       else 
-        change.filter(_ => current.isEmpty || overwrite).fold[Future[Unit]](
+        change.filter(_ => current.isEmpty || overwrite).fold[Future[Option[A]]](
           popErr(target, "conflicting value: " + v + " <> " + current.get)(jc))(
           _(v).flatMap { r =>
-            if (r) void else popErr(target, "update failed")(jc)
+            if (r) async(Some(v)) else popErr(target, "update failed")(jc)
           })
     }
-  private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Unit] =
+  private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Option[A]] =
     update[A](target, current, jc, Some(change))(read)
 
   private[this] def record(implicit jc : JsContext) : Future[models.Record] = {
@@ -252,11 +252,11 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           a <- asset(jc)
           l <- a.slot
           seg = l.map(_.segment)
-          _ <- write(a, seg, jc \ "position")(s => a.link(new models.Slot { def context = c; def segment = s }).map(_ => true))(json.Reads {
+          seg <- write(a, seg, jc \ "position")(s => a.link(new models.Slot { def context = c; def segment = s }).map(_ => true))(json.Reads {
             case json.JsString("auto") => json.JsSuccess(seg.getOrElse(Segment.singleton(off)))
             case j => readsSegment.reads(j)
           }.map(s => s.singleton.fold(s)(o => Segment(o, o + a.duration))))
-        } yield (off + a.duration + Offset.SECOND)
+        } yield (seg.flatMap(_.upperBound).getOrElse(off + a.duration) + Offset.SECOND)
       }
     } yield (c)
   }
