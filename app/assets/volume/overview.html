@@ -13,10 +13,10 @@
 
     <div class="col-desktop-9 col-tablet-6 col-mobile-6">
       <div>
-        <dl ng-if="::!shared" class="flat">
-          <dt>Access</dt>
-          <dd>Private to selected collaborators</dd>
-        </dl>
+        <div ng-if="::!shared" class="overview-access">
+          <span>ACCESS: <b>Private (shared only with selected collaborators)</b></span>
+          <a ng-href="{{::volume.editRoute('access')}}"><button class="yellow icon edit"></button></a>
+        </div>
 
         <div ng-if="::!!volume.citation" frame id="frame-citation" frame-title="volume.citation.title" fold>
           <p class="panel-overview-volume-citation">
