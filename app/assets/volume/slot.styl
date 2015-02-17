@@ -32,17 +32,28 @@
 .slot-toolbar  
   border-bottom 1px solid neutral53
   padding b3
-
+  button
+    border-radius 0
+    margin 0
+  button:first-of-type
+    border-top-left-radius b8
+    border-bottom-left-radius b8
+  button:last-of-type
+    border-top-right-radius b8
+    border-bottom-right-radius b8
 //SLOT-TIMELINE
 .slot-timeline-selection
   height 0
   pointer-events none
   .selection
     background-color rgba(180,180,180,0.3)
-    top b2*5
     bottom 0
+    top 0
     position absolute
     min-width 1px
+    z-index 1
+    &.edit
+      top 45px
 
 .slot-timeline-temporal
   position relative
@@ -89,9 +100,8 @@
 
 .slot-timeline-zoom
   position absolute
-  top b2*5
+  top 0
   right 0
-  margin-top f3
   margin-right f4
 
 .slot-timeline-ruler
@@ -136,8 +146,9 @@
   bottom 2px
   min-width 3px
   z-index 50
-  background-color rgba(159,161,207,0.54)
-  border 1px #7ca19a solid
+  background-color green53
+  border 1px green43 solid
+  opacity 0.8
   
 .slot-track-asset-info
   padding b6
@@ -190,10 +201,12 @@
 .slot-timeline-now
   position absolute
   z-index 100
-  top b2*5
-  bottom 0%
+  bottom 0
+  top 0
   border-left 1px solid green
   transition left .05s linear
+  &.edit
+    top 45px
 
 .slot-timeline-track
 .slot-tag-track
@@ -311,6 +324,7 @@
     video
       @media screen and (min-width: 520px)
         min-width 480px
+        max-width 720px
 
 .player-main-float
   position absolute
@@ -328,6 +342,9 @@
   margin-bottom b4
   position relative
   width 100%
+  height 180px
+  overflow-y auto
+  overflow-x hidden
   dl 
     display block
   dt 
@@ -339,8 +356,9 @@
     display block
 
 .player-main-info-actions
-  position relative
-  float right
+  position absolute
+  top 0
+  right 0
   
   button
     height 24px
@@ -351,7 +369,7 @@
     position relative
     top -b6
     padding 0 b8 
-    margin 0 b8
+    margin b6 b8
 
 .player-main-info-name
   font-line 1
@@ -400,9 +418,9 @@
   width 158px
 
 .player-main-drop
-  border b8 pale dashed
-  padding-top 1
-  padding-bottom 1
+  background-color pale
+  padding-top b2
+  padding-bottom b2
   width: 100%
   height: 100%
   

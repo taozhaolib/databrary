@@ -69,6 +69,8 @@
                     <input input-position class="position-input" type="text" size="10" name="position" ng-model="current.data.position" placeholder="{{::'position.placeholder' | message}}">
                   </validator>
 
+
+                  <!--MOVE MOVEMOVEMOVEMOVE MOVE-->
                   <div class="player-excerpt-form" ng-if="current.excerpt !== undefined">
                     <ng-form name="current.form.excerpt">
                       <label class="option">
@@ -141,18 +143,19 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
-          <div class="slot-toolbar">
-            <button ng-if="editing" ng-click="" class="mini">Excerpt</button>
-            <button ng-if="editing" ng-click="" class="mini">Keyword</button>
-            <button ng-if="editing" ng-click="" class="mini">Record</button>
-            <button ng-if="editing" ng-click="" class="mini">Asset</button>
+          <div class="slot-toolbar" ng-if="editing">
+            <span>Add: </span>
+            <button ng-click="current.excerpt.toggle()" class="mini">Excerpt</button>
+            <button ng-click="" class="mini">Keyword</button>
+            <button ng-click="" class="mini">Record</button>
+            <button ng-click="" class="mini">File</button>
           </div>
           <div class="slot-timeline-now-zone">
-            <div class="slot-timeline-now" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
+            <div class="slot-timeline-now" ng-class="{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
           </div>
 
           <div class="slot-timeline-selection" ng-if="!ruler.selection.empty">
-            <div class="selection" ng-style="positionStyle(ruler.selection)"></div>
+            <div class="selection" ng-class="{edit: editing}" ng-style="positionStyle(ruler.selection)"></div>
           </div>
 
           <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
