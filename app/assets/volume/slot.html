@@ -26,90 +26,94 @@
           </div>
           <div class="player-main" folded>
             <div class="player-main-info">
-              <nav class="player-main-info-actions">
-                <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="save-slot green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
-                <button ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></button>
-                <button ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></button>
-                <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
-              </nav>
-              <h1 class="player-main-info-name">
-                <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
-                <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
-                <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
-                <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
-                <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
-              </h1>
-              <div ng-if="::!editing">
-                <dl class="player-main-info-list cf">
-                  <dt ng-if="!!current.asset" message="asset.format"></dt>
-                  <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                  <dt ng-if="current.segment.full === false || current.asset.duration">Position</dt>
-                  <dd>
-                    <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
-                    <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
-                  </dd>
-                  <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
-                  <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
-                  <dt ng-if="!!current.age">age</dt>
-                  <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
-                </dl>
+              <div class="sticky">
+                <nav class="player-main-info-actions">
+                  <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="save-slot green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
+                  <button ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-info-link icon trash2"></button>
+                  <button ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-info-link icon download"></button>
+                  <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
+                </nav>
+                <h1 class="player-main-info-name">
+                  <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+                  <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
+                  <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
+                  <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
+                  <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
+                </h1>
               </div>
+              <div class="scroll">
+                <div ng-if="::!editing">
+                  <dl class="player-main-info-list cf">
+                    <dt ng-if="!!current.asset" message="asset.format"></dt>
+                    <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
+                    <dt ng-if="current.segment.full === false || current.asset.duration">Position</dt>
+                    <dd>
+                      <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
+                      <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
+                    </dd>
+                    <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
+                    <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
+                    <dt ng-if="!!current.age">age</dt>
+                    <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
+                  </dl>
+                </div>
 
-              <ng-form ng-if="::editing" name="form.edit" ng-switch="current.type">
-                <div ng-switch-when="asset">
-                  <validator name="name" label="asset.name">
-                    <input type="text" name="name" ng-model="current.data.name" placeholder="{{::'asset.name.placeholder' | message}}">
-                  </validator>
+                <ng-form ng-if="::editing" name="form.edit" ng-switch="current.type">
+                  <div ng-switch-when="asset">
+                    <validator name="name" label="asset.name">
+                      <input type="text" name="name" ng-model="current.data.name" placeholder="{{::'asset.name.placeholder' | message}}">
+                    </validator>
 
-                  <validator name="classification" label="asset.classification">
-                    <classification-select name="classification" ng-model="current.data.classification"></classification-select>
-                  </validator>
+                    <validator name="classification" label="asset.classification">
+                      <classification-select name="classification" ng-model="current.data.classification"></classification-select>
+                    </validator>
 
-                  <validator name="position" label="position" noclientval>
-                    <input input-position class="position-input" type="text" size="10" name="position" ng-model="current.data.position" placeholder="{{::'position.placeholder' | message}}">
-                  </validator>
+                    <validator name="position" label="position" noclientval>
+                      <input input-position class="position-input" type="text" size="10" name="position" ng-model="current.data.position" placeholder="{{::'position.placeholder' | message}}">
+                    </validator>
 
 
-                  <!--MOVE MOVEMOVEMOVEMOVE MOVE-->
-                  <div class="player-excerpt-form" ng-if="current.excerpt !== undefined">
-                    <ng-form name="current.form.excerpt">
-                      <label class="option">
-                        <input type="checkbox" name="excerpt-on" ng-disabled="!current.excerpt" ng-model="current.excerpt.on">
-                        <span message="asset.excerpt.checkbox-label"></span>
-                      </label>
-                      <validator noclientval class="excerpt-validator" name="excerpt" ng-show="current.excerpt.on && current.data.classification < page.classification.PUBLIC" label="asset.excerpt">
-                        <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()"></select>
-                      </validator>
-                      <button ng-if="current.excerpt" class="mini green" ng-click="current.saveExcerpt()" message="save" ng-disabled="current.form.excerpt.$pristine || current.form.excerpt.$invalid"></button>
+                    <!--MOVE MOVEMOVEMOVEMOVE MOVE-->
+                    <div class="player-excerpt-form" ng-if="current.excerpt !== undefined">
+                      <ng-form name="current.form.excerpt">
+                        <label class="option">
+                          <input type="checkbox" name="excerpt-on" ng-disabled="!current.excerpt" ng-model="current.excerpt.on">
+                          <span message="asset.excerpt.checkbox-label"></span>
+                        </label>
+                        <validator noclientval class="excerpt-validator" name="excerpt" ng-show="current.excerpt.on && current.data.classification < page.classification.PUBLIC" label="asset.excerpt">
+                          <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()"></select>
+                        </validator>
+                        <button ng-if="current.excerpt" class="mini green" ng-click="current.saveExcerpt()" message="save" ng-disabled="current.form.excerpt.$pristine || current.form.excerpt.$invalid"></button>
+                      </ng-form>
+                    </div>
+                  </div>
+
+                  <div ng-switch-when="record">
+                    <ng-form name="current.form.measures">
+                    <dl class="cf">
+                      <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
+                      <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
+                        <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
+                        <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
+                        <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
+                        <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
+                        <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
+                      </dd>
+                      <dt>
+                        <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
+                      </dt>
+                    </dl>
+                    </ng-form>
+                    <ng-form name="current.form.position">
+                    <validator name="position" label="position">
+                      <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" placeholder="{{::'position.placeholder' | message}}">
+                      &ndash;
+                      <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.segment.u" position-min="current.segment.l" placeholder="{{::'position.placeholder' | message}}">
+                    </validator>
                     </ng-form>
                   </div>
-                </div>
-
-                <div ng-switch-when="record">
-                  <ng-form name="current.form.measures">
-                  <dl class="cf">
-                    <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
-                    <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
-                      <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
-                      <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
-                      <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
-                      <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
-                      <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
-                    </dd>
-                    <dt>
-                      <select class="add" name="add" ng-model="current.data.add" ng-options="metric.id+'' as metric.name for metric in current.addOptions()" ng-change="current.add()"/>
-                    </dt>
-                  </dl>
-                  </ng-form>
-                  <ng-form name="current.form.position">
-                  <validator name="position" label="position">
-                    <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" placeholder="{{::'position.placeholder' | message}}">
-                    &ndash;
-                    <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.segment.u" position-min="current.segment.l" placeholder="{{::'position.placeholder' | message}}">
-                  </validator>
-                  </ng-form>
-                </div>
-              </ng-form>
+                </ng-form>
+              </div>
             </div>
 
             <div class="player-main-viewport">

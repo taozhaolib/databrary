@@ -342,9 +342,13 @@
   margin-bottom b4
   position relative
   width 100%
-  height 180px
-  overflow-y auto
-  overflow-x hidden
+  .sticky
+    position relative
+    top 0
+  .scroll
+    overflow-y auto
+    overflow-x hidden
+    height 180px
   dl 
     display block
   dt 
@@ -359,6 +363,8 @@
   position absolute
   top 0
   right 0
+  background-color white
+  z-index 1
   
   button
     height 24px
