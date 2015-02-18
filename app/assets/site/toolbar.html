@@ -23,12 +23,6 @@
             <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="//databrary.org/community.html"><span>Community</span></a>
             </li>
-            <li ng-repeat="link in page.display.toolbarLinks">
-              <a ng-href="{{::link.url}}" class="button mini" ng-class="::link.type" target="{{::link.target}}" ng-click="link.click()">
-                <span ng-if="::link.icon" class="icon" ng-class="::link.icon"></span>
-                <span class="text" ng-bind="::link.html"></span>
-              </a>
-            </li>
           </ul>
         </nav>
       </div>
