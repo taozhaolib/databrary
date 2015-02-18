@@ -30,7 +30,8 @@ import Control.Has (view)
 import Databrary.Action
 import Databrary.Model.Kind
 import Databrary.Model.Enum
-import Databrary.Web.Form
+import Databrary.Web.Form (getFormData, FormData, FormPath)
+import Databrary.Web.Deform
 
 putJson :: JSON.Value -> FormPath -> T.Text -> JSON.Value
 putJson JSON.Null [] v = JSON.String v

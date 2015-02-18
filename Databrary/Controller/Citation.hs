@@ -7,7 +7,7 @@ import Data.Aeson (toJSON)
 import Network.URI (URI)
 
 import Databrary.Action
-import Databrary.Web.Form
+import Databrary.Web.Deform
 import Databrary.Controller.Form
 import Databrary.Model.Citation.CrossRef
 
