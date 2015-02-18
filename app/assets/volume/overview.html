@@ -5,7 +5,6 @@
         <div class="panel-overview-volume-header-fill grid-outside"></div>
         <div ng-if="::!!volume.alias" class="panel-alias" ng-bind="::volume.alias"></div>
         <h1 class="panel-title smaller">
-          <span class="volume icon"></span>
           <span ng-bind="::volume.name"></span>
           <a ng-href="{{::volume.editRoute('overview')}}"><span class="button green icon edit"></span></a>
         </h1>
