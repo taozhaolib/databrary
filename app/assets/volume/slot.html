@@ -133,15 +133,14 @@
 
         <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
           <div class="slot-toolbar" ng-if="editing">
-            <!-- button only appears if possible to add excerpt/ clear an existing one -->
-            <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('add')" class="mini">Add Excerpt</button>
+            <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Add Excerpt</button>
             <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
             <!-- button only appears if possible to add keyword/ clear an existing one -->
             <button ng-click="" class="mini">Add Keyword</button>
             <button ng-click="" class="mini">Add Record</button>
             <button ng-click="addBlank()" class="mini">Add File</button>
 
-            <ng-form ng-if="current.excerpt.on === 'add'" name="current.form.excerpt">
+            <ng-form ng-if="current.excerpt.on" name="current.form.excerpt">
               <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
             <input ng-if="new_keyword"></input>
@@ -157,11 +156,11 @@
 
           <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
             <div class="slot-timeline-control">
-              <input input-position="-Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l"></input>
+              <input input-position="-Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l" ng-change="updateSelection()"></input>
               <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,0)">&larr;</button>
               <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position" name="position"></input>
               <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,1)">&rarr;</button>
-              <input input-position="Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u"></input>
+              <input input-position="Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u" ng-change="updateSelection()"></input>
               <div class="slot-timeline-zoom">
                 <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
                 <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>

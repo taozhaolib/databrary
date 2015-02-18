@@ -209,7 +209,7 @@ app.controller('volume/slot', [
       $scope.tracks.remove(track)
       return
 
-    finalizeSelection = ->
+    $scope.updateSelection = finalizeSelection = ->
       $scope.current.editExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
         t.update()
@@ -311,22 +311,26 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         opts = super()
-        opts[''] = 'prompt'
+        opts[@excerpt.classification] = 'prompt' unless @excerpt.classification of opts
         opts
 
       saveExcerpt: (value) ->
         return unless @excerpt
-        if value == 'add'
-          @excerpt.on = value
-        else if (value == null || value == '') && @excerpt.on == 'add'
+        console.log(value)
+        if value == ''
+          @excerpt.on = true
+        else if value == null && @excerpt.classification == ''
           @excerpt.on = false
         else
           messages.clear(this)
           @excerpt.target.setExcerpt(value) #if @excerpt.on then @excerpt.classification else null
             .then (excerpt) =>
                 @excerpts.remove(excerpt)
-                @excerpts.push(excerpt) if 'excerpt' of excerpt
-                @editExcerpt()
+                if 'excerpt' of excerpt
+                  @excerpts.push(excerpt)
+                else
+                  @excerpt.on = false
+                  @excerpt.classification = ''
               , (res) =>
                 messages.addError
                   type: 'red'
