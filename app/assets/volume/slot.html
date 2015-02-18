@@ -71,21 +71,6 @@
                     <validator name="position" label="position" noclientval>
                       <input input-position class="position-input" type="text" size="10" name="position" ng-model="current.data.position" placeholder="{{::'position.placeholder' | message}}">
                     </validator>
-
-
-                    <!--MOVE MOVEMOVEMOVEMOVE MOVE-->
-                    <div class="player-excerpt-form" ng-if="current.excerpt !== undefined">
-                      <ng-form name="current.form.excerpt">
-                        <label class="option">
-                          <input type="checkbox" name="excerpt-on" ng-disabled="!current.excerpt" ng-model="current.excerpt.on">
-                          <span message="asset.excerpt.checkbox-label"></span>
-                        </label>
-                        <validator noclientval class="excerpt-validator" name="excerpt" ng-show="current.excerpt.on && current.data.classification < page.classification.PUBLIC" label="asset.excerpt">
-                          <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()"></select>
-                        </validator>
-                        <button ng-if="current.excerpt" class="mini green" ng-click="current.saveExcerpt()" message="save" ng-disabled="current.form.excerpt.$pristine || current.form.excerpt.$invalid"></button>
-                      </ng-form>
-                    </div>
                   </div>
 
                   <div ng-switch-when="record">
@@ -149,15 +134,18 @@
         <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
           <div class="slot-toolbar" ng-if="editing">
             <!-- button only appears if possible to add excerpt/ clear an existing one -->
-            <button ng-click="someToggleFunction()" class="mini">Add Excerpt</button>
+            <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('add')" class="mini">Add Excerpt</button>
+            <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
             <!-- button only appears if possible to add keyword/ clear an existing one -->
             <button ng-click="" class="mini">Add Keyword</button>
             <button ng-click="" class="mini">Add Record</button>
             <button ng-click="addBlank()" class="mini">Add File</button>
 
-            <select ng-if="new excerpt or existing excerpt selected"></select>
-            <input ng-if="new keyword"></input>
-            <input ng-if="new record"></input>
+            <ng-form ng-if="current.excerpt.on === 'add'" name="current.form.excerpt">
+              <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
+            </ng-form>
+            <input ng-if="new_keyword"></input>
+            <input ng-if="new_record"></input>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
@@ -174,13 +162,12 @@
               <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position" name="position"></input>
               <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,1)">&rarr;</button>
               <input input-position="Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u"></input>
+              <div class="slot-timeline-zoom">
+                <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
+                <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
+              </div>
             </div>
             
-            <div class="slot-timeline-zoom">
-              <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
-              <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
-            </div>
-
             <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
               <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
               <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>

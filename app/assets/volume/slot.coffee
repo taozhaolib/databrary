@@ -300,7 +300,7 @@ app.controller('volume/slot', [
           if !excerpt
             target: @asset.inSegment(seg)
             on: false
-            classification: '0'
+            classification: ''
           else if excerpt.segment.equals(seg)
             target: excerpt
             on: true
@@ -309,19 +309,30 @@ app.controller('volume/slot', [
             null
         return
 
-      saveExcerpt: () ->
-        messages.clear(this)
-        @excerpt.target.setExcerpt(if @excerpt.on then @excerpt.classification else null)
-          .then (excerpt) =>
-              @excerpts.remove(excerpt)
-              @excerpts.push(excerpt) if 'excerpt' of excerpt
-              @form.excerpt.$setPristine()
-            , (res) =>
-              messages.addError
-                type: 'red'
-                body: constants.message('asset.update.error', @name)
-                report: res
-                owner: this
+      excerptOptions: () ->
+        opts = super()
+        opts[''] = 'prompt'
+        opts
+
+      saveExcerpt: (value) ->
+        return unless @excerpt
+        if value == 'add'
+          @excerpt.on = value
+        else if (value == null || value == '') && @excerpt.on == 'add'
+          @excerpt.on = false
+        else
+          messages.clear(this)
+          @excerpt.target.setExcerpt(value) #if @excerpt.on then @excerpt.classification else null
+            .then (excerpt) =>
+                @excerpts.remove(excerpt)
+                @excerpts.push(excerpt) if 'excerpt' of excerpt
+                @editExcerpt()
+              , (res) =>
+                messages.addError
+                  type: 'red'
+                  body: constants.message('asset.update.error', @name)
+                  report: res
+                  owner: this
 
       canRestore: () ->
         Store.removedAsset if editing && this == blank && Store.removedAsset?.volume.id == slot.volume.id
