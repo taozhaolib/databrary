@@ -3,8 +3,7 @@
     <div class="row">
       <div class="col">
         <h2 ng-if="::!top" class="panel-header" folder ng-click="toggleFold()"><span></span>{{::title}}</h2>
-
-        <div folded panel-body></div>
+        <div ng-if="!folded" panel-body ng-transclude></div>
       </div>
     </div>
   </div>

@@ -24,7 +24,7 @@
           <div class="slot-header folder" folder ng-click="toggleFold()">
             <span>Viewer</span>
           </div>
-          <div class="player-main" folded>
+          <div class="player-main" ng-if="!folded">
             <div class="player-main-info">
               <div class="sticky">
                 <nav class="player-main-info-actions">

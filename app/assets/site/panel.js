@@ -3,7 +3,7 @@
 app.directive('panel', [
   'constantService',
   function (constants) {
-    var link = function ($scope, $element, $attrs, ctrl, transclude) {
+    var link = function ($scope, $element, $attrs) {
       if (angular.isDefined($attrs.id)) {
         $scope.id = $attrs.id;
         $element.addClass($attrs.id);
@@ -27,10 +27,6 @@ app.directive('panel', [
       };
 
       //
-
-      transclude($scope, function ($clone) {
-        $element.find('[panel-body]').append($clone);
-      });
 
       if ($scope.refreshPanel)
         $scope.refreshPanel();
