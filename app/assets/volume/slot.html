@@ -135,14 +135,12 @@
           <div class="slot-toolbar" ng-if="editing">
             <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Add Excerpt</button>
             <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
-            <!-- button only appears if possible to add keyword/ clear an existing one -->
-            <button ng-click="" class="mini">Add Keyword</button>
-            <button ng-click="" class="mini">Add Record</button>
-            <button ng-click="addBlank()" class="mini">Add File</button>
-
             <ng-form ng-if="current.excerpt.on" name="current.form.excerpt">
-              <select name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
+              <select class="slot-toolbar-excerpt" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
+            <button ng-click="" class="mini" ng-class="{float:current.excerpt.on}">Add Keyword</button>
+            <button ng-click="" class="mini" ng-class="{float:current.excerpt.on}">Add Record</button>
+            <button ng-click="addBlank()" class="mini" ng-class="{float:current.excerpt.on}">Add File</button>
             <input ng-if="new_keyword"></input>
             <input ng-if="new_record"></input>
           </div>
