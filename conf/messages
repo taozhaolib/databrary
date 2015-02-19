@@ -632,7 +632,7 @@ download.zip=Download all files as zip
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
-spreadsheet.add.category=Add new column group
+spreadsheet.add.category=Add new tab
 spreadsheet.add.metric=Add new column to {0}
 spreadsheet.unlimit=Show all {0} rows...
 
