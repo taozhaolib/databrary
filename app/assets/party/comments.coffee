@@ -7,6 +7,5 @@ app.directive 'partyComments', [
     scope: false
     link: ($scope) ->
       $scope.comments = $scope.party.comments
-      $scope.enabled = !$.isEmptyObject($scope.comments)
       return
 ]

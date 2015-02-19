@@ -7,9 +7,7 @@ app.directive 'volumeExcerpts', [
     templateUrl: 'volume/excerpts.html'
     scope: false
     link: ($scope) ->
-      $scope.enabled = $scope.volume.excerpts && $scope.volume.excerpts.length > 0
-      if $scope.enabled && !$scope.current
-        $scope.current = $scope.volume.excerpts[0]
+      $scope.current = $scope.volume.excerpts[0]
 
       $scope.setCurrent = (asset) ->
         $scope.current = asset

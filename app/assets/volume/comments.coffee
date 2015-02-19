@@ -10,12 +10,12 @@ app.directive 'volumeComments', [
       $scope.canPost = models.Login.isAuthorized()
       refresh = () ->
         $scope.comments = $scope.volume.comments
-        $scope.enabled = $scope.canPost || !$.isEmptyObject($scope.comments)
       refresh()
 
       pullComments = () ->
-        $scope.volume.get(['comments']).then(
-          refresh, (res) ->
+        $scope.volume.get(['comments']).then((res) ->
+            $scope.comments = res.comments
+          , (res) ->
             messages.addError
               body: constants.message('comments.update.error')
               report: res

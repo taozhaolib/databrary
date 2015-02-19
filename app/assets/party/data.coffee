@@ -7,6 +7,6 @@ app.directive 'partyData', [
     templateUrl: 'party/data.html'
     scope: false
     link: ($scope) ->
-      $scope.enabled = $scope.volumes.length || $scope.party.checkPermission(constants.permission.EDIT) && models.Login.isAuthorized();
+      $scope.volumes = (va.volume for va in $scope.party.volumes)
       return
 ]
