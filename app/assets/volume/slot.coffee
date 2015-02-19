@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'tooltipService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $location, $sce, $q, constants, display, messages, tooltips, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', 'storageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $sce, $q, constants, display, messages, tooltips, styles, storage, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -70,30 +70,30 @@ app.controller('volume/slot', [
         Infinity
 
     $scope.positionStyle = (p) ->
-      styles = {}
-      return styles unless p?
+      style = {}
+      return style unless p?
       if p instanceof Segment
         l = offsetPosition(p.l)
         if l < 0
-          styles.left = '0px'
-          styles['border-left'] = '0px'
-          styles['border-top-left-radius'] = '0px'
-          styles['border-bottom-left-radius'] = '0px'
+          style.left = '0px'
+          style['border-left'] = '0px'
+          style['border-top-left-radius'] = '0px'
+          style['border-bottom-left-radius'] = '0px'
         else if l <= 1
-          styles.left = 100*l + '%'
+          style.left = 100*l + '%'
         r = offsetPosition(p.u)
         if r > 1
-          styles.right = '0px'
-          styles['border-right'] = '0px'
-          styles['border-top-right-radius'] = '0px'
-          styles['border-bottom-right-radius'] = '0px'
+          style.right = '0px'
+          style['border-right'] = '0px'
+          style['border-top-right-radius'] = '0px'
+          style['border-bottom-right-radius'] = '0px'
         else if r >= 0
-          styles.right = 100 - 100*r + '%'
+          style.right = 100 - 100*r + '%'
       else
         p = offsetPosition(p)
         if p >= 0 && p <= 1
-          styles.left = 100*p + '%'
-      styles
+          style.left = 100*p + '%'
+      style
 
     seekOffset = (o) ->
       if video && $scope.asset?.segment.contains(o) && isFinite($scope.asset.segment.l)
@@ -364,15 +364,32 @@ app.controller('volume/slot', [
         t.excerpts.push(e) if t
       return
 
+    viewportHeightStyle = undefined
+    viewportImgHeightStyle = undefined
+    viewportVideoHeightStyle = undefined
+    setViewportHeight = (h) ->
+      viewportHeightStyle = styles.set('.player-main-viewport{height:'+h+'px}', viewportHeightStyle)
+      viewportImgHeightStyle = styles.set('.player-main-viewport .asset-display img{max-height:'+(h-16)+'px}', viewportImgHeightStyle)
+      viewportVideoHeightStyle = styles.set('.player-main-viewport .asset-display video{height:'+(h-16)+'px}', viewportVideoHeightStyle)
+      viewportHeight = h
+      storage.set('viewport-height', h)
+
+    viewportMinHeight = 120
+    viewportHeight = parseInt(storage.get('viewport-height'), 10)
+    ### jshint ignore:start ###
+    unless viewportHeight >= viewportMinHeight
+      viewportHeight = viewportMinHeight
+    ### jshint ignore:end ###
+    setViewportHeight(viewportHeight)
     viewport = undefined
     $scope.resizePlayer = (down, up) ->
       viewport ?= document.getElementById('player-main-viewport')
       bar = down.currentTarget
-      h = Math.max(viewport.offsetHeight + up.clientY - down.clientY, 120)
+      h = Math.max(viewport.offsetHeight + up.clientY - down.clientY, viewportMinHeight)
       if up.type == 'mousemove'
         bar.style.top = h - viewport.offsetHeight + 'px'
       else
-        viewport.style.height = h+'px'
+        setViewportHeight(h)
         bar.style.top = '0px'
       return
 

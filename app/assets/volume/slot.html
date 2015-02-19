@@ -104,7 +104,7 @@
               </div>
             </div>
 
-            <div id="player-main-viewport" class="player-main-viewport" style="height: 640px;">
+            <div id="player-main-viewport" class="player-main-viewport">
               <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
