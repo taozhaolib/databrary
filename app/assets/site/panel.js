@@ -14,9 +14,7 @@ app.directive('panel', [
       $scope.title = constants.message($attrs.panelTitle);
       $scope.top = 'top' in $attrs;
       $scope.enabled = true;
-      console.log($attrs.editLink);
       $scope.edit = $attrs.editLink;
-      //
 
       $scope.getPanelClasses = function () {
         var classes = {};
@@ -26,8 +24,6 @@ app.directive('panel', [
 
         return classes;
       };
-
-      //
 
       transclude($scope, function ($clone) {
         $element.find('[panel-body]').append($clone);
