@@ -15,10 +15,12 @@ module Databrary.Model.Party
   , findParties
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Data.Int (Int64)
 import Data.List (intercalate)
 import Data.Maybe (catMaybes, isNothing, fromMaybe)
+import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
@@ -114,6 +116,11 @@ data PartyFilter = PartyFilter
   , partyFilterAuthorize :: Maybe Party
   , partyFilterVolume :: Maybe Volume
   }
+
+instance Monoid PartyFilter where
+  mempty = PartyFilter Nothing Nothing Nothing Nothing Nothing
+  mappend (PartyFilter q1 a1 i1 p1 v1) (PartyFilter q2 a2 i2 p2 v2) =
+    PartyFilter (q1 <> q2) (a1 <|> a2) (i1 <|> i2) (p1 <|> p2) (v1 <|> v2)
 
 partyFilter :: PartyFilter -> Identity -> String
 partyFilter PartyFilter{..} ident =

@@ -15,18 +15,20 @@ module Databrary.Web.Deform
   ) where
 
 import Control.Applicative (Applicative(..), Alternative(..), (<$>), (<$), liftA2)
-import Control.Arrow (first, second, (***), left)
+import Control.Arrow (first, second, (***), left, right)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, unless)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Writer.Class (MonadWriter(..))
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.UTF8 as BSU
 import qualified Data.HashMap.Strict as HM
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Read as TR
 import qualified Data.Vector as V
 import qualified Network.URI as URI
 import Text.Read (readEither)
@@ -100,7 +102,7 @@ runDeform (DeformT fa) = fmap fr . fa . initForm where
 withSubDeform :: Monad m => FormKey -> DeformT m a -> DeformT m a
 withSubDeform = local . subForm
 
-infixr 1 .:>
+infixr 2 .:>
 (.:>) :: Monad m => T.Text -> DeformT m a -> DeformT m a
 (.:>) = withSubDeform . FormField
 
@@ -189,11 +191,23 @@ instance Deform Bool where
     fv (FormDatumJSON JSON.Null) = return False
     fv _ = Left "Boolean value required"
 
+instance Deform Int where
+  deform = deformParse 0 fv where
+    fv (FormDatumBS b) = readParser $ BSC.unpack b
+    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.Number n)) = return $ round n
+    fv (FormDatumJSON (JSON.Bool True)) = return 1
+    fv (FormDatumJSON (JSON.Bool False)) = return 0
+    fv _ = Left "Integer required"
+
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform
 
+readParser :: Read a => String -> Either T.Text a
+readParser = left T.pack . readEither
+
 deformRead :: (Functor m, Monad m) => Read a => a -> DeformT m a
-deformRead def = deformEither def . left T.pack . readEither =<< deform
+deformRead def = deformEither def . readParser =<< deform
 
 deformRegex :: (Functor m, Monad m) => FormErrorMessage -> Regex.Regex -> DeformT m T.Text
 deformRegex err regex = deformCheck err (Regex.matchTest regex . T.unpack) =<< deform

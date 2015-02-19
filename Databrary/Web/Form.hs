@@ -12,6 +12,7 @@ module Databrary.Web.Form
   , subForms
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
@@ -27,7 +28,7 @@ import qualified Network.Wai as Wai
 
 import Control.Has (makeHasRec, Has(..), peeks)
 import Databrary.Web.Parse
-import Databrary.Action
+import Databrary.Action.Types (ActionM)
 
 data FormData = FormData
   { formDataQuery :: Map.Map BS.ByteString (Maybe BS.ByteString)
@@ -38,9 +39,7 @@ data FormData = FormData
 instance Monoid FormData where
   mempty = FormData mempty mempty Nothing
   mappend (FormData q1 p1 j1) (FormData q2 p2 j2) =
-    FormData (mappend q1 q2) (mappend p1 p2) (ja j1 j2) where
-    ja Nothing j = j
-    ja j _ = j -- XXX maybe try to union keys?
+    FormData (mappend q1 q2) (mappend p1 p2) (j1 <|> j2)
 
 getFormData :: (ActionM c m, MonadIO m) => m FormData
 getFormData = do

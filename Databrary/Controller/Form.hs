@@ -4,7 +4,6 @@ module Databrary.Controller.Form
   , runForm
 
   , emailTextForm
-  , enumForm
 
 {-
   , optionalEnumForm
@@ -13,14 +12,11 @@ module Databrary.Controller.Form
   -}
   ) where
 
-import Control.Applicative ((<$))
 import Control.Monad ((<=<))
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson.Types as JSON
-import qualified Data.Foldable as Fold
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
-import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Vector as V
 import Network.HTTP.Types (badRequest400)
@@ -29,8 +25,6 @@ import qualified Text.Regex.Posix as Regex
 
 import Control.Has (view)
 import Databrary.Action
-import Databrary.Model.Kind
-import Databrary.Model.Enum
 import Databrary.Web.Form (getFormData, FormData, FormPath)
 import Databrary.Web.Deform
 
@@ -70,9 +64,6 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
 
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
 emailTextForm = deformRegex "Invalid email address" emailRegex
-
-enumForm :: forall a m . (Functor m, Monad m, DBEnum a) => DeformT m a
-enumForm = maybe (minBound <$ deformError ("Invalid " <> kindOf (undefined :: a))) return . readDBEnum =<< deform
 
 {-
 checkReadForm :: (Monad m, Read a, Show a) => v -> (a -> Bool) -> Maybe a -> Form.Form v m a

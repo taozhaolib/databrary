@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, PatternGuards #-}
+{-# LANGUAGE TemplateHaskell, PatternGuards, OverloadedStrings #-}
 module Databrary.Model.Enum
   ( DBEnum
   , readDBEnum
@@ -6,6 +6,7 @@ module Databrary.Model.Enum
   , pgEnumValues
   ) where
 
+import Control.Applicative ((<$))
 import Control.Monad (liftM2)
 import qualified Data.Aeson.Types as JSON
 import qualified Data.CaseInsensitive as CI (mk)
@@ -17,6 +18,7 @@ import Text.Read (readMaybe)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.Kind
+import Databrary.Web.Deform
 
 class (PGEnum a, Kinded a) => DBEnum a
 
@@ -40,6 +42,9 @@ parseJSONEnum (JSON.Number x) = p (round x) where
   fe = fromEnum
 parseJSONEnum _ = fail $ "Invalid " ++ kindOf (undefined :: a)
 
+enumForm :: forall a m . (Functor m, Monad m, DBEnum a) => DeformT m a
+enumForm = maybe (minBound <$ deformError ("Invalid " `T.append` kindOf (undefined :: a))) return . readDBEnum =<< deform
+
 makeDBEnum :: String -> String -> TH.DecsQ
 makeDBEnum name typs =
   liftM2 (++)
@@ -51,6 +56,8 @@ makeDBEnum name typs =
           toJSON = JSON.toJSON . fromEnum
         instance JSON.FromJSON $(return typt) where
           parseJSON = parseJSONEnum
+        instance Deform $(return typt) where
+          deform = enumForm
     |]
   where
   typt = TH.ConT (TH.mkName typs)

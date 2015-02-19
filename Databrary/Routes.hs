@@ -25,17 +25,17 @@ routes :: R.RouteM AppAction
 routes = do
   api <- True <$ R.fixed "api" <|> return False
   msum 
-    [ "login" >>              act (viewLogin api) 
-                          <|> act (postLogin api)
-    , R.route >>= \p ->       act (viewParty api p)
-                          <|> act (postParty api p)
-    , "party" >>              act (createParty api)
-                          <|> act (searchParty api)
-    , R.route >>= \v ->       act (viewVolume api v)
+    [ "login" >> (guard (not api) >> act viewLogin)
+                                 <|> act (postLogin api)
+    , R.route >>= \p ->              act (viewParty api p)
+                                 <|> act (postParty api p)
+    , "party" >>                     act (createParty api)
+                                 <|> act (searchParty api)
+    , R.route >>= \v ->              act (viewVolume api v)
     , R.route >>= \c ->
         R.route >>= \a ->
-          "download"       >> act (downloadSlotAsset c a)
-    , R.route >>= \r ->       act (viewRecord api r)
-    , guard api >> "cite"  >> act getCitation
-    , "public" >> R.route >>= act . staticPublicFile
+          "download" >>              act (downloadSlotAsset c a)
+    , R.route >>= \r ->              act (viewRecord api r)
+    , guard api >> "cite" >>         act getCitation
+    , "public" >> R.route >>=        act . staticPublicFile
     ]

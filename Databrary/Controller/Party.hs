@@ -6,14 +6,14 @@ module Databrary.Controller.Party
   , searchParty
   ) where
 
-import Control.Applicative ((<$>), (<$), (<*>), pure)
+import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
 import Control.Monad (unless)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
+import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
-import qualified Text.Digestive as Form
+import qualified Text.Blaze.Html5 as Html
 
 import Control.Applicative.Ops
 import Control.Has (view, peek, peeks)
@@ -29,10 +29,9 @@ import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
-import Databrary.Web.Form
+import Databrary.Web.Deform
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
-import Databrary.View.Form
 
 withParty :: Maybe Permission -> Id Party -> (Party -> AuthAction) -> AppAction
 withParty Nothing i f = withAuth $ do
@@ -80,7 +79,7 @@ emptyParty = Party
   , partyPermission = PermissionREAD
   }
 
-partyForm :: Monad m => Party -> DeformT m Party
+partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
 partyForm p = do
   name <- "name" .:> deform
   affiliation <- "affiliation" .:> deform
@@ -97,8 +96,7 @@ htmlPartyForm i fd fe = undefined (maybe (createParty False) (postParty False) i
 postParty :: Bool -> Id Party -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
   withParty (Just PermissionADMIN) i $ \p -> do
-    let disp = displayPartyForm api (Just i)
-    p' <- runForm (htmlPartyForm (Just i) <!? api) $ partyForm p
+    p' <- runForm (api ?!> htmlPartyForm (Just i)) $ partyForm p
     changeParty p'
     displayParty ([] <? api) p'
 
@@ -106,37 +104,30 @@ createParty :: Bool -> AppRAction
 createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
-  let disp = displayPartyForm api Nothing
-  (bp, _) <- runForm "party" disp (partyForm Nothing)
+  bp <- runForm (api ?!> htmlPartyForm Nothing) $ partyForm emptyParty
   p <- addParty bp
-  displayParty ([] <? api) p
+  displayParty (api ?> []) p
 
-paginationForm :: Monad m => Form.Form T.Text m (Int, Int)
+paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
 paginationForm = (,)
-  <$> "limit" Form..: checkReadForm "invalid limit" (\l -> l > 0 && l <= 129) (Just 32)
-  <*> "offset" Form..: checkReadForm "invalid offset" (>= 0) (Just 0)
+  <$> ("limit" .:> (deformCheck "invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
+  <*> ("offset" .:> (deformCheck "invalid offset" (>= 0) =<< deform) <|> return 0)
 
-partySearchForm :: Monad m => Form.Form T.Text m PartyFilter
+partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter
-  <$> "query" Form..: Form.optionalString Nothing
-  <*> "access" Form..: optionalEnumForm Nothing
-  <*> "institution" Form..: (Just <$> Form.bool Nothing)
+  <$> ("query" .:> deform)
+  <*> ("access" .:> optional deform)
+  <*> ("institution" .:> optional deform)
   <*> pure Nothing
   <*> pure Nothing
 
-displayPartySearchForm :: Bool -> Form.View T.Text -> AuthAction
-displayPartySearchForm api = displayForm api $
-  renderForm (searchParty api)
-    [ ("query", inputText)
-    , ("access", inputEnum PermissionNONE)
-    , ("institution", inputCheckbox)
-    ]
+htmlPartySearchForm :: PartyFilter -> FormData -> FormErrors -> Html.Html
+htmlPartySearchForm pf fd fe = undefined (searchParty False)
 
 searchParty :: Bool -> AppRAction
 searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
-  let disp = displayPartySearchForm api
-  ((pf, (limit, offset)), form) <- runForm "party" disp ((,) <$> partySearchForm <*> paginationForm)
+  (pf, (limit, offset)) <- runForm (api ?!> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset
   if api
     then okResponse [] $ JSON.toJSON $ map partyJSON p
-    else displayPartySearchForm api form
+    else okResponse [] $ htmlPartySearchForm pf mempty mempty
