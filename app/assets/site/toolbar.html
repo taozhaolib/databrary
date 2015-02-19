@@ -20,29 +20,28 @@
             <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="//databrary.org/about.html"><span>About</span></a>
               <ul>
-              	<li>News &amp; Events</li>
-              	<li>Mission</li>
-              	<li>Our Team</li>
-              	<li>Join the Team</li>
-              	<li>Press &amp; Publications</li>
+              	<li><a href="//databrary.org">News &amp; Events</a></li>
+              	<li><a href="//databrary.org/about/mission.html">Mission</a></li>
+              	<li><a href="//databrary.org/about/team.html">Our Team</a></li>
+              	<li><a href="//databrary.org/about/jobs.html">Join the Team</a></li>
+              	<li><a href="//databrary.org/about/press-and-publications.html">Press &amp; Publications</a></li>
               </ul>
             </li>
             <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="//databrary.org/access.html"><span>Access</span></a>
               <ul>
-              	<li>Overview</li>
-              	<li>Rights &amp; Responsibilities</li>
-              	<li>FAQ</li>
-              	<li>User Guide</li>
-              	<li>Policies</li>
+              	<li><a href="//databrary.org/access/responsibilities.html">Rights &amp; Responsibilities</a></li>
+              	<li><a href="//databrary.org/about/faq.html">FAQ</a></li>
+              	<li><a href="//databrary.org/access/guide.html">User Guide</a></li>
+              	<li><a href="//databrary.org/access/policies.html">Policies</a></li>
           	  </ul>
             </li>
             <li ng-class="{'hide-mobile':!hoverNav}">
               <a href="//databrary.org/community.html"><span>Community</span></a>
               <ul>
-              	<li>Authorized Investigators</li>
-              	<li>Institution</li>
-              	<li>Board</li>
+              	<li><a ng-href="{{::page.router.partySearch()}}">Authorized Investigators</a></li>
+              	<li><a ng-href="{{::page.router.partySearch()}}?institution=true&access=5">Institution</a></li>
+              	<li><a href="//databrary.org/community/board.html">Board</a></li>
               </ul>
             </li>
           </ul>
