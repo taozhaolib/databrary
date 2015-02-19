@@ -178,8 +178,10 @@ network.apply.foreign=Grant authorization to {0}
 network.grant.local=Manage and grant authorizations
 network.grant.foreign=Apply for authorization from {0}
 
-auth.parents.title=Authorized by
-auth.children.title=Granted authorization to
+auth.parents.title=Sponsors
+auth.parents.subtitle=Authorized by:
+auth.children.title=Affiliates
+auth.children.subtitle=Granted authorization to:
 auth.expiration=Expiration
 auth.expiration.none=Never
 auth.pending=Request pending
@@ -404,7 +406,7 @@ not.participant=No participants
 not.condition=No conditions
 not.group=Not grouped
 
-excerpts.title=Excerpts
+excerpts.title=Highlighted Excerpts
 excerpts.download=Download this excerpt.
 excerpts.jump=Jump to the session from which this excerpt originates.
 
@@ -448,7 +450,7 @@ tags.new.placeholder=Add new tag...
 access.global.legend=Share this study
 access.global.save.success=Sharing settings updated.
 access.global.save.error=Unable to update sharing settings.
-access.global.NONE.NONE=Private: Share with collaborators selected below.
+access.global.NONE.NONE=Private: Share only with collaborators selected below.
 access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and selected information with the public.
 access.global.restricted=You must be an authorized Databrary Investigator in order to share studies.
 
@@ -621,7 +623,7 @@ wizard.volume-edit-funding.description=Specify funding sources.
 wizard.volume-edit-funding.instructions=Add or manage sources of funding that supported this research here.
 
 wizard.volume-edit-access.name=Access
-wizard.volume-edit-access.description=Set access and sharing levels.
+wizard.volume-edit-access.description=Share your study with collaborators, authorized researchers, and the public.
 wizard.volume-edit-access.instructions=Specify with whom you want to share the data contained in this volume by adding collaborators and what level of access you wish them to have.
 
 volume.edit.access.success=Volume access updated successfully.
@@ -631,7 +633,7 @@ download.zip=Download all files as zip
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
-spreadsheet.add.category=Add new column group
+spreadsheet.add.category=Add new tab
 spreadsheet.add.metric=Add new column to {0}
 spreadsheet.unlimit=Show all {0} rows...
 

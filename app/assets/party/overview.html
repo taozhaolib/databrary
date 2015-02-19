@@ -2,7 +2,10 @@
   <div class="row">
     <div class="col-desktop-12 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
-        <h1 class="panel-title smaller">{{party.name}}</h1>
+        <h1 class="panel-title smaller">
+          <span>{{party.name}}</span>
+          <a ng-href="{{::party.editRoute('overview')}}"><span class="button icon edit"></span></a>
+        </h1>
       </hgroup>
 
       <div>

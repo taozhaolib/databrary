@@ -14,7 +14,7 @@ app.directive('panel', [
       $scope.title = constants.message($attrs.panelTitle);
       $scope.top = 'top' in $attrs;
       $scope.enabled = true;
-
+      $scope.edit = $attrs.editLink;
       //
 
       $scope.getPanelClasses = function () {

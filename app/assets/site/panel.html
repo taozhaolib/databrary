@@ -2,7 +2,11 @@
   <div class="wrap">
     <div class="row">
       <div class="col">
-        <h2 ng-if="::!top" class="panel-header" folder ng-click="toggleFold()"><span></span>{{::title}}</h2>
+        <h2 ng-if="::!top" class="panel-header" folder ng-click="toggleFold()">
+          <span></span>
+          {{::title}}
+          <a ng-if="edit" ng-href="{{::edit}}"><span class="button green icon edit"></span></a>
+        </h2>
         <div ng-if="!folded" panel-body ng-transclude></div>
       </div>
     </div>

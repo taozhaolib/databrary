@@ -1,4 +1,4 @@
-<panel ng-controller="party/data" id="panel_browser" panel-title="volumes.title" fold>
+<panel ng-controller="party/data" id="panel_browser" edit-link="{{::page.router.volumeCreate([party.id])}}" panel-title="volumes.title" fold>
   <volume-list data="volumes"></volume-list>
   <button class="green" ng-click="page.$location.url(page.router.volumeCreate([party.id]))" message="volume.edit.create" ng-if="::party.checkPermission(page.permission.EDIT)"></button>
 </panel>

@@ -10,6 +10,8 @@
           <h3 class="view-title smaller">
             <span ng-bind="::slot.displayName"></span>
             <span ng-if="::slot.date" ng-bind="::' (' + slot.date + ')'"></span>
+            <a ng-if="::!editing" ng-href="{{::slot.editRoute()}}"><span class="neutral button icon edit"></span></a>
+            <a ng-if="editing" ng-href="{{::slot.route()}}"><span class="neutral button icon view-icon"></span></a>
           </h3>
         </hgroup>
 
