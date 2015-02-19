@@ -6,11 +6,10 @@ module Databrary.Model.Metric
   , metricJSON
   ) where
 
-import Control.Applicative ((<$>), (<$))
-import Control.Monad (guard)
 import qualified Data.IntMap.Strict as IntMap
 import Data.Maybe (catMaybes)
 
+import Control.Applicative.Ops
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
@@ -40,7 +39,7 @@ metricJSON m@Metric{..} = JSON.record metricId $ catMaybes
   [ Just $ "name" JSON..= metricName
   , Just $ "classification" JSON..= metricClassification
   , Just $ "type" JSON..= show metricType
-  , "options" JSON..= metricOptions <$ guard (not (null metricOptions))
+  , "options" JSON..= metricOptions <!? null metricOptions
   , ("assumed" JSON..=) <$> metricAssumed
-  , "long" JSON..= True <$ guard (metricLong m)
+  , "long" JSON..= True <? metricLong m
   ]

@@ -5,10 +5,9 @@ module Databrary.Model.Volume
   , volumeJSON
   ) where
 
-import Control.Applicative ((<$))
-import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 
+import Control.Applicative.Ops
 import Control.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
@@ -30,7 +29,7 @@ lookupVolume vi = do
 volumeJSON :: Volume -> JSON.Object
 volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
   [ Just $ "name" JSON..= volumeName
-  , "alias" JSON..= volumeAlias <$ guard (volumePermission >= PermissionREAD)
+  , "alias" JSON..= volumeAlias <? (volumePermission >= PermissionREAD)
   , Just $ "body" JSON..= volumeBody
   , Just $ "creation" JSON..= volumeCreation
   , Just $ "permission" JSON..= volumePermission

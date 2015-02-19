@@ -6,6 +6,8 @@ module Databrary.Web.Deform
   , (.:>)
   , withSubDeforms
   , deformCheck
+  , deformOptional
+  , deformNonempty
   , Deform(..) 
   , deformError
   , deformRead
@@ -19,10 +21,13 @@ import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Writer.Class (MonadWriter(..))
 import qualified Data.Aeson as JSON
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.UTF8 as BSU
+import qualified Data.HashMap.Strict as HM
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Data.Vector as V
 import qualified Network.URI as URI
 import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
@@ -124,6 +129,15 @@ deformCheck e f x = x <$ unless (f x) (deformError e)
 deformOptional :: (Functor m, Monad m) => DeformT m a -> DeformT m (Maybe a)
 deformOptional f = opt =<< peek where
   opt FormDatumNone = return Nothing
+  opt _ = Just <$> f
+
+deformNonempty :: (Functor m, Monad m) => DeformT m a -> DeformT m (Maybe a)
+deformNonempty f = opt =<< peek where
+  opt FormDatumNone = return Nothing
+  opt (FormDatumBS s) | BS.null s = return Nothing
+  opt (FormDatumJSON (JSON.String s)) | T.null s = return Nothing
+  opt (FormDatumJSON (JSON.Object o)) | HM.null o = return Nothing
+  opt (FormDatumJSON (JSON.Array v)) | V.null v = return Nothing
   opt (FormDatumJSON JSON.Null) = return Nothing
   opt _ = Just <$> f
 
@@ -134,13 +148,13 @@ class Deform a where
   deform :: (Functor m, Monad m) => DeformT m a
 
 instance Deform a => Deform (Maybe a) where
-  deform = deformOptional deform
+  deform = deformNonempty deform
 
 instance Deform T.Text where
   deform = deformParse "" fv where
     fv (FormDatumBS b) = return $ TE.decodeUtf8 b
     fv (FormDatumJSON (JSON.String t)) = return t
-    fv (FormDatumJSON (JSON.Number s)) = return $ T.pack $ show s
+    fv (FormDatumJSON (JSON.Number n)) = return $ T.pack $ show n
     fv (FormDatumJSON (JSON.Bool True)) = return "1"
     fv (FormDatumJSON (JSON.Bool False)) = return ""
     fv _ = Left "Text value required"
@@ -149,10 +163,31 @@ instance Deform String where
   deform = deformParse "" fv where
     fv (FormDatumBS b) = return $ BSU.toString b
     fv (FormDatumJSON (JSON.String t)) = return $ T.unpack t
-    fv (FormDatumJSON (JSON.Number s)) = return $ show s
+    fv (FormDatumJSON (JSON.Number n)) = return $ show n
     fv (FormDatumJSON (JSON.Bool True)) = return "1"
     fv (FormDatumJSON (JSON.Bool False)) = return ""
-    fv _ = Left "Text value required"
+    fv _ = Left "String value required"
+
+instance Deform Bool where
+  deform = deformParse False fv where
+    fv (FormDatumBS "true") = return True
+    fv (FormDatumBS "false") = return False
+    fv (FormDatumBS "on") = return True
+    fv (FormDatumBS "off") = return False
+    fv (FormDatumBS "1") = return True
+    fv (FormDatumBS "0") = return False
+    fv (FormDatumBS "") = return False
+    fv (FormDatumJSON (JSON.String "true")) = return True
+    fv (FormDatumJSON (JSON.String "false")) = return False
+    fv (FormDatumJSON (JSON.String "on")) = return True
+    fv (FormDatumJSON (JSON.String "off")) = return False
+    fv (FormDatumJSON (JSON.String "1")) = return True
+    fv (FormDatumJSON (JSON.String "0")) = return False
+    fv (FormDatumJSON (JSON.String "")) = return False
+    fv (FormDatumJSON (JSON.Number n)) = return $ n /= 0
+    fv (FormDatumJSON (JSON.Bool b)) = return b
+    fv (FormDatumJSON JSON.Null) = return False
+    fv _ = Left "Boolean value required"
 
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform

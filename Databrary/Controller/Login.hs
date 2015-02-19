@@ -5,16 +5,16 @@ module Databrary.Controller.Login
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
-import Control.Applicative ((<$>), (<*>))
 import Control.Monad (when, unless)
+import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Foldable as Fold
-import Data.Maybe (fromMaybe, fromJust)
+import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Text.Digestive as Form
+import qualified Text.Blaze.Html5 as Html
 
+import Control.Applicative.Ops
 import Control.Has (view)
 import Databrary.Action
 import Databrary.Web.Form
@@ -23,7 +23,7 @@ import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Token
-import Databrary.View.Form
+import Databrary.Web.Deform
 import Databrary.Controller.Form
 
 loginAccount :: SiteAuth -> Bool -> AppAction
@@ -33,42 +33,28 @@ loginAccount auth su = do
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 
-data LoginForm = LoginForm
-  { loginEmail :: T.Text
-  , loginPassword :: T.Text
-  , loginSuperuser :: Bool
-  }
+displayLogin :: FormData -> FormErrors -> Html.Html
+displayLogin fd fe = undefined
 
-loginForm :: Monad m => Form.Form T.Text m LoginForm
-loginForm = LoginForm
-  <$> "email"     Form..: emailTextForm Nothing
-  <*> "password"  Form..: Form.text Nothing
-  <*> "superuser" Form..: Form.bool (Just False)
-
-displayLogin :: ActionM c m => Bool -> Form.View T.Text -> m Response
-displayLogin api = displayForm api $
-  renderForm (postLogin api)
-    [ ("email", inputText)
-    , ("password", inputPassword)
-    ]
-
-viewLogin :: Bool -> AppRAction
-viewLogin api = action GET (apiRoute api ["login"]) $ do
-  form <- Form.getForm "login" loginForm
-  displayLogin api form
+viewLogin :: AppRAction
+viewLogin = action GET ["login"] $
+  okResponse [] $ displayLogin mempty mempty
 
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
-  (login, form) <- runForm "login" disp loginForm
-  auth <- lookupSiteAuthByEmail (loginEmail login)
-  let p = fmap view auth
-      a = partyAccount =<< p
-      su = loginSuperuser login && Fold.any ((PermissionADMIN ==) . view) auth
-  attempts <- maybe (return 0) recentAccountLogins p
-  let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 (loginPassword login))) (accountPasswd =<< a)
-      block = attempts > 4
-  auditAccountLogin pass (fromMaybe nobodyParty p) (loginEmail login)
-  when block $ result =<< disp (formAddError ["email"] "Too many login attempts. Try again later." form)
-  unless pass $ result =<< disp (formAddError ["password"] "Incorrect login." form)
-  loginAccount (fromJust auth) su
-  where disp = displayLogin api
+  (Just auth, su) <- runForm (api ?!> displayLogin) $ do
+    email <- "email" .:> emailTextForm
+    password <- "password" .:> deform
+    superuser <- "superuser" .:> deform
+    auth <- lift $ lookupSiteAuthByEmail email
+    let p = view <$> auth
+        a = partyAccount =<< p
+        su = superuser && Fold.any ((PermissionADMIN ==) . view) auth
+    attempts <- lift $ maybe (return 0) recentAccountLogins p
+    let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 password)) (accountPasswd =<< a)
+        block = attempts > 4
+    lift $ auditAccountLogin pass (fromMaybe nobodyParty p) email
+    when block $ "email" .:> deformError "Too many login attempts. Try again later."
+    unless pass $ "password" .:> deformError "Incorrect login."
+    return (auth, su)
+  loginAccount auth su

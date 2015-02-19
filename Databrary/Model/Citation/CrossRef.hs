@@ -3,8 +3,7 @@ module Databrary.Model.Citation.CrossRef
   ( lookupCitation
   ) where
 
-import Control.Applicative ((<$>), (<*>), (<$), optional)
-import Control.Monad (guard)
+import Control.Applicative ((<*>), optional)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.Attoparsec.ByteString as P
@@ -16,6 +15,7 @@ import qualified Data.Text.Encoding as TE
 import qualified Network.HTTP.Client as HC
 import qualified Network.URI as URI
 
+import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Client
 import Databrary.URL
@@ -40,7 +40,7 @@ parseCitation = JSON.withObject "citation" $ \o ->
     <*> (Just <$> (o JSON..: "DOI" >>= parseDOI))
     <*> optional (o JSON..: "issued" >>= (JSON..: "date-parts") >>= (JSON..! 0) >>= (JSON..! 0))
   where
-  parseDOI d = hdlURL d <$ guard (validHDL d)
+  parseDOI d = hdlURL d <? validHDL d
 
 lookupCitation :: (HTTPClientM c m) => URI.URI -> m (Maybe Citation)
 lookupCitation uri = runMaybeT $ do

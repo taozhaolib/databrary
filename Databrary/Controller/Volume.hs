@@ -4,13 +4,12 @@ module Databrary.Controller.Volume
   , viewVolume
   ) where
 
-import Control.Applicative ((<$>), (<$))
-import Control.Monad (guard)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import qualified Network.Wai as Wai
 
+import Control.Applicative.Ops
 import Control.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action
@@ -60,4 +59,4 @@ viewVolume :: Bool -> Id Volume -> AppRAction
 viewVolume api i = action GET (apiRoute api $ toRoute i) $ do
   q <- peeks Wai.queryString
   withVolume PermissionPUBLIC i $
-    displayVolume (q <$ guard api)
+    displayVolume (q <? api)

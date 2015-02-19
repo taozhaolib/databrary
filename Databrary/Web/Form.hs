@@ -35,6 +35,13 @@ data FormData = FormData
   , formDataJSON :: Maybe JSON.Value
   }
 
+instance Monoid FormData where
+  mempty = FormData mempty mempty Nothing
+  mappend (FormData q1 p1 j1) (FormData q2 p2 j2) =
+    FormData (mappend q1 q2) (mappend p1 p2) (ja j1 j2) where
+    ja Nothing j = j
+    ja j _ = j -- XXX maybe try to union keys?
+
 getFormData :: (ActionM c m, MonadIO m) => m FormData
 getFormData = do
   f <- peeks $ FormData . Map.fromList . Wai.queryString

@@ -6,12 +6,11 @@ module Databrary.Model.Container
   , containerJSON
   ) where
 
-import Control.Applicative ((<$>), (<$))
-import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 import Data.Time.Format (formatTime)
 import System.Locale (defaultTimeLocale)
 
+import Control.Applicative.Ops
 import Control.Has (view, peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
@@ -43,7 +42,7 @@ formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c whe
 
 containerJSON :: Container -> JSON.Object
 containerJSON c@Container{..} = JSON.record containerId $ catMaybes
-  [ "top" JSON..= containerTop <$ guard containerTop
+  [ "top" JSON..= containerTop <? containerTop
   , ("name" JSON..=) <$> containerName
   , ("date" JSON..=) <$> formatContainerDate c
   ]

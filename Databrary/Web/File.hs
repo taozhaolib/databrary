@@ -5,8 +5,7 @@ module Databrary.Web.File
   , serveStaticFile
   ) where
 
-import Control.Applicative ((<$), (<$>))
-import Control.Monad (guard, when)
+import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
@@ -21,6 +20,7 @@ import System.FilePath (joinPath, splitDirectories, (</>))
 import System.IO.Error (tryIOError)
 import System.Posix.Files (getFileStatus, modificationTimeHiRes, fileSize)
 
+import Control.Applicative.Ops
 import Databrary.Action
 import Databrary.Web.HTTP
 import qualified Databrary.Web.Route as R
@@ -30,7 +30,7 @@ newtype StaticPath = StaticPath FilePath
 
 staticPath :: [T.Text] -> Maybe StaticPath
 staticPath p = StaticPath . joinPath <$> mapM component p where
-  component c = T.unpack c <$ guard (not (T.null c) && T.head c /= '.' && T.all ok c)
+  component c = T.unpack c <? (not (T.null c) && T.head c /= '.' && T.all ok c)
   ok '.' = True
   ok '-' = True
   ok '_' = True

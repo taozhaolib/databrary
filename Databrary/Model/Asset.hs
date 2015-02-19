@@ -4,10 +4,9 @@ module Databrary.Model.Asset
   , assetJSON
   ) where
 
-import Control.Applicative ((<$>), (<$))
-import Control.Monad (guard)
 import Data.Maybe (catMaybes, isNothing)
 
+import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Time ()
 import Databrary.Model.Format.Types
@@ -19,5 +18,5 @@ assetJSON Asset{..} = JSON.record assetId $ catMaybes
   , Just $ "classification" JSON..= assetClassification
   , ("name" JSON..=) <$> assetName
   , ("duration" JSON..=) <$> assetDuration
-  , ("pending" JSON..= True) <$ guard (isNothing assetSHA1)
+  , ("pending" JSON..= True) <? isNothing assetSHA1
   ]

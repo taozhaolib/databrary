@@ -7,7 +7,7 @@ module Databrary.Controller.Party
   ) where
 
 import Control.Applicative ((<$>), (<$), (<*>), pure)
-import Control.Monad (unless, guard)
+import Control.Monad (unless)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
@@ -15,6 +15,7 @@ import qualified Data.Text as T
 import qualified Network.Wai as Wai
 import qualified Text.Digestive as Form
 
+import Control.Applicative.Ops
 import Control.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action
@@ -67,7 +68,7 @@ viewParty :: Bool -> Id Party -> AppRAction
 viewParty api i = action GET (apiRoute api $ toRoute i) $ do
   q <- peeks Wai.queryString
   withParty (Just PermissionNONE) i $
-    displayParty (q <$ guard api)
+    displayParty (q <? api)
 
 emptyParty :: Party
 emptyParty = Party
@@ -79,33 +80,27 @@ emptyParty = Party
   , partyPermission = PermissionREAD
   }
 
-partyForm :: Monad m => Maybe Party -> Form.Form T.Text m Party
-partyForm p = up
-  <$> "name" Form..: Form.text (partyName <$> p)
-  <*> "affiliation" Form..: Form.optionalText (partyAffiliation =<< p)
-  <*> "url" Form..: Form.optionalText (partyURL =<< p) -- FIXME
-  where
-  up name affiliation url = (fromMaybe emptyParty p)
+partyForm :: Monad m => Party -> DeformT m Party
+partyForm p = do
+  name <- "name" .:> deform
+  affiliation <- "affiliation" .:> deform
+  url <- "url" .:> deform
+  return p
     { partyName = name
     , partyAffiliation = affiliation
     , partyURL = url
     }
 
-displayPartyForm :: Bool -> Maybe (Id Party) -> Form.View T.Text -> AuthAction
-displayPartyForm api i = displayForm api $
-  renderForm (maybe (createParty api) (postParty api) i)
-    [ ("name", inputText)
-    , ("affiliation", inputText)
-    , ("url", inputText)
-    ]
+htmlPartyForm :: Maybe (Id Party) -> FormData -> FormErrors -> Html.Html
+htmlPartyForm i fd fe = undefined (maybe (createParty False) (postParty False) i)
 
 postParty :: Bool -> Id Party -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
   withParty (Just PermissionADMIN) i $ \p -> do
     let disp = displayPartyForm api (Just i)
-    (p', _) <- runForm "party" disp (partyForm $ Just p)
+    p' <- runForm (htmlPartyForm (Just i) <!? api) $ partyForm p
     changeParty p'
-    displayParty ([] <$ guard api) p'
+    displayParty ([] <? api) p'
 
 createParty :: Bool -> AppRAction
 createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
@@ -114,7 +109,7 @@ createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   let disp = displayPartyForm api Nothing
   (bp, _) <- runForm "party" disp (partyForm Nothing)
   p <- addParty bp
-  displayParty ([] <$ guard api) p
+  displayParty ([] <? api) p
 
 paginationForm :: Monad m => Form.Form T.Text m (Int, Int)
 paginationForm = (,)

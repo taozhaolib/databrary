@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Form
-  ( runForm
+  ( FormData
+  , runForm
 
   , emailTextForm
   , enumForm
@@ -12,7 +13,7 @@ module Databrary.Controller.Form
   -}
   ) where
 
-import Control.Applicative (Applicative, (<$))
+import Control.Applicative ((<$))
 import Control.Monad ((<=<))
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Aeson.Types as JSON
@@ -22,7 +23,7 @@ import Data.List (foldl')
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Vector as V
-import Network.HTTP.Types (Status, ok200, badRequest400)
+import Network.HTTP.Types (badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Regex.Posix as Regex
 

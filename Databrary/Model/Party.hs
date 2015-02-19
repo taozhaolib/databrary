@@ -15,7 +15,6 @@ module Databrary.Model.Party
   , findParties
   ) where
 
-import Control.Applicative ((<$>), (<$))
 import Control.Monad (guard)
 import Data.Int (Int64)
 import Data.List (intercalate)
@@ -26,6 +25,7 @@ import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
 
+import Control.Applicative.Ops
 import Control.Has (Has(..), peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
@@ -61,7 +61,7 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
   [ Just $ "name" JSON..= partyName
   , ("affiliation" JSON..=) <$> partyAffiliation
   , ("url" JSON..=) <$> partyURL
-  , "institution" JSON..= True <$ guard (isNothing partyAccount)
+  , "institution" JSON..= True <? isNothing partyAccount
   , ("email" JSON..=) <$> partyEmail p
   , Just $ "permission" JSON..= partyPermission
   ]
@@ -77,7 +77,7 @@ addParty bp = do
 lookupFixedParty :: Id Party -> Identity -> Maybe Party
 lookupFixedParty (Id (-1)) _ = Just nobodyParty
 lookupFixedParty (Id 0) _ = Just rootParty
-lookupFixedParty i a = view a <$ guard (i == view a)
+lookupFixedParty i a = view a <? (i == view a)
 
 lookupParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupParty i = do

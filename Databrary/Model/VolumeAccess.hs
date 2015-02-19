@@ -6,10 +6,9 @@ module Databrary.Model.VolumeAccess
   , volumeAccessJSON
   ) where
 
-import Control.Applicative ((<$))
-import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 
+import Control.Applicative.Ops
 import Control.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
@@ -34,6 +33,6 @@ partyVolumeAccess p perm = do
 
 volumeAccessJSON :: VolumeAccess -> JSON.Object
 volumeAccessJSON VolumeAccess{..} = JSON.object $ catMaybes
-  [ ("individual" JSON..= volumeAccessIndividual) <$ guard (volumeAccessIndividual >= PermissionNONE)
-  , ("children"   JSON..= volumeAccessChildren)   <$ guard (volumeAccessChildren   >= PermissionNONE)
+  [ ("individual" JSON..= volumeAccessIndividual) <? (volumeAccessIndividual >= PermissionNONE)
+  , ("children"   JSON..= volumeAccessChildren)   <? (volumeAccessChildren   >= PermissionNONE)
   ]
