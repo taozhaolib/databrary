@@ -364,6 +364,18 @@ app.controller('volume/slot', [
         t.excerpts.push(e) if t
       return
 
+    viewport = undefined
+    $scope.resizePlayer = (down, up) ->
+      viewport ?= document.getElementById('player-main-viewport')
+      bar = down.currentTarget
+      h = Math.max(viewport.offsetHeight + up.clientY - down.clientY, 120)
+      if up.type == 'mousemove'
+        bar.style.top = h - viewport.offsetHeight + 'px'
+      else
+        viewport.style.height = h+'px'
+        bar.style.top = '0px'
+      return
+
     videoEvents =
       pause: ->
         $scope.playing = 0

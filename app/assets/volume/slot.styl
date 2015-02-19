@@ -329,11 +329,10 @@
 .player-main-viewport
   border-top 1px solid pale
   padding-top b3
-  height 660px
   .asset-display
     img,
     video
-      max-height 640px
+      height 100%
     // img
     //   max-height 800px
     // video
@@ -342,7 +341,9 @@
     //     max-width 720px
 
 .player-resize-bar
+  position relative
   text-align center
+  cursor row-resize
 
 .player-main-float
   position absolute

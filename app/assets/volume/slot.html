@@ -1,7 +1,8 @@
 <article class="view slot-view" flow-init="flowOptions"
     flow-file-added="fileAdded($file, $event)"
     flow-file-success="fileSuccess($file)"
-    flow-file-progress="fileProgress($file)">
+    flow-file-progress="fileProgress($file)"
+    mouse-drag-region>
   <div class="wrap">
     <div class="row">
       <div class="col">
@@ -103,14 +104,15 @@
               </div>
             </div>
 
-            <div class="player-main-viewport">
+            <div id="player-main-viewport" class="player-main-viewport" style="height: 640px;">
               <div ng-if="editing && !current.file" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
               <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
             </div>
-            <div class="player-resize-bar">
+
+            <div class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
               <span class="icon resize"></span>
             </div>
           </div>
@@ -136,7 +138,7 @@
           </ul>
         </div>
 
-        <section id="slot-timeline" class="slot-timeline slot frame" mouse-drag-region>
+        <section id="slot-timeline" class="slot-timeline slot frame">
           <div class="slot-toolbar" ng-if="editing">
             <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Add Excerpt</button>
             <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
