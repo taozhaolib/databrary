@@ -316,7 +316,6 @@ app.controller('volume/slot', [
 
       saveExcerpt: (value) ->
         return unless @excerpt
-        console.log(value)
         if value == ''
           @excerpt.on = true
         else if value == null && @excerpt.classification == ''
