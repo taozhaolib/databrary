@@ -25,11 +25,6 @@ app.directive('panel', [
 
         return classes;
       };
-
-      //
-
-      if ($scope.refreshPanel)
-        $scope.refreshPanel();
     };
 
     return {
