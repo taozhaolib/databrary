@@ -55,9 +55,39 @@ body
   position relative
   vertical-align top
 
-  li
-    margin-right f2
+  ul
+  	display inline-block
+  	li
+  	  margin-right f2
+	  position relative
 
+	  ul
+	    position absolute
+	    margin-top 1px
+	    display none
+	    opacity 0
+	    visibility hidden
+
+  ul li:hover
+  	ul
+      display block
+      opacity 1
+      visibility visible
+      background-color white
+      box-shadow box-shadow-def
+      border-bottom-left-radius b8
+      border-bottom-right-radius b8
+      padding 0
+      font-size b2
+      line-height b2
+      li
+      	margin 0
+      	padding b3
+      li:before
+      	content none
+      li:hover
+      	background-color green51
+      	  	  
   a
     position relative
     top -b24
