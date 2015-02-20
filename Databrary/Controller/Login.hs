@@ -23,7 +23,7 @@ import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Token
-import Databrary.Web.Deform
+import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
 
 loginAccount :: SiteAuth -> Bool -> AppAction

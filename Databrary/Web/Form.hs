@@ -53,6 +53,7 @@ getFormData = do
 data FormKey 
   = FormField !T.Text
   | FormIndex !Int
+  deriving (Eq, Ord)
 
 type FormPath = [FormKey]
 
@@ -78,9 +79,6 @@ dotBS a b
 formSubBS :: FormKey -> BS.ByteString -> BS.ByteString
 formSubBS k b = b `dotBS` view k
 
-_formPathBS :: FormPath -> BS.ByteString
-_formPathBS = dotsBS . map view
-
 data FormDatum
   = FormDatumNone
   | FormDatumBS !BS.ByteString
@@ -94,12 +92,12 @@ instance Monoid FormDatum where
 data Form = Form
   { formData :: FormData
   , formPath :: FormPath
-  , formPrefix :: BS.ByteString
+  , formPathBS :: BS.ByteString
   , formJSON :: Maybe JSON.Value
   , formDatum :: FormDatum
   }
 
-makeHasRec ''Form ['formData, 'formPath, 'formDatum]
+makeHasRec ''Form ['formData, 'formPath, 'formPathBS, 'formDatum]
 
 initForm :: FormData -> Form
 initForm d = form where form = Form d [] "" (formDataJSON d) (getFormDatum form)
@@ -113,14 +111,14 @@ subForm :: FormKey -> Form -> Form
 subForm key form = form' where
   form' = form
     { formPath = formSubPath key $ formPath form
-    , formPrefix = formSubBS key $ formPrefix form
+    , formPathBS = formSubBS key $ formPathBS form
     , formJSON = formSubJSON key =<< formJSON form
     , formDatum = getFormDatum form'
     }
 
 formEmpty :: Form -> Bool
 formEmpty Form{ formJSON = Just _ } = False
-formEmpty Form{ formPrefix = p, formData = FormData{..} } =
+formEmpty Form{ formPathBS = p, formData = FormData{..} } =
   me formDataQuery || me formDataPost where
   me = not . Fold.any (sk . fst) . Map.lookupGE p
   sk s = p `BS.isPrefixOf` s && (l == BS.length s || BSC.index s l == '.')
@@ -139,11 +137,11 @@ jsonFormDatum :: Form -> FormDatum
 jsonFormDatum Form{ formJSON = j } = Fold.foldMap FormDatumJSON j
 
 queryFormDatum :: Form -> FormDatum
-queryFormDatum Form{ formData = FormData{ formDataQuery = m }, formPrefix = p } =
+queryFormDatum Form{ formData = FormData{ formDataQuery = m }, formPathBS = p } =
   Fold.foldMap (maybe (FormDatumJSON JSON.Null) FormDatumBS) $ Map.lookup p m
 
 postFormDatum :: Form -> FormDatum
-postFormDatum Form{ formData = FormData{ formDataPost = m }, formPrefix = p } =
+postFormDatum Form{ formData = FormData{ formDataPost = m }, formPathBS = p } =
   Fold.foldMap FormDatumBS $ Map.lookup p m
 
 getFormDatum :: Form -> FormDatum

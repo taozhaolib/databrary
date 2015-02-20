@@ -17,19 +17,22 @@ import qualified Text.Digestive as F
 import Databrary.Model.Enum
 import Databrary.View.Html
 import Databrary.Action
+import Databrary.Web.Form.View
+
+type FormErrors = ([Form
 
 absoluteRef :: T.Text -> F.View v -> T.Text
 absoluteRef ref F.View{ F.viewContext = [] } = ref
 absoluteRef ref F.View{ F.viewContext = ctx } =
   T.concat $ (concatMap (\x -> [x,"."]) ctx) ++ [ref]
 
-refId :: T.Text -> F.View v -> H.AttributeValue
-refId ref view = H.toValue $ absoluteRef ref view
+pathId :: FormPath -> H.AttributeValue
+pathId = H.toValue . formPathId
 
-label :: T.Text -> F.View v -> H.Html -> H.Html
-label ref view = H.label
+label :: FormPath -> H.Html -> H.Html
+label ref = H.label
   H.! HA.for ref'
-  where ref' = refId ref view
+  where ref' = pathId ref
 
 inputText :: T.Text -> F.View v -> H.Html
 inputText ref view = H.input

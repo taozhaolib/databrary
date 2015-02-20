@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, PatternGuards #-}
-module Databrary.Web.Deform
+module Databrary.Web.Form.Deform
   ( DeformT
   , FormErrors
   , runDeform
@@ -34,13 +34,10 @@ import qualified Network.URI as URI
 import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
 
-import Control.Has (view, peek, peeks)
+import Control.Has (peek, peeks)
 import Databrary.URL
 import Databrary.Web.Form
-
-type FormErrorMessage = T.Text
-type FormError = (FormPath, FormErrorMessage)
-type FormErrors = [FormError]
+import Databrary.Web.Form.Errors
 
 newtype DeformT m a = DeformT { runDeformT :: Form -> m (FormErrors, Maybe a) }
 
@@ -71,7 +68,7 @@ instance Monad m => MonadPlus (DeformT m) where
   DeformT a `mplus` DeformT b = DeformT $ \d -> do
     ar <- a d
     case ar of
-      ([], Just _) -> return ar
+      (er, Just _) | nullFormErrors er -> return ar
       _ -> b d
 
 instance (Applicative m, Monad m) => Alternative (DeformT m) where
@@ -96,22 +93,22 @@ instance Monad m => MonadWriter FormErrors (DeformT m) where
 
 runDeform :: Functor m => DeformT m a -> FormData -> m (Either FormErrors a)
 runDeform (DeformT fa) = fmap fr . fa . initForm where
-  fr ([], Just a) = Right a
+  fr (e, Just a) | nullFormErrors e = Right a
   fr (e, _) = Left e
 
-withSubDeform :: Monad m => FormKey -> DeformT m a -> DeformT m a
-withSubDeform = local . subForm
+withSubDeform :: (Functor m, Monad m) => FormKey -> DeformT m a -> DeformT m a
+withSubDeform k (DeformT a) = DeformT $ fmap (first (unsubFormErrors k)) . a . subForm k
 
 infixr 2 .:>
-(.:>) :: Monad m => T.Text -> DeformT m a -> DeformT m a
+(.:>) :: (Functor m, Monad m) => T.Text -> DeformT m a -> DeformT m a
 (.:>) = withSubDeform . FormField
 
 withSubDeforms :: (Functor m, Monad m) => DeformT m a -> DeformT m [a]
 withSubDeforms (DeformT a) = DeformT $
-  fmap (concat *** sequence) . mapAndUnzipM a . subForms
+  fmap (unsubFormsErrors *** sequence) . mapAndUnzipM a . subForms
 
 deformErrorWith :: Monad m => Maybe a -> FormErrorMessage -> DeformT m a
-deformErrorWith r e = DeformT $ \f -> return ([(view f, e)], r)
+deformErrorWith r e = DeformT $ \_ -> return (singletonFormError e, r)
 
 deformErrorDef :: Monad m => a -> FormErrorMessage -> DeformT m a
 deformErrorDef = deformErrorWith . Just

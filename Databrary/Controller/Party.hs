@@ -29,7 +29,7 @@ import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
-import Databrary.Web.Deform
+import Databrary.Web.Form.Deform
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 
