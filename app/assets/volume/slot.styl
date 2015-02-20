@@ -1,40 +1,87 @@
-
-.slot-player
-.slot-timeline
+.slot.frame
   margin-bottom b4
+  background-color white
+  box-shadow box-shadow-def
+  position relative
+  .slot-header.folder
+    &:before
+      top b4
+    span
+      text-transform uppercase
+      font-size b2
+
+//SLOT-HEADER
+.slot-header
+  width 100%
+  background mix(neutral51,white,50)
+  border-bottom 1px solid mix(neutral41,white,25)
+  height b1
+  padding-left b3
 
 .slot-download
   width 100%
   height 1
   position relative
-  .slot-download-link
-    position absolute
-    right 0
-    .download
-      margin-left b3 
+
+.slot-download-link
+  position absolute
+  right 0
+  .download
+    margin-left b3 
+
+//SLOT-TOOLBAR
+.slot-toolbar  
+  border-bottom 1px solid neutral53
+  padding b3
+  .float
+    float right
+  button,select,input
+    height 30px
+  button
+    border-radius 0
+    margin 0
+  button:first-of-type
+    border-top-left-radius b8
+    border-bottom-left-radius b8
+  button:last-of-type
+    border-top-right-radius b8
+    border-bottom-right-radius b8
+  select
+    margin 0
+    padding 0
+
+.slot-toolbar-select
+  width 280px
+  margin-left b8
 
 //SLOT-TIMELINE
 .slot-timeline
-  background-color white
-  box-shadow box-shadow-def
-  position relative
+  z-index 1
 
 .slot-timeline-selection
   height 0
   pointer-events none
   .selection
     background-color rgba(180,180,180,0.3)
-    height 100%
+    bottom 0
+    top 0
     position absolute
     min-width 1px
+    z-index 1
+    &.edit
+      top 45px
 
 .slot-timeline-temporal
+  position relative
   text-align center
   margin-top f3
+  width 100%
 
 .slot-timeline-control
-  display inline
-  width auto
+  position absolute
+  left 0
+  right 0
+  z-index 600
   button
     margin 0
     padding-top 0
@@ -57,8 +104,8 @@
   padding-right b1
   margin-right auto
   margin-left auto
-  margin-top f3
-  margin-bottom f3
+  margin-top 0
+  margin-bottom 0
   border-radius 0
   &.stop
     border-top-right-radius b1
@@ -71,18 +118,18 @@
   position absolute
   top 0
   right 0
-  margin-top f3
   margin-right f4
 
 .slot-timeline-ruler
+  position relative
   z-index 500
   width 100%
   box-shadow 0 b8 b8 -b8 black
-  height 2
+  height 3
   cursor default
 
 .slot-timeline-ruler-time
-  margin-top b1 + b8
+  margin-top 2
   font-size f23
 
   &.left
@@ -115,8 +162,9 @@
   bottom 2px
   min-width 3px
   z-index 50
-  background-color rgba(159,161,207,0.54)
-  border 1px #7ca19a solid
+  background-color green53
+  border 1px green43 solid
+  opacity 0.8
   
 .slot-track-asset-info
   padding b6
@@ -169,19 +217,12 @@
 .slot-timeline-now
   position absolute
   z-index 100
-  top 2 * b1
-  bottom 0%
+  bottom 0
+  top 0
   border-left 1px solid green
   transition left .05s linear
-
-  &:before
-    content ''
-    border-radius b1
-    size b3
-    position absolute
-    top -b3
-    left -b6
-    background-color green
+  &.edit
+    top 45px
 
 .slot-timeline-track
 .slot-tag-track
@@ -274,6 +315,7 @@
 
 //SLOT-PLAYER
 .slot-player
+  z-index 2
   dl > dd 
     margin-left 0
   select.add
@@ -283,11 +325,8 @@
 
 .player-main
   width 100%
-  background white
   padding b2
-  box-shadow box-shadow-def
   text-align center
-  position relative
 
   &:hover
     .player-main-float
@@ -296,12 +335,17 @@
 .player-main-viewport
   border-top 1px solid pale
   padding-top b3
-  .asset-display
-    img
-      max-height 800px
-    video
-      @media screen and (min-width: 520px)
-        min-width 480px
+
+.player-resize-bar
+  position relative
+  text-align center
+  cursor row-resize
+  height b23
+  margin-left -4%
+  margin-right -4%
+  margin-bottom -b6
+.player-resize-bar:active
+  border-top 2px solid red
 
 .player-main-float
   position absolute
@@ -319,6 +363,13 @@
   margin-bottom b4
   position relative
   width 100%
+  .sticky
+    position relative
+    top 0
+  .scroll
+    overflow-y auto
+    overflow-x hidden
+    height 180px
   dl 
     display block
   dt 
@@ -330,8 +381,27 @@
     display block
 
 .player-main-info-actions
-  position relative
-  float right
+  position absolute
+  top 0
+  right 0
+  background-color white
+  z-index 1
+  
+  button
+    height 24px
+    min-width 26px
+    background-position center center
+    background-repeat no-repeat
+    font-line b2
+    position relative
+    top -b6
+    padding 0 b8 
+    margin b6 b8
+
+.player-main-info-name
+  font-line 1
+  padding-bottom f2
+
   img.player-main-info-file-icon span.icon
     height 19px
     margin 0
@@ -342,11 +412,7 @@
     position relative
     top 0
     height b23
-
-.player-main-info-name
-  font-line 1
-  padding-bottom f2
-
+    
   .category
     text-transform capitalize
     font-weight bold
@@ -370,23 +436,25 @@
     float left
     margin-left b6
 
-.player-main-info-link
+.player-main-action-icon
   link-color orange
   display inline-block
   margin-left b8
+.player-main-action-word
+  float right
+
+.position-input
+  width 158px
 
 .player-main-drop
-  border b8 pale dashed
-  padding-top 1
-  padding-bottom 1
+  border 3px dashed pale
+  padding-top b2
+  padding-bottom b2
   width: 100%
   height: 100%
   
   &.over-zone
     background-color green51
-
-.save-slot
-  float right
   
 .player-excerpt-form
   margin-top b2

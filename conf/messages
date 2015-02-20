@@ -348,6 +348,7 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
+classification.excerpt.prompt=Choose additional sharing level...
 classification.excerpt.PRIVATE=No additional sharing
 classification.excerpt.RESTRICTED=Restricted: shared with appropriate participant release.
 classification.excerpt.SHARED=Shared: shared with authorized Databrary users for educational or research purposes.
@@ -443,7 +444,6 @@ tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
-tags.new.placeholder=Add new tag...
 
 # Access
 access.global.legend=Share this study
@@ -607,7 +607,7 @@ asset.restore=Paste removed "{0}".
 asset.remove.success=Removed "{0}" successfully.  You may restore it to this or another location.
 asset.remove.error=Unable to remove "{0}".
 asset.remove.confirm=Are you sure you want to remove this file?
-asset.add=Add a new file...
+asset.add=(new file)
 
 asset.display.unavailable=Preview unavailable
 asset.display.nopermission=You are not authorized to view this file

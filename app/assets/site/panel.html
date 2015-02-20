@@ -1,4 +1,4 @@
-<section class="panel ng-cloak" ng-class="getPanelClasses()" ng-show="enabled">
+<section class="panel ng-cloak" ng-class="id">
   <div class="wrap">
     <div class="row">
       <div class="col">
@@ -7,7 +7,7 @@
           {{::title}}
           <a ng-click="edit($event)" ng-if="edit"><span class="button green icon edit"></span></a>
         </h2>
-        <div folded panel-body></div>
+        <div ng-if="!folded" panel-body ng-transclude></div>
       </div>
     </div>
   </div>

@@ -741,9 +741,11 @@ app.factory('modelService', [
         slot.container.records.push(r);
     }
 
-    Slot.prototype.addRecord = function (r) {
+    Slot.prototype.addRecord = function (r, seg) {
+      if (!seg)
+        seg = this.segment;
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
+      return router.http(router.controllers.RecordApi.add, this.container.id, seg.format(), {record:r.id})
         .then(function (res) {
           recordAdd(s, r);
           return r.update(res.data);

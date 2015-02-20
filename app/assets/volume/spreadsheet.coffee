@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'spreadsheet', [
-  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout', '$document', '$location',
-  (constants, display, messages, tooltips, $compile, $templateCache, $timeout, $document, $location) ->
+  'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', '$compile', '$templateCache', '$timeout', '$document', '$location',
+  (constants, display, messages, tooltips, styles, $compile, $templateCache, $timeout, $document, $location) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
     byDefault = (a,b) -> +(a > b) || +(a == b) - 1
@@ -90,8 +90,6 @@ app.directive 'spreadsheet', [
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
-
-    selectStyles = document.head.appendChild(document.createElement('style')).sheet
 
     {
     restrict: 'E'
@@ -493,7 +491,7 @@ app.directive 'spreadsheet', [
               cell.classList.remove('saving')
               cell.classList.add('error')
               messages.addError
-                body: 'error' # FIXME
+                body: 'Error saving data' # FIXME
                 report: res
                 owner: cell
               return
@@ -836,8 +834,7 @@ app.directive 'spreadsheet', [
           return
 
         unselect = ->
-          while selectStyles.cssRules.length
-            selectStyles.deleteRule(0)
+          styles.clear()
 
           unedit()
           return
@@ -849,9 +846,9 @@ app.directive 'spreadsheet', [
           expand(info)
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
-              selectStyles.insertRule('.' + c + '{background-color:' +
+              styles.set('.' + c + '{background-color:' +
                 (if c.includes('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
-                ';\n text-}', selectStyles.cssRules.length)
+                ';\n text-}')
 
           edit(cell, info) if editing
           return
