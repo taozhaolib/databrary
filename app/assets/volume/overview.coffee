@@ -34,11 +34,13 @@ app.directive 'volumeOverview', [
     restrict: 'E'
     templateUrl: 'volume/overview.html'
     scope: false
-    link: ($scope) ->
-      generateSummary($scope.volume) unless $scope.volume.summary
+    link:
+      pre: ($scope) ->
+        generateSummary($scope.volume) unless $scope.volume.summary
 
-      $scope.shared = $scope.volume.access.some((a) -> a.children && a.party.id <= 0)
+        $scope.shared = $scope.volume.access.some((a) -> a.children && a.party.id <= 0)
+        console.log($scope.shared)
 
-      return
+        return
     }
 ]
