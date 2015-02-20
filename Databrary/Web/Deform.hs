@@ -15,7 +15,7 @@ module Databrary.Web.Deform
   ) where
 
 import Control.Applicative (Applicative(..), Alternative(..), (<$>), (<$), liftA2)
-import Control.Arrow (first, second, (***), left, right)
+import Control.Arrow (first, second, (***), left)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, unless)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
@@ -69,10 +69,10 @@ instance Monad m => Monad (DeformT m) where
 instance Monad m => MonadPlus (DeformT m) where
   mzero = DeformT $ \_ -> return (mempty, Nothing)
   DeformT a `mplus` DeformT b = DeformT $ \d -> do
-    ar@(_, ma) <- a d
-    case ma of
-      Nothing -> b d
-      Just _ -> return ar
+    ar <- a d
+    case ar of
+      ([], Just _) -> return ar
+      _ -> b d
 
 instance (Applicative m, Monad m) => Alternative (DeformT m) where
   empty = mzero

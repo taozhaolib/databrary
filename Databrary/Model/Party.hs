@@ -65,7 +65,7 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
   , ("url" JSON..=) <$> partyURL
   , "institution" JSON..= True <? isNothing partyAccount
   , ("email" JSON..=) <$> partyEmail p
-  , Just $ "permission" JSON..= partyPermission
+  , "permission" JSON..= partyPermission <? (partyPermission > PermissionREAD)
   ]
 
 changeParty :: AuditM c m => Party -> m ()

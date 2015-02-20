@@ -52,7 +52,6 @@ Executable databrary
     contravariant,
     blaze-markup,
     blaze-html,
-    digestive-functors,
     regex-posix,
     bcrypt,
     http-client
