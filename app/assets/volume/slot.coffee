@@ -374,7 +374,7 @@ app.controller('volume/slot', [
       storage.set('viewport-height', h)
 
     viewportMinHeight = 120
-    viewportHeight = parseInt(storage.get('viewport-height'), 10)
+    viewportHeight = parseInt(storage.get('viewport-height'), 10) || 360
     ### jshint ignore:start ###
     unless viewportHeight >= viewportMinHeight
       viewportHeight = viewportMinHeight
