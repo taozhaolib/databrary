@@ -143,12 +143,12 @@ app.controller('volume/slot', [
       return false if stayDirty()
 
       $scope.current = c
-      $scope.asset = c.asset if c.type == 'asset'
+      $scope.asset = c?.asset if !c || c.type == 'asset'
       searchLocation($location.replace())
       delete target.asset
       delete target.record
 
-      blank.fillData() if c == blank
+      blank.fillData() if blank && c == blank
       $scope.playing = 0
       finalizeSelection()
       true
@@ -202,13 +202,6 @@ app.controller('volume/slot', [
       searchLocation($location.replace())
       return
 
-    removed = (track) ->
-      return if track.asset || track.file
-      select() if track == $scope.current
-      blank = undefined if track == blank
-      $scope.tracks.remove(track)
-      return
-
     $scope.updateSelection = finalizeSelection = ->
       $scope.current.editExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
@@ -223,6 +216,13 @@ app.controller('volume/slot', [
         $scope.tracks.push(blank = new Track())
       select(blank)
       blank
+
+    removed = (track) ->
+      return if track.asset || track.file
+      select() if track == $scope.current
+      blank = undefined if track == blank
+      $scope.tracks.remove(track)
+      return
 
     class Track extends Store
       constructor: (asset) ->
