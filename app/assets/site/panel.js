@@ -1,8 +1,8 @@
 'use strict';
 
 app.directive('panel', [
-  'constantService',
-  function (constants) {
+  'constantService', '$location',
+  function (constants, $location) {
     var link = function ($scope, $element, $attrs, ctrl, transclude) {
       if (angular.isDefined($attrs.id)) {
         $scope.id = $attrs.id;
@@ -14,7 +14,13 @@ app.directive('panel', [
       $scope.title = constants.message($attrs.panelTitle);
       $scope.top = 'top' in $attrs;
       $scope.enabled = true;
-      $scope.edit = $attrs.editLink;
+      if ($attrs.editLink){
+        $scope.edit = function(event) {
+          $location.url($attrs.editLink);
+          event.stopPropagation();
+          return false;
+        };
+      }
 
       $scope.getPanelClasses = function () {
         var classes = {};
