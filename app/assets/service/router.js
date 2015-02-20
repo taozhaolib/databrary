@@ -320,7 +320,7 @@ app.provider('routerService', [
       resolve: {
         slot: [
           'pageService', function (page) {
-            var r = page.models.Volume.get(page.$route.current.params.vid);
+            var r = page.models.Volume.get(page.$route.current.params.vid, edit ? ['containers', 'records'] : []);
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,

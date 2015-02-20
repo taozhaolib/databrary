@@ -77,7 +77,7 @@
                   </div>
 
                   <div ng-switch-when="record">
-                    <ng-form name="current.form.measures">
+                    <ng-form name="form.measures">
                     <dl class="cf">
                       <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
@@ -92,7 +92,7 @@
                       </dt>
                     </dl>
                     </ng-form>
-                    <ng-form name="current.form.position">
+                    <ng-form name="form.position">
                     <validator name="position" label="position">
                       <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" placeholder="{{::'position.placeholder' | message}}">
                       &ndash;
@@ -139,16 +139,22 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline slot frame">
-          <div class="slot-toolbar" ng-if="editing">
+          <div class="slot-toolbar" ng-if="::editing">
             <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Add Excerpt</button>
             <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
-            <ng-form ng-if="current.excerpt.on" name="current.form.excerpt">
-              <select class="slot-toolbar-excerpt" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
+            <ng-form ng-if="current.excerpt.on" name="form.excerpt">
+              <select class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
-            <!--
-            <button ng-click="" class="mini" ng-class="{float:current.excerpt.on}">Add Record</button>
-            -->
-            <button ng-click="addBlank()" class="mini" ng-class="{float:current.excerpt.on}">Add File</button>
+            <button ng-if="!addRecord.options" ng-click="addRecord()" class="mini">Add Record</button>
+            <button ng-if="!!addRecord.options" ng-click="addRecord(null)" class="mini">Cancel</button>
+            <ng-form ng-if="!!addRecord.options" name="form.record">
+              <select class="slot-toolbar-select" name="record" ng-model="addRecord.select" ng-options="r as d for (r, d) in addRecord.options" ng-change="addRecord(addRecord.select)">
+                <option value="">Choose record...</option>
+              </select>
+            </ng-form>
+            <button ng-if="!!current.record && !current.pending" ng-click="current.remove()" class="mini">Remove Record</button>
+            <button ng-click="addBlank()" class="mini">Add File</button>
+            <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove File</button>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>

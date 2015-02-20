@@ -204,6 +204,7 @@ app.controller('volume/slot', [
 
     $scope.updateSelection = finalizeSelection = ->
       $scope.current.editExcerpt() if $scope.current?.excerpts
+      $scope.addRecord(null)
       for t in $scope.tags
         t.update()
       return
@@ -488,13 +489,13 @@ app.controller('volume/slot', [
       save: ->
         messages.clear(this)
         saves = []
-        if @form.measures.$dirty
+        if $scope.form.measures.$dirty
           saves.push @record.save({measures:@data.measures}).then () =>
-            @form.measures.$setPristine()
+            $scope.form.measures.$setPristine()
             return
-        if @form.position.$dirty
+        if $scope.form.position.$dirty
           saves.push slot.moveRecord(@rec, @rec.segment, @segment).then (r) =>
-            @form.position.$setPristine()
+            $scope.form.position.$setPristine()
             return unless r # nothing happened
             @segment = new Segment(r.segment)
             if @segment.empty
@@ -519,13 +520,13 @@ app.controller('volume/slot', [
       dragLeft: (event) ->
         @segment.l = positionOffset(event.clientX)
         if event.type != 'mousemove'
-          @form.position.$setDirty()
+          $scope.form.position.$setDirty()
         return
 
       dragRight: (event) ->
         @segment.u = positionOffset(event.clientX)
         if event.type != 'mousemove'
-          @form.position.$setDirty()
+          $scope.form.position.$setDirty()
         return
 
     placeRecords = () ->
@@ -543,6 +544,37 @@ app.controller('volume/slot', [
       for r in t
         r.sort byPosition
       $scope.records = t
+      return
+
+    $scope.addRecord = (r) ->
+      seg = getSelection()
+      if r == undefined
+        rs = {}
+        for ri, r of slot.volume.records
+          rs[ri] = r.displayName
+        for sr in records
+          if sr.segment.overlaps(seg)
+            delete rs[sr.record.id]
+        $scope.addRecord.options = rs
+        $scope.addRecord.select = null
+      else
+        $scope.addRecord.options = undefined
+        if r
+          slot.addRecord(slot.volume.records[r], seg).then (rec) ->
+              r = new Record
+                id: rec.id
+                record: rec
+                segment: seg
+              records.push(r)
+              placeRecords()
+              select(r)
+              return
+            , (res) ->
+              messages.addError
+                body: 'Error adding record'
+                report: res
+                owner: $scope
+              return
       return
 
     $scope.positionBackgroundStyle = (l, i) ->
