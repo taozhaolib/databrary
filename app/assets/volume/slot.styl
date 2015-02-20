@@ -53,6 +53,9 @@
     margin-left b8
 
 //SLOT-TIMELINE
+.slot-timeline
+  z-index 1
+
 .slot-timeline-selection
   height 0
   pointer-events none
@@ -310,6 +313,7 @@
 
 //SLOT-PLAYER
 .slot-player
+  z-index 2
   dl > dd 
     margin-left 0
   select.add
@@ -334,6 +338,12 @@
   position relative
   text-align center
   cursor row-resize
+  height b23
+  margin-left -4%
+  margin-right -4%
+  margin-bottom -b6
+.player-resize-bar:active
+  border-top 2px solid red
 
 .player-main-float
   position absolute
