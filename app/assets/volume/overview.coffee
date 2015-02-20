@@ -39,7 +39,6 @@ app.directive 'volumeOverview', [
         generateSummary($scope.volume) unless $scope.volume.summary
 
         $scope.shared = $scope.volume.access.some((a) -> a.children && a.party.id <= 0)
-        console.log($scope.shared)
 
         return
     }
