@@ -16,7 +16,7 @@ app.directive('panel', [
 
     return {
       restrict: 'E',
-      scope: {},
+      scope: true,
       templateUrl: 'site/panel.html',
       transclude: true,
       replace: true,
