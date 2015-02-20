@@ -4,7 +4,10 @@
       <div class="col">
         <hgroup>
           <h1 class="view-context smaller" message="edit"></h1>
-          <h2 class="view-title smaller" ng-bind="volume.alias || volume.name"></h2>
+          <h2 class="view-title smaller">
+            <span ng-bind="volume.alias || volume.name"></span>
+            <a ng-href="{{::volume.route()}}"><span class="button green icon view-icon"></span></a>
+          </h2>
         </hgroup>
 
         <h3 class="view-title smaller" id="goto-sst" message="materials.title"></h3>
