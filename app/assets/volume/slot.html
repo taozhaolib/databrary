@@ -132,8 +132,8 @@
                 </button>
               </div>
             </li>
-            <li class="panel-tags-item" ng-if="::page.models.Login.isAuthorized()">
-              <tag-add></tag-add>
+            <li class="panel-tags-item" ng-if="::editing || page.models.Login.isAuthorized()">
+              <tag-add placeholder="Add new {{::editing ? 'keyword' : 'tag'}}..."></tag-add>
             </li>
           </ul>
         </div>
@@ -145,11 +145,10 @@
             <ng-form ng-if="current.excerpt.on" name="current.form.excerpt">
               <select class="slot-toolbar-excerpt" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
-            <button ng-click="" class="mini" ng-class="{float:current.excerpt.on}">Add Keyword</button>
+            <!--
             <button ng-click="" class="mini" ng-class="{float:current.excerpt.on}">Add Record</button>
+            -->
             <button ng-click="addBlank()" class="mini" ng-class="{float:current.excerpt.on}">Add File</button>
-            <input ng-if="new_keyword"></input>
-            <input ng-if="new_record"></input>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>

@@ -444,7 +444,6 @@ tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
-tags.new.placeholder=Add new tag...
 
 # Access
 access.global.legend=Share this study
