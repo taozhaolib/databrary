@@ -4,12 +4,13 @@ module Databrary.Web.Route
 
   , maybe
   , method
+  , final
   , text
   , fixed
   , switch
   , path
   , read
-  , reader
+  , readText
   , Routable(..)
   , query
 
@@ -18,11 +19,11 @@ module Databrary.Web.Route
 
 import Prelude hiding (read, maybe)
 
-import Control.Applicative (Applicative, Alternative, (<$))
-import Control.Monad (MonadPlus, mzero, mfilter)
-import Control.Monad.Trans.Class (lift)
-import Control.Monad.Reader (MonadReader, ReaderT(..), asks)
-import Control.Monad.State (MonadState, StateT(..))
+import Control.Applicative (Applicative(..), Alternative(..), (<$), (<$>))
+import Control.Arrow (first)
+import Control.Monad ((<=<), MonadPlus(..), mzero, mfilter, ap, join, guard)
+import Control.Monad.Reader.Class (MonadReader(..), asks)
+import Control.Monad.State.Class (MonadState(..))
 import qualified Data.ByteString as BS
 import Data.Int (Int32, Int16)
 import Data.Maybe (fromMaybe)
@@ -33,17 +34,51 @@ import Network.HTTP.Types (Method)
 import qualified Network.Wai as Wai
 import Text.Read (readMaybe)
 
-newtype RouteM a = RouteM { runRoute :: ReaderT Wai.Request (StateT [T.Text] Maybe) a }
-  deriving (Functor, Monad, MonadPlus, Applicative, Alternative, MonadReader Wai.Request, MonadState [T.Text])
+newtype RouteM a = RouteM { runRouteM :: Wai.Request -> [T.Text] -> Maybe (a, [T.Text]) }
+
+lpt :: e -> a -> (a, e)
+lpt e a = (a, e)
+
+instance Functor RouteM where
+  fmap f (RouteM a) = RouteM $ \q -> fmap (first f) . a q
+
+instance Applicative RouteM where
+  pure = return
+  (<*>) = ap
+
+instance Monad RouteM where
+  return a = RouteM $ \_ p -> Just (a, p)
+  RouteM x >>= f = RouteM $ \q -> 
+    let rf (vx, px) = runRouteM (f vx) q px in rf <=< x q
+  fail _ = mzero
+
+instance MonadPlus RouteM where
+  mzero = RouteM $ \_ _ -> Nothing
+  RouteM a `mplus` RouteM b = RouteM $ \q t ->
+    a q t `mplus` b q t
+
+instance Alternative RouteM where
+  empty = mzero
+  (<|>) = mplus
+
+instance MonadReader Wai.Request RouteM where
+  ask = RouteM $ \q -> Just . (,) q
+  reader f = RouteM $ \q -> Just . (,) (f q)
+  local f (RouteM a) = RouteM $ a . f
+
+instance MonadState [T.Text] RouteM where
+  get = RouteM $ \_ -> Just . join (,)
+  put t = RouteM $ \_ _ -> Just ((), t)
+  state f = RouteM $ \_ -> Just . f
 
 maybe :: Maybe a -> RouteM a
-maybe = RouteM . lift . lift
+maybe r = RouteM $ \_ t -> fmap (lpt t) r
 
 method :: RouteM Method
 method = asks Wai.requestMethod
 
 text :: RouteM T.Text
-text = RouteM $ lift $ StateT f where
+text = RouteM $ \_ -> f where
   f (p:l) = Just (p, l)
   f [] = Nothing
 
@@ -57,38 +92,39 @@ switch :: Eq a => [(a, RouteM b)] -> a -> RouteM b
 switch l x = fromMaybe mzero $ lookup x l
 
 path :: RouteM [T.Text]
-path = RouteM $ lift $ StateT $ \p -> Just (p, [])
+path = RouteM $ \_ p -> Just (p, [])
+
+final :: RouteM ()
+final = path >>= guard . null
 
 read :: Read a => RouteM a
 read = maybe . readMaybe . T.unpack =<< text
 
-reader :: Text.Reader a -> RouteM a
-reader r = either (const mzero) (return . fst) . r =<< text
+readText :: Text.Reader a -> RouteM a
+readText r = either (const mzero) (return . fst) . r =<< text
 
 class Routable a where
   route :: RouteM a
   toRoute :: a -> [T.Text]
 
 instance Routable Integer where
-  route = reader (Text.signed Text.decimal)
+  route = readText (Text.signed Text.decimal)
   toRoute  = return . T.pack . show
 
 instance Routable Int where
-  route = reader (Text.signed Text.decimal)
+  route = readText (Text.signed Text.decimal)
   toRoute  = return . T.pack . show
 
 instance Routable Int32 where
-  route = reader (Text.signed Text.decimal)
+  route = readText (Text.signed Text.decimal)
   toRoute  = return . T.pack . show
 
 instance Routable Int16 where
-  route = reader (Text.signed Text.decimal)
+  route = readText (Text.signed Text.decimal)
   toRoute  = return . T.pack . show
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString
 
 routeRequest :: RouteM a -> Wai.Request -> Maybe a
-routeRequest r q = case runStateT (runReaderT (runRoute r) q) (Wai.pathInfo q) of
-  Just (a, []) -> Just a
-  _ -> Nothing
+routeRequest (RouteM r) q = fst <$> r q (Wai.pathInfo q)

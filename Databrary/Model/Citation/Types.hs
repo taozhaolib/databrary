@@ -9,13 +9,13 @@ import Data.Maybe (catMaybes)
 import qualified Data.Text as T
 
 import qualified Databrary.JSON as JSON
-import Databrary.URL (URI)
+import Databrary.Model.URL (URI)
 
 data Citation = Citation
   { citationHead :: T.Text
-  , citationTitle :: Maybe T.Text
   , citationURL :: Maybe URI
   , citationYear :: Maybe Int16
+  , citationTitle :: Maybe T.Text
   }
 
 instance JSON.ToJSON Citation where

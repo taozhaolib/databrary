@@ -10,12 +10,12 @@ module Databrary.View.Form
   , renderForm
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Trans.Control (liftWith)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Foldable as Fold
-import Data.Maybe (isJust)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Text.Blaze.Internal as M
@@ -45,8 +45,6 @@ value = do
     FormDatumJSON _ -> Nothing -- that's weird
     FormDatumBS b -> BS.null b ?!> b
 
-type Field = H.AttributeValue -> Maybe BS.ByteString -> H.Html
-
 errorList :: [FormErrorMessage] -> H.Html
 errorList [] = mempty
 errorList err =
@@ -60,25 +58,29 @@ errorLists err =
     H.dt $ H.toHtml (formPathText p)
     H.dd H.! HA.class_ "error" $ H.toHtml e) err
 
-label :: H.AttributeValue -> H.Html -> H.Html
-label ref = H.label
+_label :: H.AttributeValue -> H.Html -> H.Html
+_label ref = H.label
   H.! HA.for ref
+
+type Field = H.AttributeValue -> Maybe BS.ByteString -> H.Html
 
 field :: T.Text -> Field -> FormHtml
 field k sub = k .:> do
   ref <- pathId
   err <- formViewErrors
   val <- value
-  lift $ label ref $ do
+  lift $ H.label $ do
+    H.toHtml k
     sub ref val
     errorList err
+    H.br
 
-inputText :: Field
-inputText ref val = H.input
+inputText :: H.ToValue a => Maybe a -> Field
+inputText val ref dat = H.input
   H.! HA.type_ "text"
   H.! HA.id    ref
   H.! HA.name  ref
-  $? (fmap (flip (H.!) . HA.value . byteStringValue) val)
+  $? (flip (H.!) . HA.value <$> (fmap byteStringValue dat <|> fmap H.toValue val))
 
 inputPassword :: Field
 inputPassword ref _ = H.input
@@ -86,24 +88,26 @@ inputPassword ref _ = H.input
   H.! HA.id    ref
   H.! HA.name  ref
 
-inputCheckbox :: Field
-inputCheckbox ref val = H.input
+inputCheckbox :: Bool -> Field
+inputCheckbox val ref dat = H.input
   H.! HA.type_ "checkbox"
   H.! HA.id    ref
   H.! HA.name  ref
-  H.!? (isJust val, HA.checked "checked")
+  H.!? (maybe val (const True) dat, HA.checked "checked")
 
-inputSelect :: H.ToMarkup b => [(BS.ByteString, b)] -> Field
-inputSelect choices ref val = H.select
+inputSelect :: H.ToMarkup b => Maybe BS.ByteString -> [(BS.ByteString, b)] -> Field
+inputSelect val choices ref dat = H.select
   H.! HA.id   ref
   H.! HA.name ref
   $ mapM_ (\(v, c) -> H.option
     H.!  HA.value (byteStringValue v)
-    H.!? (Fold.any (v ==) val, HA.selected "selected")
+    H.!? (Fold.any (v ==) (dat <|> val), HA.selected "selected")
     $ H.toHtml c) choices
 
-inputEnum :: forall a . DBEnum a => a -> Field
-inputEnum _ = inputSelect $ map (\(x, v) -> (BSC.pack $ show $ fromEnum (x :: a), v)) pgEnumValues
+inputEnum :: forall a . DBEnum a => Maybe a -> Field
+inputEnum val =
+  inputSelect (bshow <$> val) $ map (\(x, v) -> (bshow (x :: a), v)) pgEnumValues
+  where bshow = BSC.pack . show . fromEnum
 
 renderForm :: RouteAction q -> FormHtml -> FormHtml
 renderForm act form =

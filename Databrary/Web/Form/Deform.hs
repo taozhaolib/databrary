@@ -35,7 +35,7 @@ import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
 
 import Control.Has (peek, peeks)
-import Databrary.URL
+import Databrary.Model.URL
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 
@@ -176,6 +176,7 @@ instance Deform String where
 
 instance Deform Bool where
   deform = deformParse False fv where
+    fv FormDatumNone = return False
     fv (FormDatumBS "true") = return True
     fv (FormDatumBS "false") = return False
     fv (FormDatumBS "on") = return True

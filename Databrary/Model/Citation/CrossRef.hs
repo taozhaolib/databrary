@@ -18,7 +18,7 @@ import qualified Network.URI as URI
 import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Client
-import Databrary.URL
+import Databrary.Model.URL
 import Databrary.Model.Citation.Types
 
 crossRefUrl :: HC.Request
@@ -36,9 +36,9 @@ parseCitation :: JSON.Value -> JSON.Parser Citation
 parseCitation = JSON.withObject "citation" $ \o ->
   Citation
     <$> o JSON..:? "head" JSON..!= ""
-    <*> o JSON..:? "title"
     <*> (Just <$> (o JSON..: "DOI" >>= parseDOI))
     <*> optional (o JSON..: "issued" >>= (JSON..: "date-parts") >>= (JSON..! 0) >>= (JSON..! 0))
+    <*> o JSON..:? "title"
   where
   parseDOI d = hdlURL d <? validHDL d
 

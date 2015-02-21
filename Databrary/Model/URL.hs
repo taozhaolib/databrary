@@ -1,14 +1,36 @@
-module Databrary.URL
+{-# LANGUAGE TemplateHaskell, DataKinds #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+module Databrary.Model.URL
   ( URI
   , validHDL
   , hdlURL
   , parseURL
   ) where
 
+import Data.Maybe (fromMaybe)
+import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
+import Language.Haskell.TH.Lift (deriveLiftMany)
+
 import Control.Monad (guard)
 import Data.Char (isDigit)
 import Data.Maybe (isNothing)
 import Network.URI
+
+toPG :: URI -> String
+toPG u = uriToString id u ""
+
+fromPG :: String -> URI
+fromPG u = fromMaybe (error $ "pgDecode URI: " ++ u) $ parseURI u
+
+instance PGParameter "text" URI where
+  pgEncode t = pgEncode t . toPG
+  pgEncodeValue e t = pgEncodeValue e t . toPG
+  pgLiteral t = pgLiteral t . toPG
+instance PGColumn "text" URI where
+  pgDecode t = fromPG . pgDecode t
+  pgDecodeValue e t = fromPG . pgDecodeValue e t
+
+deriveLiftMany [''URIAuth, ''URI]
 
 validHDL :: String -> Bool
 validHDL = v0 (0 :: Int) where

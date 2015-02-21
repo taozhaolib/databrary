@@ -16,7 +16,6 @@ import qualified Data.Text.Encoding as TE
 import Control.Applicative.Ops
 import Control.Has (view)
 import Databrary.Action
-import Databrary.Web.Form
 import Databrary.Web.Cookie
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
@@ -35,16 +34,16 @@ loginAccount auth su = do
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 
-displayLogin :: FormHtml
-displayLogin = renderLogin (postLogin False)
+htmlLogin :: FormHtml
+htmlLogin = renderLogin (postLogin False)
 
 viewLogin :: AppRAction
 viewLogin = action GET ["login"] $
-  okResponse [] $ blankFormView displayLogin
+  okResponse [] $ blankFormView htmlLogin
 
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
-  (Just auth, su) <- runForm (api ?!> displayLogin) $ do
+  (Just auth, su) <- runForm (api ?!> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
     superuser <- "superuser" .:> deform

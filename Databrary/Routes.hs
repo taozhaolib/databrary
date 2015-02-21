@@ -18,24 +18,30 @@ import Databrary.Controller.Static
 
 act :: RouteAction q -> R.RouteM (Action q)
 act ra = do
+  R.final
   _ <- mfilter (actionMethod ra ==) R.method
   return $ routeAction ra
 
 routes :: R.RouteM AppAction
 routes = do
   api <- True <$ R.fixed "api" <|> return False
+  let
+    isapi = guard api
+    html = guard (not api)
   msum 
-    [ "login" >> (guard (not api) >> act viewLogin)
-                                 <|> act (postLogin api)
-    , R.route >>= \p ->              act (viewParty api p)
-                                 <|> act (postParty api p)
-    , "party" >>                     act (createParty api)
-                                 <|> act (searchParty api)
-    , R.route >>= \v ->              act (viewVolume api v)
+    [ "login" >>             (html >> act viewLogin)
+                                  <|> act (postLogin api)
+    , R.route >>= \p ->               act (viewParty api p)
+                                  <|> act (postParty api p)
+               <|> (html >> "edit" >> act (viewPartyForm p))
+    , "party" >>                      act (createParty api)
+                                  <|> act (searchParty api)
+    , R.route >>= \v ->               act (viewVolume api v)
     , R.route >>= \c ->
         R.route >>= \a ->
-          "download" >>              act (downloadSlotAsset c a)
-    , R.route >>= \r ->              act (viewRecord api r)
-    , guard api >> "cite" >>         act getCitation
-    , "public" >> R.route >>=        act . staticPublicFile
+               (html >> "download" >> act (downloadSlotAsset c a))
+    , R.route >>= \r ->               act (viewRecord api r)
+
+    , isapi >> "cite" >>              act getCitation
+    , html >> "public" >> R.route >>= act . staticPublicFile
     ]

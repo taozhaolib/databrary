@@ -8,6 +8,6 @@ import Databrary.View.Form
 
 renderLogin :: RouteAction q -> FormHtml
 renderLogin act = renderForm act $ do
-  field "email" inputText
+  field "email" $ inputText (Nothing :: Maybe String)
   field "password" inputPassword
-  field "superuser" inputCheckbox
+  field "superuser" $ inputCheckbox False

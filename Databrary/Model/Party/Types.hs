@@ -16,6 +16,7 @@ import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Control.Has (makeHasRec)
+import Databrary.Model.URL (URI)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
@@ -26,7 +27,7 @@ data Party = Party
   { partyId :: Id Party
   , partyName :: T.Text
   , partyAffiliation :: Maybe T.Text
-  , partyURL :: Maybe T.Text
+  , partyURL :: Maybe URI
   , partyAccount :: Maybe Account
   , partyPermission :: Permission
   }

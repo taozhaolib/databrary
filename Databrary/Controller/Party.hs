@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Party
   ( viewParty
+  , viewPartyForm
   , postParty
   , createParty
   , searchParty
@@ -10,6 +11,7 @@ import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
 import Control.Monad (unless)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
@@ -28,19 +30,26 @@ import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
+import qualified Databrary.Web.Route as R
 import Databrary.Web.Form.Deform
 import Databrary.Web.Form.View (blankFormView)
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.View.Form (FormHtml)
+import Databrary.View.Party
 
-withParty :: Maybe Permission -> Id Party -> (Party -> AuthAction) -> AppAction
-withParty Nothing i f = withAuth $ do
-  u <- peek
-  unless (partyId u == i) $ result =<< forbiddenResponse
-  f u
-withParty (Just p) i f = withAuth $
+instance R.Routable (Maybe (Id Party)) where
+  route = Just <$> R.route <|> Nothing <$ "profile"
+  toRoute (Just i) = R.toRoute i
+  toRoute Nothing = ["profile"]
+
+withParty :: Maybe Permission -> Maybe (Id Party) -> (Party -> AuthAction) -> AppAction
+withParty (Just p) (Just i) f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
+withParty _ mi f = withAuth $ do
+  u <- peek
+  unless (Fold.all (partyId u ==) mi) $ result =<< forbiddenResponse
+  f u
 
 partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 partyJSONField p "parents" _ =
@@ -64,7 +73,7 @@ displayParty :: Maybe JSON.Query -> Party -> AuthAction
 displayParty (Just q) p = okResponse [] =<< partyJSONQuery p q
 displayParty Nothing p = okResponse [] $ partyName p -- TODO
 
-viewParty :: Bool -> Id Party -> AppRAction
+viewParty :: Bool -> Maybe (Id Party) -> AppRAction
 viewParty api i = action GET (apiRoute api $ toRoute i) $ do
   q <- peeks Wai.queryString
   withParty (Just PermissionNONE) i $
@@ -91,13 +100,18 @@ partyForm p = do
     , partyURL = url
     }
 
-htmlPartyForm :: Maybe (Id Party) -> FormHtml
-htmlPartyForm i = undefined (maybe (createParty False) (postParty False) i)
+htmlPartyForm :: Maybe (Party) -> FormHtml
+htmlPartyForm p = renderPartyForm (maybe (createParty False) (postParty False . Just . partyId) p) p
 
-postParty :: Bool -> Id Party -> AppRAction
+viewPartyForm :: Maybe (Id Party) -> AppRAction
+viewPartyForm i = action GET (toRoute i ++ ["edit"]) $
+  withParty (Just PermissionADMIN) i $
+    okResponse [] . blankFormView . htmlPartyForm . Just
+
+postParty :: Bool -> Maybe (Id Party) -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
   withParty (Just PermissionADMIN) i $ \p -> do
-    p' <- runForm (api ?!> htmlPartyForm (Just i)) $ partyForm p
+    p' <- runForm (api ?!> htmlPartyForm (Just p)) $ partyForm p
     changeParty p'
     displayParty ([] <? api) p'
 
@@ -123,7 +137,7 @@ partySearchForm = PartyFilter
   <*> pure Nothing
 
 htmlPartySearchForm :: PartyFilter -> FormHtml
-htmlPartySearchForm pf = undefined (searchParty False)
+htmlPartySearchForm = renderPartySearchForm (searchParty False)
 
 searchParty :: Bool -> AppRAction
 searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
