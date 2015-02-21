@@ -1,61 +1,82 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 module Databrary.Web.Form.View
-  ( FormView
+  ( FormViewT
   , runFormView
+  , blankFormView
   , (.:>) 
   , formViewErrors
   , allFormViewErrors
   ) where
 
-import Control.Applicative (Applicative(..))
+import Control.Applicative (Applicative(..), (<$>))
 import Control.Arrow (first, second)
-import Control.Monad (ap, join)
+import Control.Monad (ap, join, liftM)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.State (MonadState(..))
+import Control.Monad.Trans.Class (MonadTrans(..))
+import Control.Monad.Trans.Control (MonadTransControl(..))
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 
-newtype FormView a = FormView { unFormView :: Form -> FormErrors -> (a, FormErrors) }
+newtype FormViewT m a = FormViewT { runFormViewT :: Form -> FormErrors -> m (a, FormErrors) }
 
-instance Functor FormView where
-  fmap f (FormView v) = FormView $ \d -> first f . v d
+lpt :: e -> a -> (a, e)
+lpt e a = (a, e)
 
-instance Applicative FormView where
-  pure = return
+instance MonadTrans FormViewT where
+  lift m = FormViewT $ \_ e ->
+    liftM (lpt e) m
+
+instance MonadTransControl FormViewT where
+  type StT FormViewT a = (a, FormErrors)
+  liftWith f = FormViewT $ \d e ->
+    liftM (lpt e) $ f $ \t -> runFormViewT t d e
+  restoreT m = FormViewT $ \_ _ -> m
+
+instance Functor m => Functor (FormViewT m) where
+  fmap f (FormViewT v) = FormViewT $ \d ->
+    fmap (first f) . v d
+
+instance (Applicative m, Monad m) => Applicative (FormViewT m) where
+  pure a = FormViewT $ \_ e -> pure (a, e)
   (<*>) = ap
 
-instance Monad FormView where
-  return a = FormView $ \_ -> (,) a
-  x >>= f = FormView $ \d e ->
-    let run v = unFormView v d
-        (rx, ex) = run x e in run (f rx) ex
+instance Monad m => Monad (FormViewT m) where
+  return a = FormViewT $ \_ e -> return (a, e)
+  FormViewT x >>= f = FormViewT $ \d e -> do
+    (rx, ex) <- x d e
+    runFormViewT (f rx) d ex
+  fail e = FormViewT $ \_ _ -> fail e
 
-instance MonadReader Form FormView where
-  ask = FormView (,)
-  reader f = FormView $ (,) . f
-  local f (FormView a) = FormView $ a . f
+instance Monad m => MonadReader Form (FormViewT m) where
+  ask = FormViewT $ \d -> return . (,) d
+  reader f = FormViewT $ \d -> return . (,) (f d)
+  local f (FormViewT a) = FormViewT $ a . f
 
-instance MonadState FormErrors FormView where
-  get = FormView $ \_ -> join (,)
-  put e = FormView $ \_ _ -> ((), e)
-  state f = FormView $ \_ -> f
+instance Monad m => MonadState FormErrors (FormViewT m) where
+  get = FormViewT $ \_ -> return . join (,)
+  put e = FormViewT $ \_ _ -> return ((), e)
+  state f = FormViewT $ \_ -> return . f
 
-runFormView :: FormView a -> FormData -> FormErrors -> a
-runFormView (FormView f) = (fst .) . f . initForm
+runFormView :: Functor m => FormViewT m a -> FormData -> FormErrors -> m a
+runFormView (FormViewT f) d = fmap fst . f (initForm d)
 
-withSubFormView :: FormKey -> FormView a -> FormView a
-withSubFormView k (FormView a) = FormView $ \d e ->
-  second (setSubFormErrors e k) $ a (subForm k d) (subFormErrors k e)
+blankFormView :: Functor m => FormViewT m a -> m a
+blankFormView f = runFormView f mempty mempty
+
+withSubFormView :: Functor m => FormKey -> FormViewT m a -> FormViewT m a
+withSubFormView k (FormViewT a) = FormViewT $ \d e ->
+  second (setSubFormErrors e k) <$> a (subForm k d) (subFormErrors k e)
 
 infixr 2 .:>
-(.:>) :: T.Text -> FormView a -> FormView a
+(.:>) :: Functor m => T.Text -> FormViewT m a -> FormViewT m a
 (.:>) = withSubFormView . FormField
 
-formViewErrors :: FormView [FormErrorMessage]
+formViewErrors :: Monad m => FormViewT m [FormErrorMessage]
 formViewErrors = state $ \e -> (formErrors e, e{ formErrors = [] }) 
 
-allFormViewErrors :: FormView [(FormPath, FormErrorMessage)]
+allFormViewErrors :: Monad m => FormViewT m [(FormPath, FormErrorMessage)]
 allFormViewErrors = state $ \e -> (allFormErrors e, mempty)

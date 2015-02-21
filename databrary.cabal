@@ -50,6 +50,7 @@ Executable databrary
     warp,
     exceptions,
     contravariant,
+    monad-control,
     blaze-markup,
     blaze-html,
     regex-posix,

@@ -16,7 +16,10 @@ import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
 import Databrary.Web.Form (getFormData, FormData)
-import Databrary.Web.Form.Deform
+import Databrary.Web.Form.Deform (DeformT, runDeform, deformRegex)
+import Databrary.Web.Form.View (runFormView)
+import Databrary.Web.Form.Errors (FormErrors)
+import Databrary.View.Form (FormHtml)
 
 apiFormErrors :: ActionM c m => FormErrors -> m Response
 apiFormErrors = returnResponse badRequest400 [] . JSON.toJSON
@@ -30,10 +33,10 @@ handleForm re = either (result <=< re) return
 handleFormErrors :: (ActionM c m, MonadIO m) => Maybe (FormErrors -> Html.Html) -> Either FormErrors a -> m a
 handleFormErrors = handleForm . maybe apiFormErrors htmlFormErrors
 
-runForm :: (ActionM q m, MonadIO m) => Maybe (FormData -> FormErrors -> Html.Html) -> DeformT m a -> m a
+runForm :: (ActionM q m, MonadIO m) => Maybe FormHtml -> DeformT m a -> m a
 runForm mf fa = do
   fd <- getFormData
-  handleFormErrors (fmap ($ fd) mf) =<< runDeform fa fd
+  handleFormErrors (fmap (\hv -> runFormView hv fd) mf) =<< runDeform fa fd
 
 
 emailRegex :: Regex.Regex

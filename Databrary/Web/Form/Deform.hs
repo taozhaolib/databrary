@@ -1,7 +1,6 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards #-}
+{-# LANGUAGE OverloadedStrings, PatternGuards, TypeFamilies #-}
 module Databrary.Web.Form.Deform
   ( DeformT
-  , FormErrors
   , runDeform
   , (.:>)
   , withSubDeforms
@@ -19,6 +18,7 @@ import Control.Arrow (first, second, (***), left)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, unless)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
+import Control.Monad.Trans.Control (MonadTransControl(..))
 import Control.Monad.Writer.Class (MonadWriter(..))
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
@@ -42,7 +42,14 @@ import Databrary.Web.Form.Errors
 newtype DeformT m a = DeformT { runDeformT :: Form -> m (FormErrors, Maybe a) }
 
 instance MonadTrans DeformT where
-  lift m = DeformT $ \_ -> ((,) mempty . Just) `liftM` m
+  lift m = DeformT $ \_ ->
+    liftM ((,) mempty . Just) m
+
+instance MonadTransControl DeformT where
+  type StT DeformT a = (FormErrors, Maybe a)
+  liftWith f = DeformT $ \d ->
+    liftM ((,) mempty . Just) $ f $ \t -> runDeformT t d
+  restoreT m = DeformT $ \_ -> m
 
 instance Functor m => Functor (DeformT m) where
   fmap f (DeformT m) = DeformT $ \d ->

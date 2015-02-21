@@ -2,6 +2,7 @@
 module Databrary.Web.Form 
   ( FormKey(..)
   , FormPath
+  , formPathText
   , FormData
   , getFormData
   , FormDatum(..)
@@ -68,7 +69,7 @@ instance Has T.Text FormKey where
   view (FormField t) = t
   view (FormIndex i) = T.pack $ show i
 
-dotsBS :: [BS.ByteString]  -> BS.ByteString
+dotsBS :: [BS.ByteString] -> BS.ByteString
 dotsBS = BS.intercalate (BSC.singleton '.')
 
 dotBS :: BS.ByteString -> BS.ByteString -> BS.ByteString
@@ -78,6 +79,9 @@ dotBS a b
 
 formSubBS :: FormKey -> BS.ByteString -> BS.ByteString
 formSubBS k b = b `dotBS` view k
+
+formPathText :: FormPath -> T.Text
+formPathText = T.intercalate (T.singleton '.') . map view
 
 data FormDatum
   = FormDatumNone
@@ -90,7 +94,7 @@ instance Monoid FormDatum where
   mappend x _ = x
 
 data Form = Form
-  { formData :: FormData
+  { formData :: !FormData
   , formPath :: FormPath
   , formPathBS :: BS.ByteString
   , formJSON :: Maybe JSON.Value

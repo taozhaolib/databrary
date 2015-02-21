@@ -13,7 +13,6 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Network.Wai as Wai
-import qualified Text.Blaze.Html5 as Html
 
 import Control.Applicative.Ops
 import Control.Has (view, peek, peeks)
@@ -30,8 +29,10 @@ import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Web.Form.Deform
+import Databrary.Web.Form.View (blankFormView)
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
+import Databrary.View.Form (FormHtml)
 
 withParty :: Maybe Permission -> Id Party -> (Party -> AuthAction) -> AppAction
 withParty Nothing i f = withAuth $ do
@@ -90,8 +91,8 @@ partyForm p = do
     , partyURL = url
     }
 
-htmlPartyForm :: Maybe (Id Party) -> FormData -> FormErrors -> Html.Html
-htmlPartyForm i fd fe = undefined (maybe (createParty False) (postParty False) i)
+htmlPartyForm :: Maybe (Id Party) -> FormHtml
+htmlPartyForm i = undefined (maybe (createParty False) (postParty False) i)
 
 postParty :: Bool -> Id Party -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
@@ -121,8 +122,8 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-htmlPartySearchForm :: PartyFilter -> FormData -> FormErrors -> Html.Html
-htmlPartySearchForm pf fd fe = undefined (searchParty False)
+htmlPartySearchForm :: PartyFilter -> FormHtml
+htmlPartySearchForm pf = undefined (searchParty False)
 
 searchParty :: Bool -> AppRAction
 searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
@@ -130,4 +131,4 @@ searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   p <- findParties pf limit offset
   if api
     then okResponse [] $ JSON.toJSON $ map partyJSON p
-    else okResponse [] $ htmlPartySearchForm pf mempty mempty
+    else okResponse [] $ blankFormView $ htmlPartySearchForm pf

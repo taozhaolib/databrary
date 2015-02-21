@@ -12,7 +12,6 @@ import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text.Encoding as TE
-import qualified Text.Blaze.Html5 as Html
 
 import Control.Applicative.Ops
 import Control.Has (view)
@@ -24,7 +23,10 @@ import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Token
 import Databrary.Web.Form.Deform
+import Databrary.Web.Form.View (blankFormView)
 import Databrary.Controller.Form
+import Databrary.View.Form (FormHtml)
+import Databrary.View.Login
 
 loginAccount :: SiteAuth -> Bool -> AppAction
 loginAccount auth su = do
@@ -33,12 +35,12 @@ loginAccount auth su = do
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 
-displayLogin :: FormData -> FormErrors -> Html.Html
-displayLogin fd fe = undefined
+displayLogin :: FormHtml
+displayLogin = renderLogin (postLogin False)
 
 viewLogin :: AppRAction
 viewLogin = action GET ["login"] $
-  okResponse [] $ displayLogin mempty mempty
+  okResponse [] $ blankFormView displayLogin
 
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
