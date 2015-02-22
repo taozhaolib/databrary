@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
+  , tokenRedeemURL
   , createLoginToken
   , lookupSession
   , createSession
@@ -24,12 +25,17 @@ import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Party
+import Databrary.Action.Route (actionURL)
+import Databrary.Web.Request (Request)
 import Databrary.Entropy
 import Databrary.DB
 import Databrary.Model.Token.Types
 import Databrary.Model.Token.SQL
 
 useTPG
+
+tokenRedeemURL :: Token -> Request -> BS.ByteString
+tokenRedeemURL tok req = actionURL undefined req
 
 createToken :: (DBM m, EntropyM c m) => (Id Token -> DBTransaction a) -> m a
 createToken insert = do

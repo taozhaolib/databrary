@@ -20,7 +20,7 @@ import Network.Wai.Parse
 
 import Control.Has (peek, peeks)
 import Databrary.Action.Types (ActionM)
-import Databrary.Action.Request (getRequestHeader)
+import Databrary.Web.Request (lookupRequestHeader)
 import Databrary.Action.Response (response, result)
 
 requestTooLarge :: Response
@@ -104,7 +104,7 @@ parseJSONContent = maybe ContentUnknown ContentJSON . AP.maybeResult
 
 parseRequestContent :: (MonadIO m, ActionM c m) => m Content
 parseRequestContent = do
-  ct <- getRequestHeader hContentType
+  ct <- peeks $ lookupRequestHeader hContentType
   case fmap parseContentType ct of
     Just ("application/x-www-form-urlencoded", _) ->
       parseFormContent UrlEncoded

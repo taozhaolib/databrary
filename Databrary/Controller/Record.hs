@@ -3,6 +3,7 @@ module Databrary.Controller.Record
   ( viewRecord
   ) where
 
+import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Model.Id
 import Databrary.Model.Permission

@@ -33,7 +33,7 @@ import Control.Applicative.Ops
 import Control.Has (Has(..), peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
-import Databrary.Action.Request
+import Databrary.Web.Request
 import Databrary.Model.Id
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Permission

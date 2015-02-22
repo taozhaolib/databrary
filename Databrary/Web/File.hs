@@ -5,7 +5,7 @@ module Databrary.Web.File
   , serveStaticFile
   ) where
 
-import Control.Monad (when)
+import Control.Monad (when, mfilter)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
@@ -21,9 +21,11 @@ import System.IO.Error (tryIOError)
 import System.Posix.Files (getFileStatus, modificationTimeHiRes, fileSize)
 
 import Control.Applicative.Ops
-import Databrary.Action
+import Control.Has (peek)
+import Databrary.Web.Request
 import Databrary.Web.HTTP
 import qualified Databrary.Web.Route as R
+import Databrary.Action
 import Databrary.Model.Format (Format, getFormatByFilename, unknownFormat, formatMimeType)
 
 newtype StaticPath = StaticPath FilePath
@@ -53,15 +55,15 @@ serveFile file fmt etag = do
         -- , (hCacheControl, ???)
         ]
       sz = toInteger $ fileSize info
-  ifnm <- map unquoteHTTP . (splitHTTP =<<) <$> getRequestHeaders "if-none-match"
-  notmod <- if null ifnm
-    then Fold.any (mt <=) . (parseHTTPTimestamp =<<) <$> getRequestHeader hIfModifiedSince
-    else return $ any (\m -> m == "*" || m == etag) ifnm
+  req <- peek
+  let ifnm = map unquoteHTTP $ (splitHTTP =<<) $ lookupRequestHeaders "if-none-match" req
+      notmod
+        | null ifnm = Fold.any (mt <=) $ (parseHTTPTimestamp =<<) $ lookupRequestHeader hIfModifiedSince req
+        | otherwise = any (\m -> m == "*" || m == etag) ifnm
   when notmod $ result =<< emptyResponse notModified304 fh
-  ifrng <- fmap unquoteHTTP <$> getRequestHeader hIfRange
-  let part = if Fold.any (etag /=) ifrng
-        then Nothing -- allow range detection
-        else Just $ Wai.FilePart 0 sz sz -- force full file
+  let ifrng = unquoteHTTP <$> lookupRequestHeader hIfRange req
+      part = mfilter (etag /=) ifrng $> -- allow range detection
+        Wai.FilePart 0 sz sz -- force full file
   okResponse fh (file, part)
 
 serveStaticFile :: (ActionM c m, MonadIO m) => FilePath -> StaticPath -> m Response

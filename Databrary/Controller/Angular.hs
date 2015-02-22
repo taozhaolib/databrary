@@ -19,20 +19,20 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Format
 import Databrary.Model.Party
 import Databrary.Action
-import Databrary.Action.Request
+import Databrary.Web.Request
 
 browserBlacklist :: Regex.Regex
 browserBlacklist = Regex.makeRegex
   ("^Mozilla/.* \\(.*\\<(MSIE [0-9]\\.[0-9]|AppleWebKit/.* Version/[0-5]\\..* Safari/)" :: String)
 
 angularEnabled :: Wai.Request -> Bool
-angularEnabled req = getjs $ getQueryParameters "js" req where
+angularEnabled req = getjs $ lookupQueryParameters "js" req where
   getjs ((Just "0"):_) = False
   getjs ((Just "false"):_) = False
   getjs ((Just "off"):_) = False
   getjs ((Just ""):_) = False
   getjs (_:_) = True
-  getjs [] = not $ Fold.any (Regex.matchTest browserBlacklist) $ getRequestHeader hUserAgent req
+  getjs [] = not $ Fold.any (Regex.matchTest browserBlacklist) $ lookupRequestHeader hUserAgent req
 
 constantsJS :: BSL.ByteString
 constantsJS =

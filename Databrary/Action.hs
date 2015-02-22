@@ -5,8 +5,6 @@ module Databrary.Action
   , ActionM
   , AppAction
   , AuthAction
-  , getRequestHeader
-  , getRequestHeaders
 
   , Response
   , returnResponse
@@ -21,11 +19,11 @@ module Databrary.Action
 
   , StdMethod(GET, POST)
   , RouteAction(..)
+  , actionURL
   , AppRAction
   , AuthRAction
   , action
   , withAuth
-  , R.toRoute
   , apiRoute
 
   , runAppRoute
@@ -33,21 +31,18 @@ module Databrary.Action
 
 import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.IO.Class (MonadIO)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
-import Data.Functor.Contravariant (Contravariant(..))
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
-import qualified Data.Text as T
-import Network.HTTP.Types (Method, methodGet, StdMethod(..), renderStdMethod, encodePathSegments, Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
+import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
 import qualified Network.Wai as Wai
 
-import Control.Has (peek)
+import Control.Has (peek, peeks)
+import Databrary.Web.Request
 import Databrary.Action.Types
-import Databrary.Action.Request
 import Databrary.Action.Response
 import Databrary.Action.App
 import Databrary.Action.Auth
+import Databrary.Action.Route
 import Databrary.Resource
 import qualified Databrary.Web.Route as R
 
@@ -55,9 +50,9 @@ emptyResponse :: ActionM q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
 
 redirectRouteResponse :: ActionM q m => ResponseHeaders -> RouteAction qa -> m Response
-redirectRouteResponse h RouteAction{ actionMethod = g, actionRoute = r }
-  | g == methodGet = emptyResponse seeOther303 ((hLocation, r) : h) -- XXX absolute URL
-  | otherwise = fail ("redirectRouteResponse: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
+redirectRouteResponse h a = do
+  url <- peeks $ actionURL a
+  emptyResponse seeOther303 ((hLocation, url) : h)
 
 forbiddenResponse :: ActionM q m => m Response
 forbiddenResponse = emptyResponse forbidden403 []
@@ -75,29 +70,6 @@ guardAction False r = result =<< r
 maybeAction :: (ActionM q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a
 maybeAction Nothing = result =<< notFoundResponse
-
-data RouteAction q = RouteAction 
-  { actionMethod :: Method
-  , actionRoute :: BS.ByteString
-  , routeAction :: Action q
-  }
-
-action :: StdMethod -> [T.Text] -> Action q -> RouteAction q
-action meth path act = RouteAction
-  { actionMethod = renderStdMethod meth
-  , actionRoute = Blaze.toByteString $ encodePathSegments path
-  , routeAction = act
-  }
-
-apiRoute :: Bool -> [T.Text] -> [T.Text]
-apiRoute False = id
-apiRoute True = ("api" :)
-
-mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
-mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
-
-instance Contravariant RouteAction where
-  contramap f = mapRouteAction (withAction f)
 
 type AppRAction = RouteAction AppRequest
 type AuthRAction = RouteAction AuthRequest

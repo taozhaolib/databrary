@@ -10,16 +10,16 @@ import qualified Data.HashMap.Strict as HM
 import Data.Maybe (mapMaybe, maybeToList)
 import qualified Data.Vector as V
 
+import Control.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Audit
-import Databrary.Action.Request
+import Databrary.Web.Request
 
 angularAnalytics :: AuditM q m => m ()
 angularAnalytics = do
-  c <- getRequestHeader "x-requested-with"
-  when (Fold.any ("DatabraryClient" ==) c) $ do
-    h <- getRequestHeaders "analytics"
-    mapM_ auditAnalytic $ pr . P.parseOnly JSON.json' =<< h
+  req <- peek
+  when (Fold.any ("DatabraryClient" ==) $ lookupRequestHeader "x-requested-with" req) $
+    mapM_ auditAnalytic $ pr . P.parseOnly JSON.json' =<< lookupRequestHeaders "analytics" req
   where
   pr (Left _) = []
   pr (Right (JSON.Array l)) = mapMaybe ar $ V.toList l

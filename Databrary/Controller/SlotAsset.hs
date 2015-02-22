@@ -6,6 +6,7 @@ module Databrary.Controller.SlotAsset
 import Data.Maybe (fromJust)
 
 import Control.Has (view)
+import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Model.Id
 import Databrary.Model.Permission

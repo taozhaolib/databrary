@@ -17,7 +17,7 @@ import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time.Types
 import Databrary.Action.Types
-import Databrary.Action.Request
+import Databrary.Web.Request
 import Databrary.Action.Response
 
 data AppRequest = AppRequest

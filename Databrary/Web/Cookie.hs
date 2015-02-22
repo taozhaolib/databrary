@@ -6,7 +6,6 @@ module Databrary.Web.Cookie
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
-import Control.Applicative ((<$>))
 import qualified Data.ByteString as BS
 import Network.HTTP.Types (Header, hCookie)
 import qualified Network.Wai as Wai
@@ -16,13 +15,13 @@ import Control.Has (peeks)
 import Databrary.Crypto
 import Databrary.Resource
 import Databrary.Model.Time.Types
-import Databrary.Action.Request
+import Databrary.Web.Request
 
-getCookies :: MonadHasRequest c m => m Cook.Cookies
-getCookies = maybe [] Cook.parseCookies <$> getRequestHeader hCookie
+getCookies :: Request -> Cook.Cookies
+getCookies = maybe [] Cook.parseCookies . lookupRequestHeader hCookie
 
 getSignedCookie :: (MonadHasResource c m, MonadHasRequest c m) => BS.ByteString -> m (Maybe BS.ByteString)
-getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< getCookies
+getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< peeks getCookies
 
 setSignedCookie :: (MonadHasResource c m, MonadHasRequest c m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
 setSignedCookie c val ex = do

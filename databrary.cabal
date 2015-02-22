@@ -56,7 +56,8 @@ Executable databrary
     blaze-html,
     regex-posix,
     bcrypt,
-    http-client
+    http-client,
+    mime-mail
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds
 

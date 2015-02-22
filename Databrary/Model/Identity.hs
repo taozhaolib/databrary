@@ -13,7 +13,7 @@ import Control.Applicative.Ops
 import Control.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Token
-import Databrary.Action.Request
+import Databrary.Web.Request
 import Databrary.Resource
 import Databrary.DB
 import Databrary.Web.Cookie

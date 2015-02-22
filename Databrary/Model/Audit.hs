@@ -18,7 +18,7 @@ import Network.Wai (remoteHost)
 import Control.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Action.Request
+import Databrary.Web.Request
 import Databrary.Model.Identity.Types
 import Databrary.Model.Audit.Types
 

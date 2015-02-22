@@ -13,7 +13,7 @@ import Network.HTTP.Types (ResponseHeaders, Status)
 import qualified Network.Wai as Wai
 
 import Control.Has (Has, MonadHas, peeks)
-import Databrary.Action.Request
+import Databrary.Web.Request
 import Databrary.Action.Response
 
 type Action q = ReaderT q IO Response

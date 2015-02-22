@@ -19,6 +19,7 @@ import qualified Network.Wai as Wai
 import Control.Applicative.Ops
 import Control.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
+import Databrary.Action.Route
 import Databrary.Action
 import Databrary.DB
 import Databrary.Model.Enum
