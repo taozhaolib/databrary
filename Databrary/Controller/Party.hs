@@ -32,10 +32,8 @@ import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import qualified Databrary.Web.Route as R
 import Databrary.Web.Form.Deform
-import Databrary.Web.Form.View (blankFormView)
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
-import Databrary.View.Form (FormHtml)
 import Databrary.View.Party
 
 instance R.Routable (Maybe (Id Party)) where
@@ -100,13 +98,10 @@ partyForm p = do
     , partyURL = url
     }
 
-htmlPartyForm :: Maybe (Party) -> FormHtml
-htmlPartyForm p = renderPartyForm (maybe (createParty False) (postParty False . Just . partyId) p) p
-
 viewPartyForm :: Maybe (Id Party) -> AppRAction
 viewPartyForm i = action GET (toRoute i ++ ["edit"]) $
   withParty (Just PermissionADMIN) i $
-    okResponse [] . blankFormView . htmlPartyForm . Just
+    blankForm . htmlPartyForm . Just
 
 postParty :: Bool -> Maybe (Id Party) -> AppRAction
 postParty api i = action POST (apiRoute api $ toRoute i) $
@@ -136,13 +131,10 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-htmlPartySearchForm :: PartyFilter -> FormHtml
-htmlPartySearchForm = renderPartySearchForm (searchParty False)
-
 searchParty :: Bool -> AppRAction
 searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
   (pf, (limit, offset)) <- runForm (api ?!> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset
   if api
     then okResponse [] $ JSON.toJSON $ map partyJSON p
-    else okResponse [] $ blankFormView $ htmlPartySearchForm pf
+    else blankForm $ htmlPartySearchForm pf

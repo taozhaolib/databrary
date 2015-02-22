@@ -4,9 +4,10 @@ module Databrary.Action.Auth
   , MonadHasAuthRequest
   , AuthAction
   , withAuth
+  , withoutAuth
   ) where
 
-import Control.Monad.Reader (asks)
+import Control.Monad.Reader (ReaderT, withReaderT, asks)
 
 import Control.Has (makeHasRec)
 import Databrary.Action.Types
@@ -28,4 +29,8 @@ instance ActionData AuthRequest where
 withAuth :: AuthAction -> AppAction
 withAuth f = do
   i <- determineIdentity
-  withAction (\a -> AuthRequest a i) f
+  withReaderT (\a -> AuthRequest a i) f
+
+withoutAuth :: ReaderT AuthRequest IO a -> ReaderT AppRequest IO a
+withoutAuth f =
+  withReaderT (\a -> AuthRequest a UnIdentified) f

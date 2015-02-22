@@ -11,6 +11,7 @@ module Databrary.Action
   , Response
   , returnResponse
   , emptyResponse
+  , redirectRouteResponse
   , forbiddenResponse
   , notFoundResponse
   , okResponse
@@ -33,11 +34,12 @@ module Databrary.Action
 import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Data.Functor.Contravariant (Contravariant(..))
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
-import Network.HTTP.Types (Method, StdMethod(..), renderStdMethod, encodePathSegments, Status, ok200, forbidden403, notFound404, ResponseHeaders)
+import Network.HTTP.Types (Method, methodGet, StdMethod(..), renderStdMethod, encodePathSegments, Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
 import qualified Network.Wai as Wai
 
 import Control.Has (peek)
@@ -51,6 +53,11 @@ import qualified Databrary.Web.Route as R
 
 emptyResponse :: ActionM q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
+
+redirectRouteResponse :: ActionM q m => RouteAction qa -> m Response
+redirectRouteResponse RouteAction{ actionMethod = g, actionRoute = r }
+  | g == methodGet = emptyResponse seeOther303 [(hLocation, r)] -- XXX absolute URL
+  | otherwise = fail ("redirectRouteResponse: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
 
 forbiddenResponse :: ActionM q m => m Response
 forbiddenResponse = emptyResponse forbidden403 []

@@ -7,7 +7,7 @@ module Databrary.View.Form
   , inputCheckbox
   , inputSelect
   , inputEnum
-  , renderForm
+  , htmlForm
   ) where
 
 import Control.Applicative ((<|>))
@@ -25,14 +25,19 @@ import qualified Text.Blaze.Html5.Attributes as HA
 import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.Enum
-import Databrary.View.Html
 import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.View
+import Databrary.View.Html
+import Databrary.View.Template
 
 type FormHtmlM = FormViewT M.MarkupM
 type FormHtml = FormHtmlM ()
+
+liftFormHtml :: (M.MarkupM FormErrors -> H.Html) -> FormHtml -> FormHtml
+liftFormHtml h f = liftWith $ \run -> h (snd <$> run f)
 
 pathId :: FormHtmlM H.AttributeValue
 pathId = peeks byteStringValue
@@ -109,14 +114,11 @@ inputEnum val =
   inputSelect (bshow <$> val) $ map (\(x, v) -> (bshow (x :: a), v)) pgEnumValues
   where bshow = BSC.pack . show . fromEnum
 
-renderForm :: RouteAction q -> FormHtml -> FormHtml
-renderForm act form =
-  liftWith $ \run -> H.form
-    H.! HA.method  (H.unsafeByteStringValue $ actionMethod act)
-    -- H.! HA.enctype (H.toValue $ show $ F.viewEncType form)
-    H.! HA.action  (byteStringValue $ actionRoute act)
-    $ do
-      ((), err) <- run form
+htmlForm :: T.Text -> RouteAction q -> AuthRequest -> FormHtml -> FormHtml
+htmlForm title act req = liftFormHtml $ \form ->
+  htmlTemplate req (Just title) $
+    actionForm act $ do
+      err <- form
       errorLists $ allFormErrors err
       H.input
         H.! HA.type_ "submit"

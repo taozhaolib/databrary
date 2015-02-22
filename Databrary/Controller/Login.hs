@@ -1,7 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Login
-  ( postLogin
-  , viewLogin
+  ( viewLogin
+  , postLogin
+  , postLogout
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
@@ -16,16 +17,18 @@ import qualified Data.Text.Encoding as TE
 import Control.Applicative.Ops
 import Control.Has (view)
 import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.Web.Cookie
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
+import Databrary.Model.Identity
 import Databrary.Model.Permission
 import Databrary.Model.Token
 import Databrary.Web.Form.Deform
-import Databrary.Web.Form.View (blankFormView)
 import Databrary.Controller.Form
-import Databrary.View.Form (FormHtml)
 import Databrary.View.Login
+
+import {-# SOURCE #-} Databrary.Controller.Party
 
 loginAccount :: SiteAuth -> Bool -> AppAction
 loginAccount auth su = do
@@ -34,16 +37,15 @@ loginAccount auth su = do
   cook <- setSignedCookie "session" tok ex
   okResponse [cook] (mempty :: Blaze.Builder)
 
-htmlLogin :: FormHtml
-htmlLogin = renderLogin (postLogin False)
-
 viewLogin :: AppRAction
-viewLogin = action GET ["login"] $
-  okResponse [] $ blankFormView htmlLogin
+viewLogin = action GET ["login"] $ withAuth $
+  maybeIdentity
+    (blankForm htmlLogin)
+    (\_ -> redirectRouteResponse $ viewParty False Nothing)
 
 postLogin :: Bool -> AppRAction
 postLogin api = action POST (apiRoute api ["login"]) $ do
-  (Just auth, su) <- runForm (api ?!> htmlLogin) $ do
+  (Just auth, su) <- withoutAuth $ runForm (api ?!> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
     superuser <- "superuser" .:> deform
@@ -59,3 +61,7 @@ postLogin api = action POST (apiRoute api ["login"]) $ do
     unless pass $ "password" .:> deformError "Incorrect login."
     return (auth, su)
   loginAccount auth su
+
+postLogout :: Bool -> AppRAction
+postLogout api = action POST (apiRoute api ["logout"]) $ do
+  fail "TODO"

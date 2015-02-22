@@ -3,6 +3,7 @@ module Databrary.Action.App
   ( AppRequest(..)
   , MonadHasAppRequest
   , AppAction
+  , AppActionM
   , withApp
   ) where
 
@@ -11,7 +12,7 @@ import Control.Monad.Reader (asks)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
-import Control.Has (makeHasRec)
+import Control.Has (MonadHas, makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time.Types
@@ -28,6 +29,7 @@ data AppRequest = AppRequest
 makeHasRec ''AppRequest ['appResource, 'appTimestamp, 'appRequest]
 
 type AppAction = Action AppRequest
+type AppActionM q m = (MonadHas AppRequest q m, ActionData q)
 
 withApp :: Resource -> AppAction -> WaiAction
 withApp rc act = do

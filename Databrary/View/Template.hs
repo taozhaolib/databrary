@@ -1,21 +1,29 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.View.Template
-  ( 
+  ( htmlTemplate
   ) where
 
+import Control.Arrow (second)
+import Control.Monad (when)
+import qualified Data.Foldable as Fold
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
-import qualified Text.Digestive as F
+import Network.HTTP.Types (methodGet, encodePath)
 import qualified Network.Wai as Wai
 
-import Databrary.Action
+import Control.Has (view)
+import Databrary.Model.Identity
+import Databrary.Action.Auth
 import Databrary.View.Html
+
+import {-# SOURCE #-} Databrary.Controller.Login
+import {-# SOURCE #-} Databrary.Controller.Party
 
 header :: Wai.Request -> H.Html
 header req = do
-  when (Wai.requestMethad req == methodGet && hasjs) $
+  when (Wai.requestMethod req == methodGet && hasjs) $
     H.link
       H.! HA.rel "canonical"
       H.! HA.href (builderValue $ encodePath (Wai.pathInfo req) nojsq)
@@ -39,51 +47,24 @@ htmlTemplate req title body = H.docTypeHtml $ do
   H.head $ do
     header (view req)
     H.title $ do
-      mapM_ (>> " || ") title
+      Fold.mapM_ (\t -> H.toHtml t >> " || ") title
       "Databrary"
   H.body $ do
     H.section
       H.! HA.id "toolbar"
-      H.! HA.class_ "toolbar" $ do
-  <section id="toolbar" class="toolbar cf">
-    <a href="/">Databrary</a>
-    </h1>
-
-          @request match {
-            case request : SiteRequest.Auth[_] => {
-              <a href="@routes.PartyHtml.profile(Some(false))">
-                <span class="username">@request.identity.name</span>
-              </a>
-
-              @if(request.access.isAdmin) {
-                @if(request.superuser) {
-                  @helper.form(routes.LoginHtml.superuserOff) {
-                    <button type="submit" class="link toolbar-superuser on">SU</button>
-                  }
-                } else {
-                  @defining(new LoginController.SuperuserForm()(request)) { form =>
-                    @widget.tag.form(form) {
-                      @defining(helper.FieldConstructor(widget.tag.rawFieldConstructor.f)) { implicit fieldConstructor =>
-                        @widget.tag.inputPassword(form.auth(), 'class -> "mini toolbar-static-input password")
-                        <button type="submit" class="link toolbar-superuser off">SU</button>
-                      }
-                    }(request)
-                  }
-                }
-              }
-
-              @widget.tag.form(LoginController.LogoutForm) {
-                <button type="submit" class="link">@Messages("toolbar.logout")</button>
-              }(request)
-            }
-
-            case _ => {
-              <a href="@routes.LoginHtml.view(Some(false))">@Messages("toolbar.login")</a>
-            }
-          }
-  </section>
-
-  @body
-  @footer()
-</body>
-</html>
+      H.! HA.class_ "toolbar"
+      $ do
+        H.a
+          H.! HA.href "/"
+          $ "Databrary"
+        foldIdentity
+          (actionLink viewLogin $ "login")
+          (\_ -> do
+            actionLink (viewParty False Nothing) $ "profile"
+            actionForm (postLogout False) $
+              H.button
+                H.! HA.type_ "submit"
+                $ "logout")
+          $ authIdentity req
+    body
+    footer

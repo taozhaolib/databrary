@@ -1,13 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.View.Login
-  ( renderLogin
+  ( htmlLogin
   ) where
 
-import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.View.Form
 
-renderLogin :: RouteAction q -> FormHtml
-renderLogin act = renderForm act $ do
+import {-# SOURCE #-} Databrary.Controller.Login
+
+htmlLogin :: AuthRequest -> FormHtml
+htmlLogin req = htmlForm "Login" (postLogin False) req $ do
   field "email" $ inputText (Nothing :: Maybe String)
   field "password" inputPassword
   field "superuser" $ inputCheckbox False
