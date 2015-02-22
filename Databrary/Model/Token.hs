@@ -3,6 +3,7 @@ module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
   , lookupSession
   , createSession
+  , removeSession
   , lookupUpload
   , createUpload
   ) where
@@ -65,6 +66,10 @@ createSession auth su = do
       }
     , sessionSuperuser = su
     }
+
+removeSession :: (DBM m) => SessionToken -> m Bool
+removeSession tok = (0 <) <$>
+  dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
 
 createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m UploadToken
 createUpload vol name = do

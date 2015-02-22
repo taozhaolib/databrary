@@ -54,9 +54,9 @@ import qualified Databrary.Web.Route as R
 emptyResponse :: ActionM q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
 
-redirectRouteResponse :: ActionM q m => RouteAction qa -> m Response
-redirectRouteResponse RouteAction{ actionMethod = g, actionRoute = r }
-  | g == methodGet = emptyResponse seeOther303 [(hLocation, r)] -- XXX absolute URL
+redirectRouteResponse :: ActionM q m => ResponseHeaders -> RouteAction qa -> m Response
+redirectRouteResponse h RouteAction{ actionMethod = g, actionRoute = r }
+  | g == methodGet = emptyResponse seeOther303 ((hLocation, r) : h) -- XXX absolute URL
   | otherwise = fail ("redirectRouteResponse: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
 
 forbiddenResponse :: ActionM q m => m Response

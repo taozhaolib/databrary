@@ -8,6 +8,7 @@ import Control.Monad (msum, mfilter, guard)
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
+import Databrary.Controller.Root
 import Databrary.Controller.Login
 import Databrary.Controller.Party
 import Databrary.Controller.Volume
@@ -29,7 +30,8 @@ routes = do
     isapi = guard api
     html = guard (not api)
   msum 
-    [ "login" >>             (html >> act viewLogin)
+    [                                 act (viewRoot api)
+    , "login" >>             (html >> act viewLogin)
                                   <|> act (postLogin api)
     , R.route >>= \p ->               act (viewParty api p)
                                   <|> act (postParty api p)

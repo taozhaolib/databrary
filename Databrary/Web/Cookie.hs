@@ -2,6 +2,7 @@
 module Databrary.Web.Cookie
   ( getSignedCookie
   , setSignedCookie
+  , clearCookie
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
@@ -34,3 +35,9 @@ setSignedCookie c val ex = do
     , Cook.setCookieExpires = Just ex
     , Cook.setCookieSecure = sec
     })
+
+clearCookie :: BS.ByteString -> Header
+clearCookie c = ("set-cookie", Blaze.toByteString $ Cook.renderSetCookie $ Cook.def
+  { Cook.setCookieName = c
+  , Cook.setCookiePath = Just "/"
+  })
