@@ -10,6 +10,7 @@ import qualified Databrary.Web.Route as R
 import Databrary.Action
 import Databrary.Controller.Root
 import Databrary.Controller.Login
+import Databrary.Controller.Register
 import Databrary.Controller.Party
 import Databrary.Controller.Volume
 import Databrary.Controller.Record
@@ -34,6 +35,8 @@ routes = do
     [                                 act (viewRoot api)
     , "login" >>             (html >> act viewLogin)
                                   <|> act (postLogin api)
+    , "register" >>          (html >> act viewRegister)
+                                  <|> act (postRegister api)
     , R.route >>= \p ->               act (viewParty api p)
                                   <|> act (postParty api p)
                <|> (html >> "edit" >> act (viewPartyForm p))

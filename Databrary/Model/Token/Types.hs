@@ -4,10 +4,12 @@ module Databrary.Model.Token.Types
   , MonadHasToken
   , AccountToken(..)
   , MonadHasAccountToken
-  , SessionToken(..)
-  , MonadHasSessionToken
-  , UploadToken(..)
-  , MonadHasUploadToken
+  , LoginToken(..)
+  , MonadHasLoginToken
+  , Session(..)
+  , MonadHasSession
+  , Upload(..)
+  , MonadHasUpload
   ) where
 
 import qualified Data.Text as T
@@ -34,16 +36,23 @@ data AccountToken = AccountToken
 
 makeHasRec ''AccountToken ['accountToken, 'tokenAccount]
 
-data SessionToken = SessionToken
+data LoginToken = LoginToken
+  { loginAccountToken :: !AccountToken
+  , loginPasswordToken :: Bool
+  }
+
+makeHasRec ''LoginToken ['loginAccountToken]
+
+data Session = Session
   { sessionAccountToken :: !AccountToken
   , sessionSuperuser :: Bool
   }
 
-makeHasRec ''SessionToken ['sessionAccountToken]
+makeHasRec ''Session ['sessionAccountToken]
 
-data UploadToken = UploadToken
+data Upload = Upload
   { uploadAccountToken :: AccountToken
   , uploadFilename :: T.Text
   }
 
-makeHasRec ''UploadToken ['uploadAccountToken]
+makeHasRec ''Upload ['uploadAccountToken]

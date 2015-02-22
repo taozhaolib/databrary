@@ -3,11 +3,13 @@ module Databrary.Model.Party
   ( module Databrary.Model.Party.Types
   , nobodyParty
   , rootParty
+  , blankParty
   , lookupParty
   , lookupAuthParty
   , lookupSiteAuthByEmail
   , changeParty
   , addParty
+  , addAccount
   , auditAccountLogin
   , recentAccountLogins
   , partyJSON
@@ -48,6 +50,16 @@ nobodyParty, rootParty :: Party
 nobodyParty = $(loadParty (Id (-1)) PermissionREAD)
 rootParty = $(loadParty (Id 0) PermissionSHARED)
 
+blankParty :: Party
+blankParty = Party
+  { partyId = error "new party"
+  , partyName = ""
+  , partyAffiliation = Nothing
+  , partyURL = Nothing
+  , partyAccount = Nothing
+  , partyPermission = PermissionREAD
+  }
+
 emailPermission :: Permission
 emailPermission = PermissionSHARED
 
@@ -72,9 +84,16 @@ changeParty :: AuditM c m => Party -> m ()
 changeParty p = dbExecute1 =<< $(updateParty 'p)
 
 addParty :: AuditM c m => Party -> m Party
-addParty bp = do
-  p <- dbQuery1' =<< $(insertParty 'bp)
-  return $ p PermissionREAD
+addParty bp =
+  dbQuery1' . fmap ($ PermissionREAD) =<< $(insertParty 'bp)
+
+addAccount :: AuditM c m => Account -> m Account
+addAccount ba@Account{ accountParty = bp } = do
+  p <- addParty bp
+  dbExecute1 =<< $(insertAccount 'ba)
+  let pa = p{ partyAccount = Just a }
+      a = ba{ accountParty = pa }
+  return a
 
 lookupFixedParty :: Id Party -> Identity -> Maybe Party
 lookupFixedParty (Id (-1)) _ = Just nobodyParty

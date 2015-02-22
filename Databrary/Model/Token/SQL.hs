@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 module Databrary.Model.Token.SQL
-  ( selectSessionToken
-  , selectUploadToken
+  ( selectSession
+  , selectUpload
   ) where
 
 import qualified Data.Text as T
@@ -22,13 +22,13 @@ accountTokenRow table = selectJoin 'AccountToken
   , joinOn (table ++ ".account = account.id") selectSiteAuth
   ]
 
-selectSessionToken :: Selector -- @'SessionToken'@
-selectSessionToken =
-  addSelects 'SessionToken (accountTokenRow "session") ["session.superuser"]
+selectSession :: Selector -- @'Session'@
+selectSession =
+  addSelects 'Session (accountTokenRow "session") ["session.superuser"]
 
-makeUploadToken :: Token -> T.Text -> SiteAuth -> UploadToken
-makeUploadToken t n u = UploadToken (AccountToken t u) n
+makeUpload :: Token -> T.Text -> SiteAuth -> Upload
+makeUpload t n u = Upload (AccountToken t u) n
 
-selectUploadToken :: Selector -- @'SiteAuth' -> 'SessionToken'@
-selectUploadToken =
-  addSelects 'makeUploadToken (tokenRow "upload") ["upload.filename"]
+selectUpload :: Selector -- @'SiteAuth' -> 'Upload'@
+selectUpload =
+  addSelects 'makeUpload (tokenRow "upload") ["upload.filename"]

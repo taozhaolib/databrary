@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
+  , createLoginToken
   , lookupSession
   , createSession
   , removeSession
@@ -9,6 +10,7 @@ module Databrary.Model.Token
   ) where
 
 import Control.Applicative ((<$>))
+import Control.Monad (when, void)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
@@ -42,24 +44,37 @@ createToken insert = do
     dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
 
-lookupSession :: DBM m => BS.ByteString -> m (Maybe SessionToken)
+lookupSession :: DBM m => BS.ByteString -> m (Maybe Session)
 lookupSession tok =
-  dbQuery1 $(selectQuery selectSessionToken "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
+  dbQuery1 $(selectQuery selectSession "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
 
-lookupUpload :: (DBM m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe UploadToken)
+lookupUpload :: (DBM m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe Upload)
 lookupUpload tok = do
   auth <- peek
-  dbQuery1 $ fmap ($ auth) $(selectQuery selectUploadToken "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
+  dbQuery1 $ fmap ($ auth) $(selectQuery selectUpload "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
+
+createLoginToken :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken
+createLoginToken auth passwd = do
+  when passwd $ void $ dbExecute [pgSQL|DELETE FROM login_token WHERE account = ${view auth :: Id Party} AND password|]
+  (tok, ex) <- createToken $ \tok ->
+    dbQuery1' [pgSQL|INSERT INTO login_token (token, account, password) VALUES (${tok}, ${view auth :: Id Party}, ${passwd}) RETURNING token, expires|]
+  return $ LoginToken
+    { loginAccountToken = AccountToken
+      { accountToken = Token tok ex
+      , tokenAccount = auth
+      }
+    , loginPasswordToken = passwd
+    }
 
 sessionDuration :: Bool -> Offset
 sessionDuration False = 7*24*60*60
 sessionDuration True = 30*60
 
-createSession :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m SessionToken
+createSession :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m Session
 createSession auth su = do
   (tok, ex) <- createToken $ \tok ->
     dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}) RETURNING token, expires|]
-  return $ SessionToken
+  return $ Session
     { sessionAccountToken = AccountToken
       { accountToken = Token tok ex
       , tokenAccount = auth
@@ -67,16 +82,16 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-removeSession :: (DBM m) => SessionToken -> m Bool
+removeSession :: (DBM m) => Session -> m Bool
 removeSession tok = (0 <) <$>
   dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
 
-createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m UploadToken
+createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m Upload
 createUpload vol name = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->
     dbQuery1' [pgSQL|INSERT INTO upload (token, account, volume, filename) VALUES (${tok}, ${view auth :: Id Party}, ${volumeId vol}, ${name}) RETURNING token, expires|]
-  return $ UploadToken
+  return $ Upload
     { uploadAccountToken = AccountToken
       { accountToken = Token tok ex
       , tokenAccount = auth

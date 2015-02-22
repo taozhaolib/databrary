@@ -27,11 +27,11 @@ determineIdentity = do
   s <- maybe (return Nothing) lookupSession c
   return $ maybe UnIdentified Identified s
 
-foldIdentity :: a -> (SessionToken -> a) -> Identity -> a
+foldIdentity :: a -> (Session -> a) -> Identity -> a
 foldIdentity u _ UnIdentified = u
 foldIdentity _ i (Identified s) = i s
 
-maybeIdentity :: (MonadHasIdentity c m) => m a -> (SessionToken -> m a) -> m a
+maybeIdentity :: (MonadHasIdentity c m) => m a -> (Session -> m a) -> m a
 maybeIdentity u i = foldIdentity u i =<< peek
 
 identityJSON :: Identity -> JSON.Object

@@ -6,6 +6,7 @@ module Databrary.Model.Party.SQL
   , selectSiteAuth
   , updateParty
   , insertParty
+  , insertAccount
   ) where
 
 import Data.Char (toLower)
@@ -86,3 +87,12 @@ insertParty p = auditInsert "party"
   (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
   (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
   where ps = nameRef p
+
+insertAccount :: TH.Name -- ^ @'Account'@
+  -> TH.ExpQ
+insertAccount a = auditInsert "account"
+  [ ("id", "${partyId (accountParty " ++ as ++ ")}")
+  , ("email", "${accountEmail " ++ as ++ "}")
+  , ("password", "${accountPasswd " ++ as ++ "}")
+  ] Nothing
+  where as = nameRef a

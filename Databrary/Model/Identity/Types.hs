@@ -16,11 +16,11 @@ import Databrary.Model.Token.Types
 
 data Identity
   = UnIdentified
-  | Identified { identitySession :: SessionToken }
+  | Identified { identitySession :: Session }
 
 instance Has SiteAuth Identity where
   view UnIdentified = nobodySiteAuth
-  view (Identified SessionToken{ sessionAccountToken = AccountToken{ tokenAccount = t } }) = t
+  view (Identified Session{ sessionAccountToken = AccountToken{ tokenAccount = t } }) = t
 
 instance Has Party Identity where
   view = view . (view :: Identity -> SiteAuth)

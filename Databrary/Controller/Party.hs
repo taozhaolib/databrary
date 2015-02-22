@@ -77,16 +77,6 @@ viewParty api i = action GET (apiRoute api $ toRoute i) $ do
   withParty (Just PermissionNONE) i $
     displayParty (q <? api)
 
-emptyParty :: Party
-emptyParty = Party
-  { partyId = error "new party"
-  , partyName = ""
-  , partyAffiliation = Nothing
-  , partyURL = Nothing
-  , partyAccount = Nothing
-  , partyPermission = PermissionREAD
-  }
-
 partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
 partyForm p = do
   name <- "name" .:> deform
@@ -111,10 +101,10 @@ postParty api i = action POST (apiRoute api $ toRoute i) $
     displayParty ([] <? api) p'
 
 createParty :: Bool -> AppRAction
-createParty api = action POST (apiRoute api [kindOf emptyParty]) $ withAuth $ do
+createParty api = action POST (apiRoute api [kindOf blankParty]) $ withAuth $ do
   perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
-  bp <- runForm (api ?!> htmlPartyForm Nothing) $ partyForm emptyParty
+  bp <- runForm (api ?!> htmlPartyForm Nothing) $ partyForm blankParty
   p <- addParty bp
   displayParty (api ?> []) p
 
@@ -132,7 +122,7 @@ partySearchForm = PartyFilter
   <*> pure Nothing
 
 searchParty :: Bool -> AppRAction
-searchParty api = action GET (apiRoute api [kindOf emptyParty]) $ withAuth $ do
+searchParty api = action GET (apiRoute api [kindOf blankParty]) $ withAuth $ do
   (pf, (limit, offset)) <- runForm (api ?!> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset
   if api
