@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
 module Databrary.Model.RecordCategory
   ( module Databrary.Model.RecordCategory.Types
+  , allRecordCategories
   , getRecordCategory
   , getRecordCategory'
   , recordCategoryJSON
@@ -18,11 +19,11 @@ import Databrary.Model.RecordCategory.Boot
 
 useTPG
 
-recordCategories :: [RecordCategory]
-recordCategories = $(loadRecordCategories)
+allRecordCategories :: [RecordCategory]
+allRecordCategories = $(loadRecordCategories)
 
 recordCategoriesById :: IntMap.IntMap RecordCategory
-recordCategoriesById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ recordCategoryId a, a)) recordCategories
+recordCategoriesById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ recordCategoryId a, a)) allRecordCategories
 
 getRecordCategory :: Id RecordCategory -> Maybe RecordCategory
 getRecordCategory (Id i) = IntMap.lookup (fromIntegral i) recordCategoriesById

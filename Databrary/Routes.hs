@@ -15,6 +15,7 @@ import Databrary.Controller.Volume
 import Databrary.Controller.Record
 import Databrary.Controller.SlotAsset
 import Databrary.Controller.Citation
+import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
 act :: RouteAction q -> R.RouteM (Action q)
@@ -44,6 +45,11 @@ routes = do
                (html >> "download" >> act (downloadSlotAsset c a))
     , R.route >>= \r ->               act (viewRecord api r)
 
-    , isapi >> "cite" >>              act getCitation
-    , html >> "public" >> R.route >>= act . staticPublicFile
+    , isapi >> msum
+      [ "cite" >>                     act getCitation
+      ]
+    , html >> msum
+      [ "public" >> R.route >>=       act . staticPublicFile
+      , "constants.js" >>             act angularConstants
+      ]
     ]

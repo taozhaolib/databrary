@@ -5,6 +5,7 @@ module Databrary.JSON
   , module Data.Aeson.Types
   , object
   , record
+  , recordMap
   , (.+)
   , (.+?)
   , (.++)
@@ -16,10 +17,15 @@ module Databrary.JSON
 
 import Data.Aeson hiding (object)
 import Data.Aeson.Types hiding (object)
+import Data.Aeson.Encode (encodeToTextBuilder)
 import qualified Data.ByteString as BS
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.Builder as TLB
+import qualified Data.Text.Lazy.Builder.Scientific as SciT
 import qualified Data.Traversable as Trav
 import qualified Data.Vector as V
 import Network.HTTP.Types (Query)
@@ -30,6 +36,12 @@ object = HM.fromList
 
 record :: ToJSON k => k -> [Pair] -> Object
 record k = object . (("id" .= k) :)
+
+recordMap :: [Object] -> Value
+recordMap = Object . HM.fromList . map (\o -> (tt $ o HM.! "id", Object o)) where
+  tt (String t) = t
+  tt v = TL.toStrict $ TLB.toLazyText $ encodeToTextBuilder v
+  tt _ = error "recordMap: non-scalar id"
 
 infixl 4 .+, .+?, .++
 (.+) :: Object -> Pair -> Object

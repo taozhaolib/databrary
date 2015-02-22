@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
 module Databrary.Model.Metric
   ( module Databrary.Model.Metric.Types
+  , allMetrics
   , getMetric
   , getMetric'
   , metricJSON
@@ -18,11 +19,11 @@ import Databrary.Model.Metric.Boot
 
 useTPG
 
-metrics :: [Metric]
-metrics = $(loadMetrics)
+allMetrics :: [Metric]
+allMetrics = $(loadMetrics)
 
 metricsById :: IntMap.IntMap Metric
-metricsById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ metricId a, a)) metrics
+metricsById = IntMap.fromAscList $ map (\a -> (fromIntegral $ unId $ metricId a, a)) allMetrics
 
 getMetric :: Id Metric -> Maybe Metric
 getMetric (Id i) = IntMap.lookup (fromIntegral i) metricsById

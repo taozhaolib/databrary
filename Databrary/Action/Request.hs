@@ -1,15 +1,14 @@
-{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Action.Request
   ( Request
   , MonadHasRequest
   , getRequestHeader
   , getRequestHeaders
-  , isApi
+  , getQueryParameters
   ) where
 
 import qualified Data.ByteString as BS
 import Network.HTTP.Types (HeaderName)
-import Network.Wai (Request, requestHeaders, pathInfo)
+import Network.Wai (Request, requestHeaders, queryString)
 
 import Control.Has (MonadHas, peeks)
 
@@ -21,7 +20,5 @@ getRequestHeader h = peeks $ lookup h . requestHeaders
 getRequestHeaders :: MonadHasRequest c m => HeaderName -> m [BS.ByteString]
 getRequestHeaders h = peeks $ map snd . filter ((h ==) . fst) . requestHeaders
 
-isApi :: MonadHasRequest c m => m Bool
-isApi = peeks (isapi . pathInfo) where
-  isapi ("api":_) = True
-  isapi _ = False
+getQueryParameters :: MonadHasRequest c m => BS.ByteString -> m [Maybe BS.ByteString]
+getQueryParameters q = peeks $ map snd . filter ((q ==) . fst) . queryString
