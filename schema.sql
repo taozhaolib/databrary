@@ -952,7 +952,7 @@ CREATE TRIGGER "volume_citation_changed_text" AFTER INSERT OR UPDATE OF "head", 
 
 CREATE TABLE audit."analytic" (
 	"route" text NOT NULL,
-	"data" json NOT NULL
+	"data" jsonb NOT NULL
 ) INHERITS (audit."audit");
 COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by the browser.';
 

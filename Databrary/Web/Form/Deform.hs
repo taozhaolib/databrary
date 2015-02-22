@@ -9,6 +9,7 @@ module Databrary.Web.Form.Deform
   , deformNonempty
   , Deform(..) 
   , deformError
+  , deformParse
   , deformRead
   , deformRegex
   ) where

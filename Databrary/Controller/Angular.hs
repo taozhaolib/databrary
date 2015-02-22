@@ -57,5 +57,3 @@ constantsJS =
 angularConstants :: AppRAction
 angularConstants = action GET ["constants.js"] $ do
   okResponse [(hContentType, "text/javascript")] constantsJS
-
--- angularAnalytics :: (MonadHasRequest q m, DBM m) => m ()

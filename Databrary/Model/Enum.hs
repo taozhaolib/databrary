@@ -6,9 +6,10 @@ module Databrary.Model.Enum
   , pgEnumValues
   ) where
 
-import Control.Applicative ((<$))
+import Control.Arrow (left)
 import Control.Monad (liftM2)
 import qualified Data.Aeson.Types as JSON
+import qualified Data.ByteString.Char8 as BSC
 import qualified Data.CaseInsensitive as CI (mk)
 import Data.Char (toUpper)
 import qualified Data.Text as T
@@ -18,6 +19,7 @@ import Text.Read (readMaybe)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.Kind
+import Databrary.Web.Form (FormDatum(..))
 import Databrary.Web.Form.Deform
 
 class (PGEnum a, Kinded a) => DBEnum a
@@ -43,7 +45,11 @@ parseJSONEnum (JSON.Number x) = p (round x) where
 parseJSONEnum _ = fail $ "Invalid " ++ kindOf (undefined :: a)
 
 enumForm :: forall a m . (Functor m, Monad m, DBEnum a) => DeformT m a
-enumForm = maybe (minBound <$ deformError ("Invalid " `T.append` kindOf (undefined :: a))) return . readDBEnum =<< deform
+enumForm = deformParse minBound fv where
+  fv (FormDatumBS b) = maybe e return $ readDBEnum $ BSC.unpack b
+  fv (FormDatumJSON j) = left T.pack $ JSON.parseEither parseJSONEnum j
+  fv FormDatumNone = e
+  e = Left $ "Invalid " `T.append` kindOf (undefined :: a)
 
 makeDBEnum :: String -> String -> TH.DecsQ
 makeDBEnum name typs =

@@ -13,6 +13,7 @@ import Control.Has (makeHasRec)
 import Databrary.Action.Types
 import Databrary.Action.App
 import Databrary.Model.Identity
+import Databrary.Controller.Analytics
 
 data AuthRequest = AuthRequest
   { authApp :: !AppRequest
@@ -29,7 +30,8 @@ instance ActionData AuthRequest where
 withAuth :: AuthAction -> AppAction
 withAuth f = do
   i <- determineIdentity
-  withReaderT (\a -> AuthRequest a i) f
+  withReaderT (\a -> AuthRequest a i) $
+    angularAnalytics >> f
 
 withoutAuth :: ReaderT AuthRequest IO a -> ReaderT AppRequest IO a
 withoutAuth f =
