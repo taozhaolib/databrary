@@ -7,7 +7,7 @@ import qualified Data.ByteString as BS
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Id.Types
 import Databrary.Model.Format.Types
 

@@ -6,7 +6,7 @@ module Databrary.Model.Citation.SQL
 
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Citation.Types
 
 citationRow :: Selector -- ^ @Maybe 'T.Text' -> 'Citation'@

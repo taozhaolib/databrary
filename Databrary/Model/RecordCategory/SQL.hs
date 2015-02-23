@@ -5,7 +5,7 @@ module Databrary.Model.RecordCategory.SQL
   ) where
 
 import Databrary.Model.RecordCategory.Types
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 
 recordCategoryRow :: Selector -- RecordCategory
 recordCategoryRow = selectColumns 'RecordCategory "record_category" ["id", "name"]

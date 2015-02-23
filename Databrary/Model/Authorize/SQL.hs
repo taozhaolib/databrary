@@ -2,13 +2,17 @@
 module Databrary.Model.Authorize.SQL
   ( selectAuthorizeParent
   , selectAuthorizeChild
+  , updateAuthorize
+  , insertAuthorize
+  , deleteAuthorize
   ) where
 
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.Time.Types
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Party.SQL (selectParty)
+import Databrary.Model.Audit.SQL
 import Databrary.Model.Party.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Permission.SQL
@@ -45,3 +49,43 @@ selectAuthorizeChild parent ident = selectMap (`TH.AppE` TH.VarE parent) $ selec
   , joinOn ("authorize.child = party.id AND authorize.parent = ${partyId " ++ nameRef parent ++ "}") 
     $ selectParty ident
   ]
+
+authorizeSets :: String -- ^ @'Authorize'@
+  -> [(String, String)]
+authorizeSets a =
+  [ ("site", "${accessSite " ++ a ++ "}")
+  , ("member", "${accessMember " ++ a ++ "}")
+  , ("expires", "${authorizeExpires " ++ a ++ "}")
+  ]
+
+authorizeKeys :: String -- ^ @'Authorize'@
+  -> [(String, String)]
+authorizeKeys a =
+  [ ("child", "${partyId (authorizeChild (authorization " ++ a ++ "))}")
+  , ("parent", "${partyId (authorizeParent (authorization " ++ a ++ "))}")
+  ]
+
+updateAuthorize :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Authorize'@
+  -> TH.ExpQ
+updateAuthorize ident a = auditUpdate ident "authorize"
+  (authorizeSets as)
+  (whereEq $ authorizeKeys as)
+  Nothing
+  where as = nameRef a
+
+insertAuthorize :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Authorize'@
+  -> TH.ExpQ
+insertAuthorize ident a = auditInsert ident "authorize"
+  (authorizeKeys as ++ authorizeSets as)
+  Nothing
+  where as = nameRef a
+
+deleteAuthorize :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Authorize'@
+  -> TH.ExpQ
+deleteAuthorize ident a = auditDelete ident "authorize"
+  (whereEq $ authorizeKeys as)
+  Nothing
+  where as = nameRef a

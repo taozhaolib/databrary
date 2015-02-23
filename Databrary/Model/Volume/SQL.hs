@@ -8,7 +8,7 @@ import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.Time.Types
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
 

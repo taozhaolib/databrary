@@ -82,21 +82,27 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
   ]
 
 changeParty :: AuditM c m => Party -> m ()
-changeParty p = dbExecute1 =<< $(updateParty 'p)
+changeParty p = do
+  ident <- getAuditIdentity
+  dbExecute1 $(updateParty 'ident 'p)
 
 changeAccount :: AuditM c m => Account -> m ()
-changeAccount a = dbExecute1 =<< $(updateAccount 'a)
+changeAccount a = do
+  ident <- getAuditIdentity
+  dbExecute1 $(updateAccount 'ident 'a)
 
 addParty :: AuditM c m => Party -> m Party
-addParty bp =
-  dbQuery1' . fmap ($ PermissionREAD) =<< $(insertParty 'bp)
+addParty bp = do
+  ident <- getAuditIdentity
+  dbQuery1' $ fmap ($ PermissionREAD) $(insertParty 'ident 'bp)
 
 addAccount :: AuditM c m => Account -> m Account
 addAccount ba@Account{ accountParty = bp } = do
-  p <- addParty bp
+  ident <- getAuditIdentity
+  p <- dbQuery1' $ fmap ($ PermissionREAD) $(insertParty 'ident 'bp)
   let pa = p{ partyAccount = Just a }
       a = ba{ accountParty = pa }
-  dbExecute1 =<< $(insertAccount 'a)
+  dbExecute1 $(insertAccount 'ident 'a)
   return a
 
 lookupFixedParty :: Id Party -> Identity -> Maybe Party

@@ -3,6 +3,7 @@ module Databrary.Model.Audit.SQL
   ( auditInsert
   , auditDelete
   , auditUpdate
+  , whereEq
   ) where
 
 import Data.List (intercalate)
@@ -10,7 +11,7 @@ import Database.PostgreSQL.Typed.Query (makePGQuery, simpleQueryFlags)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.Types
 
 actionCmd :: AuditAction -> String
@@ -19,33 +20,33 @@ actionCmd AuditActionChange = "UPDATE"
 actionCmd AuditActionRemove = "DELETE FROM"
 actionCmd a = error $ "actionCmd: " ++ show a
 
-auditQuery :: AuditAction -> String -> String -> Maybe SelectOutput -> TH.ExpQ
-auditQuery action table stmt returning = do
-  who <- TH.newName "who"
-  ip <- TH.newName "ip"
-  let sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
-        ++ " RETURNING *) INSERT INTO audit." ++ table
-        ++ " SELECT CURRENT_TIMESTAMP, ${" ++ nameRef who ++ "}, ${" ++ nameRef ip ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
-  TH.doE
-    [ return $ TH.BindS
-      (TH.RecP 'AuditIdentity [('auditWho, TH.VarP who), ('auditIp, TH.VarP ip)])
-      (TH.VarE (TH.mkName "Databrary.Model.Audit.getAuditIdentity"))
-    , TH.noBindS $ TH.appE (TH.varE 'return) $
-      maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++))) returning
-    ]
+auditQuery :: AuditAction -> TH.Name -- ^ @'AuditIdentity'
+  -> String -> String -> Maybe SelectOutput -> TH.ExpQ
+auditQuery action ident table stmt =
+  maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++)))
   where
+  sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
+    ++ " RETURNING *) INSERT INTO audit." ++ table
+    ++ " SELECT CURRENT_TIMESTAMP, ${auditWho " ++ idents ++ "}, ${auditIp " ++ idents ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
+  idents = nameRef ident
   flags = simpleQueryFlags
 
-auditInsert :: String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
-auditInsert table args =
-  auditQuery AuditActionAdd table 
+auditInsert :: TH.Name -> String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
+auditInsert ident table args =
+  auditQuery AuditActionAdd ident table 
     ('(' : intercalate "," (map fst args) ++ ") VALUES (" ++ intercalate "," (map snd args) ++ ")")
 
-auditDelete :: String -> String -> Maybe SelectOutput -> TH.ExpQ
-auditDelete table wher =
-  auditQuery AuditActionRemove table ("WHERE " ++ wher)
+auditDelete :: TH.Name -> String -> String -> Maybe SelectOutput -> TH.ExpQ
+auditDelete ident table wher =
+  auditQuery AuditActionRemove ident table ("WHERE " ++ wher)
 
-auditUpdate :: String -> [(String, String)] -> String -> Maybe SelectOutput -> TH.ExpQ
-auditUpdate table sets wher =
-  auditQuery AuditActionChange table
-    ("SET " ++ intercalate "," (map (\(c,v) -> c ++ "=" ++ v) sets) ++ " WHERE " ++ wher)
+auditUpdate :: TH.Name -> String -> [(String, String)] -> String -> Maybe SelectOutput -> TH.ExpQ
+auditUpdate ident table sets wher =
+  auditQuery AuditActionChange ident table
+    ("SET " ++ intercalate "," (map pairEq sets) ++ " WHERE " ++ wher)
+
+pairEq :: (String, String) -> String
+pairEq (c, v) = c ++ "=" ++ v
+
+whereEq :: [(String, String)] -> String
+whereEq = intercalate " AND " . map pairEq

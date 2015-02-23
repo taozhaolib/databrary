@@ -17,7 +17,7 @@ import Databrary.Model.Asset.SQL
 import Databrary.Model.Container.Types
 import Databrary.Model.Container.SQL
 import Databrary.Model.Slot.Types
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Volume.SQL
 import Databrary.Model.SlotAsset.Types
 

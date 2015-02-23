@@ -7,7 +7,7 @@ module Databrary.Model.Token.SQL
 
 import qualified Data.Text as T
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Party.Types
 import Databrary.Model.Party.SQL (selectSiteAuth)
 import Databrary.Model.Token.Types

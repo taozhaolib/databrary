@@ -5,6 +5,8 @@ module Databrary.DB
   , DBM
   , dbRunQuery
   , dbExecute
+  , dbTryExecute
+  , dbExecuteSimple
   , dbExecute1
   , dbQuery
   , dbQuery1
@@ -15,7 +17,7 @@ module Databrary.DB
   ) where
 
 import Control.Applicative (Applicative, (<$>))
-import Control.Exception (onException)
+import Control.Exception (onException, tryJust)
 import Control.Monad (when, (<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
@@ -24,9 +26,9 @@ import qualified Data.Configurator.Types as C
 import Data.IORef (IORef, newIORef, atomicModifyIORef')
 import Data.Maybe (fromMaybe, isJust)
 import Data.Pool (Pool, withResource, createPool)
-import Database.PostgreSQL.Typed.TH (withTPGConnection, useTPGDatabase)
-import Database.PostgreSQL.Typed.Query
 import Database.PostgreSQL.Typed.Protocol
+import Database.PostgreSQL.Typed.Query
+import Database.PostgreSQL.Typed.TH (withTPGConnection, useTPGDatabase)
 import qualified Language.Haskell.TH as TH
 import Network (PortID(..))
 import System.IO.Unsafe (unsafePerformIO)
@@ -75,6 +77,12 @@ dbRunQuery q = liftDB $ \c -> pgRunQuery c q
 
 dbExecute :: (DBM m, PGQuery q ()) => q -> m Int
 dbExecute q = liftDB $ \c -> pgExecute c q
+
+dbTryExecute :: (DBM m, PGQuery q ()) => (PGError -> Maybe e) -> q -> m (Either e Int)
+dbTryExecute err q = liftDB $ \c -> tryJust err (pgExecute c q)
+
+dbExecuteSimple :: DBM m => PGSimpleQuery () -> m Int
+dbExecuteSimple = dbExecute
 
 dbExecute1 :: (DBM m, PGQuery q ()) => q -> m ()
 dbExecute1 q = do

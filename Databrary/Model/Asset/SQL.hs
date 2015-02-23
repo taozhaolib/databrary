@@ -12,7 +12,7 @@ import Databrary.Model.Time.Types
 import Databrary.Model.Format
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
 import Databrary.Model.Asset.Types

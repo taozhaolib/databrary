@@ -6,7 +6,7 @@ module Databrary.Model.VolumeAccess.SQL
 
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Party.SQL
 import Databrary.Model.Volume.SQL
 import Databrary.Model.VolumeAccess.Types

@@ -9,7 +9,7 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types

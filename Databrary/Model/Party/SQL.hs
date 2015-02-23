@@ -14,7 +14,7 @@ import Data.Char (toLower)
 import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Permission.Types
 import Databrary.Model.Permission.SQL
@@ -75,33 +75,57 @@ selectSiteAuth = selectJoin 'makeSiteAuth
     $ accessRow "authorize_view"
   ]
 
-updateParty :: TH.Name -> TH.ExpQ -- ()
-updateParty p = auditUpdate "party"
-  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
-  ("id = ${partyId " ++ ps ++ "}")
+partySets :: String -- ^ @'Party'@
+  -> [(String, String)]
+partySets p =
+  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ p ++ "}")) ["Name", "Affiliation", "URL"])
+
+accountSets :: String -- ^ @'Account'@
+  -> [(String, String)]
+accountSets a =
+  [ ("email", "${accountEmail " ++ a ++ "}")
+  , ("password", "${accountPasswd " ++ a ++ "}")
+  ]
+
+partyKeys :: String -- ^ @'Party'@
+  -> [(String, String)]
+partyKeys p =
+  [ ("id", "${partyId " ++ p ++ "}") ]
+
+accountKeys :: String -- ^ @'Account'@
+  -> [(String, String)]
+accountKeys a = partyKeys $ "(accountParty " ++ a ++ ")"
+
+updateParty :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Party'@
+  -> TH.ExpQ -- ()
+updateParty ident p = auditUpdate ident "party"
+  (partySets ps)
+  (whereEq $ partyKeys ps)
   Nothing
   where ps = nameRef p
 
-updateAccount :: TH.Name -> TH.ExpQ -- ()
-updateAccount a = auditUpdate "account"
-  [ ("email", "${accountEmail " ++ as ++ "}")
-  , ("password", "${accountPasswd " ++ as ++ "}")
-  ] ("id = ${partyId (accountParty " ++ as ++ ")}")
+updateAccount :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Account'@
+  -> TH.ExpQ -- ()
+updateAccount ident a = auditUpdate ident "account"
+  (accountSets as)
+  (whereEq $ accountKeys as)
   Nothing
   where as = nameRef a
 
-insertParty :: TH.Name -- ^ @'Party'@
+insertParty :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Party'@
   -> TH.ExpQ -- ^ @'Permission' -> 'Party'@
-insertParty p = auditInsert "party"
-  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ ps ++ "}")) ["Name", "Affiliation", "URL"])
+insertParty ident p = auditInsert ident "party"
+  (partySets ps)
   (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
   where ps = nameRef p
 
-insertAccount :: TH.Name -- ^ @'Account'@
+insertAccount :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Account'@
   -> TH.ExpQ
-insertAccount a = auditInsert "account"
-  [ ("id", "${partyId (accountParty " ++ as ++ ")}")
-  , ("email", "${accountEmail " ++ as ++ "}")
-  , ("password", "${accountPasswd " ++ as ++ "}")
-  ] Nothing
+insertAccount ident a = auditInsert ident "account"
+  (accountKeys as ++ accountSets as)
+  Nothing
   where as = nameRef a

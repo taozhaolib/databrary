@@ -3,7 +3,7 @@ module Databrary.Model.Permission.SQL
   ( accessRow
   ) where
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Permission.Types
 
 accessRow :: String -- ^ Table name

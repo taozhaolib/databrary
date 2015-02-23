@@ -7,7 +7,7 @@ module Databrary.Model.Funding.SQL
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 
-import Databrary.Model.SQL
+import Databrary.Model.SQL.Select
 import Databrary.Model.Funding.Types
 
 funderRow :: Selector -- ^ @'Funder'@

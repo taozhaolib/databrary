@@ -4,15 +4,19 @@ module Databrary.Model.Authorize
   , getAuthorizedChildren
   , getAuthorizedParents
   , authorizeJSON
+  , setAuthorize
+  , removeAuthorize
   ) where
 
 import Control.Applicative ((<$>))
+import Control.Monad (when)
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
 import Control.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.SQL
+import Databrary.Model.Audit
 import Databrary.Model.Permission
 import Databrary.Model.Party.Types
 import Databrary.Model.Identity.Types
@@ -38,3 +42,16 @@ getAuthorizedChildren parent al = do
 authorizeJSON :: Authorize -> JSON.Object
 authorizeJSON Authorize{..} = accessJSON (authorizeAccess authorization)
   JSON..+? (("expires" JSON..=) <$> authorizeExpires)
+
+setAuthorize :: (AuditM c m) => Authorize -> m ()
+setAuthorize auth = do
+  ident <- getAuditIdentity
+  r <- updateOrInsert
+    $(updateAuthorize 'ident 'auth)
+    $(insertAuthorize 'ident 'auth)
+  when (r /= 1) $ fail $ "setAuthorize: " ++ show r ++ " rows"
+
+removeAuthorize :: (AuditM c m) => Authorize -> m Bool
+removeAuthorize auth = do
+  ident <- getAuditIdentity
+  (0 <) <$> dbExecute $(deleteAuthorize 'ident 'auth)
