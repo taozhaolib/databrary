@@ -38,6 +38,8 @@ routes = do
                                   <|> act (postLogin api)
     , "register" >>          (html >> act viewRegister)
                                   <|> act (postRegister api)
+    , "password" >>          (html >> act viewPasswordReset)
+                                  <|> act (postPasswordReset api)
     , R.route >>= \t ->               act (viewLoginToken api t)
                                   <|> act (postPasswordToken api t)
     , R.route >>= \p ->               act (viewParty api p)

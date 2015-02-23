@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.View.Register
   ( htmlRegister
+  , htmlPasswordReset
   ) where
 
 import Databrary.Action.Auth
@@ -14,3 +15,7 @@ htmlRegister req = htmlForm "Register" (postRegister False) req $ do
   field "email" $ inputText (Nothing :: Maybe String)
   field "affiliation" $ inputText (Nothing :: Maybe String)
   field "agreement" $ inputCheckbox False
+
+htmlPasswordReset :: AuthRequest -> FormHtml
+htmlPasswordReset req = htmlForm "Password Reset" (postPasswordReset False) req $ do
+  field "email" $ inputText (Nothing :: Maybe String)

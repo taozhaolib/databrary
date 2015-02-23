@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.App 
   ( AppRequest(..)
-  , MonadHasAppRequest
   , AppAction
   , AppActionM
   , withApp
@@ -12,7 +11,7 @@ import Control.Monad.Reader (asks, withReaderT)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
-import Control.Has (MonadHas, makeHasRec)
+import Control.Has (makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time.Types
@@ -29,7 +28,7 @@ data AppRequest = AppRequest
 makeHasRec ''AppRequest ['appResource, 'appTimestamp, 'appRequest]
 
 type AppAction = Action AppRequest
-type AppActionM q m = (MonadHas AppRequest q m, ActionData q)
+type AppActionM q m = (MonadHasAppRequest q m, ActionData q)
 
 withApp :: Resource -> AppAction -> WaiAction
 withApp rc act = do

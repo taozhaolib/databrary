@@ -2,18 +2,23 @@
 module Databrary.Controller.Register
   ( viewRegister
   , postRegister
+  , viewPasswordReset
+  , postPasswordReset
   ) where
 
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad (mfilter)
+import Control.Monad.Reader (ReaderT)
 import Data.Monoid ((<>), mempty)
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import qualified Data.Text.Lazy as TL
-import qualified Network.Mail.Mime as Mail
 
 import Control.Applicative.Ops
 import Control.Has (view, peeks)
 import Databrary.Action
 import Databrary.Action.Auth
+import Databrary.Action.App
+import Databrary.Mail
+import Databrary.Model.Permission
 import Databrary.Model.Party
 import Databrary.Model.Identity
 import Databrary.Model.Token
@@ -23,6 +28,14 @@ import Databrary.Controller.Party
 import Databrary.Controller.Token
 import Databrary.View.Register
 
+resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe T.Text -> [T.Text]) -> ReaderT AppRequest IO ()
+resetPasswordMail (Left email) subj body =
+  sendMail (Left email) subj (body Nothing)
+resetPasswordMail (Right auth) subj body = do
+  tok <- loginTokenId =<< createLoginToken auth True
+  url <- peeks $ actionURL $ viewLoginToken False tok
+  sendMail (Right $ view auth) subj (body $ Just $ TE.decodeLatin1 url)
+
 viewRegister :: AppRAction
 viewRegister = action GET ["register"] $ withAuth $
   maybeIdentity
@@ -30,8 +43,8 @@ viewRegister = action GET ["register"] $ withAuth $
     (\_ -> redirectRouteResponse [] $ viewParty False Nothing)
 
 postRegister :: Bool -> AppRAction
-postRegister api = action POST (apiRoute api ["register"]) $ withoutAuth $ do
-  reg <- runForm (api ?!> htmlRegister) $ do
+postRegister api = action POST (apiRoute api ["register"]) $ do
+  reg <- withoutAuth $ runForm (api ?!> htmlRegister) $ do
     name <- "name" .:> deform
     email <- "email" .:> emailTextForm
     affiliation <- "affiliation" .:> deform
@@ -47,19 +60,40 @@ postRegister api = action POST (apiRoute api ["register"]) $ withoutAuth $ do
           , accountPasswd = Nothing
           }
     return a
-  auth <- maybe (flip SiteAuth mempty <$> addAccount reg) return =<< lookupSiteAuthByEmail (accountEmail reg)
-  tok <- loginTokenId =<< createLoginToken auth True
-  url <- peeks $ actionURL $ viewLoginToken False tok
-  liftIO $ Mail.renderSendMail $ Mail.simpleMail'
-    (Mail.Address (Just (partyName (view auth))) (accountEmail (view auth)))
-    (Mail.Address (Just "Databrary") "help@databrary.org")
+  auth <- maybe (flip SiteAuth mempty <$> withoutAuth (addAccount reg)) return =<< lookupSiteAuthByEmail (accountEmail reg)
+  resetPasswordMail (Right auth) 
     "Databrary account created"
-    ("Thank you for registering with Databrary. Please use this link to complete your\n\
+    $ \(Just url) -> [
+      "Thank you for registering with Databrary. Please use this link to complete your\n\
       \registration:\n\n"
-      <> TL.fromStrict (TE.decodeLatin1 url) <> "\n\n\
+      , url, "\n\n\
       \By clicking the above link, you also indicate that you have read and understand\n\
       \the Databrary Access agreement, which you can download here:\n\n\
       \http://databrary.org/policies/agreement.pdf\n\n\
       \Once you've validated your e-mail, you will be able to request authorization in\n\
-      \order to be granted full access to Databrary.")
+      \order to be granted full access to Databrary.\n"
+    ]
   okResponse [] $ "Your confirmation email has been sent to '" <> accountEmail reg <> "'."
+
+viewPasswordReset :: AppRAction
+viewPasswordReset = action GET ["password"] $ withoutAuth $ do
+  blankForm htmlPasswordReset
+
+postPasswordReset :: Bool -> AppRAction
+postPasswordReset api = action POST (apiRoute api ["password"]) $ do
+  email <- withoutAuth $ runForm (api ?!> htmlPasswordReset) $ do
+    "email" .:> emailTextForm
+  auth <- mfilter ((PermissionADMIN >) . accessMember) <$> lookupSiteAuthByEmail email
+  resetPasswordMail (maybe (Left email) Right auth)
+    "Databrary password reset"
+    $ (:)
+    "Someone (hopefully you) has requested to reset the password for the Databrary\n\
+    \account associated with this email address. If you did not request this, let us\n\
+    \know (by replying to this message) or simply ignore it.\n\n"
+    . maybe [
+      "Unfortunately, no Databrary account found for this email address. You can try\n\
+      \again with a different email address, or reply to this email for assistance.\n"
+      ] ((:)
+      "Otherwise, you may use this link to reset your Databrary password:\n\n"
+      . return)
+  okResponse [] $ "Your password reset information has been sent to '" <> email <> "'."

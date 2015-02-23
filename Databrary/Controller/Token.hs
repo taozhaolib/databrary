@@ -43,4 +43,5 @@ postPasswordToken api ti = action POST (apiRoute api $ toRoute ti) $ do
     passwordForm
   pw <- liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
   withoutAuth $ changeAccount (view tok) { accountPasswd = pw } -- or should this be withAuth?
+  removeLoginToken tok
   loginAccount api (view tok) False
