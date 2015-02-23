@@ -45,7 +45,7 @@
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
                 </h1>
               </div>
-              <div class="scroll">
+              <div class="scroll" ng-class="::{'scroll-view':!editing,'scroll-edit':editing}">
                 <div ng-if="::!editing">
                   <dl class="player-main-info-list cf">
                     <dt ng-if="!!current.asset" message="asset.format"></dt>
