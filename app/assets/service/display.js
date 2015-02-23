@@ -18,7 +18,6 @@ app.factory('displayService', [
 
     $rootScope.$on('$routeChangeSuccess', function () {
       display.loading = false;
-      display.toolbarLinks = [];
     });
 
     display.error = undefined;
@@ -27,11 +26,8 @@ app.factory('displayService', [
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
-      display.toolbarLinks = [];
       $rootScope.$broadcast('displayService-error', error);
     });
-
-    display.toolbarLinks = [];
 
     var $scroll = $('html,body');
 

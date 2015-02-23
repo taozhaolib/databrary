@@ -4,7 +4,7 @@
       <hgroup>
         <h1 class="panel-title smaller">
           <span>{{party.name}}</span>
-          <a ng-if="::party.checkPermission(page.permission.EDIT)" ng-href="{{::party.editRoute('overview')}}"><span class="button icon edit"></span></a>
+          <a ng-if="::party.checkPermission(page.permission.EDIT)" ng-href="{{::party.editRoute()}}"><span class="button icon edit"></span></a>
         </h1>
       </hgroup>
 

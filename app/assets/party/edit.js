@@ -5,12 +5,6 @@ app.controller('party/edit', [
     $scope.party = party;
     page.display.title = page.constants.message('party.edit');
 
-    page.display.toolbarLinks.push({
-      type: 'yellow',
-      html: page.constants.message('party.view'),
-      url: party.route(),
-    });
-
     $scope.registerStep = function (step) {
       step.form = step.$scope['partyEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };

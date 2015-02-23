@@ -30,15 +30,8 @@ app.controller('volume/slot', [
         .search('select', if !ruler.selection.empty then ruler.selection.format())
         .search('range', if ruler.zoomed then ruler.range.format())
 
-    if editing || slot.checkPermission(constants.permission.EDIT)
-      url = if editing then slot.route() else slot.editRoute()
-      display.toolbarLinks.push
-        type: 'yellow'
-        html: constants.message(if editing then 'slot.view' else 'slot.edit')
-        #url: url
-        click: ->
-          searchLocation($location.url(url))
-          return
+    $scope.toggleEdit = () ->
+      searchLocation($location.url(if editing then slot.route() else slot.editRoute()))
 
     byId = (a, b) -> a.id - b.id
     byPosition = (a, b) -> a.segment.l - b.segment.l

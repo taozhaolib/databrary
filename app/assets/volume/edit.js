@@ -7,13 +7,6 @@ app.controller('volume/edit', [
     $scope.volume = volume;
     display.title = volume ? volume.title : constants.message('volume.edit.create');
 
-    if (volume)
-      display.toolbarLinks.push({
-        type: 'yellow',
-        html: constants.message('volume.edit.exit'),
-        url: volume.route()
-      });
-
     $scope.registerStep = function (step) {
       step.form = step.$scope['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];
     };

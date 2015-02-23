@@ -207,7 +207,6 @@ auth.grant.expires.help=Select a date within the next two years.
 
 # --- Party edit
 party.edit=edit profile
-party.view=view profile
 
 party.edit.personal=Personal Information
 party.edit.account=Login Information
@@ -538,8 +537,6 @@ wizard.register-pending.instructions=Your request for authorization is now pendi
 
 volume.edit.create=Create study
 volume.edit.cancel=Cancel
-volume.edit=Edit study
-volume.edit.exit=View study
 
 volume.edit.title.sub=New Study
 volume.edit.success=Volume saved successfully.
@@ -635,7 +632,3 @@ slot.remove.notempty=You must remove all associated records and files before you
 spreadsheet.add.category=Add new tab
 spreadsheet.add.metric=Add new column to {0}
 spreadsheet.unlimit=Show all {0} rows...
-
-# --- Timeline
-slot.edit=Edit session
-slot.view=View session
