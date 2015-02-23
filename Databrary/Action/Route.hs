@@ -9,6 +9,7 @@ module Databrary.Action.Route
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
+import Control.Monad.Reader (withReaderT)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Functor.Contravariant (Contravariant(..))
@@ -46,4 +47,4 @@ mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
 
 instance Contravariant RouteAction where
-  contramap f = mapRouteAction (withAction f)
+  contramap f = mapRouteAction (withReaderT f)

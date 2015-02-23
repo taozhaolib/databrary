@@ -164,7 +164,16 @@ instance Deform T.Text where
     fv (FormDatumJSON (JSON.Number n)) = return $ T.pack $ show n
     fv (FormDatumJSON (JSON.Bool True)) = return "1"
     fv (FormDatumJSON (JSON.Bool False)) = return ""
-    fv _ = Left "Text value required"
+    fv _ = Left "String value required"
+
+instance Deform BS.ByteString where
+  deform = deformParse "" fv where
+    fv (FormDatumBS b) = return b
+    fv (FormDatumJSON (JSON.String t)) = return $ TE.encodeUtf8 t
+    fv (FormDatumJSON (JSON.Number n)) = return $ BSC.pack $ show n
+    fv (FormDatumJSON (JSON.Bool True)) = return "1"
+    fv (FormDatumJSON (JSON.Bool False)) = return ""
+    fv _ = Left "String value required"
 
 instance Deform String where
   deform = deformParse "" fv where

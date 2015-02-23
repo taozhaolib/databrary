@@ -5,8 +5,10 @@ module Databrary.Controller.Form
   , blankForm
 
   , emailTextForm
+  , passwordForm
   ) where
 
+import qualified Data.ByteString as BS
 import Control.Applicative ((<$>))
 import Control.Monad ((<=<))
 import Control.Monad.IO.Class (MonadIO)
@@ -20,7 +22,7 @@ import qualified Text.Regex.Posix as Regex
 import Databrary.Action
 import Databrary.Action.Types
 import Databrary.Web.Form (getFormData, FormData)
-import Databrary.Web.Form.Deform (DeformT, runDeform, deformRegex)
+import Databrary.Web.Form.Deform
 import Databrary.Web.Form.View (runFormView, blankFormView)
 import Databrary.Web.Form.Errors (FormErrors)
 import Databrary.View.Form (FormHtml)
@@ -54,3 +56,9 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
 
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
 emailTextForm = deformRegex "Invalid email address" emailRegex
+
+passwordForm :: (Functor m, Monad m) => DeformT m BS.ByteString
+passwordForm = do
+  p <- "once" .:> (deformCheck "Password too short. Must be 7 characters." ((7 <=) . BS.length) =<< deform)
+  _ <- "again" .:> (deformCheck "Passwords do not match." (p ==) =<< deform)
+  return p

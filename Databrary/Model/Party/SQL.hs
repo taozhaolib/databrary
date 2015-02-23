@@ -5,6 +5,7 @@ module Databrary.Model.Party.SQL
   , selectAuthParty
   , selectSiteAuth
   , updateParty
+  , updateAccount
   , insertParty
   , insertAccount
   ) where
@@ -80,6 +81,14 @@ updateParty p = auditUpdate "party"
   ("id = ${partyId " ++ ps ++ "}")
   Nothing
   where ps = nameRef p
+
+updateAccount :: TH.Name -> TH.ExpQ -- ()
+updateAccount a = auditUpdate "account"
+  [ ("email", "${accountEmail " ++ as ++ "}")
+  , ("password", "${accountPasswd " ++ as ++ "}")
+  ] ("id = ${partyId (accountParty " ++ as ++ ")}")
+  Nothing
+  where as = nameRef a
 
 insertParty :: TH.Name -- ^ @'Party'@
   -> TH.ExpQ -- ^ @'Permission' -> 'Party'@

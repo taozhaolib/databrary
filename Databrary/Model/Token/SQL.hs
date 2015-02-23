@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
 module Databrary.Model.Token.SQL
-  ( selectSession
+  ( selectLoginToken
+  , selectSession
   , selectUpload
   ) where
 
@@ -21,6 +22,10 @@ accountTokenRow table = selectJoin 'AccountToken
   [ tokenRow table
   , joinOn (table ++ ".account = account.id") selectSiteAuth
   ]
+
+selectLoginToken :: Selector -- @'Session'@
+selectLoginToken =
+  addSelects 'LoginToken (accountTokenRow "login_token") ["login_token.password"]
 
 selectSession :: Selector -- @'Session'@
 selectSession =

@@ -8,7 +8,7 @@ module Databrary.Action.App
   ) where
 
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (asks)
+import Control.Monad.Reader (asks, withReaderT)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 
@@ -34,7 +34,7 @@ type AppActionM q m = (MonadHas AppRequest q m, ActionData q)
 withApp :: Resource -> AppAction -> WaiAction
 withApp rc act = do
   ts <- liftIO getCurrentTime
-  withAction (AppRequest rc ts) act
+  withReaderT (AppRequest rc ts) act
 
 instance ActionData AppRequest where
   returnResponse s h r = do

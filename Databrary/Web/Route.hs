@@ -29,6 +29,7 @@ import Data.Int (Int32, Int16)
 import Data.Maybe (fromMaybe)
 import Data.String (IsString(..))
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as Text
 import Network.HTTP.Types (Method)
 import qualified Network.Wai as Wai
@@ -109,19 +110,27 @@ class Routable a where
 
 instance Routable Integer where
   route = readText (Text.signed Text.decimal)
-  toRoute  = return . T.pack . show
+  toRoute = return . T.pack . show
 
 instance Routable Int where
   route = readText (Text.signed Text.decimal)
-  toRoute  = return . T.pack . show
+  toRoute = return . T.pack . show
 
 instance Routable Int32 where
   route = readText (Text.signed Text.decimal)
-  toRoute  = return . T.pack . show
+  toRoute = return . T.pack . show
 
 instance Routable Int16 where
   route = readText (Text.signed Text.decimal)
-  toRoute  = return . T.pack . show
+  toRoute = return . T.pack . show
+
+instance Routable T.Text where
+  route = text
+  toRoute = return
+
+instance Routable BS.ByteString where
+  route = TE.encodeUtf8 <$> text
+  toRoute = return . TE.decodeUtf8
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString

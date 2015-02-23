@@ -19,9 +19,9 @@ import Databrary.Model.Identity
 import Databrary.Model.Token
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
+import Databrary.Controller.Party
+import Databrary.Controller.Token
 import Databrary.View.Register
-
-import {- SOURCE -} Databrary.Controller.Party
 
 viewRegister :: AppRAction
 viewRegister = action GET ["register"] $ withAuth $
@@ -48,8 +48,8 @@ postRegister api = action POST (apiRoute api ["register"]) $ withoutAuth $ do
           }
     return a
   auth <- maybe (flip SiteAuth mempty <$> addAccount reg) return =<< lookupSiteAuthByEmail (accountEmail reg)
-  tok <- createLoginToken auth True
-  url <- peeks $ tokenRedeemURL (view tok)
+  tok <- loginTokenId =<< createLoginToken auth True
+  url <- peeks $ actionURL $ viewLoginToken False tok
   liftIO $ Mail.renderSendMail $ Mail.simpleMail'
     (Mail.Address (Just (partyName (view auth))) (accountEmail (view auth)))
     (Mail.Address (Just "Databrary") "help@databrary.org")
@@ -62,5 +62,4 @@ postRegister api = action POST (apiRoute api ["register"]) $ withoutAuth $ do
       \http://databrary.org/policies/agreement.pdf\n\n\
       \Once you've validated your e-mail, you will be able to request authorization in\n\
       \order to be granted full access to Databrary.")
-
   okResponse [] $ "Your confirmation email has been sent to '" <> accountEmail reg <> "'."

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Login
-  ( viewLogin
+  ( loginAccount
+  , viewLogin
   , postLogin
   , postLogout
   ) where
@@ -10,7 +11,6 @@ import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
-import qualified Data.Text.Encoding as TE
 
 import Control.Applicative.Ops
 import Control.Has (view)
@@ -55,7 +55,7 @@ postLogin api = action POST (apiRoute api ["login"]) $ do
         a = partyAccount =<< p
         su = superuser && Fold.any ((PermissionADMIN ==) . view) auth
     attempts <- lift $ maybe (return 0) recentAccountLogins p
-    let pass = maybe False (flip BCrypt.validatePassword (TE.encodeUtf8 password)) (accountPasswd =<< a)
+    let pass = maybe False (flip BCrypt.validatePassword password) (accountPasswd =<< a)
         block = attempts > 4
     lift $ auditAccountLogin pass (fromMaybe nobodyParty p) email
     when block $ "email" .:> deformError "Too many login attempts. Try again later."

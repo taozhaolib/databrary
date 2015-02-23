@@ -13,7 +13,6 @@ import Database.PostgreSQL.Typed.Dynamic (PGRep)
 import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
-import Control.Has (Has(..))
 import Databrary.Model.Kind
 import qualified Databrary.Web.Route as R
 
@@ -36,7 +35,7 @@ instance Show (IdType a) => Show (Id a) where
   showsPrec p (Id a) = showsPrec p a
   show (Id a) = show a
 
-instance (R.Routable (IdType a), Has (Id a) a, Kinded a) => R.Routable (Id a) where
+instance (R.Routable (IdType a), Kinded a) => R.Routable (Id a) where
   route = R.fixed (kindOf (undefined :: a)) >> Id <$> R.route
   toRoute (Id i) = kindOf (undefined :: a) : R.toRoute i
 

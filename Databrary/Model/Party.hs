@@ -8,6 +8,7 @@ module Databrary.Model.Party
   , lookupAuthParty
   , lookupSiteAuthByEmail
   , changeParty
+  , changeAccount
   , addParty
   , addAccount
   , auditAccountLogin
@@ -83,6 +84,9 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
 changeParty :: AuditM c m => Party -> m ()
 changeParty p = dbExecute1 =<< $(updateParty 'p)
 
+changeAccount :: AuditM c m => Account -> m ()
+changeAccount a = dbExecute1 =<< $(updateAccount 'a)
+
 addParty :: AuditM c m => Party -> m Party
 addParty bp =
   dbQuery1' . fmap ($ PermissionREAD) =<< $(insertParty 'bp)
@@ -90,9 +94,9 @@ addParty bp =
 addAccount :: AuditM c m => Account -> m Account
 addAccount ba@Account{ accountParty = bp } = do
   p <- addParty bp
-  dbExecute1 =<< $(insertAccount 'ba)
   let pa = p{ partyAccount = Just a }
       a = ba{ accountParty = pa }
+  dbExecute1 =<< $(insertAccount 'a)
   return a
 
 lookupFixedParty :: Id Party -> Identity -> Maybe Party

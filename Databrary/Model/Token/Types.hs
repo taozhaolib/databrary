@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, TypeFamilies #-}
+{-# LANGUAGE TemplateHaskell, TypeFamilies, OverloadedStrings #-}
 module Databrary.Model.Token.Types
   ( Token(..)
   , MonadHasToken
@@ -16,6 +16,7 @@ import qualified Data.Text as T
 import qualified Data.ByteString as BS
 
 import Control.Has (makeHasRec)
+import Databrary.Model.Kind
 import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
@@ -40,6 +41,12 @@ data LoginToken = LoginToken
   { loginAccountToken :: !AccountToken
   , loginPasswordToken :: Bool
   }
+
+-- these are signed version of Id Token
+type instance IdType LoginToken = BS.ByteString
+
+instance Kinded LoginToken where
+  kindOf _ = "token"
 
 makeHasRec ''LoginToken ['loginAccountToken]
 

@@ -2,16 +2,20 @@
 module Databrary.Crypto
   ( sign
   , unSign
+  , passwordPolicy
   ) where
 
 import Control.Monad (guard)
+import qualified Crypto.BCrypt as BCrypt
 import qualified Crypto.Hash as Hash
 import Data.Byteable (toBytes)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
+import Data.Monoid ((<>))
 
 import Control.Has (peeks)
 import Databrary.Resource
+import Databrary.Entropy
 
 hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString
 hmac key = Base64.encode . (toBytes :: Hash.HMAC Hash.Skein256_224 -> BS.ByteString) . Hash.hmac key
@@ -24,15 +28,29 @@ signature msg = do
   secret <- peeks resourceSecret
   return $ hmac secret msg
 
-sign :: MonadHasResource c m => BS.ByteString -> m BS.ByteString
+nonceBytes, nonceLength :: Int
+nonceBytes = 6
+nonceLength = BS.length $ Base64.encode $ BS.replicate nonceBytes 0 -- 8
+
+sign :: (MonadHasResource c m, EntropyM c m) => BS.ByteString -> m BS.ByteString
 sign msg = do
-  sig <- signature msg
-  return $ sig `BS.append` msg
+  nonce <- entropyBytes nonceBytes
+  sig <- signature (msg <> nonce)
+  return $ sig <> Base64.encode nonce <> msg
 
 unSign :: MonadHasResource c m => BS.ByteString -> m (Maybe BS.ByteString)
 unSign sigmsg = do
-  sig' <- signature msg
+  sig' <- signature (msg <> nonce)
   return $ do
     guard (sig == sig')
     return msg
-  where (sig, msg) = BS.splitAt hmacLength sigmsg
+  where
+  (sig, noncemsg) = BS.splitAt hmacLength sigmsg
+  (nonce64, msg) = BS.splitAt nonceLength noncemsg
+  nonce = Base64.decodeLenient nonce64
+
+passwordPolicy :: BCrypt.HashingPolicy
+passwordPolicy = BCrypt.HashingPolicy
+  { BCrypt.preferredHashAlgorithm = "$2b$"
+  , BCrypt.preferredHashCost = 12
+  }

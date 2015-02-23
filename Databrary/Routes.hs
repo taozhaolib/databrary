@@ -11,6 +11,7 @@ import Databrary.Action
 import Databrary.Controller.Root
 import Databrary.Controller.Login
 import Databrary.Controller.Register
+import Databrary.Controller.Token
 import Databrary.Controller.Party
 import Databrary.Controller.Volume
 import Databrary.Controller.Record
@@ -37,6 +38,8 @@ routes = do
                                   <|> act (postLogin api)
     , "register" >>          (html >> act viewRegister)
                                   <|> act (postRegister api)
+    , R.route >>= \t ->               act (viewLoginToken api t)
+                                  <|> act (postPasswordToken api t)
     , R.route >>= \p ->               act (viewParty api p)
                                   <|> act (postParty api p)
                <|> (html >> "edit" >> act (viewPartyForm p))

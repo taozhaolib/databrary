@@ -1,8 +1,10 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Token
   ( module Databrary.Model.Token.Types
-  , tokenRedeemURL
+  , loginTokenId
+  , lookupLoginToken
   , createLoginToken
+  , removeLoginToken
   , lookupSession
   , createSession
   , removeSession
@@ -11,7 +13,7 @@ module Databrary.Model.Token
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad (when, void)
+import Control.Monad (when, void, (<=<))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
@@ -19,23 +21,37 @@ import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (view, peek)
+import Databrary.Resource
+import Databrary.Entropy
+import Databrary.Crypto
+import Databrary.DB
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Party
-import Databrary.Action.Route (actionURL)
-import Databrary.Web.Request (Request)
-import Databrary.Entropy
-import Databrary.DB
 import Databrary.Model.Token.Types
 import Databrary.Model.Token.SQL
 
 useTPG
 
-tokenRedeemURL :: Token -> Request -> BS.ByteString
-tokenRedeemURL tok req = actionURL undefined req
+loginTokenId :: (MonadHasResource c m, EntropyM c m) => LoginToken -> m (Id LoginToken)
+loginTokenId tok = Id <$> sign (unId (view tok :: Id Token))
+
+lookupLoginToken :: (DBM m, MonadHasResource c m) => Id LoginToken -> m (Maybe LoginToken)
+lookupLoginToken =
+  maybe (return Nothing)
+    (\t -> dbQuery1 $(selectQuery selectLoginToken "$!WHERE login_token.token = ${t} AND expires > CURRENT_TIMESTAMP")) <=< unSign . unId
+
+lookupSession :: DBM m => BS.ByteString -> m (Maybe Session)
+lookupSession tok =
+  dbQuery1 $(selectQuery selectSession "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
+
+lookupUpload :: (DBM m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe Upload)
+lookupUpload tok = do
+  auth <- peek
+  dbQuery1 $ fmap ($ auth) $(selectQuery selectUpload "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
 
 createToken :: (DBM m, EntropyM c m) => (Id Token -> DBTransaction a) -> m a
 createToken insert = do
@@ -49,15 +65,6 @@ createToken insert = do
   dbTransaction $ do
     dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
-
-lookupSession :: DBM m => BS.ByteString -> m (Maybe Session)
-lookupSession tok =
-  dbQuery1 $(selectQuery selectSession "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
-
-lookupUpload :: (DBM m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe Upload)
-lookupUpload tok = do
-  auth <- peek
-  dbQuery1 $ fmap ($ auth) $(selectQuery selectUpload "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
 
 createLoginToken :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken
 createLoginToken auth passwd = do
@@ -88,10 +95,6 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-removeSession :: (DBM m) => Session -> m Bool
-removeSession tok = (0 <) <$>
-  dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
-
 createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m Upload
 createUpload vol name = do
   auth <- peek
@@ -104,3 +107,11 @@ createUpload vol name = do
       }
     , uploadFilename = name
     }
+
+removeLoginToken :: DBM m => LoginToken -> m Bool
+removeLoginToken tok = (0 <) <$>
+  dbExecute [pgSQL|DELETE FROM login_token WHERE token = ${view tok :: Id Token}|]
+
+removeSession :: (DBM m) => Session -> m Bool
+removeSession tok = (0 <) <$>
+  dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]

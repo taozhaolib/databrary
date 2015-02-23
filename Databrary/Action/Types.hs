@@ -1,6 +1,5 @@
 module Databrary.Action.Types
   ( Action
-  , withAction
   , ActionData(..)
   , ActionM
   , WaiAction
@@ -8,7 +7,7 @@ module Databrary.Action.Types
   ) where
 
 import Control.Exception (catch)
-import Control.Monad.Reader (ReaderT, runReaderT, withReaderT)
+import Control.Monad.Reader (ReaderT, runReaderT)
 import Network.HTTP.Types (ResponseHeaders, Status)
 import qualified Network.Wai as Wai
 
@@ -17,9 +16,6 @@ import Databrary.Web.Request
 import Databrary.Action.Response
 
 type Action q = ReaderT q IO Response
-
-withAction :: (q -> q') -> Action q' -> Action q
-withAction = withReaderT
 
 class Has Request q => ActionData q where
   returnResponse :: (MonadHas Request q m, ResponseData r) => Status -> ResponseHeaders -> r -> m Response
