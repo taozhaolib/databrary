@@ -324,6 +324,7 @@ app.controller('volume/slot', [
                 else
                   @excerpt.on = false
                   @excerpt.classification = ''
+                document.getElementById('slot-toolbar-select-excerpt').blur()
               , (res) =>
                 messages.addError
                   type: 'red'
