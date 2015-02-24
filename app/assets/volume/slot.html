@@ -205,9 +205,6 @@
 
           <div class="slot-timeline-tracks">
             <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.asset.segment.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="select($event, t)" ng-dblclick="selectAll($event, t)" mouse-drag="dragSelection($down, $up, t)">
-              <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
-                <div ng-if="editing && t === current" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
-              </div>
               <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="!excerpt.segment.full" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
               </div>
               <div class="slot-track-asset-info">
@@ -218,6 +215,9 @@
                 </div>
                 <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
+              </div>
+              <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
+                <div ng-if="editing && t === current" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
               </div>
             </div>
           </div>
