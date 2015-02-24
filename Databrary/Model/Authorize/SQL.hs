@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Authorize.SQL
-  ( selectAuthorizeParent
+  ( authorizeRow
+  , selectAuthorizeParent
   , selectAuthorizeChild
   , updateAuthorize
   , insertAuthorize

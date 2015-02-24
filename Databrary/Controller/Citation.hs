@@ -4,6 +4,7 @@ module Databrary.Controller.Citation
   ) where
 
 import Data.Aeson (toJSON)
+import qualified Data.Text as T
 import Network.URI (URI)
 
 import Databrary.Action
@@ -15,7 +16,7 @@ citeForm :: (Functor m, Monad m) => DeformT m URI
 citeForm = "url" .:> deform
 
 getCitation :: AppRAction
-getCitation = action GET ["api","cite"] $ do
+getCitation = action GET ["api" :: T.Text,"cite"] $ do
   url <- runForm Nothing citeForm
   cite <- maybeAction =<< lookupCitation url
   okResponse [] $ toJSON cite

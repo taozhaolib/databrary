@@ -14,11 +14,9 @@ withRecord :: Permission -> Id Record -> (Record -> AuthAction) -> AppAction
 withRecord p i f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupRecord i
 
-displayRecord :: Bool -> Record -> AuthAction
-displayRecord True = okResponse [] . recordJSON
-displayRecord False = okResponse [] . show . recordId -- TODO
-
-viewRecord :: Bool -> Id Record -> AppRAction
-viewRecord api i = action GET (apiRoute api $ toRoute i) $
+viewRecord :: API -> Id Record -> AppRAction
+viewRecord api i = action GET (api, i) $
   withRecord PermissionPUBLIC i $
-    displayRecord api
+    case api of
+      JSON -> okResponse [] . recordJSON
+      HTML -> okResponse [] . show . recordId -- TODO

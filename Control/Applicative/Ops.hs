@@ -11,8 +11,8 @@ import qualified Data.Foldable as Fold
 import Data.Functor
 import Data.Monoid (Endo(..))
 
-infixl 4 <?, <!?
-infixr 4 ?>, ?!>
+infixl 1 <?, <!?
+infixr 1 ?>, ?!>
 
 -- |@'($>)' . guard@ 
 (?>) :: Alternative f => Bool -> a -> f a

@@ -1,8 +1,8 @@
 module Databrary.Controller.Register where
 
-import Databrary.Action (AppRAction)
+import Databrary.Action
 
 viewRegister :: AppRAction
-postRegister :: Bool -> AppRAction
+postRegister :: API -> AppRAction
 viewPasswordReset :: AppRAction
-postPasswordReset :: Bool -> AppRAction
+postPasswordReset :: API -> AppRAction

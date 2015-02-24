@@ -5,16 +5,17 @@ module Databrary.Action.Route
   , actionURL
   , action
   , R.toRoute
-  , apiRoute
+  , API(..)
   ) where
 
+import Control.Applicative ((<|>))
 import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.Reader (withReaderT)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import Data.Functor (($>))
 import Data.Functor.Contravariant (Contravariant(..))
 import Data.Monoid ((<>))
-import qualified Data.Text as T
 import Network.HTTP.Types (Method, methodGet, StdMethod(..), renderStdMethod, encodePathSegments)
 
 import Databrary.Web.Request
@@ -32,19 +33,25 @@ actionURL RouteAction{ actionMethod = g, actionRoute = r } req
   | g == methodGet = requestHost req <> r
   | otherwise = error ("actionURL: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
 
-action :: StdMethod -> [T.Text] -> Action q -> RouteAction q
-action meth path act = RouteAction
+action :: R.Routable r => StdMethod -> r -> Action q -> RouteAction q
+action meth r act = RouteAction
   { actionMethod = renderStdMethod meth
-  , actionRoute = Blaze.toByteString $ encodePathSegments path
+  , actionRoute = Blaze.toByteString $ encodePathSegments $ R.toRoute r
   , routeAction = act
   }
-
-apiRoute :: Bool -> [T.Text] -> [T.Text]
-apiRoute False = id
-apiRoute True = ("api" :)
 
 mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
 
 instance Contravariant RouteAction where
   contramap f = mapRouteAction (withReaderT f)
+
+data API
+  = HTML
+  | JSON
+  deriving (Eq)
+
+instance R.Routable API where
+  route = R.fixed "api" $> JSON <|> return HTML
+  toRoute HTML = []
+  toRoute JSON = ["api"]

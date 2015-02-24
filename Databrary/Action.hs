@@ -4,7 +4,9 @@ module Databrary.Action
   , Action
   , ActionM
   , AppAction
+  , AppRequest
   , AuthAction
+  , AuthRequest
 
   , Response
   , returnResponse
@@ -19,12 +21,12 @@ module Databrary.Action
 
   , StdMethod(GET, POST)
   , RouteAction(..)
+  , API(..)
   , actionURL
   , AppRAction
   , AuthRAction
   , action
   , withAuth
-  , apiRoute
 
   , runAppRoute
   ) where

@@ -16,7 +16,6 @@ import Control.Applicative.Ops
 import Control.Has (view, peeks)
 import Databrary.Action
 import Databrary.Action.Auth
-import Databrary.Action.App
 import Databrary.Mail
 import Databrary.Model.Permission
 import Databrary.Model.Party
@@ -33,18 +32,18 @@ resetPasswordMail (Left email) subj body =
   sendMail (Left email) subj (body Nothing)
 resetPasswordMail (Right auth) subj body = do
   tok <- loginTokenId =<< createLoginToken auth True
-  url <- peeks $ actionURL $ viewLoginToken False tok
+  url <- peeks $ actionURL $ viewLoginToken HTML tok
   sendMail (Right $ view auth) subj (body $ Just $ TE.decodeLatin1 url)
 
 viewRegister :: AppRAction
-viewRegister = action GET ["register"] $ withAuth $
+viewRegister = action GET ("register" :: T.Text) $ withAuth $
   maybeIdentity
     (blankForm htmlRegister)
-    (\_ -> redirectRouteResponse [] $ viewParty False Nothing)
+    (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
-postRegister :: Bool -> AppRAction
-postRegister api = action POST (apiRoute api ["register"]) $ do
-  reg <- withoutAuth $ runForm (api ?!> htmlRegister) $ do
+postRegister :: API -> AppRAction
+postRegister api = action POST (api, "register" :: T.Text) $ do
+  reg <- withoutAuth $ runForm (api == HTML ?> htmlRegister) $ do
     name <- "name" .:> deform
     email <- "email" .:> emailTextForm
     affiliation <- "affiliation" .:> deform
@@ -76,12 +75,12 @@ postRegister api = action POST (apiRoute api ["register"]) $ do
   okResponse [] $ "Your confirmation email has been sent to '" <> accountEmail reg <> "'."
 
 viewPasswordReset :: AppRAction
-viewPasswordReset = action GET ["password"] $ withoutAuth $ do
+viewPasswordReset = action GET ("password" :: T.Text) $ withoutAuth $ do
   blankForm htmlPasswordReset
 
-postPasswordReset :: Bool -> AppRAction
-postPasswordReset api = action POST (apiRoute api ["password"]) $ do
-  email <- withoutAuth $ runForm (api ?!> htmlPasswordReset) $ do
+postPasswordReset :: API -> AppRAction
+postPasswordReset api = action POST (api, "password" :: T.Text) $ do
+  email <- withoutAuth $ runForm (api == HTML ?> htmlPasswordReset) $ do
     "email" .:> emailTextForm
   auth <- mfilter ((PermissionADMIN >) . accessMember) <$> lookupSiteAuthByEmail email
   resetPasswordMail (maybe (Left email) Right auth)

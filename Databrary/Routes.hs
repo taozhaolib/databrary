@@ -3,7 +3,7 @@ module Databrary.Routes
   ( routes
   ) where
 
-import Control.Applicative ((<$), (<|>))
+import Control.Applicative ((<|>))
 import Control.Monad (msum, mfilter, guard)
 
 import qualified Databrary.Web.Route as R
@@ -13,6 +13,7 @@ import Databrary.Controller.Login
 import Databrary.Controller.Register
 import Databrary.Controller.Token
 import Databrary.Controller.Party
+import Databrary.Controller.Authorize
 import Databrary.Controller.Volume
 import Databrary.Controller.Record
 import Databrary.Controller.SlotAsset
@@ -28,10 +29,10 @@ act ra = do
 
 routes :: R.RouteM AppAction
 routes = do
-  api <- True <$ R.fixed "api" <|> return False
+  api <- R.route
   let
-    isapi = guard api
-    html = guard (not api)
+    json = guard (api == JSON)
+    html = guard (api == HTML)
   msum 
     [                                 act (viewRoot api)
     , "login" >>             (html >> act viewLogin)
@@ -42,9 +43,13 @@ routes = do
                                   <|> act (postPasswordReset api)
     , R.route >>= \t ->               act (viewLoginToken api t)
                                   <|> act (postPasswordToken api t)
-    , R.route >>= \p ->               act (viewParty api p)
-                                  <|> act (postParty api p)
-               <|> (html >> "edit" >> act (viewPartyForm p))
+    , R.route >>= \p -> msum          -- /party/P
+      [                               act (viewParty api p)
+      ,                               act (postParty api p)
+      , html >> "edit" >>             act (viewPartyForm p)
+      , R.route >>= \a ->    (html >> act (viewAuthorize p a))
+                                  <|> act (postAuthorize api p a)
+      ]
     , "party" >>                      act (createParty api)
                                   <|> act (searchParty api)
     , R.route >>= \v ->               act (viewVolume api v)
@@ -53,10 +58,10 @@ routes = do
                (html >> "download" >> act (downloadSlotAsset c a))
     , R.route >>= \r ->               act (viewRecord api r)
 
-    , isapi >> msum
+    , json >> msum                    -- /api
       [ "cite" >>                     act getCitation
       ]
-    , html >> msum
+    , html >> msum                    -- /
       [ "public" >> R.route >>=       act . staticPublicFile
       , "constants.js" >>             act angularConstants
       ]

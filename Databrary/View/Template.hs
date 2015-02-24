@@ -16,6 +16,7 @@ import qualified Network.Wai as Wai
 import Control.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
+import Databrary.Action
 import Databrary.View.Html
 
 import {-# SOURCE #-} Databrary.Controller.Login
@@ -60,11 +61,12 @@ htmlTemplate req title body = H.docTypeHtml $ do
         foldIdentity
           (actionLink viewLogin $ "login")
           (\_ -> do
-            actionLink (viewParty False Nothing) $ "profile"
-            actionForm (postLogout False) $
+            actionLink (viewParty HTML TargetProfile) $ "profile"
+            actionForm (postLogout HTML) $
               H.button
                 H.! HA.type_ "submit"
                 $ "logout")
           $ authIdentity req
+    Fold.mapM_ (H.h1 . H.toHtml) title
     body
     footer

@@ -8,8 +8,8 @@ import Control.Has (peek)
 import Databrary.Action
 import Databrary.View.Root
 
-viewRoot :: Bool -> AppRAction
-viewRoot api = action GET [] $ withAuth $
-  if api
-    then okResponse [] JSON.emptyObject
-    else okResponse [] . htmlRoot =<< peek
+viewRoot :: API -> AppRAction
+viewRoot api = action GET api $ withAuth $
+  case api of
+    JSON -> okResponse [] JSON.emptyObject
+    HTML -> okResponse [] . htmlRoot =<< peek

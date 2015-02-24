@@ -30,8 +30,10 @@ import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as TR
+import Data.Time (Day, fromGregorian, parseTime)
 import qualified Data.Vector as V
 import qualified Network.URI as URI
+import System.Locale (defaultTimeLocale)
 import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
 
@@ -214,6 +216,11 @@ instance Deform Int where
     fv (FormDatumJSON (JSON.Bool True)) = return 1
     fv (FormDatumJSON (JSON.Bool False)) = return 0
     fv _ = Left "Integer required"
+
+instance Deform Day where
+  deform = maybe (deformErrorWith (Just (fromGregorian 1900 1 1)) "Invalid date (please use YYYY-MM-DD)") return . pd =<< deform where
+    pd t = pf "%F" t <|> pf "%D" t
+    pf = parseTime defaultTimeLocale
 
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform

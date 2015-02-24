@@ -11,6 +11,7 @@ import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
 
 import Control.Applicative.Ops
 import Control.Has (view)
@@ -29,24 +30,24 @@ import Databrary.View.Login
 import {-# SOURCE #-} Databrary.Controller.Root
 import {-# SOURCE #-} Databrary.Controller.Party
 
-loginAccount :: Bool -> SiteAuth -> Bool -> AppAction
+loginAccount :: API -> SiteAuth -> Bool -> AppAction
 loginAccount api auth su = do
   sess <- createSession auth su
   let Token (Id tok) ex = view sess
   cook <- setSignedCookie "session" tok ex
-  if api
-    then okResponse [cook] $ identityJSON (Identified sess)
-    else redirectRouteResponse [cook] $ viewParty False Nothing
+  case api of
+    JSON -> okResponse [cook] $ identityJSON (Identified sess)
+    HTML -> redirectRouteResponse [cook] $ viewParty HTML TargetProfile
 
 viewLogin :: AppRAction
-viewLogin = action GET ["login"] $ withAuth $
+viewLogin = action GET ("login" :: T.Text) $ withAuth $
   maybeIdentity
     (blankForm htmlLogin)
-    (\_ -> redirectRouteResponse [] $ viewParty False Nothing)
+    (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
-postLogin :: Bool -> AppRAction
-postLogin api = action POST (apiRoute api ["login"]) $ do
-  (Just auth, su) <- withoutAuth $ runForm (api ?!> htmlLogin) $ do
+postLogin :: API -> AppRAction
+postLogin api = action POST (api, "login" :: T.Text) $ do
+  (Just auth, su) <- withoutAuth $ runForm (api == HTML ?> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
     superuser <- "superuser" .:> deform
@@ -63,10 +64,10 @@ postLogin api = action POST (apiRoute api ["login"]) $ do
     return (auth, su)
   loginAccount api auth su
 
-postLogout :: Bool -> AppRAction
-postLogout api = action POST (apiRoute api ["logout"]) $ withAuth $ do
+postLogout :: API -> AppRAction
+postLogout api = action POST (api, "logout" :: T.Text) $ withAuth $ do
   maybeIdentity (return False) removeSession
-  if api
-    then okResponse [cook] $ identityJSON UnIdentified
-    else redirectRouteResponse [cook] $ viewRoot False
+  case api of
+    JSON -> okResponse [cook] $ identityJSON UnIdentified
+    HTML -> redirectRouteResponse [cook] $ viewRoot HTML
   where cook = clearCookie "session"

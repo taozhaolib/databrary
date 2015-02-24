@@ -1,7 +1,7 @@
 module Databrary.Controller.Login where
 
-import Databrary.Action (AppRAction)
+import Databrary.Action
 
 viewLogin :: AppRAction
-postLogin :: Bool -> AppRAction
-postLogout :: Bool -> AppRAction
+postLogin :: API -> AppRAction
+postLogout :: API -> AppRAction

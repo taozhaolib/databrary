@@ -52,12 +52,9 @@ volumeJSONField _ _ _ = return Nothing
 volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
 volumeJSONQuery vol = JSON.jsonQuery (volumeJSON vol) (volumeJSONField vol)
 
-displayVolume :: Maybe JSON.Query -> Volume -> AuthAction
-displayVolume (Just q) vol = okResponse [] =<< volumeJSONQuery vol q
-displayVolume Nothing vol = okResponse [] $ volumeName vol -- TODO
-
-viewVolume :: Bool -> Id Volume -> AppRAction
-viewVolume api i = action GET (apiRoute api $ toRoute i) $ do
-  q <- peeks Wai.queryString
-  withVolume PermissionPUBLIC i $
-    displayVolume (q <? api)
+viewVolume :: API -> Id Volume -> AppRAction
+viewVolume api i = action GET (api, i) $
+  withVolume PermissionPUBLIC i $ \v ->
+    case api of
+      JSON -> okResponse [] =<< volumeJSONQuery v =<< peeks Wai.queryString
+      HTML -> okResponse [] $ volumeName v -- TODO

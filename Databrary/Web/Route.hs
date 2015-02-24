@@ -19,7 +19,7 @@ module Databrary.Web.Route
 
 import Prelude hiding (read, maybe)
 
-import Control.Applicative (Applicative(..), Alternative(..), (<$), (<$>))
+import Control.Applicative (Applicative(..), Alternative(..), (<$), (<$>), optional)
 import Control.Arrow (first)
 import Control.Monad ((<=<), MonadPlus(..), mzero, mfilter, ap, join, guard)
 import Control.Monad.Reader.Class (MonadReader(..), asks)
@@ -27,6 +27,7 @@ import Control.Monad.State.Class (MonadState(..))
 import qualified Data.ByteString as BS
 import Data.Int (Int32, Int16)
 import Data.Maybe (fromMaybe)
+import Data.Monoid ((<>))
 import Data.String (IsString(..))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -108,6 +109,35 @@ class Routable a where
   route :: RouteM a
   toRoute :: a -> [T.Text]
 
+instance Routable () where
+  route = return ()
+  toRoute () = []
+
+instance Routable a => Routable (Maybe a) where
+  route = optional route
+  toRoute Nothing = []
+  toRoute (Just a) = toRoute a
+
+instance (Routable a, Routable b) => Routable (a, b) where
+  route = (,) <$> route <*> route
+  toRoute (a, b) = toRoute a <> toRoute b
+
+instance (Routable a, Routable b, Routable c) => Routable (a, b, c) where
+  route = (,,) <$> route <*> route <*> route
+  toRoute (a, b, c) = toRoute a <> toRoute b <> toRoute c
+
+instance Routable T.Text where
+  route = text
+  toRoute = return
+
+instance Routable [T.Text] where
+  route = path
+  toRoute = id
+
+instance Routable BS.ByteString where
+  route = TE.encodeUtf8 <$> text
+  toRoute = return . TE.decodeUtf8
+
 instance Routable Integer where
   route = readText (Text.signed Text.decimal)
   toRoute = return . T.pack . show
@@ -123,14 +153,6 @@ instance Routable Int32 where
 instance Routable Int16 where
   route = readText (Text.signed Text.decimal)
   toRoute = return . T.pack . show
-
-instance Routable T.Text where
-  route = text
-  toRoute = return
-
-instance Routable BS.ByteString where
-  route = TE.encodeUtf8 <$> text
-  toRoute = return . TE.decodeUtf8
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString

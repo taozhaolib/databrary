@@ -22,7 +22,7 @@ withSlotAsset p ci ai f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupSlotAsset ci ai
 
 downloadSlotAsset :: Id Container -> Id Asset -> AppRAction
-downloadSlotAsset ci ai = action GET (toRoute ci ++ toRoute ai) $
+downloadSlotAsset ci ai = action GET (ci, ai) $
   withSlotAsset PermissionREAD ci ai $ \sa -> do
     let a = view sa
     store <- maybeAction =<< getAssetFile a

@@ -2,9 +2,13 @@ module Databrary.Controller.Party where
 
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
-import Databrary.Action (AppRAction)
+import Databrary.Action
 
-viewParty :: Bool -> Maybe (Id Party) -> AppRAction
-postParty :: Bool -> Maybe (Id Party) -> AppRAction
-createParty :: Bool -> AppRAction
-searchParty :: Bool -> AppRAction
+data PartyTarget
+  = TargetProfile
+  | TargetParty (Id Party)
+
+viewParty :: API -> PartyTarget -> AppRAction
+postParty :: API -> PartyTarget -> AppRAction
+createParty :: API -> AppRAction
+searchParty :: API -> AppRAction

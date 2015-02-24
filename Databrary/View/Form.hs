@@ -26,7 +26,6 @@ import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.Enum
 import Databrary.Action
-import Databrary.Action.Auth
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.View

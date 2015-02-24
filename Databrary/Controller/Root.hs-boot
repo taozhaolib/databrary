@@ -1,5 +1,5 @@
 module Databrary.Controller.Root where
 
-import Databrary.Action (AppRAction)
+import Databrary.Action
 
-viewRoot :: Bool -> AppRAction
+viewRoot :: API -> AppRAction

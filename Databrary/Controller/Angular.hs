@@ -7,6 +7,7 @@ module Databrary.Controller.Angular
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Foldable as Fold
 import Data.Monoid ((<>))
+import qualified Data.Text as T
 import Network.HTTP.Types (hUserAgent, hContentType)
 import qualified Network.Wai as Wai
 import qualified Text.Regex.Posix as Regex
@@ -55,5 +56,5 @@ constantsJS =
     ]
 
 angularConstants :: AppRAction
-angularConstants = action GET ["constants.js"] $ do
+angularConstants = action GET ("constants.js" :: T.Text) $ do
   okResponse [(hContentType, "text/javascript")] constantsJS

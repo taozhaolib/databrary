@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Party
-  ( viewParty
+  ( PartyTarget(..)
+  , withParty
+  , viewParty
   , viewPartyForm
   , postParty
   , createParty
@@ -11,9 +13,9 @@ import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
 import Control.Monad (unless)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
+import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
 import Control.Applicative.Ops
@@ -37,28 +39,34 @@ import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.View.Party
 
-instance R.Routable (Maybe (Id Party)) where
-  route = Just <$> R.route <|> Nothing <$ "profile"
-  toRoute (Just i) = R.toRoute i
-  toRoute Nothing = ["profile"]
+data PartyTarget
+  = TargetProfile
+  | TargetParty (Id Party)
 
-withParty :: Maybe Permission -> Maybe (Id Party) -> (Party -> AuthAction) -> AppAction
-withParty (Just p) (Just i) f = withAuth $
+instance R.Routable PartyTarget where
+  route = TargetParty <$> R.route <|> TargetProfile <$ "profile"
+  toRoute (TargetParty i) = R.toRoute i
+  toRoute TargetProfile = ["profile"]
+
+withParty :: Maybe Permission -> PartyTarget -> (Party -> AuthAction) -> AppAction
+withParty (Just p) (TargetParty i) f = withAuth $
   f =<< checkPermission p =<< maybeAction =<< lookupAuthParty i
 withParty _ mi f = withAuth $ do
   u <- peek
-  unless (Fold.all (partyId u ==) mi) $ result =<< forbiddenResponse
+  let isme TargetProfile = True
+      isme (TargetParty i) = partyId u == i
+  unless (isme mi) $ result =<< forbiddenResponse
   f u
 
 partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 partyJSONField p "parents" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeParent (authorization a))))
-    <$> getAuthorizedParents p (view p >= PermissionADMIN)
+    <$> lookupAuthorizedParents p (view p >= PermissionADMIN)
 partyJSONField p "children" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeChild (authorization a))))
-    <$> getAuthorizedChildren p (view p >= PermissionADMIN)
+    <$> lookupAuthorizedChildren p (view p >= PermissionADMIN)
 partyJSONField p "volumes" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("volume" JSON..= volumeJSON (volumeAccessVolume va)))
@@ -68,15 +76,12 @@ partyJSONField _ _ _ = return Nothing
 partyJSONQuery :: (DBM m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
 partyJSONQuery p = JSON.jsonQuery (partyJSON p) (partyJSONField p)
 
-displayParty :: Maybe JSON.Query -> Party -> AuthAction
-displayParty (Just q) p = okResponse [] =<< partyJSONQuery p q
-displayParty Nothing p = okResponse [] $ partyName p -- TODO
-
-viewParty :: Bool -> Maybe (Id Party) -> AppRAction
-viewParty api i = action GET (apiRoute api $ toRoute i) $ do
-  q <- peeks Wai.queryString
-  withParty (Just PermissionNONE) i $
-    displayParty (q <? api)
+viewParty :: API -> PartyTarget -> AppRAction
+viewParty api i = action GET (api, i) $
+  withParty (Just PermissionNONE) i $ \p ->
+    case api of
+      JSON -> okResponse [] =<< partyJSONQuery p =<< peeks Wai.queryString
+      HTML -> okResponse [] $ partyName p -- TODO
 
 partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
 partyForm p = do
@@ -89,25 +94,29 @@ partyForm p = do
     , partyURL = url
     }
 
-viewPartyForm :: Maybe (Id Party) -> AppRAction
-viewPartyForm i = action GET (toRoute i ++ ["edit"]) $
+viewPartyForm :: PartyTarget -> AppRAction
+viewPartyForm i = action GET (i, "edit" :: T.Text) $
   withParty (Just PermissionADMIN) i $
     blankForm . htmlPartyForm . Just
 
-postParty :: Bool -> Maybe (Id Party) -> AppRAction
-postParty api i = action POST (apiRoute api $ toRoute i) $
+postParty :: API -> PartyTarget -> AppRAction
+postParty api i = action POST (api, i) $
   withParty (Just PermissionADMIN) i $ \p -> do
-    p' <- runForm (api ?!> htmlPartyForm (Just p)) $ partyForm p
+    p' <- runForm (api == HTML ?> htmlPartyForm (Just p)) $ partyForm p
     changeParty p'
-    displayParty ([] <? api) p'
+    case api of
+      JSON -> okResponse [] $ partyJSON p
+      HTML -> redirectRouteResponse [] $ viewParty api i
 
-createParty :: Bool -> AppRAction
-createParty api = action POST (apiRoute api [kindOf blankParty]) $ withAuth $ do
+createParty :: API -> AppRAction
+createParty api = action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
   perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
-  bp <- runForm (api ?!> htmlPartyForm Nothing) $ partyForm blankParty
+  bp <- runForm (api == HTML ?> htmlPartyForm Nothing) $ partyForm blankParty
   p <- addParty bp
-  displayParty (api ?> []) p
+  case api of
+    JSON -> okResponse [] $ partyJSON p
+    HTML -> redirectRouteResponse [] $ viewParty api $ TargetParty $ partyId p
 
 paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
 paginationForm = (,)
@@ -122,10 +131,10 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-searchParty :: Bool -> AppRAction
-searchParty api = action GET (apiRoute api [kindOf blankParty]) $ withAuth $ do
-  (pf, (limit, offset)) <- runForm (api ?!> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
+searchParty :: API -> AppRAction
+searchParty api = action GET (api, "party" :: T.Text) $ withAuth $ do
+  (pf, (limit, offset)) <- runForm (api == HTML ?> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset
-  if api
-    then okResponse [] $ JSON.toJSON $ map partyJSON p
-    else blankForm $ htmlPartySearchForm pf
+  case api of
+    JSON -> okResponse [] $ JSON.toJSON $ map partyJSON p
+    HTML -> blankForm $ htmlPartySearchForm pf
