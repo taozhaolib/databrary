@@ -484,7 +484,7 @@ app.controller('volume/slot', [
         messages.clear(this)
         saves = []
         if $scope.form.measures.$dirty
-          saves.push @record.save({measures:@data.measures}).then () =>
+          saves.push @record.save({measures:@data.measures}).then () ->
             $scope.form.measures.$setPristine()
             return
         if $scope.form.position.$dirty
