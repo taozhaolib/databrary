@@ -10,11 +10,15 @@ import Network.Mail.Mime
 
 import Databrary.Model.Party.Types
 
-sendMail :: MonadIO m => Either T.Text Account -> T.Text -> [T.Text] -> m ()
+baseMail :: Mail
+baseMail = emptyMail (Address (Just "Databrary") "help@databrary.org")
+
+sendMail :: MonadIO m => [Either T.Text Account] -> T.Text -> [T.Text] -> m ()
 sendMail to subj body =
-  liftIO $ renderSendMail $ simpleMail' (addr to)
-    (Address (Just "Databrary") "help@databrary.org")
-    subj (TL.fromChunks body)
+  liftIO $ renderSendMail $ addPart [plainPart (TL.fromChunks body)] $ baseMail
+    { mailTo = map addr to
+    , mailHeaders = [("Subject", subj)]
+    }
   where
   addr (Left e) = Address Nothing e
   addr (Right Account{ accountEmail = email, accountParty = Party{ partyName = name } }) =

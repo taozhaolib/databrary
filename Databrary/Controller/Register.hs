@@ -29,11 +29,11 @@ import Databrary.View.Register
 
 resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe T.Text -> [T.Text]) -> ReaderT AppRequest IO ()
 resetPasswordMail (Left email) subj body =
-  sendMail (Left email) subj (body Nothing)
+  sendMail [Left email] subj (body Nothing)
 resetPasswordMail (Right auth) subj body = do
   tok <- loginTokenId =<< createLoginToken auth True
   url <- peeks $ actionURL $ viewLoginToken HTML tok
-  sendMail (Right $ view auth) subj (body $ Just $ TE.decodeLatin1 url)
+  sendMail [Right $ view auth] subj (body $ Just $ TE.decodeLatin1 url)
 
 viewRegister :: AppRAction
 viewRegister = action GET ("register" :: T.Text) $ withAuth $
