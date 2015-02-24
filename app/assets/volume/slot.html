@@ -33,8 +33,8 @@
                 <nav class="player-main-info-actions">
                   <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-main-action-word green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
                   <button ng-if="editing && !current.file && current.asset" class="player-main-action-word yellow" flow-btn>Replace File</button>
-                  <button ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-action-icon icon trash2"></button>
-                  <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-action-icon icon download"></a>
+                  <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-action-icon icon trash2 button"></a>
+                  <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-action-icon icon download button"></a>
                   <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
                 </nav>
                 <h1 class="player-main-info-name">
