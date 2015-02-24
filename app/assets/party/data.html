@@ -1,1 +1,2 @@
 <volume-list data="volumes"></volume-list>
+<a ng-href="{{page.router.volumeCreate([party.id])}}" ng-if="::party.checkPermission(page.permission.EDIT)"><span class="button green" message="volume.edit.create"></span></a>
