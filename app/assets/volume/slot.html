@@ -6,7 +6,7 @@
   <div class="wrap">
     <div class="row">
       <div class="col">
-        <hgroup>
+        <hgroup class="session-header">
           <a class="view-link" ng-href="{{::editing ? page.router.volumeSpreadsheet(volume.id) : volume.route()}}" ng-bind="::volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
             <span ng-bind="::slot.displayName"></span>
@@ -15,13 +15,6 @@
             <a ng-if="::editing" ng-click="toggleEdit()"><span class="neutral button icon view-icon"></span></a>
           </h3>
         </hgroup>
-
-        <div ng-if="::!editing" class="slot-download" ng-show="!!tracks[0].asset">
-          <a class="slot-download-link" ng-href="{{::slot.zipRoute()}}" target="_self">
-            <span class="download" message="download.zip"></span>
-            <span class="icon download"></span>
-          </a>
-        </div>
 
         <section class="slot-player slot frame" fold ng-if="!!current">
           <div class="slot-header folder" folder ng-click="toggleFold()">
@@ -228,6 +221,13 @@
             </div>
           </div>
         </section>
+
+        <div ng-if="::!editing" class="slot-download" ng-show="!!tracks[0].asset">
+          <a ng-href="{{::slot.zipRoute()}}" target="_self">
+            <span class="icon download"></span>
+            <span class="download" message="download.zip"></span>
+          </a>
+        </div>
       </div>
     </div>
   </div>
