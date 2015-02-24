@@ -161,13 +161,16 @@ app.controller('volume/slot', [
       return
 
     $scope.setSelection = (pos, u) ->
-      sel = ruler.selection
-      sel = slot.segment if sel.empty
-      ruler.selection =
-        if u
-          new Segment(Math.min(sel.l, pos), pos+0.1)
-        else
-          new Segment(pos, Math.max(sel.u, pos+0.1))
+      if u == undefined
+        ruler.selection = new Segment(pos)
+      else
+        sel = ruler.selection
+        sel = slot.segment if sel.empty
+        ruler.selection =
+          if u
+            new Segment(Math.min(sel.l, pos), pos+0.1)
+          else
+            new Segment(pos, Math.max(sel.u, pos+0.1))
       finalizeSelection()
       return
 
