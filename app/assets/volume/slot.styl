@@ -160,26 +160,14 @@
   min-width 3px
   z-index 50
   background-color green53
-  border 1px green43 solid
+  border 1px green13 solid
   opacity 0.6
   
 .slot-track-asset-info
   padding b6
   overflow ellipsis
   position relative
-  .slot-track-asset-info-name
-    display inline-block
-    overflow hidden
-    text-overflow ellipsis
-    width 96%
-    padding-left b2
-    .track-status
-      color red
-    &.uploading
-      width 40%
-    &.excerpt
-      font-weight bold
-      color pitch
+      
   .classification-info
   .upload-progress-info
     position absolute
@@ -190,6 +178,19 @@
   progress
     @media screen and (max-width: 640px)
       width 100px
+  
+.slot-track-asset-info-name
+  display inline-block
+  overflow hidden
+  text-overflow ellipsis
+  width 96%
+  padding-left b2
+  .track-status
+    color red
+  &.uploading
+    width 40%
+  &.excerpt:after
+    content "*"
 
 .slot-track-asset-thumb
   height b2+b3
