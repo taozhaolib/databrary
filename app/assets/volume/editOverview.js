@@ -26,7 +26,7 @@ app.directive('volumeEditOverviewForm', [
       if (!volume) {
         form.data.owner = parseInt($routeParams.owner) || models.Login.user.id;
         form.owners = models.Login.user.parents.filter(function (p) {
-            return Math.min(p.site, p.member) >= constants.permission.EDIT;
+            return p.member >= constants.permission.ADMIN;
           }).map(function (p) {
             return p.party;
           });
