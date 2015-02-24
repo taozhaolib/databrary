@@ -237,7 +237,7 @@ app.controller('volume/slot', [
       fillData: ->
         super()
         if !@asset
-          @data.position = if ruler.range.uBounded then ruler.range.u else 0
+          @data.position = if ruler.range.uBounded then Math.floor(ruler.range.u) else 0
 
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
