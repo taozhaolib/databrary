@@ -4,6 +4,7 @@ module Databrary.Controller.Login
   , viewLogin
   , postLogin
   , postLogout
+  , viewUser
   ) where
 
 import Control.Monad (when, unless)
@@ -14,7 +15,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 
 import Control.Applicative.Ops
-import Control.Has (view)
+import Control.Has (view, peek)
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Web.Cookie
@@ -40,13 +41,13 @@ loginAccount api auth su = do
     HTML -> redirectRouteResponse [cook] $ viewParty HTML TargetProfile
 
 viewLogin :: AppRAction
-viewLogin = action GET ("login" :: T.Text) $ withAuth $
+viewLogin = action GET ["user", "login" :: T.Text] $ withAuth $
   maybeIdentity
     (blankForm htmlLogin)
     (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
 postLogin :: API -> AppRAction
-postLogin api = action POST (api, "login" :: T.Text) $ do
+postLogin api = action POST (api, ["user", "login" :: T.Text]) $ do
   (Just auth, su) <- withoutAuth $ runForm (api == HTML ?> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
@@ -65,9 +66,13 @@ postLogin api = action POST (api, "login" :: T.Text) $ do
   loginAccount api auth su
 
 postLogout :: API -> AppRAction
-postLogout api = action POST (api, "logout" :: T.Text) $ withAuth $ do
+postLogout api = action POST (api, ["user", "logout" :: T.Text]) $ withAuth $ do
   maybeIdentity (return False) removeSession
   case api of
     JSON -> okResponse [cook] $ identityJSON UnIdentified
     HTML -> redirectRouteResponse [cook] $ viewRoot HTML
   where cook = clearCookie "session"
+
+viewUser :: AppRAction
+viewUser = action GET (JSON, "user" :: T.Text) $ withAuth $
+  okResponse [] . identityJSON =<< peek

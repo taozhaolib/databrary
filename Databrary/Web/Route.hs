@@ -158,4 +158,4 @@ query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString
 
 routeRequest :: RouteM a -> Wai.Request -> Maybe a
-routeRequest (RouteM r) q = fst <$> r q (Wai.pathInfo q)
+routeRequest (RouteM r) q = fst <$> r q (filter (not . T.null) $ Wai.pathInfo q)

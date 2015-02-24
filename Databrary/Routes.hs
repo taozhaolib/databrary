@@ -3,11 +3,16 @@ module Databrary.Routes
   ( routes
   ) where
 
+import qualified Data.ByteString as BS
 import Control.Applicative ((<|>))
-import Control.Monad (msum, mfilter, guard)
+import Control.Monad (msum, guard)
+import Control.Monad.Reader (ask)
+import Network.HTTP.Types (methodGet, movedPermanently301, hLocation)
+import qualified Network.Wai as Wai
 
 import qualified Databrary.Web.Route as R
 import Databrary.Action
+import Databrary.Action.Types
 import Databrary.Controller.Root
 import Databrary.Controller.Login
 import Databrary.Controller.Register
@@ -21,11 +26,15 @@ import Databrary.Controller.Citation
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
-act :: RouteAction q -> R.RouteM (Action q)
+act :: ActionData q => RouteAction q -> R.RouteM (Action q)
 act ra = do
   R.final
-  _ <- mfilter (actionMethod ra ==) R.method
-  return $ routeAction ra
+  req <- ask
+  guard $ actionMethod ra == Wai.requestMethod req
+  return $
+    if actionMethod ra == methodGet && Wai.rawPathInfo req /= actionRoute ra
+      then emptyResponse movedPermanently301 [(hLocation, actionURL ra req `BS.append` Wai.rawQueryString req)]
+      else routeAction ra
 
 routes :: R.RouteM AppAction
 routes = do
@@ -35,12 +44,16 @@ routes = do
     html = guard (api == HTML)
   msum 
     [                                 act (viewRoot api)
-    , "login" >>             (html >> act viewLogin)
+    , "user" >> msum                  -- /user
+      [                       json >> act viewUser
+      , "login" >>           (html >> act viewLogin)
                                   <|> act (postLogin api)
-    , "register" >>          (html >> act viewRegister)
+      , "logout" >>                   act (postLogout api)
+      , "register" >>        (html >> act viewRegister)
                                   <|> act (postRegister api)
-    , "password" >>          (html >> act viewPasswordReset)
+      , "password" >>        (html >> act viewPasswordReset)
                                   <|> act (postPasswordReset api)
+      ]
     , R.route >>= \t ->               act (viewLoginToken api t)
                                   <|> act (postPasswordToken api t)
     , R.route >>= \p -> msum          -- /party/P

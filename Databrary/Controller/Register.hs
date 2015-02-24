@@ -36,13 +36,13 @@ resetPasswordMail (Right auth) subj body = do
   sendMail [Right $ view auth] subj (body $ Just $ TE.decodeLatin1 url)
 
 viewRegister :: AppRAction
-viewRegister = action GET ("register" :: T.Text) $ withAuth $
+viewRegister = action GET ["user", "register" :: T.Text] $ withAuth $
   maybeIdentity
     (blankForm htmlRegister)
     (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
 postRegister :: API -> AppRAction
-postRegister api = action POST (api, "register" :: T.Text) $ do
+postRegister api = action POST (api, ["user", "register" :: T.Text]) $ do
   reg <- withoutAuth $ runForm (api == HTML ?> htmlRegister) $ do
     name <- "name" .:> deform
     email <- "email" .:> emailTextForm
@@ -75,11 +75,11 @@ postRegister api = action POST (api, "register" :: T.Text) $ do
   okResponse [] $ "Your confirmation email has been sent to '" <> accountEmail reg <> "'."
 
 viewPasswordReset :: AppRAction
-viewPasswordReset = action GET ("password" :: T.Text) $ withoutAuth $ do
+viewPasswordReset = action GET ["user", "password" :: T.Text] $ withoutAuth $ do
   blankForm htmlPasswordReset
 
 postPasswordReset :: API -> AppRAction
-postPasswordReset api = action POST (api, "password" :: T.Text) $ do
+postPasswordReset api = action POST (api, ["user", "password" :: T.Text]) $ do
   email <- withoutAuth $ runForm (api == HTML ?> htmlPasswordReset) $ do
     "email" .:> emailTextForm
   auth <- mfilter ((PermissionADMIN >) . accessMember) <$> lookupSiteAuthByEmail email
