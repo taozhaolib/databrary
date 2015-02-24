@@ -540,35 +540,49 @@ app.controller('volume/slot', [
       $scope.records = t
       return
 
+    $scope.setCategory = (c) ->
+      if c?
+        rs = {}
+        for ri, r of $scope.addRecord.records when `(r.category || 0) == c`
+          rs[ri] = r.displayName
+        $scope.addRecord.options = rs
+      else
+        $scope.addRecord.options = undefined
+      return
+
     $scope.addRecord = (r) ->
       seg = getSelection()
+      $scope.addRecord.records = undefined
       if r == undefined
         rs = {}
         for ri, r of slot.volume.records
-          rs[ri] = r.displayName
+          rs[ri] = r
         for sr in records
-          if sr.segment.overlaps(seg)
+          if sr.record.id of rs && sr.segment.overlaps(seg)
             delete rs[sr.record.id]
-        $scope.addRecord.options = rs
+        $scope.addRecord.records = rs
+        rc = {}
+        for ri, r of rs
+          rc[r.category || 0] = null
+        $scope.addRecord.categories = rc
         $scope.addRecord.select = null
-      else
-        $scope.addRecord.options = undefined
-        if r
-          slot.addRecord(slot.volume.records[r], seg).then (rec) ->
-              r = new Record
-                id: rec.id
-                record: rec
-                segment: seg
-              records.push(r)
-              placeRecords()
-              select(r)
-              return
-            , (res) ->
-              messages.addError
-                body: 'Error adding record'
-                report: res
-                owner: $scope
-              return
+        $scope.setCategory($scope.addRecord.category)
+      else if r
+        slot.addRecord(slot.volume.records[r], seg).then (rec) ->
+            r = new Record
+              id: rec.id
+              record: rec
+              segment: seg
+            records.push(r)
+            placeRecords()
+            select(r)
+            return
+          , (res) ->
+            messages.addError
+              body: 'Error adding record'
+              report: res
+              owner: $scope
+            return
       return
 
     $scope.positionBackgroundStyle = (l, i) ->
