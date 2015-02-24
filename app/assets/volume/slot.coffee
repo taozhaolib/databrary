@@ -14,7 +14,7 @@ app.controller('volume/slot', [
     fullRange = new Segment(0, 0)
     ruler = $scope.ruler =
       range: if 'range' of target then new Segment(target.range) else fullRange
-      selection: if 'select' of target then new Segment(target.select) else Segment.empty
+      selection: new Segment(if 'select' of target then target.select else null)
       position: Offset.parse(target.pos)
       zoomed: 'range' of target
 
@@ -98,7 +98,7 @@ app.controller('volume/slot', [
       if isFinite(o = positionOffset(pos))
         seekOffset(o)
         unless ruler.selection.contains(o) || ruler.selection.u == o # "loose" contains
-          ruler.selection = Segment.empty
+          ruler.selection = new Segment(null)
           finalizeSelection()
       return
 
@@ -187,7 +187,7 @@ app.controller('volume/slot', [
         else if startPos = endPos
           new Segment(startPos)
         else
-          Segment.empty
+          new Segment(null)
       finalizeSelection() if up.type != 'mousemove'
       return
 
