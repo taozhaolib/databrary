@@ -139,10 +139,13 @@
             <ng-form ng-if="current.excerpt.on" name="form.excerpt">
               <select id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
-            <button ng-if="!addRecord.options" ng-click="addRecord()" class="mini">Add Record</button>
-            <button ng-if="!!addRecord.options" ng-click="addRecord(null)" class="mini">Cancel</button>
-            <ng-form ng-if="!!addRecord.options" name="form.record">
-              <select class="slot-toolbar-select" name="record" ng-model="addRecord.select" ng-options="r as d for (r, d) in addRecord.options" ng-change="addRecord(addRecord.select)">
+            <button ng-if="!addRecord.records" ng-click="addRecord()" class="mini">Add Record</button>
+            <button ng-if="!!addRecord.records" ng-click="addRecord(null)" class="mini">Cancel</button>
+            <ng-form ng-if="!!addRecord.records" name="form.record">
+              <select class="slot-toolbar-select" name="category" ng-model="addRecord.category" ng-options="c as page.constants.category[c].name || 'record' for (c, n) in addRecord.categories" ng-change="setCategory(addRecord.category)">
+                <option value="">Choose category...</option>
+              </select>
+              <select ng-if="!!addRecord.options" class="slot-toolbar-select" name="record" ng-model="addRecord.select" ng-options="r as d for (r, d) in addRecord.options" ng-change="addRecord(addRecord.select)">
                 <option value="">Choose record...</option>
               </select>
             </ng-form>
