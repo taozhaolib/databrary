@@ -7,7 +7,7 @@ module Databrary.Model.Audit.SQL
   ) where
 
 import Data.List (intercalate)
-import Database.PostgreSQL.Typed.Query (makePGQuery, simpleQueryFlags)
+import Database.PostgreSQL.Typed.Query (makePGQuery, parseQueryFlags)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import qualified Language.Haskell.TH as TH
 
@@ -22,14 +22,14 @@ actionCmd a = error $ "actionCmd: " ++ show a
 
 auditQuery :: AuditAction -> TH.Name -- ^ @'AuditIdentity'
   -> String -> String -> Maybe SelectOutput -> TH.ExpQ
-auditQuery action ident table stmt =
+auditQuery action ident tablef stmt =
   maybe (makePGQuery flags sql) (makeQuery flags ((sql ++) . (" RETURNING " ++)))
   where
   sql = "WITH audit_row AS (" ++ actionCmd action ++ ' ' : table ++ ' ' : stmt
     ++ " RETURNING *) INSERT INTO audit." ++ table
     ++ " SELECT CURRENT_TIMESTAMP, ${auditWho " ++ idents ++ "}, ${auditIp " ++ idents ++ "}, " ++ pgSafeLiteral action ++ ", * FROM audit_row"
   idents = nameRef ident
-  flags = simpleQueryFlags
+  (flags, table) = parseQueryFlags tablef
 
 auditInsert :: TH.Name -> String -> [(String, String)] -> Maybe SelectOutput -> TH.ExpQ
 auditInsert ident table args =

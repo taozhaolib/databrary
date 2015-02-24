@@ -2,9 +2,11 @@
 module Databrary.Model.Volume.Types
   ( Volume(..)
   , MonadHasVolume
+  , blankVolume
   ) where
 
 import qualified Data.Text as T
+import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 
 import Control.Has (makeHasRec)
 import Databrary.Model.Time.Types
@@ -27,3 +29,13 @@ instance Kinded Volume where
   kindOf _ = "volume"
 
 makeHasRec ''Volume ['volumeId, 'volumePermission]
+
+blankVolume :: Volume
+blankVolume = Volume
+  { volumeId = error "blankVolume"
+  , volumeName = ""
+  , volumeAlias = Nothing
+  , volumeBody = Nothing
+  , volumeCreation = posixSecondsToUTCTime 1357900000
+  , volumePermission = PermissionNONE
+  }

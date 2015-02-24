@@ -2,6 +2,8 @@
 module Databrary.Model.Volume 
   ( module Databrary.Model.Volume.Types
   , lookupVolume
+  , changeVolume
+  , addVolume
   , volumeJSON
   ) where
 
@@ -14,6 +16,7 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id
 import Databrary.Model.Permission
+import Databrary.Model.Audit
 import Databrary.Model.Party.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
@@ -34,4 +37,14 @@ volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
   , Just $ "creation" JSON..= volumeCreation
   , Just $ "permission" JSON..= volumePermission
   ]
+
+changeVolume :: AuditM c m => Volume -> m ()
+changeVolume v = do
+  ident <- getAuditIdentity
+  dbExecute1 $(updateVolume 'ident 'v)
+
+addVolume :: AuditM c m => Volume -> m Volume
+addVolume bv = do
+  ident <- getAuditIdentity
+  dbQuery1' $ fmap ($ PermissionADMIN) $(insertVolume 'ident 'bv)
 

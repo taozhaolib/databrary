@@ -15,6 +15,7 @@ import qualified Language.Haskell.TH.Syntax as TH
 
 import Databrary.Model.Kind
 import qualified Databrary.Web.Route as R
+import Databrary.Web.Form.Deform (Deform(..))
 
 type family IdType a
 newtype Id a = Id { unId :: IdType a }
@@ -43,6 +44,9 @@ instance JSON.ToJSON (IdType a) => JSON.ToJSON (Id a) where
   toJSON (Id a) = JSON.toJSON a
 instance JSON.FromJSON (IdType a) => JSON.FromJSON (Id a) where
   parseJSON = fmap Id . JSON.parseJSON
+
+instance Deform (IdType a) => Deform (Id a) where
+  deform = Id <$> deform
 
 instance TH.Lift (IdType a) => TH.Lift (Id a) where
   lift (Id i) = TH.conE 'Id `TH.appE` TH.lift i

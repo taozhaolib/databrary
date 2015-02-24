@@ -85,7 +85,7 @@ viewParty api i = action GET (api, i) $
 
 partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
 partyForm p = do
-  name <- "name" .:> deform
+  name <- "name" .:> (deformCheck "Required" (not . T.null) =<< deform)
   affiliation <- "affiliation" .:> deform
   url <- "url" .:> deform
   return p
@@ -105,7 +105,7 @@ postParty api i = action POST (api, i) $
     p' <- runForm (api == HTML ?> htmlPartyForm (Just p)) $ partyForm p
     changeParty p'
     case api of
-      JSON -> okResponse [] $ partyJSON p
+      JSON -> okResponse [] $ partyJSON p'
       HTML -> redirectRouteResponse [] $ viewParty api i
 
 createParty :: API -> AppRAction
@@ -120,8 +120,8 @@ createParty api = action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
 
 paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
 paginationForm = (,)
-  <$> ("limit" .:> (deformCheck "invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
-  <*> ("offset" .:> (deformCheck "invalid offset" (>= 0) =<< deform) <|> return 0)
+  <$> ("limit" .:> (deformCheck "Invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
+  <*> ("offset" .:> (deformCheck "Invalid offset" (>= 0) =<< deform) <|> return 0)
 
 partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter

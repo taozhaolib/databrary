@@ -7,6 +7,7 @@ module Databrary.Model.Party.Types
   , SiteAuth(..)
   , MonadHasSiteAuth
   , nobodySiteAuth
+  , blankParty
   ) where
 
 import qualified Data.ByteString as BS
@@ -68,3 +69,13 @@ makeHasRec ''Party ['partyId, 'partyPermission]
 makeHasRec ''Account ['accountParty]
 makeHasRec ''SiteAuth ['siteAccount, 'siteAccess]
 deriveLiftMany [''Party, ''Account]
+
+blankParty :: Party
+blankParty = Party
+  { partyId = error "blankParty"
+  , partyName = ""
+  , partyAffiliation = Nothing
+  , partyURL = Nothing
+  , partyAccount = Nothing
+  , partyPermission = PermissionNONE
+  }

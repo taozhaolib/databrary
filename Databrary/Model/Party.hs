@@ -3,7 +3,6 @@ module Databrary.Model.Party
   ( module Databrary.Model.Party.Types
   , nobodyParty
   , rootParty
-  , blankParty
   , lookupParty
   , lookupAuthParty
   , lookupSiteAuthByEmail
@@ -50,16 +49,6 @@ useTPG
 nobodyParty, rootParty :: Party
 nobodyParty = $(loadParty (Id (-1)) PermissionREAD)
 rootParty = $(loadParty (Id 0) PermissionSHARED)
-
-blankParty :: Party
-blankParty = Party
-  { partyId = error "new party"
-  , partyName = ""
-  , partyAffiliation = Nothing
-  , partyURL = Nothing
-  , partyAccount = Nothing
-  , partyPermission = PermissionREAD
-  }
 
 emailPermission :: Permission
 emailPermission = PermissionSHARED

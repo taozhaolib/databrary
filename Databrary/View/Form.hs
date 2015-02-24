@@ -3,6 +3,7 @@ module Databrary.View.Form
   ( FormHtml
   , field
   , inputText
+  , inputTextarea
   , inputPassword
   , inputCheckbox
   , inputSelect
@@ -16,6 +17,7 @@ import Control.Monad.Trans.Control (liftWith)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Foldable as Fold
+import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Text.Blaze.Internal as M
@@ -85,6 +87,12 @@ inputText val ref dat = H.input
   H.! HA.id    ref
   H.! HA.name  ref
   $? (flip (H.!) . HA.value <$> (fmap byteStringValue dat <|> fmap H.toValue val))
+
+inputTextarea :: H.ToMarkup a => Maybe a -> Field
+inputTextarea val ref dat = H.textarea
+  H.! HA.id    ref
+  H.! HA.name  ref
+  $ fromMaybe mempty $ fmap byteStringHtml dat <|> fmap H.toHtml val
 
 inputPassword :: Field
 inputPassword ref _ = H.input

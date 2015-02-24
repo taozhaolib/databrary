@@ -1,5 +1,8 @@
 module Databrary.View.Html
-  ( lazyByteStringValue
+  ( lazyByteStringHtml
+  , byteStringHtml
+  , builderHtml
+  , lazyByteStringValue
   , byteStringValue
   , builderValue
   , actionLink
@@ -17,6 +20,15 @@ import qualified Text.Blaze.Html5.Attributes as HA
 
 import Blaze.ByteString.Builder.Html.Word (fromHtmlEscapedByteString, fromHtmlEscapedLazyByteString)
 import Databrary.Action
+
+lazyByteStringHtml :: BSL.ByteString -> Markup.Markup
+lazyByteStringHtml = Markup.unsafeLazyByteString . Blaze.toLazyByteString . fromHtmlEscapedLazyByteString
+
+byteStringHtml :: BS.ByteString -> Markup.Markup
+byteStringHtml = Markup.unsafeByteString . Blaze.toByteString . fromHtmlEscapedByteString
+
+builderHtml :: Blaze.Builder -> Markup.Markup
+builderHtml = lazyByteStringHtml . Blaze.toLazyByteString
 
 lazyByteStringValue :: BSL.ByteString -> Markup.AttributeValue
 lazyByteStringValue = Markup.unsafeLazyByteStringValue . Blaze.toLazyByteString . fromHtmlEscapedLazyByteString

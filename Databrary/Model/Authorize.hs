@@ -1,9 +1,11 @@
 {-# LANGUAGE TemplateHaskell, RecordWildCards, OverloadedStrings #-}
 module Databrary.Model.Authorize
   ( module Databrary.Model.Authorize.Types
+  , selfAuthorize
   , lookupAuthorizedChildren
   , lookupAuthorizedParents
   , lookupAuthorize
+  , lookupAuthorizeParent
   , setAuthorize
   , removeAuthorize
   , authorizeJSON
@@ -17,14 +19,19 @@ import Control.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL
+import Databrary.Model.Id
 import Databrary.Model.Audit
 import Databrary.Model.Permission
-import Databrary.Model.Party.Types
+import Databrary.Model.Party
 import Databrary.Model.Identity.Types
 import Databrary.Model.Authorize.Types
 import Databrary.Model.Authorize.SQL
 
 useTPG
+
+selfAuthorize :: Party -> Authorize
+selfAuthorize p =
+  Authorize (Authorization (if partyId p == partyId nobodyParty then minBound else maxBound) p p) Nothing
 
 filterAll :: PGQuery a b => Bool -> a -> a
 filterAll True = id
@@ -43,6 +50,11 @@ lookupAuthorizedChildren parent al = do
 lookupAuthorize :: (DBM m, MonadHasIdentity c m) => Party -> Party -> m (Maybe Authorize)
 lookupAuthorize child parent =
   dbQuery1 $ (\a -> a child parent) <$> $(selectQuery authorizeRow "$WHERE authorize.child = ${partyId child} AND authorize.parent = ${partyId parent}")
+
+lookupAuthorizeParent :: (DBM m, MonadHasIdentity c m) => Party -> Id Party -> m (Maybe Authorize)
+lookupAuthorizeParent child parent = do
+  ident <- peek
+  dbQuery1 $ $(selectQuery (selectAuthorizeParent 'child 'ident) "$WHERE authorize.parent = ${parent}")
 
 setAuthorize :: (AuditM c m) => Authorize -> m ()
 setAuthorize auth = do

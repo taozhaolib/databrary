@@ -56,7 +56,7 @@ routes = do
       ]
     , R.route >>= \t ->               act (viewLoginToken api t)
                                   <|> act (postPasswordToken api t)
-    , R.route >>= \p -> msum          -- /party/P
+    , R.route >>= \p -> msum          -- /party/ID
       [                               act (viewParty api p)
       ,                               act (postParty api p)
       , html >> "edit" >>             act (viewPartyForm p)
@@ -65,7 +65,12 @@ routes = do
       ]
     , "party" >>                      act (createParty api)
                                   <|> act (searchParty api)
-    , R.route >>= \v ->               act (viewVolume api v)
+    , R.route >>= \v -> msum          -- /vo/ume/ID
+      [                               act (viewVolume api v)
+      ,                               act (postVolume api v)
+      , html >> "edit" >>             act (viewVolumeForm v)
+      ]
+    , "volume" >>                     act (createVolume api)
     , R.route >>= \c ->
         R.route >>= \a ->
                (html >> "download" >> act (downloadSlotAsset c a))

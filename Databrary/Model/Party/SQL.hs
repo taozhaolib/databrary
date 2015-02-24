@@ -75,6 +75,15 @@ selectSiteAuth = selectJoin 'makeSiteAuth
     $ accessRow "authorize_view"
   ]
 
+partyKeys :: String -- ^ @'Party'@
+  -> [(String, String)]
+partyKeys p =
+  [ ("id", "${partyId " ++ p ++ "}") ]
+
+accountKeys :: String -- ^ @'Account'@
+  -> [(String, String)]
+accountKeys a = partyKeys $ "(accountParty " ++ a ++ ")"
+
 partySets :: String -- ^ @'Party'@
   -> [(String, String)]
 partySets p =
@@ -86,15 +95,6 @@ accountSets a =
   [ ("email", "${accountEmail " ++ a ++ "}")
   , ("password", "${accountPasswd " ++ a ++ "}")
   ]
-
-partyKeys :: String -- ^ @'Party'@
-  -> [(String, String)]
-partyKeys p =
-  [ ("id", "${partyId " ++ p ++ "}") ]
-
-accountKeys :: String -- ^ @'Account'@
-  -> [(String, String)]
-accountKeys a = partyKeys $ "(accountParty " ++ a ++ ")"
 
 updateParty :: TH.Name -- ^ @'AuditIdentity'
   -> TH.Name -- ^ @'Party'@
