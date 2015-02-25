@@ -24,7 +24,7 @@ app.directive('volumeEditOverviewForm', [
       }
       init(volume);
       if (!volume)
-        form.data.owner = parseInt($routeParams.owner) || models.Login.user.id;
+        form.data.owner = parseInt($routeParams.owner) || $scope.owners[0].id;
 
       form.save = function () {
         messages.clear(form);
