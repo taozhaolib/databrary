@@ -20,27 +20,26 @@
           <div class="slot-header folder" folder ng-click="toggleFold()">
             <span>Viewer</span>
           </div>
-          <div class="player-main" ng-if="!folded">
-            <div class="player-main-info">
-              <div class="sticky">
-                <nav class="player-main-info-actions">
-                  <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-main-action-word green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
-                  <button ng-if="editing && !current.file && current.asset" class="player-main-action-word yellow" flow-btn>Replace File</button>
-                  <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-main-action-icon icon trash2 button"></a>
-                  <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-main-action-icon icon download button"></a>
+          <div class="player" ng-if="!folded">
+            <nav class="player-actions">
+              <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
+              <button ng-if="editing && !current.file && current.asset" class="player-action-word yellow" flow-btn>Replace File</button>
+              <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-action-icon icon trash2 button"></a>
+              <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
                   <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
                 </nav>
-                <h1 class="player-main-info-name">
-                  <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-main-info-file-icon">
+            <div id="player-scroll" class="player-scroll">
+              <div class="player-info">
+                <h1 class="player-info-name">
+                  <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
                   <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
                   <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
                 </h1>
-              </div>
-              <div class="scroll" ng-class="::{'scroll-view':!editing,'scroll-edit':editing}">
+
                 <div ng-if="::!editing">
-                  <dl class="player-main-info-list cf">
+                  <dl class="player-info-list cf">
                     <dt ng-if="!!current.asset" message="asset.format"></dt>
                     <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
                     <dt ng-if="current.segment.full === false || current.asset.duration">Position</dt>
@@ -95,22 +94,21 @@
                     </ng-form>
                   </div>
                 </ng-form>
-              </div>
+
             </div>
 
-            <div id="player-main-viewport" class="player-main-viewport">
-              <div ng-if="editing && current.type == 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-main-drop">
+              <div id="player-viewport" class="player-viewport">
+                <div ng-if="editing && current.type == 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
               <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
             </div>
-
+            </div>
             <div class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
               <span class="icon resize"></span>
             </div>
           </div>
-
         </section>
 
         <div id="slot-tags" class="slot-tags panel-tags-list" ng-form="form.tag">
@@ -152,6 +150,7 @@
             <button ng-if="!!current.record && !current.pending" ng-click="current.remove()" class="mini">Remove Record</button>
             <button ng-click="addBlank()" class="mini">Add File</button>
             <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove File</button>
+            <button ng-if="editing && !!(current.asset || current.record) && form.edit.$dirty && !form.edit.$invalid && !current.pending" class="player-action-word green" ng-click="current.save()" message="save"></button>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="::{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
@@ -195,8 +194,8 @@
           <div class="slot-annotations">
             <div class="slot-record-track slot-track" ng-repeat="rs in records">
               <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
-                <div ng-if="editing && r === current" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
-                <div ng-if="editing && r === current" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
+                <div ng-if="editing && r === current && form.position" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
+                <div ng-if="editing && r === current && form.position" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
               </div>
               <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="select($event, r)" ng-dblclick="selectAll($event, r)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
             </div>
@@ -216,7 +215,7 @@
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
               </div>
               <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
-                <div ng-if="editing && t === current" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
+                <div ng-if="editing && t === current && form.edit" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
               </div>
             </div>
           </div>
