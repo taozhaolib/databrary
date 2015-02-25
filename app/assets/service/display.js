@@ -1,8 +1,8 @@
 'use strict';
 
 app.factory('displayService', [
-  '$rootScope', 'storageService', '$filter', 'messageService', 'tooltipService', 'constantService', '$timeout', '$window',
-  function ($rootScope, storage, $filter, messages, tooltips, constants, $timeout, window) {
+  '$rootScope', 'storageService', '$filter', 'messageService', 'tooltipService', 'constantService', '$timeout', '$window', 'analyticService',
+  function ($rootScope, storage, $filter, messages, tooltips, constants, $timeout, window, analytics) {
     var display = {};
 
     display.title = '';
@@ -16,17 +16,27 @@ app.factory('displayService', [
       messages.clear();
     });
 
-    $rootScope.$on('$routeChangeSuccess', function () {
+    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
       display.loading = false;
+
+      var data = {current: current.controller};
+      if (previous)
+        data.previous = previous.controller;
+      analytics.add('open', data);
     });
 
     display.error = undefined;
 
-    $rootScope.$on('$routeChangeError', function (event, next, previous, error) {
+    $rootScope.$on('$routeChangeError', function (event, current, previous, error) {
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
       $rootScope.$broadcast('displayService-error', error);
+
+      var data = {current: current.controller, error: error};
+      if (previous)
+        data.previous = previous.controller;
+      analytics.add('close', data);
     });
 
     var $scroll = $('html,body');
