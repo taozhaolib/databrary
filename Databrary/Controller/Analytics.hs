@@ -3,6 +3,7 @@ module Databrary.Controller.Analytics
   ( angularAnalytics
   ) where
 
+import Control.Applicative ((<$>), (<*>))
 import Control.Monad (when)
 import qualified Data.Attoparsec.ByteString as P
 import qualified Data.Foldable as Fold
@@ -24,8 +25,8 @@ angularAnalytics = do
   pr (Left _) = []
   pr (Right (JSON.Array l)) = mapMaybe ar $ V.toList l
   pr (Right j) = maybeToList $ ar j
-  ar (JSON.Object o)
-    | Just a <- JSON.parseMaybe JSON.parseJSON =<< HM.lookup "action" o
-    , Just r <- JSON.parseMaybe JSON.parseJSON =<< HM.lookup "route" o
-    = Just $ Analytic a r $ JSON.Object $ HM.delete "action" $ HM.delete "route" o
+  ar (JSON.Object o) = Analytic 
+    <$> (JSON.parseMaybe JSON.parseJSON =<< HM.lookup "action" o)
+    <*> (JSON.parseMaybe JSON.parseJSON =<< HM.lookup "route" o)
+    <*> HM.lookup "data" o
   ar _ = Nothing
