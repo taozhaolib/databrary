@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, PatternGuards #-}
 module Databrary.Controller.Volume
   ( withVolume
   , viewVolume
@@ -7,11 +7,13 @@ module Databrary.Controller.Volume
   , createVolume
   ) where
 
-import Control.Monad (mfilter)
+import Control.Applicative (Applicative, (<*>), pure)
+import Control.Monad (mfilter, guard, when)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isNothing)
+import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
@@ -19,6 +21,7 @@ import Control.Applicative.Ops
 import Control.Has (peeks, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
+import Databrary.Web.Client (HTTPClientM)
 import Databrary.Model.Enum
 import Databrary.Model.Id
 import Databrary.Model.Kind
@@ -29,6 +32,7 @@ import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Model.Party
 import Databrary.Model.Citation
+import Databrary.Model.Citation.CrossRef
 import Databrary.Model.Funding
 import Databrary.Model.Container
 import Databrary.Model.Record
@@ -70,16 +74,41 @@ viewVolume api vi = action GET (api, vi) $
       JSON -> okResponse [] =<< volumeJSONQuery v =<< peeks Wai.queryString
       HTML -> okResponse [] $ volumeName v -- TODO
 
+citationForm :: (Functor m, Applicative m, Monad m) => DeformT m Citation
+citationForm = Citation
+  <$> ("head" .:> deform)
+  <*> ("url" .:> deform)
+  <*> ("year" .:> deform)
+  <*> pure Nothing
+
 volumeForm :: (Functor m, Monad m) => Volume -> DeformT m Volume
 volumeForm v = do
-  name <- "name" .:> (deformCheck "Required" (not . T.null) =<< deform)
+  name <- "name" .:> deform
   alias <- "alias" .:> deform
-  body <- "body" .:> deformNonempty deform
+  body <- "body" .:> deform
   return v
     { volumeName = name
     , volumeAlias = alias
     , volumeBody = body
     }
+
+volumeCitationForm :: HTTPClientM c m => Volume -> DeformT m (Volume, Maybe Citation)
+volumeCitationForm v = do
+  vol <- volumeForm v
+  cite <- "citation" .:> citationForm
+  look <- maybe (return Nothing) (lift . lookupCitation) $
+    guard (T.null (volumeName vol) || T.null (citationHead cite) || isNothing (citationYear cite)) >> citationURL cite
+  let fill = maybe cite (cite <>) look
+      empty = isNothing (citationURL fill) && isNothing (citationYear fill)
+      name 
+        | Just title <- citationTitle fill
+        , T.null (volumeName vol) = title
+        | otherwise = volumeName vol
+  when (T.null name) $
+    "name" .:> deformError "Required"
+  when (not empty && T.null (citationHead fill)) $
+    "citation" .:> "name" .:> deformError "Required"
+  return (vol{ volumeName = name }, empty ?!> fill)
 
 viewVolumeForm :: Id Volume -> AppRAction
 viewVolumeForm vi = action GET (vi, "edit" :: T.Text) $
@@ -89,8 +118,9 @@ viewVolumeForm vi = action GET (vi, "edit" :: T.Text) $
 postVolume :: API -> Id Volume -> AppRAction
 postVolume api vi = action POST (api, vi) $
   withVolume PermissionEDIT vi $ \v -> do
-    v' <- runForm (api == HTML ?> htmlVolumeForm (Just v)) $ volumeForm v
+    (v', cite) <- runForm (api == HTML ?> htmlVolumeForm (Just v)) $ volumeCitationForm v
     changeVolume v'
+    setVolumeCitation v' cite
     case api of
       JSON -> okResponse [] $ volumeJSON v'
       HTML -> redirectRouteResponse [] $ viewVolume api vi
@@ -98,8 +128,8 @@ postVolume api vi = action POST (api, vi) $
 createVolume :: API -> AppRAction
 createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ do
   u <- peek
-  (bv, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing) $ do
-    bv <- volumeForm blankVolume
+  (bv, cite, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing) $ do
+    (bv, cite) <- volumeCitationForm blankVolume
     own <- "owner" .:> do
       oi <- deformOptional deform
       own <- maybe (return $ Just $ selfAuthorize u) (lift . lookupAuthorizeParent u) oi
@@ -108,8 +138,9 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
     auth <- lift $ lookupAuthorization own rootParty
     deformGuard "Insufficient site authorization to create volume." $
       PermissionEDIT <= accessSite auth
-    return (bv, own)
+    return (bv, cite, own)
   v <- addVolume bv
+  setVolumeCitation v cite
   case api of
     JSON -> okResponse [] $ volumeJSON v
     HTML -> redirectRouteResponse [] $ viewVolume api $ volumeId v
