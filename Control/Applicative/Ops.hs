@@ -4,6 +4,7 @@ module Control.Applicative.Ops
   , (<?), (?>)
   , (<!?), (?!>)
   , (?$), ($?)
+  , (>$), ($<)
   ) where
 
 import Control.Applicative
@@ -53,3 +54,13 @@ infixl 0 $?
 
 {-# SPECIALIZE (?$) :: Maybe (a -> a) -> a -> a #-}
 {-# SPECIALIZE ($?) :: a -> Maybe (a -> a) -> a #-}
+
+infix 4 >$, $<
+
+-- |@(=<<) ($>)@
+(>$) :: Functor f => (a -> f ()) -> a -> f a
+f >$ a = f a $> a
+
+-- |@flip '(>$)'@
+($<) :: Functor f => a -> (a -> f ()) -> f a
+a $< f = a <$ f a

@@ -7,10 +7,10 @@ module Databrary.Controller.Volume
   , createVolume
   ) where
 
+import Control.Monad (mfilter)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
@@ -103,10 +103,12 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
     own <- "owner" .:> do
       oi <- deformOptional deform
       own <- maybe (return $ Just $ selfAuthorize u) (lift . lookupAuthorizeParent u) oi
-      deformCheck "You are not authorized to create volumes with that owner."
-        (Fold.any ((PermissionADMIN <=) . accessMember)) own
+      deformMaybe' "You are not authorized to create volumes for that owner." $
+        authorizeParent . authorization <$> mfilter ((PermissionADMIN <=) . accessMember) own
+    auth <- lift $ lookupAuthorization own rootParty
+    deformGuard "Insufficient site authorization to create volume." $
+      PermissionEDIT <= accessSite auth
     return (bv, own)
-  fail "TODO"
   v <- addVolume bv
   case api of
     JSON -> okResponse [] $ volumeJSON v

@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Authorize.SQL
-  ( authorizeRow
+  ( authorizationRow
+  , authorizeRow
   , selectAuthorizeParent
   , selectAuthorizeChild
   , updateAuthorize
@@ -19,6 +20,9 @@ import Databrary.Model.Permission.Types
 import Databrary.Model.Permission.SQL
 import Databrary.Model.Authorize.Types
 
+authorizationRow :: Selector -- ^ @'Party' -> 'Party' -> 'Authorization'@
+authorizationRow = selectMap (TH.ConE 'Authorization `TH.AppE`) $ accessRow "authorize_view"
+
 makeAuthorize :: Access -> Maybe Timestamp -> Party -> Party -> Authorize
 makeAuthorize a e c p = Authorize
   { authorization = Authorization
@@ -29,7 +33,7 @@ makeAuthorize a e c p = Authorize
   , authorizeExpires = e
   }
 
-authorizeRow :: Selector -- @'Party' -> 'Party' -> 'Authorize'@
+authorizeRow :: Selector -- ^ @'Party' -> 'Party' -> 'Authorize'@
 authorizeRow = addSelects 'makeAuthorize
   (accessRow "authorize") ["expires"]
 

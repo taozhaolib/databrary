@@ -6,6 +6,7 @@ module Databrary.Model.Authorize
   , lookupAuthorizedParents
   , lookupAuthorize
   , lookupAuthorizeParent
+  , lookupAuthorization
   , setAuthorize
   , removeAuthorize
   , authorizeJSON
@@ -13,6 +14,8 @@ module Databrary.Model.Authorize
 
 import Control.Applicative ((<$>))
 import Control.Monad (when)
+import Data.Maybe (fromMaybe)
+import Data.Monoid (mempty)
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
 import Control.Has (peek)
@@ -55,6 +58,12 @@ lookupAuthorizeParent :: (DBM m, MonadHasIdentity c m) => Party -> Id Party -> m
 lookupAuthorizeParent child parent = do
   ident <- peek
   dbQuery1 $ $(selectQuery (selectAuthorizeParent 'child 'ident) "$WHERE authorize.parent = ${parent}")
+
+lookupAuthorization :: (DBM m, MonadHasIdentity c m) => Party -> Party -> m Authorization
+lookupAuthorization child parent 
+  | partyId child == partyId parent = return $ authorization $ selfAuthorize child
+  | otherwise = fromMaybe (Authorization mempty child parent) <$>
+  dbQuery1 ((\a -> a child parent) <$> $(selectQuery authorizationRow "!$WHERE authorize_view.child = ${partyId child} AND authorize_view.parent = ${partyId parent}"))
 
 setAuthorize :: (AuditM c m) => Authorize -> m ()
 setAuthorize auth = do

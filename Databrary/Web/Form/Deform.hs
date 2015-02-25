@@ -4,19 +4,21 @@ module Databrary.Web.Form.Deform
   , runDeform
   , (.:>)
   , withSubDeforms
-  , deformCheck
   , deformOptional
   , deformNonempty
   , Deform(..) 
   , deformError
+  , deformMaybe'
+  , deformGuard
+  , deformCheck
   , deformParse
   , deformRead
   , deformRegex
   ) where
 
-import Control.Applicative (Applicative(..), Alternative(..), (<$>), (<$), liftA2)
+import Control.Applicative (Applicative(..), Alternative(..), liftA2)
 import Control.Arrow (first, second, (***), left)
-import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, unless)
+import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Trans.Control (MonadTransControl(..))
@@ -38,6 +40,7 @@ import System.Locale (defaultTimeLocale)
 import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
 
+import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.URL
 import Databrary.Web.Form
@@ -130,11 +133,18 @@ deformError = deformErrorWith (Just ())
 deformError' :: Monad m => FormErrorMessage -> DeformT m a
 deformError' = deformErrorWith Nothing
 
+deformMaybe' :: Monad m => FormErrorMessage -> Maybe a -> DeformT m a
+deformMaybe' e = maybe (deformError' e) return
+
 deformEither :: (Functor m, Monad m) => a -> Either FormErrorMessage a -> DeformT m a
 deformEither def = either (deformErrorDef def) return
 
+deformGuard :: (Monad m) => FormErrorMessage -> Bool -> DeformT m ()
+deformGuard _ True = return ()
+deformGuard e False = deformError e
+
 deformCheck :: (Functor m, Monad m) => FormErrorMessage -> (a -> Bool) -> a -> DeformT m a
-deformCheck e f x = x <$ unless (f x) (deformError e)
+deformCheck e f = (>$) (deformGuard e . f)
 
 deformOptional :: (Functor m, Monad m) => DeformT m a -> DeformT m (Maybe a)
 deformOptional f = opt =<< peek where
