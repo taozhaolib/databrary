@@ -152,6 +152,7 @@
             <button ng-if="!!current.record && !current.pending" ng-click="current.remove()" class="mini">Remove Record</button>
             <button ng-click="addBlank()" class="mini">Add File</button>
             <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove File</button>
+            <button ng-if="editing && !!(current.asset || current.record) && form.edit.$dirty && !form.edit.$invalid && !current.pending" class="player-main-action-word green" ng-click="current.save()" message="save"></button>
           </div>
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="::{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
@@ -192,8 +193,8 @@
           <div class="slot-annotations">
             <div class="slot-record-track slot-track" ng-repeat="rs in records">
               <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
-                <div ng-if="editing && r === current" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
-                <div ng-if="editing && r === current" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
+                <div ng-if="editing && r === current && form.position" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
+                <div ng-if="editing && r === current && form.position" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
               </div>
               <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="select($event, r)" ng-dblclick="selectAll($event, r)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
             </div>
@@ -213,7 +214,7 @@
                 <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
               </div>
               <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
-                <div ng-if="editing && t === current" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
+                <div ng-if="editing && t === current && form.edit" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($up)"></div>
               </div>
             </div>
           </div>

@@ -129,7 +129,7 @@ app.controller('volume/slot', [
       return
 
     stayDirty = (global) ->
-      if global || editing && $scope.current && $scope.form.edit && ($scope.current.dirty = $scope.form.edit.$dirty)
+      if global || editing && $scope.current && $scope.form.edit && ($scope.current.asset || $scope.current.record) && ($scope.current.dirty = $scope.form.edit.$dirty)
         not confirm(constants.message('navigation.confirmation'))
 
     select = (c) ->
