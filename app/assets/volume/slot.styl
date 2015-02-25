@@ -325,18 +325,18 @@
   .validator
     margin-bottom b8
 
-.player-main
+.player
   width 100%
   padding b2
   text-align center
 
-  &:hover
-    .player-main-float
-      opacity 1
-
-.player-main-viewport
+.player-viewport
   border-top 1px solid pale
   padding-top b3
+
+.player-scroll
+  overflow-y auto
+  overflow-x hidden
 
 .player-resize-bar
   position relative
@@ -349,35 +349,14 @@
 .player-resize-bar:active
   border-top 2px solid red
 
-.player-main-float
-  position absolute
-  top b1 * 5.5
-  left b1
-  right b1
-  opacity 0
-  transition opacity trans-time trans-ease
-  background white
-  box-shadow box-shadow-def
-
-.player-main-info
+.player-info
   text-align left
   padding-bottom b4
   margin-bottom b4
-  position relative
   width 100%
-  .sticky
-    position relative
-    top 0
-  .scroll
-    overflow-y auto
-    overflow-x hidden
-    &.scroll-view
-      height 80px
-    &.scroll-edit
-      height 240px
-  dl 
+  dl
     display block
-  dt 
+  dt
     text-transform uppercase
     font-size 0.8em
     float left
@@ -385,12 +364,8 @@
     margin-right f3
     display block
 
-.player-main-info-actions
-  position absolute
-  top 0
-  right 0
+.player-actions
   background-color white
-  z-index 1
   
   button
     height 24px
@@ -403,16 +378,16 @@
     padding 0 b8 
     margin b6 b8
 
-.player-main-info-name
+.player-info-name
   font-line 1
   padding-bottom f2
 
-  img.player-main-info-file-icon span.icon
+  img.player-info-file-icon span.icon
     height 19px
     margin 0
     display inline
 
-  img.player-main-info-file-icon
+  img.player-info-file-icon
     margin-right b8
     position relative
     top 0
@@ -422,7 +397,7 @@
     text-transform capitalize
     font-weight bold
 
-.player-main-info-list
+.player-info-list
   margin-bottom 0
 
   .icon
@@ -441,17 +416,17 @@
     float left
     margin-left b6
 
-.player-main-action-icon
+.player-action-icon
   display inline-block
   margin-left b8a
     
-.player-main-action-word
+.player-action-word
   float right
 
 .position-input
   width 158px
 
-.player-main-drop
+.player-drop
   border 3px dashed pale
   padding-top b2
   padding-bottom b2

@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$location', '$sce', '$q', 'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', 'storageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
-  ($scope, $location, $sce, $q, constants, display, messages, tooltips, styles, storage, Offset, Segment, Store, slot, editing) ->
+  '$scope', '$location', '$sce', '$q', '$timeout', 'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', 'storageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $sce, $q, $timeout, constants, display, messages, tooltips, styles, storage, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -149,6 +149,7 @@ app.controller('volume/slot', [
       blank.fillData() if blank && c == blank
       $scope.playing = 0
       finalizeSelection()
+      updatePlayerHeight()
       true
 
     $scope.selectAll = (event, c) ->
@@ -366,33 +367,46 @@ app.controller('volume/slot', [
         t.excerpts.push(e) if t
       return
 
-    viewportHeightStyle = undefined
-    viewportImgHeightStyle = undefined
-    viewportVideoHeightStyle = undefined
-    setViewportHeight = (h) ->
-      viewportHeightStyle = styles.set('.player-main-viewport{height:'+h+'px}', viewportHeightStyle)
-      viewportImgHeightStyle = styles.set('.player-main-viewport .asset-display img{max-height:'+(h-16)+'px}', viewportImgHeightStyle)
-      viewportVideoHeightStyle = styles.set('.player-main-viewport .asset-display video{height:'+(h-16)+'px}', viewportVideoHeightStyle)
-      viewportHeight = h
-      storage.set('viewport-height', h)
-
+    playerMinHeight = 200
     viewportMinHeight = 120
-    viewportHeight = parseInt(storage.get('viewport-height'), 10) || 360
+    playerHeight = parseInt(storage.get('player-height'), 10) || 400
     ### jshint ignore:start ###
-    unless viewportHeight >= viewportMinHeight
-      viewportHeight = viewportMinHeight
+    unless playerHeight >= playerMinHeight
+      playerHeight = playerMinHeight
     ### jshint ignore:end ###
-    setViewportHeight(viewportHeight)
-    viewport = undefined
+
+    playerHeightStyle = undefined
+    playerImgHeightStyle = undefined
+    playerVideoHeightStyle = undefined
+    updatePlayerHeight = () ->
+      $timeout ->
+        player = document.getElementById('player-scroll')
+        return unless player
+        viewer = document.getElementById('player-viewport')
+        d = player.offsetTop + playerHeight - viewer.offsetTop - 10 # viewport padding+border
+        if d < viewportMinHeight
+          d = viewportMinHeight
+        playerImgHeightStyle = styles.set('.player-viewport .asset-display img{max-height:'+d+'px}', playerImgHeightStyle)
+        playerVideoHeightStyle = styles.set('.player-viewport .asset-display video{height:'+d+'px}', playerVideoHeightStyle)
+        return
+      return
+    setPlayerHeight = () ->
+      storage.set('player-height', playerHeight)
+      playerHeightStyle = styles.set('.player-scroll{height:'+playerHeight+'px}', playerHeightStyle)
+      updatePlayerHeight()
+      return
+    setPlayerHeight()
+
     $scope.resizePlayer = (down, up) ->
-      viewport ?= document.getElementById('player-main-viewport')
+      player = document.getElementById('player-scroll')
       bar = down.currentTarget
-      h = Math.max(viewport.offsetHeight + up.clientY - down.clientY, viewportMinHeight)
+      h = Math.max(player.offsetHeight + up.clientY - down.clientY, playerMinHeight)
       if up.type == 'mousemove'
-        bar.style.top = h - viewport.offsetHeight + 'px'
+        bar.style.top = h - player.offsetHeight + 'px'
       else
-        setViewportHeight(h)
         bar.style.top = '0px'
+        playerHeight = h
+        setPlayerHeight()
       return
 
     videoEvents =
