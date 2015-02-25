@@ -1,11 +1,21 @@
 'use strict';
 
 app.controller('volume/edit', [
-  '$scope', 'constantService', 'displayService', 'routerService', 'Store', 'volume',
-  function ($scope, constants, display, router, Store, volume) {
+  '$scope', 'constantService', 'displayService', 'routerService', 'modelService', 'Store', 'volume',
+  function ($scope, constants, display, router, models, Store, volume) {
     $scope.flowOptions = Store.flowOptions;
     $scope.volume = volume;
     display.title = volume ? volume.title : constants.message('volume.edit.create');
+
+    if (!volume) {
+      $scope.owners = models.Login.user.parents.filter(function (p) {
+          return p.member >= constants.permission.ADMIN && p.party.access >= constants.permission.EDIT;
+        }).map(function (p) {
+          return p.party;
+        });
+      if (models.Login.user.access >= constants.permission.EDIT)
+        $scope.owners.unshift(models.Login.user);
+    }
 
     $scope.registerStep = function (step) {
       step.form = step.$scope['volumeEdit' + step.name.charAt(0).toUpperCase() + step.name.slice(1) + 'Form'];

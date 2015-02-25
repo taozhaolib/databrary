@@ -46,10 +46,11 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   }
 
   protected def contributeAction(e : Option[models.Party.Id]) =
-    PartyController.action(e, Some(Permission.CONTRIBUTE)) andThen
+    PartyController.action(e, Some(Permission.NONE)) andThen
       new ActionFilter[PartyController.Request] {
         protected def filter[A](request : PartyController.Request[A]) =
-          request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
+          request.obj.party.access.map(a =>
+            if (request.obj.access.member < Permission.ADMIN || a.site < Permission.EDIT) Some(Forbidden) else None)
       }
 
   def create(owner : Option[Party.Id]) = SiteAction.andThen(contributeAction(owner)).async { implicit request =>
@@ -59,7 +60,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
         alias = form.alias.get.flatMap(Maybe(_).opt),
         body = form.body.get.flatten)
-      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
+      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.EDIT)
       _ <- setLinks(vol, form, cite)
     } yield (result(vol))
   }

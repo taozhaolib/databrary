@@ -5,6 +5,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.{Json,JsNull}
 import java.net.URL
 import macros._
+import macros.async._
 import dbrary._
 import dbrary.SQL._
 import site._
@@ -80,7 +81,7 @@ final class Party protected (val id : Party.Id, private[this] var name_ : String
     )
 }
 
-final class SiteParty(access : Access)(implicit val site : Site)
+final class SiteParty(val access : Access)(implicit val site : Site)
   extends SiteObject {
   assert(access.identity === site.identity)
   def party = access.target
@@ -112,9 +113,15 @@ final class SiteParty(access : Access)(implicit val site : Site)
     JsonOptions(json, options
     , "parents" -> { opt =>
         val full = checkPermission(Permission.ADMIN)
-        party.authorizeParents(full)
-        .map(JsonArray.map(a =>
-          (if (full) a.json else JsonObject()) + ('party -> a.parent.json)))
+        val ap = party.authorizeParents(full)
+        if (full && opt.contains("access"))
+          ap.flatMap(_.mapAsync(a =>
+            a.parent.access.map(s =>
+              a.json + ('party -> (a.parent.json + ('access -> s.site)))))
+            .map(JsonArray(_)))
+        else
+          ap.map(JsonArray.map(a =>
+            (if (full) a.json else JsonObject()) + ('party -> a.parent.json)))
       }
     , "children" -> { opt =>
         val full = checkPermission(Permission.ADMIN)

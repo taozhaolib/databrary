@@ -255,7 +255,7 @@ app.provider('routerService', [
             if (!('id' in page.$route.current.params)) {
               if (!page.models.Login.isAuthorized())
                 return page.$q.reject({status: 403});
-              return page.models.Login.user.get(['parents'])
+              return page.models.Login.user.get({'parents':'access'})
                 .then(function () {
                   return undefined;
                 });
