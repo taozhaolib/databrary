@@ -140,6 +140,11 @@ app.controller('volume/slot', [
       searchLocation($location.replace())
       delete target.asset
       delete target.record
+      if $scope.form.edit
+        if c?.dirty
+          $scope.form.edit.$setDirty()
+        else
+          $scope.form.edit.$setPristine()
 
       blank.fillData() if blank && c == blank
       $scope.playing = 0
