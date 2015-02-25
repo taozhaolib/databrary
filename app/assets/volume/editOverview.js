@@ -23,15 +23,8 @@ app.directive('volumeEditOverviewForm', [
         };
       }
       init(volume);
-      if (!volume) {
+      if (!volume)
         form.data.owner = parseInt($routeParams.owner) || models.Login.user.id;
-        form.owners = models.Login.user.parents.filter(function (p) {
-            return p.member >= constants.permission.ADMIN;
-          }).map(function (p) {
-            return p.party;
-          });
-        form.owners.unshift(models.Login.user);
-      }
 
       form.save = function () {
         messages.clear(form);
