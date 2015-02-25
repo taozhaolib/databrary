@@ -171,7 +171,10 @@
               <div class="slot-timeline-zoom">
                 <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
                 <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
+                <span ng-if="ruler.selection.full" ng-click="setSelection(null)">Clear Selection</span>
+                <span ng-if="!ruler.selection.full" ng-click="setSelection(undefined)">Select All</span>
               </div>
+
             </div>
             
             <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
