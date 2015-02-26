@@ -7,7 +7,7 @@ module Databrary.Model.Authorize
   , lookupAuthorize
   , lookupAuthorizeParent
   , lookupAuthorization
-  , setAuthorize
+  , changeAuthorize
   , removeAuthorize
   , authorizeJSON
   ) where
@@ -65,8 +65,8 @@ lookupAuthorization child parent
   | otherwise = fromMaybe (Authorization mempty child parent) <$>
   dbQuery1 ((\a -> a child parent) <$> $(selectQuery authorizationRow "!$WHERE authorize_view.child = ${partyId child} AND authorize_view.parent = ${partyId parent}"))
 
-setAuthorize :: (AuditM c m) => Authorize -> m ()
-setAuthorize auth = do
+changeAuthorize :: (AuditM c m) => Authorize -> m ()
+changeAuthorize auth = do
   ident <- getAuditIdentity
   r <- updateOrInsert
     $(updateAuthorize 'ident 'auth)

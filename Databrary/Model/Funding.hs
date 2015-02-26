@@ -2,7 +2,7 @@
 module Databrary.Model.Funding
   ( module Databrary.Model.Funding.Types
   , lookupFunder
-  , volumeFunding
+  , lookupVolumeFunding
   ) where
 
 import Databrary.DB
@@ -18,6 +18,6 @@ lookupFunder :: DBM m => Id Funder -> m (Maybe Funder)
 lookupFunder fi =
   dbQuery1 $(selectQuery selectFunder "$WHERE funder.fundref_id = ${fi}")
 
-volumeFunding :: (DBM m) => Volume -> m [Funding]
-volumeFunding vol =
+lookupVolumeFunding :: (DBM m) => Volume -> m [Funding]
+lookupVolumeFunding vol =
   dbQuery $(selectQuery selectVolumeFunding "$WHERE volume_funding.volume = ${volumeId vol}")

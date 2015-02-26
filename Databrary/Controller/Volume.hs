@@ -55,15 +55,15 @@ volumeJSONField vol "access" ma = do
     volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va)))
     <$> volumeVolumeAccess vol (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
 volumeJSONField vol "citation" _ =
-  Just . maybe JSON.Null JSON.toJSON <$> volumeCitation vol
+  Just . maybe JSON.Null JSON.toJSON <$> lookupVolumeCitation vol
 volumeJSONField vol "links" _ =
-  Just . JSON.toJSON <$> volumeLinks vol
+  Just . JSON.toJSON <$> lookupVolumeLinks vol
 volumeJSONField vol "funding" _ =
-  Just . JSON.toJSON <$> volumeFunding vol
+  Just . JSON.toJSON <$> lookupVolumeFunding vol
 volumeJSONField vol "containers" _ =
-  Just . JSON.toJSON . map containerJSON <$> volumeContainers vol
+  Just . JSON.toJSON . map containerJSON <$> lookupVolumeContainers vol
 volumeJSONField vol "records" _ =
-  Just . JSON.toJSON . map recordJSON <$> volumeRecords vol
+  Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
@@ -115,15 +115,15 @@ volumeCitationForm v = do
 viewVolumeForm :: Id Volume -> AppRAction
 viewVolumeForm vi = action GET (vi, "edit" :: T.Text) $
   withVolume PermissionEDIT vi $ \v ->
-    blankForm . htmlVolumeForm (Just v) =<< volumeCitation v
+    blankForm . htmlVolumeForm (Just v) =<< lookupVolumeCitation v
 
 postVolume :: API -> Id Volume -> AppRAction
 postVolume api vi = action POST (api, vi) $
   withVolume PermissionEDIT vi $ \v -> do
-    cite <- volumeCitation v
+    cite <- lookupVolumeCitation v
     (v', cite') <- runForm (api == HTML ?> htmlVolumeForm (Just v) cite) $ volumeCitationForm v
     changeVolume v'
-    setVolumeCitation v' cite'
+    changeVolumeCitation v' cite'
     case api of
       JSON -> okResponse [] $ volumeJSON v'
       HTML -> redirectRouteResponse [] $ viewVolume api vi
@@ -143,7 +143,8 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
       PermissionEDIT <= accessSite auth
     return (bv, cite, own)
   v <- addVolume bv
-  setVolumeCitation v cite
+  changeVolumeCitation v cite
+  changeVolumeAccess $ VolumeAccess PermissionADMIN PermissionEDIT owner v
   case api of
     JSON -> okResponse [] $ volumeJSON v
     HTML -> redirectRouteResponse [] $ viewVolume api $ volumeId v
@@ -151,15 +152,15 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
 viewVolumeLinks :: Id Volume -> AppRAction
 viewVolumeLinks vi = action GET (vi, "link" :: T.Text) $
   withVolume PermissionEDIT vi $ \v ->
-    blankForm . htmlVolumeLinksForm v =<< volumeLinks v
+    blankForm . htmlVolumeLinksForm v =<< lookupVolumeLinks v
 
 postVolumeLinks :: API -> Id Volume -> AppRAction
 postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $
   withVolume PermissionEDIT vi $ \v -> do
-    links <- volumeLinks v
+    links <- lookupVolumeLinks v
     links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $
       withSubDeforms citationForm
-    setVolumeLinks v links'
+    changeVolumeLinks v links'
     case api of
       JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')
       HTML -> redirectRouteResponse [] $ viewVolume api vi

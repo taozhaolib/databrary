@@ -57,10 +57,8 @@ selectAuthorizeChild parent ident = selectMap (`TH.AppE` TH.VarE parent) $ selec
 
 authorizeSets :: String -- ^ @'Authorize'@
   -> [(String, String)]
-authorizeSets a =
-  [ ("site", "${accessSite " ++ a ++ "}")
-  , ("member", "${accessMember " ++ a ++ "}")
-  , ("expires", "${authorizeExpires " ++ a ++ "}")
+authorizeSets a = accessSets a ++
+  [ ("expires", "${authorizeExpires " ++ a ++ "}")
   ]
 
 authorizeKeys :: String -- ^ @'Authorize'@
@@ -70,7 +68,7 @@ authorizeKeys a =
   , ("parent", "${partyId (authorizeParent (authorization " ++ a ++ "))}")
   ]
 
-updateAuthorize :: TH.Name -- ^ @'AuditIdentity'
+updateAuthorize :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Authorize'@
   -> TH.ExpQ
 updateAuthorize ident a = auditUpdate ident "authorize"
@@ -79,7 +77,7 @@ updateAuthorize ident a = auditUpdate ident "authorize"
   Nothing
   where as = nameRef a
 
-insertAuthorize :: TH.Name -- ^ @'AuditIdentity'
+insertAuthorize :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Authorize'@
   -> TH.ExpQ
 insertAuthorize ident a = auditInsert ident "authorize"
@@ -87,7 +85,7 @@ insertAuthorize ident a = auditInsert ident "authorize"
   Nothing
   where as = nameRef a
 
-deleteAuthorize :: TH.Name -- ^ @'AuditIdentity'
+deleteAuthorize :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Authorize'@
   -> TH.ExpQ
 deleteAuthorize ident a = auditDelete ident "authorize"

@@ -2,7 +2,7 @@
 module Databrary.Model.Record
   ( module Databrary.Model.Record.Types
   , lookupRecord
-  , volumeRecords
+  , lookupVolumeRecords
   , recordJSON
   ) where
 
@@ -31,8 +31,8 @@ lookupRecord ri = do
   ident <- peek
   dbQuery1 $(selectQuery (selectRecord 'ident) "$WHERE record.id = ${ri}")
 
-volumeRecords :: DBM m => Volume -> m [Record]
-volumeRecords vol =
+lookupVolumeRecords :: DBM m => Volume -> m [Record]
+lookupVolumeRecords vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
 
 getRecordMeasures :: Record -> Measures

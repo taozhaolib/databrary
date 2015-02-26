@@ -26,7 +26,7 @@ deriveLiftMany [''Permission, ''Consent, ''Classification]
 data Access = Access
   { accessSite' :: !Permission
   , accessMember' :: !Permission
-  }
+  } deriving (Eq)
 
 accessPermission' :: Access -> Permission
 accessPermission' (Access s m) = min s m

@@ -1,10 +1,10 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Citation
   ( module Databrary.Model.Citation.Types
-  , volumeCitation
-  , setVolumeCitation
-  , volumeLinks
-  , setVolumeLinks
+  , lookupVolumeCitation
+  , changeVolumeCitation
+  , lookupVolumeLinks
+  , changeVolumeLinks
   ) where
 
 import Control.Applicative ((<$>))
@@ -16,16 +16,16 @@ import Databrary.Model.Volume.Types
 import Databrary.Model.Citation.Types
 import Databrary.Model.Citation.SQL
 
-volumeCitation :: (DBM m) => Volume -> m (Maybe Citation)
-volumeCitation vol =
+lookupVolumeCitation :: (DBM m) => Volume -> m (Maybe Citation)
+lookupVolumeCitation vol =
   dbQuery1 $ fmap ($ Just (volumeName vol)) $(selectQuery selectVolumeCitation "$WHERE volume_citation.volume = ${volumeId vol}")
 
-volumeLinks :: (DBM m) => Volume -> m [Citation]
-volumeLinks vol =
+lookupVolumeLinks :: (DBM m) => Volume -> m [Citation]
+lookupVolumeLinks vol =
   dbQuery $(selectQuery selectVolumeLink "$WHERE volume_link.volume = ${volumeId vol}")
 
-setVolumeCitation :: (AuditM c m) => Volume -> Maybe Citation -> m Bool
-setVolumeCitation vol citem = do
+changeVolumeCitation :: (AuditM c m) => Volume -> Maybe Citation -> m Bool
+changeVolumeCitation vol citem = do
   ident <- getAuditIdentity
   (0 <) <$> maybe
     (dbExecute $(deleteVolumeCitation 'ident 'vol))
@@ -34,8 +34,8 @@ setVolumeCitation vol citem = do
       $(insertVolumeCitation 'ident 'vol 'cite))
     citem
 
-setVolumeLinks :: (AuditM c m) => Volume -> [Citation] -> m ()
-setVolumeLinks vol links = do
+changeVolumeLinks :: (AuditM c m) => Volume -> [Citation] -> m ()
+changeVolumeLinks vol links = do
   ident <- getAuditIdentity
   dbTransaction $ do
     dbExecute $(deleteVolumeLink 'ident 'vol)

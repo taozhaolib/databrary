@@ -2,7 +2,7 @@
 module Databrary.Model.Container
   ( module Databrary.Model.Container.Types
   , lookupContainer
-  , volumeContainers
+  , lookupVolumeContainers
   , containerJSON
   ) where
 
@@ -30,8 +30,8 @@ lookupContainer ci = do
   ident <- peek
   dbQuery1 $(selectQuery (selectContainer 'ident) "$WHERE container.id = ${ci}")
 
-volumeContainers :: DBM m => Volume -> m [Container]
-volumeContainers vol =
+lookupVolumeContainers :: DBM m => Volume -> m [Container]
+lookupVolumeContainers vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.volume = ${volumeId vol}")
 
 formatContainerDate :: Container -> Maybe String

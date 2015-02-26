@@ -73,7 +73,7 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $
     a <- if app
       then do
         when (isNothing c) $ do
-          setAuthorize c'
+          changeAuthorize c'
           dl <- partyDelegates parent
           agent <- peeks $ fmap accountEmail . partyAccount
           url <- peeks $ actionURL $ viewPartyForm $ TargetParty $ partyId parent
@@ -100,7 +100,7 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $
             expires <- "expires" .:> (deformCheck "Expiration must be within two years." (Fold.all (\e -> su || e > minexp && e <= maxexp))
               =<< (<|> (su ?!> maxexp)) <$> deformOptional deform)
             return $ Authorize (Authorization (Access site member) child parent) $ fmap (`UTCTime` 43210) expires
-        maybe (Fold.mapM_ removeAuthorize c) setAuthorize a
+        maybe (Fold.mapM_ removeAuthorize c) changeAuthorize a
         when (Fold.any ((PermissionPUBLIC <) . accessSite) a && Fold.all ((PermissionPUBLIC >=) . accessSite) c) $
           sendMail
             (maybe id (:) (Right <$> partyAccount child) authorizeAddr)
