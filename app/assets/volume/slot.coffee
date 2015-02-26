@@ -243,11 +243,6 @@ app.controller('volume/slot', [
         $scope.asset = asset if $scope.current == this
         return
 
-      fillData: ->
-        super()
-        if !@asset
-          @data.position = if ruler.range.uBounded then Math.floor(ruler.range.u) else 0
-
       Object.defineProperty @prototype, 'id',
         get: -> @asset?.id
 
