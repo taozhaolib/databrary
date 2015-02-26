@@ -9,6 +9,7 @@ module Databrary.Web.Form.Errors
   , unsubFormsErrors
   , singletonFormError
   , subFormErrors
+  , subFormsErrors
   , setSubFormErrors
   ) where
 
@@ -52,6 +53,15 @@ unsubFormsErrors = FormErrors [] . sf 0 where
 
 subFormErrors :: FormKey -> FormErrors -> FormErrors
 subFormErrors k (FormErrors _ s) = Map.findWithDefault mempty k s
+
+subFormsErrors :: FormErrors -> [FormErrors]
+subFormsErrors (FormErrors _ s) = zs 0 (maybe id ((:) . (,) (FormIndex 0)) i0 $ Map.toAscList is) where
+  zs _ [] = []
+  zs i l@((FormIndex j,e):r)
+    | i == j = e : zs (succ i) r
+    | i < j = mempty : zs (succ i) l
+  zs _ _ = error "subFormsErrors"
+  (_, i0, is) = Map.splitLookup (FormIndex 0) s
 
 setSubFormErrors :: FormErrors -> FormKey -> FormErrors -> FormErrors
 setSubFormErrors (FormErrors e m) k s = FormErrors e $

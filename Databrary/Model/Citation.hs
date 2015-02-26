@@ -4,6 +4,7 @@ module Databrary.Model.Citation
   , volumeCitation
   , setVolumeCitation
   , volumeLinks
+  , setVolumeLinks
   ) where
 
 import Control.Applicative ((<$>))
@@ -24,11 +25,18 @@ volumeLinks vol =
   dbQuery $(selectQuery selectVolumeLink "$WHERE volume_link.volume = ${volumeId vol}")
 
 setVolumeCitation :: (AuditM c m) => Volume -> Maybe Citation -> m Bool
-setVolumeCitation vol mcite = do
+setVolumeCitation vol citem = do
   ident <- getAuditIdentity
   (0 <) <$> maybe
     (dbExecute $(deleteVolumeCitation 'ident 'vol))
     (\cite -> updateOrInsert
       $(updateVolumeCitation 'ident 'vol 'cite)
       $(insertVolumeCitation 'ident 'vol 'cite))
-    mcite
+    citem
+
+setVolumeLinks :: (AuditM c m) => Volume -> [Citation] -> m ()
+setVolumeLinks vol links = do
+  ident <- getAuditIdentity
+  dbTransaction $ do
+    dbExecute $(deleteVolumeLink 'ident 'vol)
+    mapM_ (\link -> dbExecute $(insertVolumeLink 'ident 'vol 'link)) links

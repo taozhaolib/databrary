@@ -69,6 +69,8 @@ routes = do
       [                               act (viewVolume api v)
       ,                               act (postVolume api v)
       , html >> "edit" >>             act (viewVolumeForm v)
+      , "link" >>            (html >> act (viewVolumeLinks v))
+                                  <|> act (postVolumeLinks api v)
       ]
     , "volume" >>                     act (createVolume api)
     , R.route >>= \c ->

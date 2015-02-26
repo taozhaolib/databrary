@@ -5,6 +5,8 @@ module Databrary.Model.Citation.SQL
   , updateVolumeCitation
   , deleteVolumeCitation
   , selectVolumeLink
+  , insertVolumeLink
+  , deleteVolumeLink
   ) where
 
 import qualified Language.Haskell.TH as TH
@@ -31,12 +33,17 @@ volumeKeys :: String -- ^ @'Volume'@
 volumeKeys v =
   [ ("volume", "${volumeId " ++ v ++ "}") ]
 
-citationSets :: String -- ^ @'Citation'@
+linkSets :: String -- ^ @'Citation'@
   -> [(String, String)]
-citationSets c =
+linkSets c =
   [ ("head", "${citationHead " ++ c ++ "}")
   , ("url", "${citationURL " ++ c ++ "}")
-  , ("year", "${citationYear " ++ c ++ "}")
+  ]
+
+citationSets :: String -- ^ @'Citation'@
+  -> [(String, String)]
+citationSets c = linkSets c ++
+  [ ("year", "${citationYear " ++ c ++ "}")
   ]
 
 insertVolumeCitation :: TH.Name -- ^ @'AuditIdentity'
@@ -60,5 +67,20 @@ deleteVolumeCitation :: TH.Name -- ^ @'AuditIdentity'
   -> TH.Name -- ^ @'Volume'@
   -> TH.ExpQ -- ^ ()
 deleteVolumeCitation ident v = auditDelete ident "volume_citation"
+  (whereEq $ volumeKeys (nameRef v))
+  Nothing
+
+insertVolumeLink :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Volume'@
+  -> TH.Name -- ^ @'Citation'@
+  -> TH.ExpQ -- ^ ()
+insertVolumeLink ident v c = auditInsert ident "volume_link"
+  (volumeKeys (nameRef v) ++ linkSets (nameRef c))
+  Nothing
+
+deleteVolumeLink :: TH.Name -- ^ @'AuditIdentity'
+  -> TH.Name -- ^ @'Volume'@
+  -> TH.ExpQ -- ^ ()
+deleteVolumeLink ident v = auditDelete ident "volume_link"
   (whereEq $ volumeKeys (nameRef v))
   Nothing

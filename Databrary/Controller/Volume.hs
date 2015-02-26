@@ -5,6 +5,8 @@ module Databrary.Controller.Volume
   , viewVolumeForm
   , postVolume
   , createVolume
+  , viewVolumeLinks
+  , postVolumeLinks
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure)
@@ -112,15 +114,16 @@ volumeCitationForm v = do
 
 viewVolumeForm :: Id Volume -> AppRAction
 viewVolumeForm vi = action GET (vi, "edit" :: T.Text) $
-  withVolume PermissionEDIT vi $
-    blankForm . htmlVolumeForm . Just
+  withVolume PermissionEDIT vi $ \v ->
+    blankForm . htmlVolumeForm (Just v) =<< volumeCitation v
 
 postVolume :: API -> Id Volume -> AppRAction
 postVolume api vi = action POST (api, vi) $
   withVolume PermissionEDIT vi $ \v -> do
-    (v', cite) <- runForm (api == HTML ?> htmlVolumeForm (Just v)) $ volumeCitationForm v
+    cite <- volumeCitation v
+    (v', cite') <- runForm (api == HTML ?> htmlVolumeForm (Just v) cite) $ volumeCitationForm v
     changeVolume v'
-    setVolumeCitation v' cite
+    setVolumeCitation v' cite'
     case api of
       JSON -> okResponse [] $ volumeJSON v'
       HTML -> redirectRouteResponse [] $ viewVolume api vi
@@ -128,7 +131,7 @@ postVolume api vi = action POST (api, vi) $
 createVolume :: API -> AppRAction
 createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ do
   u <- peek
-  (bv, cite, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing) $ do
+  (bv, cite, owner) <- runForm (api == HTML ?> htmlVolumeForm Nothing Nothing) $ do
     (bv, cite) <- volumeCitationForm blankVolume
     own <- "owner" .:> do
       oi <- deformOptional deform
@@ -144,3 +147,20 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
   case api of
     JSON -> okResponse [] $ volumeJSON v
     HTML -> redirectRouteResponse [] $ viewVolume api $ volumeId v
+
+viewVolumeLinks :: Id Volume -> AppRAction
+viewVolumeLinks vi = action GET (vi, "link" :: T.Text) $
+  withVolume PermissionEDIT vi $ \v ->
+    blankForm . htmlVolumeLinksForm v =<< volumeLinks v
+
+postVolumeLinks :: API -> Id Volume -> AppRAction
+postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $
+  withVolume PermissionEDIT vi $ \v -> do
+    links <- volumeLinks v
+    links' <- runForm (api == HTML ?> htmlVolumeLinksForm v links) $
+      withSubDeforms citationForm
+    setVolumeLinks v links'
+    case api of
+      JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')
+      HTML -> redirectRouteResponse [] $ viewVolume api vi
+

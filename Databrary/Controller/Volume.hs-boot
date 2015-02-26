@@ -8,3 +8,5 @@ viewVolume :: API -> Id Volume -> AppRAction
 viewVolumeForm :: Id Volume -> AppRAction
 postVolume :: API -> Id Volume -> AppRAction
 createVolume :: API -> AppRAction
+viewVolumeLinks :: Id Volume -> AppRAction
+postVolumeLinks :: API -> Id Volume -> AppRAction

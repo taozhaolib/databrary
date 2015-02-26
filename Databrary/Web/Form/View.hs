@@ -4,6 +4,7 @@ module Databrary.Web.Form.View
   , runFormView
   , blankFormView
   , (.:>) 
+  , withSubFormsViews
   , formViewErrors
   , allFormViewErrors
   ) where
@@ -70,6 +71,15 @@ blankFormView f = runFormView f mempty mempty
 withSubFormView :: Functor m => FormKey -> FormViewT m a -> FormViewT m a
 withSubFormView k (FormViewT a) = FormViewT $ \d e ->
   second (setSubFormErrors e k) <$> a (subForm k d) (subFormErrors k e)
+
+withSubFormsViews :: (Functor m, Monad m) => [a] -> (Maybe a -> FormViewT m ()) -> FormViewT m ()
+withSubFormsViews l f = msfv 0 l =<< reader subForms where
+  msfv _ [] [] = return ()
+  msfv i xl sl = withSubFormView (FormIndex i) (f x) >> msfv (succ i) xr sr where
+    (x, xr) = uncons xl
+    (_, sr) = uncons sl
+  uncons (x:r) = (Just x, r)
+  uncons r = (Nothing, r)
 
 infixr 2 .:>
 (.:>) :: Functor m => T.Text -> FormViewT m a -> FormViewT m a
