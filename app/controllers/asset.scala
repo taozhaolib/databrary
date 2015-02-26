@@ -29,11 +29,14 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       sa.flatMap(_.segment.zip((l, u) => u - l)).filter(_ != Offset.ZERO) getOrElse asset.duration
     }
 
-  private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
+  private[this] def set(asset : Asset, form : AssetController.AssetForm, autopos : Boolean = false)(implicit request : SiteRequest[_]) =
     for {
       slot <- form.container.get.mapAsync { c =>
-        form.position.get.fold(async(Segment.full))(p =>
-          duration(asset).map(d => Segment(p, p + d)))
+        form.position.get.orElseAsync(
+          if (autopos) SlotAsset.containerEnd(c).map(e => Some(e.getOrElse(Offset.ZERO)))
+          else async(None))
+        .flatMap(_.fold(async(Segment.full))(p =>
+          duration(asset).map(d => Segment(p, p + d))))
         .flatMap(Slot.get(c, _))
         .map(_ getOrElse form.container.withError("object.invalid", "container")._throw)
       }
@@ -114,7 +117,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   def upload(v : models.Volume.Id) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.UploadForm()._bind
-      create(form).flatMap(set(_, form))
+      create(form).flatMap(a => set(a, form, a.duration > Offset.ZERO))
     }
 
   def replace(o : models.Asset.Id) =

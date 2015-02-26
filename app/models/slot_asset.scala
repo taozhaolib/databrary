@@ -181,6 +181,9 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     }
     .SELECT(sql"WHERE COALESCE($top = container.top, true)")
     .list
+
+  def containerEnd(c : Container.Id) : Future[Option[Offset]] =
+    lsql"SELECT max(upper(segment)) FROM slot_asset WHERE container = $c".run.single(SQL.Cols[Option[Offset]])
 }
 
 object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot] {
