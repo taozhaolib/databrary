@@ -13,6 +13,17 @@ pad = f2
   display inline-block
 
 .frame
+  overflow hidden
+  max-height 2000px
+  transition-property visibility, max-height
+  transition-duration 0.03s, 1s
+  transition-delay 0s, 0.03s
+  &.ng-hide
+    display block!important
+    max-height 0
+    visibility hidden
+    
+    
   &.foldable
     .folder
       cursor pointer
@@ -37,6 +48,7 @@ pad = f2
 
     .fold
       max-height 1000px
+      overflow hidden
       transition-property max-height, visibility
       transition-duration 0.15s, 0s
       transition-delay 0s, 0.15s
