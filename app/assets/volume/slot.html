@@ -16,19 +16,19 @@
           </h3>
         </hgroup>
 
-        <section class="slot-player slot frame" fold ng-if="!!current">
+        <section class="slot-player slot frame" fold ng-show="!!current">
           <div class="slot-header folder" folder ng-click="toggleFold()">
             <span>Viewer</span>
           </div>
-          <div class="player" ng-if="!folded">
-            <nav class="player-actions">
+          <div class="player fold">
+            <nav ng-if="!(folded)" class="player-actions">
               <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
               <button ng-if="editing && !current.file && current.asset" class="player-action-word yellow" flow-btn>Replace File</button>
               <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-action-icon icon trash2 button"></a>
               <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
                   <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
                 </nav>
-            <div id="player-scroll" class="player-scroll">
+            <div ng-if="!(folded && !current)" id="player-scroll" class="player-scroll">
               <div class="player-info">
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">

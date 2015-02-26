@@ -13,6 +13,16 @@ pad = f2
   display inline-block
 
 .frame
+  overflow hidden
+  max-height 2000px
+  transition-property visibility, max-height
+  transition-duration 0.03s, 1s
+  transition-delay 0s, 0.03s
+  &.ng-hide
+    max-height 0
+    visibility hidden
+    
+    
   &.foldable
     .folder
       cursor pointer
@@ -36,7 +46,11 @@ pad = f2
           transform rotate(-45deg)
 
     .fold
-      transition transition
+      max-height 2000px
+      overflow hidden
+      transition-property max-height, visibility
+      transition-duration 0.15s, 0s
+      transition-delay 0s, 0.15s
 
   &.folded
     .folder
@@ -50,4 +64,7 @@ pad = f2
           transform rotate(-45deg)
 
     .fold
-      display none
+      max-height 0
+      visibility hidden
+      overflow hidden
+  
