@@ -276,7 +276,7 @@ auth.search.child=Search for the person you wish to sponsor...
 auth.search.child.help=Enter the person you wish to sponsor.
 auth.search.error=Could not retrieve any users or institutions.
 
-auth.apply.legend=Current sponsors and applications
+auth.apply.legend=Current sponsors and requests
 auth.search.apply.legend=Apply for a new sponsor
 auth.grant.legend=Current affiliates and requests
 auth.search.grant.legend=Authorize a new affiliate
