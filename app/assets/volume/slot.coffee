@@ -387,7 +387,7 @@ app.controller('volume/slot', [
         if d < viewportMinHeight
           d = viewportMinHeight
         playerImgHeightStyle = styles.set('.player-viewport .asset-display img{max-height:'+d+'px}', playerImgHeightStyle)
-        playerVideoHeightStyle = styles.set('.player-viewport .asset-display video{height:'+d+'px}', playerVideoHeightStyle)
+        playerVideoHeightStyle = styles.set('.player-viewport .asset-display video,.player-drop{height:'+d+'px}', playerVideoHeightStyle)
         return
       return
     setPlayerHeight = () ->
