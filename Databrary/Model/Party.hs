@@ -83,12 +83,12 @@ changeAccount a = do
 addParty :: AuditM c m => Party -> m Party
 addParty bp = do
   ident <- getAuditIdentity
-  dbQuery1' $ fmap ($ PermissionREAD) $(insertParty 'ident 'bp)
+  dbQuery1' $ fmap (\p -> p PermissionREAD Nothing) $(insertParty 'ident 'bp)
 
 addAccount :: AuditM c m => Account -> m Account
 addAccount ba@Account{ accountParty = bp } = do
   ident <- getAuditIdentity
-  p <- dbQuery1' $ fmap ($ PermissionREAD) $(insertParty 'ident 'bp)
+  p <- dbQuery1' $ fmap (\p -> p PermissionREAD Nothing) $(insertParty 'ident 'bp)
   let pa = p{ partyAccount = Just a }
       a = ba{ accountParty = pa }
   dbExecute1 $(insertAccount 'ident 'a)

@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.VolumeAccess.SQL
-  ( selectVolumeVolumeAccess
+  ( selectVolumeAccess
+  , selectVolumeAccessParty
   , selectPartyVolumeAccess
   , updateVolumeAccess
   , insertVolumeAccess
@@ -9,6 +10,9 @@ module Databrary.Model.VolumeAccess.SQL
 
 import qualified Language.Haskell.TH as TH
 
+import Databrary.Model.Permission.Types
+import Databrary.Model.Party.Types
+import Databrary.Model.Volume.Types
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Party.SQL
@@ -18,13 +22,26 @@ import Databrary.Model.VolumeAccess.Types
 volumeAccessRow :: Selector -- ^ @'Party' -> 'Volume' -> 'VolumeAccess'@
 volumeAccessRow = selectColumns 'VolumeAccess "volume_access" ["individual", "children"]
 
-selectVolumeVolumeAccess :: TH.Name -- ^ 'Volume'
+selectVolumeAccess :: TH.Name -- ^ 'Volume'
   -> TH.Name -- ^ 'Identity'
   -> Selector -- ^ 'VolumeAccess'
-selectVolumeVolumeAccess vol ident = selectMap (`TH.AppE` TH.VarE vol) $ selectJoin '($)
+selectVolumeAccess vol ident = selectMap (`TH.AppE` TH.VarE vol) $ selectJoin '($)
   [ volumeAccessRow
   , joinOn ("volume_access.party = party.id AND volume_access.volume = ${volumeId " ++ nameRef vol ++ "}")
-    $ selectParty ident
+    $ selectAuthParty ident
+  ]
+
+makeVolumeAccessParty :: Party -> Maybe (Party -> Volume -> VolumeAccess) -> Volume -> VolumeAccess
+makeVolumeAccessParty p Nothing v = VolumeAccess PermissionNONE PermissionNONE p v
+makeVolumeAccessParty p (Just af) v = af p v
+
+selectVolumeAccessParty :: TH.Name -- ^ 'Volume'
+  -> TH.Name -- ^ 'Identity'
+  -> Selector -- ^ 'VolumeAccess'
+selectVolumeAccessParty vol ident = selectMap (`TH.AppE` TH.VarE vol) $ selectJoin 'makeVolumeAccessParty
+  [ selectAuthParty ident
+  , maybeJoinOn ("party.id = volume_access.party AND volume_access.volume = ${volumeId " ++ nameRef vol ++ "}")
+    volumeAccessRow
   ]
 
 selectPartyVolumeAccess :: TH.Name -- ^ 'Party'

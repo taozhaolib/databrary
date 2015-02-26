@@ -1,10 +1,12 @@
 {-# LANGUAGE TemplateHaskell, RecordWildCards, OverloadedStrings #-}
 module Databrary.Model.VolumeAccess
   ( module Databrary.Model.VolumeAccess.Types
-  , volumeVolumeAccess
-  , partyVolumeAccess
-  , volumeAccessJSON
+  , lookupVolumeAccess
+  , lookupVolumeAccessParty
+  , lookupPartyVolumeAccess
   , changeVolumeAccess
+  , volumeAccessProvidesADMIN
+  , volumeAccessJSON
   ) where
 
 import Data.Maybe (catMaybes)
@@ -23,21 +25,20 @@ import Databrary.Model.Audit
 import Databrary.Model.VolumeAccess.Types
 import Databrary.Model.VolumeAccess.SQL
 
-volumeVolumeAccess :: (DBM m, MonadHasIdentity c m) => Volume -> Permission -> m [VolumeAccess]
-volumeVolumeAccess vol perm = do
+lookupVolumeAccess :: (DBM m, MonadHasIdentity c m) => Volume -> Permission -> m [VolumeAccess]
+lookupVolumeAccess vol perm = do
   ident <- peek
-  dbQuery $(selectQuery (selectVolumeVolumeAccess 'vol 'ident) "$WHERE volume_access.individual >= ${perm} ORDER BY individual DESC, children DESC")
+  dbQuery $(selectQuery (selectVolumeAccess 'vol 'ident) "$WHERE volume_access.individual >= ${perm} ORDER BY individual DESC, children DESC")
 
-partyVolumeAccess :: (DBM m, MonadHasIdentity c m) => Party -> Permission -> m [VolumeAccess]
-partyVolumeAccess p perm = do
+lookupVolumeAccessParty :: (DBM m, MonadHasIdentity c m) => Volume -> Id Party -> m (Maybe VolumeAccess)
+lookupVolumeAccessParty vol p = do
+  ident <- peek
+  dbQuery1 $(selectQuery (selectVolumeAccessParty 'vol 'ident) "WHERE party.id = ${p}")
+
+lookupPartyVolumeAccess :: (DBM m, MonadHasIdentity c m) => Party -> Permission -> m [VolumeAccess]
+lookupPartyVolumeAccess p perm = do
   ident <- peek
   dbQuery $(selectQuery (selectPartyVolumeAccess 'p 'ident) "$WHERE volume_access.individual >= ${perm} ORDER BY individual DESC, children DESC")
-
-volumeAccessJSON :: VolumeAccess -> JSON.Object
-volumeAccessJSON VolumeAccess{..} = JSON.object $ catMaybes
-  [ ("individual" JSON..= volumeAccessIndividual) <? (volumeAccessIndividual >= PermissionNONE)
-  , ("children"   JSON..= volumeAccessChildren)   <? (volumeAccessChildren   >= PermissionNONE)
-  ]
 
 changeVolumeAccess :: (AuditM c m) => VolumeAccess -> m Bool
 changeVolumeAccess va = do
@@ -47,3 +48,14 @@ changeVolumeAccess va = do
     else updateOrInsert
       $(updateVolumeAccess 'ident 'va)
       $(insertVolumeAccess 'ident 'va)
+
+volumeAccessProvidesADMIN :: VolumeAccess -> Bool
+volumeAccessProvidesADMIN VolumeAccess{ volumeAccessChildren   = PermissionADMIN, volumeAccessParty = p } = accessMember     p == PermissionADMIN
+volumeAccessProvidesADMIN VolumeAccess{ volumeAccessIndividual = PermissionADMIN, volumeAccessParty = p } = accessPermission p == PermissionADMIN
+volumeAccessProvidesADMIN _ = False
+
+volumeAccessJSON :: VolumeAccess -> JSON.Object
+volumeAccessJSON VolumeAccess{..} = JSON.object $ catMaybes
+  [ ("individual" JSON..= volumeAccessIndividual) <? (volumeAccessIndividual >= PermissionNONE)
+  , ("children"   JSON..= volumeAccessChildren)   <? (volumeAccessChildren   >= PermissionNONE)
+  ]

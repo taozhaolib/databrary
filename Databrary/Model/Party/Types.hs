@@ -16,7 +16,7 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (makeHasRec)
+import Control.Has (makeHasRec, Has(..))
 import Databrary.Model.URL (URI)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
@@ -31,6 +31,7 @@ data Party = Party
   , partyURL :: Maybe URI
   , partyAccount :: Maybe Account
   , partyPermission :: Permission
+  , partyAccess :: Maybe Access
   }
 
 data Account = Account
@@ -39,13 +40,28 @@ data Account = Account
   , accountParty :: Party
   }
 
+makeHasRec ''Party ['partyId]
+makeHasRec ''Account ['accountParty]
+
+instance Has Access Party where
+  view Party{ partyAccess = Just a } = a
+  view _ = mempty
+instance Has Permission Party where
+  view Party{ partyPermission = p, partyAccess = Just a } = p `max` accessPermission' a
+  view Party{ partyPermission = p } = p
+
 instance Kinded Party where
   kindOf _ = "party"
 
+-- Access to the site by a (current) account
 data SiteAuth = SiteAuth
   { siteAccount :: Account -- maybe should be Party (for nobody)
   , siteAccess :: Access
   }
+
+makeHasRec ''SiteAuth ['siteAccount, 'siteAccess]
+
+deriveLiftMany [''Party, ''Account]
 
 -- this is unfortunate, mainly to avoid untangling Party.SQL
 nobodySiteAuth :: SiteAuth
@@ -60,15 +76,11 @@ nobodySiteAuth = SiteAuth
       , partyURL = Nothing
       , partyAccount = Nothing
       , partyPermission = PermissionREAD
+      , partyAccess = Just minBound
       }
     }
   , siteAccess = mempty
   }
-
-makeHasRec ''Party ['partyId, 'partyPermission]
-makeHasRec ''Account ['accountParty]
-makeHasRec ''SiteAuth ['siteAccount, 'siteAccess]
-deriveLiftMany [''Party, ''Account]
 
 blankParty :: Party
 blankParty = Party
@@ -78,4 +90,5 @@ blankParty = Party
   , partyURL = Nothing
   , partyAccount = Nothing
   , partyPermission = PermissionNONE
+  , partyAccess = Nothing
   }

@@ -55,7 +55,7 @@ postLogin api = action POST (api, ["user", "login" :: T.Text]) $ do
     auth <- lift $ lookupSiteAuthByEmail email
     let p = view <$> auth
         a = partyAccount =<< p
-        su = superuser && Fold.any ((PermissionADMIN ==) . view) auth
+        su = superuser && Fold.any ((PermissionADMIN ==) . accessPermission) auth
     attempts <- lift $ maybe (return 0) recentAccountLogins p
     let pass = maybe False (flip BCrypt.validatePassword password) (accountPasswd =<< a)
         block = attempts > 4

@@ -3,7 +3,6 @@ module Databrary.Model.Party.Boot
   ( loadParty
   ) where
 
-import Data.Maybe (fromJust)
 import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
@@ -16,7 +15,7 @@ import Databrary.Model.Party.SQL
 
 useTPG
 
-loadParty :: Id Party -> Permission -> TH.ExpQ -- ^ @'Permission' -> 'Party'@
+loadParty :: Id Party -> Permission -> TH.ExpQ -- ^ @'Party'@
 loadParty i perm = do
-  p <- dbQuery1 $(selectQuery partyRow "$WHERE party.id = ${i}")
-  TH.lift $ fromJust p Nothing perm
+  Just p <- dbQuery1 $(selectQuery partyRow "$WHERE party.id = ${i}")
+  TH.lift $ p Nothing perm Nothing

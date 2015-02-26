@@ -53,7 +53,7 @@ volumeJSONField :: (DBM m, MonadHasIdentity c m) => Volume -> BS.ByteString -> M
 volumeJSONField vol "access" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va)))
-    <$> volumeVolumeAccess vol (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
+    <$> lookupVolumeAccess vol (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
 volumeJSONField vol "citation" _ =
   Just . maybe JSON.Null JSON.toJSON <$> lookupVolumeCitation vol
 volumeJSONField vol "links" _ =

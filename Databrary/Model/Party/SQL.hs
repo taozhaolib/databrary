@@ -10,10 +10,13 @@ module Databrary.Model.Party.SQL
   , insertAccount
   ) where
 
+import Control.Applicative ((<|>))
 import Data.Char (toLower)
 import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 
+import Control.Applicative.Ops
+import Control.Has (view)
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Permission.Types
@@ -27,50 +30,51 @@ partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]
 accountRow :: Selector -- ^ @'Party' -> 'Account'@
 accountRow = selectColumns 'Account "account" ["email", "password"]
 
-makeParty :: (Maybe Account -> Permission -> Party) -> Maybe (Party -> Account) -> Permission -> Party
-makeParty pc ac perm = p where
-  p = pc (fmap ($ p) ac) perm
+makeParty :: (Maybe Account -> Permission -> Maybe Access -> Party) -> Maybe (Party -> Account) -> Permission -> Maybe Access -> Party
+makeParty pc ac perm a = p where
+  p = pc (fmap ($ p) ac) perm a
 
-selectUnpermissionedParty :: Selector -- ^ @'Permission' -> 'Party'@
-selectUnpermissionedParty = selectJoin 'makeParty 
+selectPermissionParty :: Selector -- ^ @'Permission' -> Maybe 'Access' -> 'Party'@
+selectPermissionParty = selectJoin 'makeParty 
   [ partyRow
   , maybeJoinUsing ["id"] accountRow
   ]
 
-permissionParty :: (Permission -> Party) -> Maybe Permission -> Identity -> Party
-permissionParty pf perm ident = pf $ if identitySuperuser ident
-  then maxBound
-  else maybe id max perm $ max PermissionPUBLIC $ min PermissionREAD $ accessSite ident
+permissionParty :: (Permission -> Maybe Access -> Party) -> Maybe Access -> Identity -> Party
+permissionParty pf a ident = p where
+  p = pf 
+    (max PermissionPUBLIC $ min PermissionREAD $ accessSite ident)
+    (((identitySuperuser ident || view ident == partyId p) ?> maxBound) <|> a)
 
 selectParty :: TH.Name -- ^ 'Identity'
   -> Selector -- ^ @'Party'@
-selectParty ident = selectMap ((`TH.AppE` TH.VarE ident) . (`TH.AppE` TH.ConE 'Nothing) . (TH.VarE 'permissionParty `TH.AppE`)) $
-  selectUnpermissionedParty
+selectParty ident = selectMap ((`TH.AppE` TH.VarE ident) . (`TH.AppE` (TH.ConE 'Nothing)) . (TH.VarE 'permissionParty `TH.AppE`)) $
+  selectPermissionParty
 
 selectAuthParty :: TH.Name -- ^ 'Identity`
   -> Selector -- ^ @'Party'@
 selectAuthParty ident = selectMap (`TH.AppE` TH.VarE ident) $ selectJoin 'permissionParty
-  [ selectUnpermissionedParty
+  [ selectPermissionParty
   , maybeJoinOn ("party.id = authorize_valid.parent AND authorize_valid.child = ${view " ++ nameRef ident ++ " :: Id Party}")
-    $ selector "authorize_valid" "LEAST(site, member)"
+    $ accessRow "authorize_valid" -- optimization, should be authorize_view if we used site
   ]
 
-makeAccount :: (Maybe Account -> Permission -> Party) -> (Party -> Account) -> Permission -> Account
-makeAccount pc ac perm = a where
-  a = ac (pc (Just a) perm)
+makeAccount :: (Maybe Account -> Permission -> Maybe Access -> Party) -> (Party -> Account) -> Permission -> Maybe Access -> Account
+makeAccount pc ac perm ma = a where
+  a = ac $ pc (Just a) perm ma
 
-selectUnpermissionedAccount :: Selector -- ^ @'Permission' -> 'Account'@
-selectUnpermissionedAccount = selectJoin 'makeAccount 
+selectPermissionAccount :: Selector -- ^ @'Permission' -> Maybe 'Access' -> 'Account'@
+selectPermissionAccount = selectJoin 'makeAccount 
   [ partyRow
   , joinUsing ["id"] accountRow
   ]
 
-makeSiteAuth :: (Permission -> Account) -> Maybe Access -> SiteAuth
-makeSiteAuth p a = SiteAuth (p maxBound) (Fold.fold a)
+makeSiteAuth :: (Permission -> Maybe Access -> Account) -> Maybe Access -> SiteAuth
+makeSiteAuth p a = SiteAuth (p maxBound $ Just maxBound) (Fold.fold a)
 
 selectSiteAuth :: Selector -- @'SiteAuth'@
 selectSiteAuth = selectJoin 'makeSiteAuth
-  [ selectUnpermissionedAccount
+  [ selectPermissionAccount
   , maybeJoinOn "party.id = authorize_view.child AND authorize_view.parent = 0"
     $ accessRow "authorize_view"
   ]

@@ -20,6 +20,7 @@ import Databrary.Controller.Token
 import Databrary.Controller.Party
 import Databrary.Controller.Authorize
 import Databrary.Controller.Volume
+import Databrary.Controller.VolumeAccess
 import Databrary.Controller.Record
 import Databrary.Controller.SlotAsset
 import Databrary.Controller.Citation
@@ -54,13 +55,15 @@ routes = do
       , "password" >>        (html >> act viewPasswordReset)
                                   <|> act (postPasswordReset api)
       ]
-    , R.route >>= \t ->               act (viewLoginToken api t)
+    , R.route >>= \t ->               -- /token/ID
+                                      act (viewLoginToken api t)
                                   <|> act (postPasswordToken api t)
     , R.route >>= \p -> msum          -- /party/ID
       [                               act (viewParty api p)
       ,                               act (postParty api p)
       , html >> "edit" >>             act (viewPartyForm p)
-      , R.route >>= \a ->    (html >> act (viewAuthorize p a))
+      , R.route >>= \a ->             --          /authorize/ID
+                             (html >> act (viewAuthorize p a))
                                   <|> act (postAuthorize api p a)
       ]
     , "party" >>                      act (createParty api)
@@ -69,14 +72,18 @@ routes = do
       [                               act (viewVolume api v)
       ,                               act (postVolume api v)
       , html >> "edit" >>             act (viewVolumeForm v)
+      , R.route >>= \p ->             --           /access/ID
+                             (html >> act (viewVolumeAccess v p))
+                                  <|> act (postVolumeAccess api v p)
       , "link" >>            (html >> act (viewVolumeLinks v))
                                   <|> act (postVolumeLinks api v)
       ]
     , "volume" >>                     act (createVolume api)
-    , R.route >>= \c ->
-        R.route >>= \a ->
+    , R.route >>= \c ->               -- /slot/ID
+        R.route >>= \a ->             --         /asset/ID
                (html >> "download" >> act (downloadSlotAsset c a))
-    , R.route >>= \r ->               act (viewRecord api r)
+    , R.route >>= \r ->               -- /record/ID
+                                      act (viewRecord api r)
 
     , json >> msum                    -- /api
       [ "cite" >>                     act getCitation
