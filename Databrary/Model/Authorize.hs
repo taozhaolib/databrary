@@ -18,7 +18,7 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
-import Control.Has (peek)
+import Control.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL
@@ -62,8 +62,12 @@ lookupAuthorizeParent child parent = do
 lookupAuthorization :: (DBM m, MonadHasIdentity c m) => Party -> Party -> m Authorization
 lookupAuthorization child parent 
   | partyId child == partyId parent = return $ authorization $ selfAuthorize child
-  | otherwise = fromMaybe (Authorization mempty child parent) <$>
-  dbQuery1 ((\a -> a child parent) <$> $(selectQuery authorizationRow "!$WHERE authorize_view.child = ${partyId child} AND authorize_view.parent = ${partyId parent}"))
+  | otherwise = do
+    auth <- peek
+    if partyId (view auth) == partyId child && partyId parent == partyId rootParty
+      then return $ Authorization (siteAccess auth) child parent
+      else fromMaybe (Authorization mempty child parent) <$>
+        dbQuery1 ((\a -> a child parent) <$> $(selectQuery authorizationRow "!$WHERE authorize_view.child = ${partyId child} AND authorize_view.parent = ${partyId parent}"))
 
 changeAuthorize :: (AuditM c m) => Authorize -> m ()
 changeAuthorize auth = do

@@ -71,6 +71,8 @@ partyJSONField p "volumes" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("volume" JSON..= volumeJSON (volumeAccessVolume va)))
     <$> lookupPartyVolumeAccess p (fromMaybe PermissionNONE $ readDBEnum . BSC.unpack =<< ma)
+partyJSONField p "access" _ = do
+  Just . JSON.toJSON . accessSite <$> lookupAuthorization p rootParty
 partyJSONField _ _ _ = return Nothing
 
 partyJSONQuery :: (DBM m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
