@@ -397,16 +397,15 @@ app.directive 'spreadsheet', [
             r = records[c][m.metric.id]
             if expandedCat == c && counts[expanded][c] > 1
               for n in [0..counts[expanded][c]-1] by 1 when n of r
-                generateText(
-                  document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi),
-                  'age', r[n][expanded])
+                e = document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi)
+                generateText(e, 'age', r[n][expanded]) if e
             return unless 0 of r
             r = r[0]
             post = '_' + mi
-            for d, i in r when counts[i][c] == 1
-              generateText(
-                document.getElementById(id + '-rec_' + i + post),
-                'age', d)
+            for d, i in r
+              if counts[i][c] == 1
+                e = document.getElementById(id + '-rec_' + i + post)
+                generateText(e, 'age', d) if e
 
         # Generate all rows.
         generate = ->
