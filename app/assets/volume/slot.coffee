@@ -398,12 +398,15 @@ app.controller('volume/slot', [
     setPlayerHeight()
 
     $scope.resizePlayer = (down, up) ->
+      frame = document.getElementById('slot-player')
+      frame.style.overflow = 'visible'
       player = document.getElementById('player-scroll')
       bar = down.currentTarget
       h = Math.max(player.offsetHeight + up.clientY - down.clientY, playerMinHeight)
       if up.type == 'mousemove'
         bar.style.top = h - player.offsetHeight + 'px'
       else
+        frame.style.overflow = 'hidden'
         bar.style.top = '0px'
         playerHeight = h
         setPlayerHeight()
