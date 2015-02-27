@@ -38,6 +38,7 @@ app.factory('Store', [
         @file.cancel()
         delete @file
         return true
+      return true unless @asset
       @asset.remove().then (asset) =>
           Store.removedAsset = asset
           messages.add
