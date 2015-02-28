@@ -45,7 +45,7 @@ changeVolumeAccess va = do
   ident <- getAuditIdentity
   (0 <) <$> if volumeAccessIndividual va == PermissionNONE
     then dbExecute $(deleteVolumeAccess 'ident 'va)
-    else updateOrInsert
+    else fst <$> updateOrInsert
       $(updateVolumeAccess 'ident 'va)
       $(insertVolumeAccess 'ident 'va)
 

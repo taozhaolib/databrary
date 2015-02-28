@@ -46,7 +46,7 @@ citationSets c = linkSets c ++
   [ ("year", "${citationYear " ++ c ++ "}")
   ]
 
-insertVolumeCitation :: TH.Name -- ^ @'AuditIdentity'
+insertVolumeCitation :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Volume'@
   -> TH.Name -- ^ @'Citation'@
   -> TH.ExpQ -- ^ ()
@@ -54,7 +54,7 @@ insertVolumeCitation ident v c = auditInsert ident "volume_citation"
   (volumeKeys (nameRef v) ++ citationSets (nameRef c))
   Nothing
 
-updateVolumeCitation :: TH.Name -- ^ @'AuditIdentity'
+updateVolumeCitation :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Volume'@
   -> TH.Name -- ^ @'Citation'@
   -> TH.ExpQ -- ^ ()
@@ -63,14 +63,14 @@ updateVolumeCitation ident v c = auditUpdate ident "volume_citation"
   (whereEq $ volumeKeys (nameRef v))
   Nothing
 
-deleteVolumeCitation :: TH.Name -- ^ @'AuditIdentity'
+deleteVolumeCitation :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Volume'@
   -> TH.ExpQ -- ^ ()
 deleteVolumeCitation ident v = auditDelete ident "volume_citation"
   (whereEq $ volumeKeys (nameRef v))
   Nothing
 
-insertVolumeLink :: TH.Name -- ^ @'AuditIdentity'
+insertVolumeLink :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Volume'@
   -> TH.Name -- ^ @'Citation'@
   -> TH.ExpQ -- ^ ()
@@ -78,7 +78,7 @@ insertVolumeLink ident v c = auditInsert ident "volume_link"
   (volumeKeys (nameRef v) ++ linkSets (nameRef c))
   Nothing
 
-deleteVolumeLink :: TH.Name -- ^ @'AuditIdentity'
+deleteVolumeLink :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Volume'@
   -> TH.ExpQ -- ^ ()
 deleteVolumeLink ident v = auditDelete ident "volume_link"

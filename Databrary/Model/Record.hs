@@ -3,6 +3,11 @@ module Databrary.Model.Record
   ( module Databrary.Model.Record.Types
   , lookupRecord
   , lookupVolumeRecords
+  , addRecord
+  , changeRecord
+  , removeRecord
+  , changeRecordMeasure
+  , removeRecordMeasure
   , recordJSON
   ) where
 
@@ -13,7 +18,8 @@ import qualified Data.Text as T
 import Control.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
-import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.SQL
+import Databrary.Model.Audit
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity.Types
@@ -34,6 +40,34 @@ lookupRecord ri = do
 lookupVolumeRecords :: DBM m => Volume -> m [Record]
 lookupVolumeRecords vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
+
+addRecord :: AuditM c m => Record -> m Record
+addRecord br = do
+  ident <- getAuditIdentity
+  dbQuery1' $(insertRecord 'ident 'br)
+
+changeRecord :: AuditM c m => Record -> m ()
+changeRecord r = do
+  ident <- getAuditIdentity
+  dbExecute1 $(updateRecord 'ident 'r)
+
+removeRecord :: AuditM c m => Record -> m ()
+removeRecord r = do
+  ident <- getAuditIdentity
+  dbExecute1 $(deleteRecord 'ident 'r)
+
+changeRecordMeasure :: AuditM c m => Measure -> m Measure
+changeRecordMeasure m = do
+  ident <- getAuditIdentity
+  (_, [r]) <- updateOrInsert
+    $(updateMeasure 'ident 'm)
+    $(insertMeasure 'ident 'm)
+  return r
+
+removeRecordMeasure :: AuditM c m => Measure -> m Bool
+removeRecordMeasure m = do
+  ident <- getAuditIdentity
+  (0 <) <$> dbExecute $(deleteMeasure 'ident 'm)
 
 getRecordMeasures :: Record -> Measures
 getRecordMeasures r = maybe [] filt $ readClassification (view r) (view r) where

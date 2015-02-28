@@ -29,7 +29,7 @@ changeVolumeCitation vol citem = do
   ident <- getAuditIdentity
   (0 <) <$> maybe
     (dbExecute $(deleteVolumeCitation 'ident 'vol))
-    (\cite -> updateOrInsert
+    (\cite -> fst <$> updateOrInsert
       $(updateVolumeCitation 'ident 'vol 'cite)
       $(insertVolumeCitation 'ident 'vol 'cite))
     citem

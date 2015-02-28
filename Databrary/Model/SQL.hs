@@ -14,16 +14,16 @@ import Databrary.Model.SQL.Select
 isDuplicateKeyException :: PGError -> Bool
 isDuplicateKeyException (PGError e) = pgMessageCode e `elem` ["23505", "23P01"]
 
-updateOrInsert :: (DBM m, PGQuery q ()) => q -> q -> m Int
+updateOrInsert :: (DBM m, PGQuery q a) => q -> q -> m (Int, [a])
 updateOrInsert upd ins = dbTransaction uoi where
-  uoi :: DBTransaction Int
+  -- uoi :: DBTransaction (Int, [a])
   uoi = do
-    u <- dbExecute upd
-    if u /= 0
+    u@(n, _) <- dbRunQuery upd
+    if n /= 0
       then return u
       else do
         dbExecuteSimple "SAVEPOINT pre_insert"
-        i <- dbTryExecute ((() <?) . isDuplicateKeyException) ins
+        i <- dbTryQuery ((() <?) . isDuplicateKeyException) ins
         either (\() -> do
           dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
           uoi)

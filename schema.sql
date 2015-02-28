@@ -641,7 +641,7 @@ COMMENT ON TABLE "record" IS 'Sets of metadata measurements organized into or ap
 
 SELECT audit.CREATE_TABLE ('record');
 
-CREATE TYPE data_type AS ENUM ('text', 'number', 'date');
+CREATE TYPE data_type AS ENUM ('text', 'numeric', 'date');
 COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure_* tables.';
 
 CREATE TABLE "metric" (
@@ -692,7 +692,7 @@ INSERT INTO "record_template" VALUES (-100, -180, true);
 INSERT INTO "record_template" VALUES (-100, -140, true);
 INSERT INTO "record_template" VALUES (-100, -150, true);
 
-CREATE TABLE "measure" ( -- ABSTRACT
+CREATE TABLE "measure_abstract" ( -- ABSTRACT
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = table_name
 	Primary Key ("record", "metric"),
@@ -705,21 +705,66 @@ CREATE TABLE "measure_text" (
 	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "text"
 	"datum" text NOT NULL,
 	Primary Key ("record", "metric")
-) INHERITS ("measure");
+) INHERITS ("measure_abstract");
 
 CREATE TABLE "measure_number" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "number"
 	"datum" numeric NOT NULL,
 	Primary Key ("record", "metric")
-) INHERITS ("measure");
+) INHERITS ("measure_abstract");
 
 CREATE TABLE "measure_date" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
 	"metric" integer NOT NULL References "metric" ON UPDATE CASCADE, -- WHERE kind = "date"
 	"datum" date NOT NULL,
 	Primary Key ("record", "metric")
-) INHERITS ("measure");
+) INHERITS ("measure_abstract");
+
+CREATE VIEW "measure" AS
+	SELECT record, metric, datum FROM measure_text UNION ALL
+	SELECT record, metric, text(datum) FROM measure_number UNION ALL
+	SELECT record, metric, text(datum) FROM measure_date;
+COMMENT ON VIEW "measure" IS 'Data from all measure tables, coerced to text.';
+
+CREATE FUNCTION "measure_insert" () RETURNS trigger LANGUAGE plpgsql AS $insert$
+DECLARE
+	type_name name;
+BEGIN
+	SELECT type INTO type_name FROM metric WHERE id = NEW.metric;
+	IF type_name IS NULL THEN
+		RETURN NULL;
+	END IF;
+	EXECUTE $$INSERT INTO measure_$$ || type_name || $$ VALUES ($1, $2, $3::$$ || type_name || $$) RETURNING text(datum)$$ INTO NEW.datum USING NEW.record, NEW.metric, NEW.datum;
+	RETURN NEW;
+END; $insert$;
+CREATE TRIGGER "measure_insert" INSTEAD OF INSERT ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_insert" ();
+
+CREATE FUNCTION "measure_update" () RETURNS trigger LANGUAGE plpgsql AS $update$
+DECLARE
+	type_name name;
+BEGIN
+	SELECT type INTO type_name FROM metric WHERE id = NEW.metric AND id = OLD.metric;
+	IF type_name IS NULL THEN
+		RETURN NULL;
+	END IF;
+	EXECUTE $$UPDATE measure_$$ || type_name || $$ SET record = $1, datum = $2::$$ || type_name || $$ WHERE record = $3 AND metric = $4 RETURNING text(datum)$$ INTO NEW.datum USING NEW.record, NEW.datum, OLD.record, OLD.metric;
+	RETURN NEW;
+END; $update$;
+CREATE TRIGGER "measure_update" INSTEAD OF UPDATE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_update" ();
+
+CREATE FUNCTION "measure_delete" () RETURNS trigger LANGUAGE plpgsql AS $delete$
+DECLARE
+	type_name name;
+BEGIN
+	SELECT type INTO type_name FROM metric WHERE id = OLD.metric;
+	IF type_name IS NULL THEN
+		RETURN NULL;
+	END IF;
+	EXECUTE $$DELETE FROM measure_$$ || type_name || $$ WHERE record = $1 AND metric = $2$$ INTO NEW.datum USING OLD.record, OLD.metric;
+	RETURN OLD;
+END; $delete$;
+CREATE TRIGGER "measure_delete" INSTEAD OF DELETE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_delete" ();
 
 SELECT audit.CREATE_TABLE ('measure');
 ALTER TABLE audit."measure" ADD "datum" text NOT NULL;
@@ -741,21 +786,9 @@ CREATE VIEW audit."measure_date" AS
 	SELECT * FROM audit.measure;
 CREATE TRIGGER "measure_i" INSTEAD OF INSERT ON audit."measure_date" FOR EACH ROW EXECUTE PROCEDURE audit."measure_i" ();
 
-CREATE VIEW "measure_view" AS
-	SELECT record, metric, datum FROM measure_text UNION ALL
-	SELECT record, metric, text(datum) FROM measure_number UNION ALL
-	SELECT record, metric, text(datum) FROM measure_date;
-COMMENT ON VIEW "measure_view" IS 'Data from all measure tables, coerced to text.';
-
 CREATE VIEW "measures" ("record", "measures") AS
-	SELECT record, array_agg(metric || ':' || datum ORDER BY metric) FROM measure_view GROUP BY record;
+	SELECT record, array_agg(metric || ':' || datum ORDER BY metric) FROM measure GROUP BY record;
 COMMENT ON VIEW "measures" IS 'All measures for each record aggregated into a single array.';
-
-CREATE VIEW "measure_all" ("record", "metric", "datum_text", "datum_number", "datum_date") AS
-	SELECT record, metric, datum, NULL::numeric, NULL::date FROM measure_text UNION ALL
-	SELECT record, metric, NULL, datum, NULL FROM measure_number UNION ALL
-	SELECT record, metric, NULL, NULL, datum FROM measure_date;
-COMMENT ON VIEW "measure_all" IS 'Data from all measure tables, coerced to text.';
 
 CREATE TABLE "record_measures" (
 	"id" integer NOT NULL Primary Key References "record" ON UPDATE CASCADE ON DELETE CASCADE,
@@ -789,7 +822,7 @@ CREATE FUNCTION "record_measures_mi" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 	UPDATE record_measures SET measures = measures.measures FROM measures WHERE record = id AND id = NEW.record;
 	RETURN null;
 END; $$;
-CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
+CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
 CREATE TRIGGER "record_measures_i" AFTER INSERT ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mi" ();
@@ -799,7 +832,7 @@ CREATE FUNCTION "record_measures_mu" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 	UPDATE record_measures SET measures = measures.measures FROM measures WHERE record = id AND id IN (OLD.record, NEW.record);
 	RETURN null;
 END; $$;
-CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
+CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
 CREATE TRIGGER "record_measures_u" AFTER UPDATE ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_mu" ();
@@ -809,12 +842,12 @@ CREATE FUNCTION "record_measures_md" () RETURNS trigger LANGUAGE plpgsql AS $$ B
 	UPDATE record_measures SET measures = measures.measures FROM measures WHERE record = id AND id = OLD.record;
 	RETURN null;
 END; $$;
-CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
+CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_abstract" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_text" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_number" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 CREATE TRIGGER "record_measures_d" AFTER DELETE ON "measure_date" FOR EACH ROW EXECUTE PROCEDURE "record_measures_md" ();
 
-CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure" EXECUTE PROCEDURE "record_measures_refresh" ();
+CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_abstract" EXECUTE PROCEDURE "record_measures_refresh" ();
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_text" EXECUTE PROCEDURE "record_measures_refresh" ();
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_number" EXECUTE PROCEDURE "record_measures_refresh" ();
 CREATE TRIGGER "record_measures_t" AFTER TRUNCATE ON "measure_date" EXECUTE PROCEDURE "record_measures_refresh" ();

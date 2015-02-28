@@ -72,7 +72,7 @@ lookupAuthorization child parent
 changeAuthorize :: (AuditM c m) => Authorize -> m ()
 changeAuthorize auth = do
   ident <- getAuditIdentity
-  r <- updateOrInsert
+  (r, _) <- updateOrInsert
     $(updateAuthorize 'ident 'auth)
     $(insertAuthorize 'ident 'auth)
   when (r /= 1) $ fail $ "setAuthorize: " ++ show r ++ " rows"

@@ -4,8 +4,8 @@ module Databrary.DB
   , initDB
   , DBM
   , dbRunQuery
+  , dbTryQuery
   , dbExecute
-  , dbTryExecute
   , dbExecuteSimple
   , dbExecute1
   , dbQuery
@@ -75,11 +75,11 @@ instance (Functor m, Applicative m, MonadIO m, Has DBConn c) => DBM (ReaderT c m
 dbRunQuery :: (DBM m, PGQuery q a) => q -> m (Int, [a])
 dbRunQuery q = liftDB $ \c -> pgRunQuery c q
 
+dbTryQuery :: (DBM m, PGQuery q a) => (PGError -> Maybe e) -> q -> m (Either e (Int, [a]))
+dbTryQuery err q = liftDB $ \c -> tryJust err (pgRunQuery c q)
+
 dbExecute :: (DBM m, PGQuery q ()) => q -> m Int
 dbExecute q = liftDB $ \c -> pgExecute c q
-
-dbTryExecute :: (DBM m, PGQuery q ()) => (PGError -> Maybe e) -> q -> m (Either e Int)
-dbTryExecute err q = liftDB $ \c -> tryJust err (pgExecute c q)
 
 dbExecuteSimple :: DBM m => PGSimpleQuery () -> m Int
 dbExecuteSimple = dbExecute
