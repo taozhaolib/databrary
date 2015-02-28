@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
 module Databrary.Model.Record
   ( module Databrary.Model.Record.Types
+  , blankRecord
   , lookupRecord
   , lookupVolumeRecords
   , addRecord
@@ -31,6 +32,15 @@ import Databrary.Model.Record.Types
 import Databrary.Model.Record.SQL
 
 useTPG
+
+blankRecord :: Volume -> Record
+blankRecord vol = Record
+  { recordId = error "blankRecord"
+  , recordVolume = vol
+  , recordCategory = Nothing
+  , recordConsent = Nothing
+  , recordMeasures = []
+  }
 
 lookupRecord :: (MonadHasIdentity c m, DBM m) => Id Record -> m (Maybe Record)
 lookupRecord ri = do
