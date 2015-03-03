@@ -28,7 +28,7 @@
               <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
               <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
             </nav>
-            <div ng-if="!(folded && !current)" id="player-scroll" class="player-scroll">
+            <div ng-if="!(folded && !current)" id="player-scroll" class="player-scroll" ng-style="{height:playerHeight}">
               <div class="player-info">
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
