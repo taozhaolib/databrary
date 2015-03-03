@@ -105,7 +105,7 @@
                 <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
               </div>
             </div>
-            <div class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
+            <div ng-if="!folded" class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
               <span class="icon resize"></span>
             </div>
           </div>
