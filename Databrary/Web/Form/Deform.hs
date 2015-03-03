@@ -5,7 +5,7 @@ module Databrary.Web.Form.Deform
   , (.:>)
   , withSubDeforms
   , deformOptional
-  , deformNonempty
+  , deformNonEmpty
   , Deform(..) 
   , deformError
   , deformErrorDef
@@ -152,8 +152,8 @@ deformOptional f = opt =<< peek where
   opt FormDatumNone = return Nothing
   opt _ = Just <$> f
 
-deformNonempty :: (Functor m, Monad m) => DeformT m a -> DeformT m (Maybe a)
-deformNonempty f = opt =<< peek where
+deformNonEmpty :: (Functor m, Monad m) => DeformT m a -> DeformT m (Maybe a)
+deformNonEmpty f = opt =<< peek where
   opt FormDatumNone = return Nothing
   opt (FormDatumBS s) | BS.null s = return Nothing
   opt (FormDatumJSON (JSON.String s)) | T.null s = return Nothing
@@ -169,7 +169,7 @@ class Deform a where
   deform :: (Functor m, Monad m) => DeformT m a
 
 instance Deform a => Deform (Maybe a) where
-  deform = deformNonempty deform
+  deform = deformNonEmpty deform
 
 instance Deform T.Text where
   deform = deformParse "" fv where

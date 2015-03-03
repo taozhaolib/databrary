@@ -13,8 +13,11 @@ module Databrary.Model.Record
   ) where
 
 import Control.Applicative ((<$>))
+import Control.Monad (guard)
+import Data.Function (on)
 import Data.Maybe (catMaybes)
 import qualified Data.Text as T
+import Database.PostgreSQL.Typed.Protocol (PGError(..), pgMessageCode)
 
 import Control.Has (peek, view)
 import Databrary.DB
@@ -66,18 +69,46 @@ removeRecord r = do
   ident <- getAuditIdentity
   dbExecute1 $(deleteRecord 'ident 'r)
 
-changeRecordMeasure :: AuditM c m => Measure -> m Measure
+measureOrder :: Measure -> Measure -> Ordering
+measureOrder = compare `on` (metricId . measureMetric)
+
+rmMeasure :: Measure -> Record
+rmMeasure m@Measure{ measureRecord = rec } = rec{ recordMeasures = upd $ recordMeasures rec } where
+  upd [] = [m]
+  upd l@(m':l') = case m `measureOrder` m' of
+    GT -> m':upd l'
+    EQ -> l'
+    LT -> l
+
+upMeasure :: Measure -> Record
+upMeasure m@Measure{ measureRecord = rec } = rec{ recordMeasures = upd $ recordMeasures rec } where
+  upd [] = [m]
+  upd l@(m':l') = case m `measureOrder` m' of
+    GT -> m':upd l'
+    EQ -> m:l'
+    LT -> m:l
+
+isInvalidInputException :: PGError -> Bool
+isInvalidInputException (PGError e) = pgMessageCode e `elem` ["22007", "22008", "22P02"]
+
+changeRecordMeasure :: AuditM c m => Measure -> m (Maybe Record)
 changeRecordMeasure m = do
   ident <- getAuditIdentity
-  (_, [r]) <- updateOrInsert
+  r <- tryUpdateOrInsert (guard . isInvalidInputException)
     $(updateMeasure 'ident 'm)
     $(insertMeasure 'ident 'm)
-  return r
+  case r of
+    Left () -> return Nothing
+    Right (_, [d]) -> return $ Just $ upMeasure d
+    Right (n, _) -> fail $ "changeRecordMeasure: " ++ show n ++ " rows"
 
-removeRecordMeasure :: AuditM c m => Measure -> m Bool
+removeRecordMeasure :: AuditM c m => Measure -> m Record
 removeRecordMeasure m = do
   ident <- getAuditIdentity
-  (0 <) <$> dbExecute $(deleteMeasure 'ident 'm)
+  r <- dbExecute $(deleteMeasure 'ident 'm)
+  return $ if r > 0
+    then rmMeasure m
+    else measureRecord m
 
 getRecordMeasures :: Record -> Measures
 getRecordMeasures r = maybe [] filt $ readClassification (view r) (view r) where

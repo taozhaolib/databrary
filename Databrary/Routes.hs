@@ -77,14 +77,16 @@ routes = do
                                   <|> act (postVolumeAccess api v p)
       , "link" >>            (html >> act (viewVolumeLinks v))
                                   <|> act (postVolumeLinks api v)
+      , "record" >>                   act (createRecord api v)
       ]
     , "volume" >>                     act (createVolume api)
     , R.route >>= \c ->               -- /slot/ID
         R.route >>= \a ->             --         /asset/ID
                (html >> "download" >> act (downloadSlotAsset c a))
-    , R.route >>= \r ->               -- /record/ID
-                                      act (viewRecord api r)
-
+    , R.route >>= \r -> msum          -- /record/ID
+      [                               act (viewRecord api r)
+      , R.route >>= \m ->             act (postRecordMeasure api r m)
+      ]
     , json >> msum                    -- /api
       [ "cite" >>                     act getCitation
       ]

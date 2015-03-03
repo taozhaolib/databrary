@@ -2,19 +2,23 @@
 module Databrary.Controller.Record
   ( viewRecord
   , createRecord
+  , postRecordMeasure
   ) where
 
+import Control.Monad (when)
+import Control.Monad.Trans.Class (lift)
+import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text as T
 
 import Control.Applicative.Ops
 import Databrary.Action.Route
 import Databrary.Action
-import Databrary.Model.Kind
 import Databrary.Model.Id
 import Databrary.Model.Volume
 import Databrary.Model.Permission
 import Databrary.Model.Record
 import Databrary.Model.RecordCategory
+import Databrary.Model.Metric
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
@@ -33,10 +37,10 @@ viewRecord api i = action GET (api, i) $
       HTML -> okResponse [] . show . recordId -- TODO
 
 createRecord :: API -> Id Volume -> AppRAction
-createRecord api vi = action POST (api, vi, kindOf (blankRecord undefined) :: T.Text) $
+createRecord api vi = action POST (api, vi, "record" :: T.Text) $
   withVolume PermissionEDIT vi $ \vol -> do
     br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
-      cat <- "category" .:> (maybe (return Nothing) (maybe (deformErrorDef Nothing "No such record category.") (return . Just) . getRecordCategory) =<< deformNonempty deform)
+      cat <- "category" .:> (maybe (return Nothing) (maybe (deformErrorDef Nothing "No such record category.") (return . Just) . getRecordCategory) =<< deform)
       return (blankRecord vol)
         { recordCategory = cat
         }
@@ -44,3 +48,20 @@ createRecord api vi = action POST (api, vi, kindOf (blankRecord undefined) :: T.
     case api of
       JSON -> okResponse [] $ recordJSON rec
       HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec
+
+postRecordMeasure :: API -> Id Record -> Id Metric -> AppRAction
+postRecordMeasure api ri mi = action POST (api, ri, mi) $
+  withRecord PermissionEDIT ri $ \rec -> do
+    met <- maybeAction $ getMetric mi
+    let meas = Measure rec met
+    rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $
+      "datum" .:> deformNonEmpty deform
+      >>= maybe
+        (lift $ removeRecordMeasure $ meas "")
+        (\d -> do
+          r <- lift $ changeRecordMeasure $ meas d
+          when (isNothing r) $ deformError $ T.pack $ "Invalid " ++ show (metricType met)
+          return $ fromMaybe rec r)
+    case api of
+      JSON -> okResponse [] $ recordJSON rec'
+      HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec'
