@@ -17,7 +17,7 @@
         </hgroup>
 
         <section class="slot-player slot frame" id="slot-player" fold ng-style="{'max-height':current?playerHeight+100+'px':'0px'}">
-          <div class="slot-header folder" folder ng-click="toggleFold()">
+          <div class="slot-header folder" folder ng-click="toggleFold()" ng-if="current">
             <span>Viewer</span>
           </div>
           <div class="player fold">
