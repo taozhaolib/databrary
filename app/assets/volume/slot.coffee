@@ -375,7 +375,6 @@ app.controller('volume/slot', [
       playerHeight = playerMinHeight
     ### jshint ignore:end ###
 
-    $scope.playerHeight = undefined
     playerImgHeightStyle = undefined
     playerVideoHeightStyle = undefined
     updatePlayerHeight = () ->
@@ -392,7 +391,7 @@ app.controller('volume/slot', [
       return
     setPlayerHeight = () ->
       storage.set('player-height', playerHeight)
-      $scope.playerHeight = playerHeight+'px'
+      $scope.playerHeight = playerHeight
       updatePlayerHeight()
       return
     setPlayerHeight()
