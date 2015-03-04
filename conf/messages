@@ -288,7 +288,9 @@ auth.request.notfound.success=Thank you for submitting a request to be Authorize
 auth.request.notfound.info=Contact info
 
 # Permission levels
-auth.site=Access to others'' data shared on Databrary 
+auth.site.view=Level of 
+auth.site.edit=Allow 
+auth.site=access to others'' data shared on Databrary 
 auth.site.NONE.title=No access
 # for lockdown only:
 auth.site.NONE=Cannot access shared Databrary data (except as granted through group/lab access).
@@ -303,7 +305,9 @@ auth.site.EDIT=Share data with Databrary and the public.
 auth.site.ADMIN.title=Administrative access
 auth.site.ADMIN=Can authorize users on {0} behalf.
 
-auth.member=Access to {0} group/lab data
+auth.member.view=Level of
+auth.member.edit=Grant
+auth.member=access to {0} group/lab data
 auth.member.NONE.title=No access
 auth.member.NONE=Cannot access {0} data (except as granted through Databrary authorization).
 auth.member.PUBLIC.title=Public access
