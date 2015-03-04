@@ -170,13 +170,16 @@
   overflow ellipsis
   position relative
       
-  .classification-info
-  .upload-progress-info
+  .classification-info,.upload-progress-info
     position absolute
-    right b8
     top b3
+    right b8
     span
       font-style italic
+  
+  .upload-progress-info
+    margin-right b1+b3
+  
   progress
     @media screen and (max-width: 640px)
       width 100px

@@ -417,7 +417,7 @@ position=Position
 position.placeholder=MM:SS
 
 volume.links=Links
-link.head=Citation/description
+link.head=Title/description
 link.url=URL or DOI
 link.head.title=Step 1. Enter title
 link.url.title=Step 2. Enter URL or DOI
