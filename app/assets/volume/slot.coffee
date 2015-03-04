@@ -205,8 +205,9 @@ app.controller('volume/slot', [
       return
 
     $scope.updateSelection = finalizeSelection = ->
-      $scope.current.editExcerpt() if $scope.current?.excerpts
-      $scope.addRecord(null)
+      if editing
+        $scope.addRecord(null)
+        $scope.current.editExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
         t.update()
       return
@@ -571,8 +572,8 @@ app.controller('volume/slot', [
 
     $scope.addRecord = (r) ->
       seg = getSelection()
-      $scope.addRecord.records = undefined
       if r == undefined
+        $scope.editing = 'record'
         rs = {}
         for ri, r of slot.volume.records
           rs[ri] = r
@@ -586,7 +587,10 @@ app.controller('volume/slot', [
         $scope.addRecord.categories = rc
         $scope.addRecord.select = null
         $scope.setCategory($scope.addRecord.category)
-      else if r
+      else
+        $scope.editing = true
+        $scope.addRecord.records = undefined
+        return unless r?
         slot.addRecord(slot.volume.records[r], seg).then (rec) ->
             r = new Record
               id: rec.id
