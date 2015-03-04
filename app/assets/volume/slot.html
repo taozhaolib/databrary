@@ -17,7 +17,7 @@
         </hgroup>
 
         <section class="slot-player slot frame" id="slot-player" fold ng-style="{'max-height':current?playerHeight+100+'px':'0px'}">
-          <div class="slot-header folder" folder ng-click="toggleFold()">
+          <div class="slot-header folder" folder ng-click="toggleFold()" ng-if="!!current">
             <span>Viewer</span>
           </div>
           <div class="player fold">
@@ -105,7 +105,7 @@
               <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
             </div>
             </div>
-            <div class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
+            <div ng-if="!folded" class="player-resize-bar" mouse-drag="resizePlayer($down, $up)">
               <span class="icon resize"></span>
             </div>
           </div>
@@ -132,7 +132,7 @@
 
         <section id="slot-timeline" class="slot-timeline slot frame">
           <div class="slot-toolbar" ng-if="::editing">
-            <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Add Excerpt</button>
+            <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Highlight as Excerpt</button>
             <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
             <ng-form ng-if="current.excerpt.on" name="form.excerpt">
               <select id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
