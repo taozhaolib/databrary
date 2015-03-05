@@ -319,7 +319,7 @@ auth.member.READ=Full view access to all {0} group data.
 auth.member.EDIT.title=Read/write access
 auth.member.EDIT=Can access and edit all {0} group data.
 auth.member.ADMIN.title=Manager
-auth.member.ADMIN=Can create and access volumes and change volume access on all {0} group data.
+auth.member.ADMIN=Can create volumes and change volume access on all {0} group data.
 
 # note: {0} may be name or "You"
 access.NONE={0} cannot access these data.
