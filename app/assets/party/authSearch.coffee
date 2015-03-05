@@ -15,11 +15,11 @@ app.directive 'authSearchForm', [
       $scope.$watch ->
           form.principal
         , (principal) ->
-          form.validator.client
-              name:
-                tips: constants.message('auth.search.' + (principal || 'placeholder') + '.help')
-            , true
+          form.validator.client({
+              name:{tips: constants.message('auth.search.' + (principal || 'placeholder') + '.help')}
+            }, true)
           form.placeholderText = $attrs.placeholderText || constants.message('auth.search.' + (form.principal || 'placeholder'))
+          return
 
       select = (found) -> ->
         form.selectFn(found)
