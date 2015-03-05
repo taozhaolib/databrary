@@ -19,8 +19,7 @@ app.factory('Store', [
         if @asset
           name: @asset.name
           classification: @asset.classification+''
-          container: @slot.id # required for position, which has the side-effect of restoring deleted/moved assets
-          position: @asset.segment.l
+          container: @slot.id # this is only necessary for position but has the side-effect of restoring deleted/moved assets
         else
           classification: constants.classification.RESTRICTED+''
       return
