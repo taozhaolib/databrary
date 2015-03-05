@@ -108,7 +108,8 @@ object LoginController extends LoginController {
   final class LoginForm(implicit request : SiteRequest[_])
     extends HtmlForm[LoginForm](
       routes.LoginHtml.post,
-      views.html.party.login(_)) {
+      views.html.party.login(_))
+    with NoCsrfForm {
     val email = Field(Forms.optional(Forms.email))
     val password = Field(Forms.default(Forms.text, ""))
     val openid = Field(Forms.optional(Forms.of[URL]))
