@@ -5,7 +5,7 @@ module Databrary.Model.Token.SQL
   , selectUpload
   ) where
 
-import qualified Data.Text as T
+import qualified Data.ByteString as BS
 
 import Databrary.Model.SQL.Select
 import Databrary.Model.Party.Types
@@ -31,7 +31,7 @@ selectSession :: Selector -- @'Session'@
 selectSession =
   addSelects 'Session (accountTokenRow "session") ["session.superuser"]
 
-makeUpload :: Token -> T.Text -> SiteAuth -> Upload
+makeUpload :: Token -> BS.ByteString -> SiteAuth -> Upload
 makeUpload t n u = Upload (AccountToken t u) n
 
 selectUpload :: Selector -- @'SiteAuth' -> 'Upload'@

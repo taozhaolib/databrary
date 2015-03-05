@@ -9,11 +9,13 @@ module Databrary.Model.Format
   , formatJSON
   ) where
 
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
-import System.FilePath (takeExtension)
+import System.Posix.FilePath (RawFilePath, takeExtension)
 
 import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
@@ -41,15 +43,15 @@ getFormat (Id i) = IntMap.lookup (fromIntegral i) formatsById
 getFormat' :: Id Format -> Format
 getFormat' (Id i) = formatsById IntMap.! fromIntegral i
 
-formatsByExtension :: Map.Map String Format
+formatsByExtension :: Map.Map BS.ByteString Format
 formatsByExtension = Map.fromList [ (e, a) | a <- allFormats, e <- formatExtension a ]
 
-getFormatByExtension :: String -> Maybe Format
-getFormatByExtension e = Map.lookup (map toLower e) formatsByExtension
+getFormatByExtension :: BS.ByteString -> Maybe Format
+getFormatByExtension e = Map.lookup (BSC.map toLower e) formatsByExtension
 
-getFormatByFilename :: FilePath -> Maybe Format
-getFormatByFilename = me . takeExtension where
-  me ('.':e) = getFormatByExtension e
+getFormatByFilename :: RawFilePath -> Maybe Format
+getFormatByFilename = me . BSC.uncons . takeExtension where
+  me (Just ('.',e)) = getFormatByExtension e
   me _ = Nothing
 
 formatJSON :: Format -> JSON.Object

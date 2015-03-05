@@ -17,7 +17,6 @@ import Control.Monad (when, void, (<=<))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
-import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (view, peek)
@@ -95,7 +94,7 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> T.Text -> m Upload
+createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> m Upload
 createUpload vol name = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->

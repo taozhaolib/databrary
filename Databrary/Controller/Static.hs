@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Static
   ( staticPublicFile
   ) where

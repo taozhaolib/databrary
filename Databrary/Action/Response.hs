@@ -11,6 +11,7 @@ import qualified Blaze.ByteString.Builder.Char.Utf8 as Blaze
 import Control.Exception (Exception, throwIO)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.Aeson as JSON
+import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
@@ -31,6 +32,9 @@ instance ResponseData Blaze.Builder where
 
 instance ResponseData BSL.ByteString where
   response = responseLBS
+
+instance ResponseData BS.ByteString where
+  response s h = responseBuilder s h . Blaze.fromByteString
 
 instance ResponseData StreamingBody where
   response = responseStream

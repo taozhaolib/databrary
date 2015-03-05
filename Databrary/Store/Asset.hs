@@ -6,21 +6,21 @@ import Control.Monad ((<=<))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
-import qualified Data.ByteString.Lazy.Char8 as BSLC
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Traversable as Trav
-import System.FilePath ((</>))
-import System.Posix.Files (fileExist)
+import System.Posix.FilePath (RawFilePath, (</>))
+import System.Posix.Files.ByteString (fileExist)
 
 import Control.Has (peek)
 import Databrary.Store.Storage
 import Databrary.Model.Asset
 
-assetFile :: Asset -> Maybe FilePath
+assetFile :: Asset -> Maybe RawFilePath
 assetFile = fmap sf . BS.uncons <=< assetSHA1 where
   sf (h,t) = bs (BSB.word8HexFixed h) </> bs (BSB.byteStringHex t)
-  bs = BSLC.unpack . BSB.toLazyByteString
+  bs = BSL.toStrict . BSB.toLazyByteString
 
-getAssetFile :: StorageM c m => Asset -> m (Maybe FilePath)
+getAssetFile :: StorageM c m => Asset -> m (Maybe RawFilePath)
 getAssetFile a = do
   s <- peek
   let 

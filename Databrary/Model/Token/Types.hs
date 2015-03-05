@@ -12,7 +12,6 @@ module Databrary.Model.Token.Types
   , MonadHasUpload
   ) where
 
-import qualified Data.Text as T
 import qualified Data.ByteString as BS
 
 import Control.Has (makeHasRec)
@@ -59,7 +58,7 @@ makeHasRec ''Session ['sessionAccountToken]
 
 data Upload = Upload
   { uploadAccountToken :: AccountToken
-  , uploadFilename :: T.Text
+  , uploadFilename :: BS.ByteString
   }
 
 makeHasRec ''Upload ['uploadAccountToken]

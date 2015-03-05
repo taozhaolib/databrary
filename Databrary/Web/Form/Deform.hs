@@ -29,7 +29,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.UTF8 as BSU
 import qualified Data.HashMap.Strict as HM
-import Data.Int (Int32, Int16)
+import Data.Int (Int64, Int32, Int16)
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -221,6 +221,15 @@ instance Deform Bool where
     fv _ = Left "Boolean value required"
 
 instance Deform Int where
+  deform = deformParse 0 fv where
+    fv (FormDatumBS b) = readParser $ BSC.unpack b
+    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.Number n)) = return $ round n
+    fv (FormDatumJSON (JSON.Bool True)) = return 1
+    fv (FormDatumJSON (JSON.Bool False)) = return 0
+    fv _ = Left "Integer required"
+
+instance Deform Int64 where
   deform = deformParse 0 fv where
     fv (FormDatumBS b) = readParser $ BSC.unpack b
     fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
