@@ -353,9 +353,9 @@ classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 classification.excerpt.prompt=Choose additional sharing level...
 classification.excerpt.PRIVATE=No additional sharing
-classification.excerpt.RESTRICTED=Restricted: shared with appropriate participant release.
-classification.excerpt.SHARED=Shared: shared with authorized Databrary users for educational or research purposes.
-classification.excerpt.PUBLIC=Public: available to anybody for unrestricted use.
+classification.excerpt.RESTRICTED=Shared with appropriate participant release.
+classification.excerpt.SHARED=Shared with authorized Databrary users for educational or research purposes.
+classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
 
 classification.select.PRIVATE=Never share this file: only available to collaborators.
 classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
