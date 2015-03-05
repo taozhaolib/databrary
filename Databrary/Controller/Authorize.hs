@@ -9,7 +9,7 @@ import Control.Applicative ((<*>), (<|>))
 import Control.Monad (when)
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe, isNothing, mapMaybe)
-import Data.Monoid (mempty)
+import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
@@ -79,7 +79,7 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $
           url <- peeks $ actionURL $ viewPartyForm $ TargetParty $ partyId parent
           sendMail
             (map Right dl ++ authorizeAddr)
-            "Databrary authorization request"
+            ("Databrary authorization request from " <> partyName child)
             [ partyName child, " <", fromMaybe "" agent, "> has requested to be authorized by ", partyName parent, ".\n\n\
               \To approve or reject this authorization request, go to:\n",
               TE.decodeLatin1 url, "?page=grant#auth-", T.pack (show $ partyId child), "\n\n\
