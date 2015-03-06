@@ -29,9 +29,9 @@ app.directive('hint', [
         a.name;
     });
 
-    angular.forEach(['dataset', 'study', 'record', 'slot', 'asset', 'play'], function (a) {
-      hints['object-' + a] =
-        page.constants.message('object.tip.' + a);
+    angular.forEach(['slot'], function (a) {
+      hints['action-' + a] =
+        page.constants.message('hint.action.' + a);
     });
 
     angular.forEach(['up', 'null'], function (a) {

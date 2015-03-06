@@ -364,14 +364,6 @@ classification.select.PUBLIC=This file may be available to anybody for unrestric
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
-# objects
-object.tip.dataset=Datasets are collections of raw data.
-object.tip.study=Studies extend datasets with analysis, documents, and publications.
-object.tip.record=A metadata label applied to set of related sessions.
-object.tip.slot=Sessions group files and data collected at the same time.
-object.tip.asset=Files can potentially contain a lot of valuable data.
-object.tip.play=Click to view data in this session
-
 # Volume page
 volume=Volume
 dataset=Dataset
@@ -636,3 +628,4 @@ slot.remove.notempty=You must remove all associated records and files before you
 spreadsheet.add.category=Add new tab
 spreadsheet.add.metric=Add new column to {0}
 spreadsheet.unlimit=Show all {0} rows...
+hint.action.slot=Click to view data in this session
