@@ -379,7 +379,7 @@ app.directive 'spreadsheet', [
               return
           a = cell.insertBefore(document.createElement('a'), cell.firstChild)
           a.setAttribute('href', if editing then slot.editRoute() else slot.route())
-          a.className = "session icon hint-object-play"
+          a.className = "session icon hint-action-slot"
 
           generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i)
