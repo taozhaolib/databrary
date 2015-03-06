@@ -203,7 +203,7 @@ app.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['comments', 'access', 'openid', 'parents', 'children', 'volumes'];
+            var req = ['access', 'openid', 'parents', 'children', 'volumes'];
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else
@@ -324,7 +324,7 @@ app.provider('routerService', [
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-                  ['consents', 'records', 'assets', 'excerpts', 'tags' /*, 'comments'*/]);
+                  ['consents', 'records', 'assets', 'excerpts', 'tags', 'comments']);
               });
           },
         ],

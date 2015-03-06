@@ -588,7 +588,7 @@ app.factory('modelService', [
         }
       }
       if ('comments' in init)
-        slot.comments = commentMakeArray(slot.volume, init.comments);
+        slot.comments = commentMakeArray(slot.container, init.comments);
       if ('records' in init) {
         var rl = init.records;
         for (var ri = 0; ri < rl.length; ri ++)
@@ -685,7 +685,7 @@ app.factory('modelService', [
     function containerPrepare(volume, init) {
       if (typeof init == 'number')
         init = {id:init,_PLACEHOLDER:true};
-      return containerMake(volume, init);
+      return containerMake(volume || volumeMake(init.volume), init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
@@ -1109,9 +1109,9 @@ app.factory('modelService', [
         this.who = partyMake(init.who);
     };
 
-    function commentMakeArray(volume, l) {
+    function commentMakeArray(context, l) {
       if (l) for (var i = 0; i < l.length; i ++)
-        l[i] = new Comment(volume || volumeMake(l[i].container.volume), l[i]);
+        l[i] = new Comment(context, l[i]);
       return l;
     }
 
