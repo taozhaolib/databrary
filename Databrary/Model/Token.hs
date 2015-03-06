@@ -17,6 +17,7 @@ import Control.Monad (when, void, (<=<))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
+import Data.Int (Int64)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Has (view, peek)
@@ -94,17 +95,18 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> m Upload
-createUpload vol name = do
+createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload
+createUpload vol name size = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->
-    dbQuery1' [pgSQL|INSERT INTO upload (token, account, volume, filename) VALUES (${tok}, ${view auth :: Id Party}, ${volumeId vol}, ${name}) RETURNING token, expires|]
+    dbQuery1' [pgSQL|INSERT INTO upload (token, account, volume, filename, size) VALUES (${tok}, ${view auth :: Id Party}, ${volumeId vol}, ${name}, ${size}) RETURNING token, expires|]
   return $ Upload
     { uploadAccountToken = AccountToken
       { accountToken = Token tok ex
       , tokenAccount = auth
       }
     , uploadFilename = name
+    , uploadSize = size
     }
 
 removeLoginToken :: DBM m => LoginToken -> m Bool

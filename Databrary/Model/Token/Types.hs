@@ -13,6 +13,7 @@ module Databrary.Model.Token.Types
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Int (Int64)
 
 import Control.Has (makeHasRec)
 import Databrary.Model.Kind
@@ -59,6 +60,7 @@ makeHasRec ''Session ['sessionAccountToken]
 data Upload = Upload
   { uploadAccountToken :: AccountToken
   , uploadFilename :: BS.ByteString
+  , uploadSize :: Int64
   }
 
 makeHasRec ''Upload ['uploadAccountToken]

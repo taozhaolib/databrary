@@ -6,6 +6,7 @@ module Databrary.Model.Token.SQL
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Int (Int64)
 
 import Databrary.Model.SQL.Select
 import Databrary.Model.Party.Types
@@ -31,9 +32,9 @@ selectSession :: Selector -- @'Session'@
 selectSession =
   addSelects 'Session (accountTokenRow "session") ["session.superuser"]
 
-makeUpload :: Token -> BS.ByteString -> SiteAuth -> Upload
-makeUpload t n u = Upload (AccountToken t u) n
+makeUpload :: Token -> BS.ByteString -> Int64 -> SiteAuth -> Upload
+makeUpload t n z u = Upload (AccountToken t u) n z
 
 selectUpload :: Selector -- @'SiteAuth' -> 'Upload'@
 selectUpload =
-  addSelects 'makeUpload (tokenRow "upload") ["upload.filename"]
+  addSelects 'makeUpload (tokenRow "upload") ["upload.filename", "upload.size"]
