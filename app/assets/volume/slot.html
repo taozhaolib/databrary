@@ -121,6 +121,7 @@
         </div>
 
         <section id="slot-timeline" class="slot-timeline slot frame">
+          
           <div class="slot-toolbar" ng-if="::editing" ng-switch="editing">
             <div ng-switch-when="true">
               <button ng-click="addRecord()" class="mini">Add Record</button>
@@ -150,10 +151,11 @@
               <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
               <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.segment.u" position-min="current.segment.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
-              <button class="player-action-word" ng-click="current.finishPosition()" message="cancel"></button>
-              <button class="player-action-word green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid " message="save"></button>
+              <button ng-click="current.finishPosition()" message="cancel"></button>
+              <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid " message="save"></button>
             </ng-form>
           </div>
+
           <div class="slot-timeline-now-zone">
             <div class="slot-timeline-now" ng-class="::{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
           </div>

@@ -28,13 +28,17 @@
     margin-right b3 
 
 //SLOT-TOOLBAR
+slot-toolbar-height = 46px
+
 .slot-toolbar  
   border-bottom 1px solid neutral53
   padding b3
+  height slot-toolbar-height
   .float
     float right
   button,select,input
-    height 30px
+    height b1+b4
+    line-height b2+b4
   button
     border-radius 0
     margin 0
@@ -66,8 +70,22 @@
     position absolute
     min-width 1px
     z-index 1
-    &.edit
-      top 45px
+
+.slot-timeline-now-zone
+  z-index 200
+  pointer-events none
+
+.slot-timeline-now
+  position absolute
+  z-index 100
+  bottom 0
+  top 0
+  border-left 1px solid green
+  transition left .05s linear
+
+.selection,.slot-timeline-now
+  &.edit
+    top slot-toolbar-height
 
 .slot-timeline-temporal
   position relative
@@ -224,20 +242,6 @@
     box-shadow box-shadow-def
     border 1px solid green33
     background-color green52
-
-.slot-timeline-now-zone
-  z-index 200
-  pointer-events none
-
-.slot-timeline-now
-  position absolute
-  z-index 100
-  bottom 0
-  top 0
-  border-left 1px solid green
-  transition left .05s linear
-  &.edit
-    top 46px
 
 .slot-timeline-track
 .slot-tag-track
@@ -436,8 +440,6 @@
   > dd
     float left
     margin-left b6
-
-
 
 .position-input
   width 158px
