@@ -8,7 +8,6 @@ module Databrary.Web.File
 import Control.Monad (when, mfilter)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
@@ -23,6 +22,7 @@ import System.Posix.Files.ByteString (getFileStatus, modificationTimeHiRes, file
 
 import Control.Applicative.Ops
 import Control.Has (peek)
+import Databrary.Store
 import Databrary.Web.Request
 import Databrary.Web.HTTP
 import qualified Databrary.Web.Route as R
@@ -65,7 +65,7 @@ serveFile file fmt etag = do
   let ifrng = unquoteHTTP <$> lookupRequestHeader hIfRange req
       part = mfilter (etag /=) ifrng $> -- allow range detection
         Wai.FilePart 0 sz sz -- force full file
-  okResponse fh (BSC.unpack file, part)
+  okResponse fh (unRawFilePath file, part)
 
 serveStaticFile :: (ActionM c m, MonadIO m) => RawFilePath -> StaticPath -> m Response
 serveStaticFile dir (StaticPath rel) =

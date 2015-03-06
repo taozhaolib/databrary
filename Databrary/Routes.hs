@@ -94,6 +94,8 @@ routes = do
 
     , json >> msum                    -- /api
       [ "cite" >>                     act getCitation
+      , "upload" >>                   act uploadChunk
+                                  <|> act testChunk
       ]
 
     , html >> msum                    -- /
