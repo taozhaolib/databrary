@@ -285,8 +285,6 @@
   padding-top b6
   position absolute
   left 0
-  overflow hidden
-  text-overflow ellipsis
 
 .slot-consent
   background-color purple51
@@ -386,15 +384,20 @@
   background-color white
   position absolute
   right 0
-  
-  button
-    height 24px
-    min-width 26px
-    font-line b2
-    position relative
-    top -b6
-    padding 0 b8 
-    margin b6 b8
+
+.player-action-icon
+  display inline-block
+  margin-left b8
+    
+.player-action-word
+  float right
+  height 24px
+  min-width 26px
+  font-line b2
+  position relative
+  top -b6
+  padding 0 b8 
+  margin b6 b8
 
 .player-info-name
   font-line 1
@@ -434,12 +437,7 @@
     float left
     margin-left b6
 
-.player-action-icon
-  display inline-block
-  margin-left b8a
-    
-.player-action-word
-  float right
+
 
 .position-input
   width 158px
