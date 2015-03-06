@@ -757,9 +757,23 @@ app.controller('volume/slot', [
             break
         @state = state
 
+    class Comment
+      constructor: (c) ->
+        @comment = c
+        @segment = new Segment(c.segment)
+
+      type: 'comment'
+
+      getClass: ->
+        cls = []
+        if @comment.parents
+          cls.push('depth-'+Math.min(@comment.parents.length, 5))
+        cls
+
     ### jshint ignore:start #### fixed in jshint 2.5.7
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
+    $scope.comments = (new Comment(comment) for comment in slot.comments)
     ### jshint ignore:end ###
     sortTracks()
     fillExcerpts()
