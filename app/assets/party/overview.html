@@ -1,6 +1,9 @@
 <panel top id="panel-overview-party" panel-title="party.overview.title">
   <div class="row">
     <div class="col-desktop-12 col-tablet-6 col-mobile-6 col-cell">
+      <p><a ng-if="page.$location.path() == '/profile'" ng-href="/party/{{::party.id}}">Go to public view of my profile</a>
+         <a ng-if="page.$location.path() == '/party/'+page.models.Login.user.id" ng-href="/profile">Go to my account profile</a>
+      </p>
       <hgroup>
         <h1 class="panel-title smaller">
           <span>{{party.name}}</span>
