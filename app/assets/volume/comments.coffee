@@ -33,7 +33,7 @@ app.directive 'volumeComments', [
         $scope.replyTo = comment
 
       $scope.$on 'commentReplyForm-init', (event, form) ->
-        form.successFn = $scope.pullComments
+        form.successFn = pullComments
         form.cancelFn = $scope.setReply
         form.target = $scope.replyTo
         event.stopPropagation()

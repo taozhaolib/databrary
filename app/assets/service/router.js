@@ -203,7 +203,7 @@ app.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['comments', 'access', 'openid', 'parents', 'children', 'volumes'];
+            var req = ['access', 'openid', 'parents', 'children', 'volumes'];
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else
