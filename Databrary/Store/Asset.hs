@@ -1,5 +1,6 @@
 module Databrary.Store.Asset
-  ( getAssetFile
+  ( maxAssetSize
+  , getAssetFile
   ) where
 
 import Control.Monad ((<=<))
@@ -8,6 +9,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Traversable as Trav
+import Data.Word (Word64)
 import System.Posix.FilePath (RawFilePath, (</>))
 import System.Posix.Files.ByteString (fileExist)
 
@@ -15,12 +17,15 @@ import Control.Has (peek)
 import Databrary.Store.Storage
 import Databrary.Model.Asset
 
+maxAssetSize :: Word64
+maxAssetSize = 128*1024*1024*1024
+
 assetFile :: Asset -> Maybe RawFilePath
 assetFile = fmap sf . BS.uncons <=< assetSHA1 where
   sf (h,t) = bs (BSB.word8HexFixed h) </> bs (BSB.byteStringHex t)
   bs = BSL.toStrict . BSB.toLazyByteString
 
-getAssetFile :: StorageM c m => Asset -> m (Maybe RawFilePath)
+getAssetFile :: MonadStorage c m => Asset -> m (Maybe RawFilePath)
 getAssetFile a = do
   s <- peek
   let 

@@ -32,6 +32,7 @@ import Databrary.Model.Format
 import Databrary.Model.Token
 import Databrary.Store
 import Databrary.Store.Upload
+import Databrary.Store.Asset
 import Databrary.Web.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form
@@ -45,7 +46,7 @@ uploadStart vi = action POST (JSON, vi, "upload" :: T.Text) $ do
   withVolume PermissionEDIT vi $ \vol -> do
     (filename, size) <- runForm Nothing $ (,)
       <$> ("filename" .:> (deformCheck "File format not supported." (isJust . getFormatByFilename) =<< deform))
-      <*> ("size" .:> fileSizeForm)
+      <*> ("size" .:> (deformCheck "File too large." ((maxAssetSize >=) . fromIntegral) =<< fileSizeForm))
     tok <- createUpload vol filename size
     file <- peeks $ uploadFile tok
     liftIO $ bracket

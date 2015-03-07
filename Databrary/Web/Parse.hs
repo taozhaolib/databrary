@@ -5,10 +5,11 @@ module Databrary.Web.Parse
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
-import Control.Applicative ((<$>))
-import Control.Monad (when)
+import Control.Applicative ((<$>), (<$))
+import Control.Exception (bracket)
+import Control.Monad (when, unless)
 import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Trans.Resource (ReleaseKey)
+import Control.Monad.Reader (runReaderT)
 import qualified Data.Aeson as JSON
 import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.ByteString as BS
@@ -18,9 +19,11 @@ import Data.Word (Word64)
 import Network.HTTP.Types (requestEntityTooLarge413, hContentType)
 import Network.Wai
 import Network.Wai.Parse
+import System.IO (Handle, hClose)
 
 import Control.Has (peek, peeks)
-import Databrary.Store (RawFilePath)
+import Databrary.Action.App
+import Databrary.Store.Temp
 import Databrary.Action.Types (MonadAction)
 import Databrary.Web.Request (lookupRequestHeader)
 import Databrary.Action.Response (response, result)
@@ -33,8 +36,8 @@ type ChunkParser a = IO BS.ByteString -> IO a
 _mapChunks :: (a -> b) -> ChunkParser a -> ChunkParser b
 _mapChunks f parse next = f <$> parse next
 
-nullChunks :: ChunkParser Word64
-nullChunks next = go 0 where
+_nullChunks :: ChunkParser Word64
+_nullChunks next = go 0 where
   go n = do
     b <- next
     if BS.null b
@@ -52,6 +55,13 @@ limitChunks lim parse next = do
     writeIORef len n'
     return b
 
+writeChunks :: Handle -> ChunkParser ()
+writeChunks h next = run where
+  run = do
+    b <- next
+    unless (BS.null b) $
+      BS.hPut h b >> run
+
 parserChunks :: AP.Parser a -> ChunkParser (AP.Result a)
 parserChunks parser next = run (AP.parse parser) where
   run p = do
@@ -62,17 +72,11 @@ parserChunks parser next = run (AP.parse parser) where
       else run $ AP.feed r
 
 
-mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
-mapBackEnd f back param info next = f <$> back param info next
+_mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
+_mapBackEnd f back param info next = f <$> back param info next
 
-nullBackEnd :: BackEnd Word64
-nullBackEnd _ _ = nullChunks
-
-_limitBackEnd :: Word64 -> BackEnd a -> BackEnd a
-_limitBackEnd lim back param info = limitChunks lim $ back param info
-
-_parserBackEnd :: AP.Parser a -> BackEnd (AP.Result a)
-_parserBackEnd parser _ _ = parserChunks parser
+rejectBackEnd :: BackEnd a
+rejectBackEnd _ _ _ = result requestTooLarge
 
 
 _parseRequestChunks :: (MonadIO m, MonadAction c m) => ChunkParser a -> m a
@@ -88,7 +92,7 @@ limitRequestChunks lim p = do
 data Content
   = ContentForm 
     { contentFormParams :: [Param]
-    , contentFormFiles :: [File (Either Word64 (ReleaseKey, RawFilePath))]
+    , contentFormFiles :: [File TempFile]
     }
   | ContentJSON JSON.Value
   | ContentUnknown
@@ -98,20 +102,34 @@ maxTextSize = 1024*1024
 
 parseFormContent :: (MonadIO m, MonadAction c m) => RequestBodyType -> m Content
 parseFormContent t = uncurry ContentForm
-  <$> limitRequestChunks maxTextSize (sinkRequestBody (mapBackEnd Left nullBackEnd) t)
+  <$> limitRequestChunks maxTextSize (sinkRequestBody rejectBackEnd t)
+
+parseFormFileContent :: (MonadIO m, MonadAppAction c m) => (FileInfo BS.ByteString -> Word64) -> RequestBodyType -> m Content
+parseFormFileContent ff rt = do
+  app <- peek
+  (p, f) <- liftIO $ do
+    let be fn fi fb = case ff fi{ fileContent = fn } of
+          0 -> result requestTooLarge
+          m ->
+            bracket
+              (runReaderT makeTempFile app)
+              (hClose . snd)
+              (\(t, h) -> t <$ limitChunks m (writeChunks h) fb)
+    sinkRequestBody be rt (requestBody $ appRequest app)
+  return $ ContentForm p f
 
 parseJSONContent :: (MonadIO m, MonadAction c m) => m Content
 parseJSONContent = maybe ContentUnknown ContentJSON . AP.maybeResult
   <$> limitRequestChunks maxTextSize (parserChunks JSON.json)
 
-parseRequestContent :: (MonadIO m, MonadAction c m) => m Content
-parseRequestContent = do
+parseRequestContent :: (MonadIO m, MonadAppAction c m) => (BS.ByteString -> Word64) -> m Content
+parseRequestContent ff = do
   ct <- peeks $ lookupRequestHeader hContentType
   case fmap parseContentType ct of
     Just ("application/x-www-form-urlencoded", _) ->
       parseFormContent UrlEncoded
     Just ("multipart/form-data", attrs) | Just bound <- lookup "boundary" attrs ->
-      parseFormContent $ Multipart bound
+      parseFormFileContent (ff . fileContent) $ Multipart bound
     Just ("text/json", _) ->
       parseJSONContent
     Just ("application/json", _) ->

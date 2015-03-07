@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Form
   ( FormData
+  , runFormWith
   , runForm
   , blankForm
 
@@ -21,6 +22,7 @@ import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
 import Databrary.Action.Types
+import Databrary.Action.App (MonadAppAction)
 import Databrary.Web.Form (getFormData, FormData)
 import Databrary.Web.Form.Deform
 import Databrary.Web.Form.View (runFormView, blankFormView)
@@ -39,12 +41,16 @@ handleForm re = either (result <=< re) return
 handleFormErrors :: (MonadAction c m, MonadIO m) => Maybe (FormErrors -> Html.Html) -> Either FormErrors a -> m a
 handleFormErrors = handleForm . maybe apiFormErrors htmlFormErrors
 
-runForm :: (MonadAction q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
-runForm mf fa = do
-  fd <- getFormData
+runFormWith :: (MonadAppAction q m, MonadIO m) => FormData -> Maybe (q -> FormHtml) -> DeformT m a -> m a
+runFormWith fd mf fa = do
   req <- ask
   let fv hv = runFormView (hv req) fd
   handleFormErrors (fv <$> mf) =<< runDeform fa fd
+
+runForm :: (MonadAppAction q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
+runForm mf fa = do
+  (fd, _) <- getFormData []
+  runFormWith fd mf fa
 
 blankForm :: ActionData q => (q -> FormHtml) -> Action q
 blankForm hv =

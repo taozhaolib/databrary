@@ -21,15 +21,19 @@ import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Foldable as Fold
 import qualified Data.HashMap.Strict as HM
 import qualified Data.Map as Map
+import Data.Maybe (fromMaybe)
 import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Vector as V
+import Data.Word (Word64)
 import qualified Network.Wai as Wai
+import Network.Wai.Parse (File)
 
 import Control.Has (makeHasRec, Has(..), peeks)
+import Databrary.Store.Temp (TempFile)
 import Databrary.Web.Parse
-import Databrary.Action.Types (MonadAction)
+import Databrary.Action.App (MonadAppAction)
 
 data FormData = FormData
   { formDataQuery :: Map.Map BS.ByteString (Maybe BS.ByteString)
@@ -42,14 +46,14 @@ instance Monoid FormData where
   mappend (FormData q1 p1 j1) (FormData q2 p2 j2) =
     FormData (mappend q1 q2) (mappend p1 p2) (j1 <|> j2)
 
-getFormData :: (MonadAction c m, MonadIO m) => m FormData
-getFormData = do
+getFormData :: (MonadAppAction c m, MonadIO m) => [(BS.ByteString, Word64)] -> m (FormData, [File TempFile])
+getFormData fs = do
   f <- peeks $ FormData . Map.fromList . Wai.queryString
-  c <- parseRequestContent
+  c <- parseRequestContent (fromMaybe 0 . (`lookup` fs))
   return $ case c of
-    ContentForm p _ -> f (Map.fromList p) Nothing
-    ContentJSON j -> f Map.empty (Just j)
-    _ -> f Map.empty Nothing
+    ContentForm p u -> (f (Map.fromList p) Nothing, u)
+    ContentJSON j -> (f Map.empty (Just j), [])
+    _ -> (f Map.empty Nothing, [])
 
 data FormKey 
   = FormField !T.Text

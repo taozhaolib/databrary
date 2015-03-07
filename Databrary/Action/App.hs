@@ -2,6 +2,7 @@
 module Databrary.Action.App 
   ( AppRequest(..)
   , MonadHasAppRequest
+  , MonadAppAction 
   , AppActionM
   , AppAction
   , runApp
@@ -9,12 +10,12 @@ module Databrary.Action.App
 
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (ReaderT(..), asks, runReaderT)
-import Control.Monad.Trans.Resource (InternalState, runResourceT, withInternalState, MonadResource(..), runInternalState)
+import Control.Monad.Trans.Resource (InternalState, runResourceT, withInternalState)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 import qualified Network.Wai as Wai
 
-import Control.Has (Has, view, makeHasRec)
+import Control.Has (makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time.Types
@@ -29,13 +30,12 @@ data AppRequest = AppRequest
   , appRequest :: !Request
   }
 
-makeHasRec ''AppRequest ['appResource, 'appTimestamp, 'appRequest]
+makeHasRec ''AppRequest ['appResource, 'appResourceState, 'appTimestamp, 'appRequest]
 
 type AppActionM a = ActionM AppRequest a
 type AppAction = Action AppRequest
 
-instance Has AppRequest q => MonadResource (ReaderT q IO) where
-  liftResourceT r = ReaderT $ runInternalState r . appResourceState . view
+type MonadAppAction q m = (MonadHasAppRequest q m, ActionData q)
 
 runApp :: Resource -> AppAction -> Wai.Application
 runApp rc act req send = do
