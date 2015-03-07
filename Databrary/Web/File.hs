@@ -16,7 +16,7 @@ import qualified Data.Text.Encoding as TE
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Network.HTTP.Types (hLastModified, hContentType, hIfModifiedSince, notModified304, hIfRange)
 import qualified Network.Wai as Wai
-import System.Posix.FilePath (RawFilePath, joinPath, splitDirectories, (</>))
+import System.Posix.FilePath (joinPath, splitDirectories, (</>))
 import System.IO.Error (tryIOError)
 import System.Posix.Files.ByteString (getFileStatus, modificationTimeHiRes, fileSize)
 
@@ -43,7 +43,7 @@ instance R.Routable StaticPath where
   route = R.maybe . staticPath =<< R.path
   toRoute (StaticPath p) = map TE.decodeLatin1 $ splitDirectories p
 
-serveFile :: (ActionM c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response
+serveFile :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response
 serveFile file fmt etag = do
   minfo <- liftIO $ tryIOError $ getFileStatus file
   info <- either (\_ -> result =<< notFoundResponse) return minfo
@@ -67,6 +67,6 @@ serveFile file fmt etag = do
         Wai.FilePart 0 sz sz -- force full file
   okResponse fh (unRawFilePath file, part)
 
-serveStaticFile :: (ActionM c m, MonadIO m) => RawFilePath -> StaticPath -> m Response
+serveStaticFile :: (MonadAction c m, MonadIO m) => RawFilePath -> StaticPath -> m Response
 serveStaticFile dir (StaticPath rel) =
   serveFile (dir </> rel) (fromMaybe unknownFormat $ getFormatByFilename rel) rel

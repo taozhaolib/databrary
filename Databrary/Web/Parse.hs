@@ -8,6 +8,7 @@ import qualified Blaze.ByteString.Builder as Blaze
 import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad.Trans.Resource (ReleaseKey)
 import qualified Data.Aeson as JSON
 import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.ByteString as BS
@@ -19,7 +20,8 @@ import Network.Wai
 import Network.Wai.Parse
 
 import Control.Has (peek, peeks)
-import Databrary.Action.Types (ActionM)
+import Databrary.Store (RawFilePath)
+import Databrary.Action.Types (MonadAction)
 import Databrary.Web.Request (lookupRequestHeader)
 import Databrary.Action.Response (response, result)
 
@@ -60,8 +62,8 @@ parserChunks parser next = run (AP.parse parser) where
       else run $ AP.feed r
 
 
-_mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
-_mapBackEnd f back param info next = f <$> back param info next
+mapBackEnd :: (a -> b) -> BackEnd a -> BackEnd b
+mapBackEnd f back param info next = f <$> back param info next
 
 nullBackEnd :: BackEnd Word64
 nullBackEnd _ _ = nullChunks
@@ -73,10 +75,10 @@ _parserBackEnd :: AP.Parser a -> BackEnd (AP.Result a)
 _parserBackEnd parser _ _ = parserChunks parser
 
 
-_parseRequestChunks :: (MonadIO m, ActionM c m) => ChunkParser a -> m a
+_parseRequestChunks :: (MonadIO m, MonadAction c m) => ChunkParser a -> m a
 _parseRequestChunks p = liftIO . p =<< peeks requestBody
 
-limitRequestChunks :: (MonadIO m, ActionM c m) => Word64 -> ChunkParser a -> m a
+limitRequestChunks :: (MonadIO m, MonadAction c m) => Word64 -> ChunkParser a -> m a
 limitRequestChunks lim p = do
   rq <- peek
   liftIO $ case requestBodyLength rq of
@@ -86,7 +88,7 @@ limitRequestChunks lim p = do
 data Content
   = ContentForm 
     { contentFormParams :: [Param]
-    , contentFormFiles :: [File Word64]
+    , contentFormFiles :: [File (Either Word64 (ReleaseKey, RawFilePath))]
     }
   | ContentJSON JSON.Value
   | ContentUnknown
@@ -94,15 +96,15 @@ data Content
 maxTextSize :: Word64
 maxTextSize = 1024*1024
 
-parseFormContent :: (MonadIO m, ActionM c m) => RequestBodyType -> m Content
+parseFormContent :: (MonadIO m, MonadAction c m) => RequestBodyType -> m Content
 parseFormContent t = uncurry ContentForm
-  <$> limitRequestChunks maxTextSize (sinkRequestBody nullBackEnd t)
+  <$> limitRequestChunks maxTextSize (sinkRequestBody (mapBackEnd Left nullBackEnd) t)
 
-parseJSONContent :: (MonadIO m, ActionM c m) => m Content
+parseJSONContent :: (MonadIO m, MonadAction c m) => m Content
 parseJSONContent = maybe ContentUnknown ContentJSON . AP.maybeResult
   <$> limitRequestChunks maxTextSize (parserChunks JSON.json)
 
-parseRequestContent :: (MonadIO m, ActionM c m) => m Content
+parseRequestContent :: (MonadIO m, MonadAction c m) => m Content
 parseRequestContent = do
   ct <- peeks $ lookupRequestHeader hContentType
   case fmap parseContentType ct of

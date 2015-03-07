@@ -1,17 +1,20 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.App 
   ( AppRequest(..)
-  , AppAction
+  , MonadHasAppRequest
   , AppActionM
-  , withApp
+  , AppAction
+  , runApp
   ) where
 
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Reader (asks, withReaderT)
+import Control.Monad.Reader (ReaderT(..), asks, runReaderT)
+import Control.Monad.Trans.Resource (InternalState, runResourceT, withInternalState, MonadResource(..), runInternalState)
 import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
+import qualified Network.Wai as Wai
 
-import Control.Has (makeHasRec)
+import Control.Has (Has, view, makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time.Types
@@ -21,19 +24,24 @@ import Databrary.Action.Response
 
 data AppRequest = AppRequest
   { appResource :: !Resource
+  , appResourceState :: !InternalState
   , appTimestamp :: !Timestamp
   , appRequest :: !Request
   }
 
 makeHasRec ''AppRequest ['appResource, 'appTimestamp, 'appRequest]
 
+type AppActionM a = ActionM AppRequest a
 type AppAction = Action AppRequest
-type AppActionM q m = (MonadHasAppRequest q m, ActionData q)
 
-withApp :: Resource -> AppAction -> WaiAction
-withApp rc act = do
+instance Has AppRequest q => MonadResource (ReaderT q IO) where
+  liftResourceT r = ReaderT $ runInternalState r . appResourceState . view
+
+runApp :: Resource -> AppAction -> Wai.Application
+runApp rc act req send = do
   ts <- liftIO getCurrentTime
-  withReaderT (AppRequest rc ts) act
+  runResourceT $ withInternalState $ \is ->
+    send =<< runResult (runReaderT act (AppRequest rc is ts req))
 
 instance ActionData AppRequest where
   returnResponse s h r = do

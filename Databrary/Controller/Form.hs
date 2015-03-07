@@ -27,19 +27,19 @@ import Databrary.Web.Form.View (runFormView, blankFormView)
 import Databrary.Web.Form.Errors (FormErrors)
 import Databrary.View.Form (FormHtml)
 
-apiFormErrors :: ActionM c m => FormErrors -> m Response
+apiFormErrors :: MonadAction c m => FormErrors -> m Response
 apiFormErrors = returnResponse badRequest400 [] . JSON.toJSON
 
-htmlFormErrors :: ActionM c m => (FormErrors -> Html.Html) -> FormErrors -> m Response
+htmlFormErrors :: MonadAction c m => (FormErrors -> Html.Html) -> FormErrors -> m Response
 htmlFormErrors f = returnResponse badRequest400 [] . f
 
-handleForm :: (ActionM c m, MonadIO m) => (FormErrors -> m Response) -> Either FormErrors a -> m a
+handleForm :: (MonadAction c m, MonadIO m) => (FormErrors -> m Response) -> Either FormErrors a -> m a
 handleForm re = either (result <=< re) return
 
-handleFormErrors :: (ActionM c m, MonadIO m) => Maybe (FormErrors -> Html.Html) -> Either FormErrors a -> m a
+handleFormErrors :: (MonadAction c m, MonadIO m) => Maybe (FormErrors -> Html.Html) -> Either FormErrors a -> m a
 handleFormErrors = handleForm . maybe apiFormErrors htmlFormErrors
 
-runForm :: (ActionM q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
+runForm :: (MonadAction q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
 runForm mf fa = do
   fd <- getFormData
   req <- ask

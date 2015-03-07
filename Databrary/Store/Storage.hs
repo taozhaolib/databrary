@@ -11,15 +11,17 @@ import Control.Monad (unless)
 import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
+import System.Directory (getTemporaryDirectory)
 import System.IO.Error (mkIOError, doesNotExistErrorType)
-import System.Posix.FilePath (RawFilePath)
 import System.Posix.Files.ByteString (getFileStatus, isDirectory)
 
 import Control.Has (MonadHas)
+import Databrary.Store
 
 data Storage = Storage
   { storageMaster :: RawFilePath
   , storageFallback :: Maybe RawFilePath
+  , storageTemp :: RawFilePath
   , storageUpload :: RawFilePath
   }
 
@@ -36,4 +38,5 @@ initStorage :: C.Config -> IO Storage
 initStorage conf = Storage
   <$> (checkDirectory =<< C.require conf "master")
   <*> C.lookup conf "fallback"
+  <*> (maybe (rawFilePath <$> getTemporaryDirectory) return =<< C.lookup conf "temp")
   <*> (checkDirectory =<< C.require conf "upload")

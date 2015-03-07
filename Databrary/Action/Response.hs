@@ -2,13 +2,13 @@
 module Databrary.Action.Response
   ( Response
   , ResponseData(..)
-  , Result(..)
   , result
+  , runResult
   ) where
 
 import qualified Blaze.ByteString.Builder as Blaze
 import qualified Blaze.ByteString.Builder.Char.Utf8 as Blaze
-import Control.Exception (Exception, throwIO)
+import Control.Exception (Exception, throwIO, handle)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
@@ -75,3 +75,6 @@ instance Exception Result
 
 result :: MonadIO m => Response -> m a
 result = liftIO . throwIO . Result
+
+runResult :: IO Response -> IO Response
+runResult = handle (return . resultResponse)

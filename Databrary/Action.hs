@@ -2,7 +2,7 @@
 module Databrary.Action
   ( Request
   , Action
-  , ActionM
+  , MonadAction
   , AppAction
   , AppRequest
   , AuthAction
@@ -48,28 +48,28 @@ import Databrary.Action.Route
 import Databrary.Resource
 import qualified Databrary.Web.Route as R
 
-emptyResponse :: ActionM q m => Status -> ResponseHeaders -> m Response
+emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
 
-redirectRouteResponse :: ActionM q m => ResponseHeaders -> RouteAction qa -> m Response
+redirectRouteResponse :: MonadAction q m => ResponseHeaders -> RouteAction qa -> m Response
 redirectRouteResponse h a = do
   url <- peeks $ actionURL a
   emptyResponse seeOther303 ((hLocation, url) : h)
 
-forbiddenResponse :: ActionM q m => m Response
+forbiddenResponse :: MonadAction q m => m Response
 forbiddenResponse = emptyResponse forbidden403 []
 
-notFoundResponse :: ActionM q m => m Response
+notFoundResponse :: MonadAction q m => m Response
 notFoundResponse = emptyResponse notFound404 []
 
-okResponse :: (ActionM q m, ResponseData r) => ResponseHeaders -> r -> m Response
+okResponse :: (MonadAction q m, ResponseData r) => ResponseHeaders -> r -> m Response
 okResponse = returnResponse ok200
 
-guardAction :: (ActionM q m, MonadIO m) => Bool -> m Response -> m ()
+guardAction :: (MonadAction q m, MonadIO m) => Bool -> m Response -> m ()
 guardAction True _ = return ()
 guardAction False r = result =<< r
 
-maybeAction :: (ActionM q m, MonadIO m) => Maybe a -> m a
+maybeAction :: (MonadAction q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a
 maybeAction Nothing = result =<< notFoundResponse
 
@@ -77,5 +77,5 @@ type AppRAction = RouteAction AppRequest
 type AuthRAction = RouteAction AuthRequest
 
 runAppRoute :: R.RouteM AppAction -> Resource -> Wai.Application
-runAppRoute route rc = runWai $ withApp rc $
+runAppRoute route rc = runApp rc $
   fromMaybe notFoundResponse . R.routeRequest route =<< peek

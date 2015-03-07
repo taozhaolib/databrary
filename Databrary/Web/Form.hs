@@ -29,7 +29,7 @@ import qualified Network.Wai as Wai
 
 import Control.Has (makeHasRec, Has(..), peeks)
 import Databrary.Web.Parse
-import Databrary.Action.Types (ActionM)
+import Databrary.Action.Types (MonadAction)
 
 data FormData = FormData
   { formDataQuery :: Map.Map BS.ByteString (Maybe BS.ByteString)
@@ -42,7 +42,7 @@ instance Monoid FormData where
   mappend (FormData q1 p1 j1) (FormData q2 p2 j2) =
     FormData (mappend q1 q2) (mappend p1 p2) (j1 <|> j2)
 
-getFormData :: (ActionM c m, MonadIO m) => m FormData
+getFormData :: (MonadAction c m, MonadIO m) => m FormData
 getFormData = do
   f <- peeks $ FormData . Map.fromList . Wai.queryString
   c <- parseRequestContent
