@@ -69,7 +69,7 @@ lookupAuthorization child parent
       else fromMaybe (Authorization mempty child parent) <$>
         dbQuery1 ((\a -> a child parent) <$> $(selectQuery authorizationRow "!$WHERE authorize_view.child = ${partyId child} AND authorize_view.parent = ${partyId parent}"))
 
-changeAuthorize :: (AuditM c m) => Authorize -> m ()
+changeAuthorize :: (MonadAudit c m) => Authorize -> m ()
 changeAuthorize auth = do
   ident <- getAuditIdentity
   (r, _) <- updateOrInsert
@@ -77,7 +77,7 @@ changeAuthorize auth = do
     $(insertAuthorize 'ident 'auth)
   when (r /= 1) $ fail $ "setAuthorize: " ++ show r ++ " rows"
 
-removeAuthorize :: (AuditM c m) => Authorize -> m Bool
+removeAuthorize :: (MonadAudit c m) => Authorize -> m Bool
 removeAuthorize auth = do
   ident <- getAuditIdentity
   (0 <) <$> dbExecute $(deleteAuthorize 'ident 'auth)

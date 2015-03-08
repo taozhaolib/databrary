@@ -15,7 +15,7 @@ import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
-import System.Posix.FilePath (RawFilePath, takeExtension)
+import System.Posix.FilePath (RawFilePath, splitExtension)
 
 import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
@@ -25,7 +25,7 @@ import Databrary.Model.Format.Boot
 
 unknownFormat :: Format
 unknownFormat = Format
-  { formatId = error "unknown format"
+  { formatId = error "unknownFormat"
   , formatMimeType = "application/octet-stream"
   , formatExtension = []
   , formatName = "Unknown"
@@ -49,10 +49,11 @@ formatsByExtension = Map.fromList [ (e, a) | a <- allFormats, e <- formatExtensi
 getFormatByExtension :: BS.ByteString -> Maybe Format
 getFormatByExtension e = Map.lookup (BSC.map toLower e) formatsByExtension
 
-getFormatByFilename :: RawFilePath -> Maybe Format
-getFormatByFilename = me . BSC.uncons . takeExtension where
-  me (Just ('.',e)) = getFormatByExtension e
-  me _ = Nothing
+getFormatByFilename :: RawFilePath -> Maybe (RawFilePath, Format)
+getFormatByFilename n = do
+  ('.',e) <- BSC.uncons de
+  (,) b <$> getFormatByExtension e
+  where (b, de) = splitExtension n
 
 formatJSON :: Format -> JSON.Object
 formatJSON Format{..} = JSON.record formatId $ catMaybes

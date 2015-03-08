@@ -12,6 +12,7 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (ReaderT)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
+import Data.ByteString.Lazy.Internal (defaultChunkSize)
 import Data.Int (Int64)
 import Data.Maybe (isJust)
 import qualified Data.Text as T
@@ -103,7 +104,7 @@ testChunk = action GET (JSON, "upload" :: T.Text) $ withAuth $ do
     hSeek h AbsoluteSeek (toInteger off)
     let block 0 = return False
         block n = do
-          b <- BS.hGetSome h $ fromIntegral $ min n 131072
+          b <- BS.hGetSome h $ fromIntegral $ n `min` fromIntegral defaultChunkSize
           if BS.any (0 /=) b
             then return True
             else block $ n - fromIntegral (BS.length b)

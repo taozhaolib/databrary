@@ -98,7 +98,7 @@ volumeCitationForm :: HTTPClientM c m => Volume -> DeformT m (Volume, Maybe Cita
 volumeCitationForm v = do
   vol <- volumeForm v
   cite <- "citation" .:> citationForm
-  look <- maybe (return Nothing) (lift . lookupCitation) $
+  look <- flatMapM (lift . lookupCitation) $
     guard (T.null (volumeName vol) || T.null (citationHead cite) || isNothing (citationYear cite)) >> citationURL cite
   let fill = maybe cite (cite <>) look
       empty = isNothing (citationURL fill) && isNothing (citationYear fill)

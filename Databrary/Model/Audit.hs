@@ -1,7 +1,7 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Audit
   ( module Databrary.Model.Audit.Types
-  , AuditM
+  , MonadAudit
   , getRemoteIp
   , getAuditIdentity
   , Analytic(..)
@@ -24,7 +24,7 @@ import Databrary.Model.Audit.Types
 
 useTPG
 
-type AuditM c m = (MonadHasRequest c m, MonadHasIdentity c m, DBM m)
+type MonadAudit c m = (MonadHasRequest c m, MonadHasIdentity c m, DBM m)
 
 getRemoteIp :: MonadHasRequest c m => m PGInet
 getRemoteIp = peeks (fromMaybe (PGInet 0 32) . sockAddrPGInet . remoteHost)
@@ -38,7 +38,7 @@ data Analytic = Analytic
   , analyticData :: JSON.Value
   }
 
-auditAnalytic :: (AuditM c m) => Analytic -> m ()
+auditAnalytic :: (MonadAudit c m) => Analytic -> m ()
 auditAnalytic Analytic{..} = do
   ai <- getAuditIdentity
   dbExecute1 [pgSQL|INSERT INTO audit.analytic (audit_action, audit_user, audit_ip, route, data) VALUES

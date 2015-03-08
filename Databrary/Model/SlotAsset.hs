@@ -25,7 +25,7 @@ lookupSlotAsset ci ai = do
   ident <- peek
   dbQuery1 $(selectQuery (selectSlotAsset 'ident) "$WHERE container.id = ${ci} AND asset.id = ${ai}")
 
-auditSlotAssetDownload :: AuditM c m => Bool -> SlotAsset -> m ()
+auditSlotAssetDownload :: MonadAudit c m => Bool -> SlotAsset -> m ()
 auditSlotAssetDownload success sa = do
   ai <- getAuditIdentity
   dbExecute1 [pgSQL|INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES

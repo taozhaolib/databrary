@@ -8,6 +8,7 @@ module Databrary.Web.Form.Deform
   , deformNonEmpty
   , Deform(..) 
   , deformError
+  , deformError'
   , deformErrorDef
   , deformMaybe'
   , deformGuard

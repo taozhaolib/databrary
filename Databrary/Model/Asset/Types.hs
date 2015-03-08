@@ -5,6 +5,7 @@ module Databrary.Model.Asset.Types
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Int (Int64)
 import qualified Data.Text as T
 
 import Control.Has (makeHasRec)
@@ -24,6 +25,7 @@ data Asset = Asset
   , assetName :: Maybe T.Text
   , assetDuration :: Maybe Offset
   , assetSHA1 :: Maybe BS.ByteString
+  , assetSize :: Maybe Int64
   , assetVolume :: Volume
   }
 

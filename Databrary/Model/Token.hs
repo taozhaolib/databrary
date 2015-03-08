@@ -12,7 +12,6 @@ module Databrary.Model.Token
   , createUpload
   ) where
 
-import Control.Applicative ((<$>))
 import Control.Monad (when, void, (<=<))
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
@@ -20,6 +19,7 @@ import qualified Data.ByteString.Base64.URL as Base64
 import Data.Int (Int64)
 import Database.PostgreSQL.Typed (pgSQL)
 
+import Control.Applicative.Ops
 import Control.Has (view, peek)
 import Databrary.Resource
 import Databrary.Entropy
@@ -41,8 +41,8 @@ loginTokenId tok = Id <$> sign (unId (view tok :: Id Token))
 
 lookupLoginToken :: (DBM m, MonadHasResource c m) => Id LoginToken -> m (Maybe LoginToken)
 lookupLoginToken =
-  maybe (return Nothing)
-    (\t -> dbQuery1 $(selectQuery selectLoginToken "$!WHERE login_token.token = ${t} AND expires > CURRENT_TIMESTAMP")) <=< unSign . unId
+  flatMapM (\t -> dbQuery1 $(selectQuery selectLoginToken "$!WHERE login_token.token = ${t} AND expires > CURRENT_TIMESTAMP"))
+    <=< unSign . unId
 
 lookupSession :: DBM m => BS.ByteString -> m (Maybe Session)
 lookupSession tok =

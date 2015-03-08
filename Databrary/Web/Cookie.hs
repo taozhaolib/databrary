@@ -11,6 +11,7 @@ import Network.HTTP.Types (Header, hCookie)
 import qualified Network.Wai as Wai
 import qualified Web.Cookie as Cook
 
+import Control.Applicative.Ops
 import Control.Has (peeks)
 import Databrary.Entropy
 import Databrary.Crypto
@@ -22,7 +23,7 @@ getCookies :: Request -> Cook.Cookies
 getCookies = maybe [] Cook.parseCookies . lookupRequestHeader hCookie
 
 getSignedCookie :: (MonadHasResource c m, MonadHasRequest c m) => BS.ByteString -> m (Maybe BS.ByteString)
-getSignedCookie c = maybe (return Nothing) unSign . lookup c =<< peeks getCookies
+getSignedCookie c = flatMapM unSign . lookup c =<< peeks getCookies
 
 setSignedCookie :: (MonadHasResource c m, MonadHasRequest c m, EntropyM c m) => BS.ByteString -> BS.ByteString -> Timestamp -> m Header
 setSignedCookie c val ex = do

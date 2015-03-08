@@ -40,7 +40,7 @@ lookupPartyVolumeAccess p perm = do
   ident <- peek
   dbQuery $(selectQuery (selectPartyVolumeAccess 'p 'ident) "$WHERE volume_access.individual >= ${perm} ORDER BY individual DESC, children DESC")
 
-changeVolumeAccess :: (AuditM c m) => VolumeAccess -> m Bool
+changeVolumeAccess :: (MonadAudit c m) => VolumeAccess -> m Bool
 changeVolumeAccess va = do
   ident <- getAuditIdentity
   (0 <) <$> if volumeAccessIndividual va == PermissionNONE

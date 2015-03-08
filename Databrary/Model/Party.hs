@@ -70,22 +70,22 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
   , "permission" JSON..= partyPermission <? (partyPermission > PermissionREAD)
   ]
 
-changeParty :: AuditM c m => Party -> m ()
+changeParty :: MonadAudit c m => Party -> m ()
 changeParty p = do
   ident <- getAuditIdentity
   dbExecute1 $(updateParty 'ident 'p)
 
-changeAccount :: AuditM c m => Account -> m ()
+changeAccount :: MonadAudit c m => Account -> m ()
 changeAccount a = do
   ident <- getAuditIdentity
   dbExecute1 $(updateAccount 'ident 'a)
 
-addParty :: AuditM c m => Party -> m Party
+addParty :: MonadAudit c m => Party -> m Party
 addParty bp = do
   ident <- getAuditIdentity
   dbQuery1' $ fmap (\p -> p PermissionREAD Nothing) $(insertParty 'ident 'bp)
 
-addAccount :: AuditM c m => Account -> m Account
+addAccount :: MonadAudit c m => Account -> m Account
 addAccount ba@Account{ accountParty = bp } = do
   ident <- getAuditIdentity
   p <- dbQuery1' $ fmap (\p -> p PermissionREAD Nothing) $(insertParty 'ident 'bp)
@@ -102,16 +102,14 @@ lookupFixedParty i a = view a <? (i == view a)
 lookupParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupParty i = do
   ident <- peek
-  maybe
-    (dbQuery1 $(selectQuery (selectParty 'ident) "$WHERE party.id = ${i}"))
-    (return . Just) $ lookupFixedParty i ident
+  lookupFixedParty i ident `orElseM`
+    dbQuery1 $(selectQuery (selectParty 'ident) "$WHERE party.id = ${i}")
 
 lookupAuthParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupAuthParty i = do
   ident <- peek
-  maybe
-    (dbQuery1 $(selectQuery (selectAuthParty 'ident) "$WHERE party.id = ${i}"))
-    (return . Just) $ lookupFixedParty i ident
+  lookupFixedParty i ident `orElseM`
+    dbQuery1 $(selectQuery (selectAuthParty 'ident) "$WHERE party.id = ${i}")
 
 lookupSiteAuthByEmail :: DBM m => T.Text -> m (Maybe SiteAuth)
 lookupSiteAuthByEmail e =

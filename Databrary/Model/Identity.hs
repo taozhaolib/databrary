@@ -24,7 +24,7 @@ import Databrary.Model.Identity.Types
 determineIdentity :: (MonadHasResource c m, MonadHasRequest c m, DBM m) => m Identity
 determineIdentity = do
   c <- getSignedCookie "session"
-  s <- maybe (return Nothing) lookupSession c
+  s <- flatMapM lookupSession c
   return $ maybe UnIdentified Identified s
 
 foldIdentity :: a -> (Session -> a) -> Identity -> a

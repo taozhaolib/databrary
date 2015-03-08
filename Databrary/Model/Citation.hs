@@ -24,7 +24,7 @@ lookupVolumeLinks :: (DBM m) => Volume -> m [Citation]
 lookupVolumeLinks vol =
   dbQuery $(selectQuery selectVolumeLink "$WHERE volume_link.volume = ${volumeId vol}")
 
-changeVolumeCitation :: (AuditM c m) => Volume -> Maybe Citation -> m Bool
+changeVolumeCitation :: (MonadAudit c m) => Volume -> Maybe Citation -> m Bool
 changeVolumeCitation vol citem = do
   ident <- getAuditIdentity
   (0 <) <$> maybe
@@ -34,7 +34,7 @@ changeVolumeCitation vol citem = do
       $(insertVolumeCitation 'ident 'vol 'cite))
     citem
 
-changeVolumeLinks :: (AuditM c m) => Volume -> [Citation] -> m ()
+changeVolumeLinks :: (MonadAudit c m) => Volume -> [Citation] -> m ()
 changeVolumeLinks vol links = do
   ident <- getAuditIdentity
   dbTransaction $ do

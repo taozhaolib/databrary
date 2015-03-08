@@ -51,4 +51,4 @@ lookupFundRef fi = runMaybeT $ do
 
 lookupFunderRef :: (DBM m, HTTPClientM c m, MonadThrow m) => Id Funder -> m (Maybe Funder)
 lookupFunderRef fi =
-  maybe (lookupFundRef fi) (return . Just) =<< lookupFunder fi
+  (`orElseM` lookupFundRef fi) =<< lookupFunder fi

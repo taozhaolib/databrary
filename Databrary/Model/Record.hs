@@ -54,17 +54,17 @@ lookupVolumeRecords :: DBM m => Volume -> m [Record]
 lookupVolumeRecords vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
 
-addRecord :: AuditM c m => Record -> m Record
+addRecord :: MonadAudit c m => Record -> m Record
 addRecord br = do
   ident <- getAuditIdentity
   dbQuery1' $(insertRecord 'ident 'br)
 
-changeRecord :: AuditM c m => Record -> m ()
+changeRecord :: MonadAudit c m => Record -> m ()
 changeRecord r = do
   ident <- getAuditIdentity
   dbExecute1 $(updateRecord 'ident 'r)
 
-removeRecord :: AuditM c m => Record -> m ()
+removeRecord :: MonadAudit c m => Record -> m ()
 removeRecord r = do
   ident <- getAuditIdentity
   dbExecute1 $(deleteRecord 'ident 'r)
@@ -91,7 +91,7 @@ upMeasure m@Measure{ measureRecord = rec } = rec{ recordMeasures = upd $ recordM
 isInvalidInputException :: PGError -> Bool
 isInvalidInputException (PGError e) = pgMessageCode e `elem` ["22007", "22008", "22P02"]
 
-changeRecordMeasure :: AuditM c m => Measure -> m (Maybe Record)
+changeRecordMeasure :: MonadAudit c m => Measure -> m (Maybe Record)
 changeRecordMeasure m = do
   ident <- getAuditIdentity
   r <- tryUpdateOrInsert (guard . isInvalidInputException)
@@ -102,7 +102,7 @@ changeRecordMeasure m = do
     Right (_, [d]) -> return $ Just $ upMeasure d
     Right (n, _) -> fail $ "changeRecordMeasure: " ++ show n ++ " rows"
 
-removeRecordMeasure :: AuditM c m => Measure -> m Record
+removeRecordMeasure :: MonadAudit c m => Measure -> m Record
 removeRecordMeasure m = do
   ident <- getAuditIdentity
   r <- dbExecute $(deleteMeasure 'ident 'm)

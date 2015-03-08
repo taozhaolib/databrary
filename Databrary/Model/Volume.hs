@@ -38,12 +38,12 @@ volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
   , Just $ "permission" JSON..= volumePermission
   ]
 
-changeVolume :: AuditM c m => Volume -> m ()
+changeVolume :: MonadAudit c m => Volume -> m ()
 changeVolume v = do
   ident <- getAuditIdentity
   dbExecute1 $(updateVolume 'ident 'v)
 
-addVolume :: AuditM c m => Volume -> m Volume
+addVolume :: MonadAudit c m => Volume -> m Volume
 addVolume bv = do
   ident <- getAuditIdentity
   dbQuery1' $ fmap ($ PermissionADMIN) $(insertVolume 'ident 'bv)

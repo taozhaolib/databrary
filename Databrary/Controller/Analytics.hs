@@ -16,7 +16,7 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.Audit
 import Databrary.Web.Request
 
-angularAnalytics :: AuditM q m => m ()
+angularAnalytics :: MonadAudit q m => m ()
 angularAnalytics = do
   req <- peek
   when (Fold.any ("DatabraryClient" ==) $ lookupRequestHeader "x-requested-with" req) $

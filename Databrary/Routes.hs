@@ -25,6 +25,7 @@ import Databrary.Controller.Record
 import Databrary.Controller.SlotAsset
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
+import Databrary.Controller.Asset
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
@@ -79,17 +80,23 @@ routes = do
       , "link" >>            (html >> act (viewVolumeLinks v))
                                   <|> act (postVolumeLinks api v)
       , "record" >>                   act (createRecord api v)
+      , "asset" >>                    act (createAsset api v)
       , json >> "upload" >>           act (uploadStart v)
       ]
     , "volume" >>                     act (createVolume api)
 
-    , R.route >>= \c ->               -- /slot/ID
-        R.route >>= \a ->             --         /asset/ID
+    , R.route >>= \c -> msum          -- /slot/ID
+      [ R.route >>= \a ->             --         /asset/ID
                (html >> "download" >> act (downloadSlotAsset c a))
+      ]
 
     , R.route >>= \r -> msum          -- /record/ID
       [                               act (viewRecord api r)
       , R.route >>= \m ->             act (postRecordMeasure api r m)
+      ]
+
+    , R.route >>= \a -> msum          -- /asset/ID
+      [                               act (viewAsset api a)
       ]
 
     , json >> msum                    -- /api

@@ -5,6 +5,9 @@ module Control.Applicative.Ops
   , (<!?), (?!>)
   , (?$), ($?)
   , (>$), ($<)
+  , fromMaybeM
+  , orElseM
+  , flatMapM
   ) where
 
 import Control.Applicative
@@ -64,3 +67,14 @@ f >$ a = f a $> a
 -- |@flip '(>$)'@
 ($<) :: Functor f => a -> (a -> f ()) -> f a
 a $< f = a <$ f a
+
+fromMaybeM :: Monad m => m a -> Maybe a -> m a
+fromMaybeM _ (Just a) = return a
+fromMaybeM m Nothing = m
+
+orElseM :: Monad m => Maybe a -> m (Maybe a) -> m (Maybe a)
+orElseM Nothing m = m
+orElseM m _ = return m
+
+flatMapM :: Monad m => (a -> m (Maybe b)) -> Maybe a -> m (Maybe b)
+flatMapM = maybe (return Nothing)
