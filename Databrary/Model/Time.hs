@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds, PatternGuards #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Time
   ( module Databrary.Model.Time.Types
@@ -9,13 +9,13 @@ import Control.Applicative ((<$>))
 import Control.Arrow (first)
 import Data.Fixed (Fixed(..), Milli)
 import Database.PostgreSQL.Typed.Types (PGType)
-import Database.PostgreSQL.Typed.Range (PGRangeType)
+import qualified Database.PostgreSQL.Typed.Range as Range
 
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Time.Types
 
 instance PGType "segment"
-instance PGRangeType "segment" "interval"
+instance Range.PGRangeType "segment" "interval"
 
 instance JSON.ToJSON Offset where
   toJSON off = JSON.Number (realToFrac off * 1000)
@@ -50,3 +50,9 @@ parseOffset = rm . readsOffset where
   rm ((x,""):_) = Just x
   rm (_:l) = rm l
   rm [] = Nothing
+
+instance JSON.ToJSON Segment where
+  toJSON s
+    | Range.isEmpty s = JSON.Null
+    | Just o <- Range.getPoint s = JSON.toJSON o
+    | otherwise = JSON.toJSON $ map Range.bound [Range.lowerBound s, Range.upperBound s]

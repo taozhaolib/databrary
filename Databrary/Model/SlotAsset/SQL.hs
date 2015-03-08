@@ -4,6 +4,9 @@ module Databrary.Model.SlotAsset.SQL
   , selectAssetSlotAsset
   , selectVolumeSlotAsset
   , selectSlotAsset
+  , insertSlotAsset
+  , updateSlotAsset
+  , deleteSlotAsset
   ) where
 
 import qualified Language.Haskell.TH as TH
@@ -18,6 +21,7 @@ import Databrary.Model.Container.Types
 import Databrary.Model.Container.SQL
 import Databrary.Model.Slot.Types
 import Databrary.Model.SQL.Select
+import Databrary.Model.Audit.SQL
 import Databrary.Model.Volume.SQL
 import Databrary.Model.SlotAsset.Types
 
@@ -80,3 +84,40 @@ selectSlotAsset ident = selectJoin 'makeVolumeSlotAsset
   , joinOn "asset.volume = volume.id AND container.volume = volume.id"
     $ selectVolume ident
   ]
+
+slotAssetKeys :: String -- ^ @'SlotAsset'@
+  -> [(String, String)]
+slotAssetKeys sa =
+  [ ("asset", "${assetId (slotAsset " ++ sa ++ ")}") ]
+
+slotAssetSets :: String -- ^ @'SlotAsset'@
+  -> [(String, String)]
+slotAssetSets sa =
+  [ ("container", "${containerId (slotContainer (assetSlot " ++ sa ++ "))}")
+  , ("segment", "${slotSegment (assetSlot " ++ sa ++ ")}")
+  ]
+
+insertSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
+  -> TH.Name -- ^ @'SlotAsset'@
+  -> TH.ExpQ
+insertSlotAsset ident a = auditInsert ident "slot_asset"
+  (slotAssetKeys as ++ slotAssetSets as)
+  Nothing
+  where as = nameRef a
+
+updateSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
+  -> TH.Name -- ^ @'SlotAsset'@
+  -> TH.ExpQ
+updateSlotAsset ident a = auditUpdate ident "slot_asset"
+  (slotAssetSets as)
+  (whereEq $ slotAssetKeys as)
+  Nothing
+  where as = nameRef a
+
+deleteSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
+  -> TH.Name -- ^ @'SlotAsset'@
+  -> TH.ExpQ
+deleteSlotAsset ident a = auditDelete ident "slot_asset"
+  (whereEq $ slotAssetKeys as)
+  Nothing
+  where as = nameRef a

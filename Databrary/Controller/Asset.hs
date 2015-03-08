@@ -6,9 +6,11 @@ module Databrary.Controller.Asset
 
 import Control.Monad ((<=<))
 import Control.Monad.Trans.Class (lift)
+import qualified Data.Foldable as Fold
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
+import qualified Database.PostgreSQL.Typed.Range as Range
 import Network.Wai.Parse (FileInfo(..))
 
 import Control.Applicative.Ops
@@ -18,13 +20,14 @@ import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
 import Databrary.Action
 import Databrary.Model.Permission
-import Databrary.Model.Time
 import Databrary.Model.Id
 import Databrary.Model.Volume
 import Databrary.Model.Container
 import Databrary.Model.Token
 import Databrary.Model.Format
 import Databrary.Model.Asset
+import Databrary.Model.Slot
+import Databrary.Model.SlotAsset
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
@@ -53,7 +56,7 @@ createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
     -- adm <- peeks ((PermissionADMIN <=) . accessMember')
     (fd, ufs) <- getFormData [("file", maxAssetSize)]
     let file = lookup "file" ufs
-    asset <- runFormWith fd (api == HTML ?> htmlAssetForm vol) $ do
+    asa <- runFormWith fd (api == HTML ?> htmlAssetForm vol) $ do
       upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
       upfile <- case (file, upload) of
         (Just f, Nothing) -> return (Left f)
@@ -68,10 +71,13 @@ createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
         , assetClassification = classification
         , assetName = Just $ TE.decodeUtf8 fname'
         } (Just path)
-      name :: Maybe T.Text <- "name" .:> deform
+      name <- "name" .:> deform
+      lift $ changeAsset asset{ assetName = name }
       cont <- "container" .:> deformLookup "Container not found." (lookupVolumeContainer vol)
-      pos :: Maybe Offset <- "position" .:> deform
-      return asset
+      pos <- "position" .:> deform
+      let sa = fmap (\c -> SlotAsset asset (Slot c (Range.normal pos pos)) Nothing) cont
+      Fold.mapM_ (lift . changeSlotAsset) sa
+      return $ maybe (Left asset) Right sa
     case api of
-      JSON -> okResponse [] $ assetJSON asset
-      HTML -> redirectRouteResponse [] $ viewAsset api $ assetId asset
+      JSON -> okResponse [] $ either assetJSON slotAssetJSON asa
+      HTML -> redirectRouteResponse [] $ viewAsset api $ assetId $ either id slotAsset asa

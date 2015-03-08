@@ -75,7 +75,7 @@ changeAuthorize auth = do
   (r, _) <- updateOrInsert
     $(updateAuthorize 'ident 'auth)
     $(insertAuthorize 'ident 'auth)
-  when (r /= 1) $ fail $ "setAuthorize: " ++ show r ++ " rows"
+  when (r /= 1) $ fail $ "changeAuthorize: " ++ show r ++ " rows"
 
 removeAuthorize :: (MonadAudit c m) => Authorize -> m Bool
 removeAuthorize auth = do
