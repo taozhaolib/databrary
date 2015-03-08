@@ -17,7 +17,6 @@ import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
 import Databrary.Action
-import Databrary.Action.Route
 import Databrary.Model.Permission
 import Databrary.Model.Time
 import Databrary.Model.Id
@@ -51,7 +50,7 @@ deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deform
 createAsset :: API -> Id Volume -> AppRAction
 createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
   withVolume PermissionEDIT vi $ \vol -> do
-    adm <- peeks ((PermissionADMIN <=) . accessMember')
+    -- adm <- peeks ((PermissionADMIN <=) . accessMember')
     (fd, ufs) <- getFormData [("file", maxAssetSize)]
     let file = lookup "file" ufs
     asset <- runFormWith fd (api == HTML ?> htmlAssetForm vol) $ do

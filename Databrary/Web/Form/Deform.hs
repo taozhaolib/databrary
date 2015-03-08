@@ -35,7 +35,7 @@ import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as TR
-import Data.Time (Day, fromGregorian, parseTime)
+import Data.Time (fromGregorian, parseTime)
 import qualified Data.Vector as V
 import qualified Network.URI as URI
 import System.Locale (defaultTimeLocale)
@@ -45,6 +45,7 @@ import qualified Text.Regex.Posix as Regex
 import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.URL
+import Databrary.Model.Time
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 
@@ -257,10 +258,19 @@ instance Deform Int16 where
     fv (FormDatumJSON (JSON.Bool False)) = return 0
     fv _ = Left "Integer required"
 
-instance Deform Day where
+instance Deform Date where
   deform = maybe (deformErrorWith (Just (fromGregorian 1900 1 1)) "Invalid date (please use YYYY-MM-DD)") return . pd =<< deform where
     pd t = pf "%F" t <|> pf "%D" t
     pf = parseTime defaultTimeLocale
+
+instance Deform Offset where
+  deform = deformParse 0 fv where
+    fv (FormDatumBS b) = po $ BSC.unpack b
+    fv (FormDatumJSON (JSON.String t)) = po $ T.unpack t
+    fv (FormDatumJSON (JSON.Number n)) = return $ realToFrac $ n / 1000
+    fv (FormDatumJSON (JSON.Bool False)) = return 0
+    fv _ = Left "Offset required"
+    po = maybe (Left "Invalid offset") Right . parseOffset
 
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform
