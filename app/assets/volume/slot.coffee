@@ -367,6 +367,7 @@ app.controller('volume/slot', [
               @excerpts.remove(excerpt)
               if 'excerpt' of excerpt
                 @excerpts.push(excerpt)
+              @updateExcerpt()
             , (res) =>
               messages.addError
                 type: 'red'
