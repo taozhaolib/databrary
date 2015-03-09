@@ -25,6 +25,8 @@ app.directive('volumeEditMaterialsForm', [
       Material.prototype.save = function () {
         if (!this.data.excerptOn)
           this.data.excerpt = '';
+        else if (this.data.excerpt <= this.data.classification)
+          this.data.excerpt = '0';
         return Store.prototype.save.call(this);
       };
 
