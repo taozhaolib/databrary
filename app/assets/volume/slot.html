@@ -136,10 +136,10 @@
               <button ng-if="current.excerpt.on === true" ng-click="current.editExcerpt()" class="mini">Edit highlight</button>
             </div>
             <ng-form ng-switch-when="record" name="form.record">
-              <button ng-click="addRecord(null)" class="mini">Cancel</button>
+              <button ng-click="addRecord(null)" class="mini">Cancel</button>&#32;
               <select class="slot-toolbar-select" name="category" ng-model="addRecord.category" ng-options="c as page.constants.category[c].name || 'record' for (c, n) in addRecord.categories" ng-change="setCategory(addRecord.category)">
                 <option value="">Choose category...</option>
-              </select>
+              </select>&#32;
               <select ng-if="!!addRecord.options" class="slot-toolbar-select" name="record" ng-model="addRecord.select" ng-options="r as d for (r, d) in addRecord.options" ng-change="addRecord(addRecord.select)">
                 <option value="">Choose record...</option>
               </select>
@@ -154,9 +154,7 @@
             </ng-form>
             <ng-form ng-switch-when="excerpt" name="form.excerpt">
               <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
-              <span ng-if="current.excerpt === undefined">You must select part or all of the file to highlight.</span>
-              <span ng-if="current.excerpt === null">Your current selection ovelaps with an existing highlight.</span>
-              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Highlight</button>
+              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Highlight</button>&#32;
               <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
           </div>
