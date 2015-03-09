@@ -1,6 +1,10 @@
-<p>
-  <a ng-if="::page.$location.path() === page.router.profile()" ng-href="{{::page.router.party(party.id)}}">Show full titles and descriptions</a>
-  <a ng-if="::page.$location.path() === page.router.party(page.models.Login.user.id)" ng-href="{{::page.router.profile()}}">Show volume short names</a>
+<p ng-if="::page.$location.path() === page.router.profile()">
+  <span>Showing volumes by short name.</span>&nbsp;
+  <a ng-href="{{::page.router.party(party.id)}}">(See full titles and descriptions instead)</a>
+</p>
+<p ng-if="::page.$location.path() === page.router.party(page.models.Login.user.id)">
+  <span>Showing volumes by full title and description.</span>&nbsp;
+  <a ng-href="{{::page.router.profile()}}">(See volume short names instead)</a>
 </p>
 <volume-list data="volumes"></volume-list>
 <a ng-href="{{page.router.volumeCreate([party.id])}}" ng-if="::party.checkPermission(page.permission.EDIT)"><span class="button green" message="volume.edit.create"></span></a>
