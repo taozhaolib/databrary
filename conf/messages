@@ -401,9 +401,9 @@ not.participant=No participants
 not.condition=No conditions
 not.group=Not grouped
 
-excerpts.title=Highlighted Excerpts
-excerpts.download=Download this excerpt.
-excerpts.jump=Jump to the session from which this excerpt originates.
+excerpts.title=Highlights
+excerpts.download=Download this highlight.
+excerpts.jump=Jump to the session from which this highlight originates.
 
 position=Position
 position.placeholder=MM:SS
@@ -565,7 +565,7 @@ volume.edit.success=Volume saved successfully.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as excerpts, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
+wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as highlights, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
@@ -583,7 +583,7 @@ asset.name.help=You may optionally provide a brief description of this file for 
 asset.name.placeholder=New file name
 asset.classification=Classification
 asset.excerpt=
-asset.excerpt.checkbox-label=Highlight as excerpt
+asset.excerpt.checkbox-label=Highlight on volume
 asset.add-drop=Drop file here or click to upload a new file.
 asset.add-drop.replace=Drop file here or click to upload replacement file.
 asset.upload-progress=(in progress)

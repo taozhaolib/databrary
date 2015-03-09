@@ -213,7 +213,6 @@ app.controller('volume/slot', [
       if editing
         return false if $scope.editing == 'position'
         $scope.addRecord(null)
-        $scope.current.editExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
         t.update()
       return
@@ -330,9 +329,10 @@ app.controller('volume/slot', [
         return
 
       editExcerpt: () ->
+        $scope.editing = 'excerpt'
         @excerpt = undefined
         seg = getSelection()
-        return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg) || !@asset.checkPermission(constants.permission.EDIT)
+        return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
           if !excerpt
@@ -353,28 +353,21 @@ app.controller('volume/slot', [
         opts
 
       saveExcerpt: (value) ->
-        return unless @excerpt
-        if value == ''
-          @excerpt.on = true
-        else if value == null && @excerpt.classification == ''
-          @excerpt.on = false
-        else
-          messages.clear(this)
-          @excerpt.target.setExcerpt(value) #if @excerpt.on then @excerpt.classification else null
-            .then (excerpt) =>
-                @excerpts.remove(excerpt)
-                if 'excerpt' of excerpt
-                  @excerpts.push(excerpt)
-                else
-                  @excerpt.on = false
-                  @excerpt.classification = ''
-                document.getElementById('slot-toolbar-select-excerpt').blur()
-              , (res) =>
-                messages.addError
-                  type: 'red'
-                  body: constants.message('asset.update.error', @name)
-                  report: res
-                  owner: this
+        $scope.editing = true
+        if value == undefined || value == ''
+          return
+        messages.clear(this)
+        @excerpt.target.setExcerpt(value)
+          .then (excerpt) =>
+              @excerpts.remove(excerpt)
+              if 'excerpt' of excerpt
+                @excerpts.push(excerpt)
+            , (res) =>
+              messages.addError
+                type: 'red'
+                body: constants.message('asset.update.error', @name)
+                report: res
+                owner: this
 
       canRestore: () ->
         Store.removedAsset if editing && this == blank && Store.removedAsset?.volume.id == slot.volume.id

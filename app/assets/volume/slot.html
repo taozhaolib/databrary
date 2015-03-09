@@ -22,7 +22,7 @@
           </div>
           <div class="player fold">
             <nav ng-if="!(folded || !current)" class="player-actions">
-              <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" message="save" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending"></button>
+              <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending">Save</button>
               <button ng-if="editing && !current.file && current.asset" class="player-action-word yellow" flow-btn>Replace File</button>
               <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-action-icon icon trash2 button"></a>
               <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
@@ -132,11 +132,7 @@
               <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove File</button>
               <button ng-if="!!current.asset" ng-click="current.rePosition()" class="mini">Position File</button>
               &#32;
-              <button ng-if="current.excerpt.on === false" ng-click="current.saveExcerpt('')" class="mini">Highlight as Excerpt</button>
-              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Excerpt</button>
-              <ng-form ng-if="current.excerpt.on" name="form.excerpt">
-                <select id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
-              </ng-form>
+              <button ng-if="!!current.asset" ng-click="current.editExcerpt()" class="mini">Highlight on Volume</button>
             </div>
             <ng-form ng-switch-when="record" name="form.record">
               <button ng-click="addRecord(null)" class="mini">Cancel</button>
@@ -151,8 +147,15 @@
               <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
               <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.segment.u" position-min="current.segment.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
-              <button ng-click="current.finishPosition()" message="cancel"></button>
-              <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid " message="save"></button>
+              <button ng-click="current.finishPosition()">Cancel</button>
+              <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid">Save</button>
+            </ng-form>
+            <ng-form ng-switch-when="excerpt" name="form.excerpt">
+              <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
+              <span ng-if="current.excerpt === undefined">You must select part or all of the file to highlight.</span>
+              <span ng-if="current.excerpt === null">Your current selection ovelaps with an existing highlight.</span>
+              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Highlight</button>
+              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
           </div>
 

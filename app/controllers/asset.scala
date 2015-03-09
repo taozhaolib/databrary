@@ -77,10 +77,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
             (TemporaryFile(u.file), None, Some(u.filename))
           })
         case (None, None, Some(localfile)) if adm =>
-        /* local file handling, for admin only: */
+          /* local file handling, for admin only: */
           val file = store.Stage.file(localfile)
-        val name = file.getName
-        if (!file.isFile)
+          val name = file.getName
+          if (!file.isFile)
             form.localfile.withError("file.notfound")._throw
           async((store.TemporaryFileLinkOrCopy(file), None, Some(name)))
         case _ =>
