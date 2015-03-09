@@ -28,12 +28,9 @@
     margin-right b3 
 
 //SLOT-TOOLBAR
-slot-toolbar-height = 46px
-
 .slot-toolbar  
   border-bottom 1px solid neutral53
   padding b3
-  height slot-toolbar-height
   .float
     float right
   button,select,input
@@ -60,6 +57,9 @@ slot-toolbar-height = 46px
 .slot-timeline
   z-index 1
 
+.slot-timeline-timeline
+  position relative
+
 .slot-timeline-selection
   height 0
   pointer-events none
@@ -83,18 +83,14 @@ slot-toolbar-height = 46px
   border-left 1px solid green
   transition left .05s linear
 
-.selection,.slot-timeline-now
-  &.edit
-    top slot-toolbar-height
-
 .slot-timeline-temporal
   position relative
   text-align center
-  margin-top f3
   width 100%
 
 .slot-timeline-control
   position absolute
+  margin-top f3
   left 0
   right 0
   z-index 600
@@ -112,16 +108,12 @@ slot-toolbar-height = 46px
   position relative
   top b24
   width auto
-  min-width 10%
   height 31px
   text-align center
   box-shadow inset 1px 1px 2px dark
-  padding-left b1
-  padding-right b1
-  margin-right auto
-  margin-left auto
-  margin-top 0
-  margin-bottom 0
+  padding-left b2
+  padding-right b2
+  margin 0px auto
   border-radius 0
   &.stop
     border-top-right-radius b1
@@ -131,9 +123,8 @@ slot-toolbar-height = 46px
     border-bottom-left-radius b1
 
 .slot-timeline-zoom
-  position absolute
-  top 0
-  right 0
+  position relative
+  float right
   margin-right f4
   font-size 0.8em
   .icon
@@ -151,7 +142,7 @@ slot-toolbar-height = 46px
   z-index 500
   width 100%
   box-shadow 0 b8 b8 -b8 black
-  height 3
+  min-height 3
   cursor default
 
 .slot-timeline-ruler-time
@@ -442,7 +433,7 @@ slot-toolbar-height = 46px
     margin-left b6
 
 .position-input
-  width 158px
+  width auto
 
 .player-drop
   border 3px dashed pale
