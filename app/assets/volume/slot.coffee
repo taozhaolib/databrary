@@ -212,7 +212,8 @@ app.controller('volume/slot', [
     $scope.updateSelection = finalizeSelection = ->
       if editing
         return false if $scope.editing == 'position'
-        $scope.addRecord(null)
+        $scope.editing = true
+        $scope.current.updateExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
         t.update()
       return
@@ -328,8 +329,7 @@ app.controller('volume/slot', [
           $scope.updatePosition()
         return
 
-      editExcerpt: () ->
-        $scope.editing = 'excerpt'
+      updateExcerpt: () ->
         @excerpt = undefined
         seg = getSelection()
         return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg)
@@ -345,6 +345,11 @@ app.controller('volume/slot', [
             classification: excerpt.excerpt+''
           else
             null
+        return
+
+      editExcerpt: () ->
+        @updateExcerpt() # should be unnecessary
+        $scope.editing = 'excerpt'
         return
 
       excerptOptions: () ->
