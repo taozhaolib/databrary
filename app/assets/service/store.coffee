@@ -19,7 +19,6 @@ app.factory('Store', [
         if @asset
           name: @asset.name
           classification: @asset.classification+''
-          container: @slot.id # this is only necessary for position but has the side-effect of restoring deleted/moved assets
         else
           classification: constants.classification.RESTRICTED+''
       return
@@ -137,7 +136,7 @@ app.factory('Store', [
 
     excerptOptions: () ->
       l = {}
-      for c, i in constants.classification when i == 0 || i > @data.classification
+      for c, i in constants.classification when i >= @data.classification
         l[i] = c
       l
 

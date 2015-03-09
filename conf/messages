@@ -351,8 +351,8 @@ classification.RESTRICTED=Restricted: potentially identifying data; only shared 
 classification.SHARED=Shared: only shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
-classification.excerpt.prompt=Choose additional sharing level...
-classification.excerpt.PRIVATE=No additional sharing.
+classification.excerpt.prompt=Choose sharing level...
+classification.excerpt.PRIVATE=Not shared.
 classification.excerpt.RESTRICTED=Shared with appropriate participant release.
 classification.excerpt.SHARED=Shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
