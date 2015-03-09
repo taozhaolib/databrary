@@ -136,7 +136,8 @@ app.factory('Store', [
 
     excerptOptions: () ->
       l = {}
-      for c, i in constants.classification when i >= @data.classification
+      l[0] = constants.classification[@data.classification]
+      for c, i in constants.classification when i > @data.classification
         l[i] = c
       l
 

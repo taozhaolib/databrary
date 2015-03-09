@@ -361,8 +361,6 @@ app.controller('volume/slot', [
         $scope.editing = true
         if value == undefined || value == ''
           return
-        if value && value <= @data.classification
-          value = 0
         messages.clear(this)
         @excerpt.target.setExcerpt(value)
           .then (excerpt) =>
