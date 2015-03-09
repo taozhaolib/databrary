@@ -1,10 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Asset
   ( viewAsset
+  , postAsset
   , createAsset
   ) where
 
-import Control.Monad ((<=<))
+import Control.Monad ((<=<), when, void)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.Foldable as Fold
 import qualified Data.Text as T
@@ -36,9 +37,9 @@ import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.View.Asset
 
-withAsset :: Permission -> Id Asset -> (Asset -> AuthAction) -> AppAction
+withAsset :: Permission -> Id Asset -> (AssetSlot -> AuthAction) -> AppAction
 withAsset p i f = withAuth $
-  f =<< checkPermission p =<< maybeAction =<< lookupAsset i
+  f =<< checkPermission p =<< maybeAction =<< lookupAssetSlot i
 
 viewAsset :: API -> Id Asset -> AppRAction
 viewAsset api i = action GET (api, i) $
@@ -50,13 +51,33 @@ viewAsset api i = action GET (api, i) $
 deformLookup :: (Monad m, Functor m, Deform a) => FormErrorMessage -> (a -> m (Maybe b)) -> DeformT m (Maybe b)
 deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deform
 
+assetForm :: Either Asest SlotAsset ->
+
+postAsset :: API -> Id Asset -> AppRAction
+postAsset api ai = action POST (api, ai) $
+  withAsset PermissionEDIT ai $ \asset -> do
+    sa <- lookupAssetSlotAsset asset
+    asset' <- runForm (api == HTML ?> htmlAssetForm (Right asset)) $ do
+      name <- "name" .:> deform
+      classification <- "classification" .:> deform
+      cont <- "container" .:> deformLookup "Container not found." (lookupVolumeContainer vol)
+      pos <- "position" .:> deform
+      return asset
+        { assetName = name
+        , assetClassification = classification
+        }
+    changeAsset asset'
+    case api of
+      JSON -> okResponse [] $ assetJSON asset'
+      HTML -> redirectRouteResponse [] $ viewAsset api ai
+
 createAsset :: API -> Id Volume -> AppRAction
 createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
   withVolume PermissionEDIT vi $ \vol -> do
     -- adm <- peeks ((PermissionADMIN <=) . accessMember')
     (fd, ufs) <- getFormData [("file", maxAssetSize)]
     let file = lookup "file" ufs
-    asa <- runFormWith fd (api == HTML ?> htmlAssetForm vol) $ do
+    (ba, upfile, name, slot) <- runFormWith fd (api == HTML ?> htmlAssetForm (Left vol)) $ do
       upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
       upfile <- case (file, upload) of
         (Just f, Nothing) -> return (Left f)
@@ -64,20 +85,27 @@ createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
         _ -> deformError' "Either file XOR upload required."
       let fname = either fileName uploadFilename upfile
       (fname', fmt) <- deformMaybe' "Unknown or unsupported file format." $ getFormatByFilename fname
-      classification <- "classification" .:> deform
-      path <- either (return . tempFilePath . fileContent) (lift . peeks . uploadFile) upfile
-      asset <- lift $ addAsset (blankAsset vol)
-        { assetFormat = fmt
-        , assetClassification = classification
-        , assetName = Just $ TE.decodeUtf8 fname'
-        } (Just path)
       name <- "name" .:> deform
-      lift $ changeAsset asset{ assetName = name }
+      classification <- "classification" .:> deform
       cont <- "container" .:> deformLookup "Container not found." (lookupVolumeContainer vol)
       pos <- "position" .:> deform
-      let sa = fmap (\c -> SlotAsset asset (Slot c (Range.normal pos pos)) Nothing) cont
-      Fold.mapM_ (lift . changeSlotAsset) sa
-      return $ maybe (Left asset) Right sa
+      return
+        ( (blankAsset vol)
+          { assetFormat = fmt
+          , assetClassification = classification
+          , assetName = Just $ TE.decodeUtf8 fname'
+          }
+        , upfile
+        , name
+        , fmap (`Slot` Range.normal pos pos) cont
+        )
+    path <- either (return . tempFilePath . fileContent) (peeks . uploadFile) upfile
+    asset <- addAsset ba (Just path)
+    either (releaseTempFile . fileContent) (void . removeUpload) upfile
+    when (name /= assetName asset) $ changeAsset asset{ assetName = name }
+    let sa = fmap (\s -> SlotAsset asset s Nothing) slot
+    Fold.mapM_ (changeSlotAsset) sa
+    let asa = maybe (Left asset) Right sa
     case api of
       JSON -> okResponse [] $ either assetJSON slotAssetJSON asa
       HTML -> redirectRouteResponse [] $ viewAsset api $ assetId $ either id slotAsset asa

@@ -10,6 +10,7 @@ module Databrary.Model.Token
   , removeSession
   , lookupUpload
   , createUpload
+  , removeUpload
   ) where
 
 import Control.Monad (when, void, (<=<))
@@ -18,13 +19,16 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
 import Data.Int (Int64)
 import Database.PostgreSQL.Typed (pgSQL)
+import System.Posix.Files.ByteString (removeLink)
 
 import Control.Applicative.Ops
-import Control.Has (view, peek)
+import Control.Has (view, peek, peeks)
 import Databrary.Resource
 import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.DB
+import Databrary.Store.Storage
+import Databrary.Store.Upload
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Time.Types
 import Databrary.Model.Id.Types
@@ -116,3 +120,9 @@ removeLoginToken tok = (0 <) <$>
 removeSession :: (DBM m) => Session -> m Bool
 removeSession tok = (0 <) <$>
   dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
+
+removeUpload :: (DBM m, MonadStorage c m) => Upload -> m Bool
+removeUpload tok = do
+  r <- (0 <) <$> dbExecute [pgSQL|DELETE FROM upload WHERE token = ${view tok :: Id Token}|]
+  when r $ liftIO . removeLink =<< peeks (uploadFile tok)
+  return r

@@ -2,9 +2,11 @@
 module Databrary.Model.SlotAsset
   ( module Databrary.Model.SlotAsset.Types
   , lookupSlotAsset
-  , auditSlotAssetDownload
+  , lookupAssetOrSlotAsset
+  , lookupAssetSlotAsset
   , changeSlotAsset
   , removeSlotAsset
+  , auditSlotAssetDownload
   , slotAssetJSON
   ) where
 
@@ -30,10 +32,19 @@ import Databrary.Model.SQL
 import Databrary.Model.SlotAsset.Types
 import Databrary.Model.SlotAsset.SQL
 
-lookupSlotAsset :: (MonadHasIdentity c m, DBM m) => Id Container -> Id Asset -> m (Maybe SlotAsset)
-lookupSlotAsset ci ai = do
+lookupSlotAsset :: (MonadHasIdentity c m, DBM m) => Id Asset -> m (Maybe SlotAsset)
+lookupSlotAsset ai = do
   ident <- peek
-  dbQuery1 $(selectQuery (selectSlotAsset 'ident) "$WHERE container.id = ${ci} AND asset.id = ${ai}")
+  dbQuery1 $(selectQuery (selectSlotAsset 'ident) "$WHERE asset.id = ${ai}")
+
+lookupAssetOrSlotAsset :: (MonadHasIdentity c m, DBM m) => Id Asset -> m (Maybe (Either Asset SlotAsset))
+lookupAssetOrSlotAsset ai = do
+  ident <- peek
+  dbQuery1 $(selectQuery (selectAssetOrSlotAsset 'ident) "$WHERE asset.id = ${ai}")
+
+lookupAssetSlotAsset :: (DBM m) => Asset -> m (Maybe SlotAsset)
+lookupAssetSlotAsset a =
+  dbQuery1 $ ($ a) <$> $(selectQuery selectAssetSlotAsset "$WHERE asset.id = ${assetId a}")
 
 changeSlotAsset :: (MonadAudit c m) => SlotAsset -> m ()
 changeSlotAsset sa = do

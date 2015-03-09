@@ -2,6 +2,7 @@
 module Databrary.Web.Form.Deform
   ( DeformT
   , runDeform
+  , deformSync'
   , (.:>)
   , withSubDeforms
   , deformOptional
@@ -20,7 +21,7 @@ module Databrary.Web.Form.Deform
 
 import Control.Applicative (Applicative(..), Alternative(..), liftA2)
 import Control.Arrow (first, second, (***), left)
-import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM)
+import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, guard)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Trans.Control (MonadTransControl(..))
@@ -112,6 +113,10 @@ runDeform :: Functor m => DeformT m a -> FormData -> m (Either FormErrors a)
 runDeform (DeformT fa) = fmap fr . fa . initForm where
   fr (e, Just a) | nullFormErrors e = Right a
   fr (e, _) = Left e
+
+deformSync' :: Functor m => DeformT m a -> DeformT m a
+deformSync' (DeformT f) = DeformT $ fmap sync . f where
+  sync (e, a) = (e, guard (nullFormErrors e) >> a)
 
 withSubDeform :: (Functor m, Monad m) => FormKey -> DeformT m a -> DeformT m a
 withSubDeform k (DeformT a) = DeformT $ fmap (first (unsubFormErrors k)) . a . subForm k

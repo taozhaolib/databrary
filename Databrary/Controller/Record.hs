@@ -55,7 +55,7 @@ postRecordMeasure api ri mi = action POST (api, ri, mi) $
     met <- maybeAction $ getMetric mi
     let meas = Measure rec met
     rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $
-      "datum" .:> deformNonEmpty deform
+      deformSync' ("datum" .:> deformNonEmpty deform)
       >>= maybe
         (lift $ removeRecordMeasure $ meas "")
         (\d -> do
