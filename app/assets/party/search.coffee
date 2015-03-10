@@ -7,7 +7,7 @@ app.controller 'party/search', [
     offset = parseInt($location.search().offset, 10) || 0
     display.title = 'Users'
     $scope.parties = parties
-    $scope.page = 1 + (offset / limit)
+    $scope.number = 1 + (offset / limit)
     if parties.length > limit
       $scope.next = -> $location.search('offset', offset + limit)
       $scope.parties.pop()

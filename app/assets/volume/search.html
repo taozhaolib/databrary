@@ -7,13 +7,13 @@
         <volume-list data="volumes"></volume-list>
         <div class="search-pages">
           <span ng-if="::prev">
-            <a ng-if="::prev" ng-click="prev()">&lt; {{::page-1}}</a>
+            <a ng-if="::prev" ng-click="prev()">&lt; {{::number-1}}</a>
             |
           </span>
-          <b ng-bind="::page"></b>
+          <b ng-bind="::number"></b>
           <span ng-if="::next">
             |
-            <a ng-click="next()">{{::page+1}} &gt;</a>
+            <a ng-click="next()">{{::number+1}} &gt;</a>
           </span>
         </div>
       </div>
