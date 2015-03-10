@@ -7,16 +7,16 @@ app.controller('volume/slot', [
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
     $scope.volume = slot.volume
-    $scope.editing = editing
+    $scope.editing = editing # $scope.editing (but not editing) is also a modal (toolbar) indicator
     $scope.mode = if editing then 'edit' else 'view'
     target = $location.search()
-    $scope.form = {}
-    fullRange = new Segment(0, 0)
+    $scope.form = {} # all ng-forms are put here
+    fullRange = new Segment(0, 0) # total computed (asset + record) extent of this container (for zoom out full)
     ruler = $scope.ruler =
-      range: if 'range' of target then new Segment(target.range) else fullRange
-      selection: new Segment(if 'select' of target then target.select else null)
-      position: Offset.parse(target.pos)
-      zoomed: 'range' of target
+      range: if 'range' of target then new Segment(target.range) else fullRange # currently displayed zoom range
+      selection: new Segment(if 'select' of target then target.select else null) # current temporal selection
+      position: Offset.parse(target.pos) # current position, also asset seek point (should be within selection)
+      zoomed: 'range' of target # are we currently zoomed in?
 
     $flow = $scope.$flow # not really in this scope
     video = undefined
@@ -157,6 +157,7 @@ app.controller('volume/slot', [
       true
 
     $scope.selectAll = (event, c) ->
+      return false if $scope.editing == 'position'
       ruler.selection = range = new Segment(c.segment)
       finalizeSelection()
       if range && isFinite(range.l) && !range.contains(ruler.position)
@@ -310,6 +311,8 @@ app.controller('volume/slot', [
               for e in @excerpts
                 e.segment.l -= shift
                 e.segment.u -= shift
+            updateRange()
+            sortTracks()
             @finishPosition()
           , (res) =>
             @finishPosition()
@@ -544,7 +547,7 @@ app.controller('volume/slot', [
 
       save: ->
         messages.clear(this)
-        @record.save({measures:@data.measures}).then () ->
+        @record.save({measures:@data.measures}).then () =>
             @fillData()
             delete @dirty
             if this == $scope.current
@@ -708,7 +711,7 @@ app.controller('volume/slot', [
                 tag.active = true
                 $scope.tags.push(tag)
             tag.fillData(data)
-            if (if editing then tag.keyword else tag.weight)
+            if (if editing then tag.keyword?.length else tag.weight)
               tag.update()
             else
               $scope.tags.remove(tag)

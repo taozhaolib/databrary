@@ -7,7 +7,7 @@ app.controller 'volume/search', [
     offset = parseInt($location.search().offset, 10) || 0
     display.title = 'Search'
     $scope.volumes = volumes
-    $scope.page = 1 + (offset / limit)
+    $scope.number = 1 + (offset / limit)
     if volumes.length > limit
       $scope.next = -> $location.search('offset', offset + limit)
       $scope.volumes.pop()
