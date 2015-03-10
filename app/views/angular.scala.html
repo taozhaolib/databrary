@@ -32,7 +32,7 @@
     You can also switch to the <a href="@display.url(nojs)">simple version</a> of this page.
   </noscript>
   <toolbar></toolbar>
-  <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error"></main>
+  <main ng-view id="main" class="main" ng-class="::{'sandbox':page.constants.sandbox}" autoscroll ng-if="!page.display.error"></main>
   <errors></errors>
   @footer()
   <messages></messages>
