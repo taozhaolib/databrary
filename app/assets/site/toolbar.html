@@ -1,13 +1,14 @@
 <!--ng-if="::page.constants.sandbox"-->
 <section id="toolbar" class="toolbar cf">
   <div class="wrap toolbar-sandbox" ng-if="::page.constants.sandbox">
-    
+    Welcome to the Databrary demo site. Explore Databrary in action and try out some of our features here!
   </div>
   <div class="wrap toolbar-main" ng-class="{'hover-nav-bg': hoverNav}">
     <div class="row">
       <div class="title cf col-desktop-9" ng-class="{'col-tablet-7 col-mobile-4': !hoverNav&&page.models.Login.isLoggedIn(), 'col-tablet-6 col-mobile-2': !hoverNav&&!page.models.Login.isLoggedIn(),'col-mobile-6':hoverNav}">
         <div class="toolbar-site" ng-show="page.$route.current.controller!=='site/home'">
-          <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
+          <a ng-if="::!page.constants.sandbox" ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
+          <a ng-if="::page.constants.sandbox" class="sandbox" ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
         </div>
 
         <nav class="toolbar-nav cf">

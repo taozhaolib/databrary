@@ -2,7 +2,7 @@
   <div class="wrap">
     <div class="row">
       <div class="home-logo">
-        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img src="public/images/logo/databrary-nav.svg"></a>
+        <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"><img ng-if="::!page.constants.sandbox" src="public/images/logo/databrary-nav.svg"><img ng-if="::page.constants.sandbox" src="public/images/logo/databrary-demo.svg"></a>
       </div>
     </div>
   </div>
