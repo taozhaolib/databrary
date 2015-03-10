@@ -717,9 +717,9 @@ app.controller('volume/slot', [
               $scope.tags.remove(tag)
             tooltips.clear() # hack for broken tooltips
             return
-          , (res) ->
+          , (res) =>
             messages.addError
-              body: constants.message('tags.vote.error', {sce: $sce.HTML}, name)
+              body: constants.message('tags.vote.error', {sce: $sce.HTML}, @id)
               report: res
               owner: $scope
             return
