@@ -16,7 +16,7 @@ app.factory('constantService', [
 
     var invertBy = function (data, field) {
       var r = {};
-      angular.forEach(data, function (x) {
+      _.each(data, function (x) {
         if (field in x)
           r[x[field]] = x;
       });
@@ -34,20 +34,20 @@ app.factory('constantService', [
     constants.permission.SUPER = constants.permission.length;
 
     /* backwards compatibility: */
-    angular.forEach(constants.party, function (party, name) {
+    _.each(constants.party, function (party, name) {
       var uname = name.toUpperCase();
       if (angular.isObject(party) && name !== uname)
         constants.party[uname] = party.id;
     });
 
-    angular.forEach(constants.category, function (cat) {
+    _.each(constants.category, function (cat) {
       var m = 'not.' + cat.name;
       cat.not = m in constants.messages ? constants.messages[m] : 'No ' + cat.name;
     });
 
     constants.metricName.ident.display = 'ID';
 
-    angular.forEach(constants.format, function (fmt) {
+    _.each(constants.format, function (fmt) {
       var m = fmt.mimetype;
       fmt.type = m.slice(0, m.indexOf('/'));
     });

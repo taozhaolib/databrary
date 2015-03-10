@@ -68,11 +68,11 @@ app.factory('messageService', [
         if (message.statusText)
           messageBody += 'Status:\n' + message.statusText + '\n\n';
 
-        angular.forEach(message.errors, function (errorArray, field) {
+        _.each(message.errors, function(errorArray, field){
           moreBody += '<dl class="comma"><dt>' + (field || 'Reason') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
           messageBody += (field || 'Reason') + ':\n' + errorArray.join('\n') + '\n\n';
         });
-
+	  
         if (messageBody)
           body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 0, message.url || '')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
         if (message.status == 409)
@@ -88,11 +88,13 @@ app.factory('messageService', [
       return new Message(message);
     };
 
-    Message.clear = function (owner) {
-      angular.forEach(Message.list, function (message) {
-        if (owner ? message.owner === owner : !message.persist)
+      Message.clear = function (owner) {
+	  
+      _.each(Message.list, function(message){
+	if (owner ? message.owner === owner : !message.persist)
           message.remove();
       });
+
     };
 
     return Message;

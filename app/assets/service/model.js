@@ -64,12 +64,14 @@ app.factory('modelService', [
       else if (!obj)
         return options || opts;
       else if (options)
-        angular.forEach(options, function (v, o) {
-          if (v || !hasField(obj, o)) {
+
+        _.each(options, function(v, o){
+	  if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
-          }
-        });
+          } 
+	});
+
       return need;
     }
 
@@ -327,13 +329,15 @@ app.factory('modelService', [
       return router.profile();
     };
 
-    angular.forEach({
+
+
+    _.each({
       get: 'get',
       login: 'post',
       logout: 'logout',
       superuserOn: 'superuserOn',
       superuserOff: 'superuserOff'
-    }, function (api, f) {
+    }, function(api, f){
       Login[f] = function (data) {
         return router.http(router.controllers.LoginApi[api], data).then(loginRes);
       };

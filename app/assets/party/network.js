@@ -11,7 +11,7 @@ app.directive('partyNetwork', [
       var actionMessages = {};
 
       $scope.$on('$destroy', function () {
-        angular.forEach(actionMessages, function (bundle) {
+        _.each(actionMessages, function (bundle) {
           bundle.message.remove();
         });
       });
@@ -19,7 +19,7 @@ app.directive('partyNetwork', [
       $scope.isAdmin = $scope.party.checkPermission(page.permission.ADMIN);
 
       if ($scope.isAdmin)
-      angular.forEach($scope.party.children, function (party) {
+      _.each($scope.party.children, function (party) {
         if (!party.member && !party.site) {
           if (!actionMessages[party.id]) {
             actionMessages[party.id] = {

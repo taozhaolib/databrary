@@ -11,7 +11,7 @@ var keys = {
   Right: 39,
   Down: 40,
 };
-angular.forEach(keys, function (key, name) {
+_.each(keys, function(key, name){
   var directive = 'key' + name;
   keys[directive] = [
     '$parse',

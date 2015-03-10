@@ -20,7 +20,7 @@ app.provider('routerService', [
 
       var q = url.includes('?');
 
-      angular.forEach(params, function (value, key) {
+      _.each(params, function (value, key) {
         if (value == null)
           return;
 
