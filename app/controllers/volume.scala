@@ -60,7 +60,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
         alias = form.alias.get.flatMap(Maybe(_).opt),
         body = form.body.get.flatten)
-      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.EDIT)
+      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.ADMIN)
       _ <- setLinks(vol, form, cite)
     } yield (result(vol))
   }
