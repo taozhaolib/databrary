@@ -709,7 +709,7 @@ app.controller('volume/slot', [
                 tag.active = true
                 $scope.tags.push(tag)
             tag.fillData(data)
-            if (if editing then tag.keyword else tag.weight)
+            if (if editing then tag.keyword?.length else tag.weight)
               tag.update()
             else
               $scope.tags.remove(tag)
