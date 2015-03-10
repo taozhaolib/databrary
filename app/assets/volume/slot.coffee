@@ -311,6 +311,8 @@ app.controller('volume/slot', [
               for e in @excerpts
                 e.segment.l -= shift
                 e.segment.u -= shift
+            updateRange()
+            sortTracks()
             @finishPosition()
           , (res) =>
             @finishPosition()
