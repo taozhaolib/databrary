@@ -19,8 +19,9 @@ module Databrary.Model.SQL.Select
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Arrow (first, second)
-import Control.Monad (when)
+import Control.Arrow (second)
+import Control.Monad.State (StateT(..))
+import Control.Monad.Trans.Class (lift)
 import Data.Char (isLetter, toLower)
 import Data.List (intercalate, unfoldr)
 import Data.String (IsString(..))
@@ -32,7 +33,7 @@ import Databrary.DB (useTPG)
 data SelectOutput
   = OutputExpr String
   | OutputJoin !Bool TH.Name [SelectOutput]
-  | OutputMap (TH.Exp -> TH.Exp) SelectOutput
+  | OutputMap !Bool (TH.Exp -> TH.Exp) SelectOutput
 
 instance IsString SelectOutput where
   fromString = OutputExpr
@@ -45,49 +46,51 @@ _outputTuple l = OutputJoin False (TH.tupleDataName $ length l) l
 
 outputMaybe :: SelectOutput -> SelectOutput
 outputMaybe (OutputJoin False f l) = OutputJoin True f l
+outputMaybe (OutputMap False f l) = OutputMap True f l
 outputMaybe s = s
 
 outputColumns :: SelectOutput -> [String]
 outputColumns (OutputExpr s) = [s]
 outputColumns (OutputJoin _ _ o) = concatMap outputColumns o
-outputColumns (OutputMap _ o) = outputColumns o
+outputColumns (OutputMap _ _ o) = outputColumns o
 
-outputParser :: SelectOutput -> [TH.Name] -> TH.Q (TH.Exp, [TH.Name])
-outputParser (OutputExpr _) (i:l) = return (TH.VarE i, l)
-outputParser (OutputExpr _) [] = fail "outputParser: insufficient values"
-outputParser (OutputJoin mb f ol) il = do
-  (al, rl) <- subArgs ol il
-  fi <- TH.reify f
+outputParser :: SelectOutput -> StateT [TH.Name] TH.Q TH.Exp
+outputParser (OutputExpr _) = StateT st where
+  st (i:l) = return (TH.VarE i, l)
+  st [] = fail "outputParser: insufficient values"
+outputParser (OutputJoin mb f ol) = do
+  fi <- lift $ TH.reify f
   (fe, ft) <- case fi of
     TH.ClassOpI _ t _ _ -> return (TH.VarE f, t)
     TH.DataConI _ t _ _ -> return (TH.ConE f, t)
     TH.VarI _ t _ _ -> return (TH.VarE f, t)
     _ -> die "wrong kind"
-  let am = unfoldr argMaybe ft
-  flip (,) rl <$> if mb
+  if mb
     then do
-      (bl, ae) <- bindArgs am al
-      when (null bl) $ die "function with at least one non-Maybe argument required"
+      let am = unfoldr argMaybe ft
+      (bl, ae) <- bindArgs am ol
+      -- when (null bl) $ die "function with at least one non-Maybe argument required"
       return $ TH.DoE $ bl ++ [TH.NoBindS $ TH.AppE (TH.ConE 'Just) $ foldl TH.AppE fe ae]
-    else return $ foldl TH.AppE fe al
+    else foldl TH.AppE fe <$> mapM outputParser ol
   where
-  subArgs [] i = return ([], i)
-  subArgs (o:l) i = do
-    (a, r) <- outputParser o i
-    first (a :) <$> subArgs l r
-  bindArgs (True:m) (a:l) = second (a:) <$> bindArgs m l
-  bindArgs (False:m) (a:l) = do
-    n <- TH.newName "cm"
+  bindArgs (False:m) (o:l) = do
+    n <- lift $ TH.newName "cm"
+    a <- outputParser (outputMaybe o)
     (bl, al) <- bindArgs m l
     return $ (TH.BindS (TH.VarP n) a : bl, TH.VarE n : al)
-  bindArgs _ a = return ([], a)
+  bindArgs (True:m) (o:l) = do
+    a <- outputParser o
+    second (a:) <$> bindArgs m l
+  bindArgs _ o = (,) [] <$> mapM outputParser o
   argMaybe (TH.ArrowT `TH.AppT` a `TH.AppT` r) = Just (isMaybeT a, r)
   argMaybe _ = Nothing
   isMaybeT (TH.AppT (TH.ConT m) _) = m == ''Maybe
   isMaybeT _ = False
   die s = fail $ "outputParser " ++ show f ++ ": " ++ s
-outputParser (OutputMap f o) il =
-  first f <$> outputParser o il
+outputParser (OutputMap False f o) =
+  f <$> outputParser o
+outputParser (OutputMap True f o) =
+  f <$> outputParser (outputMaybe o) -- might want to lift f over the maybe
 
 data Selector = Selector
   { selectOutput :: SelectOutput
@@ -141,7 +144,7 @@ selectJoin f l@(h:t) = Selector
 selectJoin _ [] = error "selectJoin: empty list"
 
 selectMap :: (TH.Exp -> TH.Exp) -> Selector -> Selector
-selectMap f s = s{ selectOutput = OutputMap f (selectOutput s) }
+selectMap f s = s{ selectOutput = OutputMap False f (selectOutput s) }
 
 
 takeWhileEnd :: (a -> Bool) -> [a] -> [a]
@@ -154,7 +157,7 @@ makeQuery :: QueryFlags -> (String -> String) -> SelectOutput -> TH.ExpQ
 makeQuery flags sql output = do
   _ <- useTPG
   nl <- mapM (TH.newName . colVar) cols
-  (parse, []) <- outputParser output nl
+  (parse, []) <- runStateT (outputParser output) nl
   TH.AppE (TH.VarE 'fmap `TH.AppE` TH.LamE [TH.TupP $ map TH.VarP nl] parse)
     <$> makePGQuery flags (sql $ intercalate "," cols)
   where

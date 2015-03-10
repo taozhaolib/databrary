@@ -4,7 +4,6 @@ module Databrary.Model.SlotAsset.SQL
   , selectAssetSlotAsset
   , selectVolumeSlotAsset
   , selectSlotAsset
-  , selectAssetOrSlotAsset
   , insertSlotAsset
   , updateSlotAsset
   , deleteSlotAsset
@@ -82,19 +81,6 @@ selectSlotAsset ident = selectJoin 'makeVolumeSlotAsset
     selectVolumeAsset
   , joinOn "slot_asset.container = container.id"
     selectVolumeContainer
-  , joinOn "asset.volume = volume.id AND container.volume = volume.id"
-    $ selectVolume ident
-  ]
-
-makeVolumeAssetSlot :: (Volume -> Asset) -> Maybe (Asset -> SlotAsset) -> Volume -> Either Asest SlotAsset
-makeVolumeAssetSlot af sf v = maybe Left (Right .) sf $ af v
-
-selectAssetOrSlotAsset :: TH.Name -- ^ @'Identity'@
-  -> Selector -- ^ @'Either Asset SlotAsset'@
-selectAssetOrSlotAsset ident = selectJoin 'makeVolumeAssetSlot
-  [ selectVolumeAsset
-  , maybeJoinOn "asset.id = slot_asset.asset AND asset.volume = container.volume"
-    selectAssetSlotAsset
   , joinOn "asset.volume = volume.id AND container.volume = volume.id"
     $ selectVolume ident
   ]

@@ -28,7 +28,7 @@ import Databrary.Model.Token
 import Databrary.Model.Format
 import Databrary.Model.Asset
 import Databrary.Model.Slot
-import Databrary.Model.SlotAsset
+import Databrary.Model.AssetSlot
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp

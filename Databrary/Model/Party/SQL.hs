@@ -123,7 +123,7 @@ insertParty :: TH.Name -- ^ @'AuditIdentity'
   -> TH.ExpQ -- ^ @'Permission' -> 'Party'@
 insertParty ident p = auditInsert ident "party"
   (partySets ps)
-  (Just $ OutputMap (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
+  (Just $ OutputMap False (`TH.AppE` TH.ConE 'Nothing) $ selectOutput partyRow)
   where ps = nameRef p
 
 insertAccount :: TH.Name -- ^ @'AuditIdentity'

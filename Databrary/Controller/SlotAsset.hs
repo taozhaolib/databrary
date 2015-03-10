@@ -19,7 +19,7 @@ import Databrary.Web.File
 
 withSlotAsset :: Permission -> Id Container -> Id Asset -> (SlotAsset -> AuthAction) -> AppAction
 withSlotAsset p ci ai f = withAuth $
-  f =<< checkPermission p =<< maybeAction =<< lookupSlotAsset ci ai
+  f =<< checkPermission p =<< maybeAction =<< lookupSlotAsset ai
 
 downloadSlotAsset :: Id Container -> Id Asset -> AppRAction
 downloadSlotAsset ci ai = action GET (ci, ai) $
