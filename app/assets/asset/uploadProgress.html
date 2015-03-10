@@ -1,6 +1,6 @@
 <div ng-if="progressFloat && progressFloat < 1">
   <span class="hide-mobile">Progress: </span>
-  <span><progress max="1" value={{progressFloat}}></progress></span>
+  <span><progress max="1" value={{progressFloat}}></progress>&#32;</span>
   <span>({{(progressFloat*100).toFixed(1)+'%'}})</span>
 </div>
 <div ng-if="progressFloat >= 1">
