@@ -23,8 +23,13 @@ app.directive('volumeEditOverviewForm', [
         };
       }
       init(volume);
-      if (!volume)
-        form.data.owner = parseInt($routeParams.owner) || $scope.owners[0].id;
+      if (!volume && $scope.owners.length) {
+        form.data.owner = parseInt($routeParams.owner);
+        if (!$scope.owners.some(function (o) {
+            return o.id === form.data.owner;
+          }))
+          form.data.owner = $scope.owners[0].id;
+      }
 
       form.save = function () {
         messages.clear(form);
