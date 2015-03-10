@@ -64,6 +64,7 @@ object AngularController extends SiteController {
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
     , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
+    , ('sandbox, json.JsBoolean(site.Site.sandbox))
     , ('url, json.JsString(site.Site.url))
     , ('version, json.JsString(site.Site.version))
     ).js
