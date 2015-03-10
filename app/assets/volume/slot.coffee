@@ -773,7 +773,7 @@ app.controller('volume/slot', [
         cls
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
-    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when !editing || tag.keyword)
+    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.weight))
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     $scope.comments = (new Comment(comment) for comment in slot.comments)
     ### jshint ignore:end ###
