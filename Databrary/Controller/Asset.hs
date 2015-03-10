@@ -5,22 +5,29 @@ module Databrary.Controller.Asset
   , createAsset
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad ((<=<), when, void)
 import Control.Monad.Trans.Class (lift)
+import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
+import Data.Maybe (fromMaybe, isNothing, isJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
 import qualified Database.PostgreSQL.Typed.Range as Range
-import Network.Wai.Parse (FileInfo(..))
+import Network.Wai.Parse (File, FileInfo(..))
 
 import Control.Applicative.Ops
 import Control.Has (peeks)
+import Databrary.Resource
+import Databrary.DB
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
 import Databrary.Action
+import Databrary.Model.Time
 import Databrary.Model.Permission
+import Databrary.Model.Identity
 import Databrary.Model.Id
 import Databrary.Model.Volume
 import Databrary.Model.Container
@@ -29,6 +36,8 @@ import Databrary.Model.Format
 import Databrary.Model.Asset
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
+import Databrary.Store
+import Databrary.Store.Storage
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
@@ -45,30 +54,77 @@ viewAsset :: API -> Id Asset -> AppRAction
 viewAsset api i = action GET (api, i) $
   withAsset PermissionPUBLIC i $
     case api of
-      JSON -> okResponse [] . assetJSON
-      HTML -> okResponse [] . show . assetId -- TODO
+      JSON -> okResponse [] . assetSlotJSON
+      HTML -> okResponse [] . show . assetId . slotAsset -- TODO
+
+data FileUpload
+  = FileUploadForm
+    { _fileUploadForm :: FileInfo TempFile
+    , fileUploadFormat :: Format
+    }
+  | FileUploadToken
+    { _fileUploadToken :: Upload
+    , fileUploadFormat :: Format
+    }
+
+fileUploadName :: FileUpload -> BS.ByteString
+fileUploadName (FileUploadForm f _) = fileName f
+fileUploadName (FileUploadToken u _) = uploadFilename u
+
+fileUploadPath :: FileUpload -> Storage -> RawFilePath
+fileUploadPath (FileUploadForm f _) _ = tempFilePath $ fileContent f
+fileUploadPath (FileUploadToken u _) s = uploadFile u s
+
+fileUploadRemove :: (MonadResourceT c m, DBM m, MonadStorage c m) => FileUpload -> m ()
+fileUploadRemove (FileUploadForm f _) = releaseTempFile $ fileContent f
+fileUploadRemove (FileUploadToken u _) = void $ removeUpload u
 
 deformLookup :: (Monad m, Functor m, Deform a) => FormErrorMessage -> (a -> m (Maybe b)) -> DeformT m (Maybe b)
 deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deform
 
-assetForm :: Either Asest SlotAsset ->
+assetForm :: (DBM m, MonadHasIdentity c m) => AssetSlot -> [File TempFile] -> DeformT m (AssetSlot, Maybe FileUpload)
+assetForm as@AssetSlot{ slotAsset = a, assetSlot = s } ufs = do
+  let file = lookup "file" ufs
+  upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
+  let ffmt = deformMaybe' "Unknown or unsupported file format." . getFormatByFilename
+  upfile <- case (file, upload) of
+    (Just f, Nothing) -> Just . FileUploadForm f <$> ffmt (fileName f)
+    (Nothing, Just u) -> Just . FileUploadToken u <$> ffmt (uploadFilename u)
+    (Nothing, Nothing) -> return $ Nothing
+    _ -> Nothing <$ deformError "Conflicting uploaded files found."
+  let fmt = maybe (assetFormat a) fileUploadFormat upfile
+  name <- "name" .:> fmap (dropFormatExtension fmt) <$> deform
+  classification <- "classification" .:> deform
+  slot <-
+    "container" .:> (<|> slotContainer <$> s) <$> deformLookup "Container not found." (lookupVolumeContainer (assetVolume a))
+    >>= Trav.mapM (\c -> "position" .:> do
+      let seg = slotSegment <$> s
+      p <- (<|> (lowerBound =<< seg)) <$> deform
+      Slot c . maybe Range.full
+        (\l -> Range.bounded l (l + fromMaybe 0 ((segmentLength =<< seg) <|> assetDuration a)))
+        <$> orElseM p (flatMapM (lift . findAssetContainerEnd) (isNothing s && Fold.any (0 <) (assetDuration a) ?> c)))
+  return
+    ( as
+      { slotAsset = a
+        { assetName = TE.decodeUtf8 <$> name
+        , assetClassification = classification
+        , assetFormat = fmt
+        }
+      , assetSlot = slot
+      }
+    , upfile
+    )
 
 postAsset :: API -> Id Asset -> AppRAction
 postAsset api ai = action POST (api, ai) $
   withAsset PermissionEDIT ai $ \asset -> do
-    sa <- lookupAssetSlotAsset asset
-    asset' <- runForm (api == HTML ?> htmlAssetForm (Right asset)) $ do
-      name <- "name" .:> deform
-      classification <- "classification" .:> deform
-      cont <- "container" .:> deformLookup "Container not found." (lookupVolumeContainer vol)
-      pos <- "position" .:> deform
-      return asset
-        { assetName = name
-        , assetClassification = classification
-        }
-    changeAsset asset'
+    (fd, ufs) <- getFormData [("file", maxAssetSize)]
+    (asset', upfile) <- runFormWith fd (api == HTML ?> htmlAssetForm (Right asset)) $ do
+      assetForm asset ufs
+    changeAsset (slotAsset asset')
+    changeAssetSlot asset'
     case api of
-      JSON -> okResponse [] $ assetJSON asset'
+      JSON -> okResponse [] $ assetSlotJSON asset'
       HTML -> redirectRouteResponse [] $ viewAsset api ai
 
 createAsset :: API -> Id Volume -> AppRAction
@@ -76,36 +132,21 @@ createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
   withVolume PermissionEDIT vi $ \vol -> do
     -- adm <- peeks ((PermissionADMIN <=) . accessMember')
     (fd, ufs) <- getFormData [("file", maxAssetSize)]
-    let file = lookup "file" ufs
-    (ba, upfile, name, slot) <- runFormWith fd (api == HTML ?> htmlAssetForm (Left vol)) $ do
-      upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
-      upfile <- case (file, upload) of
-        (Just f, Nothing) -> return (Left f)
-        (Nothing, Just u) -> return (Right u)
-        _ -> deformError' "Either file XOR upload required."
-      let fname = either fileName uploadFilename upfile
-      (fname', fmt) <- deformMaybe' "Unknown or unsupported file format." $ getFormatByFilename fname
-      name <- "name" .:> deform
-      classification <- "classification" .:> deform
-      cont <- "container" .:> deformLookup "Container not found." (lookupVolumeContainer vol)
-      pos <- "position" .:> deform
-      return
-        ( (blankAsset vol)
-          { assetFormat = fmt
-          , assetClassification = classification
-          , assetName = Just $ TE.decodeUtf8 fname'
+    (bas, up) <- runFormWith fd (api == HTML ?> htmlAssetForm (Left vol)) $ do
+      (as, up) <- assetForm (assetNoSlot $ blankAsset vol) ufs
+      up' <- deformMaybe' "File or upload required." up
+      return (as, up')
+    asset <- addAsset (slotAsset bas)
+      { assetName = Just $ TE.decodeUtf8 $ fileUploadName up
+      } . Just =<< peeks (fileUploadPath up)
+    fileUploadRemove up
+    let as = bas
+          { slotAsset = asset
+            { assetName = assetName (slotAsset bas)
+            }
           }
-        , upfile
-        , name
-        , fmap (`Slot` Range.normal pos pos) cont
-        )
-    path <- either (return . tempFilePath . fileContent) (peeks . uploadFile) upfile
-    asset <- addAsset ba (Just path)
-    either (releaseTempFile . fileContent) (void . removeUpload) upfile
-    when (name /= assetName asset) $ changeAsset asset{ assetName = name }
-    let sa = fmap (\s -> SlotAsset asset s Nothing) slot
-    Fold.mapM_ (changeSlotAsset) sa
-    let asa = maybe (Left asset) Right sa
+    when (assetName (slotAsset as) /= assetName asset) $ changeAsset (slotAsset as)
+    when (isJust (assetSlot as)) $ void $ changeAssetSlot as
     case api of
-      JSON -> okResponse [] $ either assetJSON slotAssetJSON asa
-      HTML -> redirectRouteResponse [] $ viewAsset api $ assetId $ either id slotAsset asa
+      JSON -> okResponse [] $ assetSlotJSON as
+      HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as))

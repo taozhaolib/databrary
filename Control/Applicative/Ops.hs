@@ -72,6 +72,8 @@ fromMaybeM :: Monad m => m a -> Maybe a -> m a
 fromMaybeM _ (Just a) = return a
 fromMaybeM m Nothing = m
 
+infixl 3 `orElseM`
+
 orElseM :: Monad m => Maybe a -> m (Maybe a) -> m (Maybe a)
 orElseM Nothing m = m
 orElseM m _ = return m

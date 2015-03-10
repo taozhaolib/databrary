@@ -10,7 +10,6 @@ module Databrary.Web.Form.Deform
   , Deform(..) 
   , deformError
   , deformError'
-  , deformErrorDef
   , deformMaybe'
   , deformGuard
   , deformCheck
@@ -132,9 +131,6 @@ withSubDeforms (DeformT a) = DeformT $
 deformErrorWith :: Monad m => Maybe a -> FormErrorMessage -> DeformT m a
 deformErrorWith r e = DeformT $ \_ -> return (singletonFormError e, r)
 
-deformErrorDef :: Monad m => a -> FormErrorMessage -> DeformT m a
-deformErrorDef = deformErrorWith . Just
-
 deformError :: Monad m => FormErrorMessage -> DeformT m ()
 deformError = deformErrorWith (Just ())
 
@@ -145,7 +141,7 @@ deformMaybe' :: Monad m => FormErrorMessage -> Maybe a -> DeformT m a
 deformMaybe' e = maybe (deformError' e) return
 
 deformEither :: (Functor m, Monad m) => a -> Either FormErrorMessage a -> DeformT m a
-deformEither def = either (deformErrorDef def) return
+deformEither def = either ((<$) def . deformError) return
 
 deformGuard :: (Monad m) => FormErrorMessage -> Bool -> DeformT m ()
 deformGuard _ True = return ()

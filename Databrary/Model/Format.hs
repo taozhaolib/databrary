@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards, PatternGuards #-}
 module Databrary.Model.Format
   ( module Databrary.Model.Format.Types
   , unknownFormat
@@ -6,6 +6,7 @@ module Databrary.Model.Format
   , getFormat
   , getFormat'
   , getFormatByFilename
+  , dropFormatExtension
   , formatJSON
   ) where
 
@@ -15,7 +16,7 @@ import Data.Char (toLower)
 import qualified Data.IntMap.Strict as IntMap
 import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
-import System.Posix.FilePath (RawFilePath, splitExtension)
+import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension)
 
 import Control.Applicative.Ops
 import qualified Databrary.JSON as JSON
@@ -49,11 +50,16 @@ formatsByExtension = Map.fromList [ (e, a) | a <- allFormats, e <- formatExtensi
 getFormatByExtension :: BS.ByteString -> Maybe Format
 getFormatByExtension e = Map.lookup (BSC.map toLower e) formatsByExtension
 
-getFormatByFilename :: RawFilePath -> Maybe (RawFilePath, Format)
+getFormatByFilename :: RawFilePath -> Maybe Format
 getFormatByFilename n = do
-  ('.',e) <- BSC.uncons de
-  (,) b <$> getFormatByExtension e
-  where (b, de) = splitExtension n
+  ('.',e) <- BSC.uncons $ takeExtension n
+  getFormatByExtension e
+
+dropFormatExtension :: Format -> RawFilePath -> RawFilePath
+dropFormatExtension fmt n
+  | (f,e) <- splitExtension n
+  , BSC.map toLower e `elem` formatExtension fmt = f
+  | otherwise = n
 
 formatJSON :: Format -> JSON.Object
 formatJSON Format{..} = JSON.record formatId $ catMaybes

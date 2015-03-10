@@ -10,6 +10,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
 import Data.Char (isAscii, isAlphaNum)
 import qualified Data.Foldable as Fold
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
@@ -68,4 +69,4 @@ serveFile file fmt etag = do
 
 serveStaticFile :: (MonadAction c m, MonadIO m) => RawFilePath -> StaticPath -> m Response
 serveStaticFile dir (StaticPath rel) =
-  serveFile (dir </> rel) (maybe unknownFormat snd $ getFormatByFilename rel) rel
+  serveFile (dir </> rel) (fromMaybe unknownFormat $ getFormatByFilename rel) rel

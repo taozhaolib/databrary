@@ -4,6 +4,7 @@ module Databrary.Model.AssetSlot
   , lookupAssetSlot
   , lookupAssetAssetSlot
   , changeAssetSlot
+  , findAssetContainerEnd
   , auditAssetSlotDownload
   , assetSlotJSON
   ) where
@@ -54,6 +55,10 @@ changeAssetSlot as = do
         $(insertAssetSlot 'ident 'as)
       when (r /= 1) $ fail $ "changeAssetSlot: " ++ show r ++ " rows"
       return r
+
+findAssetContainerEnd :: DBM m => Container -> m (Maybe Offset)
+findAssetContainerEnd c = 
+  dbQuery1' [pgSQL|SELECT max(upper(segment)) FROM slot_asset WHERE container = ${containerId c}|]
 
 auditAssetSlotDownload :: MonadAudit c m => Bool -> AssetSlot -> m ()
 auditAssetSlotDownload success AssetSlot{ slotAsset = a, assetSlot = as } = do

@@ -40,7 +40,7 @@ createRecord :: API -> Id Volume -> AppRAction
 createRecord api vi = action POST (api, vi, "record" :: T.Text) $
   withVolume PermissionEDIT vi $ \vol -> do
     br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
-      cat <- "category" .:> (flatMapM ((`orElseM` deformErrorDef Nothing "No such record category.") . getRecordCategory) =<< deform)
+      cat <- "category" .:> (flatMapM ((`orElseM` Nothing <$ deformError "No such record category.") . getRecordCategory) =<< deform)
       return (blankRecord vol)
         { recordCategory = cat
         }

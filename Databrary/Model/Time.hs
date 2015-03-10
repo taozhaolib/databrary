@@ -3,10 +3,13 @@
 module Databrary.Model.Time
   ( module Databrary.Model.Time.Types
   , parseOffset
+  , lowerBound, upperBound
+  , segmentLength
   ) where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first)
+import Control.Monad (liftM2)
 import Data.Fixed (Fixed(..), Milli)
 import Database.PostgreSQL.Typed.Types (PGType)
 import qualified Database.PostgreSQL.Typed.Range as Range
@@ -50,6 +53,14 @@ parseOffset = rm . readsOffset where
   rm ((x,""):_) = Just x
   rm (_:l) = rm l
   rm [] = Nothing
+
+lowerBound, upperBound :: Range.Range a -> Maybe a
+lowerBound = Range.bound . Range.lowerBound
+upperBound = Range.bound . Range.upperBound
+
+segmentLength :: Segment -> Maybe Offset
+segmentLength s =
+  liftM2 (-) (upperBound s) (lowerBound s)
 
 instance JSON.ToJSON Segment where
   toJSON s
