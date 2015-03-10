@@ -545,7 +545,7 @@ app.controller('volume/slot', [
 
       save: ->
         messages.clear(this)
-        @record.save({measures:@data.measures}).then () ->
+        @record.save({measures:@data.measures}).then () =>
             @fillData()
             delete @dirty
             if this == $scope.current
