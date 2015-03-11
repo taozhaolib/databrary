@@ -1,14 +1,17 @@
-{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Asset
   ( module Databrary.Model.Asset.Types
   , blankAsset
   , lookupAsset
   , addAsset
   , changeAsset
+  , supersedeAsset
+  , assetIsSuperseded
   , assetJSON
   ) where
 
 import Data.Maybe (catMaybes, isNothing)
+import Database.PostgreSQL.Typed (pgSQL)
 
 import Control.Applicative.Ops
 import Control.Has (view, peek)
@@ -58,6 +61,14 @@ changeAsset :: MonadAudit c m => Asset -> m ()
 changeAsset a = do
   ident <- getAuditIdentity
   dbExecute1 $(updateAsset 'ident 'a)
+
+supersedeAsset :: DBM m => Asset -> Asset -> m ()
+supersedeAsset old new =
+  dbExecute1 [pgSQL|SELECT asset_supersede(${assetId old}, ${assetId new})|]
+
+assetIsSuperseded :: DBM m => Asset -> m Bool
+assetIsSuperseded a =
+  (0 <) <$> dbExecute [pgSQL|SELECT ''::void FROM asset_revision WHERE orig = ${assetId a} LIMIT 1|]
 
 assetJSON :: Asset -> JSON.Object
 assetJSON Asset{..} = JSON.record assetId $ catMaybes
