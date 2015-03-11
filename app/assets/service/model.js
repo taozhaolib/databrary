@@ -1071,6 +1071,8 @@ app.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.replace, this.id, data)
         .then(function (res) {
+          if (a.container)
+            a.container.clear('assets');
           return assetMake(a.volume, res.data);
         });
     };
@@ -1079,6 +1081,8 @@ app.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.remove, this.id)
         .then(function (res) {
+          if (a.container)
+            a.container.clear('assets');
           return a.update(res.data);
         });
     };
