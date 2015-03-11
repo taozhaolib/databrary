@@ -68,12 +68,12 @@
 
   <div class="col-desktop-6 col-tablet-3 col-mobile-6">
     <img class="panel-overview-volume-thumb" ng-src="{{::volume.thumbRoute()}}">
-    <show-investigators volume="volume" title="'volume.contributors.title'" page="page" minperm="page.permission.ADMIN"></show-investigators>
+    <show-investigators volume="volume" title="'volume.contributors.title'" page="page" permission="{min: page.permission.ADMIN}"></show-investigators>
 
-    <show-investigators volume="volume" title="'volume.private.title'" page="page" minperm="page.permission.READ" maxperm="page.permission.ADMIN"></show-investigators>
+    <show-investigators volume="volume" title="'volume.private.title'" page="page" permission="{max: page.permission.ADMIN, min: page.permission.READ}"></show-investigators>
   
 
-    <show-investigators volume="volume" title="'volume.shared.title'" page="page" maxperm="page.permission.READ"></show-investigators>
+    <show-investigators volume="volume" title="'volume.shared.title'" page="page" permission="{max: page.permission.READ}"></show-investigators>
 
     <div frame frame-title="volume.funding.title" fold>
       <dl class="panel-overview-volume-funds" ng-repeat="funding in ::volume.funding">

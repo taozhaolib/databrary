@@ -9,18 +9,14 @@ app.directive 'showInvestigators', [
         permission: '=permission'
         title: '=title'
         page: '=page'
-        maxperm: '=maxperm'
-        minperm: '=minperm'
     transclude: true,
     templateUrl: 'directive/showInvestigators.html',
     link: ($scope, $element) ->
-      maxPerm = $scope.maxperm ? 1000
-      minPerm = $scope.minperm ? 0
+      # 0 and 1000 have no significance except that 1000 is bigger than all the permissions
+      # and 0 is smaller than all of them. 
+      maxPerm = $scope.permission.max ? 1000
+      minPerm = $scope.permission.min ? 0
       $scope.investigators = $scope.volume.access.filter (i) ->
-        console.log "The Permission: ", i.individual
-        console.log "Scope Permission", $scope.minperm
         minPerm <= i.individual < maxPerm 
-        
-      console.log "Investigators: ", $scope.investigators
-      console.log "Access", $scope.volume.access
+
 ]
