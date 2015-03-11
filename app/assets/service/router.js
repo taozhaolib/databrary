@@ -20,7 +20,7 @@ app.provider('routerService', [
 
       var q = url.includes('?');
 
-      angular.forEach(params, function (value, key) {
+      _.each(params, function (value, key) {
         if (value == null)
           return;
 
@@ -48,13 +48,13 @@ app.provider('routerService', [
         argNames = [];
       var ph = arguments.length < 3;
       if (ph)
-        args = argNames.map(function (a) { return ':' + a; });
+        args = _.map( argNames, function (a) { return ':' + a; });
       else if (data == null)
         args = [];
       else if (Array.isArray(data))
         args = data;
       else if (typeof data === 'object') {
-        args = argNames.map(function (k) {
+        args = _.map(argNames, function (k) {
           return k in data ? data[k] : null;
         });
       } else

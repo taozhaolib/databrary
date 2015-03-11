@@ -93,7 +93,7 @@ app.directive('ngForm', [
         },
 
         clearServer: function () {
-          angular.forEach(form.validators, function (validator) {
+          _.each(form.validators, function (validator) {
             validator.server({}, true);
           });
         },

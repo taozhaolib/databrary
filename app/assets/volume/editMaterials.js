@@ -5,7 +5,7 @@ app.directive('volumeEditMaterialsForm', [
   function (page, Store) {
     var link = function ($scope) {
       var volume = $scope.volume;
-      var slot = volume.top;
+      var slots = volume.top;
       var form = $scope.volumeEditMaterialsForm;
 
       function Material(asset) {
@@ -29,7 +29,7 @@ app.directive('volumeEditMaterialsForm', [
       };
 
       form.materials = [];
-      angular.forEach(slot.assets, function (asset) {
+      _.each(slot.assets, function (asset) {
         asset.get(['creation']);
         form.materials.push(new Material(asset));
       });

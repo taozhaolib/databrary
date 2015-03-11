@@ -19,7 +19,7 @@ app.factory('pageService', [
 
     //
 
-    [
+    _.each([
       '$filter',
       '$location',
       '$parse',
@@ -28,7 +28,7 @@ app.factory('pageService', [
       '$route',
       '$sce',
       '$timeout',
-    ].forEach(function (dependency) {
+    ], function (dependency) {
       page[dependency] = $injector.get(dependency);
     });
 

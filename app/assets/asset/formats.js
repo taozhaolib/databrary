@@ -5,13 +5,15 @@ app.controller('asset/formats', [
     page.display.title = page.constants.message('help.formats.title');
 
     $scope.groups = {};
-    angular.forEach(page.constants.format, function (format) {
+
+    _.each(page.constants.format, function(format){
       var general = format.type;
 
       if (!(general in $scope.groups))
         $scope.groups[general] = [];
 
       $scope.groups[general].push(format);
+
     });
   }
 ]);

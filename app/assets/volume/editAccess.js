@@ -34,7 +34,7 @@ app.directive('volumeEditAccessForm', [
 
       function saveGlobal() {
         form.global = page.constants.accessGlobal[form.globalVal || 0].slice();
-        $q.all(page.constants.accessGlobal.parties.map(function (party, i) {
+        $q.all(_.map(page.constants.accessGlobal.parties, function (party, i) {
           var p = form.global[i];
           volume.accessSave(party, {
             individual: p,

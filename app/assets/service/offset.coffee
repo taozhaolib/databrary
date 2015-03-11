@@ -33,8 +33,7 @@ app.factory 'Offset', [
         s = s.split(':')
         l = s.length
         o = 0
-        for i in [0..l-1]
-          o = (o + parseFloat(s[i]))*multipliers[l-1-i]
+        _.each s, (val, i) -> o = (o + parseFloat(val))*multipliers[l-1-i]
         if n then -o else o
     }
 ]
