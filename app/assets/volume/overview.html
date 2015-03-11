@@ -68,30 +68,12 @@
 
   <div class="col-desktop-6 col-tablet-3 col-mobile-6">
     <img class="panel-overview-volume-thumb" ng-src="{{::volume.thumbRoute()}}">
+    <show-investigators volume="volume" title="'volume.contributors.title'" page="page" minperm="page.permission.ADMIN"></show-investigators>
 
-    <div frame frame-title="volume.contributors.title" fold>
-      <div class="row">
-        <div ng-repeat="access in ::volume.access" ng-if="::access.individual >= page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
-          <portrait></portrait>
-        </div>
-      </div>
-    </div>
+    <show-investigators volume="volume" title="'volume.private.title'" page="page" minperm="page.permission.READ" maxperm="page.permission.ADMIN"></show-investigators>
+  
 
-    <div frame frame-title="{{::shared ? 'volume.private.title' : 'volume.private.title'}}" fold>
-      <div class="row">
-        <div ng-repeat="access in ::volume.access" ng-if="::access.individual > page.permission.READ && access.individual < page.permission.ADMIN" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
-          <portrait tooltip="'access.' + page.constants.permission[access.individual] | message:party.name"></portrait>
-        </div>
-      </div>
-    </div>
-
-    <div frame frame-title="{{::shared ? 'volume.shared.title' : 'volume.private.title'}}" fold>
-      <div class="row">
-        <div ng-repeat="access in ::volume.access" ng-if="::access.individual <= page.permission.READ" class="col-desktop-7 col-tablet-9 col-mobile-6" ng-init="party = access.party">
-          <portrait tooltip="'access.' + page.constants.permission[access.individual] | message:party.name"></portrait>
-        </div>
-      </div>
-    </div>
+    <show-investigators volume="volume" title="'volume.shared.title'" page="page" maxperm="page.permission.READ"></show-investigators>
 
     <div frame frame-title="volume.funding.title" fold>
       <dl class="panel-overview-volume-funds" ng-repeat="funding in ::volume.funding">
