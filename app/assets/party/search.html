@@ -7,6 +7,10 @@
       </div>
     </div>
 
+    <div ng-if="!parties.length" class="party-list-none">
+      <span message="search.none"></span>
+    </div>
+
     <div class="row party-list">
       <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in parties">
         <portrait></portrait>
