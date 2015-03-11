@@ -99,7 +99,7 @@ object TokenHtml extends TokenController with HtmlController {
     val form = new IssuePasswordForm()._bind
     for {
       acct <- Account.getEmail(form.email.get)
-      acct <- if (Play.isProd) acct.filterAsync(_.party.access.map(_.member < Permission.ADMIN))
+      acct <- if (Play.isProd && !site.Site.sandbox) acct.filterAsync(_.party.access.map(_.member < Permission.ADMIN))
         else macros.async(acct)
       _ <- newPassword(acct.toRight(form.email.get))
     } yield (Ok("sent"))
