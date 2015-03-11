@@ -32,7 +32,7 @@ resetPasswordMail (Left email) subj body =
   sendMail [Left email] subj (body Nothing)
 resetPasswordMail (Right auth) subj body = do
   tok <- loginTokenId =<< createLoginToken auth True
-  url <- peeks $ actionURL $ viewLoginToken HTML tok
+  url <- peeks $ actionURL (viewLoginToken HTML tok) . Just
   sendMail [Right $ view auth] subj (body $ Just $ TE.decodeLatin1 url)
 
 viewRegister :: AppRAction

@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.View.Template
-  ( htmlTemplate
+  ( htmlHeader
+  , htmlTemplate
   ) where
 
 import Control.Arrow (second)
@@ -10,7 +11,8 @@ import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
-import Network.HTTP.Types (methodGet, encodePath)
+import qualified Text.Blaze.Internal as Markup
+import Network.HTTP.Types (methodGet, encodePath, Query)
 import qualified Network.Wai as Wai
 
 import Control.Has (view)
@@ -22,19 +24,21 @@ import Databrary.View.Html
 import {-# SOURCE #-} Databrary.Controller.Login
 import {-# SOURCE #-} Databrary.Controller.Party
 
-header :: Wai.Request -> H.Html
-header req = do
+htmlHeader :: Wai.Request -> Markup.MarkupM Query
+htmlHeader req = do
   when (Wai.requestMethod req == methodGet && hasjs) $
     H.link
       H.! HA.rel "canonical"
-      H.! HA.href (builderValue $ encodePath (Wai.pathInfo req) nojsq)
+      H.! HA.href (builderValue path)
   H.link
     H.! HA.rel "shortcut icon"
     H.! HA.href "/public/icons/favicon.png"
   H.link
     H.! HA.rel "start"
     H.! HA.href "/"
+  return nojsq
   where
+  path = encodePath (Wai.pathInfo req) nojsq
   (hasjs, nojsq) = nojs $ Wai.queryString req
   nojs [] = (False, [])
   nojs (("js",_):q) = (True, snd $ nojs q)
@@ -46,7 +50,7 @@ footer = mempty
 htmlTemplate :: AuthRequest -> Maybe T.Text -> H.Html -> H.Html
 htmlTemplate req title body = H.docTypeHtml $ do
   H.head $ do
-    header (view req)
+    htmlHeader (view req)
     H.title $ do
       Fold.mapM_ (\t -> H.toHtml t >> " || ") title
       "Databrary"
@@ -59,9 +63,9 @@ htmlTemplate req title body = H.docTypeHtml $ do
           H.! HA.href "/"
           $ "Databrary"
         foldIdentity
-          (actionLink viewLogin $ "login")
+          (H.a H.! actionLink viewLogin $ "login")
           (\_ -> do
-            actionLink (viewParty HTML TargetProfile) $ "profile"
+            H.a H.! actionLink (viewParty HTML TargetProfile) $ "profile"
             actionForm (postLogout HTML) $
               H.button
                 H.! HA.type_ "submit"

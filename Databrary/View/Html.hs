@@ -11,9 +11,7 @@ module Databrary.View.Html
 
 import qualified Blaze.ByteString.Builder as Blaze
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
-import Network.HTTP.Types (methodGet)
 import qualified Text.Blaze as Markup
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
@@ -39,10 +37,8 @@ byteStringValue = Markup.unsafeByteStringValue . Blaze.toByteString . fromHtmlEs
 builderValue :: Blaze.Builder -> Markup.AttributeValue
 builderValue = lazyByteStringValue . Blaze.toLazyByteString
 
-actionLink :: RouteAction q -> H.Html -> H.Html
-actionLink RouteAction{ actionMethod = g, actionRoute = r }
-  | g == methodGet = H.a H.! HA.href (byteStringValue r)
-  | otherwise = error ("actionLink: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
+actionLink :: RouteAction q -> H.Attribute
+actionLink r = HA.href $ byteStringValue $ actionURL r Nothing
 
 actionForm :: RouteAction q -> H.Html -> H.Html
 actionForm RouteAction{ actionMethod = g, actionRoute = r } = H.form

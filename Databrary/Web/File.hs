@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.File
   ( StaticPath
+  , staticPath
   , serveFile
   , serveStaticFile
   ) where
@@ -8,6 +9,7 @@ module Databrary.Web.File
 import Control.Monad (when, mfilter)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
@@ -31,16 +33,24 @@ import Databrary.Model.Format (Format, getFormatByFilename, unknownFormat, forma
 
 newtype StaticPath = StaticPath RawFilePath
 
-staticPath :: [T.Text] -> Maybe StaticPath
-staticPath p = StaticPath . joinPath <$> mapM component p where
+ok :: Char -> Bool
+ok '.' = True
+ok '-' = True
+ok '_' = True
+ok c = isAscii c && isAlphaNum c
+
+staticPath :: [BS.ByteString] -> StaticPath
+staticPath = StaticPath . joinPath . map component where
+  component c
+    | not (BS.null c) && BSC.head c /= '.' && BSC.all ok c = c
+    | otherwise = error ("staticPath: " ++ BSC.unpack c)
+
+parseStaticPath :: [T.Text] -> Maybe StaticPath
+parseStaticPath = fmap (StaticPath . joinPath) . mapM component where
   component c = TE.encodeUtf8 c <? (not (T.null c) && T.head c /= '.' && T.all ok c)
-  ok '.' = True
-  ok '-' = True
-  ok '_' = True
-  ok c = isAscii c && isAlphaNum c
 
 instance R.Routable StaticPath where
-  route = R.maybe . staticPath =<< R.path
+  route = R.maybe . parseStaticPath =<< R.path
   toRoute (StaticPath p) = map TE.decodeLatin1 $ splitDirectories p
 
 serveFile :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response

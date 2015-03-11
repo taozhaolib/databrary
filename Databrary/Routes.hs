@@ -36,7 +36,7 @@ act ra = do
   guard $ actionMethod ra == Wai.requestMethod req
   return $
     if actionMethod ra == methodGet && Wai.rawPathInfo req /= actionRoute ra
-      then emptyResponse movedPermanently301 [(hLocation, actionURL ra req `BS.append` Wai.rawQueryString req)]
+      then emptyResponse movedPermanently301 [(hLocation, actionURL ra (Just req) `BS.append` Wai.rawQueryString req)]
       else routeAction ra
 
 routes :: R.RouteM AppAction

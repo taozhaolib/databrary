@@ -28,17 +28,19 @@ data RouteAction q = RouteAction
   , routeAction :: Action q
   }
 
-actionURL :: RouteAction q -> Request -> BS.ByteString
+actionURL :: RouteAction q -> Maybe Request -> BS.ByteString
 actionURL RouteAction{ actionMethod = g, actionRoute = r } req
-  | g == methodGet = requestHost req <> r
+  | g == methodGet = maybe id ((<>) . requestHost) req r
   | otherwise = error ("actionURL: " ++ BSC.unpack g ++ " " ++ BSC.unpack r)
 
 action :: R.Routable r => StdMethod -> r -> Action q -> RouteAction q
 action meth r act = RouteAction
   { actionMethod = renderStdMethod meth
-  , actionRoute = Blaze.toByteString $ encodePathSegments $ R.toRoute r
+  , actionRoute = eps $ R.toRoute r
   , routeAction = act
-  }
+  } where
+  eps [] = "/"
+  eps p = Blaze.toByteString $ encodePathSegments p
 
 mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)

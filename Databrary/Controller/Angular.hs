@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Angular
-  ( angularEnabled
+  ( angular
   , angularConstants
   ) where
 
@@ -12,6 +12,7 @@ import Network.HTTP.Types (hUserAgent, hContentType)
 import qualified Network.Wai as Wai
 import qualified Text.Regex.Posix as Regex
 
+import Control.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types
@@ -20,7 +21,9 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Format
 import Databrary.Model.Party
 import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.Web.Request
+import Databrary.View.Angular
 
 browserBlacklist :: Regex.Regex
 browserBlacklist = Regex.makeRegex
@@ -34,6 +37,15 @@ angularEnabled req = getjs $ lookupQueryParameters "js" req where
   getjs ((Just ""):_) = False
   getjs (_:_) = True
   getjs [] = not $ Fold.any (Regex.matchTest browserBlacklist) $ lookupRequestHeader hUserAgent req
+
+viewAngular :: (MonadAction q m, MonadHasAuthRequest q m) => m Response
+viewAngular =
+  okResponse [] =<< peeks htmlAngular 
+
+angular :: AuthAction -> AuthAction
+angular act = do
+  js <- peeks angularEnabled
+  if js then viewAngular else act
 
 constantsJS :: BSL.ByteString
 constantsJS =

@@ -53,7 +53,7 @@ emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
 
 redirectRouteResponse :: MonadAction q m => ResponseHeaders -> RouteAction qa -> m Response
 redirectRouteResponse h a = do
-  url <- peeks $ actionURL a
+  url <- peeks $ actionURL a . Just
   emptyResponse seeOther303 ((hLocation, url) : h)
 
 forbiddenResponse :: MonadAction q m => m Response

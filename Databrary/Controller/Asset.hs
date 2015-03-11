@@ -10,8 +10,7 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import Data.Either (isLeft, isRight)
-import qualified Data.Foldable as Fold
-import Data.Maybe (fromMaybe, isNothing)
+import Data.Maybe (fromMaybe, isNothing, isJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -108,7 +107,7 @@ processAsset api target = do
         p <- (<|> (lowerBound =<< seg)) <$> deform
         Slot c . maybe Range.full
           (\l -> Range.bounded l (l + fromMaybe 0 ((segmentLength =<< seg) <|> assetDuration a)))
-          <$> orElseM p (flatMapM (lift . findAssetContainerEnd) (isNothing s && Fold.any (0 <) (assetDuration a) ?> c)))
+          <$> orElseM p (flatMapM (lift . findAssetContainerEnd) (isNothing s && isJust (assetDuration a) ?> c)))
     return
       ( as
         { slotAsset = a
