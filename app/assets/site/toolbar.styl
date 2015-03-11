@@ -1,12 +1,9 @@
 // styles
-sandbox-height = 2
-toolbar-height = 1.5
-
 body
   .main
-    margin-top toolbar-height
+    margin-top toolbarheight
     &.sandbox
-      margin-top toolbar-height+sandbox-height
+      margin-top toolbarheight+sandboxheight
 
 .toolbar
   top 0
@@ -14,12 +11,12 @@ body
   position fixed
   width 100%
   box-shadow box-shadow-def
-  height toolbar-height
+  height toolbarheight
   &.sandbox
-    height toolbar-height+sandbox-height
+    height toolbarheight+sandboxheight
   
 .toolbar-sandbox
-  height sandbox-height
+  height sandboxheight
   background-color orange51
   padding b2
   text-align center
@@ -27,7 +24,7 @@ body
   
   
 .toolbar-main
-  height toolbar-height
+  height toolbarheight
   line-height 1.5
   background-color white
   font-family heading-family

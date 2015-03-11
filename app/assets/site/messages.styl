@@ -24,11 +24,11 @@ message-color(color)
 
   position fixed
   z-index 850
-  top b1 * 1.5 //toolbar
+  top b1*toolbarheight //toolbar
   width 100%
   margin-bottom 0
   &.sandbox
-    top b1 * 3.5 //sandbox+toolbar
+    top b1*(toolbarheight+sandboxheight) //sandbox+toolbar
 
   .message
     box-shadow box-shadow-def

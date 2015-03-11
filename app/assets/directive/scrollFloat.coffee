@@ -1,8 +1,8 @@
 'use strict'
 
 app.directive 'scrollFloat', [
-  '$window',
-  (window) ->
+  '$window','constantService'
+  (window,constants) ->
     restrict: 'E'
     transclude: true,
     templateUrl: 'directive/scrollFloat.html',
@@ -13,7 +13,8 @@ app.directive 'scrollFloat', [
 
       scroll = ->
         box = floater.getBoundingClientRect()
-        $scope.scrollFloating = box.height && box.top < 36
+        skip = if constants.sandbox then 84 else 36
+        $scope.scrollFloating = box.height && box.top < skip
       window.addEventListener 'scroll', $scope.$lift(scroll)
       $scope.$on '$destroy', ->
         window.removeEventListener 'scroll', scroll
