@@ -115,7 +115,7 @@ private object Json {
   }
 
   private def popErr(target : site.SitePage, msg : String)(implicit jc : JsContext) =
-    Future.failed(PopulateException(msg + " in " + jc.path.toString, target))
+    PopulateException(msg + " in " + jc.path.toString, target)
 }
 
 final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = false)(implicit request : controllers.SiteRequest[_]) {
@@ -134,25 +134,31 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
         async(Some(v))
       else 
         change.filter(_ => current.isEmpty || overwrite).fold[Future[Option[A]]](
-          popErr(target, "conflicting value: " + v + " <> " + current.get)(jc))(
-          _(v).flatMap { r =>
-            if (r) async(Some(v)) else popErr(target, "update failed")(jc)
+          Future.failed(popErr(target, "conflicting value: " + v + " <> " + current.get)(jc)))(
+          _(v).map { r =>
+            if (r) Some(v) else throw popErr(target, "update failed")(jc)
           })
     }
   private[this] def write[A](target : site.SitePage, current : Option[A], jc : JsContext)(change : A => Future[Boolean])(implicit read : json.Reads[A]) : Future[Option[A]] =
     update[A](target, current, jc, Some(change))(read)
 
   private[this] def record(implicit jc : JsContext) : Future[models.Record] = {
+    val id = (jc \ "id").asOpt[models.Record.Id]
     val key = (jc \ "key").as[String]
     for {
       r <- models.Ingest.getRecord(v, key)
       r <- r.fold {
         for {
-          r <- models.Record.create(v,
-            category = (jc \ "category").as[Option[models.RecordCategory]])
+          r <- id.fold(models.Record.create(v,
+            category = (jc \ "category").as[Option[models.RecordCategory]]))(i =>
+            models.Record.get(i).map(_.filter(_.volume === v)
+            .getOrElse(throw popErr(v, "record " + i + "/" + key + " not found"))))
           _ <- models.Ingest.setRecord(r, key)
         } yield (r)
-      } { r => for {
+      } { r =>
+        if (!id.forall(_ === r.id))
+          throw popErr(r, "record id mismatch")
+        for {
           _ <- update(r, Some(r.category), jc \ "category")
         } yield (r)
       }
@@ -191,12 +197,13 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           _ <- update(a, a.name, jc \ "name")
         } yield a
       case a =>
-        throw PopulateException("ingested asset incomplete", a)
+        Future.failed(popErr(a, "ingested asset incomplete"))
     }).flatMap { a =>
       if (a.format.isTranscodable.isEmpty) {
         if (!clip.isFull)
-          throw PopulateException("don't know how to clip", a)
-        async(a)
+          Future.failed(popErr(a, "don't know how to clip"))
+        else
+          async(a)
       } else
         models.Ingest.getAssetClip(a, clip).flatMap(_.fold {
           val dur = (cast[models.TimeseriesAsset](a).map(_.duration)
@@ -217,18 +224,24 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
   }
 
   private[this] def container(implicit jc : JsContext) : Future[models.Container] = {
+    val id = (jc \ "id").asOpt[models.Container.Id]
     val key = (jc \ "key").as[String]
     for {
       c <- models.Ingest.getContainer(v, key)
       c <- c.fold {
         for {
-          c <- models.Container.create(v,
+          c <- id.fold(models.Container.create(v,
             top = (jc \ "top").asOpt[Boolean].getOrElse(false),
             name = (jc \ "name").asOpt[String],
-            date = (jc \ "date").asOpt[Date])
+            date = (jc \ "date").asOpt[Date]))(i =>
+            models.Container.get(i).map(_.filter(_.volume === v)
+            .getOrElse(throw popErr(v, "container " + i + "/" + key + " not found"))))
           _ <- models.Ingest.setContainer(c, key)
         } yield (c)
-      } { c => for {
+      } { c => 
+        if (!id.forall(_ === c.id))
+          throw popErr(c, "container id mismatch")
+        for {
           _ <- update(c, Some(c.top), jc \ "top")
           _ <- write(c, c.name, jc \ "name")(x => c.change(name = Some(Some(x))).map(_ => true))
           _ <- write(c, c.date, jc \ "date")(x => c.change(date = Some(Some(x))).map(_ => true))
