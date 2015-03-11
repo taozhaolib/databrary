@@ -5,10 +5,6 @@ app.directive 'showInvestigators', [
   (constants) ->
     restrict: 'E'
     scope: true
-    # scope:
-    #     volume: '=volume'
-    #     permission: '=permission'
-    #     title: '=title'
     transclude: true,
     templateUrl: 'volume/showInvestigators.html',
     link: ($scope, $element, $attrs) ->
