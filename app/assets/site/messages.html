@@ -1,4 +1,4 @@
-<div class="messages">
+<div class="messages" ng-class="::{'sandbox':page.constants.sandbox}">
   <div ng-repeat="message in messages.list" id="{{message.id}}" ng-class="'message message-'+message.type" ng-style="{'z-index':500-$index}">
     <div class="wrap">
       <div class="row">
