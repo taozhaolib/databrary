@@ -507,6 +507,13 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           add: ''
+        
+        pairs = _.pairs @data.measures
+        console.log "Pairs: ", pairs
+        ### jshint ignore:start #### fixed in jshint 2.5.7
+        sortedPairs = _.sortBy pairs, ([key, value]) -> value.id
+        ### jshint ignore: end ###
+        console.log "SortedPairs: ", pairs
         return
 
       Object.defineProperty @prototype, 'id',

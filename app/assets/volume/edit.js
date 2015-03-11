@@ -13,7 +13,7 @@ app.controller('volume/edit', [
                                return p.member >= constants.permission.ADMIN && p.party.access >= constants.permission.EDIT;
                              }).map(function (p) {
                                return p.party;
-                             }).value()
+                             }).value();
       if (models.Login.user.access >= constants.permission.EDIT)
         $scope.owners.unshift(models.Login.user);
     }

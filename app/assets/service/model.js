@@ -208,7 +208,7 @@ app.factory('modelService', [
     Party.search = function (data) {
       return router.http(router.controllers.PartyApi.search, data)
         .then(function (res) {
-          return _.map res.data, partyMake;
+          return _.map(res.data, partyMake);
         });
     };
 

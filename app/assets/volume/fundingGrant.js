@@ -21,7 +21,7 @@ app.directive('fundingGrantForm', [
 
       form.save = function () {
         page.messages.clear(form);
-        form.data.awards = _.filter(form.data.awards, keep)
+        form.data.awards = _.filter(form.data.awards, keep);
 
         volume.fundingSave(funding.funder.id, form.data).then(function () {
           page.messages.add({

@@ -5,7 +5,7 @@ app.directive('volumeEditMaterialsForm', [
   function (page, Store) {
     var link = function ($scope) {
       var volume = $scope.volume;
-      var slots = volume.top;
+      var slot = volume.top;
       var form = $scope.volumeEditMaterialsForm;
 
       function Material(asset) {
