@@ -52,10 +52,11 @@ private[models] object IntId {
       Formats.intFormat.unbind(key, value._id)
   }
   implicit def formatter[T] : Formatter[IntId[T]] = new formatter[T]
-  class jsonWrites[T] extends json.Writes[IntId[T]] {
+  class jsonFormat[T] extends json.Format[IntId[T]] {
     def writes(i : IntId[T]) = json.JsNumber(i._id)
+    def reads(j : json.JsValue) = j.validate[Int].map(apply[T])
   }
-  implicit def jsonWrites[T] : json.Writes[IntId[T]] = new jsonWrites[T]
+  implicit def jsonFormat[T] : json.Format[IntId[T]] = new jsonFormat[T]
 }
 /** Any class (usually a singleton object) which provides an Id type. */
 private[models] trait ProvidesId[T] {
