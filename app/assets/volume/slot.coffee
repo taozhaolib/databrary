@@ -780,7 +780,7 @@ app.controller('volume/slot', [
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
-        consents.map((c) -> new Consent(c))
+        _.map consents, (c) -> new Consent(c)
       else if (consents)
         [new Consent(consents)]
       else

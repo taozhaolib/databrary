@@ -206,14 +206,15 @@ app.directive 'spreadsheet', [
             if editing
               for m in category.template
                 arr(records[c], m)
-            metrics = Object.keys(records[c]).map(maybeInt).sort(byType)
+            metrics = _.map Object.keys(records[c]), maybeInt
+                    .sort(byType)
             metrics.pop() # remove 'id' (necessarily last)
-            metrics = metrics.map(getMetric)
+            metrics = _.map metrics, getMetric
             # add back the 'id' column first if needed
             if !metrics.length || editing && !(metrics.length == 1 && metrics[0].options)
               metrics.unshift(pseudoMetric.id)
             si = metricCols.length
-            metricCols.push.apply metricCols, metrics.map (m) ->
+            metricCols.push.apply metricCols, _.map metrics, (m) ->
               category: category
               metric: m
               sortable: m != pseudoMetric.id || metrics.length == 1

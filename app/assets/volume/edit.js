@@ -8,11 +8,12 @@ app.controller('volume/edit', [
     display.title = volume ? volume.title : constants.message('volume.edit.create');
 
     if (!volume) {
-      $scope.owners = models.Login.user.parents.filter(function (p) {
-          return p.member >= constants.permission.ADMIN && p.party.access >= constants.permission.EDIT;
-        }).map(function (p) {
-          return p.party;
-        });
+      $scope.owners = _.chain(models.Login.user.parents
+                             ).filter(function (p) {
+                               return p.member >= constants.permission.ADMIN && p.party.access >= constants.permission.EDIT;
+                             }).map(function (p) {
+                               return p.party;
+                             }).value()
       if (models.Login.user.access >= constants.permission.EDIT)
         $scope.owners.unshift(models.Login.user);
     }
@@ -36,7 +37,7 @@ app.controller('volume/edit', [
     });
 
     $scope.$watch(function () {
-      $scope.steps.forEach(function (step) {
+      _.each($scope.steps, function (step) {
         step.complete = !step.form || step.form.$pristine;
         step.error = step.form && step.form.$invalid;
       });
