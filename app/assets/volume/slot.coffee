@@ -708,7 +708,7 @@ app.controller('volume/slot', [
               tag = $scope.tags.find (t) -> t.id == data.id
               unless tag
                 tag = new Tag(data)
-                tag.active = true
+                tag.toggle(true)
                 $scope.tags.push(tag)
             tag.fillData(data)
             if (if editing then tag.keyword?.length else tag.coverage?.length)
@@ -727,10 +727,12 @@ app.controller('volume/slot', [
     $scope.vote = (name, vote) ->
       new TagName(name).save(vote)
 
+    tagToggle = storage.get('tag-toggle')?.split("\n") ? []
+
     class Tag extends TagName
       constructor: (t) ->
         @id = t.id
-        @active = false
+        @active = t.id in tagToggle
         @fillData(t)
         return
 
@@ -745,8 +747,12 @@ app.controller('volume/slot', [
               this[f].push(Segment.make(s))
         return
 
-      toggle: ->
-        @active = !@active
+      toggle: (act) ->
+        if @active = act ? !@active
+          tagToggle.push(@id)
+        else
+          tagToggle.remove(@id)
+        storage.set('tag-toggle', tagToggle.join("\n"))
 
       update: ->
         state = false
