@@ -17,7 +17,7 @@ import qualified Language.Haskell.TH as TH
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Id.Types
-import Databrary.Model.Permission.Types
+import Databrary.Model.Consent.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
 import Databrary.Model.RecordCategory
@@ -118,7 +118,7 @@ updateMeasure ident m = auditUpdate ident "!measure"
   (Just $ selectOutput $ selectMap ((TH.VarE 'setMeasureDatum `TH.AppE` TH.VarE m) `TH.AppE`) measureDatumRow)
 
 deleteMeasure :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'Record'@
+  -> TH.Name -- ^ @'Measure'@
   -> TH.ExpQ -- ^ @()@
 deleteMeasure ident m = auditDelete ident "measure"
   (whereEq $ measureKeys (nameRef m))

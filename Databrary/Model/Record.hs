@@ -17,7 +17,7 @@ import Control.Monad (guard)
 import Data.Function (on)
 import Data.Maybe (catMaybes)
 import qualified Data.Text as T
-import Database.PostgreSQL.Typed.Protocol (PGError(..), pgMessageCode)
+import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 
 import Control.Has (peek, view)
 import Databrary.DB
@@ -89,7 +89,7 @@ upMeasure m@Measure{ measureRecord = rec } = rec{ recordMeasures = upd $ recordM
     LT -> m:l
 
 isInvalidInputException :: PGError -> Bool
-isInvalidInputException (PGError e) = pgMessageCode e `elem` ["22007", "22008", "22P02"]
+isInvalidInputException e = pgErrorCode e `elem` ["22007", "22008", "22P02"]
 
 changeRecordMeasure :: MonadAudit c m => Measure -> m (Maybe Record)
 changeRecordMeasure m = do

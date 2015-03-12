@@ -6,20 +6,17 @@ module Databrary.Model.SQL
   ) where
 
 import Control.Monad (guard)
-import Database.PostgreSQL.Typed.Protocol (PGError(..), pgMessageCode)
+import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Query (PGQuery)
 
 import Control.Applicative.Ops
 import Databrary.DB
 import Databrary.Model.SQL.Select
 
-isDuplicateKeyException :: PGError -> Bool
-isDuplicateKeyException (PGError e) = pgMessageCode e `elem` ["23505", "23P01"]
-
 tryUpdateOrInsert :: (DBM m, PGQuery q a) => (PGError -> Maybe e) -> q -> q -> m (Either e (Int, [a]))
 tryUpdateOrInsert err upd ins = dbTransaction uoi where
   err' e
-    | isDuplicateKeyException e = Just Nothing
+    | pgErrorCode e == "23505" = Just Nothing
     | otherwise = Just <$> err e
   uoi = do
     u <- dbTryQuery err upd
@@ -44,7 +41,7 @@ updateOrInsert upd ins = dbTransaction uoi where
       then return u
       else do
         dbExecuteSimple "SAVEPOINT pre_insert"
-        i <- dbTryQuery (guard . isDuplicateKeyException) ins
+        i <- dbTryQuery (guard . ("23505" ==) . pgErrorCode) ins
         either (\() -> do
           dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
           uoi)

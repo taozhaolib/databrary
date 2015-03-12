@@ -4,6 +4,9 @@ module Databrary.Model.Container
   , lookupContainer
   , lookupVolumeContainer
   , lookupVolumeContainers
+  , addContainer
+  , changeContainer
+  , removeContainer
   , containerJSON
   ) where
 
@@ -20,6 +23,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.Identity.Types
+import Databrary.Model.Audit
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Container.SQL
@@ -38,6 +42,21 @@ lookupVolumeContainer vol ci =
 lookupVolumeContainers :: DBM m => Volume -> m [Container]
 lookupVolumeContainers vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.volume = ${volumeId vol}")
+
+addContainer :: MonadAudit c m => Container -> m Container
+addContainer bc = do
+  ident <- getAuditIdentity
+  dbQuery1' $(insertContainer 'ident 'bc)
+
+changeContainer :: MonadAudit c m => Container -> m ()
+changeContainer c = do
+  ident <- getAuditIdentity
+  dbExecute1 $(updateContainer 'ident 'c)
+
+removeContainer :: MonadAudit c m => Container -> m ()
+removeContainer c = do
+  ident <- getAuditIdentity
+  dbExecute1 $(deleteContainer 'ident 'c)
 
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where

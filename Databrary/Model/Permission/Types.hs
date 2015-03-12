@@ -2,7 +2,6 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Permission.Types 
   ( Permission(..)
-  , Consent(..)
   , Classification(..)
   , Access(..), accessPermission'
   , accessSite, accessMember, accessPermission
@@ -18,7 +17,6 @@ import Databrary.Model.Enum
 useTPG
 
 makeDBEnum "permission" "Permission"
-makeDBEnum "consent" "Consent"
 makeDBEnum "classification" "Classification"
 
 data Access = Access
@@ -42,4 +40,4 @@ instance Monoid Access where
   mempty = Access PermissionNONE PermissionNONE
   mappend (Access s1 m1) (Access s2 m2) = Access (max s1 s2) (max m1 m2)
 
-deriveLiftMany [''Permission, ''Consent, ''Classification, ''Access]
+deriveLiftMany [''Permission, ''Classification, ''Access]

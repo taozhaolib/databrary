@@ -12,6 +12,7 @@ module Databrary.Model.Permission
 
 import Control.Has (Has, view)
 import qualified Databrary.JSON as JSON
+import Databrary.Model.Consent.Types
 import Databrary.Model.Permission.Types
 
 -- |Level at which things become visible.

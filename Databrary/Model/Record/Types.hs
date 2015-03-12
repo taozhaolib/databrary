@@ -10,7 +10,7 @@ module Databrary.Model.Record.Types
 import Control.Has (makeHasRec)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
-import Databrary.Model.Permission.Types
+import Databrary.Model.Consent.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Metric.Types
 import Databrary.Model.RecordCategory.Types

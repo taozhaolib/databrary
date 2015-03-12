@@ -22,6 +22,7 @@ import Control.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types
+import Databrary.Model.Consent.Types
 import Databrary.Model.Metric
 import Databrary.Model.RecordCategory
 import Databrary.Model.Format

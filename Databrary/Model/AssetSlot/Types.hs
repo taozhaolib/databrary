@@ -7,6 +7,7 @@ module Databrary.Model.AssetSlot.Types
 import Control.Has (Has(..))
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission
+import Databrary.Model.Consent
 import Databrary.Model.Time.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
