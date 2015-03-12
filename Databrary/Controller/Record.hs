@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Record
-  ( viewRecord
+  ( getRecord
+  , viewRecord
   , createRecord
   , postRecordMeasure
   ) where
@@ -23,45 +24,47 @@ import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Permission
+import Databrary.Controller.Angular
 import Databrary.View.Record
 
-withRecord :: Permission -> Id Record -> (Record -> AuthAction) -> AppAction
-withRecord p i f = withAuth $
-  f =<< checkPermission p =<< maybeAction =<< lookupRecord i
+getRecord :: Permission -> Id Record -> AuthActionM Record
+getRecord p i =
+  checkPermission p =<< maybeAction =<< lookupRecord i
 
 viewRecord :: API -> Id Record -> AppRAction
-viewRecord api i = action GET (api, i) $
-  withRecord PermissionPUBLIC i $
-    case api of
-      JSON -> okResponse [] . recordJSON
-      HTML -> okResponse [] . show . recordId -- TODO
+viewRecord api i = action GET (api, i) $ withAuth $ do
+  when (api == HTML) angular
+  rec <- getRecord PermissionPUBLIC i
+  case api of
+    JSON -> okResponse [] $ recordJSON rec
+    HTML -> okResponse [] $ show $ recordId rec -- TODO
 
 createRecord :: API -> Id Volume -> AppRAction
-createRecord api vi = action POST (api, vi, "record" :: T.Text) $
-  withVolume PermissionEDIT vi $ \vol -> do
-    br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
-      cat <- "category" .:> (flatMapM ((`orElseM` Nothing <$ deformError "No such record category.") . getRecordCategory) =<< deform)
-      return (blankRecord vol)
-        { recordCategory = cat
-        }
-    rec <- addRecord br
-    case api of
-      JSON -> okResponse [] $ recordJSON rec
-      HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec
+createRecord api vi = action POST (api, vi, "record" :: T.Text) $ withAuth $ do
+  vol <- getVolume PermissionEDIT vi
+  br <- runForm (api == HTML ?> htmlRecordForm vol) $ do
+    cat <- "category" .:> (flatMapM ((`orElseM` Nothing <$ deformError "No such record category.") . getRecordCategory) =<< deform)
+    return (blankRecord vol)
+      { recordCategory = cat
+      }
+  rec <- addRecord br
+  case api of
+    JSON -> okResponse [] $ recordJSON rec
+    HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec
 
 postRecordMeasure :: API -> Id Record -> Id Metric -> AppRAction
-postRecordMeasure api ri mi = action POST (api, ri, mi) $
-  withRecord PermissionEDIT ri $ \rec -> do
-    met <- maybeAction $ getMetric mi
-    let meas = Measure rec met
-    rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $
-      deformSync' ("datum" .:> deformNonEmpty deform)
-      >>= maybe
-        (lift $ removeRecordMeasure $ meas "")
-        (\d -> do
-          r <- lift $ changeRecordMeasure $ meas d
-          when (isNothing r) $ deformError $ T.pack $ "Invalid " ++ show (metricType met)
-          return $ fromMaybe rec r)
-    case api of
-      JSON -> okResponse [] $ recordJSON rec'
-      HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec'
+postRecordMeasure api ri mi = action POST (api, ri, mi) $ withAuth $ do
+  rec <- getRecord PermissionEDIT ri
+  met <- maybeAction $ getMetric mi
+  let meas = Measure rec met
+  rec' <- runForm (api == HTML ?> htmlRecordMeasureForm rec met) $
+    deformSync' ("datum" .:> deformNonEmpty deform)
+    >>= maybe
+      (lift $ removeRecordMeasure $ meas "")
+      (\d -> do
+        r <- lift $ changeRecordMeasure $ meas d
+        when (isNothing r) $ deformError $ T.pack $ "Invalid " ++ show (metricType met)
+        return $ fromMaybe rec r)
+  case api of
+    JSON -> okResponse [] $ recordJSON rec'
+    HTML -> redirectRouteResponse [] $ viewRecord api $ recordId rec'

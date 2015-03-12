@@ -7,7 +7,6 @@ module Databrary.Controller.Register
   ) where
 
 import Control.Monad (mfilter)
-import Control.Monad.Reader (ReaderT)
 import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -25,9 +24,10 @@ import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Token
+import Databrary.Controller.Angular
 import Databrary.View.Register
 
-resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe T.Text -> [T.Text]) -> ReaderT AppRequest IO ()
+resetPasswordMail :: Either T.Text SiteAuth -> T.Text -> (Maybe T.Text -> [T.Text]) -> AuthActionM ()
 resetPasswordMail (Left email) subj body =
   sendMail [Left email] subj (body Nothing)
 resetPasswordMail (Right auth) subj body = do
@@ -36,14 +36,15 @@ resetPasswordMail (Right auth) subj body = do
   sendMail [Right $ view auth] subj (body $ Just $ TE.decodeLatin1 url)
 
 viewRegister :: AppRAction
-viewRegister = action GET ["user", "register" :: T.Text] $ withAuth $
+viewRegister = action GET (HTML, ["user", "register" :: T.Text]) $ withAuth $ do
+  angular
   maybeIdentity
     (blankForm htmlRegister)
     (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
 postRegister :: API -> AppRAction
-postRegister api = action POST (api, ["user", "register" :: T.Text]) $ do
-  reg <- withoutAuth $ runForm (api == HTML ?> htmlRegister) $ do
+postRegister api = action POST (api, ["user", "register" :: T.Text]) $ withoutAuth $ do
+  reg <- runForm (api == HTML ?> htmlRegister) $ do
     name <- "name" .:> deform
     email <- "email" .:> emailTextForm
     affiliation <- "affiliation" .:> deform
@@ -59,7 +60,7 @@ postRegister api = action POST (api, ["user", "register" :: T.Text]) $ do
           , accountPasswd = Nothing
           }
     return a
-  auth <- maybe (flip SiteAuth mempty <$> withoutAuth (addAccount reg)) return =<< lookupSiteAuthByEmail (accountEmail reg)
+  auth <- maybe (flip SiteAuth mempty <$> addAccount reg) return =<< lookupSiteAuthByEmail (accountEmail reg)
   resetPasswordMail (Right auth) 
     "Databrary account created"
     $ \(Just url) -> [
@@ -75,12 +76,13 @@ postRegister api = action POST (api, ["user", "register" :: T.Text]) $ do
   okResponse [] $ "Your confirmation email has been sent to '" <> accountEmail reg <> "'."
 
 viewPasswordReset :: AppRAction
-viewPasswordReset = action GET ["user", "password" :: T.Text] $ withoutAuth $ do
+viewPasswordReset = action GET (HTML, ["user", "password" :: T.Text]) $ withoutAuth $ do
+  angular
   blankForm htmlPasswordReset
 
 postPasswordReset :: API -> AppRAction
-postPasswordReset api = action POST (api, ["user", "password" :: T.Text]) $ do
-  email <- withoutAuth $ runForm (api == HTML ?> htmlPasswordReset) $ do
+postPasswordReset api = action POST (api, ["user", "password" :: T.Text]) $ withoutAuth $ do
+  email <- runForm (api == HTML ?> htmlPasswordReset) $ do
     "email" .:> emailTextForm
   auth <- mfilter ((PermissionADMIN >) . accessMember) <$> lookupSiteAuthByEmail email
   resetPasswordMail (maybe (Left email) Right auth)

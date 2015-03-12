@@ -8,6 +8,7 @@ module Databrary.Controller.Login
   ) where
 
 import Control.Monad (when, unless)
+import Control.Monad.Reader (withReaderT)
 import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Foldable as Fold
@@ -26,6 +27,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Token
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
+import Databrary.Controller.Angular
 import Databrary.View.Login
 
 import {-# SOURCE #-} Databrary.Controller.Root
@@ -41,14 +43,15 @@ loginAccount api auth su = do
     HTML -> redirectRouteResponse [cook] $ viewParty HTML TargetProfile
 
 viewLogin :: AppRAction
-viewLogin = action GET ["user", "login" :: T.Text] $ withAuth $
+viewLogin = action GET ["user", "login" :: T.Text] $ withAuth $ do
+  angular
   maybeIdentity
     (blankForm htmlLogin)
     (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
 postLogin :: API -> AppRAction
-postLogin api = action POST (api, ["user", "login" :: T.Text]) $ do
-  (Just auth, su) <- withoutAuth $ runForm (api == HTML ?> htmlLogin) $ do
+postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ do
+  (Just auth, su) <- runForm (api == HTML ?> htmlLogin) $ do
     email <- "email" .:> emailTextForm
     password <- "password" .:> deform
     superuser <- "superuser" .:> deform
@@ -63,7 +66,7 @@ postLogin api = action POST (api, ["user", "login" :: T.Text]) $ do
     when block $ "email" .:> deformError "Too many login attempts. Try again later."
     unless pass $ "password" .:> deformError "Incorrect login."
     return (auth, su)
-  loginAccount api auth su
+  withReaderT authApp $ loginAccount api auth su
 
 postLogout :: API -> AppRAction
 postLogout api = action POST (api, ["user", "logout" :: T.Text]) $ withAuth $ do

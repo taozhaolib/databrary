@@ -43,18 +43,18 @@ fileSizeForm :: (Functor m, Monad m) => DeformT m Int64
 fileSizeForm = deformCheck "Invalid file size." (0 <) =<< deform
 
 uploadStart :: Id Volume -> AppRAction
-uploadStart vi = action POST (JSON, vi, "upload" :: T.Text) $ do
-  withVolume PermissionEDIT vi $ \vol -> do
-    (filename, size) <- runForm Nothing $ (,)
-      <$> ("filename" .:> (deformCheck "File format not supported." (isJust . getFormatByFilename) =<< deform))
-      <*> ("size" .:> (deformCheck "File too large." ((maxAssetSize >=) . fromIntegral) =<< fileSizeForm))
-    tok <- createUpload vol filename size
-    file <- peeks $ uploadFile tok
-    liftIO $ bracket
-      (openFd file WriteOnly (Just 0600) defaultFileFlags{ exclusive = True })
-      closeFd
-      (`setFdSize` COff size)
-    okResponse [] $ unId (view tok :: Id Token)
+uploadStart vi = action POST (JSON, vi, "upload" :: T.Text) $ withAuth $ do
+  vol <- getVolume PermissionEDIT vi
+  (filename, size) <- runForm Nothing $ (,)
+    <$> ("filename" .:> (deformCheck "File format not supported." (isJust . getFormatByFilename) =<< deform))
+    <*> ("size" .:> (deformCheck "File too large." ((maxAssetSize >=) . fromIntegral) =<< fileSizeForm))
+  tok <- createUpload vol filename size
+  file <- peeks $ uploadFile tok
+  liftIO $ bracket
+    (openFd file WriteOnly (Just 0600) defaultFileFlags{ exclusive = True })
+    closeFd
+    (`setFdSize` COff size)
+  okResponse [] $ unId (view tok :: Id Token)
 
 chunkForm :: DeformT (ReaderT AuthRequest IO) (Upload, Int64, Word64)
 chunkForm = do

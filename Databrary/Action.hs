@@ -1,12 +1,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Action
   ( Request
+  , ActionM
   , Action
   , MonadAction
-  , AppAction
   , AppRequest
-  , AuthAction
+  , AppActionM
+  , AppAction
+  , MonadAppAction
   , AuthRequest
+  , AuthActionM
+  , AuthAction
+  , MonadAuthAction
 
   , Response
   , returnResponse

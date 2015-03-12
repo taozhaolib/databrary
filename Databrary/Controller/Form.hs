@@ -22,7 +22,6 @@ import qualified Text.Regex.Posix as Regex
 
 import Databrary.Action
 import Databrary.Action.Types
-import Databrary.Action.App (MonadAppAction)
 import Databrary.Web.Form (getFormData, FormData)
 import Databrary.Web.Form.Deform
 import Databrary.Web.Form.View (runFormView, blankFormView)

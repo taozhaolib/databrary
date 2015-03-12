@@ -17,14 +17,14 @@ import Databrary.Controller.Permission
 import Databrary.Store.Asset
 import Databrary.Web.File
 
-withSlotAsset :: Permission -> Id Container -> Id Asset -> (SlotAsset -> AuthAction) -> AppAction
-withSlotAsset p ci ai f = withAuth $
-  f =<< checkPermission p =<< maybeAction =<< lookupSlotAsset ai
+getSlotAsset :: Permission -> Id Container -> Id Asset -> AuthActionM SlotAsset
+getSlotAsset p ci ai =
+  checkPermission p =<< maybeAction =<< lookupSlotAsset ai
 
 downloadSlotAsset :: Id Container -> Id Asset -> AppRAction
-downloadSlotAsset ci ai = action GET (ci, ai) $
-  withSlotAsset PermissionREAD ci ai $ \sa -> do
-    let a = view sa
-    store <- maybeAction =<< getAssetFile a
-    auditSlotAssetDownload True sa
-    serveFile store (view a) (fromJust $ assetSHA1 a)
+downloadSlotAsset ci ai = action GET (ci, ai) $ withAuth $ do
+  sa <- getSlotAsset PermissionREAD ci ai
+  let a = view sa
+  store <- maybeAction =<< getAssetFile a
+  auditSlotAssetDownload True sa
+  serveFile store (view a) (fromJust $ assetSHA1 a)

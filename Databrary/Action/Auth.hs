@@ -1,13 +1,14 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
-  , MonadHasAuthRequest
+  , MonadAuthAction
+  , AuthActionM
   , AuthAction
   , withAuth
   , withoutAuth
   ) where
 
-import Control.Monad.Reader (ReaderT, withReaderT, asks)
+import Control.Monad.Reader (withReaderT, asks)
 
 import Control.Has (makeHasRec)
 import Databrary.Action.Types
@@ -22,7 +23,10 @@ data AuthRequest = AuthRequest
 
 makeHasRec ''AuthRequest ['authApp, 'authIdentity]
 
+type AuthActionM a = ActionM AuthRequest a
 type AuthAction = Action AuthRequest
+
+type MonadAuthAction q m = (MonadHasAuthRequest q m, ActionData q)
 
 instance ActionData AuthRequest where
   returnResponse s h r = asks (returnResponse s h r . authApp)
@@ -33,6 +37,6 @@ withAuth f = do
   withReaderT (\a -> AuthRequest a i) $
     angularAnalytics >> f
 
-withoutAuth :: ReaderT AuthRequest IO a -> ReaderT AppRequest IO a
+withoutAuth :: AuthAction -> AppAction
 withoutAuth f =
-  withReaderT (\a -> AuthRequest a UnIdentified) f
+  withReaderT (\a -> AuthRequest a UnIdentified) $ angularAnalytics >> f

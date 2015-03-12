@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Asset
-  ( viewAsset
+  ( getAsset
+  , viewAsset
   , postAsset
   , createAsset
   ) where
@@ -44,18 +45,20 @@ import Databrary.Store.Temp
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
+import Databrary.Controller.Angular
 import Databrary.View.Asset
 
-withAsset :: Permission -> Id Asset -> (AssetSlot -> AuthAction) -> AppAction
-withAsset p i f = withAuth $
-  f =<< checkPermission p =<< maybeAction =<< lookupAssetSlot i
+getAsset :: Permission -> Id Asset -> AuthActionM AssetSlot
+getAsset p i =
+  checkPermission p =<< maybeAction =<< lookupAssetSlot i
 
 viewAsset :: API -> Id Asset -> AppRAction
-viewAsset api i = action GET (api, i) $
-  withAsset PermissionPUBLIC i $
-    case api of
-      JSON -> okResponse [] . assetSlotJSON
-      HTML -> okResponse [] . show . assetId . slotAsset -- TODO
+viewAsset api i = action GET (api, i) $ withAuth $ do
+  when (api == HTML) angular
+  asset <- getAsset PermissionPUBLIC i
+  case api of
+    JSON -> okResponse [] $ assetSlotJSON asset
+    HTML -> okResponse [] $ show $ assetId $ slotAsset asset -- TODO
 
 data FileUpload
   = FileUploadForm
@@ -138,14 +141,14 @@ processAsset api target = do
     HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as''))
 
 postAsset :: API -> Id Asset -> AppRAction
-postAsset api ai = action POST (api, ai) $
-  withAsset PermissionEDIT ai $ \asset -> do
-    r <- assetIsSuperseded (slotAsset asset)
-    guardAction (not r) $
-      returnResponse conflict409 [] ("This file has already been replaced." :: T.Text)
-    processAsset api (Right asset)
+postAsset api ai = action POST (api, ai) $ withAuth $ do
+  asset <- getAsset PermissionEDIT ai
+  r <- assetIsSuperseded (slotAsset asset)
+  guardAction (not r) $
+    returnResponse conflict409 [] ("This file has already been replaced." :: T.Text)
+  processAsset api (Right asset)
 
 createAsset :: API -> Id Volume -> AppRAction
-createAsset api vi = action POST (api, vi, "asset" :: T.Text) $
-  withVolume PermissionEDIT vi $
-    processAsset api . Left
+createAsset api vi = action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
+  v <- getVolume PermissionEDIT vi
+  processAsset api $ Left v
