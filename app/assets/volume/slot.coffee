@@ -507,12 +507,16 @@ app.controller('volume/slot', [
         @data =
           measures: _.cloneDeep(@record.measures)
           add: ''
-        keys = _.keys @data.measures
-        sortedKeys = keys.sort (a,b) -> a - b
-        $scope.sortedMeasures = _.map sortedKeys, (key) -> {key:key}
-        console.log $scope.sortedMeasures
+          
+        @sortAll(@data.measures)
+        
         return
 
+      sortAll: (measures) ->
+        keys = _.keys measures
+        sortedKeys = keys.sort (a,b) -> a - b
+        $scope.sortedMeasures = _.map sortedKeys, (key) -> {key:key}
+        return 
       Object.defineProperty @prototype, 'id',
         get: -> @rec.id
 
@@ -545,12 +549,9 @@ app.controller('volume/slot', [
       ### jshint ignore:end ###
 
       add: ->
-        @record.measures[@data.add] = '' if @data.add
-        console.log "Measures", @data.measures
+        @data.measures[@data.add] = '' if @data.add
         @data.add = ''
-        console.log @fillData
-        @fillData()
-        console.log "sortedMeasures", $scope.sortedMeasures
+        @sortAll(@data.measures)
         return
 
       save: ->
