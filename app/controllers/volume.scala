@@ -72,7 +72,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
       via <- request.obj.adminAccessVia
-      form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
+      form = new VolumeController.AccessForm(who, via.forall(_ === who))._bind
       _ <- if (form.delete.get)
           VolumeAccess.set(request.obj, e)
         else
@@ -177,9 +177,9 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party._id <= 0
-    val individual = Field(Mappings.enum(Permission,
-      maxId = if (isGroup) Some(Permission.SHARED.id) else None,
-      minId = (if (own) Permission.ADMIN else Permission.NONE).id))
+    val individual = Field(
+      if (own) Mappings.enum(Permission).verifying("access.delete.self", _ == Permission.ADMIN)
+      else Mappings.enum(Permission, maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val children = Field(Mappings.enum(Permission,
       maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
@@ -313,11 +313,11 @@ object VolumeApi extends VolumeController with ApiController {
 
   def accessRemove(volumeId : Volume.Id, partyId : Party.Id) =
     Action(volumeId, Permission.ADMIN).async { implicit request =>
-      (if (!(partyId === request.identity.id))
-        VolumeAccess.set(request.obj, partyId)
-      else macros.async(false)).map { _ =>
-        result(request.obj)
-      }
+      for {
+        via <- request.obj.adminAccessVia
+        own = via.forall(p => p.id === partyId)
+        r <- if (own) async(false) else VolumeAccess.set(request.obj, partyId)
+      } yield (if (own) BadRequest(Messages("access.delete.self")) else result(request.obj))
     }
 
   final class FundingForm(funderId : Funder.Id)(implicit request : Request[_])

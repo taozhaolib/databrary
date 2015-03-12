@@ -25,8 +25,6 @@ app.directive('accessGrantForm', [
           p == page.permission.ADMIN;
       };
 
-      form.canChange = access.party.id !== page.models.Login.user.id || page.models.Login.user.superuser;
-
       //
 
       form.save = function () {
