@@ -88,7 +88,7 @@ app.factory('messageService', [
       return new Message(message);
     };
 
-      Message.clear = function (owner) {
+    Message.clear = function (owner) {
 	  
       _.each(Message.list, function(message){
 	if (owner ? message.owner === owner : !message.persist)

@@ -40,7 +40,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "angularjs" % "1.3.14",
   "org.webjars" % "ng-flow" % "2.5.1",
   "org.webjars" % "normalize.styl" % "3.0.0",
-  "org.webjars" % "lodash" % "3.3.1"  
+  "org.webjars" % "lodash" % "3.3.1"
 )
 
 mappings in Universal ~= { s =>

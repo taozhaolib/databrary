@@ -507,16 +507,14 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           add: ''
-          
-        @sortAll(@data.measures)
-        
+        @sortMetrics() if editing
         return
 
-      sortAll: (measures) ->
-        keys = _.keys measures
-        sortedKeys = keys.sort (a,b) -> a - b
-        $scope.sortedMeasures = _.map sortedKeys, (key) -> {key:key}
-        return 
+      sortMetrics: ->
+        keys = _.keys @data.measures
+        @sortedMetrics = keys.sort (a,b) -> a - b
+        return
+
       Object.defineProperty @prototype, 'id',
         get: -> @rec.id
 
@@ -551,7 +549,7 @@ app.controller('volume/slot', [
       add: ->
         @data.measures[@data.add] = '' if @data.add
         @data.add = ''
-        @sortAll(@data.measures)
+        @sortMetrics()
         return
 
       save: ->
