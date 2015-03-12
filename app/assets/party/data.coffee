@@ -6,6 +6,6 @@ app.directive 'partyData', [
     templateUrl: 'party/data.html'
     scope: false
     link: ($scope) ->
-      $scope.volumes = (va.volume for va in $scope.party.volumes)
+      $scope.volumes = _.pluck $scope.party.volumes, 'volume'
       return
 ]

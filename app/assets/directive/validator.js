@@ -115,7 +115,7 @@ app.directive('validator', [
           data = [data];
         }
 
-        angular.forEach(data, function (error) {
+        _.each(data, function (error) {
           validator.serverErrors.push(addPrefix(error));
         });
       };
@@ -145,13 +145,13 @@ app.directive('validator', [
         }
 
         if (Array.isArray(data.errors)) {
-          angular.forEach(data.errors, function (error) {
+          _.each(data.errors, function (error) {
             validator.clientErrors.push(addPrefix(error));
           });
         }
 
         if (Array.isArray(data.tips)) {
-          angular.forEach(data.tips, function (tip) {
+          _.each(data.tips, function (tip) {
             validator.clientTips.push(addPrefix(tip));
           });
         }

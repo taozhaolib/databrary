@@ -4,7 +4,7 @@ app.directive('hint', [
   'pageService', function (page) {
     var hints = {};
 
-    angular.forEach(page.constants.permission, function (a) {
+    _.each(page.constants.permission, function (a) {
       hints['permission-' + a] =
         page.constants.message('access.' + a, 'You');
       if ('access.edit.' + a + '.who' in page.constants.messages)
@@ -12,34 +12,34 @@ app.directive('hint', [
           page.constants.message('access.edit.' + a + '.who', 'You');
     });
 
-    angular.forEach(page.constants.consent, function (a) {
+    _.each(page.constants.consent, function (a) {
       hints['consent-' + a] =
         page.constants.message('consent.' + a);
     });
 
-    angular.forEach(page.constants.classification, function (a) {
+    _.each(page.constants.classification, function (a) {
       hints['classification-' + a] =
         page.constants.message('classification.' + a);
       hints['excerpt-' + a] =
         page.constants.message('classification.excerpt.' + a);
     });
 
-    angular.forEach(page.constants.format, function (a) {
+    _.each(page.constants.format, function (a) {
       hints['format-' + a.extension] =
         a.name;
     });
 
-    angular.forEach(['slot'], function (a) {
+    _.each(['slot'], function (a) {
       hints['action-' + a] =
         page.constants.message('hint.action.' + a);
     });
 
-    angular.forEach(['up', 'null'], function (a) {
+    _.each(['up', 'null'], function (a) {
       hints['tags-vote-' + a] =
         page.constants.message('tags.vote.' + a);
     });
 
-    angular.forEach(hints, function (hint, name) {
+    _.each(hints, function (hint, name) {
       new page.tooltips({
         live: true,
         $target: '.hint-' + name,

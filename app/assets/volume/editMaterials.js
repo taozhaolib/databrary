@@ -29,7 +29,7 @@ app.directive('volumeEditMaterialsForm', [
       };
 
       form.materials = [];
-      angular.forEach(slot.assets, function (asset) {
+      _.each(slot.assets, function (asset) {
         asset.get(['creation']);
         form.materials.push(new Material(asset));
       });

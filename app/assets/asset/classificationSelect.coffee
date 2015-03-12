@@ -11,7 +11,7 @@ app.directive 'classificationSelect', [
     link: ($scope) ->
       $scope.classification = constants.classification.slice(0)
       $scope.max = constants.classification.PUBLIC
-      $scope.check = ($scope.value <= i for l, i in constants.classification)
+      $scope.check = _.map constants.classification, (l, i) -> $scope.value <= i
       $scope.update = () ->
         $scope.value = $scope.check.indexOf(true)
       return

@@ -68,7 +68,7 @@
                   <div ng-switch-when="record">
                     <ng-form name="form.measures">
                     <dl class="cf">
-                      <dt ng-repeat-start="(m, v) in current.data.measures" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
+                      <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                         <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>

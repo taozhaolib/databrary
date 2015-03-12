@@ -507,6 +507,12 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           add: ''
+        @sortMetrics() if editing
+        return
+
+      sortMetrics: ->
+        keys = _.keys @data.measures
+        @sortedMetrics = keys.sort (a,b) -> a - b
         return
 
       Object.defineProperty @prototype, 'id',
@@ -543,6 +549,7 @@ app.controller('volume/slot', [
       add: ->
         @data.measures[@data.add] = '' if @data.add
         @data.add = ''
+        @sortMetrics()
         return
 
       save: ->
@@ -790,7 +797,7 @@ app.controller('volume/slot', [
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
-        consents.map((c) -> new Consent(c))
+        _.map consents, (c) -> new Consent(c)
       else if (consents)
         [new Consent(consents)]
       else
