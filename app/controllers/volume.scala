@@ -72,7 +72,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
     for {
       who <- models.Party.get(e).map(_.getOrElse(throw NotFoundException))
       via <- request.obj.adminAccessVia
-      form = new VolumeController.AccessForm(who, via.forall(_ === who))._bind
+      form = new VolumeController.AccessForm(who, via.exists(_ === who))._bind
       _ <- if (form.delete.get)
           VolumeAccess.set(request.obj, e)
         else
@@ -315,7 +315,7 @@ object VolumeApi extends VolumeController with ApiController {
     Action(volumeId, Permission.ADMIN).async { implicit request =>
       for {
         via <- request.obj.adminAccessVia
-        own = via.forall(p => p.id === partyId)
+        own = via.exists(p => p.id === partyId)
         r <- if (own) async(false) else VolumeAccess.set(request.obj, partyId)
       } yield (if (own) BadRequest(Messages("access.delete.self")) else result(request.obj))
     }
