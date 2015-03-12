@@ -505,15 +505,12 @@ app.controller('volume/slot', [
 
       fillData: ->
         @data =
-          measures: angular.extend({}, @record.measures)
+          measures: _.cloneDeep(@record.measures)
           add: ''
-        
-        pairs = _.pairs @data.measures
-        console.log "Pairs: ", pairs
-        ### jshint ignore:start #### fixed in jshint 2.5.7
-        sortedPairs = _.sortBy pairs, ([key, value]) -> value.id
-        ### jshint ignore: end ###
-        console.log "SortedPairs: ", pairs
+        keys = _.keys @data.measures
+        sortedKeys = keys.sort (a,b) -> a - b
+        $scope.sortedMeasures = _.map sortedKeys, (key) -> {key:key}
+        console.log $scope.sortedMeasures
         return
 
       Object.defineProperty @prototype, 'id',
@@ -548,8 +545,12 @@ app.controller('volume/slot', [
       ### jshint ignore:end ###
 
       add: ->
-        @data.measures[@data.add] = '' if @data.add
+        @record.measures[@data.add] = '' if @data.add
+        console.log "Measures", @data.measures
         @data.add = ''
+        console.log @fillData
+        @fillData()
+        console.log "sortedMeasures", $scope.sortedMeasures
         return
 
       save: ->
