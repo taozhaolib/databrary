@@ -964,14 +964,10 @@ INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (2, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'EDIT', 'NONE');
-INSERT INTO authorize (child, parent, site, member) VALUES (4, 0, 'EDIT', 'NONE');
+INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'ADMIN', 'ADMIN');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
@@ -979,7 +975,7 @@ The Databrary project is dedicated to transforming the culture of developmental 
 SELECT setval('volume_id_seq', 1);
 
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
