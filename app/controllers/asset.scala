@@ -212,6 +212,7 @@ object AssetController extends AssetController {
       val subdata = range.fold(data)((data.range _).tupled)
       val headers = Seq[Option[(String, String)]](
         Some(CONTENT_LENGTH -> subdata.size.toString),
+        Some(ACCEPT_RANGES -> "bytes"),
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + size.toString)),
         Some(CONTENT_TYPE -> asset.format.mimetype),
         saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
