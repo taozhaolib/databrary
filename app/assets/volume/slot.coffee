@@ -505,7 +505,7 @@ app.controller('volume/slot', [
 
       fillData: ->
         @data =
-          measures: _.cloneDeep(@record.measures)
+          measures: angular.extend({}, @record.measures)
           add: ''
           
         @sortAll(@data.measures)
