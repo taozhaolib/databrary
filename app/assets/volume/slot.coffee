@@ -94,7 +94,7 @@ app.controller('volume/slot', [
       return
 
     seekOffset = (o) ->
-      ruler.position = o
+      ruler.position = Math.round(o)
       $scope.updatePosition()
       return
 
@@ -180,9 +180,9 @@ app.controller('volume/slot', [
         sel = slot.segment if sel.empty
         ruler.selection =
           if u
-            new Segment(Math.min(sel.l, pos), pos+0.1)
+            new Segment(Math.min(sel.l, pos), pos)
           else
-            new Segment(pos, Math.max(sel.u, pos+0.1))
+            new Segment(pos, Math.max(sel.u, pos))
       finalizeSelection()
       return
 
@@ -460,7 +460,7 @@ app.controller('volume/slot', [
         return
       timeupdate: ->
         if $scope.asset && isFinite($scope.asset.segment.l)
-          o = 1000*video[0].currentTime
+          o = Math.round(1000*video[0].currentTime)
           if $scope.editing == 'position' && $scope.asset == $scope.current.asset
             $scope.current.setPosition(ruler.position - o)
           else
@@ -711,7 +711,7 @@ app.controller('volume/slot', [
                 tag.active = true
                 $scope.tags.push(tag)
             tag.fillData(data)
-            if (if editing then tag.keyword?.length else tag.weight)
+            if (if editing then tag.keyword?.length else tag.coverage?.length)
               tag.update()
             else
               $scope.tags.remove(tag)
@@ -773,7 +773,7 @@ app.controller('volume/slot', [
         cls
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
-    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.weight))
+    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.coverage?.length))
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     $scope.comments = (new Comment(comment) for comment in slot.comments)
     ### jshint ignore:end ###
