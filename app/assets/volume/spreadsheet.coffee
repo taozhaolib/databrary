@@ -349,7 +349,7 @@ app.directive 'spreadsheet', [
             $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "format hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
-          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
+          generateCell(row, 'excerpt', Math.max(a.classification, a.excerpt), id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].
