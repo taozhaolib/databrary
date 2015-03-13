@@ -7,7 +7,7 @@ module Databrary.Model.Record.Types
   , Measures
   ) where
 
-import Control.Has (makeHasRec)
+import Control.Has (makeHasRec, Has(..))
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Consent.Types
@@ -41,3 +41,6 @@ type Measures = [Measure]
 
 makeHasRec ''Record ['recordId, 'recordVolume, 'recordCategory, 'recordConsent]
 makeHasRec ''Measure ['measureRecord, 'measureMetric]
+
+instance Has (Maybe (Id RecordCategory)) Record where
+  view = fmap recordCategoryId . recordCategory

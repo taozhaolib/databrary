@@ -4,11 +4,13 @@ module Databrary.Model.Metric
   , allMetrics
   , getMetric
   , getMetric'
+  , birthdateMetric
   , metricJSON
   ) where
 
 import qualified Data.IntMap.Strict as IntMap
-import Data.Maybe (catMaybes)
+import Data.List (find)
+import Data.Maybe (catMaybes, fromJust)
 
 import Control.Applicative.Ops
 import Databrary.DB
@@ -34,6 +36,9 @@ getMetric' (Id i) = metricsById IntMap.! fromIntegral i
 -- this is a hack, should be in database
 metricLong :: Metric -> Bool
 metricLong = ("description" ==) . metricName
+
+birthdateMetric :: Metric
+birthdateMetric = fromJust $ find (("birthdate" ==) . metricName) allMetrics
 
 metricJSON :: Metric -> JSON.Object
 metricJSON m@Metric{..} = JSON.record metricId $ catMaybes

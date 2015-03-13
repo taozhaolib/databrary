@@ -10,7 +10,7 @@ module Databrary.Model.Permission
   , accessJSON
   ) where
 
-import Control.Has (Has, view)
+import Control.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Consent.Types
 import Databrary.Model.Permission.Types
@@ -47,7 +47,7 @@ readClassification PermissionSHARED _ = Just ClassificationSHARED
 readClassification _ _                = Just ClassificationPRIVATE
 
 -- |The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.
-dataPermission :: Has Permission a => a -> Classification -> Maybe Consent -> Permission
+dataPermission :: Permission -> Classification -> Maybe Consent -> Permission
 dataPermission o c = dp (view o) . readPermission c where
   dp p r
     | p >= PermissionREAD = p

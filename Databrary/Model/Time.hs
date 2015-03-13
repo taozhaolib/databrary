@@ -5,12 +5,16 @@ module Databrary.Model.Time
   , parseOffset
   , lowerBound, upperBound
   , segmentLength
+  , age
+  , yearsAge
+  , ageTime
   ) where
 
 import Control.Applicative ((<$>))
 import Control.Arrow (first)
 import Control.Monad (liftM2)
 import Data.Fixed (Fixed(..), Milli)
+import Data.Time (diffDays, DiffTime, secondsToDiffTime)
 import Database.PostgreSQL.Typed.Types (PGType)
 import qualified Database.PostgreSQL.Typed.Range as Range
 
@@ -67,3 +71,12 @@ instance JSON.ToJSON Segment where
     | Range.isEmpty s = JSON.Null
     | Just o <- Range.getPoint s = JSON.toJSON o
     | otherwise = JSON.toJSON $ map Range.bound [Range.lowerBound s, Range.upperBound s]
+
+age :: Date -> Date -> Age
+age b d = Age $ fromInteger $ diffDays d b
+
+yearsAge :: Real a => a -> Age
+yearsAge y = Age $ ceiling $ (365.24219 :: Double) * realToFrac y
+
+ageTime :: Age -> DiffTime
+ageTime (Age n) = secondsToDiffTime $ 86400 * fromIntegral n

@@ -72,7 +72,7 @@ removeContainer c = do
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where
   fmt
-    | dataPermission c ClassificationRESTRICTED (view c) >= PermissionREAD = "%Y-%m-%d"
+    | dataPermission (view c) ClassificationRESTRICTED (view c) >= PermissionREAD = "%Y-%m-%d"
     | otherwise = "%Y-XX-XX"
 
 containerJSON :: Container -> JSON.Object

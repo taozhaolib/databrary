@@ -7,6 +7,7 @@ module Databrary.Model.Record
   , addRecord
   , changeRecord
   , removeRecord
+  , getMeasure
   , changeRecordMeasure
   , removeRecordMeasure
   , recordJSON
@@ -15,6 +16,7 @@ module Databrary.Model.Record
 import Control.Applicative ((<$>))
 import Control.Monad (guard)
 import Data.Function (on)
+import Data.List (find)
 import Data.Maybe (catMaybes)
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
@@ -72,6 +74,9 @@ removeRecord r = do
 measureOrder :: Measure -> Measure -> Ordering
 measureOrder = compare `on` (metricId . measureMetric)
 
+getMeasure :: Metric -> Measures -> Maybe Measure
+getMeasure m = find ((metricId m ==) . metricId . measureMetric)
+
 rmMeasure :: Measure -> Record
 rmMeasure m@Measure{ measureRecord = rec } = rec{ recordMeasures = upd $ recordMeasures rec } where
   upd [] = [m]
@@ -119,8 +124,8 @@ measureJSONPair m = T.pack (show (metricId (measureMetric m))) JSON..= measureDa
 
 recordJSON :: Record -> JSON.Object
 recordJSON r@Record{..} = JSON.record recordId $ catMaybes
-  [ Just $ "volume" JSON..= volumeId recordVolume
-  , ("category" JSON..=) <$> fmap recordCategoryId recordCategory
+  [ -- Just $ "volume" JSON..= volumeId recordVolume
+    ("category" JSON..=) <$> fmap recordCategoryId recordCategory
   , Just $ "measures" JSON..= JSON.Object (JSON.object $ map measureJSONPair $ getRecordMeasures r)
   ]
 

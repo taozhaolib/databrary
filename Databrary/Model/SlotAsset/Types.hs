@@ -44,4 +44,4 @@ instance Has Classification SlotAsset where
   view SlotAsset{ slotAsset = a } = view a
 
 instance Has Permission SlotAsset where
-  view sa = dataPermission (view sa :: Asset) (view sa) (view sa)
+  view sa = dataPermission (view $ slotAsset sa) (view sa) (view sa)

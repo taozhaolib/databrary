@@ -6,9 +6,9 @@ module Databrary.Model.AssetSlot.SQL
   , selectSlotAsset
   , selectVolumeAssetSlot
   , selectAssetSlot
-  , insertAssetSlot
-  , updateAssetSlot
-  , deleteAssetSlot
+  , insertSlotAsset
+  , updateSlotAsset
+  , deleteSlotAsset
   ) where
 
 import Data.Maybe (fromMaybe)
@@ -114,27 +114,27 @@ slotAssetSets as =
   , ("segment", "${slotSegment <$> assetSlot " ++ as ++ "}")
   ]
 
-insertAssetSlot :: TH.Name -- ^ @'AuditIdentity'@
+insertSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-insertAssetSlot ident a = auditInsert ident "slot_asset"
+insertSlotAsset ident a = auditInsert ident "slot_asset"
   (slotAssetKeys as ++ slotAssetSets as)
   Nothing
   where as = nameRef a
 
-updateAssetSlot :: TH.Name -- ^ @'AuditIdentity'@
+updateSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-updateAssetSlot ident a = auditUpdate ident "slot_asset"
+updateSlotAsset ident a = auditUpdate ident "slot_asset"
   (slotAssetSets as)
   (whereEq $ slotAssetKeys as)
   Nothing
   where as = nameRef a
 
-deleteAssetSlot :: TH.Name -- ^ @'AuditIdentity'@
+deleteSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-deleteAssetSlot ident a = auditDelete ident "slot_asset"
+deleteSlotAsset ident a = auditDelete ident "slot_asset"
   (whereEq $ slotAssetKeys as)
   Nothing
   where as = nameRef a

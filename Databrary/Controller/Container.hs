@@ -7,13 +7,21 @@ module Databrary.Controller.Container
   ) where
 
 import Control.Monad (when)
+import qualified Data.ByteString as BS
 import qualified Data.Text as T
+import qualified Network.Wai as Wai
 
 import Control.Applicative.Ops
+import Control.Has (peeks)
+import qualified Databrary.JSON as JSON
+import Databrary.DB
 import Databrary.Model.Id
+import Databrary.Model.Identity
 import Databrary.Model.Permission
 import Databrary.Model.Volume
 import Databrary.Model.Container
+import Databrary.Model.AssetSlot
+import Databrary.Model.RecordSlot
 import Databrary.Action
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Permission
@@ -26,12 +34,22 @@ getContainer :: Permission -> Id Container -> AuthActionM Container
 getContainer p i =
   checkPermission p =<< maybeAction =<< lookupContainer i
 
+containerJSONField :: (DBM m, MonadHasIdentity c m) => Container -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+containerJSONField c "assets" _ =
+  Just . JSON.toJSON . map assetSlotJSON <$> lookupContainerAssets c
+containerJSONField c "records" _ =
+  Just . JSON.toJSON . map recordSlotJSON <$> lookupContainerRecords c
+containerJSONField _ _ _ = return Nothing
+
+containerJSONQuery :: (DBM m, MonadHasIdentity c m) => Container -> JSON.Query -> m JSON.Object
+containerJSONQuery vol = JSON.jsonQuery (containerJSON vol) (containerJSONField vol)
+
 viewContainer :: API -> Id Container -> AppRAction
 viewContainer api i = action GET (api, i) $ withAuth $ do
   when (api == HTML) angular
   c <- getContainer PermissionPUBLIC i
   case api of
-    JSON -> okResponse [] $ containerJSON c
+    JSON -> okResponse [] =<< containerJSONQuery c =<< peeks Wai.queryString
     HTML -> okResponse [] $ show $ containerId c -- TODO
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container

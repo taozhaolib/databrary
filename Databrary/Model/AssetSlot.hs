@@ -3,6 +3,7 @@ module Databrary.Model.AssetSlot
   ( module Databrary.Model.AssetSlot.Types
   , lookupAssetSlot
   , lookupAssetAssetSlot
+  , lookupContainerAssets
   , changeAssetSlot
   , findAssetContainerEnd
   , auditAssetSlotDownload
@@ -44,15 +45,19 @@ lookupAssetAssetSlot a = fromMaybe assetNoSlot
   <$> dbQuery1 $(selectQuery selectAssetSlotAsset "$WHERE slot_asset.asset = ${assetId a}")
   <*> return a
 
+lookupContainerAssets :: (DBM m) => Container -> m [AssetSlot]
+lookupContainerAssets c =
+  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c}")
+
 changeAssetSlot :: (MonadAudit c m) => AssetSlot -> m Bool
 changeAssetSlot as = do
   ident <- getAuditIdentity
   (0 <) <$> if isNothing (assetSlot as)
-    then dbExecute $(deleteAssetSlot 'ident 'as)
+    then dbExecute $(deleteSlotAsset 'ident 'as)
     else do
       (r, _) <- updateOrInsert
-        $(updateAssetSlot 'ident 'as)
-        $(insertAssetSlot 'ident 'as)
+        $(updateSlotAsset 'ident 'as)
+        $(insertSlotAsset 'ident 'as)
       when (r /= 1) $ fail $ "changeAssetSlot: " ++ show r ++ " rows"
       return r
 
