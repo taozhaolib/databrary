@@ -9,7 +9,7 @@ app.directive('uploadProgress', [
         progressFloat: '=progressValue'
       },
       templateUrl: 'asset/uploadProgress.html',
-      };
+    };
   }
 ]);
 
