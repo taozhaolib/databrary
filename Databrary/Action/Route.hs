@@ -9,10 +9,11 @@ module Databrary.Action.Route
   ) where
 
 import Control.Applicative ((<|>))
-import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.Reader (withReaderT)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
+import qualified Data.ByteString.Lazy as BSL
 import Data.Functor (($>))
 import Data.Functor.Contravariant (Contravariant(..))
 import Data.Monoid ((<>))
@@ -40,7 +41,7 @@ action meth r act = RouteAction
   , routeAction = act
   } where
   eps [] = "/"
-  eps p = Blaze.toByteString $ encodePathSegments p
+  eps p = BSL.toStrict $ BSB.toLazyByteString $ encodePathSegments p
 
 mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)

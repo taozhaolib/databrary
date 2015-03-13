@@ -6,15 +6,16 @@ module Databrary.Action.Response
   , runResult
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
-import qualified Blaze.ByteString.Builder.Char.Utf8 as Blaze
 import Control.Exception (Exception, throwIO, handle)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.Encoding as TLE
 import Data.Typeable (Typeable)
 import Network.HTTP.Types (ResponseHeaders, Status, hContentType)
 import Network.Wai (Response, responseBuilder, responseLBS, StreamingBody, responseStream, FilePart(..), responseFile, responseStatus)
@@ -27,14 +28,14 @@ class ResponseData r where
 instance ResponseData (Status -> ResponseHeaders -> Response) where
   response s h r = r s h
 
-instance ResponseData Blaze.Builder where
+instance ResponseData BSB.Builder where
   response = responseBuilder
 
 instance ResponseData BSL.ByteString where
   response = responseLBS
 
 instance ResponseData BS.ByteString where
-  response s h = responseBuilder s h . Blaze.fromByteString
+  response s h = responseBuilder s h . BSB.byteString
 
 instance ResponseData StreamingBody where
   response = responseStream
@@ -50,11 +51,11 @@ instance ResponseData (FilePath, Maybe FilePart) where
 
 instance ResponseData T.Text where
   response s h =
-    response s ((hContentType, "text/plain;charset=utf-8") : h) . Blaze.fromText
+    response s ((hContentType, "text/plain;charset=utf-8") : h) . TE.encodeUtf8Builder
 
 instance ResponseData TL.Text where
   response s h =
-    response s ((hContentType, "text/plain;charset=utf-8") : h) . Blaze.fromLazyText
+    response s ((hContentType, "text/plain;charset=utf-8") : h) . TLE.encodeUtf8Builder
 
 instance ResponseData JSON.Value where
   response s h =

@@ -3,10 +3,10 @@ module Databrary.View.Angular
   ( htmlAngular
   ) where
 
-import qualified Blaze.ByteString.Builder.ByteString as Blaze
 import Control.Monad (forM_)
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
 import Data.Monoid (mempty, (<>))
 import qualified Text.Blaze.Html5 as H
@@ -36,7 +36,7 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
     H.noscript $
       H.meta
         H.! HA.httpEquiv "Refresh"
-        H.! HA.content (builderValue $ Blaze.fromByteString "0;url=" <> nojs)
+        H.! HA.content (builderValue $ BSB.string7 "0;url=" <> nojs)
     H.meta
       H.! HA.httpEquiv "X-UA-Compatible"
       H.! HA.content "IE=edge"

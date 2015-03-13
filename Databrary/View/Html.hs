@@ -10,8 +10,8 @@ module Databrary.View.Html
   , (!?)
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Text.Blaze.Internal as Markup
 import qualified Text.Blaze.Html5 as H
@@ -21,22 +21,22 @@ import Blaze.ByteString.Builder.Html.Word (fromHtmlEscapedByteString, fromHtmlEs
 import Databrary.Action
 
 lazyByteStringHtml :: BSL.ByteString -> H.Markup
-lazyByteStringHtml = H.unsafeLazyByteString . Blaze.toLazyByteString . fromHtmlEscapedLazyByteString
+lazyByteStringHtml = H.unsafeLazyByteString . BSB.toLazyByteString . fromHtmlEscapedLazyByteString
 
 byteStringHtml :: BS.ByteString -> H.Markup
-byteStringHtml = H.unsafeByteString . Blaze.toByteString . fromHtmlEscapedByteString
+byteStringHtml = H.unsafeLazyByteString . BSB.toLazyByteString . fromHtmlEscapedByteString
 
-builderHtml :: Blaze.Builder -> H.Markup
-builderHtml = lazyByteStringHtml . Blaze.toLazyByteString
+builderHtml :: BSB.Builder -> H.Markup
+builderHtml = lazyByteStringHtml . BSB.toLazyByteString
 
 lazyByteStringValue :: BSL.ByteString -> H.AttributeValue
-lazyByteStringValue = H.unsafeLazyByteStringValue . Blaze.toLazyByteString . fromHtmlEscapedLazyByteString
+lazyByteStringValue = H.unsafeLazyByteStringValue . BSB.toLazyByteString . fromHtmlEscapedLazyByteString
 
 byteStringValue :: BS.ByteString -> H.AttributeValue
-byteStringValue = H.unsafeByteStringValue . Blaze.toByteString . fromHtmlEscapedByteString
+byteStringValue = H.unsafeLazyByteStringValue . BSB.toLazyByteString . fromHtmlEscapedByteString
 
-builderValue :: Blaze.Builder -> H.AttributeValue
-builderValue = lazyByteStringValue . Blaze.toLazyByteString
+builderValue :: BSB.Builder -> H.AttributeValue
+builderValue = lazyByteStringValue . BSB.toLazyByteString
 
 actionLink :: RouteAction q -> H.Attribute
 actionLink r = HA.href $ byteStringValue $ actionURL r Nothing

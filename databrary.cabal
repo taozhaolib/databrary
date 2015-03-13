@@ -28,7 +28,6 @@ Executable databrary
     posix-paths,
     directory,
     text,
-    blaze-builder,
     base64-bytestring,
     utf8-string,
     network,

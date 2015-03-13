@@ -5,8 +5,9 @@ module Databrary.Web.Cookie
   , clearCookie
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as BSL
 import Network.HTTP.Types (Header, hCookie)
 import qualified Network.Wai as Wai
 import qualified Web.Cookie as Cook
@@ -29,7 +30,7 @@ setSignedCookie :: (MonadHasResource c m, MonadHasRequest c m, EntropyM c m) => 
 setSignedCookie c val ex = do
   val' <- sign val
   sec <- peeks Wai.isSecure
-  return ("set-cookie", Blaze.toByteString $ Cook.renderSetCookie $ Cook.def
+  return ("set-cookie", BSL.toStrict $ BSB.toLazyByteString $ Cook.renderSetCookie $ Cook.def
     { Cook.setCookieName = c
     , Cook.setCookieValue = val'
     , Cook.setCookiePath = Just "/"
@@ -38,7 +39,7 @@ setSignedCookie c val ex = do
     })
 
 clearCookie :: BS.ByteString -> Header
-clearCookie c = ("set-cookie", Blaze.toByteString $ Cook.renderSetCookie $ Cook.def
+clearCookie c = ("set-cookie", BSL.toStrict $ BSB.toLazyByteString $ Cook.renderSetCookie $ Cook.def
   { Cook.setCookieName = c
   , Cook.setCookiePath = Just "/"
   })

@@ -36,8 +36,8 @@ module Databrary.Action
   , runAppRoute
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import Control.Monad.IO.Class (MonadIO)
+import qualified Data.ByteString.Builder as BSB
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
@@ -54,7 +54,7 @@ import Databrary.Resource
 import qualified Databrary.Web.Route as R
 
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
-emptyResponse s h = returnResponse s h (mempty :: Blaze.Builder)
+emptyResponse s h = returnResponse s h (mempty :: BSB.Builder)
 
 redirectRouteResponse :: MonadAction q m => ResponseHeaders -> RouteAction qa -> m Response
 redirectRouteResponse h a = do

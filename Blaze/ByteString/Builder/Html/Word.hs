@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Blaze.ByteString.Builder.Html.Word
-  ( writeHtmlEscapedWord
+  ( wordHtmlEscaped
   , fromHtmlEscapedWord
   , fromHtmlEscapedWordList
   , fromHtmlEscapedByteString
@@ -9,9 +9,10 @@ module Blaze.ByteString.Builder.Html.Word
   , fromHtmlEscapedLazyText
   ) where
 
-import Blaze.ByteString.Builder
-import Blaze.ByteString.Builder.Internal.Write
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as B
+import qualified Data.ByteString.Builder.Prim as P
+import Data.ByteString.Internal (c2w)
 import qualified Data.ByteString.Lazy as BSL
 import Data.Word (Word8)
 import qualified Data.Text as T
@@ -19,30 +20,39 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Encoding as TLE
 
-writeHtmlEscapedWord :: Word8 -> Write
-writeHtmlEscapedWord w = boundedWrite 6 (io $ toEnum $ fromIntegral w) where
-  io '<'  = getPoke $ writeByteString "&lt;"
-  io '>'  = getPoke $ writeByteString "&gt;"
-  io '&'  = getPoke $ writeByteString "&amp;"
-  io '"'  = getPoke $ writeByteString "&quot;"
-  io '\'' = getPoke $ writeByteString "&#39;"
-  io _    = getPoke $ writeWord8 w
+wordHtmlEscaped :: P.BoundedPrim Word8
+wordHtmlEscaped =
+  P.condB (>  c2w '>' ) (P.condB (== c2w '\DEL') P.emptyB $ P.liftFixedToBounded P.word8) $
+  P.condB (== c2w '<' ) (fixed4 ('&',('l',('t',';')))) $        -- &lt;
+  P.condB (== c2w '>' ) (fixed4 ('&',('g',('t',';')))) $        -- &gt;
+  P.condB (== c2w '&' ) (fixed5 ('&',('a',('m',('p',';'))))) $  -- &amp;
+  P.condB (== c2w '"' ) (fixed6 ('&',('q',('u',('o',('t',';')))))) $  -- &quot;
+  P.condB (== c2w '\'') (fixed5 ('&',('#',('3',('9',';'))))) $  -- &#39;
+  P.condB (\c -> c >= c2w ' ' || c == c2w '\t' || c == c2w '\n' || c == c2w '\r')
+        (P.liftFixedToBounded P.word8) P.emptyB
+  where
+  fixed4 x = P.liftFixedToBounded $ const x P.>$<
+    P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7
+  fixed5 x = P.liftFixedToBounded $ const x P.>$<
+    P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7
+  fixed6 x = P.liftFixedToBounded $ const x P.>$<
+    P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7 P.>*< P.char7
 
-fromHtmlEscapedWord :: Word8 -> Builder
-fromHtmlEscapedWord = fromWriteSingleton writeHtmlEscapedWord
+fromHtmlEscapedWord :: Word8 -> B.Builder
+fromHtmlEscapedWord = P.primBounded wordHtmlEscaped
 
-fromHtmlEscapedWordList :: [Word8] -> Builder
-fromHtmlEscapedWordList = fromWriteList writeHtmlEscapedWord
+fromHtmlEscapedWordList :: [Word8] -> B.Builder
+fromHtmlEscapedWordList = P.primMapListBounded wordHtmlEscaped
 
-fromHtmlEscapedByteString :: BS.ByteString -> Builder
+fromHtmlEscapedByteString :: BS.ByteString -> B.Builder
 fromHtmlEscapedByteString = fromHtmlEscapedWordList . BS.unpack
 
-fromHtmlEscapedLazyByteString :: BSL.ByteString -> Builder
+fromHtmlEscapedLazyByteString :: BSL.ByteString -> B.Builder
 fromHtmlEscapedLazyByteString = fromHtmlEscapedWordList . BSL.unpack
 
-fromHtmlEscapedText :: T.Text -> Builder
+fromHtmlEscapedText :: T.Text -> B.Builder
 fromHtmlEscapedText = fromHtmlEscapedByteString . TE.encodeUtf8
 
-fromHtmlEscapedLazyText :: TL.Text -> Builder
+fromHtmlEscapedLazyText :: TL.Text -> B.Builder
 fromHtmlEscapedLazyText = fromHtmlEscapedLazyByteString . TLE.encodeUtf8
 

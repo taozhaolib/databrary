@@ -4,7 +4,6 @@ module Databrary.Web.Parse
   , parseRequestContent
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import Control.Applicative ((<$>), (<$))
 import Control.Exception (bracket)
 import Control.Monad (when, unless)
@@ -13,6 +12,7 @@ import Control.Monad.Reader (runReaderT)
 import qualified Data.Aeson as JSON
 import qualified Data.Attoparsec.ByteString as AP
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
 import Data.IORef (newIORef, readIORef, writeIORef)
 import Data.Monoid (mempty)
 import Data.Word (Word64)
@@ -29,7 +29,7 @@ import Databrary.Web.Request (lookupRequestHeader)
 import Databrary.Action.Response (response, result)
 
 requestTooLarge :: Response
-requestTooLarge = response requestEntityTooLarge413 [] (mempty :: Blaze.Builder)
+requestTooLarge = response requestEntityTooLarge413 [] (mempty :: BSB.Builder)
 
 type ChunkParser a = IO BS.ByteString -> IO a
 

@@ -5,10 +5,10 @@ module Databrary.Controller.Angular
   , angularConstants
   ) where
 
-import qualified Blaze.ByteString.Builder as Blaze
 import Control.Arrow (second)
 import Control.Monad (when)
 import Control.Monad.IO.Class (MonadIO)
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
@@ -31,7 +31,7 @@ import Databrary.Action
 import Databrary.Web.Request
 import Databrary.View.Angular
 
-jsURL :: Maybe Bool -> Wai.Request -> (Maybe Bool, Blaze.Builder)
+jsURL :: Maybe Bool -> Wai.Request -> (Maybe Bool, BSB.Builder)
 jsURL js req =
   second (encodePath (Wai.pathInfo req) . maybe id (\v -> (("js", Just (if v then "1" else "0")) :)) js)
   $ unjs $ Wai.queryString req where
