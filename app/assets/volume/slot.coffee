@@ -297,8 +297,8 @@ app.controller('volume/slot', [
 
       finishPosition: () ->
         $scope.form.position.$setPristine()
-        @segment = new Segment(@asset.segment)
         $scope.editing = true
+        @segment = new Segment(@asset.segment)
         return
 
       savePosition: () ->
@@ -307,7 +307,7 @@ app.controller('volume/slot', [
         @asset.save({container:slot.id, position:Math.floor(@segment.l)}).then (asset) =>
             @asset = asset
             shift -= @asset.segment.l
-            if shift
+            if isFinite(shift) && shift
               for e in @excerpts
                 e.segment.l -= shift
                 e.segment.u -= shift
