@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Container
   ( module Databrary.Model.Container.Types
+  , blankContainer
   , lookupContainer
   , lookupVolumeContainer
   , lookupVolumeContainers
@@ -29,6 +30,16 @@ import Databrary.Model.Container.Types
 import Databrary.Model.Container.SQL
 
 useTPG
+
+blankContainer :: Volume -> Container
+blankContainer vol = Container
+  { containerId = error "blankContainer"
+  , containerTop = False
+  , containerName = Nothing
+  , containerDate = Nothing
+  , containerConsent = Nothing
+  , containerVolume = vol
+  }
 
 lookupContainer :: (DBM m, MonadHasIdentity c m) => Id Container -> m (Maybe Container)
 lookupContainer ci = do

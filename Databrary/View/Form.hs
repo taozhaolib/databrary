@@ -8,6 +8,7 @@ module Databrary.View.Form
   , inputCheckbox
   , inputSelect
   , inputEnum
+  , inputDate
   , htmlForm
   ) where
 
@@ -20,13 +21,16 @@ import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
+import Data.Time.Format (formatTime)
 import qualified Text.Blaze.Internal as M
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
+import System.Locale (defaultTimeLocale)
 
 import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.Enum
+import Databrary.Model.Time
 import Databrary.Action
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
@@ -86,7 +90,7 @@ inputText val ref dat = H.input
   H.! HA.type_ "text"
   H.! HA.id    ref
   H.! HA.name  ref
-  $? (flip (H.!) . HA.value <$> (fmap byteStringValue dat <|> fmap H.toValue val))
+  !? (HA.value <$> (fmap byteStringValue dat <|> fmap H.toValue val))
 
 inputTextarea :: H.ToMarkup a => Maybe a -> Field
 inputTextarea val ref dat = H.textarea
@@ -120,6 +124,13 @@ inputEnum :: forall a . DBEnum a => Maybe a -> Field
 inputEnum val =
   inputSelect (bshow <$> val) $ map (\(x, v) -> (bshow (x :: a), v)) pgEnumValues
   where bshow = BSC.pack . show . fromEnum
+
+inputDate :: Maybe Date -> Field
+inputDate val ref dat = H.input
+  H.! HA.type_ "date"
+  H.! HA.id    ref
+  H.! HA.name  ref
+  !? (HA.value <$> (fmap byteStringValue dat <|> fmap (H.toValue . formatTime defaultTimeLocale "%F") val))
 
 htmlForm :: T.Text -> RouteAction q -> AuthRequest -> FormHtml -> FormHtml
 htmlForm title act req = liftFormHtml $ \form ->

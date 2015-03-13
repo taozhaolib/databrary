@@ -50,7 +50,7 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
       H.link
         H.! HA.rel "apple-touch-icon-precomposed"
         H.! HA.href (public ["icons", "apple-touch-icon" <> maybe "" (BSC.cons '-') size <> ".png"])
-        $? (flip (H.!) . HA.sizes . byteStringValue <$> size)
+        !? (HA.sizes . byteStringValue <$> size)
     H.link
       H.! HA.rel "stylesheet"
       H.! HA.href (public ["app.min.css"])
