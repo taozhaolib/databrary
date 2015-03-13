@@ -220,7 +220,10 @@ app.controller('volume/slot', [
       return
 
     getSelection = ->
-      if ruler.selection.empty then new Segment(ruler.position) else ruler.selection
+      if ruler.selection.empty
+        new Segment(ruler.position)
+      else
+        ruler.selection
 
     $scope.addBlank = () ->
       unless blank
@@ -314,6 +317,7 @@ app.controller('volume/slot', [
             updateRange()
             sortTracks()
             @finishPosition()
+            @updateExcerpt()
           , (res) =>
             @finishPosition()
             messages.addError
@@ -334,8 +338,8 @@ app.controller('volume/slot', [
 
       updateExcerpt: () ->
         @excerpt = undefined
-        seg = getSelection()
-        return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg)
+        seg = if @segment.full then @segment else getSelection()
+        return if !@asset || !seg || !@segment.overlaps(seg)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
           if !excerpt
