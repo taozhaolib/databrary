@@ -37,6 +37,7 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Read as TR
 import Data.Time (fromGregorian, parseTime)
 import qualified Data.Vector as V
+import qualified Database.PostgreSQL.Typed.Range as Range (Range(Empty))
 import qualified Network.URI as URI
 import System.Locale (defaultTimeLocale)
 import Text.Read (readEither)
@@ -168,6 +169,16 @@ deformNonEmpty f = opt =<< peek where
 deformParse :: (Functor m, Monad m) => a -> (FormDatum -> Either FormErrorMessage a) -> DeformT m a
 deformParse def p = deformEither def =<< peeks p
 
+deformParseJSON :: (Functor m, Monad m, JSON.FromJSON a) => a -> (Maybe BS.ByteString -> Either FormErrorMessage a) -> DeformT m a
+deformParseJSON def p = do
+  d <- peek
+  case d of
+    FormDatumNone -> deformEither def $ p Nothing
+    FormDatumBS b -> deformEither def $ p $ Just b
+    FormDatumJSON j -> case JSON.fromJSON j of
+      JSON.Error e -> def <$ deformError (T.pack e)
+      JSON.Success r -> return r
+
 class Deform a where
   deform :: (Functor m, Monad m) => DeformT m a
 
@@ -265,13 +276,12 @@ instance Deform Date where
     pf = parseTime defaultTimeLocale
 
 instance Deform Offset where
-  deform = deformParse 0 fv where
-    fv (FormDatumBS b) = po $ BSC.unpack b
-    fv (FormDatumJSON (JSON.String t)) = po $ T.unpack t
-    fv (FormDatumJSON (JSON.Number n)) = return $ realToFrac $ n / 1000
-    fv (FormDatumJSON (JSON.Bool False)) = return 0
-    fv _ = Left "Offset required"
-    po = maybe (Left "Invalid offset") Right . parseOffset
+  deform = deformParseJSON 0
+    $ maybe (Left "Offset required") $ maybe (Left "Invalid offset") Right . parseOffset . BSC.unpack
+
+instance Deform Segment where
+  deform = deformParseJSON Range.Empty
+    $ maybe (Left "Segment required") $ maybe (Left "Invalid segment") Right . parseSegment . BSC.unpack
 
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform

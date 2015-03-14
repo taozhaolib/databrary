@@ -18,11 +18,13 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
 import qualified Database.PostgreSQL.Typed.Range as Range
 import Network.HTTP.Types (conflict409)
+import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Control.Applicative.Ops
 import Control.Has (peeks)
 import Databrary.Resource
+import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
@@ -32,6 +34,7 @@ import Databrary.Action
 import Databrary.Model.Time
 import Databrary.Model.Permission
 import Databrary.Model.Id
+import Databrary.Model.Identity
 import Databrary.Model.Volume
 import Databrary.Model.Container
 import Databrary.Model.Token
@@ -39,6 +42,7 @@ import Databrary.Model.Format
 import Databrary.Model.Asset
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
+import Databrary.Model.Excerpt
 import Databrary.Store
 import Databrary.Store.Storage
 import Databrary.Store.Asset
@@ -54,12 +58,20 @@ getAsset :: Permission -> Id Asset -> AuthActionM AssetSlot
 getAsset p i =
   checkPermission p =<< maybeAction =<< lookupAssetSlot i
 
+assetJSONField :: (DBM m, MonadHasIdentity c m) => AssetSlot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+assetJSONField a "excerpts" _ =
+  Just . JSON.toJSON . map excerptJSON <$> lookupAssetExcerpts a
+assetJSONField _ _ _ = return Nothing
+
+assetJSONQuery :: (DBM m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
+assetJSONQuery vol = JSON.jsonQuery (assetSlotJSON vol) (assetJSONField vol)
+
 viewAsset :: API -> Id Asset -> AppRAction
 viewAsset api i = action GET (api, i) $ withAuth $ do
   when (api == HTML) angular
   asset <- getAsset PermissionPUBLIC i
   case api of
-    JSON -> okResponse [] $ assetSlotJSON asset
+    JSON -> okResponse [] =<< assetJSONQuery asset =<< peeks Wai.queryString
     HTML -> okResponse [] $ show $ assetId $ slotAsset asset -- TODO
 
 data FileUpload

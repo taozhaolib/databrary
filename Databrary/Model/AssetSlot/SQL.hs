@@ -117,24 +117,24 @@ slotAssetSets as =
 insertSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-insertSlotAsset ident a = auditInsert ident "slot_asset"
-  (slotAssetKeys as ++ slotAssetSets as)
+insertSlotAsset ident o = auditInsert ident "slot_asset"
+  (slotAssetKeys os ++ slotAssetSets os)
   Nothing
-  where as = nameRef a
+  where os = nameRef o
 
 updateSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-updateSlotAsset ident a = auditUpdate ident "slot_asset"
-  (slotAssetSets as)
-  (whereEq $ slotAssetKeys as)
+updateSlotAsset ident o = auditUpdate ident "slot_asset"
+  (slotAssetSets os)
+  (whereEq $ slotAssetKeys os)
   Nothing
-  where as = nameRef a
+  where os = nameRef o
 
 deleteSlotAsset :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'AssetSlot'@
   -> TH.ExpQ
-deleteSlotAsset ident a = auditDelete ident "slot_asset"
-  (whereEq $ slotAssetKeys as)
+deleteSlotAsset ident o = auditDelete ident "slot_asset"
+  (whereEq $ slotAssetKeys os)
   Nothing
-  where as = nameRef a
+  where os = nameRef o

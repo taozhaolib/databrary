@@ -41,7 +41,7 @@ updateConsent ident s c = auditUpdate ident "slot_consent"
 deleteConsent :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'Slot'@
   -> TH.ExpQ -- ^ @()@
-deleteConsent ident s = auditDelete ident "slot_consent"
-  (whereEq $ slotKeys (nameRef s))
+deleteConsent ident o = auditDelete ident "slot_consent"
+  ("container = ${containerId $ slotContainer " ++ os ++ "} AND segment <@ ${slotSegment " ++ os ++ "}")
   Nothing
-
+  where os = nameRef o

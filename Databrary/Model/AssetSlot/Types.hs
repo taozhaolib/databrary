@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.AssetSlot.Types
   ( AssetSlot(..)
   , assetNoSlot
@@ -19,7 +18,7 @@ import Databrary.Model.Slot.Types
 data AssetSlot = AssetSlot
   { slotAsset :: Asset
   , assetSlot :: Maybe Slot
-  , slotAssetExcerpt :: Maybe Classification
+  , assetSlotExcerpt :: Maybe Classification
   }
 
 assetNoSlot :: Asset -> AssetSlot
@@ -50,7 +49,7 @@ instance Has (Maybe Consent) AssetSlot where
   view = (view =<<) . assetSlot
 
 instance Has Classification AssetSlot where
-  view AssetSlot{ slotAssetExcerpt = Just c } = c
+  view AssetSlot{ assetSlotExcerpt = Just c } = c
   view AssetSlot{ slotAsset = a } = view a
 
 instance Has Permission AssetSlot where

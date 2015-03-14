@@ -26,6 +26,7 @@ import Databrary.Controller.Record
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
 import Databrary.Controller.Asset
+import Databrary.Controller.Excerpt
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
@@ -99,6 +100,8 @@ routes = do
     , R.route >>= \a -> msum          -- /asset/ID
       [                               act (viewAsset api a)
       ,        (html >> "download" >> act (downloadAsset a))
+      ,         (json >> "excerpt" >> act (postExcerpt a)
+                                  <|> act (deleteExcerpt a))
       ]
 
     , json >> msum                    -- /api
