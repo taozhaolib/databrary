@@ -4,6 +4,7 @@ module Databrary.Controller.Asset
   , viewAsset
   , postAsset
   , createAsset
+  , downloadAsset
   ) where
 
 import Control.Applicative ((<|>))
@@ -11,7 +12,7 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import Data.Either (isLeft, isRight)
-import Data.Maybe (fromMaybe, isNothing, isJust)
+import Data.Maybe (fromMaybe, fromJust, isNothing, isJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -26,6 +27,7 @@ import Databrary.DB
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
+import Databrary.Web.File
 import Databrary.Action
 import Databrary.Model.Time
 import Databrary.Model.Permission
@@ -152,3 +154,11 @@ createAsset :: API -> Id Volume -> AppRAction
 createAsset api vi = action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
   processAsset api $ Left v
+
+downloadAsset :: Id Asset -> AppRAction
+downloadAsset ai = action GET (ai, "download" :: T.Text) $ withAuth $ do
+  as <- getAsset PermissionREAD ai
+  let a = slotAsset as
+  store <- maybeAction =<< getAssetFile a
+  auditAssetSlotDownload True as
+  serveFile store (assetFormat a) (fromJust $ assetSHA1 a)

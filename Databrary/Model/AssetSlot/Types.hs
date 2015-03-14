@@ -54,4 +54,5 @@ instance Has Classification AssetSlot where
   view AssetSlot{ slotAsset = a } = view a
 
 instance Has Permission AssetSlot where
-  view sa = dataPermission (view $ slotAsset sa) (view sa) (view sa)
+  view AssetSlot{ slotAsset = a, assetSlot = Just s } = dataPermission (view a) (view a) (view s)
+  view AssetSlot{ slotAsset = a } = view a

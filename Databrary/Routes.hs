@@ -23,7 +23,6 @@ import Databrary.Controller.Volume
 import Databrary.Controller.VolumeAccess
 import Databrary.Controller.Container
 import Databrary.Controller.Record
-import Databrary.Controller.SlotAsset
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
 import Databrary.Controller.Asset
@@ -90,8 +89,6 @@ routes = do
     , R.route >>= \c -> msum          -- /slot/ID
       [                               act (viewContainer api c)
       ,                               act (postContainer api c)
-      , R.route >>= \a ->             --         /asset/ID
-               (html >> "download" >> act (downloadSlotAsset c a))
       ]
 
     , R.route >>= \r -> msum          -- /record/ID
@@ -101,6 +98,7 @@ routes = do
 
     , R.route >>= \a -> msum          -- /asset/ID
       [                               act (viewAsset api a)
+      ,        (html >> "download" >> act (downloadAsset a))
       ]
 
     , json >> msum                    -- /api
