@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards, DataKinds #-}
 module Databrary.Model.Metric
   ( module Databrary.Model.Metric.Types
   , allMetrics
@@ -37,8 +37,8 @@ getMetric' (Id i) = metricsById IntMap.! fromIntegral i
 metricLong :: Metric -> Bool
 metricLong = ("description" ==) . metricName
 
-birthdateMetric :: Metric
-birthdateMetric = fromJust $ find (("birthdate" ==) . metricName) allMetrics
+birthdateMetric :: Metric--T MeasureTypeDate
+birthdateMetric = fromJust $ {- castMetric =<< -} find (("birthdate" ==) . metricName) allMetrics
 
 metricJSON :: Metric -> JSON.Object
 metricJSON m@Metric{..} = JSON.record metricId $ catMaybes

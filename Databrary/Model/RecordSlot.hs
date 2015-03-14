@@ -1,15 +1,17 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards, DataKinds #-}
 module Databrary.Model.RecordSlot
   ( module Databrary.Model.RecordSlot.Types
   , lookupRecordSlots
   , lookupContainerRecords
-  -- , changeRecordSlot
+  , moveRecordSlot
   , recordSlotJSON
   ) where
 
-import Control.Monad (when, liftM2)
-import Data.Maybe (catMaybes, isNothing)
+import Control.Monad (guard, liftM2)
+import Data.Maybe (catMaybes)
 import qualified Database.PostgreSQL.Typed.Range as Range
+import Database.PostgreSQL.Typed.Protocol (pgErrorCode)
+import Database.PostgreSQL.Typed.Types (PGTypeName(..))
 
 import Control.Applicative.Ops
 import Control.Has (view)
@@ -17,10 +19,12 @@ import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.Time
 import Databrary.Model.Permission
+import Databrary.Model.Audit
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
 import Databrary.Model.Metric
 import Databrary.Model.Record
+import Databrary.Model.Measure
 import Databrary.Model.SQL
 import Databrary.Model.RecordSlot.Types
 import Databrary.Model.RecordSlot.SQL
@@ -33,31 +37,30 @@ lookupContainerRecords :: (DBM m) => Container -> m [RecordSlot]
 lookupContainerRecords c =
   dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotRecord "$WHERE slot_record.container = ${containerId c}")
 
-{-
-changeRecordSlot :: (MonadAudit c m) => RecordSlot -> m Bool
-changeRecordSlot as = do
+moveRecordSlot :: (MonadAudit c m) => RecordSlot -> Segment -> m Bool
+moveRecordSlot rs@RecordSlot{ recordSlot = s@Slot{ slotSegment = src } } dst = do
   ident <- getAuditIdentity
-  (0 <) <$> if isNothing (recordSlot as)
-    then dbExecute $(deleteSlotRecord 'ident 'as)
-    else do
-      (r, _) <- updateOrInsert
-        $(updateSlotRecord 'ident 'as)
-        $(insertSlotRecord 'ident 'as)
-      when (r /= 1) $ fail $ "changeRecordSlot: " ++ show r ++ " rows"
-      return r
+  either (const False) ((0 <) . fst)
+    <$> case (Range.isEmpty src, Range.isEmpty dst) of
+    (True,  True) -> return $ Right (0, [])
+    (False, True) -> Right <$> dbRunQuery $(deleteSlotRecord 'ident 'rs)
+    (True,  False) -> dbTryQuery err $(insertSlotRecord 'ident 'rd)
+    (False, False) -> dbTryQuery err $(updateSlotRecord 'ident 'rs 'dst)
+  where
+  rd = rs{ recordSlot = s{ slotSegment = dst } }
+  err = guard . ("23P01" ==) . pgErrorCode
 
 recordSlotAge :: RecordSlot -> Maybe Age
 recordSlotAge rs@RecordSlot{..} =
-  clip <$> liftM2 age (measureDatum <$> getMeasure birthdateMetric (recordMeasures slotRecord)) (containerDate $ slotContainer recordSlot)
+  clip <$> liftM2 age (decodeMeasure (PGTypeProxy :: PGTypeName "date") =<< getMeasure birthdateMetric (recordMeasures slotRecord)) (containerDate $ slotContainer recordSlot)
   where
   clip a
     | dataPermission (view rs) (view birthdateMetric) (view rs) < PermissionREAD = a `min` ageLimit
     | otherwise = a
-  ageLimit = yearsAge 90
-      -}
+  ageLimit = yearsAge (90 :: Int)
 
 recordSlotJSON :: RecordSlot -> JSON.Object
 recordSlotJSON rs@RecordSlot{..} = JSON.record (recordId slotRecord) $ catMaybes
   [ Range.isFull (slotSegment recordSlot) ?!> ("segment" JSON..= slotSegment recordSlot)
-  -- , "age"
+  , ("age" JSON..=) <$> recordSlotAge rs
   ]

@@ -5,9 +5,6 @@ module Databrary.Model.Record.SQL
   , insertRecord
   , updateRecord
   , deleteRecord
-  , insertMeasure
-  , updateMeasure
-  , deleteMeasure
   ) where
 
 import qualified Data.ByteString.Char8 as BSC
@@ -82,45 +79,3 @@ deleteRecord :: TH.Name -- ^ @'AuditIdentity'@
 deleteRecord ident r = auditDelete ident "record"
   (whereEq $ recordKeys (nameRef r))
   Nothing
-
-setMeasureDatum :: Measure -> MeasureDatum -> Measure
-setMeasureDatum m d = m{ measureDatum = d }
-
-measureDatumRow :: Selector -- ^ @'MeasureDatum'@
-measureDatumRow = selector "measure" "measure.datum"
-
-measureKeys :: String -- ^ @'Measure'@
-  -> [(String, String)]
-measureKeys m =
-  [ ("record", "${recordId (measureRecord " ++ m ++ ")}")
-  , ("metric", "${metricId (measureMetric " ++ m ++ ")}")
-  ]
-
-measureSets :: String -- ^ @'Record'@
-  -> [(String, String)]
-measureSets r =
-  [ ("datum", "${measureDatum " ++ r ++ "}")
-  ]
-
-insertMeasure :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'Measure'@
-  -> TH.ExpQ -- ^ @'Measure'@
-insertMeasure ident m = auditInsert ident "!measure"
-  (measureKeys (nameRef m) ++ measureSets (nameRef m))
-  (Just $ selectOutput $ selectMap ((TH.VarE 'setMeasureDatum `TH.AppE` TH.VarE m) `TH.AppE`) measureDatumRow)
-
-updateMeasure :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'Measure'@
-  -> TH.ExpQ -- ^ @'Measure'@
-updateMeasure ident m = auditUpdate ident "!measure"
-  (measureSets (nameRef m))
-  (whereEq $ measureKeys (nameRef m))
-  (Just $ selectOutput $ selectMap ((TH.VarE 'setMeasureDatum `TH.AppE` TH.VarE m) `TH.AppE`) measureDatumRow)
-
-deleteMeasure :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'Measure'@
-  -> TH.ExpQ -- ^ @()@
-deleteMeasure ident m = auditDelete ident "measure"
-  (whereEq $ measureKeys (nameRef m))
-  Nothing
-

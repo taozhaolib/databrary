@@ -73,39 +73,35 @@ selectSlotRecord ident = selectJoin '($)
     $ selectVolume ident
   ]
 
-slotRecordKeys :: String -- ^ @'RecordSlot'@
+slotRecordVals :: String -- ^ @'RecordSlot'@
   -> [(String, String)]
-slotRecordKeys o =
-  [ ("record", "${recordId (slotRecord " ++ o ++ ")}") ]
-
-slotRecordSets :: String -- ^ @'RecordSlot'@
-  -> [(String, String)]
-slotRecordSets o =
-  [ ("container", "${containerId . slotContainer <$> recordSlot " ++ o ++ "}")
-  , ("segment", "${slotSegment <$> recordSlot " ++ o ++ "}")
+slotRecordVals o =
+  [ ("record", "${recordId $ slotRecord " ++ o ++ "}")
+  , ("container", "${containerId $ slotContainer $ recordSlot " ++ o ++ "}")
+  , ("segment", "${slotSegment $ recordSlot " ++ o ++ "}")
   ]
 
 insertSlotRecord :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'RecordSlot'@
   -> TH.ExpQ
 insertSlotRecord ident o = auditInsert ident "slot_record"
-  (slotRecordKeys os ++ slotRecordSets os)
+  (slotRecordVals os)
   Nothing
   where os = nameRef o
 
 updateSlotRecord :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'RecordSlot'@
+  -> TH.Name -- ^ @'Segment'@
   -> TH.ExpQ
-updateSlotRecord ident o = auditUpdate ident "slot_record"
-  (slotRecordSets os)
-  (whereEq $ slotRecordKeys os)
+updateSlotRecord ident o ds = auditUpdate ident "slot_record"
+  [ ("segment", "${" ++ nameRef ds ++ "}") ]
+  (whereEq $ slotRecordVals $ nameRef o)
   Nothing
-  where os = nameRef o
 
 deleteSlotRecord :: TH.Name -- ^ @'AuditIdentity'@
   -> TH.Name -- ^ @'RecordSlot'@
   -> TH.ExpQ
 deleteSlotRecord ident o = auditDelete ident "slot_record"
-  (whereEq $ slotRecordKeys os)
+  ("record = ${recordId $ slotRecord " ++ os ++ "} AND container = ${containerId $ slotContainer $ recordSlot " ++ os ++ "} AND segment <@ ${slotSegment $ recordSlot " ++ os ++ "}")
   Nothing
   where os = nameRef o
