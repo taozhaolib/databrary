@@ -11,7 +11,7 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import Data.ByteString (ByteString)
 import qualified System.Entropy as Entropy
 
-import Control.Has (MonadHas, peek)
+import Databrary.Has (MonadHas, peek)
 
 newtype Entropy = Entropy Entropy.CryptHandle
 

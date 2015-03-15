@@ -9,8 +9,8 @@ module Databrary.Model.Volume
 
 import Data.Maybe (catMaybes)
 
-import Control.Applicative.Ops
-import Control.Has (peek, view)
+import Databrary.Ops
+import Databrary.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)

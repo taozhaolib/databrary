@@ -15,7 +15,7 @@ module Databrary.Model.Token.Types
 import qualified Data.ByteString as BS
 import Data.Int (Int64)
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Kind
 import Databrary.Model.Time
 import Databrary.Model.Id.Types

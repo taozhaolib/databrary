@@ -91,9 +91,13 @@ routes = do
       ]
     , "volume" >>                     act (createVolume api)
 
-    , R.route >>= \c -> msum          -- /slot/ID
+    , R.route >>= \c -> msum          -- /container/ID
       [                               act (viewContainer api c)
       ,                               act (postContainer api c)
+      ]
+
+    , R.route >>= \s -> msum          -- /slot/ID/SEG
+      [                               
       ]
 
     , R.route >>= \r -> msum          -- /record/ID

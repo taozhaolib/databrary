@@ -14,7 +14,7 @@ import qualified Data.ByteString.Char8 as BSC
 import Database.PostgreSQL.Typed (pgSQL)
 import qualified Text.Regex.Posix as Regex
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.DB
 import Databrary.Model.SQL
 import Databrary.Model.Party.Types

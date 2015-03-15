@@ -14,7 +14,7 @@ module Databrary.Model.AssetSlot.SQL
 import Data.Maybe (fromMaybe)
 import qualified Language.Haskell.TH as TH
 
-import Control.Has (view)
+import Databrary.Has (view)
 import Databrary.Model.Segment
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types

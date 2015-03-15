@@ -12,7 +12,7 @@ import qualified Data.IntMap.Strict as IntMap
 import Data.List (find)
 import Data.Maybe (catMaybes, fromJust)
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id

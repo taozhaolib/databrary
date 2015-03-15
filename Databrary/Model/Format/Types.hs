@@ -10,7 +10,7 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLift)
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 

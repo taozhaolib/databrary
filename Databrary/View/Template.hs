@@ -15,7 +15,7 @@ import qualified Text.Blaze.Html5.Attributes as HA
 import Network.HTTP.Types (methodGet)
 import qualified Network.Wai as Wai
 
-import Control.Has (view)
+import Databrary.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
 import Databrary.Action

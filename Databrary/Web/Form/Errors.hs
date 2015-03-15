@@ -20,7 +20,7 @@ import qualified Data.Map.Strict as Map
 import Data.Monoid (Monoid(..))
 import qualified Data.Text as T
 
-import Control.Has (view)
+import Databrary.Has (view)
 import Databrary.Web.Form
 
 type FormErrorMessage = T.Text

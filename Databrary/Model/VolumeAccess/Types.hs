@@ -6,7 +6,7 @@ module Databrary.Model.VolumeAccess.Types
 
 import qualified Language.Haskell.TH as TH
 
-import Control.Has (makeHasFor)
+import Databrary.Has (makeHasFor)
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types

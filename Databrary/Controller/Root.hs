@@ -5,7 +5,7 @@ module Databrary.Controller.Root
 import Control.Monad (when)
 import qualified Data.Aeson.Types as JSON
 
-import Control.Has (peek)
+import Databrary.Has (peek)
 import Databrary.Action
 import Databrary.Controller.Angular
 import Databrary.View.Root

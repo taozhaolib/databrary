@@ -12,8 +12,8 @@ import Network.HTTP.Types (Header, hCookie)
 import qualified Network.Wai as Wai
 import qualified Web.Cookie as Cook
 
-import Control.Applicative.Ops
-import Control.Has (peeks)
+import Databrary.Ops
+import Databrary.Has (peeks)
 import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.Resource

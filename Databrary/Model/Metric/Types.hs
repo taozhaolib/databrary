@@ -11,7 +11,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.DB
 import Databrary.Model.Enum
 import Databrary.Model.Kind

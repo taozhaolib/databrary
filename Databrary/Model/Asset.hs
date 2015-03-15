@@ -13,8 +13,8 @@ module Databrary.Model.Asset
 import Data.Maybe (catMaybes, isNothing)
 import Database.PostgreSQL.Typed (pgSQL)
 
-import Control.Applicative.Ops
-import Control.Has (view, peek)
+import Databrary.Ops
+import Databrary.Has (view, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Store

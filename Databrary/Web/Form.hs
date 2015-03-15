@@ -30,7 +30,7 @@ import Data.Word (Word64)
 import qualified Network.Wai as Wai
 import Network.Wai.Parse (File)
 
-import Control.Has (makeHasRec, Has(..), peeks)
+import Databrary.Has (makeHasRec, Has(..), peeks)
 import Databrary.Store.Temp (TempFile)
 import Databrary.Web.Parse
 import Databrary.Action.App (MonadAppAction)

@@ -16,8 +16,8 @@ import Data.Word (Word64)
 import System.Posix.FilePath ((</>))
 import System.Posix.Files.ByteString (fileExist, getFileStatus, fileSize, createLink)
 
-import Control.Applicative.Ops
-import Control.Has (peek, peeks)
+import Databrary.Ops
+import Databrary.Has (peek, peeks)
 import Databrary.Store
 import Databrary.Store.Storage
 import Databrary.Model.Asset.Types

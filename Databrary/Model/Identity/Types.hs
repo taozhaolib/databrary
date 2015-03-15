@@ -8,7 +8,7 @@ module Databrary.Model.Identity.Types
 import Control.Applicative (Applicative)
 import Control.Monad.Reader (MonadReader)
 
-import Control.Has (Has(..))
+import Databrary.Has (Has(..))
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types
 import Databrary.Model.Party.Types

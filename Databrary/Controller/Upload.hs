@@ -24,7 +24,7 @@ import System.Posix.Files.ByteString (setFdSize)
 import System.Posix.IO.ByteString (openFd, OpenMode(WriteOnly), defaultFileFlags, exclusive, closeFd)
 import System.Posix.Types (COff(..))
 
-import Control.Has (view, peeks)
+import Databrary.Has (view, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Permission

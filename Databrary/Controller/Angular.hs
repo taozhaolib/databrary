@@ -18,7 +18,7 @@ import Network.HTTP.Types (encodePath, hUserAgent, hContentType)
 import qualified Network.Wai as Wai
 import qualified Text.Regex.Posix as Regex
 
-import Control.Has (peeks)
+import Databrary.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types

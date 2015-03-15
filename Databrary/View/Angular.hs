@@ -12,8 +12,8 @@ import Data.Monoid (mempty, (<>))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
 
-import Control.Applicative.Ops
-import Control.Has (view)
+import Databrary.Ops
+import Databrary.Has (view)
 import Databrary.Model.Identity
 import Databrary.Action.Auth
 import Databrary.Action

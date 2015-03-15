@@ -1,4 +1,4 @@
-module Control.Applicative.Ops
+module Databrary.Ops
   ( (<$>)
   , (<$), ($>)
   , (<?), (?>)

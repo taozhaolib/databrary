@@ -11,8 +11,8 @@ import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 
-import Control.Applicative.Ops
-import Control.Has (view, peeks)
+import Databrary.Ops
+import Databrary.Has (view, peeks)
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Mail

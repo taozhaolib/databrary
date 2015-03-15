@@ -29,8 +29,8 @@ import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
 
-import Control.Applicative.Ops
-import Control.Has (Has(..), peek)
+import Databrary.Ops
+import Databrary.Has (Has(..), peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Request

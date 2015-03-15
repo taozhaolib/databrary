@@ -33,7 +33,7 @@ import qualified Language.Haskell.TH as TH
 import Network (PortID(..))
 import System.IO.Unsafe (unsafePerformIO)
 
-import Control.Has (MonadHas, Has, peek)
+import Databrary.Has (MonadHas, Has, peek)
 
 getPGDatabase :: C.Config -> IO PGDatabase
 getPGDatabase conf = do

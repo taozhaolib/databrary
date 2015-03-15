@@ -8,7 +8,7 @@ module Databrary.Model.Volume.Types
 import qualified Data.Text as T
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Time
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types

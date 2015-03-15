@@ -5,7 +5,7 @@ module Databrary.Model.Excerpt.Types
 
 import Control.Monad (liftM2)
 
-import Control.Has (Has(..))
+import Databrary.Has (Has(..))
 import Databrary.Model.Permission
 import Databrary.Model.Segment
 import Databrary.Model.Id.Types

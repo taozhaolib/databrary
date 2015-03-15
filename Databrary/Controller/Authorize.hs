@@ -16,8 +16,8 @@ import qualified Data.Text.Encoding as TE
 import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
 import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
-import Control.Applicative.Ops
-import Control.Has (peek, peeks)
+import Databrary.Ops
+import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Mail

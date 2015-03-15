@@ -11,7 +11,7 @@ import Control.Monad (guard)
 import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Query (PGQuery)
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.DB
 import Databrary.Model.SQL.Select
 

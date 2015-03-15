@@ -18,7 +18,7 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
-import Control.Has (peek, view)
+import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL

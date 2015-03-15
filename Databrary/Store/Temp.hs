@@ -14,7 +14,7 @@ import System.Posix.FilePath (RawFilePath, (</>))
 import System.Posix.Files.ByteString (removeLink, rename)
 import System.Posix.Temp.ByteString (mkstemp)
 
-import Control.Has (peeks)
+import Databrary.Has (peeks)
 import Databrary.Resource (MonadResourceT, liftResourceT)
 import Databrary.Store.Storage
 

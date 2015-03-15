@@ -7,7 +7,7 @@ module Databrary.View.Party
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.Action.Auth
 import Databrary.Action
 import Databrary.View.Form

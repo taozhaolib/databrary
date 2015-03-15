@@ -3,7 +3,7 @@ module Databrary.Model.AssetSlot.Types
   , assetNoSlot
   ) where
 
-import Control.Has (Has(..))
+import Databrary.Has (Has(..))
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission
 import Databrary.Model.Consent

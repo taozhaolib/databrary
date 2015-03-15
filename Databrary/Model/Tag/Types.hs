@@ -10,7 +10,7 @@ module Databrary.Model.Tag.Types
 import qualified Data.ByteString as BS
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types

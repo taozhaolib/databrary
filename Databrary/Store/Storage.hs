@@ -16,7 +16,7 @@ import System.Directory (getTemporaryDirectory)
 import System.IO.Error (mkIOError, doesNotExistErrorType, illegalOperationErrorType)
 import System.Posix.Files.ByteString (getFileStatus, isDirectory, deviceID)
 
-import Control.Has (MonadHas)
+import Databrary.Has (MonadHas)
 import Databrary.Store
 
 data Storage = Storage

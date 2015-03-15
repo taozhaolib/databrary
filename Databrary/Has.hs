@@ -1,5 +1,5 @@
 {-# LANGUAGE ConstraintKinds, TemplateHaskell, TypeSynonymInstances, LiberalTypeSynonyms #-}
-module Control.Has
+module Databrary.Has
   ( Has(..)
   , MonadHas
   , peek

@@ -15,7 +15,7 @@ import Database.PostgreSQL.Typed (pgSQL)
 import Database.PostgreSQL.Typed.Inet (PGInet(..), sockAddrPGInet)
 import Network.Wai (remoteHost)
 
-import Control.Has (peek, peeks)
+import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Web.Request

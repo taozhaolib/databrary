@@ -11,7 +11,7 @@ import qualified Data.HashMap.Strict as HM
 import Data.Maybe (mapMaybe, maybeToList)
 import qualified Data.Vector as V
 
-import Control.Has (peek)
+import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Audit
 import Databrary.Web.Request

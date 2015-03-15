@@ -14,7 +14,7 @@ import Data.Monoid ((<>))
 import Network.HTTP.Types (HeaderName)
 import qualified Network.Wai as Wai
 
-import Control.Has (MonadHas)
+import Databrary.Has (MonadHas)
 
 type MonadHasRequest c m = MonadHas Wai.Request c m
 

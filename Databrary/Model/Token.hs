@@ -21,8 +21,8 @@ import Data.Int (Int64)
 import Database.PostgreSQL.Typed (pgSQL)
 import System.Posix.Files.ByteString (removeLink)
 
-import Control.Applicative.Ops
-import Control.Has (view, peek, peeks)
+import Databrary.Ops
+import Databrary.Has (view, peek, peeks)
 import Databrary.Resource
 import Databrary.Entropy
 import Databrary.Crypto

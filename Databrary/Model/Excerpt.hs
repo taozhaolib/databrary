@@ -11,8 +11,8 @@ import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 import qualified Database.PostgreSQL.Typed.Range as Range
 
-import Control.Applicative.Ops
-import Control.Has (view)
+import Databrary.Ops
+import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL

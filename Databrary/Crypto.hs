@@ -11,7 +11,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
 import Data.Monoid ((<>))
 
-import Control.Has (peeks)
+import Databrary.Has (peeks)
 import Databrary.Resource
 import Databrary.Entropy
 

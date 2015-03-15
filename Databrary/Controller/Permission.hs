@@ -4,7 +4,7 @@ module Databrary.Controller.Permission
 
 import Control.Monad.IO.Class (MonadIO)
 
-import Control.Has (Has, view)
+import Databrary.Has (Has, view)
 import Databrary.Model.Permission
 import Databrary.Action
 

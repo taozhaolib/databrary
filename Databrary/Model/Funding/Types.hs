@@ -9,7 +9,7 @@ module Databrary.Model.Funding.Types
 import Data.Int (Int64)
 import qualified Data.Text as T
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id.Types
 

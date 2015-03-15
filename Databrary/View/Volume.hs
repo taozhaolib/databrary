@@ -7,7 +7,7 @@ module Databrary.View.Volume
 
 import qualified Data.Text as T
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.Action.Auth
 import Databrary.Action
 import Databrary.Model.Volume

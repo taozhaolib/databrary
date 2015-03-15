@@ -8,8 +8,8 @@ import Control.Monad (when)
 import Control.Monad.Reader (withReaderT)
 import Data.Maybe (isJust)
 
-import Control.Applicative.Ops
-import Control.Has (view)
+import Databrary.Ops
+import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Token

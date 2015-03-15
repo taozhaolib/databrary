@@ -14,7 +14,7 @@ import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
-import Control.Has (makeHasRec, peek, MonadHas)
+import Databrary.Has (makeHasRec, peek, MonadHas)
 import Databrary.DB (DBConn, initDB)
 import Databrary.Entropy (Entropy, initEntropy)
 import Databrary.Web.Client (HTTPClient, initHTTPClient)

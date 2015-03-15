@@ -6,7 +6,7 @@ module Databrary.Model.Authorize.Types
   , MonadHasAuthorize
   ) where
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Time
 import Databrary.Model.Permission.Types
 import Databrary.Model.Party.Types

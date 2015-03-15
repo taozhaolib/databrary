@@ -5,8 +5,8 @@ module Databrary.Controller.VolumeAccess
   , postVolumeAccess
   ) where
 
-import Control.Applicative.Ops
-import Control.Has (peek)
+import Databrary.Ops
+import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Party

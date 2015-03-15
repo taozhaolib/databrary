@@ -18,7 +18,7 @@ import qualified Data.Map.Strict as Map
 import Data.Maybe (catMaybes)
 import System.Posix.FilePath (RawFilePath, splitExtension, takeExtension)
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Format.Types

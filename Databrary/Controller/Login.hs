@@ -18,8 +18,8 @@ import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 
-import Control.Applicative.Ops
-import Control.Has (view, peek)
+import Databrary.Ops
+import Databrary.Has (view, peek)
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Web.Cookie

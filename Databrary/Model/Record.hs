@@ -13,7 +13,7 @@ module Databrary.Model.Record
 import Control.Applicative ((<$>))
 import Data.Maybe (catMaybes)
 
-import Control.Has (peek, view)
+import Databrary.Has (peek, view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL

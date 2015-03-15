@@ -22,8 +22,8 @@ import System.Posix.FilePath (joinPath, splitDirectories, (</>))
 import System.IO.Error (tryIOError)
 import System.Posix.Files.ByteString (getFileStatus, modificationTimeHiRes, fileSize)
 
-import Control.Applicative.Ops
-import Control.Has (peek)
+import Databrary.Ops
+import Databrary.Has (peek)
 import Databrary.Store
 import Databrary.Web.Request
 import Databrary.Web.HTTP

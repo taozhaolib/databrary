@@ -44,8 +44,8 @@ import System.Locale (defaultTimeLocale)
 import Text.Read (readEither)
 import qualified Text.Regex.Posix as Regex
 
-import Control.Applicative.Ops
-import Control.Has (peek, peeks)
+import Databrary.Ops
+import Databrary.Has (peek, peeks)
 import Databrary.Model.URL
 import Databrary.Model.Time
 import Databrary.Model.Offset

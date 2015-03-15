@@ -18,8 +18,8 @@ import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
-import Control.Applicative.Ops
-import Control.Has (view, peek, peeks)
+import Databrary.Ops
+import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Route
 import Databrary.Action

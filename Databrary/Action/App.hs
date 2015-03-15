@@ -14,7 +14,7 @@ import Data.Time (getCurrentTime)
 import Network.HTTP.Types (hDate)
 import qualified Network.Wai as Wai
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
 import Databrary.Model.Time

@@ -10,7 +10,7 @@ module Databrary.Action.Auth
 
 import Control.Monad.Reader (withReaderT, asks)
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Action.Types
 import Databrary.Action.App
 import Databrary.Model.Identity

@@ -43,7 +43,7 @@ import Data.Monoid (mempty)
 import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
 import qualified Network.Wai as Wai
 
-import Control.Has (peek, peeks)
+import Databrary.Has (peek, peeks)
 import Databrary.Web.Request
 import Databrary.Action.Types
 import Databrary.Action.Response

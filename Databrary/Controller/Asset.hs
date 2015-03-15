@@ -21,8 +21,8 @@ import Network.HTTP.Types (conflict409)
 import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
-import Control.Applicative.Ops
-import Control.Has (peeks)
+import Databrary.Ops
+import Databrary.Has (peeks)
 import Databrary.Resource
 import qualified Databrary.JSON as JSON
 import Databrary.DB

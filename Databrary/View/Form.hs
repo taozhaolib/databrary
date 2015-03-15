@@ -27,8 +27,8 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as HA
 import System.Locale (defaultTimeLocale)
 
-import Control.Applicative.Ops
-import Control.Has (peek, peeks)
+import Databrary.Ops
+import Databrary.Has (peek, peeks)
 import Databrary.Model.Enum
 import Databrary.Model.Time
 import Databrary.Action

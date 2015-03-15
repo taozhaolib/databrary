@@ -8,7 +8,7 @@ import qualified Data.ByteString as BS
 import Data.Int (Int64)
 import qualified Data.Text as T
 
-import Control.Has (makeHasRec)
+import Databrary.Has (makeHasRec)
 import Databrary.Model.Offset
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types

@@ -15,8 +15,8 @@ import Data.Maybe (catMaybes)
 import Data.Time.Format (formatTime)
 import System.Locale (defaultTimeLocale)
 
-import Control.Applicative.Ops
-import Control.Has (view, peek)
+import Databrary.Ops
+import Databrary.Has (view, peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)

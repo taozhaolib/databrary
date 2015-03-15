@@ -10,7 +10,7 @@ module Databrary.Model.Permission.Types
 import Data.Monoid (Monoid(..))
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (Has(..))
+import Databrary.Has (Has(..))
 import Databrary.DB (useTPG)
 import Databrary.Model.Enum
 

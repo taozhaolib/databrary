@@ -10,7 +10,7 @@ module Databrary.Model.Permission
   , accessJSON
   ) where
 
-import Control.Has (view)
+import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Consent.Types
 import Databrary.Model.Permission.Types

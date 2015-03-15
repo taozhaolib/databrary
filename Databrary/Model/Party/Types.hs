@@ -16,7 +16,7 @@ import qualified Data.Text as T
 import Instances.TH.Lift ()
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
-import Control.Has (makeHasRec, Has(..))
+import Databrary.Has (makeHasRec, Has(..))
 import Databrary.Model.URL (URI)
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types

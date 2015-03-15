@@ -16,8 +16,8 @@ import Data.Maybe (catMaybes, fromMaybe, isNothing)
 import Database.PostgreSQL.Typed (pgSQL)
 import qualified Database.PostgreSQL.Typed.Range as Range
 
-import Control.Applicative.Ops
-import Control.Has (peek, view)
+import Databrary.Ops
+import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.Offset

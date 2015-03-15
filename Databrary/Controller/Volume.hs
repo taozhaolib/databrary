@@ -19,8 +19,8 @@ import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
-import Control.Applicative.Ops
-import Control.Has (peeks, peek)
+import Databrary.Ops
+import Databrary.Has (peeks, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Web.Client (HTTPClientM)

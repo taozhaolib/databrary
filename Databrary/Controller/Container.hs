@@ -11,8 +11,8 @@ import qualified Data.ByteString as BS
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
-import Control.Applicative.Ops
-import Control.Has (peeks)
+import Databrary.Ops
+import Databrary.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.Id

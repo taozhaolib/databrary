@@ -11,7 +11,7 @@ import Control.Monad.Trans.Class (lift)
 import Data.Maybe (isNothing, fromMaybe)
 import qualified Data.Text as T
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Model.Id

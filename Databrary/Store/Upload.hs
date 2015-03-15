@@ -4,7 +4,7 @@ module Databrary.Store.Upload
 
 import System.Posix.FilePath (RawFilePath, (</>))
 
-import Control.Has (view)
+import Databrary.Has (view)
 import Databrary.Store.Storage
 import Databrary.Model.Id
 import Databrary.Model.Token.Types

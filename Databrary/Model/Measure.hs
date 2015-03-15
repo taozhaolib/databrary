@@ -15,8 +15,8 @@ import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Types (PGTypeName, pgTypeName, PGColumn(pgDecode))
 
-import Control.Applicative.Ops
-import Control.Has (view)
+import Databrary.Ops
+import Databrary.Has (view)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL

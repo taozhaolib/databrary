@@ -21,7 +21,7 @@ import Network.Wai
 import Network.Wai.Parse
 import System.IO (Handle, hClose)
 
-import Control.Has (peek, peeks)
+import Databrary.Has (peek, peeks)
 import Databrary.Action.App
 import Databrary.Store.Temp
 import Databrary.Action.Types (MonadAction)

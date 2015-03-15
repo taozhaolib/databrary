@@ -15,7 +15,7 @@ import qualified Data.Text.Encoding as TE
 import qualified Network.HTTP.Client as HC
 import qualified Network.URI as URI
 
-import Control.Applicative.Ops
+import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Client
 import Databrary.Model.URL

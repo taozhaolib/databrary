@@ -15,8 +15,8 @@ import Data.Char (toLower)
 import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 
-import Control.Applicative.Ops
-import Control.Has (view)
+import Databrary.Ops
+import Databrary.Has (view)
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Permission.Types

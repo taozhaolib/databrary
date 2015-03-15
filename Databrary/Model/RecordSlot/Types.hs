@@ -5,7 +5,7 @@ module Databrary.Model.RecordSlot.Types
 
 import Control.Applicative ((<|>))
 
-import Control.Has (Has(..))
+import Databrary.Has (Has(..))
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission
 import Databrary.Model.Consent

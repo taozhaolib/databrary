@@ -11,7 +11,7 @@ import Control.Monad.Reader (ReaderT, runReaderT)
 import Network.HTTP.Types (ResponseHeaders, Status)
 import qualified Network.Wai as Wai
 
-import Control.Has (Has, MonadHas, peeks)
+import Databrary.Has (Has, MonadHas, peeks)
 import Databrary.Web.Request
 import Databrary.Action.Response
 
