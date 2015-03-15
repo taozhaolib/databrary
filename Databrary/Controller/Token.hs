@@ -42,6 +42,6 @@ postPasswordToken api ti = action POST (api, ti) $ withoutAuth $ do
   let acct = view tok
   pw <- runForm (api == HTML ?> htmlPasswordToken ti) $
     passwordForm acct
-  changeAccount acct{ accountPasswd = pw } -- or should this be withAuth?
+  changeAccount acct{ accountPasswd = Just pw } -- or should this be withAuth?
   removeLoginToken tok
   withReaderT authApp $ loginAccount api (view tok) False

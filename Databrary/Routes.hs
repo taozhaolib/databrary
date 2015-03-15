@@ -49,7 +49,8 @@ routes = do
   msum 
     [                                 act (viewRoot api)
     , "user" >> msum                  -- /user
-      [                       json >> act viewUser
+      [                      (html >> act viewUser)
+      ,                               act (postUser api)
       , "login" >>           (html >> act viewLogin)
                                   <|> act (postLogin api)
       , "logout" >>                   act (postLogout api)

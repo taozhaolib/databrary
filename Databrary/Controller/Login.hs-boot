@@ -5,3 +5,4 @@ import Databrary.Action
 viewLogin :: AppRAction
 postLogin :: API -> AppRAction
 postLogout :: API -> AppRAction
+postUser :: API -> AppRAction

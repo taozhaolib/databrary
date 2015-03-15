@@ -5,12 +5,15 @@ module Databrary.Controller.Login
   , postLogin
   , postLogout
   , viewUser
+  , postUser
   ) where
 
+import Control.Applicative ((<|>))
 import Control.Monad (when, unless)
 import Control.Monad.Reader (withReaderT)
 import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
+import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
@@ -49,6 +52,9 @@ viewLogin = action GET ["user", "login" :: T.Text] $ withAuth $ do
     (blankForm htmlLogin)
     (\_ -> redirectRouteResponse [] $ viewParty HTML TargetProfile)
 
+checkPassword :: BS.ByteString -> Account -> Bool
+checkPassword p = Fold.any (`BCrypt.validatePassword` p) . accountPasswd
+
 postLogin :: API -> AppRAction
 postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ do
   (Just auth, su) <- runForm (api == HTML ?> htmlLogin) $ do
@@ -60,7 +66,7 @@ postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ d
         a = partyAccount =<< p
         su = superuser && Fold.any ((PermissionADMIN ==) . accessPermission) auth
     attempts <- lift $ maybe (return 0) recentAccountLogins p
-    let pass = maybe False (flip BCrypt.validatePassword password) (accountPasswd =<< a)
+    let pass = checkPassword password `Fold.any` a
         block = attempts > 4
     lift $ auditAccountLogin pass (fromMaybe nobodyParty p) email
     when block $ "email" .:> deformError "Too many login attempts. Try again later."
@@ -79,3 +85,24 @@ postLogout api = action POST (api, ["user", "logout" :: T.Text]) $ withAuth $ do
 viewUser :: AppRAction
 viewUser = action GET (JSON, "user" :: T.Text) $ withAuth $
   okResponse [] . identityJSON =<< peek
+
+postUser :: API -> AppRAction
+postUser api = action POST (api, "user" :: T.Text) $ withAuth $ do
+  ident <- peek
+  acct <- case ident of
+    UnIdentified -> result =<< forbiddenResponse
+    Identified s -> return $ view s
+  acct' <- runForm (api == HTML ?> htmlUserForm acct) $ do
+    "auth" .:> do
+      p <- deform
+      deformGuard "Incorrect password." (checkPassword p acct)
+    email <- "email" .:> deform
+    passwd <- "password" .:> deformNonEmpty (passwordForm acct)
+    return acct
+      { accountEmail = fromMaybe (accountEmail acct) email
+      , accountPasswd = passwd <|> accountPasswd acct
+      }
+  changeAccount acct'
+  case api of
+    JSON -> okResponse [] $ partyJSON $ accountParty acct'
+    HTML -> redirectRouteResponse [] $ viewParty api TargetProfile

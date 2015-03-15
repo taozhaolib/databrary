@@ -68,7 +68,7 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
 emailTextForm = deformRegex "Invalid email address" emailRegex
 
-passwordForm :: (MonadIO m, Functor m, Monad m) => Account -> DeformT m (Maybe BS.ByteString)
+passwordForm :: (MonadIO m, Functor m, Monad m) => Account -> DeformT m BS.ByteString
 passwordForm acct = do
   p <- "once" .:> do
     p <- deform
@@ -79,4 +79,5 @@ passwordForm acct = do
   "again" .:> do
     a <- deform
     deformGuard "Passwords do not match." (a == p)
-  liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
+  pw <- liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
+  deformMaybe' "Error processing password." pw
