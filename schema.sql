@@ -596,7 +596,7 @@ END; $$;
 
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
-	"who" integer References "account",
+	"who" integer NOT NULL References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	Primary Key ("tag", "who", "container", "segment"),

@@ -8,7 +8,7 @@ import Control.Applicative ((<$>))
 import Databrary.DB
 import Databrary.Model.Id
 import Databrary.Model.Identity
-import Databrary.Model.Time
+import Databrary.Model.Segment
 import Databrary.Model.Container
 import Databrary.Model.Slot.Types
 

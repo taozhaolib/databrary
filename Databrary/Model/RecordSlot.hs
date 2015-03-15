@@ -10,20 +10,20 @@ module Databrary.Model.RecordSlot
 import Control.Monad (guard, liftM2)
 import Data.Maybe (catMaybes)
 import qualified Database.PostgreSQL.Typed.Range as Range
-import Database.PostgreSQL.Typed.Protocol (pgErrorCode)
 import Database.PostgreSQL.Typed.Types (PGTypeName(..))
 
 import Control.Applicative.Ops
 import Control.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Model.Time
+import Databrary.Model.Segment
 import Databrary.Model.Permission
 import Databrary.Model.Audit
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
 import Databrary.Model.Metric
 import Databrary.Model.Record
+import Databrary.Model.Age
 import Databrary.Model.Measure
 import Databrary.Model.SQL
 import Databrary.Model.RecordSlot.Types
@@ -48,7 +48,7 @@ moveRecordSlot rs@RecordSlot{ recordSlot = s@Slot{ slotSegment = src } } dst = d
     (False, False) -> dbTryQuery err $(updateSlotRecord 'ident 'rs 'dst)
   where
   rd = rs{ recordSlot = s{ slotSegment = dst } }
-  err = guard . ("23P01" ==) . pgErrorCode
+  err = guard . isExclusionViolation
 
 recordSlotAge :: RecordSlot -> Maybe Age
 recordSlotAge rs@RecordSlot{..} =

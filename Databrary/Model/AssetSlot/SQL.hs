@@ -15,7 +15,7 @@ import Data.Maybe (fromMaybe)
 import qualified Language.Haskell.TH as TH
 
 import Control.Has (view)
-import Databrary.Model.Time.Types
+import Databrary.Model.Segment
 import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Asset.Types

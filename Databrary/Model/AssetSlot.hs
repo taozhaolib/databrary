@@ -20,7 +20,8 @@ import Control.Applicative.Ops
 import Control.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Model.Time
+import Databrary.Model.Offset
+import Databrary.Model.Segment
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Party.Types

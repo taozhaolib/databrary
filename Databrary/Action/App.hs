@@ -17,7 +17,7 @@ import qualified Network.Wai as Wai
 import Control.Has (makeHasRec)
 import Databrary.Web.HTTP
 import Databrary.Resource
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.Action.Types
 import Databrary.Web.Request
 import Databrary.Action.Response

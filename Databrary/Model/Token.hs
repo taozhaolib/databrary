@@ -30,7 +30,7 @@ import Databrary.DB
 import Databrary.Store.Storage
 import Databrary.Store.Upload
 import Databrary.Model.SQL (selectQuery)
-import Databrary.Model.Time.Types
+import Databrary.Model.Offset
 import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types

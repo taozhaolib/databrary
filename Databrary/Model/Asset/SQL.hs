@@ -11,7 +11,7 @@ import Data.Int (Int64)
 import qualified Data.Text as T
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.Time.Types
+import Databrary.Model.Offset
 import Databrary.Model.Format
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types

@@ -31,7 +31,7 @@ import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
 import Databrary.Web.File
 import Databrary.Action
-import Databrary.Model.Time
+import Databrary.Model.Segment
 import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Identity

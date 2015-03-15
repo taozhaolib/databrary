@@ -9,7 +9,7 @@ import Data.Int (Int64)
 import qualified Data.Text as T
 
 import Control.Has (makeHasRec)
-import Databrary.Model.Time.Types
+import Databrary.Model.Offset
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types
 import Databrary.Model.Id.Types

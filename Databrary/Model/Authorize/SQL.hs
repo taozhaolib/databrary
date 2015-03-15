@@ -11,7 +11,7 @@ module Databrary.Model.Authorize.SQL
 
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.Model.SQL.Select
 import Databrary.Model.Party.SQL (selectParty)
 import Databrary.Model.Audit.SQL

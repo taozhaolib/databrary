@@ -8,7 +8,7 @@ module Databrary.Model.Volume.SQL
 import Data.Maybe (fromMaybe)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.Model.SQL.Select
 import Databrary.Model.Permission.Types
 import Databrary.Model.Audit.SQL

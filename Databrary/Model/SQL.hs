@@ -1,6 +1,8 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Model.SQL
   ( selectQuery
+  , isUniqueViolation
+  , isExclusionViolation
   , tryUpdateOrInsert
   , updateOrInsert
   ) where
@@ -13,10 +15,14 @@ import Control.Applicative.Ops
 import Databrary.DB
 import Databrary.Model.SQL.Select
 
+isUniqueViolation, isExclusionViolation :: PGError -> Bool
+isUniqueViolation = ("23505" ==) . pgErrorCode
+isExclusionViolation = ("23P01" ==) . pgErrorCode
+
 tryUpdateOrInsert :: (DBM m, PGQuery q a) => (PGError -> Maybe e) -> q -> q -> m (Either e (Int, [a]))
 tryUpdateOrInsert err upd ins = dbTransaction uoi where
   err' e
-    | pgErrorCode e == "23505" = Just Nothing
+    | isUniqueViolation e = Just Nothing
     | otherwise = Just <$> err e
   uoi = do
     u <- dbTryQuery err upd

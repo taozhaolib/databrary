@@ -9,7 +9,6 @@ module Databrary.Model.Excerpt
 
 import Control.Monad (guard)
 import Data.Maybe (catMaybes)
-import Database.PostgreSQL.Typed.Protocol (pgErrorCode)
 import qualified Database.PostgreSQL.Typed.Range as Range
 
 import Control.Applicative.Ops
@@ -31,7 +30,7 @@ lookupAssetExcerpts a =
 changeExcerpt :: MonadAudit c m => Excerpt -> m Bool
 changeExcerpt e = do
   ident <- getAuditIdentity
-  either (const False) ((0 <) . fst) <$> tryUpdateOrInsert (guard . ("23P01" ==) . pgErrorCode)
+  either (const False) ((0 <) . fst) <$> tryUpdateOrInsert (guard . isExclusionViolation)
     $(updateExcerpt 'ident 'e)
     $(insertExcerpt 'ident 'e)
 

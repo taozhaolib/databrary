@@ -7,7 +7,7 @@ import Control.Monad (liftM2)
 
 import Control.Has (Has(..))
 import Databrary.Model.Permission
-import Databrary.Model.Time.Types
+import Databrary.Model.Segment
 import Databrary.Model.Id.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Consent.Types

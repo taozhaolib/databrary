@@ -7,7 +7,7 @@ module Databrary.Model.Container.Types
 import qualified Data.Text as T
 
 import Control.Has (makeHasRec)
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.Model.Kind
 import Databrary.Model.Consent.Types
 import Databrary.Model.Id.Types

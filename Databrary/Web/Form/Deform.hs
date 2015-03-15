@@ -48,6 +48,8 @@ import Control.Applicative.Ops
 import Control.Has (peek, peeks)
 import Databrary.Model.URL
 import Databrary.Model.Time
+import Databrary.Model.Offset
+import Databrary.Model.Segment
 import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 

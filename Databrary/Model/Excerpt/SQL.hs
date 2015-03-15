@@ -11,7 +11,7 @@ import qualified Language.Haskell.TH as TH
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Permission.Types
-import Databrary.Model.Time.Types
+import Databrary.Model.Segment
 import Databrary.Model.AssetSlot.Types
 import Databrary.Model.Excerpt.Types
 

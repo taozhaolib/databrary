@@ -36,6 +36,9 @@ import Network.HTTP.Types (Method)
 import qualified Network.Wai as Wai
 import Text.Read (readMaybe)
 
+import Databrary.Model.Offset
+import Databrary.Model.Segment
+
 newtype RouteM a = RouteM { runRouteM :: Wai.Request -> [T.Text] -> Maybe (a, [T.Text]) }
 
 lpt :: e -> a -> (a, e)
@@ -153,6 +156,14 @@ instance Routable Int32 where
 instance Routable Int16 where
   route = readText (Text.signed Text.decimal)
   toRoute = return . T.pack . show
+
+instance Routable Offset where
+  route = maybe . parseOffset . T.unpack =<< text
+  toRoute = return . T.pack . showOffset
+
+instance Routable Segment where
+  route = maybe . parseSegment . T.unpack =<< text
+  toRoute = return . T.pack . showSegment
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString

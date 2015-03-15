@@ -8,7 +8,7 @@ module Databrary.Model.Audit.Types
 
 import Database.PostgreSQL.Typed.Inet (PGInet)
 
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.DB (useTPG)
 import Databrary.Model.Enum
 import Databrary.Model.Id.Types

@@ -17,7 +17,7 @@ import Control.Has (peeks)
 import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.Resource
-import Databrary.Model.Time.Types
+import Databrary.Model.Time
 import Databrary.Web.Request
 
 getCookies :: Request -> Cook.Cookies
