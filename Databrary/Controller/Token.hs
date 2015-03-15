@@ -5,15 +5,12 @@ module Databrary.Controller.Token
   ) where
 
 import Control.Monad (when)
-import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Reader (withReaderT)
-import qualified Crypto.BCrypt as BCrypt
 import Data.Maybe (isJust)
 
 import Control.Applicative.Ops
 import Control.Has (view)
 import qualified Databrary.JSON as JSON
-import Databrary.Crypto
 import Databrary.Model.Id
 import Databrary.Model.Token
 import Databrary.Model.Party
@@ -42,9 +39,9 @@ postPasswordToken :: API -> Id LoginToken -> AppRAction
 postPasswordToken api ti = action POST (api, ti) $ withoutAuth $ do
   tok <- maybeAction =<< lookupLoginToken ti
   guardAction (loginPasswordToken tok) notFoundResponse
-  p <- runForm (api == HTML ?> htmlPasswordToken ti) $
-    passwordForm
-  pw <- liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
-  changeAccount (view tok) { accountPasswd = pw } -- or should this be withAuth?
+  let acct = view tok
+  pw <- runForm (api == HTML ?> htmlPasswordToken ti) $
+    passwordForm acct
+  changeAccount acct{ accountPasswd = pw } -- or should this be withAuth?
   removeLoginToken tok
   withReaderT authApp $ loginAccount api (view tok) False

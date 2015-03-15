@@ -12,14 +12,20 @@ module Databrary.Controller.Form
 import qualified Data.ByteString as BS
 import Control.Applicative ((<$>))
 import Control.Monad ((<=<))
-import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ask)
+import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Aeson as JSON
+import qualified Data.Foldable as Fold
+import Data.Monoid ((<>))
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
 import Network.HTTP.Types (badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Regex.Posix as Regex
 
+import Databrary.Model.Party.Types
+import Databrary.Passwd
 import Databrary.Action
 import Databrary.Action.Types
 import Databrary.Web.Form (getFormData, FormData)
@@ -62,8 +68,15 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
 emailTextForm = deformRegex "Invalid email address" emailRegex
 
-passwordForm :: (Functor m, Monad m) => DeformT m BS.ByteString
-passwordForm = do
-  p <- "once" .:> (deformCheck "Password too short. Must be 7 characters." ((7 <=) . BS.length) =<< deform)
-  _ <- "again" .:> (deformCheck "Passwords do not match." (p ==) =<< deform)
-  return p
+passwordForm :: (MonadIO m, Functor m, Monad m) => Account -> DeformT m (Maybe BS.ByteString)
+passwordForm acct = do
+  p <- "once" .:> do
+    p <- deform
+    deformGuard "Password too short. Must be 7 characters." (7 <= BS.length p)
+    c <- liftIO $ passwdCheck p (TE.encodeUtf8 $ accountEmail acct) (TE.encodeUtf8 $ partyName $ accountParty acct)
+    Fold.mapM_ (deformError . ("Insecure password: " <>) . TE.decodeLatin1) c
+    return p
+  "again" .:> do
+    a <- deform
+    deformGuard "Passwords do not match." (a == p)
+  liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p

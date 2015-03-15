@@ -22,6 +22,7 @@ import Control.Applicative (Applicative(..), Alternative(..), liftA2)
 import Control.Arrow (first, second, (***), left)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, guard)
 import Control.Monad.Reader (MonadReader(..))
+import Control.Monad.IO.Class (MonadIO(..))
 import Control.Monad.Trans.Class (MonadTrans(..))
 import Control.Monad.Trans.Control (MonadTransControl(..))
 import Control.Monad.Writer.Class (MonadWriter(..))
@@ -61,6 +62,9 @@ instance MonadTransControl DeformT where
   liftWith f = DeformT $ \d ->
     liftM ((,) mempty . Just) $ f $ \t -> runDeformT t d
   restoreT m = DeformT $ \_ -> m
+
+instance MonadIO m => MonadIO (DeformT m) where
+  liftIO = lift . liftIO
 
 instance Functor m => Functor (DeformT m) where
   fmap f (DeformT m) = DeformT $ \d ->

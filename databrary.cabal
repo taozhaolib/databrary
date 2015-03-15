@@ -64,3 +64,5 @@ Executable databrary
 
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind
+
+  extra-libraries: crack

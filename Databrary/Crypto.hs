@@ -2,11 +2,9 @@
 module Databrary.Crypto
   ( sign
   , unSign
-  , passwordPolicy
   ) where
 
 import Control.Monad (guard)
-import qualified Crypto.BCrypt as BCrypt
 import qualified Crypto.Hash as Hash
 import Data.Byteable (toBytes)
 import qualified Data.ByteString as BS
@@ -48,9 +46,3 @@ unSign sigmsg = do
   (sig, noncemsg) = BS.splitAt hmacLength sigmsg
   (nonce64, msg) = BS.splitAt nonceLength noncemsg
   nonce = Base64.decodeLenient nonce64
-
-passwordPolicy :: BCrypt.HashingPolicy
-passwordPolicy = BCrypt.HashingPolicy
-  { BCrypt.preferredHashAlgorithm = "$2b$"
-  , BCrypt.preferredHashCost = 12
-  }
