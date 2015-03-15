@@ -10,5 +10,5 @@ data AuthorizeTarget = AuthorizeTarget
   , authorizeTarget :: Id Party
   }
 
-viewAuthorize :: PartyTarget -> AuthorizeTarget -> AppRAction
+viewAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
 postAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction

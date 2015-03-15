@@ -65,9 +65,11 @@ routes = do
       [                               act (viewParty api p)
       ,                               act (postParty api p)
       , html >> "edit" >>             act (viewPartyForm p)
-      , R.route >>= \a ->             --          /authorize/ID
-                             (html >> act (viewAuthorize p a))
-                                  <|> act (postAuthorize api p a)
+      , R.route >>= \a -> msum        --          /authorize/ID
+        [                             act (viewAuthorize api p a)
+        ,                             act (postAuthorize api p a)
+        ,                             act (deleteAuthorize api p a)
+        ]
       ]
     , "party" >>                      act (createParty api)
                                   <|> act (searchParty api)

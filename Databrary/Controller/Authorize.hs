@@ -3,6 +3,7 @@ module Databrary.Controller.Authorize
   ( AuthorizeTarget(..)
   , viewAuthorize
   , postAuthorize
+  , deleteAuthorize
   ) where
 
 import Control.Applicative ((<*>), (<|>))
@@ -13,6 +14,7 @@ import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time (UTCTime(..), fromGregorian, addGregorianYearsRollOver)
+import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 
 import Control.Applicative.Ops
 import Control.Has (peek, peeks)
@@ -42,17 +44,19 @@ instance R.Routable AuthorizeTarget where
   route = AuthorizeTarget <$> (False <$ "authorize" <|> True <$ "apply") <*> (Id <$> R.route)
   toRoute (AuthorizeTarget a (Id i)) = (if a then "apply" else "authorize") : R.toRoute i
 
-viewAuthorize :: PartyTarget -> AuthorizeTarget -> AppRAction
-viewAuthorize i at@(AuthorizeTarget app oi) = action GET (HTML, toRoute i ++ toRoute at) $ withAuth $ do
+viewAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
+viewAuthorize api i at@(AuthorizeTarget app oi) = action GET (api, toRoute i ++ toRoute at) $ withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)
   c <- lookupAuthorize child parent
   let c' = Authorize (Authorization mempty child parent) Nothing `fromMaybe` c
-  if app
-    then okResponse [] ("" :: String) -- TODO
-    else blankForm (htmlAuthorizeForm c')
+  case api of
+    JSON -> okResponse [] $ JSON.Object $ authorizeJSON c'
+    HTML
+      | app -> okResponse [] ("" :: String) -- TODO
+      | otherwise -> blankForm (htmlAuthorizeForm c')
 
 partyDelegates :: (DBM m, MonadHasIdentity c m) => Party -> m [Account]
 partyDelegates p =
@@ -111,5 +115,15 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $ wit
           ]
       return a
   case api of
-    JSON -> okResponse [] $ maybe JSON.Null (JSON.Object . authorizeJSON) a
-    HTML -> redirectRouteResponse [] $ viewAuthorize i at
+    JSON -> maybe (emptyResponse noContent204 []) (okResponse [] . JSON.Object . authorizeJSON) a
+    HTML -> redirectRouteResponse [] $ viewAuthorize api i at
+
+deleteAuthorize :: API -> PartyTarget -> AuthorizeTarget -> AppRAction
+deleteAuthorize api i at@(AuthorizeTarget app oi) = action DELETE (api, i, at) $ withAuth $ do
+  p <- getParty (Just PermissionADMIN) i
+  o <- maybeAction =<< lookupParty oi
+  let (child, parent) = if app then (p, o) else (o, p)
+  removeAuthorize $ Authorize (Authorization mempty child parent) Nothing
+  case api of
+    JSON -> emptyResponse noContent204 []
+    HTML -> redirectRouteResponse [] $ viewAuthorize api i at
