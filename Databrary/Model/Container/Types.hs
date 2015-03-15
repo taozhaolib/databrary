@@ -25,6 +25,6 @@ data Container = Container
   }
 
 instance Kinded Container where
-  kindOf _ = "slot"
+  kindOf _ = "container"
 
 makeHasRec ''Container ['containerId, 'containerConsent, 'containerVolume]
