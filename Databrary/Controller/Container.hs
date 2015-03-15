@@ -54,7 +54,7 @@ viewContainer api i = action GET (api, i) $ withAuth $ do
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
 containerForm c = do
-  name <- "name" .:> deform
+  name <- "name" .:> fmap T.strip <$> deform
   date <- "date" .:> deform
   consent <- "consent" .:> deform
   return c

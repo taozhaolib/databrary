@@ -45,9 +45,9 @@ viewRegister = action GET (HTML, ["user", "register" :: T.Text]) $ withAuth $ do
 postRegister :: API -> AppRAction
 postRegister api = action POST (api, ["user", "register" :: T.Text]) $ withoutAuth $ do
   reg <- runForm (api == HTML ?> htmlRegister) $ do
-    name <- "name" .:> deform
+    name <- "name" .:> T.strip <$> deform
     email <- "email" .:> emailTextForm
-    affiliation <- "affiliation" .:> deform
+    affiliation <- "affiliation" .:> fmap T.strip <$> deform
     _ <- "agreement" .:> (deformCheck "You must consent to the user agreement." id =<< deform)
     let p = blankParty
           { partyName = name

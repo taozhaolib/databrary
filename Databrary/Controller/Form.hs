@@ -66,7 +66,7 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
   ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][a-z0-9\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
 
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
-emailTextForm = deformRegex "Invalid email address" emailRegex
+emailTextForm = deformRegex "Invalid email address" emailRegex . T.strip =<< deform
 
 passwordForm :: (MonadIO m, Functor m, Monad m) => Account -> DeformT m BS.ByteString
 passwordForm acct = do

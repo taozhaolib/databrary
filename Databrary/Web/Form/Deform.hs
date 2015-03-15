@@ -296,5 +296,5 @@ readParser = left T.pack . readEither
 deformRead :: (Functor m, Monad m) => Read a => a -> DeformT m a
 deformRead def = deformEither def . readParser =<< deform
 
-deformRegex :: (Functor m, Monad m) => FormErrorMessage -> Regex.Regex -> DeformT m T.Text
-deformRegex err regex = deformCheck err (Regex.matchTest regex . T.unpack) =<< deform
+deformRegex :: (Functor m, Monad m) => FormErrorMessage -> Regex.Regex -> T.Text -> DeformT m T.Text
+deformRegex err regex = deformCheck err (Regex.matchTest regex . T.unpack)

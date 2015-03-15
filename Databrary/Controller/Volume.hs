@@ -80,16 +80,16 @@ viewVolume api vi = action GET (api, vi) $ withAuth $ do
 
 citationForm :: (Functor m, Applicative m, Monad m) => DeformT m Citation
 citationForm = Citation
-  <$> ("head" .:> deform)
+  <$> ("head" .:> T.strip <$> deform)
   <*> ("url" .:> deform)
   <*> ("year" .:> deform)
   <*> pure Nothing
 
 volumeForm :: (Functor m, Monad m) => Volume -> DeformT m Volume
 volumeForm v = do
-  name <- "name" .:> deform
-  alias <- "alias" .:> deform
-  body <- "body" .:> deform
+  name <- "name" .:> T.strip <$> deform
+  alias <- "alias" .:> fmap T.strip <$> deform
+  body <- "body" .:> fmap T.strip <$> deform
   return v
     { volumeName = name
     , volumeAlias = alias

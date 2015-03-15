@@ -27,6 +27,7 @@ import Databrary.Controller.Citation
 import Databrary.Controller.Upload
 import Databrary.Controller.Asset
 import Databrary.Controller.Excerpt
+import Databrary.Controller.Tag
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
