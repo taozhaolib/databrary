@@ -8,10 +8,7 @@ module Databrary.Model.Tag
   ) where
 
 import Control.Monad (guard)
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import Database.PostgreSQL.Typed (pgSQL)
-import qualified Text.Regex.Posix as Regex
 
 import Databrary.Ops
 import Databrary.DB
