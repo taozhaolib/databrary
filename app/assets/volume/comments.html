@@ -1,4 +1,4 @@
-<comment-reply-form ng-if="::canPost" ng-show="!replyTo"></comment-reply-form>
+<comment-reply-form ng-if="canPost && !replyTo"></comment-reply-form>
 
 <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="::commentClass(comment)">
   <div class="row">
@@ -28,5 +28,5 @@
     </div>
   </div>
 
-  <comment-reply-form ng-if="::canPost" ng-show="replyTo === comment" class="depth-1"></comment-reply-form>
+  <comment-reply-form ng-if="canPost && replyTo === comment"  class="depth-1"></comment-reply-form>
 </article>

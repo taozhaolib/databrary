@@ -1102,6 +1102,7 @@ app.factory('modelService', [
     Comment.prototype.class = 'comment';
 
     Comment.prototype.fields = angular.extend({
+      id: true,
       time: true,
       text: true,
       parents: true
@@ -1121,8 +1122,14 @@ app.factory('modelService', [
 
     Slot.prototype.postComment = function (data, reply) {
       var s = this;
-      if (arguments.length < 2 && this instanceof Comment)
+      console.log("1", data, "2", reply);
+      console.log('7', arguments.length, "8", this instanceof Comment);
+      console.log("9", this); 
+      if (arguments.length < 2 && this instanceof Comment){
+        console.log("3", data, "4", reply);
         reply = this.id;
+        console.log("5", data, "6", reply);
+      }      
       return router.http(router.controllers.CommentApi.post, this.container.id, this.segment.format(), reply, data)
         .then(function (res) {
           s.volume.clear('comments');
