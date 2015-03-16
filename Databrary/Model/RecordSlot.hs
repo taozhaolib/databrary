@@ -2,6 +2,7 @@
 module Databrary.Model.RecordSlot
   ( module Databrary.Model.RecordSlot.Types
   , lookupRecordSlots
+  , lookupSlotRecords
   , lookupContainerRecords
   , moveRecordSlot
   , recordSlotJSON
@@ -33,9 +34,12 @@ lookupRecordSlots :: (DBM m) => Record -> m [RecordSlot]
 lookupRecordSlots r =
   dbQuery $ ($ r) <$> $(selectQuery selectRecordSlotRecord "$WHERE slot_record.record = ${recordId r}")
 
+lookupSlotRecords :: (DBM m) => Slot -> m [RecordSlot]
+lookupSlotRecords (Slot c s) =
+  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotRecord "$WHERE slot_record.container = ${containerId c} AND slot_record.segment && ${s}")
+
 lookupContainerRecords :: (DBM m) => Container -> m [RecordSlot]
-lookupContainerRecords c =
-  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotRecord "$WHERE slot_record.container = ${containerId c}")
+lookupContainerRecords = lookupSlotRecords . containerSlot
 
 moveRecordSlot :: (MonadAudit c m) => RecordSlot -> Segment -> m Bool
 moveRecordSlot rs@RecordSlot{ recordSlot = s@Slot{ slotSegment = src } } dst = do

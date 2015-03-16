@@ -80,5 +80,6 @@ containerJSON c@Container{..} = JSON.record containerId $ catMaybes
   [ "top" JSON..= containerTop <? containerTop
   , ("name" JSON..=) <$> containerName
   , ("date" JSON..=) <$> formatContainerDate c
+  , ("consent" JSON..=) <$> containerConsent
   ]
 

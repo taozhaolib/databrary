@@ -3,6 +3,8 @@ module Databrary.Model.Slot.Types
   ( SlotId(..)
   , Slot(..)
   , slotId
+  , containerSlotId
+  , containerSlot
   , MonadHasSlotId
   , MonadHasSlot
   ) where
@@ -29,6 +31,9 @@ instance R.Routable SlotId where
 
 type instance IdType Slot = SlotId
 
+containerSlotId :: Id Container -> Id Slot
+containerSlotId c = Id $ SlotId c fullSegment
+
 data Slot = Slot
   { slotContainer :: !Container
   , slotSegment :: !Segment
@@ -36,6 +41,9 @@ data Slot = Slot
 
 slotId :: Slot -> Id Slot
 slotId (Slot c s) = Id $ SlotId (containerId c) s
+
+containerSlot :: Container -> Slot
+containerSlot c = Slot c fullSegment
 
 instance Kinded Slot where
   kindOf _ = "slot"

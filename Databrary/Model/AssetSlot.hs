@@ -3,6 +3,7 @@ module Databrary.Model.AssetSlot
   ( module Databrary.Model.AssetSlot.Types
   , lookupAssetSlot
   , lookupAssetAssetSlot
+  , lookupSlotAssets
   , lookupContainerAssets
   , changeAssetSlot
   , findAssetContainerEnd
@@ -45,9 +46,12 @@ lookupAssetAssetSlot a = fromMaybe assetNoSlot
   <$> dbQuery1 $(selectQuery selectAssetSlotAsset "$WHERE slot_asset.asset = ${assetId a}")
   <*> return a
 
+lookupSlotAssets :: (DBM m) => Slot -> m [AssetSlot]
+lookupSlotAssets (Slot c s) =
+  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c} AND slot_asset.segment && ${s}")
+
 lookupContainerAssets :: (DBM m) => Container -> m [AssetSlot]
-lookupContainerAssets c =
-  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c}")
+lookupContainerAssets = lookupSlotAssets . containerSlot
 
 changeAssetSlot :: (MonadAudit c m) => AssetSlot -> m Bool
 changeAssetSlot as = do

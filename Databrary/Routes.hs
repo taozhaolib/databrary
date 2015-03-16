@@ -22,6 +22,7 @@ import Databrary.Controller.Authorize
 import Databrary.Controller.Volume
 import Databrary.Controller.VolumeAccess
 import Databrary.Controller.Container
+import Databrary.Controller.Slot
 import Databrary.Controller.Record
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
@@ -84,19 +85,17 @@ routes = do
                                   <|> act (postVolumeAccess api v p)
       , "link" >>            (html >> act (viewVolumeLinks v))
                                   <|> act (postVolumeLinks api v)
-      , "container" >>                act (createContainer api v)
+      , "slot" >>                     act (createContainer api v)
       , "record" >>                   act (createRecord api v)
       , "asset" >>                    act (createAsset api v)
       , json >> "upload" >>           act (uploadStart v)
       ]
     , "volume" >>                     act (createVolume api)
 
-    , R.route >>= \c -> msum          -- /container/ID
-      [                               act (viewContainer api c)
-      ,                               act (postContainer api c)
+    , R.route >>= \s -> msum          -- /slot/ID/SEG
+      [                               act (viewSlot api s)
+      ,                               act (postContainer api s)
       ]
-
-    -- , R.route >>= \s -> msum          -- /slot/ID/SEG
 
     , R.route >>= \r -> msum          -- /record/ID
       [                               act (viewRecord api r)
