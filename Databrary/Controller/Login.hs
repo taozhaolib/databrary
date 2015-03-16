@@ -30,6 +30,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Token
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Form
+import Databrary.Controller.Permission
 import Databrary.Controller.Angular
 import Databrary.View.Login
 
@@ -88,10 +89,7 @@ viewUser = action GET (JSON, "user" :: T.Text) $ withAuth $
 
 postUser :: API -> AppRAction
 postUser api = action POST (api, "user" :: T.Text) $ withAuth $ do
-  ident <- peek
-  acct <- case ident of
-    UnIdentified -> result =<< forbiddenResponse
-    Identified s -> return $ view s
+  acct <- authAccount
   acct' <- runForm (api == HTML ?> htmlUserForm acct) $ do
     "auth" .:> do
       p <- deform

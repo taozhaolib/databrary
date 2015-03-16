@@ -95,6 +95,8 @@ routes = do
     , R.route >>= \s -> msum          -- /slot/ID/SEG
       [                               act (viewSlot api s)
       ,                               act (postContainer api s)
+      , R.route >>= \t ->             act (postTag api s t)
+                                  <|> act (deleteTag api s t)
       ]
 
     , R.route >>= \r -> msum          -- /record/ID

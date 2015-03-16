@@ -1,7 +1,6 @@
 {-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Tag
   ( module Databrary.Model.Tag.Types
-  , validateTag
   , lookupTag
   , addTag
   , addTagUse
@@ -24,14 +23,6 @@ import Databrary.Model.Tag.Types
 import Databrary.Model.Tag.SQL
 
 useTPG
-
-validTag :: Regex.Regex
-validTag = Regex.makeRegex
-  "^[a-z][-a-z ]+[a-z]$"
-
-validateTag :: BS.ByteString -> Maybe TagName
-validateTag t = Regex.matchTest validTag tt ?> TagName tt where
-  tt = BSC.unwords $ BSC.words t
 
 lookupTag :: DBM m => TagName -> m (Maybe Tag)
 lookupTag n =

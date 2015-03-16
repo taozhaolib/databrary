@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies, DataKinds #-}
 module Databrary.Model.Tag.Types
   ( TagName(..)
+  , validateTag
   , Tag(..)
   , MonadHasTag
   , TagUse(..)
@@ -8,15 +9,31 @@ module Databrary.Model.Tag.Types
   ) where
 
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
+import qualified Text.Regex.Posix as Regex
 
+import Databrary.Ops
 import Databrary.Has (makeHasRec)
+import qualified Databrary.Web.Route as R
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.Slot.Types
 
 newtype TagName = TagName BS.ByteString
+
+validTag :: Regex.Regex
+validTag = Regex.makeRegex
+  ("^[a-z][-a-z ]+[a-z]$" :: BS.ByteString)
+
+validateTag :: BS.ByteString -> Maybe TagName
+validateTag t = Regex.matchTest validTag tt ?> TagName tt where
+  tt = BSC.unwords $ BSC.words t
+
+instance R.Routable TagName where
+  route = R.maybe . validateTag =<< R.route
+  toRoute (TagName n) = R.toRoute n
 
 instance PGParameter "character varying" TagName where
   pgEncode t (TagName n) = pgEncode t n
@@ -33,15 +50,15 @@ data Tag = Tag
   , tagName :: TagName
   }
 
+instance Kinded Tag where
+  kindOf _ = "tag"
+
 data TagUse = TagUse
   { tag :: Tag
   , tagKeyword :: Bool
   , tagWho :: Account
   , tagSlot :: Slot
   }
-
-instance Kinded Tag where
-  kindOf _ = "tag"
 
 makeHasRec ''Tag ['tagId, 'tagName]
 makeHasRec ''TagUse ['tag, 'tagWho, 'tagSlot]
