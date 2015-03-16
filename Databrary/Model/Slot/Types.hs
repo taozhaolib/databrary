@@ -9,7 +9,6 @@ module Databrary.Model.Slot.Types
 
 import Control.Applicative ((<*>))
 import Data.Maybe (fromMaybe)
-import qualified Database.PostgreSQL.Typed.Range as Range
 
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
@@ -25,8 +24,8 @@ data SlotId = SlotId
   }
 
 instance R.Routable SlotId where
-  route = SlotId <$> (Id <$> R.route) <*> (fromMaybe Range.full <$> R.route)
-  toRoute (SlotId (Id c) s) = R.toRoute c ++ R.toRoute (Range.isFull s ?!> s :: Maybe Segment)
+  route = SlotId <$> (Id <$> R.route) <*> (fromMaybe fullSegment <$> R.route)
+  toRoute (SlotId (Id c) s) = R.toRoute c ++ R.toRoute (segmentFull s ?!> s :: Maybe Segment)
 
 type instance IdType Slot = SlotId
 

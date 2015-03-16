@@ -14,7 +14,6 @@ import Control.Applicative ((<*>))
 import Control.Monad (when, liftM2)
 import Data.Maybe (catMaybes, fromMaybe, isNothing)
 import Database.PostgreSQL.Typed (pgSQL)
-import qualified Database.PostgreSQL.Typed.Range as Range
 
 import Databrary.Ops
 import Databrary.Has (peek, view)
@@ -81,7 +80,7 @@ auditAssetSlotDownload success AssetSlot{ slotAsset = a, assetSlot = as } = do
 assetSlotJSON :: AssetSlot -> JSON.Object
 assetSlotJSON as@AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
-  , liftM2 (?!>) Range.isFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
+  , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
   , Just $ "permission" JSON..= (view as :: Permission)
   , ("excerpt" JSON..=) <$> assetSlotExcerpt
   ]

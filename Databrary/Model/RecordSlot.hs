@@ -41,7 +41,7 @@ moveRecordSlot :: (MonadAudit c m) => RecordSlot -> Segment -> m Bool
 moveRecordSlot rs@RecordSlot{ recordSlot = s@Slot{ slotSegment = src } } dst = do
   ident <- getAuditIdentity
   either (const False) ((0 <) . fst)
-    <$> case (Range.isEmpty src, Range.isEmpty dst) of
+    <$> case (Range.isEmpty (segmentRange src), Range.isEmpty (segmentRange dst)) of
     (True,  True) -> return $ Right (0, [])
     (False, True) -> Right <$> dbRunQuery $(deleteSlotRecord 'ident 'rs)
     (True,  False) -> dbTryQuery err $(insertSlotRecord 'ident 'rd)
@@ -61,6 +61,6 @@ recordSlotAge rs@RecordSlot{..} =
 
 recordSlotJSON :: RecordSlot -> JSON.Object
 recordSlotJSON rs@RecordSlot{..} = JSON.record (recordId slotRecord) $ catMaybes
-  [ Range.isFull (slotSegment recordSlot) ?!> ("segment" JSON..= slotSegment recordSlot)
+  [ segmentFull (slotSegment recordSlot) ?!> ("segment" JSON..= slotSegment recordSlot)
   , ("age" JSON..=) <$> recordSlotAge rs
   ]

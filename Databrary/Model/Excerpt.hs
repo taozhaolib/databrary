@@ -9,13 +9,13 @@ module Databrary.Model.Excerpt
 
 import Control.Monad (guard)
 import Data.Maybe (catMaybes)
-import qualified Database.PostgreSQL.Typed.Range as Range
 
 import Databrary.Ops
 import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL
+import Databrary.Model.Segment
 import Databrary.Model.Audit
 import Databrary.Model.Permission
 import Databrary.Model.Asset.Types
@@ -41,7 +41,7 @@ removeExcerpt e = do
 
 excerptJSON :: Excerpt -> JSON.Object
 excerptJSON e@Excerpt{..} = JSON.object $ catMaybes
-  [ Range.isFull excerptSegment ?!> "segment" JSON..= excerptSegment
+  [ segmentFull excerptSegment ?!> "segment" JSON..= excerptSegment
   , Just $ "classification" JSON..= excerptClassification
   , Just $ "permission" JSON..= (view e :: Permission)
   ]

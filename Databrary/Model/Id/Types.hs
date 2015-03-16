@@ -28,8 +28,8 @@ instance PGParameter t (IdType a) => PGParameter t (Id a) where
   pgEncodeValue e t (Id i) = pgEncodeValue e t i
   pgLiteral t (Id i) = pgLiteral t i
 instance PGColumn t (IdType a) => PGColumn t (Id a) where
-  pgDecode t i = Id (pgDecode t i)
-  pgDecodeValue e t i = Id (pgDecodeValue e t i)
+  pgDecode t = Id . pgDecode t
+  pgDecodeValue e t = Id . pgDecodeValue e t
 instance (PGParameter t (IdType a), PGColumn t (IdType a), PGRep t (IdType a)) => PGRep t (Id a)
 
 instance Show (IdType a) => Show (Id a) where

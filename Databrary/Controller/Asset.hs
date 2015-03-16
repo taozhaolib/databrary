@@ -121,9 +121,9 @@ processAsset api target = do
       "container" .:> (<|> slotContainer <$> s) <$> deformLookup "Container not found." (lookupVolumeContainer (assetVolume a))
       >>= Trav.mapM (\c -> "position" .:> do
         let seg = slotSegment <$> s
-        p <- (<|> (lowerBound =<< seg)) <$> deform
-        Slot c . maybe Range.full
-          (\l -> Range.bounded l (l + fromMaybe 0 ((segmentLength =<< seg) <|> assetDuration a)))
+        p <- (<|> (lowerBound . segmentRange =<< seg)) <$> deform
+        Slot c . maybe fullSegment
+          (\l -> Segment $ Range.bounded l (l + fromMaybe 0 ((segmentLength =<< seg) <|> assetDuration a)))
           <$> orElseM p (flatMapM (lift . findAssetContainerEnd) (isNothing s && isJust (assetDuration a) ?> c)))
     return
       ( as

@@ -283,16 +283,16 @@ instance Deform Date where
 
 instance Deform Offset where
   deform = deformParseJSON 0
-    $ maybe (Left "Offset required") $ maybe (Left "Invalid offset") Right . parseOffset . BSC.unpack
+    $ maybe (Left "Offset required") $ readParser . BSC.unpack
 
 instance Deform Segment where
-  deform = deformParseJSON Range.Empty
-    $ maybe (Left "Segment required") $ maybe (Left "Invalid segment") Right . parseSegment . BSC.unpack
+  deform = deformParseJSON (Segment Range.Empty)
+    $ maybe (Left "Segment required") $ readParser . BSC.unpack
 
 instance Deform URI where
   deform = maybe (deformErrorWith (Just URI.nullURI) "Invalid URL") return . parseURL =<< deform
 
-readParser :: Read a => String -> Either T.Text a
+readParser :: Read a => String -> Either FormErrorMessage a
 readParser = left T.pack . readEither
 
 deformRead :: (Functor m, Monad m) => Read a => a -> DeformT m a

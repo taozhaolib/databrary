@@ -1,84 +1,93 @@
 {-# LANGUAGE DataKinds, PatternGuards #-}
 module Databrary.Model.Segment
-  ( Segment
+  ( Segment(..)
   , lowerBound, upperBound
   , segmentLength
-  , readsSegment
-  , parseSegment
-  , showSegment
+  , fullSegment
+  , segmentFull
   ) where
 
-import Control.Applicative ((<$>), (<|>))
-import Control.Arrow (first)
-import Control.Monad (liftM2)
-import Data.List (stripPrefix)
-import Data.Maybe (fromMaybe)
+import Control.Applicative ((<|>), optional)
+import Control.Monad (guard, liftM2)
+import Data.Maybe (fromMaybe, isNothing)
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Types (PGType)
+import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 import qualified Database.PostgreSQL.Typed.Range as Range
+import qualified Text.ParserCombinators.ReadP as RP
+import qualified Text.ParserCombinators.ReadPrec as RP (lift, readPrec_to_P, minPrec)
+import Text.Read (readMaybe, readPrec)
 
+import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Offset
-
-type Segment = Range.Range Offset
-
-instance PGType "segment"
-instance Range.PGRangeType "segment" "interval"
 
 lowerBound, upperBound :: Range.Range a -> Maybe a
 lowerBound = Range.bound . Range.lowerBound
 upperBound = Range.bound . Range.upperBound
 
+newtype Segment = Segment { segmentRange :: Range.Range Offset }
+
+instance PGType "segment"
+instance Range.PGRangeType "segment" "interval"
+
+instance PGParameter "segment" Segment where
+  pgEncode t (Segment r) = pgEncode t r
+instance PGColumn "segment" Segment where
+  pgDecode t = Segment . pgDecode t
+
 segmentLength :: Segment -> Maybe Offset
-segmentLength s =
-  liftM2 (-) (upperBound s) (lowerBound s)
+segmentLength (Segment r) =
+  liftM2 (-) (upperBound r) (lowerBound r)
 
+instance Show Segment where
+  showsPrec _ (Segment Range.Empty) = showString "empty"
+  showsPrec p (Segment r)
+    | Just x <- Range.getPoint r = showsPrec p x
+    | otherwise =
+    maybe id (((if Range.lowerClosed r then id else showChar '(') .) . shows) (lowerBound r)
+    . showChar ',' . maybe id shows (upperBound r)
+    . (if Range.upperClosed r then showChar ']' else id)
 
-readsSegment :: ReadS Segment
-readsSegment ss = (Range.Empty, fromMaybe ss $ stripPrefix "empty" ss) : plb ss where
-  plb ('[':s) = pl (Just True) s
-  plb ('(':s) = pl (Just False) s
-  plb s = pl Nothing s
-  pl lb s = uncurry (pm lb) =<< (Nothing, s) : (first Just <$> readsOffset s)
-  pm lb l (',':s) = pu lb l s
-  pm lb l ('-':s) = pu lb l s
-  pm Nothing (Just l) s = return (Range.point l, s)
-  pm _ _ _ = fail "pm"
-  pu lb l s = uncurry (pub lb l) =<< (Nothing, s) : (first Just <$> readsOffset s)
-  pub lb l u (']':s) = pf lb l u (Just True) s
-  pub lb l u (')':s) = pf lb l u (Just False) s
-  pub lb l u s = pf lb l u Nothing s
-  pf lb l u ub s = return $ (Range.range (mb True lb l) (mb False ub u), s)
-  -- more liberal than Range.makeBound:
-  mb :: Bool -> Maybe Bool -> Maybe Offset -> Range.Bound Offset
-  mb d = maybe Range.Unbounded . Range.Bounded . fromMaybe d
+readP :: Read a => RP.ReadP a
+readP = RP.readPrec_to_P readPrec RP.minPrec
 
-parseSegment :: String -> Maybe Segment
-parseSegment = rm . readsSegment where
-  rm ((x,""):_) = Just x
-  rm (_:l) = rm l
-  rm [] = Nothing
-
-showSegment :: Segment -> String
-showSegment Range.Empty = "empty"
-showSegment r | Just p <- Range.getPoint r = showOffset p
-showSegment r =
-  maybe "" ((if Range.lowerClosed r then id else ('(' :)) . showOffset) (lowerBound r)
-  ++ ',' : maybe "" showOffset (upperBound r)
-  ++ (if Range.upperClosed r then "]" else "")
+instance Read Segment where
+  readPrec = RP.lift $ Segment <$> re RP.+++ rr where
+    re = do
+      RP.optional (RP.string "empty")
+      return Range.Empty
+    rr :: RP.ReadP (Range.Range Offset)
+    rr = do
+      lb <- optional $ ('[' ==) <$> RP.satisfy (`elem` "([")
+      l <- optional readP
+      (guard (isNothing lb) >> Range.point <$> maybeA l) RP.+++ do
+        RP.satisfy (`elem` ",-")
+        u <- optional readP
+        ub <- optional $ ('[' ==) <$> RP.satisfy (`elem` ")]")
+        return $ Range.range (mb True lb l) (mb False ub u)
+    -- more liberal than Range.makeBound:
+    mb :: Bool -> Maybe Bool -> Maybe Offset -> Range.Bound Offset
+    mb d = maybe Range.Unbounded . Range.Bounded . fromMaybe d
 
 instance JSON.ToJSON Segment where
-  toJSON s
-    | Range.isEmpty s = JSON.Null
-    | Just o <- Range.getPoint s = JSON.toJSON o
-    | otherwise = JSON.toJSON $ map Range.bound [Range.lowerBound s, Range.upperBound s]
+  toJSON (Segment r)
+    | Range.isEmpty r = JSON.Null
+    | Just o <- Range.getPoint r = JSON.toJSON o
+    | otherwise = JSON.toJSON $ map Range.bound [Range.lowerBound r, Range.upperBound r]
 
 instance JSON.FromJSON Segment where
-  parseJSON (JSON.String s) = maybe (fail "Invalid segment string") return $ parseSegment $ T.unpack s
+  parseJSON (JSON.String s) = maybe (fail "Invalid segment string") return $ readMaybe $ T.unpack s
   parseJSON j = do
     a <- JSON.parseJSON j <|> return <$> JSON.parseJSON j
-    case a of
+    Segment <$> case a of
       [] -> return Range.empty
       [p] -> return $ maybe Range.empty Range.point p
       [l, u] -> return $ Range.normal l u
       _ -> fail "Segment array too long"
+
+fullSegment :: Segment
+fullSegment = Segment Range.full
+
+segmentFull :: Segment -> Bool
+segmentFull = Range.isFull . segmentRange

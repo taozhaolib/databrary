@@ -96,9 +96,7 @@ routes = do
       ,                               act (postContainer api c)
       ]
 
-    , R.route >>= \s -> msum          -- /slot/ID/SEG
-      [                               
-      ]
+    -- , R.route >>= \s -> msum          -- /slot/ID/SEG
 
     , R.route >>= \r -> msum          -- /record/ID
       [                               act (viewRecord api r)

@@ -5,6 +5,7 @@ module Databrary.Ops
   , (<!?), (?!>)
   , (?$), ($?)
   , (>$), ($<)
+  , maybeA
   , fromMaybeM
   , orElseM
   , flatMapM
@@ -67,6 +68,10 @@ f >$ a = f a $> a
 -- |@flip '(>$)'@
 ($<) :: Functor f => a -> (a -> f ()) -> f a
 a $< f = a <$ f a
+
+maybeA :: Alternative m => Maybe a -> m a
+maybeA (Just x) = pure x
+maybeA Nothing = empty
 
 fromMaybeM :: Monad m => m a -> Maybe a -> m a
 fromMaybeM _ (Just a) = return a
