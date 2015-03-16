@@ -12,6 +12,7 @@ import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
+import Data.Maybe (isNothing)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
@@ -41,13 +42,16 @@ instance ResponseData StreamingBody where
   response = responseStream
 
 instance ResponseData FilePath where
-  response s h f = responseFile s h f Nothing
+  response s h f = response s h (f, Nothing :: Maybe FilePart)
 
 instance ResponseData (FilePath, FilePart) where
-  response s h (f, p) = responseFile s h f (Just p)
+  response s h (f, p) = response s h (f, Just p)
 
 instance ResponseData (FilePath, Maybe FilePart) where
-  response s h (f, p) = responseFile s h f p
+  response s h (f, p) = responseFile s h' f p where
+    h'
+      | isNothing p = ("accept-ranges", "bytes") : h
+      | otherwise = h
 
 instance ResponseData T.Text where
   response s h =
