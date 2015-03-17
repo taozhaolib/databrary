@@ -1,13 +1,41 @@
 # --- !Ups
 
 ALTER TABLE "party" RENAME "name" TO "sortname";
+ALTER TABLE "party" RENAME "orcid" TO "orcid_old";
+ALTER TABLE "party" RENAME "affiliation" TO "affiliation_old";
+ALTER TABLE "party" RENAME "url" TO "url_old";
 ALTER TABLE "party"
 	ADD "prename" text,
-	ALTER "prename" SET STORAGE EXTERNAL;
+	ALTER "prename" SET STORAGE EXTERNAL,
+	ADD "orcid" char(16),
+	ADD "affiliation" text,
+	ALTER "affiliation" SET STORAGE EXTERNAL,
+	ADD "url" text;
 UPDATE party SET prename = regexp_replace(sortname, ' [^ ]*$', ''), sortname = regexp_replace(sortname, '^.* ', '') FROM account WHERE position(' ' in sortname) > 0 AND party.id = account.id;
+UPDATE party SET orcid = orcid_old, affiliation = affiliation_old, url = url_old;
+ALTER TABLE "party"
+	DROP "orcid_old",
+	DROP "affiliation_old",
+	DROP "url_old";
+COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
 
 ALTER TABLE audit."party" RENAME "name" TO "sortname";
-ALTER TABLE audit."party" ADD "prename" text;
+ALTER TABLE audit."party" RENAME "orcid" TO "orcid_old";
+ALTER TABLE audit."party" RENAME "affiliation" TO "affiliation_old";
+ALTER TABLE audit."party" RENAME "url" TO "url_old";
+ALTER TABLE audit."party" ADD "prename" text,
+	ADD "orcid" char(16),
+	ADD "affiliation" text,
+	ADD "url" text;
+DO $do$ BEGIN
+EXECUTE $$GRANT UPDATE ON TABLE audit.party TO $$ || quote_ident(current_user);;
+UPDATE audit.party SET orcid = orcid_old, affiliation = affiliation_old, url = url_old;;
+EXECUTE $$REVOKE UPDATE ON TABLE audit.party FROM $$ || quote_ident(current_user);;
+END;; $do$;
+ALTER TABLE audit."party"
+	DROP "orcid_old",
+	DROP "affiliation_old",
+	DROP "url_old";
 
 CREATE OR REPLACE VIEW "volume_text" ("volume", "text") AS
 	SELECT id, name FROM volume 
@@ -39,6 +67,10 @@ UPDATE party SET sortname = COALESCE(prename || ' ', '') || sortname;
 ALTER TABLE "party" RENAME "sortname" TO "name";
 ALTER TABLE "party" DROP "prename";
 
--- UPDATE audit.party SET sortname = COALESCE(prename || ' ', '') || sortname;
+DO $do$ BEGIN
+EXECUTE $$GRANT UPDATE ON TABLE audit.party TO $$ || quote_ident(current_user);;
+UPDATE audit.party SET sortname = COALESCE(prename || ' ', '') || sortname;;
+EXECUTE $$REVOKE UPDATE ON TABLE audit.party FROM $$ || quote_ident(current_user);;
+END;; $do$;
 ALTER TABLE audit."party" RENAME "sortname" TO "name";
 ALTER TABLE audit."party" DROP "prename";
