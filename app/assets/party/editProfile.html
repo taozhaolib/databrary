@@ -8,11 +8,12 @@
 
   <fieldset>
     <legend message="party.edit.personal"></legend>
-    <validator name="prename" label="prename">
+
+    <validator name="prename" label="prename" class="grid-clear-left col-desktop-7 col-tablet-4 col-mobile-6">
       <input type="text" name="prename" ng-model="partyEditProfileForm.data.prename">
     </validator>
 
-    <validator name="sortname" label="sortname">
+    <validator name="sortname" label="sortname" class="grid-clear-right col-desktop-8 col-tablet-5 col-mobile-6">
       <input type="text" name="sortname" ng-model="partyEditProfileForm.data.sortname">
     </validator>
 

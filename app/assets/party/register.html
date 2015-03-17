@@ -10,11 +10,11 @@
         <wizard name="register">
           <wizard-step name="create">
             <ng-form name="registerForm">
-              <validator name="prename" label="prename">
+              <validator name="prename" label="prename" class="grid-clear-left col-desktop-7 col-tablet-4 col-mobile-6">
                 <input id="field-prename" name="prename" type="text" ng-model="registerForm.data.prename" placeholder="First">
               </validator>
 
-              <validator name="sortname" label="sortname">
+              <validator name="sortname" label="sortname" class="grid-clear-right col-desktop-8 col-tablet-5 col-mobile-6">
                 <input id="field-sortname" name="sortname" type="text" ng-model="registerForm.data.sortname" ng-minlength="2" placeholder="Last" required>
               </validator>
 
