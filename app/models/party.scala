@@ -264,7 +264,7 @@ object Party extends TableId[Party]("party") {
       })
       ++ authorize.fold(Statement.empty)(a => lsql" AND id != ${a.id} AND id NOT IN (SELECT child FROM authorize WHERE parent = ${a.id} UNION SELECT parent FROM authorize WHERE child = ${a.id})")
       ++ volume.fold(Statement.empty)(v => lsql" AND id NOT IN (SELECT party FROM volume_access WHERE volume = ${v.id})")
-      ++ lsql"ORDER BY sortname, prename LIMIT $limit OFFSET $offset")
+      ++ lsql" ORDER BY sortname, prename LIMIT $limit OFFSET $offset")
     .list
 
   /** The special party group representing everybody (including anonymous users) on the site.
