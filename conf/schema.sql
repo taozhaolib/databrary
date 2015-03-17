@@ -905,7 +905,7 @@ CREATE AGGREGATE "tsvector_agg" (tsvector) (SFUNC = tsvector_concat, STYPE = tsv
 CREATE VIEW "volume_text" ("volume", "text") AS
 	SELECT id, name FROM volume 
 	UNION ALL SELECT id, body FROM volume WHERE body IS NOT NULL
-	UNION ALL SELECT volume, name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
+	UNION ALL SELECT volume, COALESCE(prename || ' ', '') || sortname FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
 	UNION ALL SELECT volume, head FROM volume_citation
 	UNION ALL SELECT volume, year::text FROM volume_citation WHERE year IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
