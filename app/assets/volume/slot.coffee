@@ -252,6 +252,7 @@ app.controller('volume/slot', [
         @segment = new Segment(asset.segment)
         select(this) if `asset.id == target.asset`
         $scope.asset = asset if $scope.current == this
+        @updateExcerpt()
         return
 
       Object.defineProperty @prototype, 'id',
@@ -338,6 +339,7 @@ app.controller('volume/slot', [
 
       updateExcerpt: () ->
         @excerpt = undefined
+        return unless @asset && @excerpts
         seg = if @segment.full then @segment else getSelection()
         return if !@asset || !seg || !@segment.overlaps(seg)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
