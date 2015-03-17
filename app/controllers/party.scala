@@ -71,7 +71,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val party = request.obj.party
     for {
       _ <- party.change(
-        name = form.name.get,
+        sortname = form.sortname.get,
+        prename = form.prename.get,
         orcid = form.orcid.get,
         affiliation = form.affiliation.get,
         url = form.url.get
@@ -95,7 +96,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = createForm(acct)._bind
     for {
       p <- Party.create(
-        name = form.name.get.get,
+        sortname = form.sortname.get.get,
+        prename = form.prename.get.get,
         orcid = form.orcid.get.flatten,
         affiliation = form.affiliation.get.flatten,
         url = form.url.get.flatten)
@@ -209,7 +211,8 @@ object PartyController extends PartyController {
       views.html.party.edit(_)) {
     def actionName : String
     def formName : String = actionName + " Party"
-    val name : Field[Option[String]]
+    val sortname : Field[Option[String]]
+    val prename = Field(OptionMapping(Mappings.maybeText))
     val orcid = Field(OptionMapping(Forms.optional(Forms.of[Orcid])))
     val affiliation = Field(OptionMapping(Mappings.maybeText))
     val url = Field(OptionMapping(Forms.optional(Forms.of[java.net.URL])))
@@ -227,8 +230,9 @@ object PartyController extends PartyController {
     override def formName = "Edit Profile"
     def party = request.obj.party
     def accountForm : Option[AccountEditForm]
-    val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(party.name))
+    val sortname = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(party.sortname))
     val avatar = OptionalFile()
+    prename.fill(Some(party.prename))
     orcid.fill(Some(party.orcid))
     affiliation.fill(Some(party.affiliation))
     url.fill(Some(party.url))
@@ -248,7 +252,7 @@ object PartyController extends PartyController {
   abstract sealed class CreateForm(implicit request : SiteRequest[_])
     extends PartyForm(routes.PartyHtml.create()) {
     def actionName = "Create"
-    val name = Field(Mappings.some(Mappings.nonEmptyText))
+    val sortname = Field(Mappings.some(Mappings.nonEmptyText))
   }
   final class PartyCreateForm(implicit request : SiteRequest[_]) extends CreateForm
   final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {

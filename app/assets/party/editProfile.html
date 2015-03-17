@@ -8,15 +8,19 @@
 
   <fieldset>
     <legend message="party.edit.personal"></legend>
-    <validator name="name" label="party.edit.name.title">
-      <input type="text" name="name" ng-model="partyEditProfileForm.data.name">
+    <validator name="prename" label="prename">
+      <input type="text" name="prename" ng-model="partyEditProfileForm.data.prename">
     </validator>
 
-    <validator name="affiliation" label="party.edit.affiliation.title">
+    <validator name="sortname" label="sortname">
+      <input type="text" name="sortname" ng-model="partyEditProfileForm.data.sortname">
+    </validator>
+
+    <validator name="affiliation" label="affiliation">
       <input type="text" name="affiliation" ng-model="partyEditProfileForm.data.affiliation">
     </validator>
 
-    <validator name="orcid" label="party.edit.orcid.title">
+    <validator name="orcid" label="orcid">
       <input type="text" name="orcid" ng-model="partyEditProfileForm.data.orcid">
     </validator>
 

@@ -10,7 +10,8 @@
   }) { party =>
 @widget.form(party, form.formName, RequestObject.cast(request).flatMap(cast[SiteParty](_)).map(_.pageURL)) {
             @widget.tag.form(form) {
-                @widget.tag.inputText(form.name(), ('placeholder, "Full name"))
+                @widget.tag.inputText(form.prename(), ('placeholder, "First name"))
+                @widget.tag.inputText(form.sortname(), ('placeholder, "Last name"))
                 @widget.tag.inputText(form.orcid(), ('placeholder, "ORCiD"))
                 @widget.tag.inputText(form.affiliation(), ('placeholder, "Affiliation"))
                 @widget.tag.inputText(form.url(), ('placeholder, "URL"))
