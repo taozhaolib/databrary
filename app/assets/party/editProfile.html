@@ -14,7 +14,7 @@
     </validator>
 
     <validator name="sortname" label="sortname" class="grid-clear-right col-desktop-8 col-tablet-5 col-mobile-6">
-      <input type="text" name="sortname" ng-model="partyEditProfileForm.data.sortname">
+      <input type="text" name="sortname" ng-model="partyEditProfileForm.data.sortname" ng-minlength="2" required>
     </validator>
 
     <validator name="affiliation" label="affiliation">
