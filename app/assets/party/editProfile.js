@@ -6,7 +6,7 @@ app.directive('partyEditProfileForm', [
       var party = $scope.party;
       var form = $scope.partyEditProfileForm;
 
-      var fields = ['name', 'affiliation', 'orcid', 'url'];
+      var fields = ['prename', 'sortname', 'affiliation', 'orcid', 'url'];
 
       function init() {
         form.data = {};

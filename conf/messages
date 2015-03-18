@@ -154,6 +154,8 @@ password.new.again=New Password (again)
 password.incorrect=Incorrect password.
 password.match=Passwords do not match.
 password.check=Insecure password: {0}
+prename=First and middle name
+sortname=Last name
 openid=OpenID
 orcid=ORCiD
 avatar=avatar
@@ -212,20 +214,17 @@ party.edit.personal=Personal Information
 party.edit.account=Login Information
 party.edit.confirm=Confirm Access
 
-party.edit.name.title=Full name
-party.edit.name.help=Enter your full name.
-
-party.edit.affiliation.title=Affiliation
-party.edit.affiliation.help=Specify your institutional affiliation.
+party.edit.prename.help=Enter your first or given name.
+party.edit.sortname.help=Enter your last or family name.
+party.edit.affiliation.help=Specify your institutional affiliation as you wish it to display on your profile.
 
 party.edit.url.title=Website
 party.edit.url.help=Specify whatever personal web page you''d like (faculty page, ResearchGate, etc.)
 
-party.edit.orcid.title=ORCiD
 party.edit.orcid.help=Enter your ORCiD.
 
 party.edit.email.title=Email
-party.edit.email.help=Enter a valid email address.
+party.edit.email.help=Enter a valid email address. We recommend using your institutional email address.
 
 party.edit.password.title=New password
 party.edit.password.help=Enter a new, secure password.
@@ -487,19 +486,14 @@ search.none=No matches found.
 # --- Registration
 register.title=Register
 register.title.sub=Get Databrary Access
-register.name.prompt=Full name
 register.continue=Continue
 register.agree=Agree
 register.register=Agree and register
 register.sent.instructions=Your confirmation email has been sent to {0}.
 register.authquery.error=Could not retrieve potential authorizing agents.
 
-register.name.help=Provide your full name.
-
 register.email.help=We recommend using your institutional email address. You can change it later.
 register.email.error=This email address is invalid.
-
-register.affiliation.help=Enter your affiliation as you wish it to display on your profile.
 
 wizard.register-create.name=Create Account
 wizard.register-create.description=Register to browse shared data and comment on volumes.

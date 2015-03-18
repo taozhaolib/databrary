@@ -123,15 +123,15 @@
           
           <div class="slot-toolbar" ng-if="::editing" ng-switch="editing" ng-class="{'slot-toolbar-bg': editing!==true}">
             <div ng-switch-when="true">
-              <button ng-click="addRecord()" class="mini">Add Record</button>
-              <button ng-if="!!current.record" ng-click="current.remove()" class="mini">Remove Record</button>
-              <button ng-if="!!current.record" ng-click="current.rePosition()" class="mini">Position Record</button>
+              <button ng-click="addRecord()" class="mini">Add record</button>
+              <button ng-if="!!current.record" ng-click="current.remove()" class="mini">Remove record</button>
+              <button ng-if="!!current.record" ng-click="current.rePosition()" class="mini">Position record</button>
               &#32;
-              <button ng-click="addBlank()" class="mini">Add File</button>
-              <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove File</button>
-              <button ng-if="!!current.asset" ng-click="current.rePosition()" class="mini">Position File</button>
+              <button ng-click="addBlank()" class="mini">Add file</button>
+              <button ng-if="!!(current.asset || current.file) && !current.pending" ng-click="current.remove()" class="mini">Remove file</button>
+              <button ng-if="!!current.asset" ng-click="current.rePosition()" class="mini">Position file</button>
               &#32;
-              <button ng-if="current.excerpt.on === false" ng-click="current.editExcerpt()" class="mini">Highlight on Volume</button>
+              <button ng-if="current.excerpt.on === false" ng-click="current.editExcerpt()" class="mini">Highlight on volume</button>
               <button ng-if="current.excerpt.on === true" ng-click="current.editExcerpt()" class="mini">Edit highlight</button>
             </div>
             <ng-form ng-switch-when="record" name="form.record">
@@ -153,7 +153,7 @@
             </ng-form>
             <ng-form ng-switch-when="excerpt" name="form.excerpt">
               <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
-              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove Highlight</button>&#32;
+              <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove highlight</button>&#32;
               <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
             </ng-form>
           </div>
@@ -176,8 +176,8 @@
                 <div class="slot-timeline-zoom">
                   <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
                   <span class="icon zoomout" ng-if="ruler.zoomed" ng-click="zoom()"></span>
-                  <span ng-if="ruler.selection.full" ng-click="setSelection(null)">Clear Selection</span>
-                  <span ng-if="!ruler.selection.full" ng-click="setSelection(undefined)">Select All</span>
+                  <span ng-if="ruler.selection.full" ng-click="setSelection(null)">Clear selection</span>
+                  <span ng-if="!ruler.selection.full" ng-click="setSelection(undefined)">Select all</span>
                 </div>
 
               </div>
@@ -208,7 +208,7 @@
             </div>
 
             <div class="slot-timeline-tracks">
-              <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.asset.segment.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="select($event, t)" ng-dblclick="selectAll($event, t)" mouse-drag="dragSelection($down, $up, t)">
+              <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.segment.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="select($event, t)" ng-dblclick="selectAll($event, t)" mouse-drag="dragSelection($down, $up, t)">
                 <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="!excerpt.segment.full" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
                 </div>
                 <div class="slot-track-asset-info">
@@ -220,7 +220,7 @@
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                   <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
                 </div>
-                <div class="slot-track-asset" ng-if="t.asset && !t.asset.segment.full" ng-style="positionStyle(t.segment)">
+                <div class="slot-track-asset" ng-if="t.asset && !t.segment.full" ng-style="positionStyle(t.segment)">
                   <div ng-if="t === current && editing == 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>
                 </div>
               </div>

@@ -22,7 +22,8 @@ app.directive('accessGrantForm', [
       form.canGrantAccess = function (p) {
         return p == page.permission.READ ||
           p == page.permission.EDIT ||
-          p == page.permission.ADMIN;
+          p == page.permission.ADMIN ||
+          page.models.Login.checkAccess(page.permission.ADMIN);
       };
 
       //

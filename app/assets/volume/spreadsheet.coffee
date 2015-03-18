@@ -350,7 +350,7 @@ app.directive 'spreadsheet', [
             $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "format hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
-          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
+          generateCell(row, 'excerpt', Math.max(a.classification, a.excerpt), id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].
@@ -847,7 +847,7 @@ app.directive 'spreadsheet', [
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
               styles.set('.' + c + '{background-color:' +
-                (if c.includes('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
+                (if c.includes('_', 7) then 'rgba(226,217,0,0.6)' else 'rgba(242,238,100,0.4)') +
                 ';\n text-}')
 
           edit(cell, info) if editing

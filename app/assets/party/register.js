@@ -15,9 +15,9 @@ app.controller('party/register', [
         form.sent = false;
 
         var validate = {};
-        ['name', 'email', 'affiliation'].forEach(function (f) {
+        ['prename', 'sortname', 'email', 'affiliation'].forEach(function (f) {
           validate[f] = {
-            tips: page.constants.message('register.' + f + '.help')
+            tips: page.constants.message('party.edit.' + f + '.help')
           };
         });
         validate.email.errors = page.constants.message('register.email.error');

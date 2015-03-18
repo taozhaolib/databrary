@@ -134,6 +134,8 @@ app.factory('modelService', [
       id: true,
       permission: false,
       name: true,
+      sortname: true,
+      prename: true,
       orcid: true,
       affiliation: true,
       email: true,

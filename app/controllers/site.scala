@@ -218,6 +218,10 @@ object Site extends SiteController {
 
   def favicon =
     Assets.at("/public/icons", "favicon.ico")
+
+  def robots = Action {
+    Ok(views.txt.robots())
+  }
 }
 
 object SiteHtml extends HtmlController {

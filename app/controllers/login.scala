@@ -88,7 +88,8 @@ private[controllers] sealed class LoginController extends SiteController {
         e <- Account.getEmail(form.email.get)
         a <- e getOrElseAsync {
           Party.create(
-            name = form.name.get,
+            sortname = form.sortname.get,
+            prename = form.prename.get,
             affiliation = form.affiliation.get)
           .flatMap(Account.create(_, email = form.email.get))
         }
@@ -128,7 +129,8 @@ object LoginController extends LoginController {
     extends HtmlForm[RegistrationForm](
       routes.LoginHtml.register,
       views.html.party.register(_)) {
-    val name = Field(Mappings.nonEmptyText)
+    val sortname = Field(Mappings.nonEmptyText)
+    val prename = Field(Mappings.maybeText)
     val email = Field(Forms.email)
     val affiliation = Field(Mappings.maybeText)
     val agreement = Field(Forms.checked("agreement.required"))
