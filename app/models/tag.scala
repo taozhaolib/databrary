@@ -106,7 +106,7 @@ private[models] object TagUse extends Table[Unit]("tag_use") {
         case t : Tag => lsql"${t.id}"
       }) ++ lsql", ${slot.containerId}, ${slot.segment}, ${slot.site.identity.id}) RETURNING tag")
     .run.singleOpt(Tag.colId(tag)).recover {
-      case SQLDuplicateKeyException() => None
+      case SQLDuplicateKeyException(_) => None
     }
 
   private[models] def remove(tag : AbstractTag, slot : Slot, keyword : Boolean = false) : Future[Option[Tag]] =

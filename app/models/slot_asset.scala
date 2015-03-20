@@ -272,7 +272,7 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     } { classification =>
       Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key :+ ('segment -> segment))
     }.execute.recover {
-      case SQLDuplicateKeyException() => false
+      case SQLDuplicateKeyException(_) => false
     }
   }
 }

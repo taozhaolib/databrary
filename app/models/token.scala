@@ -7,6 +7,7 @@ import macros._
 import dbrary._
 import dbrary.SQL._
 import site._
+import async._
 
 trait TokenAuth {
   def token : String
@@ -67,7 +68,7 @@ private[models] sealed abstract class TokenTable[T <: Token](table : String) ext
   private def insert[A](f : Token.Id => Future[A]) : Future[A] = {
     /*@scala.annotation.tailrec*/ def loop : Future[A] =
       f(Token.generate).recoverWith {
-        case SQLDuplicateKeyException() => loop
+        case SQLDuplicateKeyException(key) if key.contains("_pkey") => loop
       }
     loop
   }
@@ -114,14 +115,17 @@ object LoginToken extends TokenTable[LoginToken]("login_token") {
     .join(Account.row on "login_token.account = account.id").map(tupleApply)
 
   /** Issue a new token for the given party.
-    * @param password if this token allows a password reset. There can be only one active password reset per user at a time, so this deletes any previous ones.
+    * @param password if this token allows a password reset.
     */
-  def create(account : Account, password : Boolean = false) : Future[LoginToken] =
-    (if (password) DELETE('account -> account.id, 'password -> true).execute
-    else async(false)).flatMap { _ =>
-      insert(SQLTerms('account -> account.id, 'password -> password),
-        columns.map(_(account)))
-    }
+  def create(account : Account, password : Boolean = false) : Future[LoginToken] = {
+    val returning = columns.map(_(account))
+    // not concurrency-safe, but too hard to fix correctly
+    (if (password)
+      (lsql"UPDATE login_token SET expires = now() + '7 days'::interval WHERE account = ${account.id} AND password RETURNING " ++ returning.select)
+      .run.singleOpt(returning.parse)
+    else async(None)).flatMap(_.getOrElseAsync(
+      insert(SQLTerms('account -> account.id, 'password -> password), returning)))
+  }
 }
 
 /** A token set in a cookie designating a particular session.

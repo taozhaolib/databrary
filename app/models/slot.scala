@@ -43,7 +43,7 @@ trait Slot extends InVolume with SiteObject {
     else
       Audit.changeOrAdd("slot_consent", SQLTerms('consent -> c), slotSql).execute
         .recover {
-          case SQLDuplicateKeyException() => false
+          case SQLDuplicateKeyException(_) => false
         }
 
   /** The permisison level granted to restricted data within this slot. */

@@ -147,7 +147,7 @@ object SlotRecord extends SlotTable("slot_record") {
     } else
       Audit.change(table, SQLTerms('segment -> dst), key :+ ('segment -> src)))
     .execute.recover {
-      case SQLDuplicateKeyException() => false
+      case SQLDuplicateKeyException(_) => false
     }
   }
 }

@@ -107,7 +107,7 @@ object VolumeLink extends Table[ExternalLink]("volume_link") {
       }
     } yield (true) }
     .recover {
-      case SQLDuplicateKeyException() => false
+      case SQLDuplicateKeyException(_) => false
     }
   }
 }

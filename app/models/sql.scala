@@ -58,10 +58,10 @@ object SQLException {
 }
 
 object SQLDuplicateKeyException {
-  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Boolean = {
+  def unapply(e : db.postgresql.exceptions.GenericDatabaseException) : Option[String] = {
     val msg = e.errorMessage.message
-    msg.startsWith("duplicate key value violates unique constraint ") ||
-    msg.startsWith("conflicting key value violates exclusion constraint ")
+    Maybe.stripPrefix(msg, "duplicate key value violates unique constraint ") orElse
+    Maybe.stripPrefix(msg, "conflicting key value violates exclusion constraint ")
   }
 }
 
@@ -72,7 +72,7 @@ object DBUtil {
       case None =>
         LiteralStatement("SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
         insert(dbc, exc).recoverWith {
-        case SQLDuplicateKeyException() =>
+        case SQLDuplicateKeyException(_) =>
           LiteralStatement("ROLLBACK TO SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
             loop(dbc)
           }
@@ -89,7 +89,7 @@ object DBUtil {
       if (r.rowsAffected == 0)
         LiteralStatement("SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
         insert(dbc, exc).result.recoverWith {
-          case SQLDuplicateKeyException() =>
+          case SQLDuplicateKeyException(_) =>
             LiteralStatement("ROLLBACK TO SAVEPOINT " + sp).run(dbc, exc).execute.flatMap { _ =>
               loop(dbc)
             }

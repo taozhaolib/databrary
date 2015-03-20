@@ -54,6 +54,8 @@ object Maybe {
     else l + r
   def flatOpt[A](o : Option[A])(implicit t : Truth[A]) : Option[A] =
     o.filter(t.pass)
+  def stripPrefix(s : String, p : String) : Option[String] =
+    if (s.startsWith(p)) Some(s.drop(p.length)) else None
 
   /** Compute the value, usually a string parse, catching NumberFormatException.
     * @return Some(f) unless f throws NumberFormatException
