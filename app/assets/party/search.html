@@ -2,16 +2,15 @@
   <div class="wrap">
     <div class="row">
       <div class="col">
-        <h3><span class="background"></span>Users</h3>
+        <h3><span class="background"></span>Search Users</h3>
         <search-form type='party'></search-form>
       </div>
     </div>
-
     <div ng-if="!parties.length" class="party-list-none">
       <span message="search.none"></span>
     </div>
 
-    <div class="row party-list">
+    <div ng-if="parties.length" class="row party-list">
       <div class="col-desktop-5 col-tablet-4 col-mobile-6" ng-repeat="party in parties">
         <portrait></portrait>
       </div>

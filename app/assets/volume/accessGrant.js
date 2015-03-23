@@ -22,10 +22,9 @@ app.directive('accessGrantForm', [
       form.canGrantAccess = function (p) {
         return p == page.permission.READ ||
           p == page.permission.EDIT ||
-          p == page.permission.ADMIN;
+          p == page.permission.ADMIN ||
+          page.models.Login.checkAccess(page.permission.ADMIN);
       };
-
-      form.canChange = access.party.id !== page.models.Login.user.id || page.models.Login.user.superuser;
 
       //
 

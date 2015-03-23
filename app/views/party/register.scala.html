@@ -10,7 +10,8 @@
         <div class="col">
             @widget.tag.form(form) {
 
-                @widget.tag.inputText(form.name(), 'placeholder -> Messages("register.name.prompt"))
+                @widget.tag.inputText(form.prename(), 'placeholder -> Messages("party.edit.prename"))
+                @widget.tag.inputText(form.sortname(), 'placeholder -> Messages("party.edit.sortname"))
                 @widget.tag.inputText(form.email(), 'placeholder -> Messages("email"))
                 @widget.tag.inputText(form.affiliation(), 'placeholder -> Messages("affiliation"))
                 @HtmlFormat.raw(Messages("wizard.register-agreement.instructions"))

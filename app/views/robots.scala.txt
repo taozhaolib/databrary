@@ -1,0 +1,4 @@
+@()@if(site.Site.sandbox || !play.api.Play.isProd(play.api.Play.current)){
+User-agent: *
+Disallow: /
+}

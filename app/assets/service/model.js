@@ -64,12 +64,14 @@ app.factory('modelService', [
       else if (!obj)
         return options || opts;
       else if (options)
-        angular.forEach(options, function (v, o) {
-          if (v || !hasField(obj, o)) {
+
+        _.each(options, function(v, o){
+	  if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
-          }
-        });
+          } 
+	});
+
       return need;
     }
 
@@ -132,6 +134,8 @@ app.factory('modelService', [
       id: true,
       permission: false,
       name: true,
+      sortname: true,
+      prename: true,
       orcid: true,
       affiliation: true,
       email: true,
@@ -206,7 +210,7 @@ app.factory('modelService', [
     Party.search = function (data) {
       return router.http(router.controllers.PartyApi.search, data)
         .then(function (res) {
-          return res.data.map(partyMake);
+          return _.map(res.data, partyMake);
         });
     };
 
@@ -327,13 +331,15 @@ app.factory('modelService', [
       return router.profile();
     };
 
-    angular.forEach({
+
+
+    _.each({
       get: 'get',
       login: 'post',
       logout: 'logout',
       superuserOn: 'superuserOn',
       superuserOff: 'superuserOff'
-    }, function (api, f) {
+    }, function(api, f){
       Login[f] = function (data) {
         return router.http(router.controllers.LoginApi[api], data).then(loginRes);
       };

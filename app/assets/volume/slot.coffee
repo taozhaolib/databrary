@@ -94,7 +94,7 @@ app.controller('volume/slot', [
       return
 
     seekOffset = (o) ->
-      ruler.position = o
+      ruler.position = Math.round(o)
       $scope.updatePosition()
       return
 
@@ -180,9 +180,9 @@ app.controller('volume/slot', [
         sel = slot.segment if sel.empty
         ruler.selection =
           if u
-            new Segment(Math.min(sel.l, pos), pos+0.1)
+            new Segment(Math.min(sel.l, pos), pos)
           else
-            new Segment(pos, Math.max(sel.u, pos+0.1))
+            new Segment(pos, Math.max(sel.u, pos))
       finalizeSelection()
       return
 
@@ -220,7 +220,10 @@ app.controller('volume/slot', [
       return
 
     getSelection = ->
-      if ruler.selection.empty then new Segment(ruler.position) else ruler.selection
+      if ruler.selection.empty
+        new Segment(ruler.position)
+      else
+        ruler.selection
 
     $scope.addBlank = () ->
       unless blank
@@ -249,6 +252,7 @@ app.controller('volume/slot', [
         @segment = new Segment(asset.segment)
         select(this) if `asset.id == target.asset`
         $scope.asset = asset if $scope.current == this
+        @updateExcerpt()
         return
 
       Object.defineProperty @prototype, 'id',
@@ -297,8 +301,8 @@ app.controller('volume/slot', [
 
       finishPosition: () ->
         $scope.form.position.$setPristine()
-        @segment = new Segment(@asset.segment)
         $scope.editing = true
+        @segment = new Segment(@asset.segment)
         return
 
       savePosition: () ->
@@ -307,13 +311,14 @@ app.controller('volume/slot', [
         @asset.save({container:slot.id, position:Math.floor(@segment.l)}).then (asset) =>
             @asset = asset
             shift -= @asset.segment.l
-            if shift
+            if isFinite(shift) && shift
               for e in @excerpts
                 e.segment.l -= shift
                 e.segment.u -= shift
             updateRange()
             sortTracks()
             @finishPosition()
+            @updateExcerpt()
           , (res) =>
             @finishPosition()
             messages.addError
@@ -334,8 +339,9 @@ app.controller('volume/slot', [
 
       updateExcerpt: () ->
         @excerpt = undefined
-        seg = getSelection()
-        return if !@asset || !seg || (@segment.full && !seg.full) || !@segment.overlaps(seg)
+        return unless @asset && @excerpts
+        seg = if @segment.full then @segment else getSelection()
+        return if !@asset || !seg || !@segment.overlaps(seg)
         excerpt = @excerpts.find((e) -> seg.overlaps(e.segment))
         @excerpt =
           if !excerpt
@@ -460,7 +466,7 @@ app.controller('volume/slot', [
         return
       timeupdate: ->
         if $scope.asset && isFinite($scope.asset.segment.l)
-          o = 1000*video[0].currentTime
+          o = Math.round(1000*video[0].currentTime)
           if $scope.editing == 'position' && $scope.asset == $scope.current.asset
             $scope.current.setPosition(ruler.position - o)
           else
@@ -507,6 +513,12 @@ app.controller('volume/slot', [
         @data =
           measures: angular.extend({}, @record.measures)
           add: ''
+        @sortMetrics() if editing
+        return
+
+      sortMetrics: ->
+        keys = _.keys @data.measures
+        @sortedMetrics = keys.sort (a,b) -> a - b
         return
 
       Object.defineProperty @prototype, 'id',
@@ -543,6 +555,7 @@ app.controller('volume/slot', [
       add: ->
         @data.measures[@data.add] = '' if @data.add
         @data.add = ''
+        @sortMetrics()
         return
 
       save: ->
@@ -708,10 +721,10 @@ app.controller('volume/slot', [
               tag = $scope.tags.find (t) -> t.id == data.id
               unless tag
                 tag = new Tag(data)
-                tag.active = true
+                tag.toggle(true)
                 $scope.tags.push(tag)
             tag.fillData(data)
-            if (if editing then tag.keyword?.length else tag.weight)
+            if (if editing then tag.keyword?.length else tag.coverage?.length)
               tag.update()
             else
               $scope.tags.remove(tag)
@@ -727,10 +740,12 @@ app.controller('volume/slot', [
     $scope.vote = (name, vote) ->
       new TagName(name).save(vote)
 
+    tagToggle = storage.get('tag-toggle')?.split("\n") ? []
+
     class Tag extends TagName
       constructor: (t) ->
         @id = t.id
-        @active = false
+        @active = t.id in tagToggle
         @fillData(t)
         return
 
@@ -745,8 +760,12 @@ app.controller('volume/slot', [
               this[f].push(Segment.make(s))
         return
 
-      toggle: ->
-        @active = !@active
+      toggle: (act) ->
+        if @active = act ? !@active
+          tagToggle.push(@id)
+        else
+          tagToggle.remove(@id)
+        storage.set('tag-toggle', tagToggle.join("\n"))
 
       update: ->
         state = false
@@ -773,7 +792,7 @@ app.controller('volume/slot', [
         cls
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
-    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.weight))
+    $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.coverage?.length))
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     $scope.comments = (new Comment(comment) for comment in slot.comments)
     ### jshint ignore:end ###
@@ -784,7 +803,7 @@ app.controller('volume/slot', [
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
-        consents.map((c) -> new Consent(c))
+        _.map consents, (c) -> new Consent(c)
       else if (consents)
         [new Consent(consents)]
       else

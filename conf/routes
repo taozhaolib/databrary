@@ -225,6 +225,7 @@ POST    /api/transcode/:id/complete                                             
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
 GET     /favicon.ico                                                                              controllers.Site.favicon
+GET     /robots.txt                                                                               controllers.Site.robots
 
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)

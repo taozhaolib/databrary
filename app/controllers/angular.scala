@@ -166,6 +166,7 @@ object AngularController extends SiteController {
     "lib/angularjs/angular.min.js",
     "lib/angularjs/angular-route.min.js",
     "lib/ng-flow/ng-flow-standalone.min.js",
+    "lib/lodash/lodash.min.js",
     "app.min.js",
     "templates.js")
 

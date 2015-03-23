@@ -59,14 +59,16 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name, name) IS 'Create an audit.$1 table
 
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
-	"name" text NOT NULL,
+	"sortname" text NOT NULL,
+	"prename" text,
 	"orcid" char(16),
 	"affiliation" text,
 	"url" text
 );
 ALTER TABLE "party"
-	ALTER "name" SET STORAGE EXTERNAL,
-	ALTER "affiliation" SET STORAGE EXTERNAL;
+	ALTER "sortname" SET STORAGE EXTERNAL,
+	ALTER "affiliation" SET STORAGE EXTERNAL,
+	ALTER "prename" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
 
@@ -903,7 +905,7 @@ CREATE AGGREGATE "tsvector_agg" (tsvector) (SFUNC = tsvector_concat, STYPE = tsv
 CREATE VIEW "volume_text" ("volume", "text") AS
 	SELECT id, name FROM volume 
 	UNION ALL SELECT id, body FROM volume WHERE body IS NOT NULL
-	UNION ALL SELECT volume, name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
+	UNION ALL SELECT volume, COALESCE(prename || ' ', '') || sortname FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
 	UNION ALL SELECT volume, head FROM volume_citation
 	UNION ALL SELECT volume, year::text FROM volume_citation WHERE year IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
@@ -955,23 +957,19 @@ COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by t
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
-INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
+INSERT INTO party (id, prename, sortname, orcid, affiliation) VALUES (1, 'Dylan', 'Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (2, 'Mike', 'Continues', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (3, 'Lisa', 'Steiger', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (4, 'Andrea', 'Byrne', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (5, 'Karen', 'Adolph', 'New York University');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (6, 'Rick', 'Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (2, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'EDIT', 'NONE');
-INSERT INTO authorize (child, parent, site, member) VALUES (4, 0, 'EDIT', 'NONE');
+INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'ADMIN', 'ADMIN');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
@@ -979,7 +977,7 @@ The Databrary project is dedicated to transforming the culture of developmental 
 SELECT setval('volume_id_seq', 1);
 
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');

@@ -13,9 +13,11 @@ import site._
 /** Any real-world individual, group, institution, etc.
   * Instances are generally obtained from [[Party.get]] or [[Party.create]].
   * @param delegated permission delegated by this party to the current user */
-final class Party protected (val id : Party.Id, private[this] var name_ : String, private[this] var orcid_ : Option[Orcid], private[this] var affiliation_ : Option[String], private[this] var url_ : Option[URL] = None)
+final class Party protected (val id : Party.Id, private[this] var sortname_ : String, private[this] var prename_ : Option[String], private[this] var orcid_ : Option[Orcid], private[this] var affiliation_ : Option[String], private[this] var url_ : Option[URL] = None)
   extends TableRowId[Party] with SitePage {
-  def name = name_
+  def sortname = sortname_
+  def prename = prename_
+  def name = prename_.fold(sortname_)(_ + " " + sortname_)
   def orcid = orcid_
   def affiliation = affiliation_
   def url = url_
@@ -24,15 +26,17 @@ final class Party protected (val id : Party.Id, private[this] var name_ : String
   def account = account_
 
   /** Update the given values in the database and this object in-place. */
-  def change(name : Option[String] = None, orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
+  def change(sortname : Option[String] = None, prename : Option[Option[String]], orcid : Option[Option[Orcid]] = None, affiliation : Option[Option[String]], url : Option[Option[URL]])(implicit site : Site) : Future[Boolean] =
     Audit.change("party", SQLTerms.flatten(
-      name.map('name -> _),
+      sortname.map('sortname -> _),
+      prename.map('prename -> _),
       orcid.map('orcid -> _),
       affiliation.map('affiliation -> _),
       url.map('url -> _)),
       SQLTerms('id -> id))
     .execute.andThen { case scala.util.Success(true) =>
-      name.foreach(name_ = _)
+      sortname.foreach(sortname_ = _)
+      prename.foreach(prename_ = _)
       orcid.foreach(orcid_ = _)
       affiliation.foreach(affiliation_ = _)
       url.foreach(url_ = _)
@@ -73,6 +77,8 @@ final class Party protected (val id : Party.Id, private[this] var name_ : String
   def json(implicit site : Site) : JsonRecord =
     JsonRecord.flatten(id
     , Some('name -> name)
+    , Some('sortname -> sortname)
+    , prename.map(('prename, _))
     , orcid.map(('orcid, _))
     , affiliation.map(('affiliation, _))
     , email.map(('email, _))
@@ -182,12 +188,13 @@ final class Account protected (val party : Party, private[this] var email_ : Str
 object Party extends TableId[Party]("party") {
   private[models] val columns = Columns(
       SelectColumn[Id]("id")
-    , SelectColumn[String]("name")
+    , SelectColumn[String]("sortname")
+    , SelectColumn[Option[String]]("prename")
     , SelectColumn[Option[Orcid]]("orcid")
     , SelectColumn[Option[String]]("affiliation")
     , SelectColumn[Option[URL]]("url")
-    ).map { (id, name, orcid, affiliation, url) =>
-      new Party(id, name, orcid, affiliation, url)
+    ).map { (id, sortname, prename, orcid, affiliation, url) =>
+      new Party(id, sortname, prename, orcid, affiliation, url)
     }
   private[models] val row : Selector[Party] =
     columns.join(Account.columns using_? 'id)
@@ -215,25 +222,26 @@ object Party extends TableId[Party]("party") {
   /* Only used by authorizeAdmin */
   def getAll : Future[Seq[Authorization]] =
     Authorization.rowParent()
-    .SELECT(lsql"ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', name")
+    .SELECT(lsql"ORDER BY site DESC NULLS LAST, member DESC NULLS LAST, account.id IS NOT NULL, password <> '', sortname")
     .list
 
   /** Create a new party. */
-  def create(name : String, orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
+  def create(sortname : String, prename : Option[String], orcid : Option[Orcid] = None, affiliation : Option[String] = None, url : Option[URL] = None)(implicit site : Site) : Future[Party] =
     Audit.add("party", SQLTerms(
-      'name -> name,
+      'sortname -> sortname,
+      'prename -> prename,
       'orcid -> orcid,
       'affiliation -> affiliation,
       'url -> url),
       "id")
-    .single(SQL.Cols[Id]).map(new Party(_, name, orcid, affiliation, url))
+    .single(SQL.Cols[Id]).map(new Party(_, sortname, prename, orcid, affiliation, url))
 
   private def byName(name : String)(implicit site : Site) = {
     val q = name.split("\\s+").filter(!_.isEmpty).mkString("%","%","%")
     if (site.access.site >= Permission.SHARED)
-      sql"(name || COALESCE(' ' || email, '')) ILIKE $q"
+      sql"(COALESCE(prename || ' ', '') || sortname || COALESCE(' ' || email, '')) ILIKE $q"
     else
-      sql"name ILIKE $q"
+      sql"(COALESCE(prename || ' ', '') || sortname) ILIKE $q"
   }
 
   /** Search for parties
@@ -256,15 +264,15 @@ object Party extends TableId[Party]("party") {
       })
       ++ authorize.fold(Statement.empty)(a => lsql" AND id != ${a.id} AND id NOT IN (SELECT child FROM authorize WHERE parent = ${a.id} UNION SELECT parent FROM authorize WHERE child = ${a.id})")
       ++ volume.fold(Statement.empty)(v => lsql" AND id NOT IN (SELECT party FROM volume_access WHERE volume = ${v.id})")
-      ++ lsql" LIMIT $limit OFFSET $offset")
+      ++ lsql" ORDER BY sortname, prename LIMIT $limit OFFSET $offset")
     .list
 
   /** The special party group representing everybody (including anonymous users) on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Nobody = new Party(asId(-1), "Everybody", None, None)
+  final val Nobody = new Party(asId(-1), "Everybody", None, None, None)
   /** The special party group representing authorized users on the site.
     * This is also in the database, but is cached here for special handling. */
-  final val Root   = new Party(asId(0),  "Databrary", None, None)
+  final val Root   = new Party(asId(0),  "Databrary", None, None, None)
   final val NOBODY : Id = Nobody.id
   final val ROOT   : Id = Root.id
 }
