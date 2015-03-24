@@ -103,7 +103,7 @@ selector t o = Selector o t (',':t)
 
 selectColumns :: TH.Name -> String -> [String] -> Selector
 selectColumns f t c =
-  selector t (OutputJoin False f $ map (selectColumn t) c)
+  selector t $ OutputJoin False f $ map (selectColumn t) c
 
 addSelects :: TH.Name -> Selector -> [SelectOutput] -> Selector
 addSelects f s c = s

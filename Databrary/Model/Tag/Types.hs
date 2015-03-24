@@ -6,6 +6,8 @@ module Databrary.Model.Tag.Types
   , MonadHasTag
   , TagUse(..)
   , MonadHasTagUse
+  , TagCoverage(..)
+  , MonadHasTagCoverage
   ) where
 
 import qualified Data.ByteString as BS
@@ -19,6 +21,8 @@ import qualified Databrary.Web.Route as R
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
+import Databrary.Model.Container.Types
+import Databrary.Model.Segment
 import Databrary.Model.Slot.Types
 
 newtype TagName = TagName BS.ByteString
@@ -50,6 +54,8 @@ data Tag = Tag
   , tagName :: TagName
   }
 
+makeHasRec ''Tag ['tagId, 'tagName]
+
 instance Kinded Tag where
   kindOf _ = "tag"
 
@@ -60,5 +66,15 @@ data TagUse = TagUse
   , tagSlot :: Slot
   }
 
-makeHasRec ''Tag ['tagId, 'tagName]
 makeHasRec ''TagUse ['tag, 'tagWho, 'tagSlot]
+
+data TagCoverage = TagCoverage
+  { tagCoverageTag :: Tag
+  , tagCoverageContainer :: Container
+  , tagCoverageWeight :: Int32
+  , tagCoverageSegments
+  , tagCoverageKeywords
+  , tagCoverageVotes :: [Segment]
+  }
+
+makeHasRec ''TagCoverage ['tagCoverageTag, 'tagCoverageContainer]

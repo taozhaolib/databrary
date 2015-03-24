@@ -52,6 +52,7 @@ Executable databrary
     resourcet,
     exceptions,
     contravariant,
+    invariant,
     monad-control,
     blaze-markup,
     blaze-html,

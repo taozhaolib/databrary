@@ -1,0 +1,15 @@
+{-# LANGUAGE OverloadedStrings #-}
+module Databrary.Model.SQL.Info
+  ( lookupTableOID
+  ) where
+
+import Database.PostgreSQL.Typed.Types (OID)
+import Database.PostgreSQL.Typed.Query (rawPGSimpleQuery)
+import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgDecodeRep)
+
+import Databrary.DB
+
+lookupTableOID :: DBM m => String -> m OID
+lookupTableOID t = do
+  [r] <- dbQuery1' $ rawPGSimpleQuery $ "SELECT oid FROM pg_class WHERE relname = " ++ pgLiteralRep t
+  return $ pgDecodeRep r

@@ -11,8 +11,8 @@ import Control.Applicative ((<|>), optional)
 import Control.Monad (guard, liftM2)
 import Data.Maybe (fromMaybe, isNothing)
 import qualified Data.Text as T
-import Database.PostgreSQL.Typed.Types (PGType)
-import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
+import Database.PostgreSQL.Typed.Types (PGType, PGParameter(..), PGColumn(..))
+import Database.PostgreSQL.Typed.Array (PGArrayType)
 import qualified Database.PostgreSQL.Typed.Range as Range
 import qualified Text.ParserCombinators.ReadP as RP
 import qualified Text.ParserCombinators.ReadPrec as RP (lift, readPrec_to_P, minPrec)
@@ -30,6 +30,8 @@ newtype Segment = Segment { segmentRange :: Range.Range Offset }
 
 instance PGType "segment"
 instance Range.PGRangeType "segment" "interval"
+instance PGType "segment[]"
+instance PGArrayType "segment[]" "segment"
 
 instance PGParameter "segment" Segment where
   pgEncode t (Segment r) = pgEncode t r

@@ -5,9 +5,11 @@ module Databrary.Model.Tag
   , addTag
   , addTagUse
   , removeTagUse
+  , lookupSlotTagCoverage
   ) where
 
 import Control.Monad (guard)
+import Data.Int (Int64)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
@@ -42,3 +44,7 @@ removeTagUse t =
     (if tagKeyword t 
       then $(deleteTagUse True 't)
       else $(deleteTagUse False 't))
+
+lookupSlotTagCoverage :: DBM m => Account -> Slot -> Int -> m [TagCoverage]
+lookupSlotTagCoverage acct slot lim =
+  dbQuery $(selectSlotTagCoverage 'acct 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
