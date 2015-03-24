@@ -369,6 +369,11 @@ object PartyHtml extends PartyController with HtmlController {
     createForm(acct).Ok
   }
 
+  def preRemove(id : Party.Id) =
+    SiteAction.rootAccess().andThen(adminAction(id)) { implicit request =>
+      Ok(views.html.party.remove(request.obj))
+    }
+
   def admin(i : models.Party.Id) = AdminAction(i).async { implicit request =>
     viewAdmin().map(Ok(_))
   }

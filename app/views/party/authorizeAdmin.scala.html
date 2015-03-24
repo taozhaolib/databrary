@@ -72,9 +72,7 @@
             }
             }
             }
-            @helper.form(routes.PartyHtml.remove(party.id)) {
-              <button type="submit">delete</button>
-            }
+            <a href="@routes.PartyHtml.preRemove(party.id)">delete</a>
           </td>
         </tr>
     }
