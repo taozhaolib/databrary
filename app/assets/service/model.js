@@ -1108,7 +1108,6 @@ app.factory('modelService', [
     Comment.prototype.class = 'comment';
 
     Comment.prototype.fields = angular.extend({
-      id: true,
       time: true,
       text: true,
       parents: true
@@ -1126,17 +1125,13 @@ app.factory('modelService', [
       return l;
     }
 
-    Slot.prototype.postComment = function (data, reply) {
-      var s = this;
-      console.log("1", data, "2", reply);
-      console.log('7', arguments.length, "8", this instanceof Comment);
-      console.log("9", this); 
-      if (arguments.length < 2 && this instanceof Comment){
-        console.log("3", data, "4", reply);
+    Slot.prototype.postComment = function (data, segment, reply) {
+      if (segment === undefined)
+        segment = this.segment;
+      if (arguments.length < 3 && this instanceof Comment)
         reply = this.id;
-        console.log("5", data, "6", reply);
-      }      
-      return router.http(router.controllers.CommentApi.post, this.container.id, this.segment.format(), reply, data)
+      var s = this;
+      return router.http(router.controllers.CommentApi.post, this.container.id, segment.format(), reply, data)
         .then(function (res) {
           s.volume.clear('comments');
           s.clear('comments');
@@ -1165,7 +1160,7 @@ app.factory('modelService', [
     };
 
     Slot.prototype.setTag = function (tag, vote, keyword, segment) {
-      if (arguments.length < 4)
+      if (segment === undefined)
         segment = this.segment;
       var s = this;
       return router.http(router.controllers.TagApi.update, tag, this.container.id, segment.format(), {vote:vote,keyword:!!keyword})

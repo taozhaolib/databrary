@@ -36,6 +36,7 @@ GET     /party/$pID<[0-9]+>/authorize/search/apply                              
 POST    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.PartyHtml.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
 POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.PartyHtml.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
+GET     /party/$pID<[0-9]+>/remove                                                                controllers.PartyHtml.preRemove(pID : models.Party.Id)
 POST    /party/$pID<[0-9]+>/remove                                                                controllers.PartyHtml.remove(pID : models.Party.Id)
 
 # admin
