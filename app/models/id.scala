@@ -44,7 +44,7 @@ private[models] object IntId {
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[IntId[T]] = PathBindable.bindableInt.transform(apply[T] _, _._id)
   implicit def queryStringBindable[T] : QueryStringBindable[IntId[T]] = QueryStringBindable.bindableInt.transform(apply[T] _, _._id)
-  implicit def sqlType[T] : SQLType[IntId[T]] = SQLType.transform[Int,IntId[T]]("integer", classOf[IntId[T]])(i => Some(apply[T](i)), _._id)
+  implicit def sqlType[T] : SQL.Type[IntId[T]] = SQL.Type.transform[Int,IntId[T]]("integer", classOf[IntId[T]])(i => Some(apply[T](i)), _._id)
   class formatter[T] extends Formatter[IntId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.intFormat.bind(key, data).right.map(apply _)
@@ -52,10 +52,11 @@ private[models] object IntId {
       Formats.intFormat.unbind(key, value._id)
   }
   implicit def formatter[T] : Formatter[IntId[T]] = new formatter[T]
-  class jsonWrites[T] extends json.Writes[IntId[T]] {
+  class jsonFormat[T] extends json.Format[IntId[T]] {
     def writes(i : IntId[T]) = json.JsNumber(i._id)
+    def reads(j : json.JsValue) = j.validate[Int].map(apply[T])
   }
-  implicit def jsonWrites[T] : json.Writes[IntId[T]] = new jsonWrites[T]
+  implicit def jsonFormat[T] : json.Format[IntId[T]] = new jsonFormat[T]
 }
 /** Any class (usually a singleton object) which provides an Id type. */
 private[models] trait ProvidesId[T] {
@@ -77,7 +78,7 @@ private[models] object LongId {
   // The normal family of conversions for database and web i/o:
   implicit def pathBindable[T] : PathBindable[LongId[T]] = PathBindable.bindableLong.transform(apply[T] _, _._id)
   implicit def queryStringBindable[T] : QueryStringBindable[LongId[T]] = QueryStringBindable.bindableLong.transform(apply[T] _, _._id)
-  implicit def sqlType[T] : SQLType[LongId[T]] = SQLType.transform[Long,LongId[T]]("bigint", classOf[LongId[T]])(i => Some(apply[T](i)), _._id)
+  implicit def sqlType[T] : SQL.Type[LongId[T]] = SQL.Type.transform[Long,LongId[T]]("bigint", classOf[LongId[T]])(i => Some(apply[T](i)), _._id)
   class formatter[T] extends Formatter[LongId[T]] {
     def bind(key : String, data : Map[String, String]) =
       Formats.longFormat.bind(key, data).right.map(apply _)

@@ -6,6 +6,7 @@ import play.api.libs.json.JsObject
 import macros._
 import macros.async._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 final case class Excerpt(segment : Segment, classification : Classification.Value) {
@@ -153,8 +154,8 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
-    .SELECT("WHERE slot_asset.asset = ?")
-    .apply(asset.id).singleOpt
+    .SELECT(sql"WHERE slot_asset.asset = ${asset.id}")
+    .singleOpt
 
   /** Retrieve the list of all assets within the given slot. */
   def getSlot(slot : Slot) : Future[Seq[SlotAsset]] =
@@ -165,8 +166,8 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, asset, context, excerpt) =>
       SlotAsset(asset, segment, context, excerpt)
     }
-    .SELECT("WHERE slot_asset.segment && ?")
-    .apply(slot.segment).list
+    .SELECT(sql"WHERE slot_asset.segment && ${slot.segment}")
+    .list
 
   def getVolume(volume : Volume, top : Option[Boolean]) : Future[Seq[SlotAsset]] =
     columns.join(
@@ -178,8 +179,11 @@ object SlotAsset extends Table[SlotAsset]("slot_asset") with TableSlot[SlotAsset
     ).map { case (segment, context, asset, excerpt) =>
       SlotAsset(asset(context.volume), segment, context, excerpt)
     }
-    .SELECT("WHERE COALESCE(? = container.top, true)")
-    .apply(top).list
+    .SELECT(sql"WHERE COALESCE($top = container.top, true)")
+    .list
+
+  def containerEnd(c : Container.Id) : Future[Option[Offset]] =
+    lsql"SELECT max(upper(segment)) FROM slot_asset WHERE container = $c".run.single(SQL.Cols[Option[Offset]])
 }
 
 object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot] {
@@ -197,8 +201,7 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
 
   private def columnsSegment(seg : Segment) = SlotAsset.columns join Columns(
       SelectColumn[Segment]("asset_slot", "segment")
-    )(FromTable("LATERAL (VALUES (slot_asset.segment * ?)) AS asset_slot (segment)")).cross
-    .pushArgs(seg)
+    ).from(sql"LATERAL (VALUES (slot_asset.segment * $seg)) AS asset_slot (segment)").cross
 
   /** Retrieve a single SlotAsset by asset id and slot id.
     * This checks permissions on the slot('s container's volume) which must also be the asset's volume. */
@@ -212,8 +215,8 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
     ).map { case ((segment, seg), asset, context, excerpt) =>
       AssetSlot(asset(context.volume), segment, seg, context, excerpt)
     }
-    .SELECT("WHERE asset.id = ? AND container.id = ? AND", Volume.condition)
-    .apply(assetId, containerId).singleOpt
+    .SELECT(sql"WHERE asset.id = $assetId AND container.id = $containerId AND " + Volume.condition)
+    .singleOpt
 }
 
 object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
@@ -236,18 +239,18 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
   /** Retrieve the list of all excerpts on a volume. */
   private[models] def getVolume(vol : Volume) : Future[Seq[FileAssetSlot]] =
     rowVolume(vol)
-    .SELECT("WHERE container.volume = ? AND asset.volume = ?")
-    .apply(vol.id, vol.id).list
+    .SELECT(sql"WHERE container.volume = ${vol.id} AND asset.volume = ${vol.id}")
+    .list
 
   /** Find an asset suitable for use as a volume thumbnail. */
   private[models] def getVolumeThumb(vol : Volume) : Future[Option[FileAssetSlot]] =
     rowVolume(vol)
-    .SELECT("JOIN format ON asset.format = format.id",
-      "WHERE container.volume = ? AND asset.volume = ?",
-        "AND GREATEST(excerpt.classification, asset.classification) >= read_classification(?::permission, slot_consent.consent)",
-        "AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')",
-      "ORDER BY container.top DESC LIMIT 1")
-    .apply(vol.id, vol.id, vol.permission).singleOpt
+    .SELECT(sql"""JOIN format ON asset.format = format.id
+       WHERE container.volume = ${vol.id} AND asset.volume = ${vol.id}
+         AND GREATEST(excerpt.classification, asset.classification) >= read_classification(${vol.permission}::permission, slot_consent.consent)
+         AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')
+       ORDER BY container.top DESC LIMIT 1""")
+    .singleOpt
 
   /** Retrieve the list of all excerpts in a slot. */
   private[models] def getSlot(slot : Slot) : Future[Seq[AssetSlot]] =
@@ -258,8 +261,8 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     ).map { case (excerpt, segment, asset, context) =>
       AssetSlot(asset, segment, excerpt.segment, context, Some(excerpt))
     }
-    .SELECT("WHERE asset.volume = ? AND excerpt.segment && ?")
-    .apply(slot.volumeId, slot.segment).list
+    .SELECT(sql"WHERE asset.volume = ${slot.volumeId} AND excerpt.segment && ${slot.segment}")
+    .list
 
   def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
     implicit val site = asset.site

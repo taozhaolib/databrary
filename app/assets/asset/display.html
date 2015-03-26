@@ -11,8 +11,8 @@
     <img ng-src="{{::asset.downloadRoute(true)}}">
   </div>
 
-  <div ng-switch-when="video">
-    <div ng-if="::!asset.asset.duration" message="asset.untranscoded"></div>
+  <div ng-switch-when="video" ng-class="{'no-preview':!asset.duration}">
+    <span ng-if="::!asset.duration" message="asset.untranscoded"></span>
     <video controls preload="metadata" seek="clip">
       <source ng-src="{{::asset.downloadRoute(true)}}" type="{{::asset.format.mimetype}}">
     </video>

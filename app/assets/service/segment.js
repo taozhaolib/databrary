@@ -14,21 +14,20 @@ app.factory('Segment', [
         this.l = typeof l[0] === 'number' ? l[0] : -Infinity;
         this.u = typeof l[1] === 'number' ? l[1] : Infinity;
       } else if (typeof l === 'number') {
-        this.l = l;
-        this.u = l+0.1; // this is floored out later
+        this.l = this.u = l;
       } else if (l === null || l === '') {
-        this.l = 0;
-        this.u = 0;
+        this.l = Infinity;
+        this.u = -Infinity;
       } else if (typeof l === 'object' && 'l' in l && 'u' in l) {
         this.l = l.l;
         this.u = l.u;
       } else if (typeof l === 'string') {
+        /* this is not a full parser as the backend has, but just needs to be sufficient to parse the output of .format */
         var i = l.indexOf(',');
         if (i === -1) {
           i = l.indexOf('-', 1);
           if (i === -1) {
-            this.l = Offset.parse(l);
-            this.u = this.l+0.1;
+            this.l = this.u = Offset.parse(l);
             return;
           }
         }
@@ -36,6 +35,8 @@ app.factory('Segment', [
         this.u = i === l.length-1 ? Infinity : Offset.parse(l.substr(i+1));
       } else
         throw new Error('invalid Segment construction');
+      this.l = Math.round(this.l);
+      this.u = Math.round(this.u);
     }
 
     Object.defineProperty(Segment.prototype, 'full', {
@@ -46,7 +47,7 @@ app.factory('Segment', [
 
     Object.defineProperty(Segment.prototype, 'empty', {
       get: function () {
-        return this.l >= this.u;
+        return this.l > this.u;
       }
     });
 
@@ -155,7 +156,7 @@ app.factory('Segment', [
 
     Segment.prototype.contains = function (that) {
       if (typeof that === 'number')
-        return that >= this.l && that < this.u;
+        return that >= this.l && (that < this.u || that == this.u && this.l == this.u);
       if (Segment.isFull(that))
         return this.full;
       if (Segment.isEmpty(that))

@@ -1,26 +1,42 @@
 // styles
-
 body
   .main
-    margin-top 1.5
+    margin-top toolbarheight
+    &.sandbox
+      margin-top toolbarheight+sandboxheight
 
 .toolbar
   top 0
   z-index 1000
   position fixed
   width 100%
-  height 1.5
-  line-height 1.5
   box-shadow box-shadow-def
+  height toolbarheight
+  &.sandbox
+    height toolbarheight+sandboxheight
+  
+.toolbar-sandbox
+  height sandboxheight
+  background-color orange51
+  padding b2
+  text-align center
+  font-size 0.8em
+  
+  
+.toolbar-main
+  height toolbarheight
+  line-height 1.5
   background-color white
   font-family heading-family
-
   .row
     position relative
 
-  .icon.contact
+  .icon
+  .toolbar-avatar
     position relative
     top b8
+    margin-left b3
+    margin-right b8
 
 .toolbar-site
   font-line 1 1.5
@@ -30,7 +46,8 @@ body
   a
     color black
     display block
-    background url('/public/images/logo/databrary-nav.png') no-repeat 0 center
+    background url('/public/images/logo/databrary-nav.svg') no-repeat 0 center
+    background-size 114px 24px 
     height 1.5
     @media screen and (max-width: grid-mobile-width)
         width 21px
@@ -45,33 +62,67 @@ body
     &:hover
       color blue52
 
-
+    &.sandbox
+      background url('/public/images/logo/databrary-demo.svg') no-repeat 0 center
+      background-size 114px 24px 
+      
 .toolbar-nav
   display inline-block
   position relative
-  top -b2
+  vertical-align top
 
-  li
-    margin-right f2
+  ul
+  	display inline-block
+  	li
+  	  margin-right f2
+	  position relative
 
+	  ul
+	    position absolute
+	    display none
+	    opacity 0
+	    visibility hidden
+
+  ul li:hover
+  	ul
+      display block
+      opacity 1
+      visibility visible
+      background-color white
+      box-shadow 0px 3px 3px 0px dark
+      border-bottom-left-radius b8
+      border-bottom-right-radius b8
+      padding 0
+      font-size b2
+      line-height b2
+      li
+      	margin 0
+      	padding b3
+      li:before
+      	content none
+      li:hover
+      	background-color green51
+      li:last-of-type
+      	border-bottom-right-radius b8
+      	border-bottom-left-radius b8
+      	  	  
   a
-    text-transform lowercase
     position relative
     top -b24
     font-line .75 .75
+  a.button
+    text-transform lowercase
 
     .icon
       position relative
       top b12
 
 .toolbar-avatar
-  position relative
-  top b8
   display inline-block
   border 1px solid gray
   size b34
-  margin-left f8
 
+.toolbar-nav,
 .toolbar-user,
 .toolbar-hover
   a
@@ -99,8 +150,11 @@ img.toolbar-hover-avatar
   width 96px    
 
 .toolbar-user
+  font-size 0.8em
   text-align right
   position relative
+  float right
+  padding-right 1.8%
 
   form
     display inline-block
@@ -119,25 +173,6 @@ img.toolbar-hover-avatar
   padding f2
   line-height 1
 
-  /*
-  &:after,
-  &:before
-    content ""
-    position absolute
-    right b1 + b12
-    size 0
-    border b4 solid transparent
-    pointer-events none
-
-  &:after
-    border-bottom-color white
-    top -b2
-
-  &:before
-    border-bottom-color gray
-    top -b2 - 1px
-*/
-
 .toolbar-user-menu
   text-align right
   width inherit
@@ -155,9 +190,6 @@ img.toolbar-hover-avatar
   .password
     margin-bottom 0
 
-.toolbar-static-input
-  width 50px
-
 .user-icon
   float right
   padding 3px
@@ -167,18 +199,17 @@ img.toolbar-hover-avatar
   padding-bottom 2
 
 .search-form-search
-  margin f2 f8 f4 f4
-
   input[type="search"]
     max-width 16
     margin-bottom 0
-    padding-top 0
-    padding-bottom 0
-    position absolute
-    top -6px
-    right 10px
+    padding b2
 
     @media screen and (max-width: 550px)
-      width 3
+      width 4
     @media screen and (min-width: 551px)
-      width 6
+      width 7
+
+.hover-nav-bg
+  background-color neutral51
+  @media screen and (min-width: 370px)
+  	height 1.5

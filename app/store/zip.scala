@@ -36,23 +36,15 @@ object Zip {
       } : _*)
     }
 
-  private def slotName(slot : Slot, names : scala.collection.Set[String] = Set.empty[String]) : Future[String] =
-    slot.fileName.map { base =>
-      var name = base
-      var i = 1
-      while (names.contains(name)) {
-        i += 1
-        name = base + i
-      }
-      name
-    }
+  private def slotName(slot : Slot) : Future[String] =
+    slot.fileName.map(_ + "-" + slot.containerId)
 
   private def zip(obj : SiteObject)(entries : Future[Enumerator[ZipFile.StreamEntry]]) : Enumerator[Array[Byte]] =
     Enumerator.flatten(entries) &>
       ZipFile.flatZip(comment = comment(obj), level = java.util.zip.Deflater.BEST_SPEED)
 
-  private def slotEntries(slot : Slot, prefix : String, names : scala.collection.Set[String] = Set.empty[String]) : Future[(String, Enumerator[ZipFile.StreamEntry])] =
-    slotName(slot, names).map { name =>
+  private def slotEntries(slot : Slot, prefix : String) : Future[(String, Enumerator[ZipFile.StreamEntry])] =
+    slotName(slot).map { name =>
       name ->
       (if (name.nonEmpty)
         enum(new ZipFile.DirEntry(prefix + name, comment = comment(slot)),
@@ -72,13 +64,11 @@ object Zip {
       enum(new ZipFile.DirEntry(vname, comment = comment(vol)),
         vol.containers.map { slots =>
           val prefix = vname + "/"
-          val names = mutable.Set.empty[String]
           Enumerator(slots : _*) &> Enumeratee.mapFlatten[Container] { slot =>
             Enumerator.flatten {
               for {
-                (name, ents) <- slotEntries(slot, prefix, names)
+                (name, ents) <- slotEntries(slot, prefix)
               } yield {
-                names += name
                 ents
               }
             }

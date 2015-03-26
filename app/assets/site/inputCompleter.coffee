@@ -12,10 +12,21 @@ app.directive 'inputCompleter', [
       pattern: '@ngPattern'
       submit: '&'
     link: ($scope, $element, $attrs) ->
+      input = $element[0].firstChild
       # this doesn't happen early enough with normal angular binding:
-      $element[0].firstChild.firstChild.setAttribute('name', $attrs.name)
+      input.setAttribute('name', $attrs.inputName)
+      min = 3 unless isFinite(min = parseInt($attrs.min))
       sent = resend = undefined
       $scope.choices = []
+      $scope.selected = undefined
+
+      setValue = (v) ->
+        # we bypass the angular model here to change text and selection...
+        old = input.value
+        $scope.value = input.value = v
+        if v.toLowerCase().startsWith(old.toLowerCase())
+          input.setSelectionRange(old.length, v.length)
+        return
 
       handle = (r) ->
         if r && typeof r.then == 'function'
@@ -24,7 +35,7 @@ app.directive 'inputCompleter', [
           sent = undefined
           if Array.isArray(r)
             if 'input' of r
-              $scope.value = r.input
+              setValue(r.input)
               delete r.input
             if r.length
               $scope.choices = r
@@ -33,32 +44,56 @@ app.directive 'inputCompleter', [
                 text: constants.message('search.none')
               ]
           else if r || r == ''
-            $scope.value = r
+            setValue(r)
             $scope.choices = []
           $scope.search(resend) if resend
+        return
 
-      $scope.search = (input) ->
+      $scope.search = () ->
+        $scope.selected = undefined
+        value = input.value
         if sent
-          resend = input != sent && input
-        else if input && input.length >= 3
+          resend = value != sent && value
+        else if value?.length >= min
           resend = undefined
-          sent = input
+          sent = value
           $scope.choices.push
             text: constants.message('search.active')
-          handle($scope.completer({$input:input}))
+          handle($scope.completer({$input:value}))
         else
           $scope.choices = []
+        return
 
       $scope.choose = (c) ->
+        $scope.selected = undefined
         resend = undefined
         handle(
           if typeof c.select == 'function'
             c.select()
           else
             c.select)
+        return
 
-      $scope.enter = (input) ->
-        handle($scope.submit({$input:input})) if input
+      $scope.enter = ($event) ->
+        if $scope.selected?
+          $scope.choose($scope.choices[$scope.selected])
+          return
+        # bypass debounce:
+        $scope.value = value = input.value
+        handle($scope.submit({$event:$event, $input:value})) if value?.length >= min
+        return
+
+      $scope.select = (i) ->
+        return unless $scope.choices.length
+        $scope.selected ?= -(i > 0)
+        $scope.selected += i
+        $scope.selected %= $scope.choices.length
+        if $scope.selected < 0
+          $scope.selected += $scope.choices.length
+        setValue($scope.choices[$scope.selected].text)
+        return
+
+      $scope.search(input.value)
 
       return
 ]

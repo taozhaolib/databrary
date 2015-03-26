@@ -15,9 +15,9 @@ app.controller('party/register', [
         form.sent = false;
 
         var validate = {};
-        ['name', 'email', 'affiliation'].forEach(function (f) {
+        ['prename', 'sortname', 'email', 'affiliation'].forEach(function (f) {
           validate[f] = {
-            tips: page.constants.message('register.' + f + '.help')
+            tips: page.constants.message('party.edit.' + f + '.help')
           };
         });
         validate.email.errors = page.constants.message('register.email.error');
@@ -52,14 +52,15 @@ app.controller('party/register', [
           };
 
         form.save = function () {
+          page.messages.clear(form);
           page.models.Login.passwordToken(token.party, form.data)
             .then(function () {
               form.validator.server({});
 
-              form.messages.add({
+              page.messages.add({
                 type: 'green',
-                countdown: 3000,
-                body: page.constants.message('reset.save.success', form.data.email)
+                body: page.constants.message('reset.save.success', form.data.email),
+                owner: form
               });
 
               form.sent = true;

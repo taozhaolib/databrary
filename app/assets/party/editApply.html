@@ -1,7 +1,9 @@
 <ng-form name="partyEditApplyForm">
-  <fieldset scroll-float class="clean">
-    <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-5 col-tablet-5 col-mobile-6"></auth-search-form>
-  </fieldset>
+  <scroll-float>
+    <fieldset class="clean">
+      <auth-search-form placeholder-text="{{::'auth.search.apply.legend' | message}}" class="col-desktop-5 col-tablet-5 col-mobile-6"></auth-search-form>
+    </fieldset>
+  </scroll-float>
   <fieldset ng-show="partyEditApplyForm.data.length > 0">
     <legend message="auth.apply.legend"></legend>
     <article ng-repeat="auth in partyEditApplyForm.data track by auth.party.id" id="auth-{{::auth.party.id}}" class="permission-auth cf foot pef anchor">
@@ -19,7 +21,9 @@
           </div>
 
           <div ng-if="::auth.member">
-            <div class="permission-auth-heading" ng-bind="::'auth.member' | message:'their'"></div>
+            <div class="permission-auth-heading">
+              <span message="auth.member.view"></span>&nbsp;<span ng-bind="::'auth.member' | message:'their'"></span>
+            </div>
             <div class="permission-auth-member">
               <strong message="auth.member.{{page.constants.permission[auth.member]}}.title"></strong>:
               {{'auth.member.'+page.constants.permission[auth.member] | message:'their'}}
@@ -27,7 +31,9 @@
           </div>
 
           <div ng-if="::auth.site">
-            <div class="permission-auth-heading" ng-bind="::'auth.site' | message:'their'"></div>
+            <div class="permission-auth-heading">
+              <span message="auth.site.view"></span>&nbsp;<span ng-bind="::'auth.site' | message:'their'"></span>
+            </div>
             <div class="permission-auth-site">
               <strong message="auth.site.{{page.constants.permission[auth.site]}}.title"></strong>:
               {{'auth.site.'+page.constants.permission[auth.site] | message:'their'}}

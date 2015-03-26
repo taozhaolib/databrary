@@ -1,13 +1,12 @@
 'use strict';
 
 app.factory('messageService', [
-  '$timeout', '$sanitize', '$sce', 'constantService',
-  function ($timeout, $sanitize, $sce, constants) {
+  '$sanitize', '$sce', 'constantService',
+  function ($sanitize, $sce, constants) {
 
     var defaults = {
       type: 'blue',
-      closeable: false,
-      countdown: false,
+      persist: false,
     };
 
     var sequence = 0;
@@ -23,36 +22,14 @@ app.factory('messageService', [
 
       Message.list[this.id] = this;
       byBody[this.body] = this;
-
-      if (this.countdown)
-        countdown(this);
     }
 
     Message.list = {};
 
     Message.prototype.remove = function () {
-      countdownClear(this);
       delete Message.list[this.id];
       delete byBody[this.body];
     };
-
-    function countdownClear(message) {
-      if (message.countdownTimer) {
-        $timeout.cancel(message.countdownTimer);
-        message.countdownTimer = undefined;
-      }
-    }
-
-    function countdown(message) {
-      countdownClear(message);
-
-      if (!message.countdown)
-        return;
-
-      message.countdownTimer = $timeout(function () {
-        message.remove();
-      }, message.countdown);
-    }
 
     Message.add = function (message) {
       return new Message(message);
@@ -60,8 +37,6 @@ app.factory('messageService', [
 
     /* NB: modifies message */
     Message.addError = function (message) {
-      message.countdown = false;
-      message.closeable = true;
       message.type = 'red';
 
       var body = constants.message('error.prefix') + ' ' + $sce.getTrustedHtml(message.body);
@@ -93,11 +68,11 @@ app.factory('messageService', [
         if (message.statusText)
           messageBody += 'Status:\n' + message.statusText + '\n\n';
 
-        angular.forEach(message.errors, function (errorArray, field) {
+        _.each(message.errors, function(errorArray, field){
           moreBody += '<dl class="comma"><dt>' + (field || 'Reason') + '</dt><dd>' + errorArray.map($sanitize).join('</dd><dd>') + '</dd></dl>';
           messageBody += (field || 'Reason') + ':\n' + errorArray.join('\n') + '\n\n';
         });
-
+	  
         if (messageBody)
           body += ' ' + constants.message('error.report', encodeURIComponent(constants.message('error.report.subject', message.status || 0, message.url || '')), encodeURIComponent(constants.message('error.report.body', messageBody))) + moreBody;
         if (message.status == 409)
@@ -111,6 +86,15 @@ app.factory('messageService', [
       message.body = $sce.trustAsHtml(body);
 
       return new Message(message);
+    };
+
+    Message.clear = function (owner) {
+	  
+      _.each(Message.list, function(message){
+	if (owner ? message.owner === owner : !message.persist)
+          message.remove();
+      });
+
     };
 
     return Message;

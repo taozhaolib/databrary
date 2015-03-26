@@ -9,7 +9,7 @@ import site._
 
 /** The possible levels of permission used for site access, user delegation, and volume permissions.
   * Must match the corresponding postgres "permission" type. */
-object Permission extends PGEnum("permission") {
+object Permission extends SQL.Enum("permission") {
   val NONE, PUBLIC, SHARED, READ, EDIT, ADMIN = Value
   // aliases or equivalent permissions (do not use val here)
   /** Level at which things become visible. */
@@ -25,9 +25,9 @@ object Permission extends PGEnum("permission") {
   }
 
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
-  override implicit val sqlType : SQLType[Value] =
-    new SQLType.default(NONE)(
-      SQLType[Value]("permission", classOf[Value])(withNameOpt, _.toString))
+  override implicit val sqlType : SQL.Type[Value] =
+    new SQL.Type.default(NONE)(
+      SQL.Type[Value]("permission", classOf[Value])(withNameOpt, _.toString))
 
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
@@ -69,15 +69,15 @@ trait HasPermission extends PerSite {
 
 /** The possible levels of participant consent governing [Classification.IDENTIFIED] data.
   * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility. */
-object Consent extends PGEnum("consent") {
+object Consent extends SQL.Enum("consent") {
   val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
   def message(v : Value) : Option[String] = {
     val m = "consent." + v.toString
     if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
   }
   implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
-  override implicit val sqlType : SQLType[Value] =
-    SQLType.transform[Option[String],Value]("consent", classOf[Value])(
+  override implicit val sqlType : SQL.Type[Value] =
+    SQL.Type.transform[Option[String],Value]("consent", classOf[Value])(
       _.fold[Option[Value]](Some(NONE))(withNameOpt),
       v => Maybe(v).opt.map(_.toString))
   override implicit object jsonFormat extends json.Format[Value] {
@@ -94,7 +94,7 @@ object Consent extends PGEnum("consent") {
 
 /** The possible types of data sensitivity according to the presence of identifying user data.
   * Must match the corresponding postgres "consent" type. */
-object Classification extends PGEnum("classification") {
+object Classification extends SQL.Enum("classification") {
   val PRIVATE, RESTRICTED, SHARED, PUBLIC = Value
   def IDENTIFIED = RESTRICTED
 

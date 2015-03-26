@@ -18,9 +18,9 @@ app.provider('routerService', [
         return url;
       }
 
-      var q = url.contains('?');
+      var q = url.includes('?');
 
-      angular.forEach(params, function (value, key) {
+      _.each(params, function (value, key) {
         if (value == null)
           return;
 
@@ -48,13 +48,13 @@ app.provider('routerService', [
         argNames = [];
       var ph = arguments.length < 3;
       if (ph)
-        args = argNames.map(function (a) { return ':' + a; });
+        args = _.map( argNames, function (a) { return ':' + a; });
       else if (data == null)
         args = [];
       else if (Array.isArray(data))
         args = data;
       else if (typeof data === 'object') {
-        args = argNames.map(function (k) {
+        args = _.map(argNames, function (k) {
           return k in data ? data[k] : null;
         });
       } else
@@ -88,32 +88,28 @@ app.provider('routerService', [
 
     var routes = {};
 
-    routes.index = makeRoute(controllers.Site.start, [], {
+    routes.index = makeRoute(controllers.SiteHtml.start, [], {
       controller: 'site/home',
       templateUrl: 'site/home.html',
       resolve: {
-        investigators: [
-          'pageService', function (page) {
-            return page.models.Party.query({
-              access: page.permission.CONTRIBUTE,
-              institution: false
-            });
-          }
-        ],
-        users: [
-          'pageService', function (page) {
-            return page.models.Party.query({
-              access: page.permission.PUBLIC,
-              institution: false
-            });
-          }
-        ],
         volume: [
-          'pageService', function (page) {
-            return page.models.Volume.get(9, ['access'])
+          'modelService', function (models) {
+            return models.Volume.get(9, ['access'])
               .catch(function() {
                 return {};
               });
+          }
+        ],
+        tags: [
+          'modelService',
+          function (models) {
+            return models.Tag.top();
+          }
+        ],
+        activity: [
+          'modelService',
+          function (models) {
+            return models.activity();
           }
         ]
       },
@@ -138,7 +134,7 @@ app.provider('routerService', [
           'modelService',
           function (models) {
             if (models.Login.isLoggedIn())
-              return models.Party.profile(['parents']);
+              return models.Login.user.get(['parents']);
             else
               return models.Login.user;
           }
@@ -187,13 +183,13 @@ app.provider('routerService', [
 
     //
 
-    routes.search = makeRoute(controllers.VolumeHtml.search, [], {
-      controller: 'site/search',
-      templateUrl: 'site/search.html',
+    routes.volumeSearch = makeRoute(controllers.VolumeHtml.search, [], {
+      controller: 'volume/search',
+      templateUrl: 'volume/search.html',
       resolve: {
         volumes: [
           'pageService', function (page) {
-            return page.models.Volume.query(page.$route.current.params);
+            return page.models.Volume.search(page.$route.current.params);
           }
         ]
       },
@@ -207,11 +203,11 @@ app.provider('routerService', [
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['comments', 'access', 'openid', 'parents', 'children', 'volumes'];
+            var req = ['access', 'openid', 'parents', 'children', 'volumes'];
             if ('id' in page.$route.current.params)
               return page.models.Party.get(page.$route.current.params.id, req);
             else
-              return page.models.Party.profile(req);
+              return page.models.Login.user.get(req);
           }
         ],
       },
@@ -238,7 +234,17 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    //
+    routes.partySearch = makeRoute(controllers.PartyHtml.search, [], {
+      controller: 'party/search',
+      templateUrl: 'party/search.html',
+      resolve: {
+        parties: [
+          'pageService', function (page) {
+            return page.models.Party.search(page.$route.current.params);
+          }
+        ]
+      },
+    });
 
     var volumeEdit = {
       controller: 'volume/edit',
@@ -246,13 +252,16 @@ app.provider('routerService', [
       resolve: {
         volume: [
           'pageService', function (page) {
-            if (!('id' in page.$route.current.params))
-              return page.models.Login.isAuthorized() ? undefined :
-                page.$q.reject({status: 403});
+            if (!('id' in page.$route.current.params)) {
+              return page.models.Login.user.get({'parents':'access'})
+                .then(function () {
+                  return undefined;
+                });
+            }
 
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,
-                ['access', 'citation', 'links', 'top', 'funding', 'records', 'containers']),
+                {access:'all', citation:'', links:'', top:'', funding:'', records:'', containers:'', tags:'keyword'}),
               page.permission.EDIT)
               .then(function (volume) {
                 return volume.top.getSlot(volume.top.segment, ['assets'])
@@ -278,7 +287,7 @@ app.provider('routerService', [
         volume: [
           'pageService', function (page) {
             return page.models.Volume.get(page.$route.current.params.id,
-              ['access', 'citation', 'links', 'funding', 'providers', 'consumers', 'top', 'tags', 'excerpts', 'comments', 'records', 'containers']);
+              {access:'all', citation:'', links:'', funding:'', providers:'', consumers:'', top:'', tags:'', excerpts:'', comments:'', records:'', containers:'', assets:'top'});
           }
         ]
       },
@@ -293,7 +302,7 @@ app.provider('routerService', [
           'pageService', function (page) {
             return checkPermission(page.$q,
               page.models.Volume.get(page.$route.current.params.id,
-                ['top', 'records', 'containers']),
+                {'top':'', 'records':'', 'containers':'', 'assets':'top'}),
               page.permission.EDIT);
           }
         ]
@@ -309,11 +318,11 @@ app.provider('routerService', [
       resolve: {
         slot: [
           'pageService', function (page) {
-            var r = page.models.Volume.get(page.$route.current.params.vid);
+            var r = page.models.Volume.get(page.$route.current.params.vid, edit ? ['containers', 'records'] : []);
             return (edit ? checkPermission(page.$q, r, page.permission.EDIT) : r)
               .then(function (volume) {
                 return volume.getSlot(page.$route.current.params.id, page.$route.current.params.segment,
-                  ['consents', 'records', 'assets', 'excerpts' /*, 'tags', 'comments'*/]);
+                  ['consents', 'records', 'assets', 'excerpts', 'tags', 'comments']);
               });
           },
         ],
@@ -332,6 +341,7 @@ app.provider('routerService', [
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
+    routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
     routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
     routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['sid', 'segment', 'id', 'size']);
     routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['sid', 'segment', 'id', 'inline']);

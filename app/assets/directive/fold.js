@@ -3,13 +3,6 @@
 app.directive('fold', [
   'pageService', 'storageService',
   function (page, storage) {
-    var foldableClass = 'foldable',
-      folderClass = 'folder',
-      foldClass = 'fold',
-      foldedClass = 'folded',
-      folderAttr = '[folder]',
-      foldAttr = '[folded]';
-
     var link = function ($scope, $element, $attrs) {
       var id = $attrs.id;
       var folded = false;
@@ -17,9 +10,10 @@ app.directive('fold', [
 
       function setFold(fold) {
         if ((folded = fold))
-          $element.addClass(foldedClass);
+          $element.addClass('folded');
         else
-          $element.removeClass(foldedClass);
+          $element.removeClass('folded');
+        $scope.folded = folded;
         if (!forget)
           storage.set('folding-' + id, folded ? '1' : '');
       }
@@ -28,9 +22,8 @@ app.directive('fold', [
         setFold(state === undefined ? !folded : state);
       };
 
-      $element.addClass(foldableClass);
-      $element.find(folderAttr).addClass(folderClass);
-      $element.find(foldAttr).addClass(foldClass);
+      $element.addClass('foldable');
+      $element.find('[folder]').addClass('folder');
 
       setFold(storage.get('folding-' + id));
     };

@@ -3,7 +3,9 @@
 .icon
   display inline-block
   position relative
-  background transparent no-repeat 0 0
+  background-color transparent
+  background-repeat no-repeat
+  background-position center
   width b23+1px
   height b23
   &.public,
@@ -14,22 +16,12 @@
   &.classification.RESTRICTED,
   &.classification.SHARED
     padding-left b1 - b12
-  &.dataset,
-  &.study
+  &.volume
     size b1
   &.record,
   &.session
     height b23
     width b23+b8
-
-  &.contact
-    background-image url('/public/images/icon/contact.png')
-
-  &.edit
-    background-image url('/public/images/icon/contribute.png')
-
-  &.close
-    background-image url('/public/images/icon/close.png')
 
   &.access.ADMIN
     background-image url('/public/images/icon/admin.png')
@@ -46,8 +38,20 @@
   &.access.PUBLIC
     background-image url('/public/images/icon/view.png')
 
-  &.consent.PUBLIC
-    background-image url('/public/images/icon/public.png')
+  &.activity
+    background-image url('/public/images/icon/activity.svg')
+
+  &.bullet
+    background-image url('/public/images/icon/bullet.png')
+
+  &.contact
+    background-image url('/public/images/icon/contact.png')
+
+  &.edit
+    background-image url('/public/images/icon/contribute.png')
+
+  &.close
+    background-image url('/public/images/icon/close.png')
 
   &.consent.EXCERPTS
     background-image url('/public/images/icon/excerpts.png')
@@ -55,12 +59,13 @@
   &.consent.SHARED
     background-image url('/public/images/icon/shared.png')
 
-  &.consent.PRIVATE
-    background-image url('/public/images/icon/private.png')
 
-
+  &.classification
+    width b1
+  
+  &.consent.PRIVATE  
   &.classification.PRIVATE
-    background-image url('/public/images/icon/private.png')
+    background-image url('/public/images/icon/private.svg')
 
   &.classification.RESTRICTED
     background-image url('/public/images/icon/identified.png')
@@ -68,12 +73,9 @@
   &.classification.SHARED
     background-image url('/public/images/icon/deidentified.png')
 
+  &.consent.PUBLIC
   &.classification.PUBLIC
-    background-image url('/public/images/icon/material.png')
-
-
-  &.dataset
-    background-image url('/public/images/icon/dataset.png')
+    background-image url('/public/images/icon/public.svg')
 
   &.record
     background-image url('/public/images/icon/record.png')
@@ -83,15 +85,27 @@
     &:hover
       opacity 0.4
 
-  &.study
+  &.volume
     background-image url('/public/images/icon/study.png')
 
   &.download
     background-image url('/public/images/icon/download2.png')
-    &:hover
+    &:not(.button)
+      margin-right b3
+    &:hover:not(.button)
       opacity 0.4
     &.line
       width b1
+
+  &.edit
+  &.edit:hover
+    background-image url('/public/images/icon/edit.svg')
+    background-size contain
+    
+  &.view-icon
+  &.view-icon:hover
+    background-image url('/public/images/icon/view.svg')
+    background-size contain
 
   &.jump
     background-image url('/public/images/icon/jump.png')
@@ -105,21 +119,27 @@
   &.add
     background-image url('/public/images/icon/add.png')
 
+  &.tag
+    background-image url('/public/images/icon/tag.svg')
+
   &.trash
     background-image url('/public/images/icon/close_c.png')
     cursor pointer
   &.trash2
     background-image url('/public/images/icon/trash.png')
     cursor pointer
-    &:hover
+    &:hover:not(.button)
       opacity 0.4
 
   &.paste
     background-image url('/public/images/icon/paste.png')
     cursor pointer
 
-  &.bullet
-    background-image url('/public/images/icon/bullet.png')
+  &.resize
+    background-image url('/public/images/icon/resize.svg')
+    background-size contain
+    &:hover
+      opacity 0.4
 
   &.go
     background-image url('/public/images/icon/go.png')
@@ -132,9 +152,18 @@
     background-image url('/public/images/icon/public.png')
     cursor pointer
 
+  &.zoomin
+    background-image url('/public/images/icon/zoomin.svg')
+    cursor pointer
+    background-size 16px
+  &.zoomout
+    background-image url('/public/images/icon/zoomout.svg')
+    cursor pointer
+    background-size 16px
+
   &.line
     height b1
-    background-position 4px 4px
+    background-position 0px 4px
     &.add
       width b1
     &.session

@@ -4,6 +4,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Access control over a volume granted to a party.
@@ -46,13 +47,13 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
   /** Retrieve the access entries for a volume. */
   private[models] def getParties(volume : Volume, access : Permission.Value = Permission.NONE) : Future[Seq[VolumeAccess]] =
     row(Volume.fixed(volume), Party.row)
-    .SELECT("WHERE individual >= ? ORDER BY individual DESC")
-    .apply(access).list
+    .SELECT(sql"WHERE individual >= $access ORDER BY individual DESC")
+    .list
   /** Retrieve the volume access entries granted to a party for (at least) READ. */ 
   private[models] def getVolumes(party : Party)(implicit site : Site) : Future[Seq[VolumeAccess]] =
     row(Volume.row, Party.fixed(party))
-    .SELECT("WHERE individual >= 'READ' AND", Volume.condition, "ORDER BY individual DESC")
-    .apply().list
+    .SELECT(sql"WHERE individual >= 'READ' AND " + Volume.condition + " ORDER BY individual DESC")
+    .list
 
   /** Update or add volume access in the database.
     * If an access for the volume and party already exists, it is changed to match this.
@@ -69,7 +70,7 @@ object VolumeAccess extends Table[VolumeAccess]("volume_access") {
     * This takes into account full permission semantics including inheritance.
     * It purposefully takes a volume id which may not yet have been checked for permissions. */
   def check(volume : Volume.Id, party : Party.Id) : Future[Permission.Value] =
-    SQL("SELECT volume_access_check(?, ?)")
-      .apply(volume, party).single(SQLCols[Permission.Value])
+    sql"SELECT volume_access_check($volume, $party)"
+      .run.single(SQL.Cols[Permission.Value])
 }
 

@@ -20,7 +20,7 @@ import models._
 private[controllers] sealed class LoginController extends SiteController {
 
   private[controllers] def login(a : Account)(implicit request : SiteRequest[_]) : Future[Result] = {
-    Audit.actionFor(Audit.Action.open, a.id, dbrary.Inet(request.remoteAddress))
+    Audit.actionFor(Audit.Action.open, a.id, Inet(request.remoteAddress))
     SessionToken.create(a).map { token =>
       (if (request.isApi) Ok((new SiteRequest.Auth(request, token)).json)
       else Redirect(routes.PartyHtml.profile(Some(false))))
@@ -32,7 +32,7 @@ private[controllers] sealed class LoginController extends SiteController {
     val form = new LoginController.LoginForm()._bind
     form.email.get.flatMapAsync(Account.getEmail _).flatMap { acct =>
       def bad =
-        acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, dbrary.Inet(request.remoteAddress)).execute).flatMap { _ =>
+        acct.foreachAsync(a => Audit.actionFor(Audit.Action.attempt, a.id, Inet(request.remoteAddress)).execute).flatMap { _ =>
           form.withGlobalError("login.bad").Bad
         }
       if (form.password.get.nonEmpty) {
@@ -60,7 +60,7 @@ private[controllers] sealed class LoginController extends SiteController {
       case _ =>
     }
     (if (request.isApi) Ok((new SiteRequest.Anon(request)).json)
-    else Redirect(routes.Site.start(Some(false))))
+    else Redirect(routes.SiteHtml.start(Some(false))))
       .withNewSession
   }
 
@@ -71,13 +71,13 @@ private[controllers] sealed class LoginController extends SiteController {
     val expires = System.currentTimeMillis + superuserTime
     Audit.action(Audit.Action.superuser)
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> true))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.SiteHtml.start(Some(false)).url)))
       .withSession(request.session + ("superuser" -> expires.toString))
   }
 
   def superuserOff = SiteAction { implicit request =>
     (if (request.isApi) Ok(request.json - "superuser" + ('superuser -> false))
-    else Redirect(request.headers.get(REFERER).getOrElse(routes.Site.start(Some(false)).url)))
+    else Redirect(request.headers.get(REFERER).getOrElse(routes.SiteHtml.start(Some(false)).url)))
       .withSession(request.session - "superuser")
   }
 
@@ -88,7 +88,8 @@ private[controllers] sealed class LoginController extends SiteController {
         e <- Account.getEmail(form.email.get)
         a <- e getOrElseAsync {
           Party.create(
-            name = form.name.get,
+            sortname = form.sortname.get,
+            prename = form.prename.get,
             affiliation = form.affiliation.get)
           .flatMap(Account.create(_, email = form.email.get))
         }
@@ -108,7 +109,8 @@ object LoginController extends LoginController {
   final class LoginForm(implicit request : SiteRequest[_])
     extends HtmlForm[LoginForm](
       routes.LoginHtml.post,
-      views.html.party.login(_)) {
+      views.html.party.login(_))
+    with NoCsrfForm {
     val email = Field(Forms.optional(Forms.email))
     val password = Field(Forms.default(Forms.text, ""))
     val openid = Field(Forms.optional(Forms.of[URL]))
@@ -127,7 +129,8 @@ object LoginController extends LoginController {
     extends HtmlForm[RegistrationForm](
       routes.LoginHtml.register,
       views.html.party.register(_)) {
-    val name = Field(Mappings.nonEmptyText)
+    val sortname = Field(Mappings.nonEmptyText)
+    val prename = Field(Mappings.maybeText)
     val email = Field(Forms.email)
     val affiliation = Field(Mappings.maybeText)
     val agreement = Field(Forms.checked("agreement.required"))
@@ -212,7 +215,7 @@ object LoginHtml extends LoginController with HtmlController {
           if (request.access.site == Permission.NONE)
             routes.PartyHtml.profile(Some(false))
           else
-            routes.Site.start(Some(false))).url))
+            routes.SiteHtml.start(Some(false))).url))
       else
         new RegistrationForm().Ok
     }

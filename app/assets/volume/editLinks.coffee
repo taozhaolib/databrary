@@ -9,7 +9,7 @@ app.directive 'volumeEditLinksForm', [
       volume = $scope.volume
       form = $scope.volumeEditLinksForm
 
-      form.data = volume.links.map (ref) ->
+      form.data = _.map volume.links, (ref) ->
         head: ref.head
         url: ref.url
 
@@ -19,9 +19,7 @@ app.directive 'volumeEditLinksForm', [
           url: ''
       blank()
 
-      form.change = () ->
-        if form.data[form.data.length-1].url != ''
-          blank()
+      form.change = () -> blank() unless form.data[form.data.length-1].url == ''
 
       form.remove = (ref) ->
         ref.removed = true
@@ -30,17 +28,17 @@ app.directive 'volumeEditLinksForm', [
         form.$setDirty()
 
       form.save = () ->
-        data = form.data.filter (ref) ->
-          !ref.removed && (ref.head != '' || ref.url != '')
+        page.messages.clear(form)
+        data = _.filter form.data, (ref) -> !ref.removed
         volume.save({links: data}).then(() ->
             form.validator.server {}
-            form.data = data
+            form.data = data.filter (ref) -> ref.head != '' || ref.url != ''
             blank()
-
-            form.messages.add
+        
+            page.messages.add
               type: 'green'
-              countdown: 3000
               body: page.constants.message('volume.edit.success')
+              owner: form
 
             form.$setPristine()
           , (res) ->

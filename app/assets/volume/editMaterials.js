@@ -28,9 +28,10 @@ app.directive('volumeEditMaterialsForm', [
         return Store.prototype.save.call(this);
       };
 
-      form.materials = slot.assets.map(function (asset) {
-        asset.asset.get(['creation']);
-        return new Material(asset);
+      form.materials = [];
+      _.each(slot.assets, function (asset) {
+        asset.get(['creation']);
+        form.materials.push(new Material(asset));
       });
 
       form.fileAdded = function (file, event) {

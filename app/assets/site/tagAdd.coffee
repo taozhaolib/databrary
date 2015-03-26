@@ -5,8 +5,9 @@ app.directive 'tagAdd', [
   (page) ->
     restrict: 'E'
     templateUrl: 'site/tagAdd.html'
-    link: ($scope) ->
+    link: ($scope, $element, $attrs) ->
       form = $scope.tagAddForm
+      $scope.placeholder = $attrs.placeholder
 
       select = (tag) -> ->
         $scope.vote(tag, true).then () -> ''
@@ -20,6 +21,7 @@ app.directive 'tagAdd', [
               l.push
                 text: 'Create tag: ' + input
                 select: select(input)
+                default: true
             l
           , (res) ->
             page.messages.addError

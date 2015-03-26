@@ -1,11 +1,11 @@
 'use strict';
 
 app.controller('site/home', [
-  '$scope', 'investigators', 'users', 'volume', 'pageService',
-  function ($scope, investigators, users, volume, page) {
-    page.display.title = page.constants.message('welcome.title');
-    $scope.investigators = page.$filter('orderBy')(investigators, 'lastName');
-    $scope.users = page.$filter('orderBy')(users, 'lastName');
+  '$scope', '$filter', 'constantService', 'displayService', 'volume', 'tags', 'activity',
+  function ($scope, $filter, constants, display, volume, tags, activity) {
+    display.title = constants.message('welcome.title');
     $scope.volume = volume;
+    $scope.tags = tags;
+    $scope.activity = activity;
   }
 ]);

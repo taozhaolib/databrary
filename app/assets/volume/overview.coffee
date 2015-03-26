@@ -1,8 +1,8 @@
 'use strict'
 
-app.controller 'volume/overview', [
-  '$scope', 'constantService',
-  ($scope, constants) ->
+app.directive 'volumeOverview', [
+  'constantService',
+  (constants) ->
     generateSummary = (volume) ->
       agemin = Infinity
       agemax = -Infinity
@@ -30,7 +30,16 @@ app.controller 'volume/overview', [
         agemax: if agemax > -Infinity then agemax
         agemean: if ages then agesum / ages
 
-    generateSummary($scope.volume) unless $scope.volume.summary
+    {
+    restrict: 'E'
+    templateUrl: 'volume/overview.html'
+    scope: false
+    link:
+      pre: ($scope) ->
+        generateSummary($scope.volume) unless $scope.volume.summary
 
-    return
+        $scope.shared = $scope.volume.access.some((a) -> a.children && a.party.id <= 0)
+
+        return
+    }
 ]

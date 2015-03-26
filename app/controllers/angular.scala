@@ -64,6 +64,7 @@ object AngularController extends SiteController {
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
     , ('party, JsonObject(('nobody, Party.Nobody.json(AnonSite)), ('root, Party.Root.json(AnonSite))))
     , ('mode, json.JsString(current.mode.toString))
+    , ('sandbox, json.JsBoolean(site.Site.sandbox))
     , ('url, json.JsString(site.Site.url))
     , ('version, json.JsString(site.Site.version))
     ).js
@@ -71,7 +72,7 @@ object AngularController extends SiteController {
   private val routesJs = {
     import routes.javascript._
     play.api.Routes.javascriptRouter("routes", None, site.Site.url.stripPrefix("http://")
-    , Site.start
+    , SiteHtml.start
     , LoginHtml.view
     , LoginHtml.registration
     , LoginHtml.register
@@ -86,18 +87,19 @@ object AngularController extends SiteController {
     , TokenHtml.token
     , TokenApi.token
     , TokenApi.password
+    , PartyHtml.search
     , PartyHtml.profile
     , PartyHtml.view
     , PartyHtml.edit
     , PartyHtml.avatar
     , PartyApi.profile
     , PartyApi.get
-    , PartyApi.query
+    , PartyApi.search
     , PartyApi.update
     , PartyApi.authorizeSearch
     , PartyApi.authorizeApply
     , PartyApi.authorizeChange
-    , PartyApi.authorizeDelete
+    , PartyApi.authorizeRemove
     , VolumeHtml.search
     , VolumeHtml.view
     , VolumeHtml.add
@@ -105,16 +107,17 @@ object AngularController extends SiteController {
     , VolumeHtml.spreadsheet
     , VolumeController.thumb
     , VolumeController.zip
+    , VolumeController.csv
     , VolumeApi.get
-    , VolumeApi.query
+    , VolumeApi.search
     , VolumeApi.update
     , VolumeApi.create
     , VolumeApi.accessSearch
     , VolumeApi.accessChange
-    , VolumeApi.accessDelete
+    , VolumeApi.accessRemove
     , VolumeApi.funderSearch
     , VolumeApi.fundingChange
-    , VolumeApi.fundingDelete
+    , VolumeApi.fundingRemove
     , SlotHtml.view
     , SlotHtml.edit
     , SlotController.zip
@@ -147,8 +150,10 @@ object AngularController extends SiteController {
     , CommentApi.post
     , TagApi.search
     , TagApi.update
+    , TagApi.top
     , routes.javascript.AngularController.cite
     , routes.javascript.AngularController.void
+    , SiteApi.activity
     )
   }
 
@@ -161,6 +166,7 @@ object AngularController extends SiteController {
     "lib/angularjs/angular.min.js",
     "lib/angularjs/angular-route.min.js",
     "lib/ng-flow/ng-flow-standalone.min.js",
+    "lib/lodash/lodash.min.js",
     "app.min.js",
     "templates.js")
 

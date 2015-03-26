@@ -3,11 +3,15 @@
 (function () {
 
 var keys = {
-  Enter: 13,
   Tab: 9,
-  Escape: 27
+  Enter: 13,
+  Escape: 27,
+  Left: 37,
+  Up: 38,
+  Right: 39,
+  Down: 40,
 };
-angular.forEach(keys, function (key, name) {
+_.each(keys, function(key, name){
   var directive = 'key' + name;
   keys[directive] = [
     '$parse',
@@ -21,8 +25,8 @@ angular.forEach(keys, function (key, name) {
               (event.keyIdentifier == name) ||
               (event.keyCode == key) ||
               (event.which == key))
-              $scope.$apply(function () {
-                action($scope, {$event:event});
+              return $scope.$apply(function () {
+                return action($scope, {$event:event});
               });
           });
         };

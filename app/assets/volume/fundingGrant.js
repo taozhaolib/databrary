@@ -20,23 +20,24 @@ app.directive('fundingGrantForm', [
       }
 
       form.save = function () {
-        form.data.awards = form.data.awards
-          .filter(keep);
+        page.messages.clear(form);
+        form.data.awards = _.filter(form.data.awards, keep);
 
         volume.fundingSave(funding.funder.id, form.data).then(function () {
-          form.messages.add({
+          page.messages.add({
             body: page.constants.message('funding.save.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
 
           delete funding.new;
           form.data.awards.push('');
           form.$setPristine();
         }, function (res) {
-          form.messages.addError({
+          page.messages.addError({
             body: page.constants.message('funding.save.error'),
             report: res,
+            owner: form
           });
 
           page.display.scrollTo(form.$element);
@@ -44,19 +45,21 @@ app.directive('fundingGrantForm', [
       };
 
       form.remove = function () {
-        volume.fundingDelete(funding.funder.id).then(function () {
-          form.messages.add({
+        page.messages.clear(form);
+        volume.fundingRemove(funding.funder.id).then(function () {
+          page.messages.add({
             body: page.constants.message('funding.remove.success'),
             type: 'green',
-            countdown: 3000,
+            owner: form
           });
 
           form.$setPristine();
           form.removeSuccessFn(funding);
         }, function (res) {
-          form.messages.addError({
+          page.messages.addError({
             body: page.constants.message('funding.remove.error'),
             report: res,
+            owner: form
           });
 
           page.display.scrollTo(form.$element);

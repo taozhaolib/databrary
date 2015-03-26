@@ -7,6 +7,7 @@ import java.net.URL
 import macros._
 import macros.async._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 sealed abstract class ExternalReference(head : String, url : Option[URL]) {
@@ -37,7 +38,7 @@ final case class Citation(val head : String, val title : Option[String] = None, 
       url.fold(async(this))(Citation.get(_).map(_.fold(this)(if (replace) _ orElse this else this orElse _)))
 
   override def json = super.json ++ JsonObject.flatten(
-    Some('title -> title),
+    title.map('title -> _),
     year.map('year -> _)
   )
 }
@@ -93,8 +94,8 @@ object VolumeLink extends Table[ExternalLink]("volume_link") {
 
   def get(vol : Volume) : Future[Seq[ExternalLink]] =
     columns
-    .SELECT("WHERE volume = ?")
-    .apply(vol.id).list
+    .SELECT(sql"WHERE volume = ${vol.id}")
+    .list
 
   def set(vol : Volume, refs : Seq[ExternalLink]) : Future[Boolean] = {
     implicit val site = vol.site
@@ -122,8 +123,8 @@ object VolumeCitation extends Table[Citation]("volume_citation") {
 
   private[models] def get(vol : Volume) : Future[Option[Citation]] =
     columns.map(_.copy(title = Some(vol.name)))
-    .SELECT("WHERE volume = ?")
-    .apply(vol.id).singleOpt
+    .SELECT(sql"WHERE volume = ${vol.id}")
+    .singleOpt
 
   private[models] def set(vol : Volume, cite : Option[Citation]) : Future[Boolean] = {
     implicit val site = vol.site

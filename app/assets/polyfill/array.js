@@ -29,6 +29,14 @@ if (!Array.prototype.findIndex) {
   });
 }
 
+if (!Array.prototype.includes) {
+  Object.defineProperty(Array.prototype, 'includes', {
+    value: function () {
+      return this.indexOf.apply(this, arguments) !== -1;
+    }
+  });
+}
+
 /* This is non-standard, but useful. */
 Object.defineProperty(Array.prototype, 'remove', {
   value: function (value) {

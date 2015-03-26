@@ -22,7 +22,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   protected def searchResults(implicit request : SiteRequest[AnyContent]) : (VolumeController.SearchForm, Future[Seq[Volume]]) = {
     val form = new VolumeController.SearchForm()._bind
-    (form, Volume.search(form.query.get, form.party.get))
+    (form, Volume.search(form.query.get, form.party.get, limit = form.limit.get, offset = form.offset.get))
   }
 
   private[this] def setLinks(vol : Volume, form : VolumeController.VolumeForm, cite : Option[Option[Citation]]) = {
@@ -46,10 +46,11 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
   }
 
   protected def contributeAction(e : Option[models.Party.Id]) =
-    PartyController.action(e, Some(Permission.CONTRIBUTE)) andThen
+    PartyController.action(e, Some(Permission.NONE)) andThen
       new ActionFilter[PartyController.Request] {
         protected def filter[A](request : PartyController.Request[A]) =
-          request.obj.party.access.map(a => if (a.site < Permission.PUBLIC) Some(Forbidden) else None)
+          request.obj.party.access.map(a =>
+            if (request.obj.access.member < Permission.ADMIN || a.site < Permission.EDIT) Some(Forbidden) else None)
       }
 
   def create(owner : Option[Party.Id]) = SiteAction.andThen(contributeAction(owner)).async { implicit request =>
@@ -59,7 +60,7 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
       vol <- models.Volume.create(form.name.get orElse cite.flatMap(_.flatMap(_.title)) getOrElse "New Volume",
         alias = form.alias.get.flatMap(Maybe(_).opt),
         body = form.body.get.flatten)
-      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.CONTRIBUTE)
+      _ <- VolumeAccess.set(vol, owner.getOrElse(request.identity.id), Permission.ADMIN, Permission.ADMIN)
       _ <- setLinks(vol, form, cite)
     } yield (result(vol))
   }
@@ -106,6 +107,8 @@ object VolumeController extends VolumeController {
     with NoCsrfForm {
     val query = Field(Mappings.maybeText)
     val party = Field(OptionMapping(Forms.of[Party.Id]))
+    val limit = Field(Forms.default(Forms.number(1,65),13))
+    val offset = Field(Forms.default(Forms.number(0),0))
   }
 
   private val linkMapping = Forms.tuple(
@@ -174,9 +177,9 @@ object VolumeController extends VolumeController {
     def partyId = party.id
     /** Does the affected party corresponding to a restricted-access group? */
     def isGroup = party._id <= 0
-    val individual = Field(Mappings.enum(Permission,
-      maxId = if (isGroup) Some(Permission.SHARED.id) else None,
-      minId = (if (own) Permission.ADMIN else Permission.NONE).id))
+    val individual = Field(
+      if (own) Mappings.enum(Permission).verifying("access.delete.self", _ == Permission.ADMIN)
+      else Mappings.enum(Permission, maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val children = Field(Mappings.enum(Permission,
       maxId = if (isGroup) Some(Permission.SHARED.id) else None))
     val delete = Field(if (own) Forms.boolean.verifying("access.delete.self", !_) else Forms.boolean).fill(false)
@@ -202,6 +205,15 @@ object VolumeController extends VolumeController {
     request.obj.auditDownload.map { _ =>
       AssetController.zipResult(store.Zip.volume(request.obj), "databrary-" + request.obj.id)
     }
+  }
+
+  def csv(i : Volume.Id) = Action(i).async { implicit request =>
+    for {
+      csv <- store.CSV.volume(request.obj)
+      name <- request.obj.fileName
+    } yield (Ok(csv).withHeaders(
+      CONTENT_TYPE -> "text/csv",
+      CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + ".csv"))))
   }
 
   def thumb(v : models.Volume.Id, size : Int = AssetController.defaultThumbSize) =
@@ -285,7 +297,7 @@ object VolumeApi extends VolumeController with ApiController {
   }
 
   private final val queryOpts : JsonOptions.Options = Map("access" -> Seq("ADMIN"), "citation" -> Nil)
-  def query = SiteAction.async { implicit request =>
+  def search = SiteAction.async { implicit request =>
     for {
       vl <- searchResults._2
       vols <- vl.mapAsync[JsonRecord, Seq[JsonRecord]](_.json(queryOpts))
@@ -299,13 +311,13 @@ object VolumeApi extends VolumeController with ApiController {
       JsonRecord(a.partyId) ++ (a.json - "volume"))(parents)))
   }
 
-  def accessDelete(volumeId : Volume.Id, partyId : Party.Id) =
+  def accessRemove(volumeId : Volume.Id, partyId : Party.Id) =
     Action(volumeId, Permission.ADMIN).async { implicit request =>
-      (if (!(partyId === request.identity.id))
-        VolumeAccess.set(request.obj, partyId)
-      else macros.async(false)).map { _ =>
-        result(request.obj)
-      }
+      for {
+        via <- request.obj.adminAccessVia
+        own = via.exists(p => p.id === partyId)
+        r <- if (own) async(false) else VolumeAccess.set(request.obj, partyId)
+      } yield (if (own) BadRequest(Messages("access.delete.self")) else result(request.obj))
     }
 
   final class FundingForm(funderId : Funder.Id)(implicit request : Request[_])
@@ -327,7 +339,7 @@ object VolumeApi extends VolumeController with ApiController {
       }
     }
 
-  def fundingDelete(volumeId : Volume.Id, funderId : Funder.Id) =
+  def fundingRemove(volumeId : Volume.Id, funderId : Funder.Id) =
     Action(volumeId, Permission.EDIT).async { implicit request =>
       VolumeFunding.set(request.obj, funderId, None).map { _ =>
         result(request.obj)

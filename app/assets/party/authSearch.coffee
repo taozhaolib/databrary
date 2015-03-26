@@ -15,11 +15,11 @@ app.directive 'authSearchForm', [
       $scope.$watch ->
           form.principal
         , (principal) ->
-          form.validator.client
-              name:
-                tips: constants.message('auth.search.' + (principal || 'placeholder') + '.help')
-            , true
+          form.validator.client({
+              name:{tips: constants.message('auth.search.' + (principal || 'placeholder') + '.help')}
+            }, true)
           form.placeholderText = $attrs.placeholderText || constants.message('auth.search.' + (form.principal || 'placeholder'))
+          return
 
       select = (found) -> ->
         form.selectFn(found)
@@ -39,9 +39,11 @@ app.directive 'authSearchForm', [
             institution: form.principal == 'principal' || (if form.principal == 'affiliate' then false else undefined)
           ).then (data) ->
               form.validator.server {}
-              l = for found in data
-                text: found.name
-                select: select(found)
+              
+              l = _.map data, (found) ->
+                    text: found.name
+                    select:select found
+                    
               l.push notfound
               l
             , (res) ->

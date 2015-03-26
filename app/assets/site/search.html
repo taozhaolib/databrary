@@ -1,9 +1,4 @@
-<article class="view search-view">
-  <div class="wrap">
-    <div class="row">
-      <div class="col">
-        <volume-list data="volumes"></volume-list>
-      </div>
-    </div>
-  </div>
-</article>
+<ng-form isolate>
+  <select class="search-select" ng-model="type" ng-options="t as d for (t, d) in ::types"/>
+  <input class="search-input" type="search" ng-model="query" key-enter="search()"/>
+</ng-form>

@@ -59,14 +59,16 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name, name) IS 'Create an audit.$1 table
 
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
-	"name" text NOT NULL,
+	"sortname" text NOT NULL,
+	"prename" text,
 	"orcid" char(16),
 	"affiliation" text,
 	"url" text
 );
 ALTER TABLE "party"
-	ALTER "name" SET STORAGE EXTERNAL,
-	ALTER "affiliation" SET STORAGE EXTERNAL;
+	ALTER "sortname" SET STORAGE EXTERNAL,
+	ALTER "affiliation" SET STORAGE EXTERNAL,
+	ALTER "prename" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
 
@@ -163,6 +165,7 @@ COMMENT ON COLUMN "authorize"."site" IS 'Level of site access granted to child, 
 COMMENT ON COLUMN "authorize"."member" IS 'Level of permission granted to the child as a member of the parent''s group';
 
 SELECT audit.CREATE_TABLE ('authorize');
+CREATE INDEX "authorize_activity_idx" ON audit."authorize" ("audit_time" DESC) WHERE "audit_action" IN ('add', 'change') AND "site" > 'NONE';
 
 CREATE MATERIALIZED VIEW "authorize_inherit" AS
 	WITH RECURSIVE aa AS (
@@ -232,6 +235,7 @@ CREATE TABLE "volume_access" (
 COMMENT ON TABLE "volume_access" IS 'Permissions over volumes assigned to users.';
 
 SELECT audit.CREATE_TABLE ('volume_access');
+CREATE INDEX "volume_share_activity_idx" ON audit."volume_access" ("audit_time" DESC) WHERE "audit_action" = 'add' AND "party" = 0 AND "children" > 'NONE';
 
 CREATE FUNCTION "volume_access_check" ("volume" integer, "party" integer) RETURNS permission LANGUAGE sql STABLE AS $$
 	SELECT access FROM (
@@ -317,6 +321,15 @@ COMMENT ON FUNCTION "segment_shift" (segment, interval) IS 'Shift both end point
 CREATE AGGREGATE "segment_union" (segment) (SFUNC = range_union, STYPE = segment, INITCOND = 'empty');
 CREATE AGGREGATE "segment_intersect" (segment) (SFUNC = range_intersect, STYPE = segment, INITCOND = '(,)');
 
+CREATE FUNCTION "segments" (segment) RETURNS segment[] LANGUAGE sql IMMUTABLE STRICT AS $$
+	SELECT CASE WHEN isempty($1) THEN ARRAY[]::segment[] ELSE ARRAY[$1] END
+$$;
+-- this needs to be done as SU, so we use a placeholder:
+CREATE FUNCTION segments_union(segment[], segment[]) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union';
+	sql AS $$ SELECT NULL::segment[] $$;
+CREATE FUNCTION segments_union(segment[], segment) RETURNS segment[] IMMUTABLE STRICT LANGUAGE -- C AS 'pgranges.so', 'ranges_union1';
+	sql AS $$ SELECT segments_union($1, segments($2)) $$;
+CREATE AGGREGATE "segments_union" (segment) (SFUNC = segments_union, STYPE = segment[], INITCOND = '{}');
 
 ----------------------------------------------------------- containers
 
@@ -557,7 +570,7 @@ CREATE TRIGGER "comment_changed" AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON
 
 CREATE TABLE "tag" (
 	"id" serial NOT NULL Primary Key,
-	"name" varchar(32) NOT NULL Unique
+	"name" varchar(32) NOT NULL Unique Check ("name" ~ '^[a-z][-a-z ]+[a-z]$')
 );
 ALTER TABLE "tag"
 	ALTER "name" SET STORAGE EXTERNAL;
@@ -583,7 +596,7 @@ END; $$;
 
 CREATE TABLE "tag_use" (
 	"tag" integer NOT NULL References "tag",
-	"who" integer NOT NULL References "account",
+	"who" integer References "account",
 	"container" integer NOT NULL References "container",
 	"segment" segment NOT NULL,
 	Primary Key ("tag", "who", "container", "segment"),
@@ -592,6 +605,13 @@ CREATE TABLE "tag_use" (
 CREATE INDEX ON "tag_use" ("who");
 CREATE INDEX "tag_use_slot_idx" ON "tag_use" ("container", "segment");
 COMMENT ON TABLE "tag_use" IS 'Applications of tags to slots.';
+
+CREATE TABLE "keyword_use" (
+	Primary Key ("tag", "container", "segment"),
+	Exclude USING gist (singleton("tag") WITH =, singleton("container") WITH =, "segment" WITH &&)
+) INHERITS ("tag_use");
+CREATE INDEX "keyword_use_slot_idx" ON "keyword_use" ("container", "segment");
+COMMENT ON TABLE "keyword_use" IS 'Special "keyword" tags editable as volume data.';
 
 
 ----------------------------------------------------------- records
@@ -885,7 +905,7 @@ CREATE AGGREGATE "tsvector_agg" (tsvector) (SFUNC = tsvector_concat, STYPE = tsv
 CREATE VIEW "volume_text" ("volume", "text") AS
 	SELECT id, name FROM volume 
 	UNION ALL SELECT id, body FROM volume WHERE body IS NOT NULL
-	UNION ALL SELECT volume, name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
+	UNION ALL SELECT volume, COALESCE(prename || ' ', '') || sortname FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
 	UNION ALL SELECT volume, head FROM volume_citation
 	UNION ALL SELECT volume, year::text FROM volume_citation WHERE year IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
@@ -937,23 +957,19 @@ COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by t
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (2, 'Mike Continues', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (4, 'Andrea Byrne', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
-INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
+INSERT INTO party (id, prename, sortname, orcid, affiliation) VALUES (1, 'Dylan', 'Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (2, 'Mike', 'Continues', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (3, 'Lisa', 'Steiger', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (4, 'Andrea', 'Byrne', 'Databrary');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (5, 'Karen', 'Adolph', 'New York University');
+INSERT INTO party (id, prename, sortname, affiliation) VALUES (6, 'Rick', 'Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, openid) VALUES (1, 'dylan@databrary.org', 'http://dylex.net/');
-INSERT INTO account (id, email, openid) VALUES (2, 'mike@databrary.org', NULL);
 INSERT INTO account (id, email, openid) VALUES (3, 'lisa@databrary.org', NULL);
-INSERT INTO account (id, email, openid) VALUES (4, 'andrea@databrary.org', NULL);
 
 INSERT INTO authorize (child, parent, site, member) VALUES (1, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (2, 0, 'ADMIN', 'ADMIN');
-INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'EDIT', 'NONE');
-INSERT INTO authorize (child, parent, site, member) VALUES (4, 0, 'EDIT', 'NONE');
+INSERT INTO authorize (child, parent, site, member) VALUES (3, 0, 'ADMIN', 'ADMIN');
 
 INSERT INTO volume (id, name, body) VALUES (1, 'Databrary', 'Databrary is an open data library for developmental science. Share video, audio, and related metadata. Discover more, faster.
 Most developmental scientists rely on video recordings to capture the complexity and richness of behavior. However, researchers rarely share video data, and this has impeded scientific progress. By creating the cyber-infrastructure and community to enable open video sharing, the Databrary project aims to facilitate deeper, richer, and broader understanding of behavior.
@@ -961,7 +977,7 @@ The Databrary project is dedicated to transforming the culture of developmental 
 SELECT setval('volume_id_seq', 1);
 
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'ADMIN', 'NONE');
-INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 2, 'ADMIN', 'NONE');
+INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
 INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');

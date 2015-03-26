@@ -10,12 +10,16 @@ private[controllers] sealed class TagController extends SiteController {
   def update(name : String = "", i : models.Container.Id, segment : Segment) =
     SiteAction.access(Permission.VIEW).andThen(SlotController.action(i, segment)).async { implicit request =>
       val form = new TagController.SlotForm()._bind
-      for {
-        r <- request.obj.setTag(form.name.get getOrElse name, form.vote.get)(request.asInstanceOf[AuthSite])
-      } yield {
-        if (request.isApi) r.fold(BadRequest(""))(r => Ok(r.json.js))
-        else Redirect(request.obj.pageURL)
-      }
+      val tag = form.name.get orElse TagName.validate(name) getOrElse form.name.withError("tag.invalid")._throw
+      if (form.keyword.get && !request.obj.checkPermission(Permission.EDIT))
+        throw ForbiddenException
+      tag.set(request.obj, form.vote.get, form.keyword.get)
+      .flatMap(_.fold(form.vote.withError("error.conflict")._throw) { t =>
+        if (request.isApi)
+          t.coverage(request.obj.container).map(t => Ok(t.json.js))
+        else
+          ARedirect(request.obj.pageURL)
+      })
     }
 }
 
@@ -23,6 +27,7 @@ object TagController extends TagController {
   trait Form extends StructForm {
     val name = Field(OptionMapping(Mappings.tag))
     val vote = Field(Forms.boolean)
+    val keyword = Field(Forms.boolean).fill(false)
   }
   /* annoying inheritance: */
   final class TagForm(slot : Slot)
@@ -48,5 +53,9 @@ object TagApi extends TagController with ApiController {
 
   def search(name : String) = SiteAction.async { implicit request =>
     Tag.search(name).map(l => Ok(JsonArray.map[Tag, String](_.name)(l)))
+  }
+
+  def top() = SiteAction.async { implicit request =>
+    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](_.json)(l)))
   }
 }

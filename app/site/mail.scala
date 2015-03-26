@@ -6,8 +6,8 @@ import play.api.i18n.Messages
 import macros.async._
 
 object Mail {
-  private lazy val mailer = current.plugin[com.typesafe.plugin.MailerPlugin]
-  private def getMailer = mailer.getOrElse(throw controllers.ServiceUnavailableException)
+  private lazy val mailer = current.plugin[play.api.libs.mailer.MailerPlugin]
+  private def getMailer = mailer.fold(throw controllers.ServiceUnavailableException)(_.instance)
   val fromAddr = current.configuration.getString("mail.from").getOrElse("<>")
   val authorizeAddr = current.configuration.getString("mail.authorize").getOrElse("authorize")
   private val fillinKey = new javax.crypto.spec.SecretKeySpec(
@@ -18,11 +18,13 @@ object Mail {
   def check() { getMailer }
 
   def send(from : String = fromAddr, to : Seq[String], subject : String, body : String) : Future[Unit] = Future {
-    val mail = getMailer.email
-    mail.setFrom(from)
-    mail.setRecipient(to : _*)
-    mail.setSubject(subject)
-    mail.send(body)
+    getMailer.send(play.api.libs.mailer.Email(
+      subject,
+      from,
+      to,
+      bodyText = Some(body)
+    ))
+    ()
   }(context.foreground)
 
   def investigator(party : models.Party) : Future[play.api.libs.ws.WSResponse] = {

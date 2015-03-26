@@ -3,20 +3,10 @@
 app.directive('frame', [
   'constantService',
   function (constants) {
-    var compile = function ($element, $attrs, transclude) {
-      return function ($scope, $element, $attrs) {
-        var start = function () {
-          $scope.id = $attrs.id;
-          $scope.title = constants.message($attrs.frameTitle);
-
-          transclude($scope, function ($clone) {
-            $element.find('[frame-body]').append($clone);
-          });
-        };
-
-        start();
+    var link =
+      function ($scope, $element, $attrs) {
+        $scope.title = constants.message($attrs.frameTitle);
       };
-    };
 
     return {
       restrict: 'A',
@@ -25,7 +15,7 @@ app.directive('frame', [
       transclude: true,
       replace: true,
       priority: 100,
-      compile: compile
+      link: link
     };
   }
 ]);

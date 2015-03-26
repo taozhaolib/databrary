@@ -1,10 +1,4 @@
-.spreadsheet:not(.edit)
-  .spreadsheet-table
-    border-bottom 2px solid grey    
-  .spreadsheet-tbody
-    border-right 2px solid grey
-
-.spreadsheet-release-legend
+.spreadsheet-legend
   margin-bottom 30px
   ul
     hide
@@ -12,8 +6,9 @@
     li
       text-indent -27px
       span.consent
+      span.classification
         width 1
-        margin-right 3px
+        margin-right b8
     li:before
       content none
 
@@ -22,6 +17,20 @@
 
 .spreadsheet
   margin-bottom 2
+
+.spreadsheet:not(.edit)
+  .spreadsheet-table
+    border-bottom 2px solid grey    
+  .spreadsheet-tbody
+    border-right 2px solid grey
+
+.spreadsheet.edit
+  .spreadsheet-table
+    td.add
+      cursor pointer
+    td.add:hover
+      background-color #AFCCC7
+      color: #ffffff
 
 .spreadsheet-table
   width auto
@@ -42,7 +51,8 @@
     border-right 1px solid white
     border-top 0
     border-bottom 0
-
+    &.metric-col
+      min-width 150px
     &.add
       cursor pointer
       padding-right 10px
@@ -53,10 +63,13 @@
     .addSessionInfo
       background-position 100% 2px
       float right
-      clear right
       cursor pointer
       &.add
         height f1+f8
+
+  td.add
+    color pale
+    text-transform lowercase
 
   td
     border 1px solid dark
@@ -66,6 +79,16 @@
     max-width 15em
     overflow hidden
     text-overflow ellipsis
+    position relative
+    
+    img.format
+      margin-right b8
+      
+    a.session.icon
+      background-size contain
+      background-position-y 50%
+      margin-right b8
+      width b23
 
   td.icon
     background-position 50% 50%
@@ -100,15 +123,6 @@
       position absolute
       left 0
       top 0
-
-  td.add
-    color pale
-    text-transform lowercase
-    cursor pointer
-
-  td.add:hover
-    background-color #AFCCC7
-    color: #ffffff
 
   td.saving
     position relative
@@ -200,16 +214,9 @@
   width 100%
   select
     word-break normal
-    height 100%
+  select
   input[type='text']
-    height 100%
   input[type='date']
+  textarea    
     height 100%
-  textarea
-    min-height 100%
-
-a.session.icon.hint-object-play
-  background-size contain
-  background-position-y 50%
-  margin-right b8
-  width b23
+    min-height b1+b4

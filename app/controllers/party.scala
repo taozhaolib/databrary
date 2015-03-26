@@ -38,6 +38,19 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   private[controllers] def Action(i : Option[models.Party.Id], p : Option[Permission.Value] = Some(Permission.ADMIN)) =
     SiteAction andThen action(i, p)
 
+  protected def searchResults(implicit request : SiteRequest[AnyContent]) : Future[Seq[Party]] = {
+    val form = new PartyController.SearchForm()._bind
+    val query = form.query.get
+    var access = form.access.get
+    var institution = form.institution.get
+    if (query.isEmpty && access.isEmpty && institution.isEmpty) {
+      /* set some reasonable defaults */
+      access = Some(Permission.EDIT)
+      institution = Some(false)
+    }
+    Party.search(query, access = access, institution = institution, limit = form.limit.get, offset = form.offset.get)
+  }
+
   protected def adminAction(i : models.Party.Id, delegate : Boolean = true) =
     action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
@@ -58,7 +71,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val party = request.obj.party
     for {
       _ <- party.change(
-        name = form.name.get,
+        sortname = form.sortname.get,
+        prename = form.prename.get,
         orcid = form.orcid.get,
         affiliation = form.affiliation.get,
         url = form.url.get
@@ -82,7 +96,8 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     val form = createForm(acct)._bind
     for {
       p <- Party.create(
-        name = form.name.get.get,
+        sortname = form.sortname.get.get,
+        prename = form.prename.get.get,
         orcid = form.orcid.get.flatten,
         affiliation = form.affiliation.get.flatten,
         url = form.url.get.flatten)
@@ -96,12 +111,19 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     } yield (result(s))
   }
 
+  def remove(id : Party.Id) =
+    SiteAction.rootAccess().andThen(adminAction(id)).async { implicit request =>
+      request.obj.party.remove.map { ok =>
+        Ok(request.obj.party.name + (if (ok) "" else " not") + " deleted")
+      }
+    }
+
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
     AdminAction(id).async { implicit request =>
       models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
         val form = new PartyController.AuthorizeChildForm(child)._bind
         if (form.delete.get)
-          models.Authorize.delete(childId, id)
+          models.Authorize.remove(childId, id)
             .map(_ => result(request.obj))
         else for {
           c <- Authorize.get(child, request.obj.party)
@@ -118,11 +140,11 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       })
     }
 
-  def authorizeDelete(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
+  def authorizeRemove(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
     for {
       /* users can remove themselves from any relationship */
-      _ <- models.Authorize.delete(id, other)
-      _ <- models.Authorize.delete(other, id)
+      _ <- models.Authorize.remove(id, other)
+      _ <- models.Authorize.remove(other, id)
     } yield (result(request.obj))
   }
 
@@ -138,7 +160,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       dl <- delegates(parent)
       _ <- async.when(Play.isProd, Mail.send(
         to = dl.map(_.email) :+ Mail.authorizeAddr,
-        subject = Messages("mail.authorize.subject"),
+        subject = Messages("mail.authorize.subject", request.obj.party.name),
         body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId, None).absoluteURL(Play.isProd) + "?page=grant#auth-" + id,
           request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
           parent.name)
@@ -156,7 +178,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
         for {
           _ <- Mail.send(
             to = Seq(Mail.authorizeAddr),
-            subject = Messages("mail.authorize.subject"),
+            subject = Messages("mail.authorize.subject", request.obj.party.name),
             body = Messages("mail.authorize.body", routes.PartyHtml.view(id, None).absoluteURL(Play.isProd),
               request.obj.party.name + request.user.fold("")(" <" + _.email + ">") + request.obj.party.affiliation.fold("")(" (" + _ + ")"),
               form.name.get + form.info.get.fold("")(" (" + _ + ")")))
@@ -172,14 +194,25 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
 }
 
 object PartyController extends PartyController {
-  private final val maxExpiration = org.joda.time.Years.years(2)
+  final class SearchForm(implicit request : SiteRequest[_])
+    extends HtmlForm[SearchForm](
+      routes.PartyHtml.search(),
+      _ => views.html.party.search(Nil))
+    with NoCsrfForm {
+    val query = Field(Mappings.maybeText)
+    val access = Field(OptionMapping(Mappings.enum(Permission)))
+    val institution = Field(OptionMapping(Forms.boolean))
+    val limit = Field(Forms.default(Forms.number(1,129),25))
+    val offset = Field(Forms.default(Forms.number(0),0))
+  }
 
   abstract sealed class PartyForm(action : Call)(implicit request : SiteRequest[_])
     extends HtmlForm[PartyForm](action,
       views.html.party.edit(_)) {
     def actionName : String
     def formName : String = actionName + " Party"
-    val name : Field[Option[String]]
+    val sortname : Field[Option[String]]
+    val prename = Field(OptionMapping(Mappings.maybeText))
     val orcid = Field(OptionMapping(Forms.optional(Forms.of[Orcid])))
     val affiliation = Field(OptionMapping(Mappings.maybeText))
     val url = Field(OptionMapping(Forms.optional(Forms.of[java.net.URL])))
@@ -197,8 +230,9 @@ object PartyController extends PartyController {
     override def formName = "Edit Profile"
     def party = request.obj.party
     def accountForm : Option[AccountEditForm]
-    val name = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(party.name))
+    val sortname = Field(OptionMapping(Mappings.nonEmptyText)).fill(Some(party.sortname))
     val avatar = OptionalFile()
+    prename.fill(Some(party.prename))
     orcid.fill(Some(party.orcid))
     affiliation.fill(Some(party.affiliation))
     url.fill(Some(party.url))
@@ -218,14 +252,16 @@ object PartyController extends PartyController {
   abstract sealed class CreateForm(implicit request : SiteRequest[_])
     extends PartyForm(routes.PartyHtml.create()) {
     def actionName = "Create"
-    val name = Field(Mappings.some(Mappings.nonEmptyText))
+    val sortname = Field(Mappings.some(Mappings.nonEmptyText))
   }
   final class PartyCreateForm(implicit request : SiteRequest[_]) extends CreateForm
   final class AccountCreateForm(implicit request : SiteRequest[_]) extends CreateForm with AccountForm {
     val email = Field(Mappings.some(Forms.email))
   }
-  sealed trait AuthorizeBaseForm extends StructForm
 
+  private final val maxExpiration = org.joda.time.Years.years(2)
+
+  sealed trait AuthorizeBaseForm extends StructForm
   sealed trait AuthorizeFullForm extends AuthorizeBaseForm {
     val site = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
     val member = Field(Forms.default(Mappings.enum(Permission), Permission.NONE))
@@ -304,6 +340,11 @@ object PartyHtml extends PartyController with HtmlController {
   def view(i : models.Party.Id, js : Option[Boolean]) =
     SiteAction.js.andThen(action(Some(i), Some(Permission.NONE))).async(viewParty(_))
 
+  def search(js : Option[Boolean]) =
+    SiteAction.js.async { implicit request =>
+      searchResults.map(l => Ok(views.html.party.search(l)))
+    }
+
   private[controllers] def viewAdmin(
     authorizeForms : Seq[AuthorizeForm] = Nil)(
     implicit request : Request[_]) = {
@@ -327,6 +368,11 @@ object PartyHtml extends PartyController with HtmlController {
   def createNew(acct : Boolean = false) = SiteAction.rootAccess().async { implicit request =>
     createForm(acct).Ok
   }
+
+  def preRemove(id : Party.Id) =
+    SiteAction.rootAccess().andThen(adminAction(id)) { implicit request =>
+      Ok(views.html.party.remove(request.obj))
+    }
 
   def admin(i : models.Party.Id) = AdminAction(i).async { implicit request =>
     viewAdmin().map(Ok(_))
@@ -358,8 +404,8 @@ object PartyHtml extends PartyController with HtmlController {
     }
 
   def avatar(i : models.Party.Id, size : Int = 64) =
-    SiteAction.andThen(action(Some(i), Some(Permission.NONE))).async { implicit request =>
-      FileAsset.getAvatar(request.obj.party).flatMap(_.fold(
+    SiteAction.async { implicit request =>
+      FileAsset.getAvatar(i).flatMap(_.fold(
         async(Found("/public/images/avatar.png")))(
         AssetController.assetResult(_, Some(size))))
     }
@@ -376,16 +422,9 @@ object PartyApi extends PartyController with ApiController {
       request.obj.json(request.apiOptions).map(Ok(_))
     }
 
-  final class SearchForm(implicit request : SiteRequest[_])
-    extends ApiForm(routes.PartyApi.query) {
-    val query = Field(Mappings.maybeText)
-    val access = Field(OptionMapping(Mappings.enum(Permission)))
-    val institution = Field(OptionMapping(Forms.boolean)).fill(None)
-  }
+  def search =
+    SiteAction.async { implicit request =>
+      searchResults.map(l => Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
+    }
 
-  def query = SiteAction.async { implicit request =>
-    val form = new SearchForm()._bind
-    Party.search(form.query.get, access = form.access.get, institution = form.institution.get).map(l =>
-      Ok(JsonArray.map[Party, JsonRecord](_.json)(l)))
-  }
 }

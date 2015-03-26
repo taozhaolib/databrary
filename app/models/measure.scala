@@ -7,16 +7,17 @@ import play.api.libs.json
 import com.github.mauricio.async.db
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Types of measurement data values. */
-object DataType extends PGEnum("data_type") {
+object DataType extends SQL.Enum("data_type") {
   val text, number, date = Value
 }
 
 /** Class for measurement types.
   * This provides convenient mapping tools between DataType, measures in the database, and Scala values. */
-private[models] sealed abstract class MeasureType[T] private (final val dataType : DataType.Value)(implicit final val sqlType : SQLType[T]) {
+private[models] sealed abstract class MeasureType[T] private (final val dataType : DataType.Value)(implicit final val sqlType : SQL.Type[T]) {
   /** The name of this type, as used in database identifiers. */
   final val name = dataType.toString
   /** The table storing measurements of this type. */
@@ -58,7 +59,7 @@ private[models] object MeasureType {
 final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val classification : Classification.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T])
   extends TableRowId[Metric[_]] {
   final def dataType = measureType.dataType
-  final def sqlType : SQLType[T] = measureType.sqlType
+  final def sqlType : SQL.Type[T] = measureType.sqlType
   final def assumed : Option[T] = _assumed.map(measureType.fromString)
   def long : Boolean = name.equals("description")
 
@@ -86,7 +87,7 @@ object Metric extends TableId[Metric[_]]("metric") {
 
   private val list : Seq[Metric[_]] =
     async.AWAIT {
-      row.SELECT("ORDER BY id").apply().list
+      row.SELECT(lsql"ORDER BY id").list
     }
   private val byId : TableIdMap[Metric[_]] =
     TableIdMap(list : _*)
@@ -104,9 +105,8 @@ object Metric extends TableId[Metric[_]]("metric") {
   def getAll : Iterable[Metric[_]] = list
 
   private[models] def getTemplate(category : RecordCategory.Id) : Future[Seq[(Metric[_], Boolean)]] =
-    SQL("SELECT metric, ident FROM record_template WHERE category = ?")
-    .immediately.apply(category)
-    .list(SQLCols[Metric.Id, Boolean].map { (m, i) =>
+    lsql"SELECT metric, ident FROM record_template WHERE category = $category"
+    .run.list(SQL.Cols[Metric.Id, Boolean].map { (m, i) =>
       (byId(m), i)
     })
 
@@ -121,10 +121,10 @@ sealed class Measure[T](val metric : Metric[T], val datum : String) {
   def ===(that : Measure[_]) : Boolean =
     metric === that.metric && datum.equals(that.datum)
   def value : T = metric.sqlType.read(datum)
-    .getOrElse(throw new SQLTypeMismatch(datum, metric.sqlType))
+    .getOrElse(throw new SQL.TypeMismatch(datum, metric.sqlType))
   private[models] def dataType = metric.dataType
   private[models] def sqlArg : SQLTerm[_] = new SQLTerm("datum", datum) {
-    override def placeholder = "?::" + metric.sqlType.name
+    override def statement = "?::" + metric.sqlType.name
   }
 
   /** Add or update this measure in the database. */
@@ -152,8 +152,8 @@ object Measure {
   private[models] def get[T](record : Record.Id, metric : Metric[T]) : Future[Option[MeasureV[T]]] =
     metric.measureType.select.column
       .map(new MeasureV[T](metric, _))
-      .SELECT("WHERE record = ? AND metric = ?")
-      .apply(record, metric.id).singleOpt
+      .SELECT(sql"WHERE record = $record AND metric = ${metric.id}")
+      .singleOpt
 
   /** Remove this measure from its associated record and delete it. */
   private[models] def remove(record : Record, metric : Metric[_]) : Future[Boolean] = {
@@ -176,7 +176,7 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
       mid +: MeasureType.all.map(_.selectAll),
       "measure_all",
       ",measure_all",
-      new SQLLine[MeasureV[_]](1 + MeasureType.all.length, { l =>
+      new SQL.Line[MeasureV[_]](1 + MeasureType.all.length, { l =>
         val metric = Metric.get(mid.get(l.head)).get
         val d = l(1+metric.dataType.id)
         make(metric, metric.sqlType.get(d))
@@ -189,12 +189,12 @@ object MeasureV extends Table[MeasureV[_]]("measure_all") {
     * @tparam T the type of the data value */
   private[models] def get[T](record : Record.Id, metric : Metric[T]) : Future[Option[T]] =
     metric.measureType.select.column
-      .SELECT("WHERE record = ? AND metric = ?")
-      .apply(record, metric.id).singleOpt
+    .SELECT(sql"WHERE record = $record AND metric = ${metric.id}")
+    .singleOpt
 
   /** Retrieve the set of measures in the given record. */
   private[models] def getRecord(record : Record.Id) : Future[Seq[MeasureV[_]]] =
-    row.SELECT("WHERE record = ? ORDER BY metric.id").apply(record).list
+    row.SELECT(sql"WHERE record = $record ORDER BY metric.id").list
 }
 
 class MeasuresView protected (private val map : collection.Map[Metric[_],Measure[_]]) {
@@ -241,16 +241,16 @@ object Measures extends Table[Measures]("measures") {
   private def apply(l : Seq[Measure[_]]) : Measures =
     new Measures(collection.mutable.Map(l.map(m => m.metric -> m) : _*))
 
-  private implicit val sqlMeasure : SQLType[Measure[_]] =
-    SQLType("measure", classOf[Measure[_]])(s =>
+  private implicit val sqlMeasure : SQL.Type[Measure[_]] =
+    SQL.Type("measure", classOf[Measure[_]])(s =>
       for {
         i <- Maybe(s.indexOf(':')).opt
         id <- Metric.get(Metric.asId(s.substring(0,i).toInt))
       } yield (new Measure(id, s.substring(i+1))),
       m => m.metricId.toString + ":" + m.datum)
 
-  implicit val sqlType : SQLType[Measures] =
-    SQLType.transform[IndexedSeq[Measure[_]], Measures]("measures", classOf[Measures])(
+  implicit val sqlType : SQL.Type[Measures] =
+    SQL.Type.transform[IndexedSeq[Measure[_]], Measures]("measures", classOf[Measures])(
       l => Some(apply(l)), _.map.values.toIndexedSeq)
 
   private[models] val row : Selector[Measures] = Columns(
@@ -258,5 +258,5 @@ object Measures extends Table[Measures]("measures") {
     )
 
   private[models] def getRecord(record : Record.Id) : Future[Measures] =
-    row.SELECT("WHERE record = ?").apply(record).singleOpt.map(apply _)
+    row.SELECT(sql"WHERE record = $record").singleOpt.map(apply _)
 }

@@ -1,8 +1,20 @@
-<article class="view volume-view" ng-class="::volume.type">
-  <ng-include src="'volume/overview.html'"></ng-include>
-  <ng-include src="'volume/excerpts.html'"></ng-include>
-  <ng-include src="'volume/materials.html'"></ng-include>
-  <ng-include src="'volume/sessions.html'"></ng-include>
-  <ng-include src="'site/tags.html'"></ng-include>
-  <ng-include src="'volume/comments.html'"></ng-include>
+<article class="view volume-view">
+  <panel top id="panel-overview-volume" panel-title="volume.overview.title">
+    <volume-overview></volume-overview>
+  </panel>
+  <panel id="panel-excerpts" panel-title="excerpts.title" fold ng-if="::volume.excerpts.length">
+    <volume-excerpts></volume-excerpts>
+  </panel>
+  <panel id="panel-materials" edit-link="{{::volume.checkPermission(page.permission.EDIT) ? volume.editRoute('materials') : ''}}" panel-title="materials.title" fold>
+    <spreadsheet top assets></spreadsheet>
+  </panel>
+  <panel id="panel-sessions" panel-title="sessions.title" edit-link="{{::volume.checkPermission(page.permission.EDIT) ? volume.editRoute('data') : ''}}" fold>
+    <spreadsheet limit="32"></spreadsheet>
+  </panel>
+  <panel id="panel-tags" panel-title="tags.title" fold ng-if="::page.models.Login.isAuthorized() || volume.tags">
+    <tags target="volume" edit="page.models.Login.isAuthorized()"></tags>
+  </panel>
+  <panel id="panel-comments" panel-title="comments.title" fold ng-if="::page.models.Login.isAuthorized() || volume.comments.keys.length">
+    <volume-comments></volume-comments>
+  </panel>
 </article>

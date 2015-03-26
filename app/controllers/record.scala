@@ -185,12 +185,12 @@ object RecordApi extends RecordController with ApiController {
     request.obj.json(request.apiOptions).map(Ok(_))
   }
 
-  private val queryForm = Form(Forms.single(
+  private val searchForm = Form(Forms.single(
     "category" -> Forms.optional(categoryMapping)
   ))
 
-  def query(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>
-    queryForm.bindFromRequest.fold(
+  def search(volume : models.Volume.Id) = VolumeController.Action(volume).async { implicit request =>
+    searchForm.bindFromRequest.fold(
       new ApiFormException(_).result,
       category =>
         Record.getVolume(request.obj, category).map(l =>

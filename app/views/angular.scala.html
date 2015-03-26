@@ -9,7 +9,7 @@
   </noscript>
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  @defining(Messages("app.title")){ title =>
+  @defining(if (site.Site.sandbox) "Databrary Demo" else Messages("app.title")){ title =>
     <title ng-bind="page.display.title + ' || @title'">@title</title>
   }
   <link rel="apple-touch-icon-precomposed" sizes="114x114" href="@routes.Assets.at("icons/apple-touch-icon-114x114.png")">
@@ -32,7 +32,7 @@
     You can also switch to the <a href="@display.url(nojs)">simple version</a> of this page.
   </noscript>
   <toolbar></toolbar>
-  <main ng-view id="main" class="main" autoscroll ng-if="!page.display.error"></main>
+  <main ng-view id="main" class="main" ng-class="::{'sandbox':page.constants.sandbox}" autoscroll ng-if="!page.display.error"></main>
   <errors></errors>
   @footer()
   <messages></messages>

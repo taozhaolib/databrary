@@ -64,12 +64,14 @@ app.factory('modelService', [
       else if (!obj)
         return options || opts;
       else if (options)
-        angular.forEach(options, function (v, o) {
-          if (v || !hasField(obj, o)) {
+
+        _.each(options, function(v, o){
+	  if (v || !hasField(obj, o)) {
             opts[o] = v;
             need = opts;
-          }
-        });
+          } 
+	});
+
       return need;
     }
 
@@ -132,6 +134,8 @@ app.factory('modelService', [
       id: true,
       permission: false,
       name: true,
+      sortname: true,
+      prename: true,
       orcid: true,
       affiliation: true,
       email: true,
@@ -195,10 +199,6 @@ app.factory('modelService', [
       return partyGet(this.id, this, options);
     };
 
-    Party.profile = function (options) {
-      return Party.get(Login.user.id, options);
-    };
-
     Party.prototype.save = function (data) {
       var p = this;
       return router.http(router.controllers.PartyApi.update, this.id, data)
@@ -207,10 +207,10 @@ app.factory('modelService', [
         });
     };
 
-    Party.query = function (data) {
-      return router.http(router.controllers.PartyApi.query, data)
+    Party.search = function (data) {
+      return router.http(router.controllers.PartyApi.search, data)
         .then(function (res) {
-          return res.data.map(partyMake);
+          return _.map(res.data, partyMake);
         });
     };
 
@@ -269,9 +269,9 @@ app.factory('modelService', [
         });
     };
 
-    Party.prototype.authorizeDelete = function (target) {
+    Party.prototype.authorizeRemove = function (target) {
       var p = this;
-      return router.http(router.controllers.PartyApi.authorizeDelete, this.id, target)
+      return router.http(router.controllers.PartyApi.authorizeRemove, this.id, target)
         .then(function (res) {
           p.clear('children');
           return p.update(res.data);
@@ -287,7 +287,7 @@ app.factory('modelService', [
     Login.prototype = Object.create(Party.prototype);
     Login.prototype.constructor = Login;
     Login.prototype.fields = angular.extend({
-      superuser: true,
+      superuser: false,
     }, Login.prototype.fields);
 
     Login.user = new Login({id:constants.party.NOBODY});
@@ -327,13 +327,19 @@ app.factory('modelService', [
       return Login.isLoggedIn() && Login.checkAccess(constants.permission.PUBLIC);
     };
 
-    angular.forEach({
+    Login.prototype.route = function () {
+      return router.profile();
+    };
+
+
+
+    _.each({
       get: 'get',
       login: 'post',
       logout: 'logout',
       superuserOn: 'superuserOn',
       superuserOff: 'superuserOff'
-    }, function (api, f) {
+    }, function(api, f){
       Login[f] = function (data) {
         return router.http(router.controllers.LoginApi[api], data).then(loginRes);
       };
@@ -471,8 +477,8 @@ app.factory('modelService', [
         });
     };
     
-    Volume.query = function (data) {
-      return router.http(router.controllers.VolumeApi.query, data)
+    Volume.search = function (data) {
+      return router.http(router.controllers.VolumeApi.search, data)
         .then(function (res) {
           return res.data.map(volumeMake);
         });
@@ -505,6 +511,10 @@ app.factory('modelService', [
       return router.volumeZip([this.id]);
     };
 
+    Volume.prototype.csvRoute = function () {
+      return router.volumeCSV([this.id]);
+    };
+
     Volume.prototype.accessSearch = function (param) {
       return router.http(router.controllers.VolumeApi.accessSearch, this.id, param)
         .then(function (res) {
@@ -521,9 +531,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.accessDelete = function (target) {
+    Volume.prototype.accessRemove = function (target) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.accessDelete, this.id, target)
+      return router.http(router.controllers.VolumeApi.accessRemove, this.id, target)
         .then(function (res) {
           v.clear('access');
           return v.update(res.data);
@@ -539,9 +549,9 @@ app.factory('modelService', [
         });
     };
 
-    Volume.prototype.fundingDelete = function (funder) {
+    Volume.prototype.fundingRemove = function (funder) {
       var v = this;
-      return router.http(router.controllers.VolumeApi.fundingDelete, this.id, funder)
+      return router.http(router.controllers.VolumeApi.fundingRemove, this.id, funder)
         .then(function (res) {
           v.clear('funding');
           return v.update(res.data);
@@ -584,7 +594,7 @@ app.factory('modelService', [
         }
       }
       if ('comments' in init)
-        slot.comments = commentMakeArray(slot.volume, init.comments);
+        slot.comments = commentMakeArray(slot.container, init.comments);
       if ('records' in init) {
         var rl = init.records;
         for (var ri = 0; ri < rl.length; ri ++)
@@ -681,7 +691,7 @@ app.factory('modelService', [
     function containerPrepare(volume, init) {
       if (typeof init == 'number')
         init = {id:init,_PLACEHOLDER:true};
-      return containerMake(volume, init);
+      return containerMake(volume || volumeMake(init.volume), init);
     }
 
     Volume.prototype.getSlot = function (container, segment, options) {
@@ -737,9 +747,11 @@ app.factory('modelService', [
         slot.container.records.push(r);
     }
 
-    Slot.prototype.addRecord = function (r) {
+    Slot.prototype.addRecord = function (r, seg) {
+      if (!seg)
+        seg = this.segment;
       var s = this;
-      return router.http(router.controllers.RecordApi.add, this.container.id, this.segment.format(), {record:r.id})
+      return router.http(router.controllers.RecordApi.add, this.container.id, seg.format(), {record:r.id})
         .then(function (res) {
           recordAdd(s, r);
           return r.update(res.data);
@@ -912,7 +924,7 @@ app.factory('modelService', [
     };
 
     delegate(AssetSlot, 'asset',
-        'id', 'container', 'format', 'classification', 'name', 'pending');
+        'id', 'container', 'format', 'duration', 'classification', 'name', 'pending');
 
     Object.defineProperty(AssetSlot.prototype, 'displayName', {
       get: function () {
@@ -933,7 +945,7 @@ app.factory('modelService', [
 
     Object.defineProperty(AssetSlot.prototype, 'icon', {
       get: function () {
-        return '/public/images/filetype/16px/' + this.format.extension + '.png';
+        return '/public/images/filetype/16px/' + this.format.extension + '.svg';
       }
     });
 
@@ -1065,6 +1077,8 @@ app.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.replace, this.id, data)
         .then(function (res) {
+          if (a.container)
+            a.container.clear('assets');
           return assetMake(a.volume, res.data);
         });
     };
@@ -1073,6 +1087,8 @@ app.factory('modelService', [
       var a = this;
       return router.http(router.controllers.AssetApi.remove, this.id)
         .then(function (res) {
+          if (a.container)
+            a.container.clear('assets');
           return a.update(res.data);
         });
     };
@@ -1103,17 +1119,19 @@ app.factory('modelService', [
         this.who = partyMake(init.who);
     };
 
-    function commentMakeArray(volume, l) {
+    function commentMakeArray(context, l) {
       if (l) for (var i = 0; i < l.length; i ++)
-        l[i] = new Comment(volume || volumeMake(l[i].container.volume), l[i]);
+        l[i] = new Comment(context, l[i]);
       return l;
     }
 
-    Slot.prototype.postComment = function (data, reply) {
-      var s = this;
-      if (arguments.length < 2 && this instanceof Comment)
+    Slot.prototype.postComment = function (data, segment, reply) {
+      if (segment === undefined)
+        segment = this.segment;
+      if (arguments.length < 3 && this instanceof Comment)
         reply = this.id;
-      return router.http(router.controllers.CommentApi.post, this.container.id, this.segment.format(), reply, data)
+      var s = this;
+      return router.http(router.controllers.CommentApi.post, this.container.id, segment.format(), reply, data)
         .then(function (res) {
           s.volume.clear('comments');
           s.clear('comments');
@@ -1128,19 +1146,30 @@ app.factory('modelService', [
 
     Tag.search = function (query) {
       return router.http(router.controllers.TagApi.search, query)
-        .then(function(res){
+        .then(function(res) {
           //do other stuff?
           return res.data;
-      });
+        });
     };
 
-    Slot.prototype.setTag = function (tag, vote) {
-      var s = this;
-      return router.http(router.controllers.TagApi.update, tag, this.container.id, this.segment.format(), {vote:vote})
-        .then(function (res) {
-          s.volume.clear('tags');
-          s.clear('tags');
+    Tag.top = function () {
+      return router.http(router.controllers.TagApi.top)
+        .then(function(res) {
           return res.data;
+        });
+    };
+
+    Slot.prototype.setTag = function (tag, vote, keyword, segment) {
+      if (segment === undefined)
+        segment = this.segment;
+      var s = this;
+      return router.http(router.controllers.TagApi.update, tag, this.container.id, segment.format(), {vote:vote,keyword:!!keyword})
+        .then(function (res) {
+          var tag = res.data;
+          s.volume.clear('tags');
+          if ('tags' in s)
+            s.tags[tag.id] = tag;
+          return tag;
         });
     };
 
@@ -1169,7 +1198,18 @@ app.factory('modelService', [
       analytic: function () {
         return router.http(router.controllers.AngularController.void, {}, {cache:false});
       },
-
+      activity: function () {
+        return router.http(router.controllers.SiteApi.activity)
+          .then(function (res) {
+            for (var i = 0; i < res.data.length; i ++) {
+              if ('volume' in res.data[i])
+                res.data[i].volume = volumeMake(res.data[i].volume);
+              if ('party' in res.data[i])
+                res.data[i].party = partyMake(res.data[i].party);
+            }
+            return res.data;
+          });
+      }
     };
   }
 ]);

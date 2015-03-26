@@ -1,8 +1,10 @@
 <ng-form name="volumeEditLinksForm">
-  <fieldset scroll-float class="clean">
-    <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
-    <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
-  </fieldset>
+  <scroll-float>
+    <fieldset class="clean">
+      <button ng-click="volumeEditLinksForm.save()" class="green" message="save" ng-disabled="volumeEditLinksForm.$pristine"></button>
+      <button ng-click="volumeEditLinksForm.resetAll()" class="neutral" message="revert" ng-disabled="volumeEditLinksForm.$pristine"></button>
+    </fieldset>
+  </scroll-float>
   <div class="link-label">
     <label class="col-desktop-7 col-tablet-4" message="link.head.title"></label>
     <label class="col-desktop-8 col-tablet-5" message="link.url.title"></label>

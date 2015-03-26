@@ -1,45 +1,43 @@
 'use strict';
 
 app.factory('displayService', [
-  '$rootScope', 'storageService', '$filter', 'messageService', 'constantService', '$timeout', '$window',
-  function ($rootScope, storage, $filter, messages, constants, $timeout, window) {
+  '$rootScope', 'storageService', '$filter', 'messageService', 'tooltipService', 'constantService', '$timeout', '$window', 'analyticService',
+  function ($rootScope, storage, $filter, messages, tooltips, constants, $timeout, window, analytics) {
     var display = {};
 
-    //
-
-    display.title = 'Welcome!';
-
-    //
+    display.title = '';
 
     display.loading = false;
 
     $rootScope.$on('$routeChangeStart', function () {
       display.loading = true;
       display.error = false;
+      tooltips.clear();
+      messages.clear();
     });
 
-    $rootScope.$on('$routeChangeSuccess', function () {
+    $rootScope.$on('$routeChangeSuccess', function (event, current, previous) {
       display.loading = false;
-      display.toolbarLinks = [];
-    });
 
-    //
+      var data = {current: current.controller};
+      if (previous)
+        data.previous = previous.controller;
+      analytics.add('open', data);
+    });
 
     display.error = undefined;
 
-    $rootScope.$on('$routeChangeError', function (event, next, previous, error) {
+    $rootScope.$on('$routeChangeError', function (event, current, previous, error) {
       display.error = true;
       display.loading = false;
       display.scrollTo(0);
-      display.toolbarLinks = [];
       $rootScope.$broadcast('displayService-error', error);
+
+      var data = {current: current.controller, error: error};
+      if (previous)
+        data.previous = previous.controller;
+      analytics.add('close', data);
     });
-
-    //
-
-    display.toolbarLinks = [];
-
-    //
 
     var $scroll = $('html,body');
 
@@ -78,18 +76,14 @@ app.factory('displayService', [
       event.preventDefault();
     };
 
-    //
-
     /* TODO: this should really use .canPlayType */
-    if (window.navigator.userAgent.toLowerCase().contains('firefox') &&
-        window.navigator.platform.toLowerCase().contains('mac'))
+    if (window.navigator.userAgent.search(/^Mozilla\/.* \(Macintosh; .* Firefox\/([0-2]|[3][0-4])/) === 0)
       messages.add({
         type: 'yellow',
-        closeable: true,
-        body: constants.message('video.unsupported')
+        body: constants.message('video.unsupported'),
+        persist: true
       });
 
-    //
     return display;
   }
 ]);

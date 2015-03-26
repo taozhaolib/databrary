@@ -1,10 +1,11 @@
 'use strict'
 
 app.directive 'spreadsheet', [
-  'constantService', 'displayService', 'messageService', 'tooltipService', '$compile', '$templateCache', '$timeout',
-  (constants, display, messages, tooltips, $compile, $templateCache, $timeout) ->
+  'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', '$compile', '$templateCache', '$timeout', '$document', '$location',
+  (constants, display, messages, tooltips, styles, $compile, $templateCache, $timeout, $document, $location) ->
     maybeInt = (s) ->
       if isNaN(i = parseInt(s, 10)) then s else i
+    byDefault = (a,b) -> +(a > b) || +(a == b) - 1
     byNumber = (a,b) -> a-b
     byId = (a,b) -> a.id-b.id
     byType = (a,b) ->
@@ -13,7 +14,7 @@ app.directive 'spreadsheet', [
       if ta != tb
         a = ta
         b = tb
-      if a>b then 1 else if a<b then -1 else 0
+      byDefault(a,b)
     byMagic = (a,b) ->
       na = parseFloat(a)
       nb = parseFloat(b)
@@ -37,7 +38,7 @@ app.directive 'spreadsheet', [
     parseInfo = (id) ->
       return if id == undefined
       s = id.split '_'
-      info = {t: s[0]}
+      info = {id: id, t: s[0]}
       return if s.length > 1 && isNaN(info.i = parseInt(s[1], 10))
       switch info.t
         when 'rec'
@@ -90,8 +91,6 @@ app.directive 'spreadsheet', [
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
 
-    selectStyles = document.head.appendChild(document.createElement('style')).sheet
-
     {
     restrict: 'E'
     scope: true
@@ -105,6 +104,7 @@ app.directive 'spreadsheet', [
         top = $scope.top = 'top' of $attrs
         assets = if $scope.assets = 'assets' of $attrs then []
         id = $scope.id = $attrs.id ? if top then 'sst' else 'ss'
+        limit = $attrs.limit
 
         ###
         # We use the following types of data structures:
@@ -122,7 +122,7 @@ app.directive 'spreadsheet', [
         slots = (container for containerId, container of volume.containers when top != !container.top) # [Row] = Slot
         ### jshint ignore:end ###
 
-        order = Object.keys(slots)  # Permutation Array of Row in display order
+        order = if slots.length then [0..slots.length-1] else [] # Permutation Array of Row in display order
 
         records = {}                # [Category_id][Metric_id][Count] :: Data
         counts = new Array(slots.length) # [Row][Category_id] :: Count
@@ -206,14 +206,15 @@ app.directive 'spreadsheet', [
             if editing
               for m in category.template
                 arr(records[c], m)
-            metrics = Object.keys(records[c]).map(maybeInt).sort(byType)
+            metrics = _.map Object.keys(records[c]), maybeInt
+                    .sort(byType)
             metrics.pop() # remove 'id' (necessarily last)
-            metrics = metrics.map(getMetric)
+            metrics = _.map metrics, getMetric
             # add back the 'id' column first if needed
             if !metrics.length || editing && !(metrics.length == 1 && metrics[0].options)
               metrics.unshift(pseudoMetric.id)
             si = metricCols.length
-            metricCols.push.apply metricCols, metrics.map (m) ->
+            metricCols.push.apply metricCols, _.map metrics, (m) ->
               category: category
               metric: m
               sortable: m != pseudoMetric.id || metrics.length == 1
@@ -225,6 +226,7 @@ app.directive 'spreadsheet', [
               start: si
             }
           $scope.metricCols = metricCols
+          $scope.totalCols = 2 + !top + metricCols.length + 3*!!assets
           return
 
         # Call all populate functions
@@ -340,9 +342,15 @@ app.directive 'spreadsheet', [
           else
             a = a[n]
             b += '_' + n
-          generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          cell = generateCell(row, 'asset', a.name, id + '-asset_' + b)
+          icon = cell.insertBefore(document.createElement('img'), cell.firstChild)
+          icon.src = a.icon
+          icon.onclick = () ->
+            t = {asset:a.id}
+            $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
+          icon.className = "format hint-format-" + a.format.extension
           generateCell(row, 'classification', a.classification, id + '-class_' + b)
-          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
+          generateCell(row, 'excerpt', Math.max(a.classification, a.excerpt), id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].
@@ -372,7 +380,7 @@ app.directive 'spreadsheet', [
               return
           a = cell.insertBefore(document.createElement('a'), cell.firstChild)
           a.setAttribute('href', if editing then slot.editRoute() else slot.route())
-          a.className = "session icon hint-object-play"
+          a.className = "session icon hint-action-slot"
 
           generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
           generateCell(row, 'consent', slot.consent, id + '-consent_' + i)
@@ -390,16 +398,15 @@ app.directive 'spreadsheet', [
             r = records[c][m.metric.id]
             if expandedCat == c && counts[expanded][c] > 1
               for n in [0..counts[expanded][c]-1] by 1 when n of r
-                generateText(
-                  document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi),
-                  'age', r[n][expanded])
+                e = document.getElementById(id + '-rec_' + expanded + '_' + n + '_' + mi)
+                generateText(e, 'age', r[n][expanded]) if e
             return unless 0 of r
             r = r[0]
             post = '_' + mi
-            for d, i in r when counts[i][c] == 1
-              generateText(
-                document.getElementById(id + '-rec_' + i + post),
-                'age', d)
+            for d, i in r
+              if counts[i][c] == 1
+                e = document.getElementById(id + '-rec_' + i + post)
+                generateText(e, 'age', d) if e
 
         # Generate all rows.
         generate = ->
@@ -413,19 +420,28 @@ app.directive 'spreadsheet', [
         # Place all rows into spreadsheet.
         fill = ->
           collapse()
-          for i in order
-            tbody.appendChild(rows[i])
+          delete $scope.more
+          for i, n in order
+            if n >= limit
+              $scope.more = order.length
+              tbody.removeChild(rows[i]) if rows[i].parentNode
+            else
+              tbody.appendChild(rows[i])
           return
 
         # Populate order based on compare function applied to values.
         sort = (values, compare) ->
           return unless values
           compare ?= byMagic
+          idx = new Array(slots.length)
+          for o, i in order
+            idx[o] = i
           order.sort (i, j) ->
-            compare(values[i], values[j])
+            compare(values[i], values[j]) || idx[i] - idx[j]
           return
 
-        currentSort = undefined
+        sort(slots.map((s) -> s.date), byDefault)
+        currentSort = 'date'
         currentSortDirection = false
   
         # Sort by values, called name.
@@ -465,17 +481,19 @@ app.directive 'spreadsheet', [
         ################################# Backend saving
 
         saveRun = (cell, run) ->
+          messages.clear(cell)
           cell.classList.remove('error')
           cell.classList.add('saving')
-          run.then () ->
+          run.then (res) ->
               cell.classList.remove('saving')
-              return
+              res
             , (res) ->
               cell.classList.remove('saving')
               cell.classList.add('error')
               messages.addError
-                body: 'error' # FIXME
+                body: 'Error saving data' # FIXME
                 report: res
+                owner: cell
               return
 
         createSlot = (cell) ->
@@ -503,9 +521,9 @@ app.directive 'spreadsheet', [
               messages.add
                 body: constants.message('slot.remove.notempty')
                 type: 'red'
-                countdown: 5000
+                owner: cell
               return
-            unedit()
+            unedit(false)
             collapse()
             rows[i].parentNode.removeChild(rows[i])
             slots.splice(i, 1)
@@ -566,6 +584,16 @@ app.directive 'spreadsheet', [
             generateRow(info.i)
             expand(info) if info.n
             record
+
+        saveAsset = (cell, info, v) ->
+          data = {}
+          t = info.t
+          t = 'name' if t == 'asset'
+          data[t] = v ? ''
+          return if info.asset[t] == data[t]
+          saveRun cell, info.asset.save(data).then () ->
+            generateText(cell, t, info.asset[t])
+            return
 
         ################################# Interaction
 
@@ -640,7 +668,7 @@ app.directive 'spreadsheet', [
               if value == 'new'
                 setRecord(cell, info)
               else if value == 'remove'
-                setRecord(cell, info, null)
+                setRecord(cell, info, null) if info.r?
               else if v = stripPrefix(value, 'add_')
                 u = v.indexOf('_')
                 m = constants.metric[v.slice(0,u)]
@@ -652,7 +680,7 @@ app.directive 'spreadsheet', [
                 if v != info.r
                   setRecord(cell, info, volume.records[v])
                 else
-                  edit(cell, info, true)
+                  #edit(cell, info, true) # broken and/or unreachable for most events
               return
             when 'metric'
               if value != undefined
@@ -666,12 +694,19 @@ app.directive 'spreadsheet', [
                 populateCols()
                 generate()
               return
+            when 'options'
+              # force completion of the first match
+              # this completely prevents people from using prefixes of options but maybe that's reasonable
+              c = editCompletions(value) if value
+              value = c[0] if c?.length
 
           switch info.t
             when 'name', 'date', 'consent'
               saveSlot(cell, info, value)
             when 'rec'
               saveMeasure(cell, info.record, info.metric, value)
+            when 'asset'
+              saveAsset(cell, info, value)
 
         editScope = $scope.$new(true)
         editScope.constants = constants
@@ -688,23 +723,28 @@ app.directive 'spreadsheet', [
           cell.classList.remove('editing')
           tooltips.clear()
 
-          save(cell, editScope.type, editInput.value) if event
-          return
-        editScope.unedit = unedit
+          save(cell, editScope.type, editInput.value) if event != false
+          cell
 
         edit = (cell, info, alt) ->
-          return if info.slot?.id == volume.top.id
           switch info.t
             when 'name'
+              return if info.slot.id == volume.top.id
               editScope.type = 'text'
               editInput.value = info.slot.name
             when 'date'
+              return if info.slot.id == volume.top.id
               editScope.type = 'date'
               editInput.value = info.slot.date
             when 'consent'
               editScope.type = 'consent'
               editInput.value = (info.slot.consent || 0) + ''
             when 'rec', 'add'
+              if info.c == 'asset'
+                # for now, just go to slot edit
+                $location.url(info.slot.editRoute())
+                return
+              return if info.slot.id == volume.top.id
               if info.t == 'rec' && info.metric.id == 'id'
                 setRecord(cell, info, null)
                 return
@@ -714,8 +754,8 @@ app.directive 'spreadsheet', [
                 return unless typeof m == 'number'
                 editInput.value = volume.records[info.r].measures[m] ? ''
                 if info.metric.options
-                  editScope.type = 'select'
-                  editScope.options = [''].concat(info.metric.options)
+                  editScope.type = 'options'
+                  editScope.options = info.metric.options
                 else if info.metric.long
                   editScope.type = 'long'
                 else
@@ -749,9 +789,12 @@ app.directive 'spreadsheet', [
                 # unitary: single metric with options
                 delete editScope.options['new']
                 for o in m.options
+                  found = false
                   for ri, r of volume.records
-                    return if (r.category || 0) == c.id && r.measures[m.id] == o
-                  editScope.options['add_'+m.id+'_'+o] = o
+                    if (r.category || 0) == c.id && r.measures[m.id] == o
+                      found = true
+                      break
+                  editScope.options['add_'+m.id+'_'+o] = o unless found
             when 'category'
               editScope.type = 'metric'
               editInput.value = undefined
@@ -767,6 +810,9 @@ app.directive 'spreadsheet', [
                 editScope.options.push(c)
               editScope.options.sort(byId)
               editScope.options.push(pseudoCategory[0]) unless 0 of records
+            when 'asset'
+              editScope.type = 'text'
+              editInput.value = info.asset.name
             else
               return
 
@@ -781,16 +827,14 @@ app.directive 'spreadsheet', [
 
           tooltips.clear()
           $timeout ->
-            input = e.children('[name=edit]')
-            input.focus()
-            # chrome produces spurious change events on date fields, so we rely on key-enter instead.
-            input.one('change', $scope.$lift(unedit)) unless editScope.type == 'date'
+            input = e.find('[name=edit]')
+            input.filter('input,textarea').focus().select()
+            input.filter('select').focus().one('change', $scope.$lift(editScope.unedit))
             return
           return
 
         unselect = ->
-          while selectStyles.cssRules.length
-            selectStyles.deleteRule(0)
+          styles.clear()
 
           unedit()
           return
@@ -802,17 +846,16 @@ app.directive 'spreadsheet', [
           expand(info)
           if info.t == 'rec'
             for c, ci in cell.classList when c.startsWith('ss-rec_')
-              selectStyles.insertRule('.' + c + '{background-color:' +
-                (if c.contains('_', 7) then '#e8e47f' else 'rgba(242,238,100,0.4)') +
-                ';\n text-}', selectStyles.cssRules.length)
+              styles.set('.' + c + '{background-color:' +
+                (if c.includes('_', 7) then 'rgba(226,217,0,0.6)' else 'rgba(242,238,100,0.4)') +
+                ';\n text-}')
 
           edit(cell, info) if editing
           return
 
         $scope.click = (event) ->
           el = event.target
-          return unless el.tagName == 'TD'
-          return unless info = parseId(el)
+          return unless el.tagName == 'TD' && info = parseId(el)
 
           select(el, info)
           if 'm' of info && metricCols[info.m].metric.id == 'age'
@@ -825,6 +868,39 @@ app.directive 'spreadsheet', [
           else
             unselect()
           return
+
+        editScope.unedit = ($event) ->
+          unedit($event)
+          false
+
+        editCompletions = (input) ->
+          i = input.toLowerCase()
+          (o for o in editScope.options when o.toLowerCase().startsWith(i))
+
+        editSelect = () ->
+          editInput.value = @text
+          unedit(true)
+          @text
+
+        editScope.completer = (input) ->
+          match = editCompletions(input)
+          switch match.length
+            when 0
+              input
+            when 1
+              match[0]
+            else
+              ({text:o, select: editSelect, default: input && i==0} for o, i in match)
+
+        editScope.next = ($event) ->
+          cell = unedit($event)
+          return unless cell
+          while true
+            cell = if $event.shiftKey then cell.previousSibling else cell.nextSibling
+            return unless cell && cell.tagName == 'TD' && info = parseId(cell)
+            break unless info.t == 'rec' && info.metric.id == 'id' # skip "delete" actions
+          select(cell, info)
+          false
 
         $scope.clickAdd = ($event) ->
           unselect()
@@ -843,6 +919,16 @@ app.directive 'spreadsheet', [
         $scope.clickNew = ($event) ->
           createSlot($event.target)
           return
+
+        $scope.unlimit = ->
+          limit = undefined
+          fill()
+
+        if editing
+          $document.on 'click', ($event) ->
+            if editCell && editCell.parentNode != $event.target && !$.contains(editCell.parentNode, $event.target)
+              $scope.$applyAsync(unedit)
+            return
 
         ################################# main
 

@@ -2,11 +2,14 @@
   <div class="row">
     <div class="col-desktop-12 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
-        <h1 class="panel-title smaller">{{party.name}}</h1>
+        <h1 class="panel-title smaller">
+          <span>{{party.name}}</span>
+          <a ng-if="::party.checkPermission(page.permission.EDIT)" ng-href="{{::party.editRoute()}}"><span class="green button icon edit"></span></a>
+        </h1>
       </hgroup>
 
       <div>
-        <div frame id="frame-contact" frame-title="party.contact.title" fold>
+        <div frame frame-title="party.contact.title" fold>
           <div>
             <dl class="flat">
               <dt ng-if="::party.affiliation" message="affiliation"/>

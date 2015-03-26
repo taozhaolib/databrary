@@ -1,31 +1,60 @@
-<section id="toolbar" class="toolbar cf">
-  <div class="wrap">
+<!--ng-if="::page.constants.sandbox"-->
+<section id="toolbar" class="toolbar cf" ng-class="::{'sandbox':page.constants.sandbox}">
+  <div class="wrap toolbar-sandbox" ng-if="::page.constants.sandbox">
+    Welcome to the <strong>Databrary demo site</strong>. Explore Databrary in action and try out some of our features here!
+  </div>
+  <div class="wrap toolbar-main" ng-class="{'hover-nav-bg': hoverNav}">
     <div class="row">
-      <div class="title cf col-desktop-7 col-tablet-5" ng-class="{'col-mobile-4': page.models.Login.isLoggedIn(), 'col-mobile-2': !page.models.Login.isLoggedIn()}">
-        <h1 class="toolbar-site" ng-show="page.$route.current.controller!=='site/home'">
-          <a ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
-        </h1>
+      <div class="title cf col-desktop-9" ng-class="{'col-tablet-7 col-mobile-4': !hoverNav&&page.models.Login.isLoggedIn(), 'col-tablet-6 col-mobile-2': !hoverNav&&!page.models.Login.isLoggedIn(),'col-mobile-6':hoverNav}">
+        <div class="toolbar-site" ng-show="page.$route.current.controller!=='site/home'">
+          <a ng-class="::{sandbox:page.constants.sandbox}" ng-href="{{::page.router.index()}}" title="Databrary: An Open Data Library"></a>
+        </div>
 
         <nav class="toolbar-nav cf">
           <ul class="toolbar-nav-ul inline-block flat cf">
-            <li ng-repeat="link in page.display.toolbarLinks">
-              <a ng-href="{{::link.url}}" class="button mini" ng-class="::link.type" target="{{::link.target}}" ng-click="link.click()">
-                <span ng-if="::link.icon" class="icon" ng-class="::link.icon"></span>
-                <span class="text" ng-bind="::link.html"></span>
+            <li ng-class="{'hide-tablet hide-desktop': !hoverNav}">
+              <a href="" class="toolbar-nav-toggle" ng-click="hoverNavToggle($event)">
+                <img src="/public/images/icon/navmenu.svg" class="icon" ng-show="!hoverNav">
+                <img src="/public/images/icon/backarrow.svg" class="icon" ng-show="hoverNav">
               </a>
+            </li>
+            <li ng-class="{'hide-mobile':!hoverNav}">
+              <a ng-href="{{::page.router.volumeSearch()}}"><span><b>Volumes</b></span></a>
+            </li>
+            <li ng-class="{'hide-mobile':!hoverNav}">
+              <a href="//databrary.org/about.html"><span>About</span></a>
+              <ul>
+                <li><a href="//databrary.org">News &amp; Events</a></li>
+                <li><a href="//databrary.org/about/mission.html">Mission</a></li>
+                <li><a href="//databrary.org/about/use-cases.html">Use Cases</a></li>
+                <li><a href="//databrary.org/about/team.html">Our Team</a></li>
+                <li><a href="//databrary.org/about/jobs.html">Join the Team</a></li>
+                <li><a href="//databrary.org/about/press-and-publications.html">Press &amp; Publications</a></li>
+              </ul>
+            </li>
+            <li ng-class="{'hide-mobile':!hoverNav}">
+              <a href="//databrary.org/access.html"><span>Access</span></a>
+              <ul>
+                <li><a href="//databrary.org/access/responsibilities.html">Rights &amp; Responsibilities</a></li>
+                <li><a href="//databrary.org/about/faq.html">FAQ</a></li>
+                <li><a href="//databrary.org/access/guide.html">User Guide</a></li>
+                <li><a href="//databrary.org/access/policies.html">Policies</a></li>
+              </ul>
+            </li>
+            <li ng-class="{'hide-mobile':!hoverNav}">
+              <a href="//databrary.org/community.html"><span>Community</span></a>
+              <ul>
+                <li><a ng-href="{{::page.router.partySearch()}}">Authorized Investigators</a></li>
+                <li><a ng-href="{{::page.router.partySearch()}}?institution=true&access=5">Institutions</a></li>
+                <li><a href="//databrary.org/community/board.html">Board</a></li>
+              </ul>
             </li>
           </ul>
         </nav>
       </div>
 
-      <div class="toolbar-user col-desktop-8 col-tablet-4" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}">
-        <div class="toolbar-search">
-          <ng-form class="search-form">
-            <div class="search-form-search">
-              <input type="search" ng-model="search.data.query" placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
-            </div>
-          </ng-form>
-        </div>
+      <div class="toolbar-user" ng-class="{'col-mobile-2': page.models.Login.isLoggedIn(), 'col-mobile-4': !page.models.Login.isLoggedIn()}" ng-if="!hoverNav">
+
         <span ng-if="!page.models.Login.isLoggedIn()">
           <a ng-href="{{::page.router.login()}}" message="toolbar.login"></a>
 
@@ -35,10 +64,16 @@
         </span>
 
         <span ng-if="page.models.Login.isLoggedIn()">
-          <a href="" class="toolbar-user-link" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
-            <span class="username hide-mobile" ng-bind="::page.models.Login.user.name"></span>
-            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> </a>
+          <a href="" ng-class="{'toolbar-superuser': page.models.Login.user.superuser !== undefined, on: !!page.models.Login.user.superuser}" ng-click="hoverUserToggle($event)">
+            <img ng-src="{{::page.models.Login.user.avatarRoute()}}" class="toolbar-avatar"> 
+            <span class="username hide-mobile hide-tablet" ng-bind="::page.models.Login.user.name"></span>
+          </a>
         </span>
+
+        <a href="" ng-click="hoverSearchToggle($event)" class="toolbar-search-toggle">
+          <img src="/public/images/icon/search.svg" class="icon">
+          <span class="hide-mobile hide-tablet">Search</span>
+        </a>
 
         <span class="sep">|</span>
 
@@ -52,10 +87,10 @@
             <ul class="flat">
               <li><strong ng-bind="::page.models.Login.user.name"></strong></li>
               <li ng-if="::!page.models.Login.isAuthorized()">
-                <a ng-href="{{::page.router.register()}}" class="toolbar-user-link" message="toolbar.reregister"></a>
+                <a ng-href="{{::page.router.register()}}" message="toolbar.reregister"></a>
               </li>
               <li>
-                <a ng-href="{{::page.router.profile()}}" class="toolbar-user-link" message="toolbar.profile"></a>
+                <a ng-href="{{::page.router.profile()}}" message="toolbar.profile"></a>
               </li>
               <li>
                 <a ng-href="{{::page.router.volumeCreate()}}" message="volume.edit.create" ng-if="::page.models.Login.isAuthorized()"></a>
@@ -81,6 +116,17 @@
           </div>
         </div>
       </section>
+
+      <section class="toolbar-hover search" click-elsewhere="hoverSearchToggle()" ng-if="hoverSearch">
+        <div class="toolbar-search">
+          <ng-form class="search-form">
+            <div class="search-form-search">
+              <input type="search" ng-model="search.data.query" placeholder="{{::'search.prompt' | message}}" key-enter="search()"/>
+            </div>
+          </ng-form>
+        </div>  
+      </section>    
+
     </div>
   </div>
 </section>

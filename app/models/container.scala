@@ -4,6 +4,7 @@ import scala.concurrent.{Future,ExecutionContext}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import macros._
 import dbrary._
+import dbrary.SQL._
 import site._
 
 /** Collection of related assets.
@@ -73,21 +74,21 @@ object Container extends TableId[Container]("container") {
   /** Retrieve an individual Container.
     * This checks user permissions and returns None if the user lacks [[Permission.VIEW]] access. */
   def get(i : Id)(implicit site : Site) : Future[Option[Container]] =
-    row.SELECT("WHERE container.id = ? AND", Volume.condition)
-    .apply(i).singleOpt
+    row.SELECT(sql"WHERE container.id = $i AND" + Volume.condition)
+    .singleOpt
 
   /** Retrieve all the containers in a given volume. */
   private[models] def getVolume(v : Volume) : Future[Seq[Container]] =
-    rowVolume(v).SELECT("ORDER BY container.top DESC")
-    .apply().list
+    rowVolume(v).SELECT(sql"ORDER BY container.top DESC")
+    .list
 
   /** Retrieve the top container in a given volume. */
   private[models] def getTop(v : Volume) : Future[Container] =
-    rowVolume(v).SELECT("WHERE container.top ORDER BY container.id LIMIT 1")
-    .apply().single
+    rowVolume(v).SELECT(sql"WHERE container.top ORDER BY container.id LIMIT 1")
+    .single
 
   /** Create a new container in the specified volume. */
   def create(volume : Volume, top : Boolean = false, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
     Audit.add(table, SQLTerms('volume -> volume.id, 'top -> top, 'name -> name, 'date -> date), "id")
-    .single(SQLCols[Id].map(new Container(_, volume, top, name, date, Consent.NONE)))
+    .single(SQL.Cols[Id].map(new Container(_, volume, top, name, date, Consent.NONE)))
 }

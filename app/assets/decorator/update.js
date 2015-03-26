@@ -4,15 +4,15 @@ app.factory('updateInterceptor', [
   '$rootScope', 'constantService', 'messageService', '$sce',
   function ($rootScope, constants, messages, $sce) {
     var version = '/' + constants.version;
-    var warning = false;
 
     return {
       response: function (res) {
         var server;
-        if (!warning && res.headers && (server = res.headers('server')) && !server.endsWith(version))
-          warning = messages.add({
+        if (res.headers && (server = res.headers('server')) && !server.endsWith(version))
+          messages.add({
             type: 'yellow',
-            body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload'))
+            body: $sce.trustAsHtml(constants.message('app.update') + ' ' + constants.message('app.reload')),
+            persist: true
           });
 
         return res;

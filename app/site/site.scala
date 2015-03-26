@@ -27,6 +27,8 @@ object Site {
   def url(call : Call) : String =
     url + call.url
 
+  val sandbox = Play.current.configuration.getBoolean("site.sandbox").getOrElse(false)
+
   periodic.start()
 }
 

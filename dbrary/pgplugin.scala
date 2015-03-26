@@ -6,7 +6,7 @@ import com.github.mauricio.async.db
 class PostgresAsyncPlugin(app : Application) extends Plugin {
   lazy val pool = {
     val config = app.configuration.getConfig("db.default").getOrElse(Configuration.empty)
-    new db.pool.ConnectionPool(Connection.factory(config),
+    new db.pool.ConnectionPool(SQL.Connection.factory(config),
       db.pool.PoolConfiguration(
         config.getInt("max").getOrElse(16),
         config.getMilliseconds("idle").getOrElse(600000),

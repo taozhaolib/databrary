@@ -201,13 +201,12 @@ class ObjectController[O <: SiteObject] extends SiteController {
     else Redirect(o.pageURL)
 }
 
+trait ApiController extends SiteController
+trait HtmlController extends SiteController
+
 object Site extends SiteController {
   assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
     "Application is insecure. You must set application.secret appropriately (see README).")
-
-  def start(js : Option[Boolean]) = SiteAction.js.async { implicit request =>
-    VolumeHtml.viewSearch(request)
-  }
 
   def tinyUrl(prefix : String, path : String) = Action {
     MovedPermanently("/" + prefix + "/" + path)
@@ -229,8 +228,35 @@ object Site extends SiteController {
 
   }
 
+  def robots = Action {
+    Ok(views.txt.robots())
+  }
+
 }
 
+object SiteHtml extends HtmlController {
+  assert(current.configuration.getString("application.secret").exists(_ != "databrary"),
+    "Application is insecure. You must set application.secret appropriately (see README).")
 
-trait ApiController extends SiteController
-trait HtmlController extends SiteController
+  def start(js : Option[Boolean]) =
+    SiteAction.js.async { implicit request =>
+      VolumeHtml.viewSearch(request)
+    }
+
+  def search(js : Option[Boolean]) =
+    VolumeHtml.search(js)
+}
+
+object SiteApi extends ApiController {
+  def activity = SiteAction.async { implicit request =>
+    for {
+      va <- Activity.volumes(8)
+      vl <- va.mapAsync { case (t, v) =>
+        v.json(Map("access" -> Seq("ADMIN"))).map(j => (t, JsonField("volume", j)))
+      }
+      aa <- Activity.authorizations(8)
+      al = aa.map { case (t, p) => (t, JsonField("party", p.json)) }
+      l = (vl ++ al).sortWith((a, b) => a._1.isAfter(b._1)).take(12)
+    } yield (Ok(JsonArray.map[(Timestamp, JsonField), JsonObject] { case (t, j) => JsonObject('time -> t, j) } (l)))
+  }
+}

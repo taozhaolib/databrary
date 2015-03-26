@@ -15,14 +15,15 @@ app.directive('userPasswordForm', [
       form.resetSuccessFn = undefined;
 
       form.reset = function () {
+        page.messages.clear(form);
         page.models.Login.issuePassword($scope.userPasswordForm.data)
           .then(function () {
             form.validator.server({});
 
-            form.messages.add({
+            page.messages.add({
               type: 'green',
-              countdown: 3000,
-              body: page.constants.message('reset.request.success', form.data.email)
+              body: page.constants.message('reset.request.success', form.data.email),
+              owner: form
             });
 
             page.$location.url(page.router.index());

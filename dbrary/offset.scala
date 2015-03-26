@@ -74,8 +74,8 @@ object Offset {
     }.sum * (if (s.startsWith("-")) -1.0 else 1.0)))(
     new Offset(_))
 
-  implicit val sqlType : SQLType[Offset] =
-    SQLType.interval.transform[Offset]("interval", classOf[Offset])(
+  implicit val sqlType : SQL.Type[Offset] =
+    SQL.Type.interval.transform[Offset]("interval", classOf[Offset])(
       p => catching(classOf[UnsupportedOperationException])
         .opt(new Offset(p.toStandardDuration.getMillis)),
       o => new time.Period(o.millis)

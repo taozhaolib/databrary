@@ -2,9 +2,9 @@
   <div class="wrap">
     <div class="row">
       <hgroup class="col">
-        <h1 class="view-context" message="help.title"></h1>
+        <h1 class="view-context smaller" message="help.title"></h1>
 
-        <h2 class="view-title" message="help.formats.title"></h2>
+        <h2 class="view-title smaller" message="help.formats.title"></h2>
 
         <p message="help.formats.body" message-html></p>
       </hgroup>
@@ -27,7 +27,7 @@
 
             <tr ng-repeat="format in group track by format.id">
               <td ng-bind="::format.extension" class="th-right"></td>
-              <td><img class="icon" ng-src="/public/images/filetype/16px/{{::format.extension}}.png"></img></td>
+              <td><img class="icon" ng-src="/public/images/filetype/16px/{{::format.extension}}.svg"></img></td>
               <td ng-bind="::format.description || format.name"></td>
             </tr>
           </tbody>

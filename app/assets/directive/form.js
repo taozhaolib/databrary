@@ -9,7 +9,6 @@ app.directive('ngForm', [
       if (!form)
         return;
 
-      form.messages = page.messages;
       form.$element = $element;
 
       var controls = [];
@@ -46,21 +45,31 @@ app.directive('ngForm', [
         $setPristine: checkDirty
       };
 
+      if ('isolate' in $attrs) {
+        form.$$parentForm.$removeControl(form);
+        form.$setDirty = function() {
+          $animate.removeClass($element, 'ng-pristine');
+          $animate.addClass($element, 'ng-dirty');
+          form.$dirty = true;
+          form.$pristine = false;
+        };
+      }
       /* it'd be nicer to handle this in $addControl, but it happens too early */
-      var parentForm = $element.parent().controller('form');
-      if (parentForm && parentForm.subformControl)
-        form.$addControl(parentForm.subformControl);
+      else if (form.$$parentForm.subformControl)
+        form.$addControl(form.$$parentForm.subformControl);
 
       var unclaimed = {};
       form.validators = {};
       form.validator = {
         server: function (res, replace) {
+          page.messages.clear(form);
           if ($.isEmptyObject(res)) {
             res.data = {};
           } else if (!angular.isObject(res.data)) {
-            form.messages.addError({
+            page.messages.addError({
               body: page.constants.message('error.generic'),
               report: res,
+              owner: form
             });
             return;
           }
@@ -73,18 +82,18 @@ app.directive('ngForm', [
           for (name in res.data) {
             if (form.validators[name]) {
               form.validators[name].server(res.data[name], replace);
-            } else if (form.messages) {
-              form.messages.add({
+            } else {
+              page.messages.add({
                 type: 'red',
-                closeable: true,
                 body: Array.isArray(res.data[name]) ? res.data[name].join(', ') : res.data[name],
+                owner: form
               });
             }
           }
         },
 
         clearServer: function () {
-          angular.forEach(form.validators, function (validator) {
+          _.each(form.validators, function (validator) {
             validator.server({}, true);
           });
         },

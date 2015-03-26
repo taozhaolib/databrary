@@ -12,33 +12,33 @@
   margin 0 2 1 0
   padding-right 1
   display inline-block
-  background-color blue52
+  background-color green52
   position relative
-  text-shadow -1px 0 2px blue51
+  text-shadow -1px 0 2px green51
 
-  span
-    background-color blue52
+  span:not(.button)
+    background-color green52
     position absolute
     left -50px
     right 0px
     top 0
     bottom 0
     z-index -100
-
-.panel-context
-  font-line 2 1.5
-  margin-top 1
-  color red32
+  span.button
+    size 1
 
 .panel-alias
   font-line 1
   margin 0
-  color blue53
+  color black
 
 .panel-title
   font-line 3.5 2.5
   margin-top 1
   margin-bottom 2
+
+  span.icon.button
+    margin-left b3
 
   &.smaller
   &.with-context
@@ -67,7 +67,7 @@
         margin-right f6
 
       &:hover
-        color mix(blue, black, 25%)
+        color mix(green, black, 25%)
 
         &:before
           transform rotate(-45deg)

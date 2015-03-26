@@ -11,42 +11,30 @@
 .panel-tags-item
   font-line 1 1.25
   height b1 + b4
-  display inline-block
+  display inline-flex
   margin-right f2
+  margin-bottom b3
   border-radius b1
   border 1px solid pale
   padding-width f3
-  margin-bottom f2
+
+  &.active
+    background-color blue51
 
   &:before
     display none
 
-  .panel-tag-weight
   .panel-tag-controls
-  .panel-tag-name
     position relative
-
-  .panel-tag-weight
-    font-weight bold
-    float left
-    background green51
-    border-radius b3
-    margin-right f4
-    margin-top f4
-    margin-bottom f4
-    min-width b1
-    font-line f34 f23
-    text-align center
-
-  .panel-tag-controls
     float left
     margin-left f4
 
   .panel-tag-name
+    position relative
     float left
     height b1
     top -b12
-
+    
   .panel-tag-vote
     arrow = b4
     able = orange
@@ -101,33 +89,20 @@
     &:focus
       outline 0
 
-.panel-tags-form
-  max-width 10
-
+//tagAdd
 .panel-tags-new-form
   position relative
 
   input
     z-index 100
     position relative
-
-.panel-tags-auto-list
-  margin 0
-  padding 0
-  position absolute
-  top b1 + b2 - 3px
-  left 0
-  right 0
-  background-color white
-  border 1px solid pale
-  border-radius 0 0 b8 b8
-  z-index 90
-
-  li
-    padding-width f4
-
-    &.active
-      background-color mix(yellow51, white, 50%)
-
-    &:before
-      display none
+    width 7
+    border none
+    box-shadow none
+    background none
+    margin 0
+  
+.keyword
+  border 1px solid orange52
+  &.active
+    background-color orange51

@@ -4,7 +4,8 @@
 # ~~~~
 
 # static
-GET     /                                                                                         controllers.Site.start(js : Option[Boolean] ?= None)
+GET     /                                                                                         controllers.SiteHtml.start(js : Option[Boolean] ?= None)
+GET     /search                                                                                   controllers.SiteHtml.search(js : Option[Boolean] ?= None)
 
 # users
 GET     /login                                                                                    controllers.LoginHtml.view(js : Option[Boolean] ?= None)
@@ -22,6 +23,7 @@ GET     /token/:token                                                           
 GET     /profile                                                                                  controllers.PartyHtml.profile(js : Option[Boolean] ?= None)
 
 # parties
+GET     /party                                                                                    controllers.PartyHtml.search(js : Option[Boolean] ?= None)
 GET     /party/create                                                                             controllers.PartyHtml.createNew()
 POST    /party/create                                                                             controllers.PartyHtml.create()
 GET     /party/$pID<-?[0-9]+>                                                                     controllers.PartyHtml.view(pID : models.Party.Id, js : Option[Boolean] ?= None)
@@ -34,6 +36,8 @@ GET     /party/$pID<[0-9]+>/authorize/search/apply                              
 POST    /party/$pID<[0-9]+>/authorize/$child<-?[0-9]+>                                            controllers.PartyHtml.authorizeChange(pID : models.Party.Id, child : models.Party.Id)
 POST    /party/$pID<[0-9]+>/authorize/$parent<-?[0-9]+>/apply                                     controllers.PartyHtml.authorizeApply(pID : models.Party.Id, parent : models.Party.Id)
 GET     /party/$pID<-?[0-9]+>/avatar                                                              controllers.PartyHtml.avatar(pID : models.Party.Id, size : Int ?= 64)
+GET     /party/$pID<[0-9]+>/remove                                                                controllers.PartyHtml.preRemove(pID : models.Party.Id)
+POST    /party/$pID<[0-9]+>/remove                                                                controllers.PartyHtml.remove(pID : models.Party.Id)
 
 # admin
 GET     /admin/authorize                                                                          controllers.PartyHtml.authorizeAdmin
@@ -41,7 +45,7 @@ POST    /party/$pID<-?[0-9]+>/investigator                                      
 POST    /party/$pID<-?[0-9]+>/reissue                                                             controllers.PartyHtml.reissue(pID : models.Account.Id)
 
 # volumes
-GET     /search                                                                                   controllers.VolumeHtml.search(js : Option[Boolean] ?= None)
+GET     /volume                                                                                   controllers.VolumeHtml.search(js : Option[Boolean] ?= None)
 GET     /volume/create                                                                            controllers.VolumeHtml.add(owner : Option[models.Party.Id] ?= None, js : Option[Boolean] ?= None)
 POST    /volume/create                                                                            controllers.VolumeHtml.create(owner : Option[models.Party.Id] ?= None)
 GET     /volume/$vID<[0-9]+>                                                                      controllers.VolumeHtml.view(vID : models.Volume.Id, js : Option[Boolean] ?= None)
@@ -52,6 +56,7 @@ GET     /volume/$vID<[0-9]+>/access/search                                      
 POST    /volume/$vID<[0-9]+>/access/$pID<-?[0-9]+>                                                controllers.VolumeHtml.accessChange(vID : models.Volume.Id, pID : models.Party.Id)
 GET     /volume/$vID<[0-9]+>/spreadsheet                                                          controllers.VolumeHtml.spreadsheet(vID : models.Volume.Id, js : Option[Boolean] ?= None)
 GET     /volume/$vID<[0-9]+>/zip                                                                  controllers.VolumeController.zip(vID : models.Volume.Id)
+GET     /volume/$vID<[0-9]+>/csv                                                                  controllers.VolumeController.csv(vID : models.Volume.Id)
 GET     /volume/$vID<[0-9]+>/thumb                                                                controllers.VolumeController.thumb(vID : models.Volume.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
 
 # slots
@@ -108,6 +113,7 @@ POST    /volume/$vID<[0-9]+>/ingest/json                                        
 GET     /constants.js                                                                             controllers.AngularController.constantsJs
 # takes nothing, does nothing (except side-effects: authorization, analytics, etc.), returns nothing
 GET     /api/null                                                                                 controllers.AngularController.void
+GET     /api/activity                                                                             controllers.SiteApi.activity
 
 # ----- LOGIN ----- #
 GET     /api/user                                                                                 controllers.LoginApi.get
@@ -122,7 +128,7 @@ GET     /api/token/:token                                                       
 
 # ----- PARTY ----- #
 # QUERY ?access=LEVEL;query=terms
-GET     /api/party                                                                                controllers.PartyApi.query
+GET     /api/party                                                                                controllers.PartyApi.search
 # GET       ?volumes;comments;parents[=all];children[=all]                                        TODO: tags;network
 GET     /api/party/$partyId<-?[0-9]+>                                                             controllers.PartyApi.get(partyId : models.Party.Id)
 # equivalent to /api/party/<currentUser>:
@@ -135,11 +141,11 @@ POST    /api/party/$pID<[0-9]+>/password                                        
 GET     /api/party/$partyId<[0-9]+>/authorize/search                                              controllers.PartyApi.authorizeSearch(partyId : models.Party.Id, apply : Boolean = false)
 POST    /api/party/$partyId<[0-9]+>/authorize/$childId<[0-9]+>                                    controllers.PartyApi.authorizeChange(partyId : models.Party.Id, childId : models.Party.Id)
 POST    /api/party/$partyId<[0-9]+>/authorize/$parentId<[0-9]+>/apply                             controllers.PartyApi.authorizeApply(partyId : models.Party.Id, parentId : models.Party.Id)
-DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                                    controllers.PartyApi.authorizeDelete(partyId : models.Party.Id, otherId : models.Party.Id)
+DELETE  /api/party/$partyId<[0-9]+>/authorize/$otherId<[0-9]+>                                    controllers.PartyApi.authorizeRemove(partyId : models.Party.Id, otherId : models.Party.Id)
 
 # ----- VOLUME ----- #
 # QUERY     ?query=search+terms;party=id
-GET     /api/volume                                                                               controllers.VolumeApi.query
+GET     /api/volume                                                                               controllers.VolumeApi.search
 # GET       ?summary;access;citations;tags;comments;funding;categories;records;sessions;assets;top
 GET     /api/volume/$volumeId<[0-9]+>                                                             controllers.VolumeApi.get(volumeId : models.Volume.Id)
 POST    /api/volume                                                                               controllers.VolumeApi.create(owner : Option[models.Party.Id] ?= None)
@@ -149,14 +155,14 @@ POST    /api/volume/$volumeId<[0-9]+>                                           
 GET     /api/volume/$volumeId<[0-9]+>/access                                                      controllers.VolumeApi.accessGet(volumeId : models.Volume.Id)
 GET     /api/volume/$volumeId<[0-9]+>/access/search                                               controllers.VolumeApi.accessSearch(volumeId : models.Volume.Id)
 POST    /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessChange(volumeId : models.Volume.Id, partyId : models.Party.Id)
-DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessDelete(volumeId : models.Volume.Id, partyId : models.Party.Id)
+DELETE  /api/volume/$volumeId<[0-9]+>/access/$partyId<-?[0-9]+>                                   controllers.VolumeApi.accessRemove(volumeId : models.Volume.Id, partyId : models.Party.Id)
 
 # volume funding
 # SEARCH (see also search.crossref.org/funders?q=)
 GET     /api/funder                                                                               controllers.VolumeApi.funderSearch(query : String, all : Boolean ?= false)
 # ADD/UPDATE awards=[]
 POST    /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingChange(volumeId : models.Volume.Id, funderId : models.Funder.Id)
-DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingDelete(volumeId : models.Volume.Id, funderId : models.Funder.Id)
+DELETE  /api/volume/$volumeId<[0-9]+>/funding/$funderId<[0-9]+>                                   controllers.VolumeApi.fundingRemove(volumeId : models.Volume.Id, funderId : models.Funder.Id)
 
 # ----- SLOT ----- #
 # QUERY     ?volume=ID;record=ID;asset=ID
@@ -169,7 +175,7 @@ DELETE  /api/slot/$containerId<[0-9]+>                                          
 
 # ----- RECORD ----- #
 # QUERY     ?volume=ID;category=ID                                                                TODO: container=ID;asset=ID
-GET     /api/record                                                                               controllers.RecordApi.query(volume : models.Volume.Id)
+GET     /api/record                                                                               controllers.RecordApi.search(volume : models.Volume.Id)
 # GET       ?slots;                                                                               TODO: assets
 GET     /api/record/$recordId<[0-9]+>                                                             controllers.RecordApi.get(recordId : models.Record.Id)
 POST    /api/record                                                                               controllers.RecordApi.create(volume : models.Volume.Id, category : Option[models.RecordCategory.Id] ?= None)
@@ -206,6 +212,7 @@ POST    /api/comment                                                            
 # GET       ?containers
 GET     /api/tag/:name                                                                            controllers.TagApi.get(name : String)
 GET     /api/tag                                                                                  controllers.TagApi.search(query : String)
+GET     /api/tags/top                                                                             controllers.TagApi.top()
 POST    /api/tag/:name                                                                            controllers.TagApi.update(name : String, container : models.Container.Id, segment : dbrary.Segment)
 
 # GET ?url=URL
@@ -223,6 +230,7 @@ GET     /test/id/:ezid                                                          
 # static resources
 GET     /public/*file                                                                             controllers.Assets.at(path="/public", file)
 GET     /favicon.ico                                                                              controllers.Site.favicon
+GET     /robots.txt                                                                               controllers.Site.robots
 
 # redirects
 GET     /p/*path                                                                                  controllers.Site.tinyUrl(prefix : String = "party", path : String)

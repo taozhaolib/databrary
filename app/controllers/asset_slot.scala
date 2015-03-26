@@ -32,7 +32,7 @@ object AssetSlotController extends AssetSlotController {
       case s : BackedAsset if s.format.isImage =>
         AssetController.assetResult(s, Some(size.max(1).min(AssetController.defaultThumbSize)))
       case a : AssetSlot =>
-        async(Found("/public/images/filetype/16px/" + a.asset.format.extension.getOrElse("_blank") + ".png")
+        async(Found("/public/images/filetype/16px/" + a.asset.format.extension.getOrElse("_blank") + ".svg")
           .withHeaders(CACHE_CONTROL -> "max-age=31556926"))
     }
 

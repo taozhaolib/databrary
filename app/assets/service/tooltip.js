@@ -108,22 +108,19 @@ app.factory('tooltipService', [
     //
 
     $rootScope.$watch(function () {
-      angular.forEach(Tooltip.list, function (tooltip) {
+
+      _.each(Tooltip.list, function(tooltip){
         if (!angular.isString(tooltip.$target) &&
-          !document.body.contains(tooltip.$target[0]))
-          tooltip.remove();
+           !document.body.contains(tooltip.$target[0]))
+           tooltip.remove();
       });
     });
 
     Tooltip.clear = function () {
-      angular.forEach(Tooltip.list, function (tooltip) {
+       _.each(Tooltip.list, function (tooltip) {
         tooltip.target = undefined;
       });
     };
-
-    $rootScope.$on('$routeChangeStart', Tooltip.clear);
-
-    //
 
     return Tooltip;
   }

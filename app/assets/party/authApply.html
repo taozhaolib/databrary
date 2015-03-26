@@ -10,9 +10,15 @@
   </fieldset>
 
   <fieldset class="clean" ng-if="!auth.party">
-    <legend message="auth.request.notfound.title"></legend>
+    <legend>More information required</legend>
 
-    <div message="auth.request.notfound.instructions" message-html></div>
+    <div>
+      <p>If you cannot find the Principal Investigator or Institution that you are looking for, please complete one of the following steps:</p>
+      <ul>
+        <li>If you're seeking affiliate status from an investigator, please contact him/her directly and suggest creating an account at Databrary. Once an account is created, you can apply for authorization.</li>
+        <li>Otherwise, please list the name and contact information (email, phone number) for your Institution's Authorizing Official that will co-sign your Agreement. This will help us to get you Authorized as quickly as possible.</li>
+      </ul>
+    </div>
 
     <validator name="info" label="auth.request.notfound.info">
       <textarea id="field-info" name="info" ng-model="authApplyForm.data.info"></textarea>

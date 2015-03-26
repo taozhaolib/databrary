@@ -1,4 +1,4 @@
-package dbrary
+package dbrary.SQL
 
 import scala.util.control.Exception.catching
 import com.github.mauricio.async.db

@@ -29,11 +29,14 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       sa.flatMap(_.segment.zip((l, u) => u - l)).filter(_ != Offset.ZERO) getOrElse asset.duration
     }
 
-  private[this] def set(asset : Asset, form : AssetController.AssetForm)(implicit request : SiteRequest[_]) =
+  private[this] def set(asset : Asset, form : AssetController.AssetForm, autopos : Boolean = false)(implicit request : SiteRequest[_]) =
     for {
       slot <- form.container.get.mapAsync { c =>
-        form.position.get.fold(async(Segment.full))(p =>
-          duration(asset).map(d => Segment(p, p + d)))
+        form.position.get.orElseAsync(
+          if (autopos) SlotAsset.containerEnd(c).map(e => Some(e.getOrElse(Offset.ZERO)))
+          else async(None))
+        .flatMap(_.fold(async(Segment.full))(p =>
+          duration(asset).map(d => Segment(p, p + d))))
         .flatMap(Slot.get(c, _))
         .map(_ getOrElse form.container.withError("object.invalid", "container")._throw)
       }
@@ -74,10 +77,10 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
             (TemporaryFile(u.file), None, Some(u.filename))
           })
         case (None, None, Some(localfile)) if adm =>
-        /* local file handling, for admin only: */
+          /* local file handling, for admin only: */
           val file = store.Stage.file(localfile)
-        val name = file.getName
-        if (!file.isFile)
+          val name = file.getName
+          if (!file.isFile)
             form.localfile.withError("file.notfound")._throw
           async((store.TemporaryFileLinkOrCopy(file), None, Some(name)))
         case _ =>
@@ -114,7 +117,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
   def upload(v : models.Volume.Id) =
     VolumeHtml.Action(v, Permission.CONTRIBUTE).async { implicit request =>
       val form = new AssetController.UploadForm()._bind
-      create(form).flatMap(set(_, form))
+      create(form).flatMap(a => set(a, form, a.duration > Offset.ZERO))
     }
 
   def replace(o : models.Asset.Id) =
@@ -209,6 +212,7 @@ object AssetController extends AssetController {
       val subdata = range.fold(data)((data.range _).tupled)
       val headers = Seq[Option[(String, String)]](
         Some(CONTENT_LENGTH -> subdata.size.toString),
+        Some(ACCEPT_RANGES -> "bytes"),
         range.map(r => CONTENT_RANGE -> ("bytes " + (if (r._1 >= size) "*" else r._1.toString + "-" + r._2.toString) + "/" + size.toString)),
         Some(CONTENT_TYPE -> asset.format.mimetype),
         saveAs.map(name => CONTENT_DISPOSITION -> ("attachment; filename=" + HTTP.quote(name + asset.format.extension.fold("")("." + _)))),
@@ -373,7 +377,7 @@ object AssetApi extends AssetController with ApiController {
         Iteratee.foreach[Array[Byte]](f.write(_))
         .map[Result] { _ =>
           f.close
-          Ok
+          Ok // TODO: NoContent once ng-flow >= 2.6
         }
         .recover[Result] { case e : Throwable =>
           f.close
