@@ -802,6 +802,14 @@ app.controller('volume/slot', [
 
     records = slot.records.map((r) -> new Record(r))
 
+    $scope.addComment = (message) ->
+      tempComment =
+        comment:
+          text: message
+          time: new Date()
+        segment: do getSelection
+      $scope.comments.unshift tempComment
+      
     $scope.consents =
       if Array.isArray(consents = slot.consents)
         _.map consents, (c) -> new Consent(c)

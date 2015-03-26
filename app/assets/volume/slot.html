@@ -242,6 +242,7 @@
         </div>
 
         <section id="slot-comments">
+         <textarea ng-model="newComment"></textarea><button ng-click="addComment(newComment)">Submit</button>
           <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment)" class="panel-comments-comment" ng-class="::comment.getClass()">
             <div class="row">
               <div class="col-desktop-6 col-tablet-6 col-mobile-6">
