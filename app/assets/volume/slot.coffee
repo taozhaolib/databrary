@@ -803,14 +803,16 @@ app.controller('volume/slot', [
     records = slot.records.map((r) -> new Record(r))
 
     $scope.addComment = (message) ->
-     #console.log "Slot: ", modelService.Comment
-      tempComment =
-        comment:
-          text: message
-          time: new Date()
-          who: modelService.Login.user
-        segment: do getSelection
-      $scope.comments.unshift tempComment
+      container = new modelService.Container()
+      comment = modelService.Comment(message, container)
+      console.log comment.postComment
+      # tempComment =
+      #   comment:
+      #     text: message
+      #     time: new Date()
+      #     who: modelService.Login.user
+      #   segment: do getSelection
+      #$scope.comments.unshift tempComment
       
     $scope.consents =
       if Array.isArray(consents = slot.consents)
