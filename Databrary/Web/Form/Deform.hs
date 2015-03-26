@@ -242,7 +242,10 @@ instance Deform Bool where
 
 instance Deform Int where
   deform = deformParse 0 fv where
-    fv (FormDatumBS b) = readParser $ BSC.unpack b
+    fv (FormDatumBS b) = maybe (Left "Invalid integer") Right $ do
+      (i, r) <- BSC.readInt b
+      guard $ BS.null r
+      return i
     fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
     fv (FormDatumJSON (JSON.Number n)) = return $ round n
     fv (FormDatumJSON (JSON.Bool True)) = return 1

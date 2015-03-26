@@ -6,10 +6,11 @@ module Databrary.Controller.Slot
 
 import Control.Monad (when)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import qualified Network.Wai as Wai
 
 import Databrary.Ops
-import Databrary.Has (peeks)
+import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.Id
@@ -19,6 +20,7 @@ import Databrary.Model.Container
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
 import Databrary.Model.RecordSlot
+import Databrary.Model.Tag
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
@@ -32,6 +34,10 @@ slotJSONField o "assets" _ =
   Just . JSON.toJSON . map assetSlotJSON <$> lookupSlotAssets o
 slotJSONField o "records" _ =
   Just . JSON.toJSON . map recordSlotJSON <$> lookupSlotRecords o
+slotJSONField o "tags" n = do
+  ident <- peek
+  tc <- lookupSlotTagCoverage ident o (maybe 64 fst $ BSC.readInt =<< n)
+  return $ Just $ JSON.toJSON $ map tagCoverageJSON tc
 slotJSONField _ _ _ = return Nothing
 
 slotJSONQuery :: (DBM m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object

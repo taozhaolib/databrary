@@ -49,7 +49,7 @@ makeTagCoverage :: Int32 -> [Maybe Segment] -> [Maybe Segment] -> [Maybe Segment
 makeTagCoverage w s k v t c = TagCoverage t c w (segs s) (segs k) (segs v) where
   segs = map $ fromMaybe (error "NULL tag segment")
 
-tagCoverageColumns :: TH.Name -- ^ @'Account'@
+tagCoverageColumns :: TH.Name -- ^ @'Party'@
   -> TH.Q [(String, String)]
 tagCoverageColumns acct = do
   tagUseOID <- lookupTableOID "tag_use"
@@ -58,10 +58,10 @@ tagCoverageColumns acct = do
     [ ("weight", "count(*)::integer")
     , ("coverage", "segments_union(segment)")
     , ("keywords", "segments_union(CASE WHEN tableoid = " ++ pgLiteralRep keywordUseOID ++ " THEN segment ELSE 'empty' END)")
-    , ("votes", "segments_union(CASE WHEN tableoid = " ++ pgLiteralRep tagUseOID ++ " AND who = ${partyId $ accountParty " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
+    , ("votes", "segments_union(CASE WHEN tableoid = " ++ pgLiteralRep tagUseOID ++ " AND who = ${partyId " ++ nameRef acct ++ "} THEN segment ELSE 'empty' END)")
     ]
 
-selectTagCoverage :: TH.Name -- ^ @'Account'@
+selectTagCoverage :: TH.Name -- ^ @'Party'@
   -> String -- query
   -> TH.Q Selector -- ^ @'Tag' -> 'Container' -> 'TagCoverage'@
 selectTagCoverage acct q = do
@@ -71,7 +71,7 @@ selectTagCoverage acct q = do
       ++ " FROM tag_use " ++ q ++ " GROUP BY tag) AS tag_coverage")
     $ OutputJoin False 'makeTagCoverage $ map (OutputExpr . ("tag_coverage." ++) . fst) cols
 
-selectSlotTagCoverage :: TH.Name -- ^ @'Account'@
+selectSlotTagCoverage :: TH.Name -- ^ @'Party'@
   -> TH.Name -- ^ @'Slot'
   -> TH.Q Selector -- ^ @'TagCoverage'@
 selectSlotTagCoverage acct slot = do

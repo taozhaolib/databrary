@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell, QuasiQuotes, RecordWildCards, OverloadedStrings #-}
 module Databrary.Model.Tag
   ( module Databrary.Model.Tag.Types
   , lookupTag
@@ -6,13 +6,16 @@ module Databrary.Model.Tag
   , addTagUse
   , removeTagUse
   , lookupSlotTagCoverage
+  , tagCoverageJSON
   ) where
 
 import Control.Monad (guard)
 import Data.Int (Int64)
+import Data.Maybe (catMaybes)
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
+import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Model.SQL
 import Databrary.Model.Party.Types
@@ -45,6 +48,14 @@ removeTagUse t =
       then $(deleteTagUse True 't)
       else $(deleteTagUse False 't))
 
-lookupSlotTagCoverage :: DBM m => Account -> Slot -> Int -> m [TagCoverage]
+lookupSlotTagCoverage :: DBM m => Party -> Slot -> Int -> m [TagCoverage]
 lookupSlotTagCoverage acct slot lim =
   dbQuery $(selectSlotTagCoverage 'acct 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
+
+tagCoverageJSON :: TagCoverage -> JSON.Object
+tagCoverageJSON TagCoverage{..} = JSON.record (tagName tagCoverageTag) $ catMaybes
+  [ Just $ "weight" JSON..= tagCoverageWeight
+  , Just $ "coverage" JSON..= tagCoverageSegments
+  , null tagCoverageKeywords ?!> "keyword" JSON..= tagCoverageKeywords
+  , null tagCoverageVotes ?!> "vote" JSON..= tagCoverageVotes
+  ]

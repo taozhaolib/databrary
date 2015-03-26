@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies, DataKinds #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies, DataKinds, GeneralizedNewtypeDeriving #-}
 module Databrary.Model.Tag.Types
   ( TagName(..)
   , validateTag
@@ -17,6 +17,7 @@ import qualified Text.Regex.Posix as Regex
 
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
+import qualified Databrary.JSON as JSON
 import qualified Databrary.Web.Route as R
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
@@ -25,7 +26,7 @@ import Databrary.Model.Container.Types
 import Databrary.Model.Segment
 import Databrary.Model.Slot.Types
 
-newtype TagName = TagName BS.ByteString
+newtype TagName = TagName BS.ByteString deriving (JSON.ToJSON)
 
 validTag :: Regex.Regex
 validTag = Regex.makeRegex
