@@ -447,6 +447,7 @@ app.controller('volume/slot', [
       h = Math.max(player.offsetHeight + up.clientY - down.clientY, playerMinHeight)
       if up.type == 'mousemove'
         bar.style.top = h - player.offsetHeight + 'px'
+        bar.style.borderTop = "2px solid #f26363"
       else
         frame.style.overflow = 'hidden'
         bar.style.top = '0px'
