@@ -108,6 +108,8 @@ POST    /record/$rID<[0-9]+>/measure                                            
 GET     /volume/$vID<[0-9]+>/ingest/json                                                          controllers.IngestController.jsonView(vID : models.Volume.Id)
 POST    /volume/$vID<[0-9]+>/ingest/json                                                          controllers.IngestController.json(vID : models.Volume.Id)
 
+GET     /permissions	                                                                          controllers.SiteHtml.permissions()
+
 # ===== API ===== #
 
 GET     /constants.js                                                                             controllers.AngularController.constantsJs
