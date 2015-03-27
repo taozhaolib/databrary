@@ -106,6 +106,8 @@ routes = do
 
     , R.route >>= \a -> msum          -- /asset/ID
       [                               act (viewAsset api a)
+      ,                               act (postAsset api a)
+      ,                               act (deleteAsset api a)
       ,        (html >> "download" >> act (downloadAsset a))
       ,         (json >> "excerpt" >> act (postExcerpt a)
                                   <|> act (deleteExcerpt a))

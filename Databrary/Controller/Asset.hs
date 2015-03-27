@@ -4,6 +4,7 @@ module Databrary.Controller.Asset
   , viewAsset
   , postAsset
   , createAsset
+  , deleteAsset
   , downloadAsset
   ) where
 
@@ -17,7 +18,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
 import qualified Database.PostgreSQL.Typed.Range as Range
-import Network.HTTP.Types (conflict409)
+import Network.HTTP.Types (StdMethod(DELETE), conflict409)
 import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
@@ -166,6 +167,15 @@ createAsset :: API -> Id Volume -> AppRAction
 createAsset api vi = action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
   processAsset api $ Left v
+
+deleteAsset :: API -> Id Asset -> AppRAction
+deleteAsset api ai = action DELETE (api, ai) $ withAuth $ do
+  asset <- getAsset PermissionEDIT ai
+  let asset' = asset{ assetSlot = Nothing }
+  changeAssetSlot asset'
+  case api of
+    JSON -> okResponse [] $ assetSlotJSON asset'
+    HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset asset'))
 
 downloadAsset :: Id Asset -> AppRAction
 downloadAsset ai = action GET (ai, "download" :: T.Text) $ withAuth $ do
