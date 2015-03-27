@@ -51,7 +51,7 @@ object Authorize extends Table[Authorize]("authorize") {
       (child : Party, parent : Party) => new Authorize(child, parent, site, member, expires)
     }
 
-  private[this] val condition = " AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
+  private[this] val condition = " AND (site > 'NONE' OR member > 'NONE') AND (expires IS NULL OR expires > CURRENT_TIMESTAMP)"
   private[this] def conditionIf(all : Boolean) =
     if (all) "" else condition
 
