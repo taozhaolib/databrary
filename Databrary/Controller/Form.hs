@@ -24,7 +24,7 @@ import Network.HTTP.Types (badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Regex.Posix as Regex
 
-import Databrary.Model.Party.Types
+import Databrary.Model.Party
 import Databrary.Passwd
 import Databrary.Action
 import Databrary.Action.Types

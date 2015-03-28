@@ -3,6 +3,7 @@ module Databrary.Model.Party
   ( module Databrary.Model.Party.Types
   , nobodyParty
   , rootParty
+  , partyName
   , lookupParty
   , lookupAuthParty
   , lookupSiteAuthByEmail
@@ -50,6 +51,10 @@ nobodyParty, rootParty :: Party
 nobodyParty = $(loadParty (Id (-1)) PermissionREAD)
 rootParty = $(loadParty (Id 0) PermissionSHARED)
 
+partyName :: Party -> T.Text
+partyName Party{ partyPreName = Just p, partySortName = n } = p <> T.cons ' ' n
+partyName Party{ partySortName = n } = n
+
 emailPermission :: Permission
 emailPermission = PermissionSHARED
 
@@ -62,7 +67,9 @@ partyEmail p =
 
 partyJSON :: Party -> JSON.Object
 partyJSON p@Party{..} = JSON.record partyId $ catMaybes
-  [ Just $ "name" JSON..= partyName
+  [ Just $ "sortname" JSON..= partySortName
+  , ("prename" JSON..=) <$> partyPreName
+  , Just $ "name" JSON..= partyName p
   , ("affiliation" JSON..=) <$> partyAffiliation
   , ("url" JSON..=) <$> partyURL
   , "institution" JSON..= True <? isNothing partyAccount

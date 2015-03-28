@@ -17,7 +17,8 @@ import {-# SOURCE #-} Databrary.Controller.Party
 
 htmlPartyForm :: Maybe Party -> AuthRequest -> FormHtml
 htmlPartyForm p req = htmlForm (maybe "Create party" ((T.append "Edit ") . partyName) p) (maybe (createParty HTML) (postParty HTML . TargetParty . partyId) p) req $ do
-  field "name" $ inputText $ partyName <$> p
+  field "prename" $ inputText $ partyPreName =<< p
+  field "name" $ inputText $ partySortName <$> p
   field "affiliation" $ inputText $ partyAffiliation =<< p
   field "url" $ inputText $ show <$> (partyURL =<< p)
 

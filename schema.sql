@@ -56,12 +56,14 @@ COMMENT ON FUNCTION audit.CREATE_TABLE (name, name) IS 'Create an audit.$1 table
 CREATE TABLE "party" (
 	"id" serial NOT NULL Primary Key,
 	"name" text NOT NULL,
+	"prename" text,
 	"orcid" char(16),
 	"affiliation" text,
 	"url" text
 );
 ALTER TABLE "party"
 	ALTER "name" SET STORAGE EXTERNAL,
+	ALTER "prename" SET STORAGE EXTERNAL,
 	ALTER "affiliation" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "party" IS 'Users, groups, organizations, and other logical identities';
 COMMENT ON COLUMN "party"."orcid" IS 'http://en.wikipedia.org/wiki/ORCID';
@@ -941,7 +943,7 @@ CREATE AGGREGATE "tsvector_agg" (tsvector) (SFUNC = tsvector_concat, STYPE = tsv
 CREATE VIEW "volume_text" ("volume", "text") AS
 	SELECT id, name FROM volume 
 	UNION ALL SELECT id, body FROM volume WHERE body IS NOT NULL
-	UNION ALL SELECT volume, name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
+	UNION ALL SELECT volume, COALESCE(prename || ' ', '') || name FROM volume_access JOIN party ON party.id = party WHERE individual >= 'ADMIN'
 	UNION ALL SELECT volume, head FROM volume_citation
 	UNION ALL SELECT volume, year::text FROM volume_citation WHERE year IS NOT NULL
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
@@ -993,10 +995,10 @@ COMMENT ON TABLE audit."analytic" IS 'Analytics data collected and reported by t
 
 ----------------------------------------------------------- bootstrap/test data
 
-INSERT INTO party (id, name, orcid, affiliation) VALUES (1, 'Dylan Simon', '0000000227931679', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (3, 'Lisa Steiger', 'Databrary');
-INSERT INTO party (id, name, affiliation) VALUES (5, 'Karen Adolph', 'New York University');
-INSERT INTO party (id, name, affiliation) VALUES (6, 'Rick Gilmore', 'Penn State University');
+INSERT INTO party (id, prename, name, orcid, affiliation) VALUES (1, 'Dylan', 'Simon', '0000000227931679', 'Databrary');
+INSERT INTO party (id, prename, name, affiliation) VALUES (3, 'Lisa', 'Steiger', 'Databrary');
+INSERT INTO party (id, prename, name, affiliation) VALUES (5, 'Karen', 'Adolph', 'New York University');
+INSERT INTO party (id, prename, name, affiliation) VALUES (6, 'Rick', 'Gilmore', 'Penn State University');
 SELECT setval('party_id_seq', 6);
 
 INSERT INTO account (id, email, password) VALUES (1, 'dylan@databrary.org', '$2a$10$X5mY45HXhBHz/1SmtWHVMOGbmPA.qjqX59A5d7RKwr0K9Wl.G/Pfq');

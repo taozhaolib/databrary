@@ -26,8 +26,8 @@ import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Party.Types
 
-partyRow :: Selector -- ^ @Maybe 'Account' -> 'Permission' -> 'Party'
-partyRow = selectColumns 'Party "party" ["id", "name", "affiliation", "url"]
+partyRow :: Selector -- ^ @Maybe 'Account' -> 'Permission' -> 'Party'@
+partyRow = selectColumns 'Party "party" ["id", "name", "prename", "affiliation", "url"]
 
 accountRow :: Selector -- ^ @'Party' -> 'Account'@
 accountRow = selectColumns 'Account "account" ["email", "password"]
@@ -98,7 +98,7 @@ accountKeys a = partyKeys $ "(accountParty " ++ a ++ ")"
 partySets :: String -- ^ @'Party'@
   -> [(String, String)]
 partySets p =
-  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ p ++ "}")) ["Name", "Affiliation", "URL"])
+  (map (\c -> (map toLower c, "${party" ++ c ++ " " ++ p ++ "}")) ["Name", "PreName", "Affiliation", "URL"])
 
 accountSets :: String -- ^ @'Account'@
   -> [(String, String)]

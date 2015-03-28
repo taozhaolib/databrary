@@ -90,10 +90,12 @@ viewParty api i = action GET (api, i) $ withAuth $ do
 partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
 partyForm p = do
   name <- "name" .:> (deformCheck "Required" (not . T.null) . T.strip =<< deform)
+  prename <- "prename" .:> fmap T.strip <$> deform
   affiliation <- "affiliation" .:> fmap T.strip <$> deform
   url <- "url" .:> deform
   return p
-    { partyName = name
+    { partySortName = name
+    , partyPreName = prename
     , partyAffiliation = affiliation
     , partyURL = url
     }

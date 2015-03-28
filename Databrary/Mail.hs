@@ -8,7 +8,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Lazy as TL
 import Network.Mail.Mime
 
-import Databrary.Model.Party.Types
+import Databrary.Model.Party
 
 baseMail :: Mail
 baseMail = emptyMail (Address (Just "Databrary") "help@databrary.org")
@@ -21,5 +21,5 @@ sendMail to subj body =
     }
   where
   addr (Left e) = Address Nothing e
-  addr (Right Account{ accountEmail = email, accountParty = Party{ partyName = name } }) =
-    Address (Just name) email
+  addr (Right Account{ accountEmail = email, accountParty = p }) =
+    Address (Just (partyName p)) email

@@ -11,6 +11,7 @@ import {-# SOURCE #-} Databrary.Controller.Register
 
 htmlRegister :: AuthRequest -> FormHtml
 htmlRegister req = htmlForm "Register" (postRegister HTML) req $ do
+  field "prename" $ inputText (Nothing :: Maybe String)
   field "name" $ inputText (Nothing :: Maybe String)
   field "email" $ inputText (Nothing :: Maybe String)
   field "affiliation" $ inputText (Nothing :: Maybe String)

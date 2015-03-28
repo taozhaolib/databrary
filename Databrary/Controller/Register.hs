@@ -46,11 +46,13 @@ postRegister :: API -> AppRAction
 postRegister api = action POST (api, ["user", "register" :: T.Text]) $ withoutAuth $ do
   reg <- runForm (api == HTML ?> htmlRegister) $ do
     name <- "name" .:> T.strip <$> deform
+    prename <- "prename" .:> fmap T.strip <$> deform
     email <- "email" .:> emailTextForm
     affiliation <- "affiliation" .:> fmap T.strip <$> deform
     _ <- "agreement" .:> (deformCheck "You must consent to the user agreement." id =<< deform)
     let p = blankParty
-          { partyName = name
+          { partySortName = name
+          , partyPreName = prename
           , partyAffiliation = affiliation
           , partyAccount = Just a
           }

@@ -26,7 +26,8 @@ type instance IdType Party = Int32
 
 data Party = Party
   { partyId :: Id Party
-  , partyName :: T.Text
+  , partySortName :: T.Text
+  , partyPreName :: Maybe T.Text
   , partyAffiliation :: Maybe T.Text
   , partyURL :: Maybe URI
   , partyAccount :: Maybe Account
@@ -71,7 +72,8 @@ nobodySiteAuth = SiteAuth
     , accountPasswd = Nothing
     , accountParty = Party
       { partyId = Id (-1)
-      , partyName = "Nobody"
+      , partySortName = "Nobody"
+      , partyPreName = Nothing
       , partyAffiliation = Nothing
       , partyURL = Nothing
       , partyAccount = Nothing
@@ -85,7 +87,8 @@ nobodySiteAuth = SiteAuth
 blankParty :: Party
 blankParty = Party
   { partyId = error "blankParty"
-  , partyName = ""
+  , partySortName = ""
+  , partyPreName = Nothing
   , partyAffiliation = Nothing
   , partyURL = Nothing
   , partyAccount = Nothing

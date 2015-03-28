@@ -23,7 +23,7 @@ postComment api si = action POST (api, si) $ withAuth $ do
   u <- authAccount
   s <- getSlot PermissionSHARED si
   c <- runForm (api == HTML ?> htmlCommentForm s) $ do
-    text <- "text" .:> (deformCheck "Comment text required." (not . T.null) =<< deform)
+    text <- "text" .:> (deformCheck "Comment text required." (not . T.null) . T.strip =<< deform)
     parent <- "parent" .:> deform
     return (blankComment u s)
       { commentText = text
