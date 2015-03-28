@@ -80,7 +80,7 @@ changeAuthorize auth = do
 removeAuthorize :: (MonadAudit c m) => Authorize -> m Bool
 removeAuthorize auth = do
   ident <- getAuditIdentity
-  (0 <) <$> dbExecute $(deleteAuthorize 'ident 'auth)
+  dbExecute1 $(deleteAuthorize 'ident 'auth)
 
 authorizeJSON :: Authorize -> JSON.Object
 authorizeJSON Authorize{..} = accessJSON (authorizeAccess authorization)

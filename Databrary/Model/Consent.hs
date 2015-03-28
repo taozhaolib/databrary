@@ -20,7 +20,7 @@ useTPG
 changeConsent :: MonadAudit c m => Slot -> Maybe Consent -> m Bool
 changeConsent s Nothing = do
   ident <- getAuditIdentity
-  (0 <) <$> dbExecute $(deleteConsent 'ident 's)
+  dbExecute1 $(deleteConsent 'ident 's)
 changeConsent s (Just c) = do
   ident <- getAuditIdentity
   either (const False) ((0 <) . fst) <$> tryUpdateOrInsert (guard . isExclusionViolation)

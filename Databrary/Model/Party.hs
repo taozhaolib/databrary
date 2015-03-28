@@ -80,12 +80,12 @@ partyJSON p@Party{..} = JSON.record partyId $ catMaybes
 changeParty :: MonadAudit c m => Party -> m ()
 changeParty p = do
   ident <- getAuditIdentity
-  dbExecute1 $(updateParty 'ident 'p)
+  dbExecute1' $(updateParty 'ident 'p)
 
 changeAccount :: MonadAudit c m => Account -> m ()
 changeAccount a = do
   ident <- getAuditIdentity
-  dbExecute1 $(updateAccount 'ident 'a)
+  dbExecute1' $(updateAccount 'ident 'a)
 
 addParty :: MonadAudit c m => Party -> m Party
 addParty bp = do
@@ -98,7 +98,7 @@ addAccount ba@Account{ accountParty = bp } = do
   p <- dbQuery1' $ fmap (\p -> p PermissionREAD Nothing) $(insertParty 'ident 'bp)
   let pa = p{ partyAccount = Just a }
       a = ba{ accountParty = pa }
-  dbExecute1 $(insertAccount 'ident 'a)
+  dbExecute1' $(insertAccount 'ident 'a)
   return a
 
 lookupFixedParty :: Id Party -> Identity -> Maybe Party
@@ -125,7 +125,7 @@ lookupSiteAuthByEmail e =
 auditAccountLogin :: (MonadHasRequest c m, DBM m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do
   ip <- getRemoteIp
-  dbExecute1 [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES
+  dbExecute1' [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES
     (${if success then AuditActionOpen else AuditActionAttempt}, -1, ${ip}, ${partyId who}, ${email})|]
 
 recentAccountLogins :: DBM m => Party -> m Int64

@@ -41,5 +41,5 @@ data Analytic = Analytic
 auditAnalytic :: (MonadAudit c m) => Analytic -> m ()
 auditAnalytic Analytic{..} = do
   ai <- getAuditIdentity
-  dbExecute1 [pgSQL|INSERT INTO audit.analytic (audit_action, audit_user, audit_ip, route, data) VALUES
+  dbExecute1' [pgSQL|INSERT INTO audit.analytic (audit_action, audit_user, audit_ip, route, data) VALUES
     (${analyticAction}, ${auditWho ai}, ${auditIp ai}, ${analyticRoute}, ${analyticData})|]

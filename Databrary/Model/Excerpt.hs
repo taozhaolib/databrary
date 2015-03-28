@@ -37,7 +37,7 @@ changeExcerpt e = do
 removeExcerpt :: MonadAudit c m => Excerpt -> m Bool
 removeExcerpt e = do
   ident <- getAuditIdentity
-  (0 <) <$> dbExecute $(deleteExcerpt 'ident 'e)
+  dbExecute1 $(deleteExcerpt 'ident 'e)
 
 excerptJSON :: Excerpt -> JSON.Object
 excerptJSON e@Excerpt{..} = JSON.object $ catMaybes

@@ -43,9 +43,9 @@ lookupPartyVolumeAccess p perm = do
 changeVolumeAccess :: (MonadAudit c m) => VolumeAccess -> m Bool
 changeVolumeAccess va = do
   ident <- getAuditIdentity
-  (0 <) <$> if volumeAccessIndividual va == PermissionNONE
-    then dbExecute $(deleteVolumeAccess 'ident 'va)
-    else fst <$> updateOrInsert
+  if volumeAccessIndividual va == PermissionNONE
+    then dbExecute1 $(deleteVolumeAccess 'ident 'va)
+    else (0 <) . fst <$> updateOrInsert
       $(updateVolumeAccess 'ident 'va)
       $(insertVolumeAccess 'ident 'va)
 

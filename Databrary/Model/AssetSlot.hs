@@ -56,14 +56,14 @@ lookupContainerAssets = lookupSlotAssets . containerSlot
 changeAssetSlot :: (MonadAudit c m) => AssetSlot -> m Bool
 changeAssetSlot as = do
   ident <- getAuditIdentity
-  (0 <) <$> if isNothing (assetSlot as)
-    then dbExecute $(deleteSlotAsset 'ident 'as)
+  if isNothing (assetSlot as)
+    then dbExecute1 $(deleteSlotAsset 'ident 'as)
     else do
       (r, _) <- updateOrInsert
         $(updateSlotAsset 'ident 'as)
         $(insertSlotAsset 'ident 'as)
       when (r /= 1) $ fail $ "changeAssetSlot: " ++ show r ++ " rows"
-      return r
+      return True
 
 findAssetContainerEnd :: DBM m => Container -> m (Maybe Offset)
 findAssetContainerEnd c = 
@@ -73,9 +73,9 @@ auditAssetSlotDownload :: MonadAudit c m => Bool -> AssetSlot -> m ()
 auditAssetSlotDownload success AssetSlot{ slotAsset = a, assetSlot = as } = do
   ai <- getAuditIdentity
   maybe
-    (dbExecute1 [pgSQL|INSERT INTO audit.asset (audit_action, audit_user, audit_ip, id, volume, format, classification) VALUES
+    (dbExecute1' [pgSQL|INSERT INTO audit.asset (audit_action, audit_user, audit_ip, id, volume, format, classification) VALUES
       (${act}, ${auditWho ai}, ${auditIp ai}, ${assetId a}, ${view a :: Id Volume}, ${view a :: Id Format}, ${assetClassification a :: Classification})|])
-    (\s -> dbExecute1 [pgSQL|INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES
+    (\s -> dbExecute1' [pgSQL|INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES
       (${act}, ${auditWho ai}, ${auditIp ai}, ${view s :: Id Container}, ${view s :: Segment}, ${assetId a})|])
     as
   where act | success = AuditActionOpen 

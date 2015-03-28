@@ -8,6 +8,7 @@ module Databrary.DB
   , dbExecute
   , dbExecuteSimple
   , dbExecute1
+  , dbExecute1'
   , dbQuery
   , dbQuery1
   , dbQuery1'
@@ -18,7 +19,7 @@ module Databrary.DB
 
 import Control.Applicative (Applicative, (<$>))
 import Control.Exception (onException, tryJust)
-import Control.Monad (when, (<=<))
+import Control.Monad (unless, (<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ReaderT(..))
 import qualified Data.Configurator as C
@@ -84,10 +85,18 @@ dbExecute q = liftDB $ \c -> pgExecute c q
 dbExecuteSimple :: DBM m => PGSimpleQuery () -> m Int
 dbExecuteSimple = dbExecute
 
-dbExecute1 :: (DBM m, PGQuery q ()) => q -> m ()
+dbExecute1 :: (DBM m, PGQuery q ()) => q -> m Bool
 dbExecute1 q = do
   r <- dbExecute q
-  when (r /= 1) $ fail $ "pgExecute1: " ++ show r ++ " rows"
+  case r of
+    0 -> return False
+    1 -> return True
+    _ -> fail $ "pgExecute1: " ++ show r ++ " rows"
+
+dbExecute1' :: (DBM m, PGQuery q ()) => q -> m ()
+dbExecute1' q = do
+  r <- dbExecute1 q
+  unless r $ fail $ "pgExecute1': failed"
 
 dbQuery :: (DBM m, PGQuery q a) => q -> m [a]
 dbQuery q = liftDB $ \c -> pgQuery c q

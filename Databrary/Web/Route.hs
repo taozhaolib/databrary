@@ -25,7 +25,7 @@ import Control.Monad ((<=<), MonadPlus(..), mzero, mfilter, ap, join, guard)
 import Control.Monad.Reader.Class (MonadReader(..), asks)
 import Control.Monad.State.Class (MonadState(..))
 import qualified Data.ByteString as BS
-import Data.Int (Int32, Int16)
+import Data.Int (Int64, Int32, Int16)
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Data.String (IsString(..))
@@ -146,6 +146,10 @@ instance Routable Integer where
   toRoute = return . T.pack . show
 
 instance Routable Int where
+  route = readText (Text.signed Text.decimal)
+  toRoute = return . T.pack . show
+
+instance Routable Int64 where
   route = readText (Text.signed Text.decimal)
   toRoute = return . T.pack . show
 

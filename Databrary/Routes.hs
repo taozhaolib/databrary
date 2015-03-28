@@ -21,6 +21,7 @@ import Databrary.Controller.Party
 import Databrary.Controller.Authorize
 import Databrary.Controller.Volume
 import Databrary.Controller.VolumeAccess
+import Databrary.Controller.Funding
 import Databrary.Controller.Container
 import Databrary.Controller.Slot
 import Databrary.Controller.Record
@@ -86,6 +87,9 @@ routes = do
                                   <|> act (postVolumeAccess api v p)
       , "link" >>            (html >> act (viewVolumeLinks v))
                                   <|> act (postVolumeLinks api v)
+      , R.route >>= \f ->     json >> --           /funder/ID
+                                      act (postVolumeFunding v f)
+                                  <|> act (deleteVolumeFunder v f)
       , "slot" >>                     act (createContainer api v)
       , "record" >>                   act (createRecord api v)
       , "asset" >>                    act (createAsset api v)

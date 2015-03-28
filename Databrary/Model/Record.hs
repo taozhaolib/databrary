@@ -55,12 +55,12 @@ addRecord br = do
 changeRecord :: MonadAudit c m => Record -> m ()
 changeRecord r = do
   ident <- getAuditIdentity
-  dbExecute1 $(updateRecord 'ident 'r)
+  dbExecute1' $(updateRecord 'ident 'r)
 
 removeRecord :: MonadAudit c m => Record -> m ()
 removeRecord r = do
   ident <- getAuditIdentity
-  dbExecute1 $(deleteRecord 'ident 'r)
+  dbExecute1' $(deleteRecord 'ident 'r)
 
 recordJSON :: Record -> JSON.Object
 recordJSON r@Record{..} = JSON.record recordId $ catMaybes

@@ -3,16 +3,20 @@ module Databrary.Model.Funding.FundRef
   ( lookupFunderRef
   ) where
 
-import Control.Applicative ((<$>))
+import Control.Monad ((<=<))
 import Control.Monad.Catch (MonadThrow)
 import Control.Monad.Trans.Maybe (MaybeT(..), runMaybeT)
 import qualified Data.Attoparsec.ByteString as P
 import qualified Data.ByteString as BS
+import qualified Data.HashMap.Strict as HM
 import Data.List (stripPrefix)
+import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
+import qualified Data.Vector as V
 import qualified Network.HTTP.Client as HC
 import Text.Read (readMaybe)
 
+import Databrary.Ops
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Client
 import Databrary.DB
@@ -38,8 +42,11 @@ parseFundRef = JSON.withObject "fundref" $ \j -> do
   doi <- j JSON..: "id"
   fid <- maybe (fail $ "doi: " ++ doi) (return . Id) $ readMaybe =<< stripPrefix ("http://dx.doi.org/" ++ fundRefDOI) doi
   name <- label =<< j JSON..: "prefLabel"
-  -- TODO
-  return $ makeFunder fid name undefined undefined
+  let alts = mapMaybe (JSON.parseMaybe (label <=< JSON.parseJSON)) $ case HM.lookup "altLabel" j of
+        Just (JSON.Array v) -> V.toList v
+        Just o -> [o]
+        Nothing -> []
+  return $ makeFunder fid name alts undefined
   where
   label j = j JSON..: "Label" >>= (JSON..: "literalForm") >>= (JSON..: "content")
 

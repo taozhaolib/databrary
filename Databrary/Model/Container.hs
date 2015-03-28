@@ -62,12 +62,12 @@ addContainer bc = do
 changeContainer :: MonadAudit c m => Container -> m ()
 changeContainer c = do
   ident <- getAuditIdentity
-  dbExecute1 $(updateContainer 'ident 'c)
+  dbExecute1' $(updateContainer 'ident 'c)
 
 removeContainer :: MonadAudit c m => Container -> m ()
 removeContainer c = do
   ident <- getAuditIdentity
-  dbExecute1 $(deleteContainer 'ident 'c)
+  dbExecute1' $(deleteContainer 'ident 'c)
 
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where

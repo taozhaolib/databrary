@@ -41,7 +41,7 @@ volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
 changeVolume :: MonadAudit c m => Volume -> m ()
 changeVolume v = do
   ident <- getAuditIdentity
-  dbExecute1 $(updateVolume 'ident 'v)
+  dbExecute1' $(updateVolume 'ident 'v)
 
 addVolume :: MonadAudit c m => Volume -> m Volume
 addVolume bv = do

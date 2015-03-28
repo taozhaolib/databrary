@@ -43,7 +43,7 @@ addTagUse t =
 
 removeTagUse :: DBM m => TagUse -> m Bool
 removeTagUse t =
-  (0 <) <$> dbExecute
+  dbExecute1
     (if tagKeyword t 
       then $(deleteTagUse True 't)
       else $(deleteTagUse False 't))

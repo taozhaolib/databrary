@@ -60,7 +60,7 @@ volumeJSONField vol "citation" _ =
 volumeJSONField vol "links" _ =
   Just . JSON.toJSON <$> lookupVolumeLinks vol
 volumeJSONField vol "funding" _ =
-  Just . JSON.toJSON <$> lookupVolumeFunding vol
+  Just . JSON.toJSON . map fundingJSON <$> lookupVolumeFunding vol
 volumeJSONField vol "containers" _ =
   Just . JSON.toJSON . map containerJSON <$> lookupVolumeContainers vol
 volumeJSONField vol "records" _ =

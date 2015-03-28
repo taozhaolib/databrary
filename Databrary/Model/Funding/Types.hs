@@ -10,7 +10,7 @@ import Data.Int (Int64)
 import qualified Data.Text as T
 
 import Databrary.Has (makeHasRec)
-import qualified Databrary.JSON as JSON
+import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 
 type instance IdType Funder = Int64
@@ -22,11 +22,8 @@ data Funder = Funder
 
 makeHasRec ''Funder ['funderId]
 
-instance JSON.ToJSON Funder where
-  toJSON Funder{..} = JSON.Object $ JSON.object
-    [ "id" JSON..= funderId
-    , "name" JSON..= funderName
-    ]
+instance Kinded Funder where
+  kindOf _ = "funder"
 
 data Funding = Funding
   { fundingFunder :: Funder
@@ -34,10 +31,3 @@ data Funding = Funding
   }
 
 makeHasRec ''Funding ['fundingFunder]
-
-instance JSON.ToJSON Funding where
-  toJSON Funding{..} = JSON.Object $ JSON.object
-    [ "funder" JSON..= fundingFunder
-    , "awards" JSON..= fundingAwards
-    ]
-

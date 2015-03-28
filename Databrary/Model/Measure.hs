@@ -65,8 +65,8 @@ changeRecordMeasure m = do
 removeRecordMeasure :: MonadAudit c m => Measure -> m Record
 removeRecordMeasure m = do
   ident <- getAuditIdentity
-  r <- dbExecute $(deleteMeasure 'ident 'm)
-  return $ if r > 0
+  r <- dbExecute1 $(deleteMeasure 'ident 'm)
+  return $ if r
     then rmMeasure m
     else measureRecord m
 

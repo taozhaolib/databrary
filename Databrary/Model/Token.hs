@@ -114,15 +114,15 @@ createUpload vol name size = do
     }
 
 removeLoginToken :: DBM m => LoginToken -> m Bool
-removeLoginToken tok = (0 <) <$>
-  dbExecute [pgSQL|DELETE FROM login_token WHERE token = ${view tok :: Id Token}|]
+removeLoginToken tok =
+  dbExecute1 [pgSQL|DELETE FROM login_token WHERE token = ${view tok :: Id Token}|]
 
 removeSession :: (DBM m) => Session -> m Bool
-removeSession tok = (0 <) <$>
-  dbExecute [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
+removeSession tok =
+  dbExecute1 [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
 
 removeUpload :: (DBM m, MonadStorage c m) => Upload -> m Bool
 removeUpload tok = do
-  r <- (0 <) <$> dbExecute [pgSQL|DELETE FROM upload WHERE token = ${view tok :: Id Token}|]
+  r <- dbExecute1 [pgSQL|DELETE FROM upload WHERE token = ${view tok :: Id Token}|]
   when r $ liftIO . removeLink =<< peeks (uploadFile tok)
   return r
