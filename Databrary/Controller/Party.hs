@@ -6,7 +6,7 @@ module Databrary.Controller.Party
   , viewPartyForm
   , postParty
   , createParty
-  , searchParty
+  , queryParty
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
@@ -138,8 +138,8 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-searchParty :: API -> AppRAction
-searchParty api = action GET (api, "party" :: T.Text) $ withAuth $ do
+queryParty :: API -> AppRAction
+queryParty api = action GET (api, "party" :: T.Text) $ withAuth $ do
   when (api == HTML) angular
   (pf, (limit, offset)) <- runForm (api == HTML ?> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
   p <- findParties pf limit offset

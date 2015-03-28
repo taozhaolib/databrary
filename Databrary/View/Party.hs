@@ -23,7 +23,7 @@ htmlPartyForm p req = htmlForm (maybe "Create party" ((T.append "Edit ") . party
   field "url" $ inputText $ show <$> (partyURL =<< p)
 
 htmlPartySearchForm :: PartyFilter -> AuthRequest -> FormHtml
-htmlPartySearchForm pf req = htmlForm "Search users" (searchParty HTML) req $ do
+htmlPartySearchForm pf req = htmlForm "Search users" (queryParty HTML) req $ do
   field "query" $ inputText $ partyFilterQuery pf
   field "access" $ inputEnum $ partyFilterAccess pf
   field "institution" $ inputCheckbox $ fromMaybe False $ partyFilterInstitution pf

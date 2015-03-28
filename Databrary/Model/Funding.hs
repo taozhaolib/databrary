@@ -2,6 +2,7 @@
 module Databrary.Model.Funding
   ( module Databrary.Model.Funding.Types
   , lookupFunder
+  , findFunders
   , lookupVolumeFunding
   , changeVolumeFunding
   , removeVolumeFunder
@@ -9,6 +10,7 @@ module Databrary.Model.Funding
   , fundingJSON
   ) where
 
+import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
@@ -25,6 +27,10 @@ useTPG
 lookupFunder :: DBM m => Id Funder -> m (Maybe Funder)
 lookupFunder fi =
   dbQuery1 $(selectQuery selectFunder "$WHERE funder.fundref_id = ${fi}")
+
+findFunders :: DBM m => T.Text -> m [Funder]
+findFunders q =
+  dbQuery $(selectQuery selectFunder "$WHERE funder.name ILIKE '%' || ${q} || '%'")
 
 lookupVolumeFunding :: (DBM m) => Volume -> m [Funding]
 lookupVolumeFunding vol =

@@ -11,4 +11,4 @@ data PartyTarget
 viewParty :: API -> PartyTarget -> AppRAction
 postParty :: API -> PartyTarget -> AppRAction
 createParty :: API -> AppRAction
-searchParty :: API -> AppRAction
+queryParty :: API -> AppRAction

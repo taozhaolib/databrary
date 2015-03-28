@@ -77,7 +77,7 @@ routes = do
         ]
       ]
     , "party" >>                      act (createParty api)
-                                  <|> act (searchParty api)
+                                  <|> act (queryParty api)
     , R.route >>= \v -> msum          -- /vo/ume/ID
       [                               act (viewVolume api v)
       ,                               act (postVolume api v)
@@ -123,6 +123,7 @@ routes = do
       [ "cite" >>                     act getCitation
       , "upload" >>                   act uploadChunk
                                   <|> act testChunk
+      , "funder" >>                   act queryFunder
       ]
 
     , html >> msum                    -- /

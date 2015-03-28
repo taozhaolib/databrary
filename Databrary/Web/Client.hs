@@ -1,12 +1,17 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Client
   ( HTTPClient
   , initHTTPClient
   , HTTPClientM
   , httpRequest
+  , httpRequestJSON
   ) where
 
+import Control.Applicative ((<$>))
 import Control.Exception (handle)
 import Control.Monad.IO.Class (MonadIO, liftIO)
+import qualified Data.Aeson as JSON
+import qualified Data.Attoparsec.ByteString as P
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Network.HTTP.Client as HC
@@ -38,3 +43,8 @@ httpRequest req acc f = do
       if HC.responseStatus res == ok200 && responseContentType res == Just (contentType acc)
         then f $ HC.responseBody res
         else return Nothing
+
+httpRequestJSON :: HTTPClientM c m => HC.Request -> m (Maybe JSON.Value)
+httpRequestJSON req = httpRequest req "application/json" $ \rb ->
+  P.maybeResult <$> P.parseWith rb JSON.json BS.empty
+
