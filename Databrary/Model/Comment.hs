@@ -3,10 +3,12 @@ module Databrary.Model.Comment
   ( module Databrary.Model.Comment.Types
   , blankComment
   , lookupComment
+  , lookupSlotComments
   , addComment
   , commentJSON
   ) where
 
+import Data.Int (Int64)
 import Data.Maybe (catMaybes, listToMaybe)
 import Database.PostgreSQL.Typed (pgSQL)
 
@@ -40,6 +42,11 @@ lookupComment :: (DBM m, MonadHasIdentity c m) => Id Comment -> m (Maybe Comment
 lookupComment i = do
   ident <- peek
   dbQuery1 $(selectQuery (selectComment 'ident) "$!WHERE comment.id = ${i}")
+
+lookupSlotComments :: (DBM m, MonadHasIdentity c m) => Slot -> Int -> m [Comment]
+lookupSlotComments (Slot c s) n = do
+  ident <- peek
+  dbQuery $ ($ c) <$> $(selectQuery (selectContainerComment 'ident) "$!WHERE comment.container = ${containerId c} AND comment.segment && ${s} ORDER BY comment.thread LIMIT ${fromIntegral n :: Int64}")
 
 addComment :: DBM m => Comment -> m Comment
 addComment c@Comment{..} = do

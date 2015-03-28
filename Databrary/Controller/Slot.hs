@@ -21,6 +21,7 @@ import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
 import Databrary.Model.RecordSlot
 import Databrary.Model.Tag
+import Databrary.Model.Comment
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular
@@ -38,6 +39,9 @@ slotJSONField o "tags" n = do
   ident <- peek
   tc <- lookupSlotTagCoverage ident o (maybe 64 fst $ BSC.readInt =<< n)
   return $ Just $ JSON.toJSON $ map tagCoverageJSON tc
+slotJSONField o "comments" n = do
+  c <- lookupSlotComments o (maybe 64 fst $ BSC.readInt =<< n)
+  return $ Just $ JSON.toJSON $ map commentJSON c
 slotJSONField _ _ _ = return Nothing
 
 slotJSONQuery :: (DBM m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object

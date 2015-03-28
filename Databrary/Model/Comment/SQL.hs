@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 module Databrary.Model.Comment.SQL
-  ( selectComment
+  ( selectContainerComment
+  , selectComment
   ) where
 
 import Data.Maybe (fromMaybe)
@@ -27,12 +28,18 @@ commentRow = selectColumns 'makeComment "comment" ["id", "segment", "time", "tex
 selectAccountContainerComment :: Selector -- ^ @'Account' -> 'Container' -> 'Comment'@
 selectAccountContainerComment = fromMap ("comment_thread AS " ++) commentRow
 
-selectComment :: TH.Name -- ^ @'Identity'@
-  -> Selector -- ^ @'Comment'@
-selectComment ident = selectJoin 'id
+selectContainerComment :: TH.Name -- ^ @'Identity'@
+  -> Selector -- ^ @'Container' -> 'Comment'@
+selectContainerComment ident = selectJoin '($)
   [ selectAccountContainerComment
   , joinOn "comment.who = account.id"
     $ selectAccount ident
+  ]
+
+selectComment :: TH.Name -- ^ @'Identity'@
+  -> Selector -- ^ @'Comment'@
+selectComment ident = selectJoin '($)
+  [ selectContainerComment ident
   , joinOn "comment.container = container.id"
     $ selectContainer ident
   ]
