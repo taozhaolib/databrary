@@ -3,6 +3,7 @@ module Databrary.Model.Party.SQL
   ( partyRow
   , selectParty
   , selectAuthParty
+  , selectAccount
   , selectSiteAuth
   , updateParty
   , updateAccount
@@ -16,11 +17,12 @@ import qualified Data.Foldable as Fold
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Ops
-import Databrary.Has (view)
+import Databrary.Has (Has, view)
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Permission.Types
 import Databrary.Model.Permission.SQL
+import Databrary.Model.Id.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Party.Types
 
@@ -40,11 +42,11 @@ selectPermissionParty = selectJoin 'makeParty
   , maybeJoinUsing ["id"] accountRow
   ]
 
-permissionParty :: (Permission -> Maybe Access -> Party) -> Maybe Access -> Identity -> Party
+permissionParty :: Has (Id Party) a => (Permission -> Maybe Access -> a) -> Maybe Access -> Identity -> a
 permissionParty pf a ident = p where
-  p = pf 
+  p = pf
     (max PermissionPUBLIC $ min PermissionREAD $ accessSite ident)
-    (((identitySuperuser ident || view ident == partyId p) ?> maxBound) <|> a)
+    (((identitySuperuser ident || view ident == (view p :: Id Party)) ?> maxBound) <|> a)
 
 selectParty :: TH.Name -- ^ 'Identity'
   -> Selector -- ^ @'Party'@
@@ -68,6 +70,11 @@ selectPermissionAccount = selectJoin 'makeAccount
   [ partyRow
   , joinUsing ["id"] accountRow
   ]
+
+selectAccount :: TH.Name -- ^ 'Identity'
+  -> Selector -- ^ @'Account'@
+selectAccount ident = selectMap ((`TH.AppE` TH.VarE ident) . (`TH.AppE` (TH.ConE 'Nothing)) . (TH.VarE 'permissionParty `TH.AppE`)) $
+  selectPermissionAccount
 
 makeSiteAuth :: (Permission -> Maybe Access -> Account) -> Maybe Access -> SiteAuth
 makeSiteAuth p a = SiteAuth (p maxBound $ Just maxBound) (Fold.fold a)

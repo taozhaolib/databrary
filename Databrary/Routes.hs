@@ -29,6 +29,7 @@ import Databrary.Controller.Upload
 import Databrary.Controller.Asset
 import Databrary.Controller.Excerpt
 import Databrary.Controller.Tag
+import Databrary.Controller.Comment
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
@@ -97,6 +98,7 @@ routes = do
       ,                               act (postContainer api s)
       , R.route >>= \t ->             act (postTag api s t)
                                   <|> act (deleteTag api s t)
+      , "comment" >>                  act (postComment api s)
       ]
 
     , R.route >>= \r -> msum          -- /record/ID

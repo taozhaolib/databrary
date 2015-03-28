@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards #-}
 module Databrary.Model.Slot
   ( module Databrary.Model.Slot.Types
   , lookupSlot
@@ -19,6 +19,6 @@ lookupSlot (Id (SlotId c s)) =
   fmap (`Slot` s) <$> lookupContainer c
 
 slotJSON :: Slot -> JSON.Object
-slotJSON (Slot c s) = containerJSON c JSON..+?
-  ( segmentFull s ?!> ("segment" JSON..= s)
+slotJSON Slot{..} = containerJSON slotContainer JSON..+?
+  ( segmentFull slotSegment ?!> ("segment" JSON..= slotSegment)
   )
