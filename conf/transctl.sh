@@ -17,7 +17,7 @@ if [[ ! -f $cmd ]] ; then
 	exit 2
 fi
 
-while getopts 'i:h:d:v:c:k:f:r:' opt ; do case "$opt" in
+while getopts 'i:h:d:v:c:k:f:r:t' opt ; do case "$opt" in
 	i) id=$OPTARG ;;
 	h) host=$OPTARG ;;
 	d) dir=$OPTARG ;;
@@ -27,9 +27,21 @@ while getopts 'i:h:d:v:c:k:f:r:' opt ; do case "$opt" in
 	k) kill=$OPTARG ;;
 	f) src=$OPTARG ;;
 	r) url=$OPTARG ;;
+	t) test=1 ;;
 
 	?) exit 1 ;;
 esac ; done
+
+if [[ -n $test ]] ; then
+	if [[ -z $dir ]] ; then
+		false
+	elif [[ -n $host ]] ; then
+		ssh "$host" test -d "$dir"
+	else
+		test -d "$dir"
+	fi
+	exit $?
+fi
 
 if [[ -z $id || -z $dir || -z $collect$kill && ( -z $src || -z $url ) ]] ; then
 	echo "$0: usage error: $*" >&2
