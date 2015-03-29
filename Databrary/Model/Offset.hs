@@ -8,6 +8,7 @@ import Data.Fixed (Fixed(..), Milli)
 import qualified Data.Text as T
 import Data.Time (DiffTime)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
+import Numeric (showSigned, showFFloat)
 import qualified Text.ParserCombinators.ReadP as RP
 import qualified Text.ParserCombinators.ReadPrec as RP (lift, readPrec_to_P, minPrec)
 import Text.Read (readMaybe, readPrec)
@@ -25,8 +26,19 @@ instance PGColumn "interval" Offset where
   pgDecodeValue e t = Offset . pgDecodeValue e t
 
 instance Show Offset where
-  -- ms...
-  showsPrec p (Offset t) = showsPrec p (floor (1000 * t) :: Integer)
+  -- showsPrec p (Offset t) = showsPrec p (floor (1000 * t) :: Integer)
+  showsPrec p (Offset t) = showSigned ss p t where
+    ss a =
+      (if h /= 0 then shows (h :: Integer) . (':' :) else id)
+      . pads m' . shows m' . (':' :)
+      . pads s' . showFFloat Nothing (fromIntegral s' + realToFrac f :: Double)
+      where
+      (s, f) = properFraction a
+      (m, s') = divMod s 60
+      (h, m') = divMod m 60
+      pads x 
+        | x < 10 = ('0' :)
+        | otherwise = id
 
 readP :: Read a => RP.ReadP a
 readP = RP.readPrec_to_P readPrec RP.minPrec

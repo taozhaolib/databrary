@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies #-}
 module Databrary.Model.GeoNames
   ( GeoName(..)
+  , MonadHasGeoName
   , geoNameUS
   , parseGeoNameRef
   , lookupGeoName

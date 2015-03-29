@@ -31,6 +31,7 @@ import Databrary.Controller.Asset
 import Databrary.Controller.Excerpt
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
+import Databrary.Controller.Transcode
 import Databrary.Controller.Angular
 import Databrary.Controller.Static
 
@@ -115,9 +116,9 @@ routes = do
       [                               act (viewAsset api a)
       ,                               act (postAsset api a)
       ,                               act (deleteAsset api a)
-      ,        (html >> "download" >> act (downloadAsset a))
-      ,         (json >> "excerpt" >> act (postExcerpt a)
-                                  <|> act (deleteExcerpt a))
+      , html >> "download" >>         act (downloadAsset a)
+      , "excerpt" >>          json >> act (postExcerpt a)
+                                  <|> act (deleteExcerpt a)
       ]
 
     , json >> msum                    -- /api
