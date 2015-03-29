@@ -1,6 +1,7 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Volume.SQL
-  ( selectVolume
+  ( volumeRow
+  , selectVolume
   , updateVolume
   , insertVolume
   ) where

@@ -523,7 +523,7 @@ COMMENT ON TRIGGER "excerpt_shift" ON "slot_asset" IS 'Move or clear excerpts on
 
 CREATE TABLE "transcode" (
 	"asset" integer NOT NULL Primary Key References "asset" ON DELETE CASCADE,
-	"owner" integer NOT NULL References "party",
+	"owner" integer NOT NULL References "account",
 	"orig" integer NOT NULL References "asset" ON DELETE CASCADE,
 	"segment" segment NOT NULL Default '(,)',
 	"options" text[] NOT NULL Default '{}',

@@ -7,6 +7,7 @@ module Databrary.Model.Format
   , getFormat'
   , getFormatByFilename
   , dropFormatExtension
+  , formatTranscodable
   , formatJSON
   ) where
 
@@ -60,6 +61,17 @@ dropFormatExtension fmt n
   | (f,e) <- splitExtension n
   , BSC.map toLower e `elem` formatExtension fmt = f
   | otherwise = n
+
+videoFormat :: Format
+videoFormat = getFormat' (Id (-800))
+
+formatIsVideo :: Format -> Bool
+formatIsVideo Format{ formatMimeType = t } = "video/" `BS.isPrefixOf` t
+
+formatTranscodable :: Format -> Maybe Format
+formatTranscodable f
+  | formatIsVideo f = Just videoFormat
+  | otherwise = Nothing
 
 formatJSON :: Format -> JSON.Object
 formatJSON Format{..} = JSON.record formatId $ catMaybes
