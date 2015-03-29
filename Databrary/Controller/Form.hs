@@ -7,15 +7,16 @@ module Databrary.Controller.Form
 
   , emailTextForm
   , passwordForm
+  , paginationForm
   ) where
 
-import qualified Data.ByteString as BS
-import Control.Applicative ((<$>))
+import Control.Applicative (Applicative, (<$>), (<*>), (<|>))
 import Control.Monad ((<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ask)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Aeson as JSON
+import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Monoid ((<>))
 import qualified Data.Text as T
@@ -81,3 +82,9 @@ passwordForm acct = do
     deformGuard "Passwords do not match." (a == p)
   pw <- liftIO $ BCrypt.hashPasswordUsingPolicy passwordPolicy p
   deformMaybe' "Error processing password." pw
+
+paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
+paginationForm = (,)
+  <$> ("limit" .:> (deformCheck "Invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
+  <*> ("offset" .:> (deformCheck "Invalid offset" (>= 0) =<< deform) <|> return 0)
+

@@ -154,6 +154,7 @@ partyFilter PartyFilter{..} ident =
   ++ withq partyFilterInstitution (\i -> if i then " AND account.id IS NULL" else " AND account.password IS NOT NULL")
   ++ withq partyFilterAuthorize (\a -> let i = pgSafeLiteral (partyId a) in " AND party.id <> " ++ i ++ " AND id NOT IN (SELECT child FROM authorize WHERE parent = " ++ i ++ " UNION SELECT parent FROM authorize WHERE child = " ++ i ++ ")")
   ++ withq partyFilterVolume (\v -> " AND id NOT IN (SELECT party FROM volume_access WHERE volume = " ++ pgSafeLiteral (volumeId v) ++ ")")
+  ++ " ORDER BY sortname, prename"
   where
   withq v f = maybe "" f v
   wordPat = intercalate "%" . ("":) . (++[""]) . words
@@ -165,4 +166,4 @@ findParties :: (MonadHasIdentity c m, DBM m) => PartyFilter -> Int -> Int -> m [
 findParties pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectParty 'ident) "")
-    (++ partyFilter pf ident ++ [pgSQL|# LIMIT ${fromIntegral limit :: Int64} OFFSET ${fromIntegral offset :: Int64}|])
+    (++ partyFilter pf ident ++ " LIMIT " ++ show limit ++ " OFFSET " ++ show offset)

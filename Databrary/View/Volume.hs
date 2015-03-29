@@ -2,7 +2,7 @@
 module Databrary.View.Volume
   ( htmlVolumeForm
   , htmlVolumeLinksForm
-  -- , htmlVolumeSearchForm
+  , htmlVolumeSearchForm
   ) where
 
 import qualified Data.Text as T
@@ -33,8 +33,6 @@ htmlVolumeLinksForm vol links req = htmlForm "Edit volume links" (postVolumeLink
     field "head" $ inputText $ citationHead <$> link
     field "url" $ inputText $ fmap show $ citationURL =<< link
 
-{-
 htmlVolumeSearchForm :: VolumeFilter -> AuthRequest -> FormHtml
-htmlVolumeSearchForm vf req = htmlForm "Search volumes" (searchVolume HTML) req $ do
+htmlVolumeSearchForm vf req = htmlForm "Search volumes" (queryVolumes HTML) req $ do
   field "query" $ inputText $ volumeFilterQuery vf
-  -}

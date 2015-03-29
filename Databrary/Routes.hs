@@ -77,7 +77,7 @@ routes = do
         ]
       ]
     , "party" >>                      act (createParty api)
-                                  <|> act (queryParty api)
+                                  <|> act (queryParties api)
     , R.route >>= \v -> msum          -- /vo/ume/ID
       [                               act (viewVolume api v)
       ,                               act (postVolume api v)
@@ -96,6 +96,7 @@ routes = do
       , json >> "upload" >>           act (uploadStart v)
       ]
     , "volume" >>                     act (createVolume api)
+                                  <|> act (queryVolumes api)
 
     , R.route >>= \s -> msum          -- /slot/ID/SEG
       [                               act (viewSlot api s)

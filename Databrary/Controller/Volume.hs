@@ -7,15 +7,16 @@ module Databrary.Controller.Volume
   , createVolume
   , viewVolumeLinks
   , postVolumeLinks
+  , queryVolumes
   ) where
 
-import Control.Applicative (Applicative, (<*>), pure)
-import Control.Monad (mfilter, guard, when)
+import Control.Applicative (Applicative, (<*>), pure, optional)
+import Control.Monad (mfilter, guard, when, liftM2)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe, isNothing)
-import Data.Monoid ((<>))
+import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
 
@@ -168,3 +169,17 @@ postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $ withAuth $ do
     JSON -> okResponse [] $ volumeJSON v JSON..+ ("links" JSON..= links')
     HTML -> redirectRouteResponse [] $ viewVolume api vi
 
+volumeSearchForm :: (Applicative m, Monad m) => DeformT m VolumeFilter
+volumeSearchForm = VolumeFilter
+  <$> ("query" .:> deform)
+  <*> ("party" .:> optional deform)
+
+queryVolumes :: API -> AppRAction
+queryVolumes api = action GET (api, "volume" :: T.Text) $ withAuth $ do
+  when (api == HTML) angular
+  (vf, (limit, offset)) <- runForm (api == HTML ?> htmlVolumeSearchForm mempty) $
+    liftM2 (,) volumeSearchForm paginationForm
+  p <- findVolumes vf limit offset
+  case api of
+    JSON -> okResponse [] $ JSON.toJSON $ map volumeJSON p
+    HTML -> blankForm $ htmlVolumeSearchForm vf

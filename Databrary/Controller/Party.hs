@@ -6,11 +6,11 @@ module Databrary.Controller.Party
   , viewPartyForm
   , postParty
   , createParty
-  , queryParty
+  , queryParties
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
-import Control.Monad (unless, when)
+import Control.Monad (unless, when, liftM2)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
@@ -125,11 +125,6 @@ createParty api = action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
     JSON -> okResponse [] $ partyJSON p
     HTML -> redirectRouteResponse [] $ viewParty api $ TargetParty $ partyId p
 
-paginationForm :: (Applicative m, Monad m) => DeformT m (Int, Int)
-paginationForm = (,)
-  <$> ("limit" .:> (deformCheck "Invalid limit" (\l -> l > 0 && l <= 129) =<< deform) <|> return 32)
-  <*> ("offset" .:> (deformCheck "Invalid offset" (>= 0) =<< deform) <|> return 0)
-
 partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter
   <$> ("query" .:> deform)
@@ -138,10 +133,11 @@ partySearchForm = PartyFilter
   <*> pure Nothing
   <*> pure Nothing
 
-queryParty :: API -> AppRAction
-queryParty api = action GET (api, "party" :: T.Text) $ withAuth $ do
+queryParties :: API -> AppRAction
+queryParties api = action GET (api, "party" :: T.Text) $ withAuth $ do
   when (api == HTML) angular
-  (pf, (limit, offset)) <- runForm (api == HTML ?> htmlPartySearchForm mempty) ((,) <$> partySearchForm <*> paginationForm)
+  (pf, (limit, offset)) <- runForm (api == HTML ?> htmlPartySearchForm mempty) $
+    liftM2 (,) partySearchForm paginationForm
   p <- findParties pf limit offset
   case api of
     JSON -> okResponse [] $ JSON.toJSON $ map partyJSON p
