@@ -27,7 +27,7 @@ import Databrary.Resource
 import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.DB
-import Databrary.Store.Storage
+import Databrary.Store.Types
 import Databrary.Store.Upload
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Offset

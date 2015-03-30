@@ -3,16 +3,17 @@ module Databrary.Model.Transcode
   ( module Databrary.Model.Transcode.Types
   , lookupTranscode
   , addTranscode
+  , updateTranscode
   ) where
 
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import Database.PostgreSQL.Typed.Query (pgSQL)
 
 import Databrary.DB
 import Databrary.Has (view, peek)
-import Databrary.Store.Storage
+import Databrary.Store
+import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Model.SQL
 import Databrary.Model.Audit
@@ -26,18 +27,18 @@ import Databrary.Model.Asset
 import Databrary.Model.Transcode.Types
 import Databrary.Model.Transcode.SQL
 
-defaultTranscodeOptions :: TranscodeOptions
+defaultTranscodeOptions :: TranscodeArgs
 defaultTranscodeOptions = ["-vf", "pad=iw+mod(iw\\,2):ih+mod(ih\\,2)"]
 
-transcodeArgs :: MonadStorage c m => Transcode -> m [BS.ByteString]
+transcodeArgs :: MonadStorage c m => Transcode -> m TranscodeArgs
 transcodeArgs Transcode{..} = do
   Just f <- getAssetFile transcodeOrig
   return $
-    [ "-f", f
+    [ "-f", unRawFilePath f
     , "-r" -- , actionURL ...
     , "--" ]
-    ++ maybe [] (\l -> ["-ss", BSC.pack $ show l]) lb
-    ++ maybe [] (\u -> ["-t", BSC.pack $ show $ u - fromMaybe 0 lb]) (upperBound rng)
+    ++ maybe [] (\l -> ["-ss", show l]) lb
+    ++ maybe [] (\u -> ["-t", show $ u - fromMaybe 0 lb]) (upperBound rng)
     ++ transcodeOptions
   where
   rng = segmentRange transcodeSegment
@@ -47,7 +48,7 @@ lookupTranscode :: DBM m => Id Asset -> m (Maybe Transcode)
 lookupTranscode a =
   dbQuery1 $(selectQuery selectTranscode "WHERE transcode.asset = ${a}")
 
-addTranscode :: (MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeOptions -> Maybe Offset -> m Transcode
+addTranscode :: (MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeArgs -> Maybe Offset -> m Transcode
 addTranscode orig seg@(Segment rng) opts dur = do
   Identified sess <- peek
   let own = view sess
@@ -69,3 +70,11 @@ addTranscode orig seg@(Segment rng) opts dur = do
     , transcodeProcess = Nothing
     , transcodeLog = Nothing
     }
+
+updateTranscode :: DBM m => Transcode -> Maybe TranscodePID -> Maybe BS.ByteString -> m Transcode
+updateTranscode tc pid logs = do
+  r <- dbQuery1 [pgSQL|UPDATE transcode SET process = ${pid}, log = COALESCE(COALESCE(log || E'\\n', '') || ${logs}, log) WHERE asset = ${assetId $ transcodeAsset tc} AND COALESCE(process, 0) = ${fromMaybe 0 $ transcodeProcess tc} RETURNING log|]
+  return $ maybe tc (\l -> tc
+    { transcodeProcess = pid
+    , transcodeLog = l
+    }) r

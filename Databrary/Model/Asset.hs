@@ -18,7 +18,7 @@ import Databrary.Has (view, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Store
-import Databrary.Store.Storage
+import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Model.SQL
 import Databrary.Model.Time ()

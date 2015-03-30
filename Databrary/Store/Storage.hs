@@ -1,14 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Store.Storage
-  ( Storage(..)
-  , MonadStorage
+  ( Storage
   , initStorage
   ) where
 
 import qualified Data.ByteString.Char8 as BSC
 import Control.Applicative ((<$>) )
 import Control.Monad (unless, foldM_)
-import Control.Monad.IO.Class (MonadIO)
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 import qualified Data.Foldable as Fold
@@ -16,17 +14,9 @@ import System.Directory (getTemporaryDirectory)
 import System.IO.Error (mkIOError, doesNotExistErrorType, illegalOperationErrorType)
 import System.Posix.Files.ByteString (getFileStatus, isDirectory, deviceID)
 
-import Databrary.Has (MonadHas)
 import Databrary.Store
-
-data Storage = Storage
-  { storageMaster :: RawFilePath
-  , storageFallback :: Maybe RawFilePath
-  , storageTemp :: RawFilePath
-  , storageUpload :: RawFilePath
-  }
-
-type MonadStorage c m = (MonadHas Storage c m, MonadIO m)
+import Databrary.Store.Types
+import Databrary.Store.Transcoder
 
 initStorage :: C.Config -> IO Storage
 initStorage conf = do
@@ -43,6 +33,16 @@ initStorage conf = do
     unless (Fold.all (d ==) dev)
       $ ioError $ mkIOError illegalOperationErrorType "storage filesystem" Nothing (Just (BSC.unpack f))
     return $ Just d)
-    Nothing [master, temp, upload]
+    Nothing $ [master, temp, upload]
 
-  return $ Storage master fallback temp upload
+  transcodeHost <- C.lookup conf "transcode.host"
+  transcodeDir <- C.lookup conf "transcode.dir"
+  tc <- initTranscoder transcodeHost transcodeDir
+
+  return $ Storage
+    { storageMaster = master
+    , storageFallback = fallback
+    , storageTemp = temp
+    , storageUpload = upload
+    , storageTranscoder = tc
+    }

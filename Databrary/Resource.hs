@@ -3,18 +3,14 @@ module Databrary.Resource
   ( Resource(..)
   , MonadHasResource
   , initResource
-  , MonadResourceT
-  , liftResourceT
   ) where
 
 import Control.Applicative ((<$>), (<*>))
-import Control.Monad.IO.Class (MonadIO, liftIO)
-import Control.Monad.Trans.Resource (InternalState, ResourceT, runInternalState)
 import qualified Data.ByteString as BS
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
-import Databrary.Has (makeHasRec, peek, MonadHas)
+import Databrary.Has (makeHasRec)
 import Databrary.DB (DBConn, initDB)
 import Databrary.Entropy (Entropy, initEntropy)
 import Databrary.Web.Client (HTTPClient, initHTTPClient)
@@ -40,8 +36,3 @@ initResource = do
     <*> initEntropy
     <*> initHTTPClient
     <*> initStorage (C.subconfig "store" conf)
-
-type MonadResourceT c m = (MonadIO m, MonadHas InternalState c m)
-
-liftResourceT :: MonadResourceT c m => ResourceT IO a -> m a
-liftResourceT r = liftIO . runInternalState r =<< peek

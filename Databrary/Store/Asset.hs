@@ -19,7 +19,7 @@ import System.Posix.Files.ByteString (fileExist, getFileStatus, fileSize, create
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
 import Databrary.Store
-import Databrary.Store.Storage
+import Databrary.Store.Types
 import Databrary.Model.Asset.Types
 
 maxAssetSize :: Word64

@@ -6,7 +6,6 @@ module Databrary.Model.Transcode.SQL
 import qualified Data.ByteString as BS
 import Data.Int (Int32)
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
 
 import Databrary.Model.SQL.Select
 import Databrary.Model.Permission.Types
@@ -19,7 +18,7 @@ import Databrary.Model.Asset.SQL
 import Databrary.Model.Segment
 import Databrary.Model.Transcode.Types
 
-makeTranscode :: Segment -> [Maybe BS.ByteString] -> Maybe Int32 -> Maybe T.Text -> SiteAuth -> (Volume -> Asset) -> (Volume -> Asset) -> (Permission -> Volume) -> Transcode
+makeTranscode :: Segment -> [Maybe String] -> Maybe Int32 -> Maybe BS.ByteString -> SiteAuth -> (Volume -> Asset) -> (Volume -> Asset) -> (Permission -> Volume) -> Transcode
 makeTranscode s f p l u a o vp =
   Transcode (a v) (siteAccount u) (o v) s (map (fromMaybe (error "NULL transcode options")) f) p l
   where v = vp PermissionADMIN

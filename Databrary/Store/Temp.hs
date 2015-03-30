@@ -15,8 +15,8 @@ import System.Posix.Files.ByteString (removeLink, rename)
 import System.Posix.Temp.ByteString (mkstemp)
 
 import Databrary.Has (peeks)
-import Databrary.Resource (MonadResourceT, liftResourceT)
-import Databrary.Store.Storage
+import Databrary.ResourceT
+import Databrary.Store.Types
 
 data TempFile = TempFile
   { tempFileRelease :: ReleaseKey

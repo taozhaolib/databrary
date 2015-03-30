@@ -27,6 +27,7 @@ Executable databrary
     unix,
     posix-paths,
     directory,
+    process,
     text,
     base64-bytestring,
     utf8-string,

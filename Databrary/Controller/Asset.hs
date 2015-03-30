@@ -24,7 +24,7 @@ import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
 import Databrary.Has (peeks)
-import Databrary.Resource
+import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Web.Form
@@ -45,7 +45,7 @@ import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
 import Databrary.Model.Excerpt
 import Databrary.Store
-import Databrary.Store.Storage
+import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
