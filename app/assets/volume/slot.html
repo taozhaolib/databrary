@@ -241,8 +241,8 @@
           </a>
         </div>
 
-         <textarea ng-model="newComment"></textarea>
-         <button ng-click="addComment(newComment)">Submit</button>
+         <textarea ng-model="volume.newComment"></textarea>
+         <button ng-click="addComment(volume.newComment)">Submit</button>
          <button ng-click="insertTimeChunk()">Get Time Chunk</button>
         <section id="slot-comments">
 
@@ -265,8 +265,14 @@
                   </aside>
                 </footer>
                 <div class="panel-comments-body" ng-bind-html="comment.comment.text | format"></div>
+                <div class="panel-comments-body" ng-show="replyTo !== comment">
+                  <button ng-click="setReply(comment)" class="mini" message="comments.reply"></button>
+                </div>
+
               </div>
             </div>
+
+            <comment-reply-form ng-if="replyTo === comment"  class="depth-1"></comment-reply-form>
           </article>
         </section>
       </div>

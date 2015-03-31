@@ -790,7 +790,7 @@ app.controller('volume/slot', [
       getClass: ->
         cls = []
         if @comment.parents
-          cls.push('depth-'+Math.min(@comment.parents.length, 5))
+          cls.push('depth-' + Math.min(@comment.parents.length, 5))
         cls
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
@@ -808,24 +808,26 @@ app.controller('volume/slot', [
       $scope.volume.newComment += " [" + selection.toString() + "]" unless selection.l is -Infinity or selection.u is Infinity
       #$scope.newComment += selection.toString()
 
+
+    $scope.setReply = (comment) ->
+      $scope.replyTo = comment
     $scope.addComment = (message) ->
-     #container = new modelService.Container()
-     # console.log comment.postComment
-      tempComment =
-        comment:
-          text: message
-          time: new Date()
-          who: modelService.Login.user
-        segment: do getSelection
-      #$scope.comments.unshift tempComment
-      #comment = new modelService.Slot( tempComment.comment)
-      slot.postComment tempComment.comment, do getSelection
+      data =
+        text: message
+        time: new Date()
+        who: modelService.Login.user
+      slot.postComment data, do getSelection
       .then (comment) ->
-       console.log comment
-       console.log $scope.comments
-       $scope.comments.push(new Comment comment)
-       # $scope.comments.unshift comment
-       console.log "NewCommentsArray:", $scope.comments
+        $scope.comments.push(new Comment comment)
+        $scope.volume.newComment = ""
+       , (e) ->
+         messages.addError
+           body: 'Error adding comment'
+           report: e
+           owner: $scope
+         return
+
+
     $scope.consents =
       if Array.isArray(consents = slot.consents)
         _.map consents, (c) -> new Consent(c)
