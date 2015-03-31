@@ -265,7 +265,7 @@
                   </aside>
                 </footer>
                 <div class="panel-comments-body" ng-bind-html="comment.comment.text | format"></div>
-                <div class="panel-comments-body" ng-show="replyTo !== comment">
+                <div class="panel-comments-body" ng-if="replyTo !== comment">
                   <button ng-click="setReply(comment)" class="mini" message="comments.reply"></button>
                 </div>
 

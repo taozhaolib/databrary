@@ -1108,6 +1108,7 @@ app.factory('modelService', [
     Comment.prototype.class = 'comment';
 
     Comment.prototype.fields = angular.extend({
+      id: true,
       time: true,
       text: true,
       parents: true

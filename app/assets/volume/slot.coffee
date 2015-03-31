@@ -811,6 +811,18 @@ app.controller('volume/slot', [
 
     $scope.setReply = (comment) ->
       $scope.replyTo = comment
+
+
+    pullComments = () ->
+      $scope.volume.get(['comments']).then((res) ->
+         $scope.comments = (new Comment(comment) for comment in res.comments)
+        , (res) ->
+            messages.addError
+              body: constants.message('comments.update.error')
+              report: res
+          )
+
+
     $scope.addComment = (message) ->
       data =
         text: message
@@ -827,6 +839,9 @@ app.controller('volume/slot', [
            owner: $scope
          return
 
+    $scope.$on 'commentReplyForm-init', (event, form) ->
+      form.target = $scope.replyTo.comment
+      form.successFn = pullComments
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
