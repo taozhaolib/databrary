@@ -23,21 +23,6 @@
     height b23
     width b23+b8
 
-  &.access.ADMIN
-    background-image url('/public/images/icon/admin.png')
-
-  &.access.EDIT
-    background-image url('/public/images/icon/contribute.png')
-
-  &.access.READ
-    background-image url('/public/images/icon/download.png')
-
-  &.access.SHARED
-    background-image url('/public/images/icon/download.png')
-
-  &.access.PUBLIC
-    background-image url('/public/images/icon/view.png')
-
   &.activity
     background-image url('/public/images/icon/activity.svg')
 
@@ -53,35 +38,38 @@
   &.close
     background-image url('/public/images/icon/close.png')
 
-  &.consent.EXCERPTS
-    background-image url('/public/images/icon/excerpts.png')
+  &.consent.PRIVATE
+    background-image url('/public/icons/consent/private.svg')
 
   &.consent.SHARED
-    background-image url('/public/images/icon/shared.png')
+    background-image url('/public/icons/consent/shared.png')
 
+  &.consent.EXCERPTS
+    background-image url('/public/icons/consent/excerpts.png')
+
+  &.consent.PUBLIC
+    background-image url('/public/icons/consent/public.svg')
 
   &.classification
     width b1
   
-  &.consent.PRIVATE  
   &.classification.PRIVATE
-    background-image url('/public/images/icon/private.svg')
+    background-image url('/public/icons/classification/private.svg')
 
   &.classification.RESTRICTED
-    background-image url('/public/images/icon/identified.png')
+    background-image url('/public/icons/classification/restricted.png')
 
   &.classification.SHARED
-    background-image url('/public/images/icon/deidentified.png')
+    background-image url('/public/icons/classification/shared.png')
 
-  &.consent.PUBLIC
   &.classification.PUBLIC
-    background-image url('/public/images/icon/public.svg')
+    background-image url('/public/icons/classification/public.svg')
 
   &.record
     background-image url('/public/images/icon/record.png')
 
   &.session
-    background-image url('/public/images/icon/session2.png')
+    background-image url('/public/images/icon/session.png')
     &:hover
       opacity 0.4
 
@@ -89,7 +77,7 @@
     background-image url('/public/images/icon/study.png')
 
   &.download
-    background-image url('/public/images/icon/download2.png')
+    background-image url('/public/images/icon/download.png')
     &:not(.button)
       margin-right b3
     &:hover:not(.button)
@@ -143,13 +131,6 @@
 
   &.go
     background-image url('/public/images/icon/go.png')
-    cursor pointer
-
-  &.locked
-    background-image url('/public/images/icon/private.png')
-    cursor pointed
-  &.unlocked
-    background-image url('/public/images/icon/public.png')
     cursor pointer
 
   &.zoomin

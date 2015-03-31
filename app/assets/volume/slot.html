@@ -123,7 +123,7 @@
           
           <div class="slot-toolbar" ng-if="::editing" ng-switch="editing" ng-class="{'slot-toolbar-bg': editing!==true}">
             <div ng-switch-when="true">
-              <button ng-click="addRecord()" class="mini">Add record</button>
+              <button ng-if="::slot !== slot.volume.top" ng-click="addRecord()" class="mini">Add record</button>
               <button ng-if="!!current.record" ng-click="current.remove()" class="mini">Remove record</button>
               <button ng-if="!!current.record" ng-click="current.rePosition()" class="mini">Position record</button>
               &#32;
@@ -166,7 +166,7 @@
               <div class="selection" ng-class="::{edit: editing}" ng-style="positionStyle(ruler.selection)"></div>
             </div>
 
-            <div class="slot-timeline-temporal" ng-if="!ruler.range.empty" ng-form="form.ruler">
+            <div class="slot-timeline-temporal" ng-if="ruler.range.length" ng-form="form.ruler">
               <div class="slot-timeline-control">
                 <input input-position="-Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l" ng-change="updateSelection()"></input>
                 <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,0)">&larr;</button>
@@ -179,7 +179,6 @@
                   <span ng-if="ruler.selection.full" ng-click="setSelection(null)">Clear selection</span>
                   <span ng-if="!ruler.selection.full" ng-click="setSelection(undefined)">Select all</span>
                 </div>
-
               </div>
               
               <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
