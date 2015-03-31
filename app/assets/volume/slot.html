@@ -123,7 +123,7 @@
           
           <div class="slot-toolbar" ng-if="::editing" ng-switch="editing" ng-class="{'slot-toolbar-bg': editing!==true}">
             <div ng-switch-when="true">
-              <button ng-click="addRecord()" class="mini">Add record</button>
+              <button ng-if="::slot !== slot.volume.top" ng-click="addRecord()" class="mini">Add record</button>
               <button ng-if="!!current.record" ng-click="current.remove()" class="mini">Remove record</button>
               <button ng-if="!!current.record" ng-click="current.rePosition()" class="mini">Position record</button>
               &#32;
