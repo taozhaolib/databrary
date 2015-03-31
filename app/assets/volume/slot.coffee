@@ -811,7 +811,6 @@ app.controller('volume/slot', [
 
     $scope.setReply = (event, comment) ->
       $scope.replyTo = comment
-      console.log "Comment:", comment
       $scope.selectAll(event, comment)
 
 
