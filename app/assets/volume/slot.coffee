@@ -6,6 +6,7 @@ app.controller('volume/slot', [
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
+ #    $scope.newComment = ""
     $scope.volume = slot.volume
     $scope.editing = editing # $scope.editing (but not editing) is also a modal (toolbar) indicator
     $scope.mode = if editing then 'edit' else 'view'
@@ -782,7 +783,7 @@ app.controller('volume/slot', [
     class Comment
       constructor: (c) ->
         @comment = c
-        @segment = new Segment(c.segment)
+        @segment = [new Segment(c.segment)]
 
       type: 'comment'
 
@@ -802,18 +803,29 @@ app.controller('volume/slot', [
 
     records = slot.records.map((r) -> new Record(r))
 
+    $scope.insertTimeChunk = () ->
+      selection = getSelection()
+      $scope.volume.newComment += " [" + selection.toString() + "]" unless selection.l is -Infinity or selection.u is Infinity
+      #$scope.newComment += selection.toString()
+
     $scope.addComment = (message) ->
-      container = new modelService.Container()
-      comment = modelService.Comment(message, container)
-      console.log comment.postComment
-      # tempComment =
-      #   comment:
-      #     text: message
-      #     time: new Date()
-      #     who: modelService.Login.user
-      #   segment: do getSelection
+     #container = new modelService.Container()
+     # console.log comment.postComment
+      tempComment =
+        comment:
+          text: message
+          time: new Date()
+          who: modelService.Login.user
+        segment: do getSelection
       #$scope.comments.unshift tempComment
-      
+      #comment = new modelService.Slot( tempComment.comment)
+      slot.postComment tempComment.comment, do getSelection
+      .then (comment) ->
+       console.log comment
+       console.log $scope.comments
+       $scope.comments.push(new Comment comment)
+       # $scope.comments.unshift comment
+       console.log "NewCommentsArray:", $scope.comments
     $scope.consents =
       if Array.isArray(consents = slot.consents)
         _.map consents, (c) -> new Consent(c)
