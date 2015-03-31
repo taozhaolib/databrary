@@ -235,6 +235,10 @@ object SiteHtml extends HtmlController {
 
   def search(js : Option[Boolean]) =
     VolumeHtml.search(js)
+
+  def permissions() = Action { implicit request =>
+    Ok(views.html.permissions())
+  }
 }
 
 object SiteApi extends ApiController {
