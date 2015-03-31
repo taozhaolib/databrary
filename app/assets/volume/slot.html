@@ -244,7 +244,7 @@
          <button ng-click="addComment(volume.newComment)">Submit</button>
         <section id="slot-comments">
 
-          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment)" class="panel-comments-comment" ng-class="::comment.getClass()">
+          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment) || comment === replyTo" class="panel-comments-comment" ng-class="::comment.getClass()">
             <div class="row">
               <div class="col-desktop-6 col-tablet-6 col-mobile-6">
                 <footer class="panel-comments-meta" ng-init="party = comment.comment.who">
@@ -269,8 +269,9 @@
 
               </div>
             </div>
-
-            <comment-reply-form ng-if="replyTo === comment"  class="depth-1"></comment-reply-form>
+            <div ng-if="replyTo === comment">
+              <textarea ng-model="volume.replyComment"></textarea><button ng-click="addComment(volume.replyComment, replyTo)">Post</button>
+            </div>
           </article>
         </section>
       </div>

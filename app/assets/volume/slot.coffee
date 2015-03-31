@@ -810,8 +810,10 @@ app.controller('volume/slot', [
 
 
     $scope.setReply = (event, comment) ->
+      console.log "Comment:", comment
+      $scope.volume.replyText = ''
       $scope.replyTo = comment
-      $scope.selectAll(event, comment)
+      $scope.selectAll(event, comment) unless comment.segment.l is -Infinity
 
 
     pullComments = () ->
@@ -824,21 +826,19 @@ app.controller('volume/slot', [
           )
 
 
-    $scope.addComment = (message) ->
+    $scope.addComment = (message, replyTo) ->
       data =
         text: message
         time: new Date()
         who: modelService.Login.user
-      slot.postComment data, do getSelection
-      .then (comment) ->
-        $scope.comments.push(new Comment comment)
-        $scope.volume.newComment = ""
-       , (e) ->
-         messages.addError
-           body: 'Error adding comment'
-           report: e
-           owner: $scope
-         return
+
+
+      segment = getSelection()
+      slot.postComment data, segment, $scope.replyTo?.comment?.id
+      .then pullComments, (e) ->
+        messages.addError
+          body: constants.message('comments.update.error')
+          reports: e
 
     $scope.$on 'commentReplyForm-init', (event, form) ->
       form.target = $scope.replyTo.comment
