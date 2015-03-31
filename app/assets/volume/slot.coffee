@@ -157,6 +157,11 @@ app.controller('volume/slot', [
       updatePlayerHeight()
       true
 
+
+    $scope.cancelReply =  ->
+      $scope.replyTo = null
+      return
+
     $scope.selectAll = (event, c) ->
       return false if $scope.editing == 'position'
       ruler.selection = range = new Segment(c.segment)

@@ -270,7 +270,7 @@
               </div>
             </div>
             <div ng-if="replyTo === comment">
-              <textarea ng-model="volume.replyComment"></textarea><button ng-click="addComment(volume.replyComment, replyTo)">Post</button>
+             <textarea ng-model="volume.replyComment"></textarea><button ng-click="addComment(volume.replyComment, replyTo)">Post</button><button ng-click="cancelReply()">Cancel</button>
             </div>
           </article>
         </section>
