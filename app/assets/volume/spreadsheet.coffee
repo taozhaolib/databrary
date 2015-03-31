@@ -144,7 +144,7 @@ app.directive 'spreadsheet', [
             info.category = getCategory(info.c)
           if 'i' of info
             info.slot = slots[info.i]
-            if 'n' of info
+            if 'n' of info && info.n of records[info.c].id
               info.record = volume.records[info.r = records[info.c].id[info.n][info.i]]
             if 'a' of info
               info.asset = assets[info.i][info.a]
@@ -211,7 +211,7 @@ app.directive 'spreadsheet', [
             metrics.pop() # remove 'id' (necessarily last)
             metrics = _.map metrics, getMetric
             # add back the 'id' column first if needed
-            if !metrics.length || editing && !(metrics.length == 1 && metrics[0].options)
+            if !metrics.length
               metrics.unshift(pseudoMetric.id)
             si = metricCols.length
             metricCols.push.apply metricCols, _.map metrics, (m) ->
@@ -283,7 +283,7 @@ app.directive 'spreadsheet', [
             td.id = i
           td
 
-        generateMultiple = (cat, cols, row, i, n, t) ->
+        generateMultiple = (cat, cols, row, i, n, t, m) ->
           if n == undefined
             return if t == 1
           else
@@ -301,7 +301,11 @@ app.directive 'spreadsheet', [
                 td.appendChild(document.createTextNode(cat.not))
               else if editing
                 td.appendChild(document.createTextNode("add " + cat.name))
-              if edit
+              if editing
+                if cols > 1 && m != undefined
+                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+n+'_'+m)
+                  row.appendChild(td)
+                  td.setAttribute("colspan", cols-1)
                 td.className = 'null add'
                 td.id = id + '-add_' + i + '_' + cat.id
           td
@@ -312,7 +316,7 @@ app.directive 'spreadsheet', [
           c = col.category.id
           t = counts[i][c] || 0
           r = records[c]
-          if td = generateMultiple(col.category, l, row, i, n, t)
+          if td = generateMultiple(col.category, l, row, i, n, t, col.start)
             if n == undefined
               for n in [0..t-1] by 1
                 td.classList.add('ss-rec_' + r.id[n][i])
