@@ -72,7 +72,7 @@
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                         <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
-                        <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
+                        <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"></textarea>
                         <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
                         <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                       </dd>
