@@ -501,7 +501,7 @@ wizard.register-create.instructions=Please provide information about yourself.
 
 wizard.register-agreement.name=Sign Agreement
 wizard.register-agreement.description=Learn about the responsibilities of all Databrary members.
-wizard.register-agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/investigator-agreement.pdf" target="_blank">full agreement as pdf</a>.
+wizard.register-agreement.instructions=Read each section of the agreement. You can also download the <a href="http://databrary.org/policies/agreement.pdf" target="_blank">full agreement as pdf</a>.
 
 wizard.register-email.name=Confirm Email
 wizard.register-email.description=Confirm your email address to continue.
