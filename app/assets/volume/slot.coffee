@@ -783,7 +783,7 @@ app.controller('volume/slot', [
     class Comment
       constructor: (c) ->
         @comment = c
-        @segment = [new Segment(c.segment)]
+        @segment = new Segment(c.segment)
 
       type: 'comment'
 
@@ -809,8 +809,10 @@ app.controller('volume/slot', [
     #   #$scope.newComment += selection.toString()
 
 
-    $scope.setReply = (comment) ->
+    $scope.setReply = (event, comment) ->
       $scope.replyTo = comment
+      console.log "Comment:", comment
+      $scope.selectAll(event, comment)
 
 
     pullComments = () ->
