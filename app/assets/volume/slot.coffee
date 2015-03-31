@@ -803,10 +803,10 @@ app.controller('volume/slot', [
 
     records = slot.records.map((r) -> new Record(r))
 
-    $scope.insertTimeChunk = () ->
-      selection = getSelection()
-      $scope.volume.newComment += " [" + selection.toString() + "]" unless selection.l is -Infinity or selection.u is Infinity
-      #$scope.newComment += selection.toString()
+    # $scope.insertTimeChunk = () ->
+    #   selection = getSelection()
+    #   $scope.volume.newComment += " [" + selection.toString() + "]" unless selection.l is -Infinity or selection.u is Infinity
+    #   #$scope.newComment += selection.toString()
 
 
     $scope.setReply = (comment) ->

@@ -243,7 +243,6 @@
 
          <textarea ng-model="volume.newComment"></textarea>
          <button ng-click="addComment(volume.newComment)">Submit</button>
-         <button ng-click="insertTimeChunk()">Get Time Chunk</button>
         <section id="slot-comments">
 
           <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment)" class="panel-comments-comment" ng-class="::comment.getClass()">
