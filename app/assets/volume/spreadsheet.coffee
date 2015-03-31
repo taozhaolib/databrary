@@ -683,8 +683,6 @@ app.directive 'spreadsheet', [
               else if !isNaN(v = parseInt(value, 10))
                 if v != info.r
                   setRecord(cell, info, volume.records[v])
-                else
-                  #edit(cell, info, true) # broken and/or unreachable for most events
               return
             when 'metric'
               if value != undefined
@@ -701,7 +699,7 @@ app.directive 'spreadsheet', [
             when 'options'
               # force completion of the first match
               # this completely prevents people from using prefixes of options but maybe that's reasonable
-              c = editCompletions(value) if value
+              c = optionCompletions(value) if value
               value = c[0] if c?.length
 
           switch info.t
@@ -730,7 +728,7 @@ app.directive 'spreadsheet', [
           save(cell, editScope.type, editInput.value) if event != false
           cell
 
-        edit = (cell, info, alt) ->
+        edit = (cell, info) ->
           switch info.t
             when 'name'
               return if info.slot.id == volume.top.id
@@ -750,14 +748,18 @@ app.directive 'spreadsheet', [
                 return
               return if info.slot.id == volume.top.id
               if info.t == 'rec' && info.metric.id == 'id'
+                # trash/bullet: remove
                 setRecord(cell, info, null)
                 return
-              if info.t == 'rec' && (!info.col.first || alt)
+              if info.t == 'rec'
                 m = info.metric.id
                 # we need a real metric here:
                 return unless typeof m == 'number'
-                editInput.value = volume.records[info.r].measures[m] ? ''
-                if info.metric.options
+                editInput.value = info.record?.measures[m] ? ''
+                if info.col.first
+                  editScope.type = 'ident'
+                  editScope.info = info
+                else if info.metric.options
                   editScope.type = 'options'
                   editScope.options = info.metric.options
                 else if info.metric.long
@@ -877,17 +879,21 @@ app.directive 'spreadsheet', [
           unedit($event)
           false
 
-        editCompletions = (input) ->
-          i = input.toLowerCase()
-          (o for o in editScope.options when o.toLowerCase().startsWith(i))
-
         editSelect = () ->
           editInput.value = @text
           unedit(true)
           @text
 
-        editScope.completer = (input) ->
-          match = editCompletions(input)
+        editScope.identCompleter = (input) ->
+          info = editScope.info
+          []
+
+        optionCompletions = (input) ->
+          i = input.toLowerCase()
+          (o for o in editScope.options when o.toLowerCase().startsWith(i))
+
+        editScope.optionsCompleter = (input) ->
+          match = optionCompletions(input)
           switch match.length
             when 0
               input
