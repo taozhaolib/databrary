@@ -240,13 +240,14 @@
           </a>
         </div>
 
+        <section ng-if="::!editing" id="slot-comments" class="">
 
-        <section id="slot-comments" class="">
+          <div ng-if="!commentReply">
+            <textarea ng-model="form.comment.text"></textarea>
+            <button ng-click="addComment(form.comment.text)">Submit</button>
+          </div>
 
-          <textarea ng-model="volume.newComment"></textarea>
-          <button ng-click="addComment(volume.newComment)">Submit</button>
-
-          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment) || comment === replyTo" class="panel-comments-comment" ng-class="::comment.getClass()">
+          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment) || comment === commentReply" class="panel-comments-comment" ng-class="::comment.getClass()">
             <div class="row">
               <div class="col-desktop-15 col-tablet-9 col-mobile-6">
                 <footer class="panel-comments-meta" ng-init="party = comment.comment.who">
@@ -265,16 +266,16 @@
                   </aside>
                 </footer>
                 <div class="panel-comments-body" ng-bind-html="comment.comment.text | format"></div>
-                <div class="panel-comments-body" ng-if="replyTo !== comment">
-                  <button ng-click="setReply($event, comment)" class="mini" message="comments.reply"></button>
+                <div class="panel-comments-body" ng-if="commentReply !== comment">
+                  <button ng-click="comment.setReply($event)" class="mini" message="comments.reply"></button>
                 </div>
 
               </div>
             </div>
-            <div ng-if="replyTo === comment">
-             <textarea ng-model="volume.replyComment"></textarea>
-             <button ng-click="addComment(volume.replyComment, replyTo)">Post</button>
-             <button ng-click="cancelReply()">Cancel</button>
+            <div ng-if="commentReply === comment">
+             <textarea ng-model="form.comment.reply"></textarea>
+             <button ng-click="addComment(form.comment.reply, comment)">Post</button>
+             <button ng-click="comment.setReply()">Cancel</button>
             </div>
           </article>
         </section>

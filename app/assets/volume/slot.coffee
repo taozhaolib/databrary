@@ -1,8 +1,8 @@
 'use strict'
 
 app.controller('volume/slot', [
-  '$scope', '$location', '$sce', '$q', '$timeout', 'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', 'storageService', 'Offset', 'Segment', 'Store', 'slot', 'edit','modelService',
-  ($scope, $location, $sce, $q, $timeout, constants, display, messages, tooltips, styles, storage, Offset, Segment, Store, slot, editing, modelService) ->
+  '$scope', '$location', '$sce', '$q', '$timeout', 'constantService', 'displayService', 'messageService', 'tooltipService', 'styleService', 'storageService', 'Offset', 'Segment', 'Store', 'slot', 'edit',
+  ($scope, $location, $sce, $q, $timeout, constants, display, messages, tooltips, styles, storage, Offset, Segment, Store, slot, editing) ->
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
@@ -156,11 +156,6 @@ app.controller('volume/slot', [
       finalizeSelection()
       updatePlayerHeight()
       true
-
-
-    $scope.cancelReply =  ->
-      $scope.replyTo = null
-      return
 
     $scope.selectAll = (event, c) ->
       return false if $scope.editing == 'position'
@@ -798,6 +793,26 @@ app.controller('volume/slot', [
           cls.push('depth-' + Math.min(@comment.parents.length, 5))
         cls
 
+      setReply: (event) ->
+        $scope.commentReply = if event
+          $scope.selectAll(event, this) unless @segment.full
+          this
+
+    $scope.addComment = (message, replyTo) ->
+      slot.postComment {text:message}, getSelection(), replyTo?.comment.id
+      .then (c) ->
+          slot.getSlot(slot.segment, ['comments']).then((res) ->
+              $scope.comments = (new Comment(comment) for comment in res.comments)
+            , (res) ->
+                messages.addError
+                  body: constants.message('comments.update.error')
+                  report: res
+            )
+        , (e) ->
+          messages.addError
+            body: constants.message('comments.add.error')
+            report: e
+
     ### jshint ignore:start #### fixed in jshint 2.5.7
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.coverage?.length))
     $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
@@ -807,47 +822,6 @@ app.controller('volume/slot', [
     fillExcerpts()
 
     records = slot.records.map((r) -> new Record(r))
-
-    # $scope.insertTimeChunk = () ->
-    #   selection = getSelection()
-    #   $scope.volume.newComment += " [" + selection.toString() + "]" unless selection.l is -Infinity or selection.u is Infinity
-    #   #$scope.newComment += selection.toString()
-
-
-    $scope.setReply = (event, comment) ->
-      console.log "Comment:", comment
-      $scope.volume.replyText = ''
-      $scope.replyTo = comment
-      $scope.selectAll(event, comment) unless comment.segment.l is -Infinity
-
-
-    pullComments = () ->
-      $scope.volume.get(['comments']).then((res) ->
-         $scope.comments = (new Comment(comment) for comment in res.comments)
-        , (res) ->
-            messages.addError
-              body: constants.message('comments.update.error')
-              report: res
-          )
-
-
-    $scope.addComment = (message, replyTo) ->
-      data =
-        text: message
-        time: new Date()
-        who: modelService.Login.user
-
-
-      segment = getSelection()
-      slot.postComment data, segment, $scope.replyTo?.comment?.id
-      .then pullComments, (e) ->
-        messages.addError
-          body: constants.message('comments.update.error')
-          reports: e
-
-    $scope.$on 'commentReplyForm-init', (event, form) ->
-      form.target = $scope.replyTo.comment
-      form.successFn = pullComments
 
     $scope.consents =
       if Array.isArray(consents = slot.consents)
