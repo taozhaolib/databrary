@@ -93,6 +93,8 @@ app.directive 'inputCompleter', [
         c = $scope.choices[$scope.selected]
         if typeof c.select == 'string'
           setValue(c.select)
+        ul = $element.children('ul')
+        ul.scrollTop(ul.children('li')[$scope.selected].offsetTop)
         return
 
       $scope.search(input.value)

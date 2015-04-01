@@ -771,7 +771,7 @@ app.directive 'spreadsheet', [
                         r:r
                         v:r.measures[info.metric.id].toLowerCase()
                         d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
-                  editScope.records = rs
+                  editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
                 else if info.metric.options
                   editScope.type = 'options'
                   editScope.options = info.metric.options
@@ -914,7 +914,7 @@ app.directive 'spreadsheet', [
               (cell) -> setRecord(cell, info, null),
               true)
           else if !info.r || input != info.record.measures[info.metric.id]
-            inputl = input.toLowerCase()
+            inputl = (input ? '').toLowerCase()
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
             for r in editScope.records
