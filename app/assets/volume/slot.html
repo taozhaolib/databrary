@@ -72,7 +72,7 @@
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                         <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
-                        <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"/>
+                        <textarea ng-switch-when="long" name="m" ng-model="current.data.measures[m]"></textarea>
                         <input ng-switch-when="date" input-date name="{{::m}}" ng-model="current.data.measures[m]" placeholder="YYYY-MM-DD"/>
                         <input ng-switch-when="number" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
                       </dd>
@@ -240,10 +240,15 @@
           </a>
         </div>
 
-        <section id="slot-comments">
-          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment)" class="panel-comments-comment" ng-class="::comment.getClass()">
+        <section ng-if="::!editing" id="slot-comments" class="slot-comments">
+          <div ng-if="!commentReply">
+            <textarea ng-model="form.comment.text" placeholder="{{::'comments.prompt' | message}}"></textarea>
+            <button ng-click="addComment(form.comment.text)">Submit</button>
+          </div>
+
+          <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.classes">
             <div class="row">
-              <div class="col-desktop-6 col-tablet-6 col-mobile-6">
+              <div class="col-desktop-15 col-tablet-9 col-mobile-6">
                 <footer class="panel-comments-meta" ng-init="party = comment.comment.who">
                   <aside class="portrait ng-cloak">
                     <a ng-href="{{::party.route()}}">
@@ -260,7 +265,16 @@
                   </aside>
                 </footer>
                 <div class="panel-comments-body" ng-bind-html="comment.comment.text | format"></div>
+                <div class="panel-comments-body" ng-if="commentReply !== comment">
+                  <button ng-click="comment.setReply($event)" class="mini" message="comments.reply"></button>
+                </div>
+
               </div>
+            </div>
+            <div ng-if="commentReply === comment">
+             <textarea ng-model="form.comment.reply"></textarea>
+             <button ng-click="addComment(form.comment.reply, comment)">Post</button>
+             <button ng-click="comment.setReply()">Cancel</button>
             </div>
           </article>
         </section>

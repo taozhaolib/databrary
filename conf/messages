@@ -389,6 +389,7 @@ volume.owner=Owner
 
 sessions.title=Data
 session=Session
+session.jump=Jump to the session from which this {0} originates.
 
 materials.title=Materials
 materials=Materials
@@ -402,7 +403,6 @@ not.group=Not grouped
 
 excerpts.title=Highlights
 excerpts.download=Download this highlight.
-excerpts.jump=Jump to the session from which this highlight originates.
 
 position=Position
 position.placeholder=MM:SS

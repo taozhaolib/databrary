@@ -6,6 +6,7 @@ app.controller('volume/slot', [
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
+ #    $scope.newComment = ""
     $scope.volume = slot.volume
     $scope.editing = editing # $scope.editing (but not editing) is also a modal (toolbar) indicator
     $scope.mode = if editing then 'edit' else 'view'
@@ -217,6 +218,8 @@ app.controller('volume/slot', [
         $scope.current.updateExcerpt() if $scope.current?.excerpts
       for t in $scope.tags
         t.update()
+      for c in $scope.comments
+        c.update()
       return
 
     getSelection = ->
@@ -786,16 +789,38 @@ app.controller('volume/slot', [
 
       type: 'comment'
 
-      getClass: ->
-        cls = []
+      update: ->
+        @classes = []
         if @comment.parents
-          cls.push('depth-'+Math.min(@comment.parents.length, 5))
-        cls
+          @classes.push('depth-' + Math.min(@comment.parents.length, 5))
+        unless ruler.selection.empty || ruler.selection.overlaps(this.segment) || this == $scope.replyTo
+          @classes.push('notselected')
+
+      setReply: (event) ->
+        $scope.commentReply = if event
+          $scope.selectAll(event, this) unless @segment.full
+          this
+        finalizeSelection()
+
+    $scope.addComment = (message, replyTo) ->
+      slot.postComment {text:message}, getSelection(), replyTo?.comment.id
+      .then (c) ->
+          slot.getSlot(slot.segment, ['comments']).then((res) ->
+              $scope.comments = (new Comment(comment) for comment in res.comments)
+            , (res) ->
+                messages.addError
+                  body: constants.message('comments.update.error')
+                  report: res
+            )
+        , (e) ->
+          messages.addError
+            body: constants.message('comments.add.error')
+            report: e
 
     ### jshint ignore:start #### fixed in jshint 2.5.7
     $scope.tags = (new Tag(tag) for tagId, tag of slot.tags when (if editing then tag.keyword?.length else tag.coverage?.length))
-    $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     $scope.comments = (new Comment(comment) for comment in slot.comments)
+    $scope.tracks = (new Track(asset) for assetId, asset of slot.assets)
     ### jshint ignore:end ###
     sortTracks()
     fillExcerpts()

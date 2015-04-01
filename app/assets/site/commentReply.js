@@ -16,7 +16,8 @@ app.directive('commentReplyForm', [
 
       form.save = function () {
         page.messages.clear(form);
-        (form.target || $scope.volume.top).postComment(form.data)
+        console.log("Target", form);
+        (form.target || $scope.slot || $scope.volume.top).postComment(form.data)
           .then(function () {
             form.validator.server({});
 

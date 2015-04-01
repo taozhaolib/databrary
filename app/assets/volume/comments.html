@@ -1,8 +1,8 @@
-<comment-reply-form ng-if="::canPost" ng-show="!replyTo"></comment-reply-form>
+<comment-reply-form ng-if="canPost && !replyTo"></comment-reply-form>
 
 <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="::commentClass(comment)">
   <div class="row">
-    <div class="col-desktop-6 col-tablet-6 col-mobile-6">
+    <div class="col-desktop-15 col-tablet-9 col-mobile-6">
       <footer class="panel-comments-meta" ng-init="party = comment.who">
         <aside class="portrait ng-cloak">
           <a ng-href="{{::party.route()}}">
@@ -15,6 +15,7 @@
             <a class="portrait-name" ng-href="{{::party.route()}}" ng-bind="::party.name"></a>
             <span class="portrait-extra">
               <time datetime="comment.time | date:'yyyy-MM-dd HH:mm:ss Z'" pubdate ng-bind="::comment.time | date:'MMMM d, yyyy'"></time>
+              <a ng-if="::!(volume.top === comment.container)" ng-href="{{::jumpLink(comment)}}" class="icon session tool" tooltip="'session.jump' | message:'comment'"></a>
             </span>
           </div>
         </aside>
@@ -28,5 +29,5 @@
     </div>
   </div>
 
-  <comment-reply-form ng-if="::canPost" ng-show="replyTo === comment" class="depth-1"></comment-reply-form>
+  <comment-reply-form ng-if="canPost && replyTo === comment"  class="depth-1"></comment-reply-form>
 </article>
