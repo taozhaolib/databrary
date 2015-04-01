@@ -794,6 +794,8 @@ app.controller('volume/slot', [
 
       getClass: ->
         cls = []
+        if !(ruler.selection.empty || ruler.selection.overlaps(this.segment) || this == $scope.replyTo)
+          cls.push('notselected')
         if @comment.parents
           cls.push('depth-' + Math.min(@comment.parents.length, 5))
         cls

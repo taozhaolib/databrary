@@ -241,12 +241,13 @@
         </div>
 
 
-        <section id="slot-comments" class="">
+        <section id="slot-comments" class="slot-comments" ng-if="::!editing">
 
-          <textarea ng-model="volume.newComment"></textarea>
-          <button ng-click="addComment(volume.newComment)">Submit</button>
-
-          <article ng-repeat="comment in comments" ng-if="ruler.selection.empty || ruler.selection.overlaps(comment.segment) || comment === replyTo" class="panel-comments-comment" ng-class="::comment.getClass()">
+          <div>
+            <textarea ng-model="volume.newComment" placeholder="{{::'comments.prompt' | message}}"></textarea>
+            <button class="mini" ng-click="addComment(volume.newComment)">Submit</button>
+          </div>
+          <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.getClass()">
             <div class="row">
               <div class="col-desktop-15 col-tablet-9 col-mobile-6">
                 <footer class="panel-comments-meta" ng-init="party = comment.comment.who">
