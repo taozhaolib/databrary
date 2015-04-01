@@ -769,9 +769,8 @@ app.directive 'spreadsheet', [
                     if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
                       rs.push
                         r:r
-                        v:r.measures[info.metric.id]
+                        v:r.measures[info.metric.id].toLowerCase()
                         d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
-                        l:Object.keys(r.measures).map(mf(r)).join(' ').toLowerCase()
                   editScope.records = rs
                 else if info.metric.options
                   editScope.type = 'options'
@@ -919,7 +918,7 @@ app.directive 'spreadsheet', [
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
             for r in editScope.records
-              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.l.includes(inputl)
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.v.startsWith(inputl)
             v = if info.metric.options
                 (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
               else if input
