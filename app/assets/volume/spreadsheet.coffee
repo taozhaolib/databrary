@@ -303,7 +303,7 @@ app.directive 'spreadsheet', [
                 td.appendChild(document.createTextNode("add " + cat.name))
               if editing
                 if cols > 1 && m != undefined
-                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+n+'_'+m)
+                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+(n||0)+'_'+m)
                   row.appendChild(td)
                   td.setAttribute("colspan", cols-1)
                 td.className = 'null add'
@@ -565,7 +565,7 @@ app.directive 'spreadsheet', [
           saveRun cell, act.then (record) ->
             if record
               r = record.id
-              info.n = inc(counts[info.i], info.c) unless 'n' of info
+              info.n = inc(counts[info.i], info.c) unless info.record
 
               for m, rcm of records[info.c]
                 v = if m of record then record[m] else record.measures[m]
