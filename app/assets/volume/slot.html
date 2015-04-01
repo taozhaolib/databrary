@@ -246,7 +246,7 @@
             <button ng-click="addComment(form.comment.text)">Submit</button>
           </div>
 
-          <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.getClass()">
+          <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.classes">
             <div class="row">
               <div class="col-desktop-15 col-tablet-9 col-mobile-6">
                 <footer class="panel-comments-meta" ng-init="party = comment.comment.who">
