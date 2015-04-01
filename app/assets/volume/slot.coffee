@@ -806,6 +806,7 @@ app.controller('volume/slot', [
       slot.postComment {text:message}, getSelection(), replyTo?.comment.id
       .then (c) ->
           slot.getSlot(slot.segment, ['comments']).then((res) ->
+              $scope.form.comment.text = ''
               $scope.comments = (new Comment(comment) for comment in res.comments)
             , (res) ->
                 messages.addError
