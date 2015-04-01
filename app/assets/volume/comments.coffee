@@ -38,4 +38,7 @@ app.directive 'volumeComments', [
         form.cancelFn = $scope.setReply
         form.target = $scope.replyTo
         event.stopPropagation()
+
+      $scope.jumpLink = (comment) ->
+        comment.container.route {asset: comment.id, select:comment.segment.format()}
 ]
