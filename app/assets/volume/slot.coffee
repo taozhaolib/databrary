@@ -56,7 +56,7 @@ app.controller('volume/slot', [
       tlr = tl.getBoundingClientRect()
       p = (position - tlr.left) / tlr.width
       if p >= 0 && p <= 1
-        ruler.range.l + p * (ruler.range.u - ruler.range.l)
+        Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
       else if p < 0
         -Infinity
       else if p > 1
