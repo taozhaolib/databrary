@@ -1,20 +1,24 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Transcode
   ( module Databrary.Model.Transcode.Types
+  , transcodeAuth
   , lookupTranscode
   , addTranscode
   , updateTranscode
   ) where
 
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Lazy as BSL
 import Data.Maybe (fromMaybe)
+import Data.Monoid ((<>))
 import Database.PostgreSQL.Typed.Query (pgSQL)
 
 import Databrary.DB
 import Databrary.Has (view, peek)
-import Databrary.Store
+import Databrary.Resource
+import Databrary.Crypto
 import Databrary.Store.Types
-import Databrary.Store.Asset
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Id
@@ -30,21 +34,12 @@ import Databrary.Model.Transcode.SQL
 defaultTranscodeOptions :: TranscodeArgs
 defaultTranscodeOptions = ["-vf", "pad=iw+mod(iw\\,2):ih+mod(ih\\,2)"]
 
-transcodeArgs :: MonadStorage c m => Transcode -> m TranscodeArgs
-transcodeArgs Transcode{..} = do
-  Just f <- getAssetFile transcodeOrig
-  return $
-    [ "-f", unRawFilePath f
-    , "-r" -- , actionURL ...
-    , "--" ]
-    ++ maybe [] (\l -> ["-ss", show l]) lb
-    ++ maybe [] (\u -> ["-t", show $ u - fromMaybe 0 lb]) (upperBound rng)
-    ++ transcodeOptions
-  where
-  rng = segmentRange transcodeSegment
-  lb = lowerBound rng
+transcodeAuth :: MonadHasResource c m => Transcode -> m BS.ByteString
+transcodeAuth t = signature $ BSL.toStrict $ BSB.toLazyByteString
+  $ maybe id ((<>) . BSB.byteString) (assetSHA1 $ transcodeOrig t)
+  $ BSB.int32LE (unId $ transcodeId t)
 
-lookupTranscode :: DBM m => Id Asset -> m (Maybe Transcode)
+lookupTranscode :: DBM m => Id Transcode -> m (Maybe Transcode)
 lookupTranscode a =
   dbQuery1 $(selectQuery selectTranscode "WHERE transcode.asset = ${a}")
 
@@ -71,7 +66,7 @@ addTranscode orig seg@(Segment rng) opts dur = do
     , transcodeLog = Nothing
     }
 
-updateTranscode :: DBM m => Transcode -> Maybe TranscodePID -> Maybe BS.ByteString -> m Transcode
+updateTranscode :: DBM m => Transcode -> Maybe TranscodePID -> Maybe String -> m Transcode
 updateTranscode tc pid logs = do
   r <- dbQuery1 [pgSQL|UPDATE transcode SET process = ${pid}, log = COALESCE(COALESCE(log || E'\\n', '') || ${logs}, log) WHERE asset = ${assetId $ transcodeAsset tc} AND COALESCE(process, 0) = ${fromMaybe 0 $ transcodeProcess tc} RETURNING log|]
   return $ maybe tc (\l -> tc

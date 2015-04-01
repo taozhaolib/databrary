@@ -1,17 +1,80 @@
+{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
 module Databrary.Store.Transcode
-  ( 
+  ( startTranscode
+  , collectTranscode
   ) where
 
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad (guard, when, unless)
+import Control.Monad.IO.Class (liftIO)
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
+import Data.Maybe (fromMaybe, isNothing)
+import Data.Monoid ((<>))
+import System.Exit (ExitCode(..))
+import System.IO (hClose)
+import Text.Read (readMaybe)
 
-import Databrary.Model.Transcode.Types
+import Databrary.Ops
+import Databrary.Has (peek, peeks)
+import Databrary.DB
+import Databrary.Resource
+import Databrary.ResourceT
+import Databrary.Web.Request
+import Databrary.Model.Audit
+import Databrary.Model.Segment
+import Databrary.Model.Asset
+import Databrary.Model.Transcode
+import Databrary.Action.Route (actionRoute)
+import Databrary.Store
 import Databrary.Store.Types
+import Databrary.Store.Temp
+import Databrary.Store.Asset
 import Databrary.Store.Transcoder
 
-{-
-startTranscode :: DBM m => Transcode -> m TranscodePID
+import {-# SOURCE #-} Databrary.Controller.Transcode
+
+ctlTranscode :: MonadStorage c m => Transcode -> TranscodeArgs -> m (ExitCode, String, String)
+ctlTranscode tc args = do
+  Just ctl <- peeks storageTranscoder
+  liftIO $ runTranscoder ctl ("-i" : show (transcodeId tc) : args)
+
+transcodeArgs :: (MonadStorage c m, MonadHasRequest c m, MonadHasResource c m) => Transcode -> m TranscodeArgs
+transcodeArgs t@Transcode{..} = do
+  Just f <- getAssetFile transcodeOrig
+  req <- peek
+  auth <- transcodeAuth t
+  return $
+    [ "-f", unRawFilePath f
+    , "-r", BSC.unpack $ requestHost req <> actionRoute (remoteTranscode (transcodeId t)) <> "?auth=" <> auth
+    , "--" ]
+    ++ maybe [] (\l -> ["-ss", show l]) lb
+    ++ maybe [] (\u -> ["-t", show $ u - fromMaybe 0 lb]) (upperBound rng)
+    ++ transcodeOptions
+  where
+  rng = segmentRange transcodeSegment
+  lb = lowerBound rng
+
+startTranscode :: (MonadStorage c m, DBM m, MonadHasRequest c m, MonadHasResource c m) => Transcode -> m (Maybe TranscodePID)
 startTranscode tc = do
   tc' <- updateTranscode tc lock Nothing
-  unless (tronscodePID tc' == lock) $ fail $ "startTranscode " ++ show (assetId (transcodeAsset tc))
-  where lock = Just -1
-        -}
+  unless (transcodeProcess tc' == lock) $ fail $ "startTranscode " ++ show (transcodeId tc)
+  args <- transcodeArgs tc
+  (r, out, err) <- ctlTranscode tc' args
+  let pid = guard (r == ExitSuccess) >> readMaybe out
+  updateTranscode tc' pid $ (isNothing pid ?> out) <> (null err ?!> err)
+  return pid
+  where lock = Just (-1)
+
+collectTranscode :: (MonadResourceT c m, MonadStorage c m, DBM m, MonadAudit c m) => Transcode -> Int -> Maybe BS.ByteString -> String -> m ()
+collectTranscode tc 0 sha1 logs = do
+  tc' <- updateTranscode tc Nothing (Just logs)
+  (f, h) <- makeTempFile
+  liftIO $ hClose h
+  (r, out, err) <- ctlTranscode tc ["-c", BSC.unpack $ tempFilePath f]
+  when (r /= ExitSuccess) $ do
+    updateTranscode tc' Nothing (Just $ out ++ err)
+    fail $ "collectTranscode " ++ show (transcodeId tc) ++ ": " ++ show r ++ "\n" ++ out ++ err
+  -- TODO: probe
+  changeAsset (transcodeAsset tc)
+    { assetSHA1 = sha1
+    } (Just $ tempFilePath f)

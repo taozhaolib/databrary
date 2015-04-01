@@ -149,7 +149,7 @@ processAsset api target = do
         }
       })
     upfile
-  changeAsset (slotAsset as'')
+  changeAsset (slotAsset as'') Nothing
   changeAssetSlot as''
   case api of
     JSON -> okResponse [] $ assetSlotJSON as''

@@ -1,16 +1,18 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Crypto
-  ( sign
+  ( signature
+  , sign
   , unSign
+  , constEqBytes
   ) where
 
-import Control.Monad (guard)
 import qualified Crypto.Hash as Hash
-import Data.Byteable (toBytes)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Base64.URL as Base64
+import Data.Byteable (toBytes, constEqBytes)
 import Data.Monoid ((<>))
 
+import Databrary.Ops
 import Databrary.Has (peeks)
 import Databrary.Resource
 import Databrary.Entropy
@@ -39,9 +41,7 @@ sign msg = do
 unSign :: MonadHasResource c m => BS.ByteString -> m (Maybe BS.ByteString)
 unSign sigmsg = do
   sig' <- signature (msg <> nonce)
-  return $ do
-    guard (sig == sig')
-    return msg
+  return $ constEqBytes sig sig' ?> msg
   where
   (sig, noncemsg) = BS.splitAt hmacLength sigmsg
   (nonce64, msg) = BS.splitAt nonceLength noncemsg

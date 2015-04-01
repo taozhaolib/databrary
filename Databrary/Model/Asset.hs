@@ -53,14 +53,15 @@ lookupAsset ai = do
 
 addAsset :: (MonadAudit c m, MonadStorage c m) => Asset -> Maybe RawFilePath -> m Asset
 addAsset ba fp = do
-  ba' <- maybe (return ba) (storeAssetFile ba) fp
   ident <- getAuditIdentity
+  ba' <- maybe (return ba) (storeAssetFile ba) fp
   dbQuery1' $(insertAsset 'ident 'ba')
 
-changeAsset :: MonadAudit c m => Asset -> m ()
-changeAsset a = do
+changeAsset :: (MonadAudit c m, MonadStorage c m) => Asset -> Maybe RawFilePath -> m ()
+changeAsset a fp = do
   ident <- getAuditIdentity
-  dbExecute1' $(updateAsset 'ident 'a)
+  a2 <- maybe (return a) (storeAssetFile a) fp
+  dbExecute1' $(updateAsset 'ident 'a2)
 
 supersedeAsset :: DBM m => Asset -> Asset -> m ()
 supersedeAsset old new =
