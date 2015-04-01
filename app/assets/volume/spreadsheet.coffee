@@ -771,6 +771,7 @@ app.directive 'spreadsheet', [
                         r:r
                         v:r.measures[info.metric.id]
                         d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
+                        l:Object.keys(r.measures).map(mf(r)).join(' ').toLowerCase()
                   editScope.records = rs
                 else if info.metric.options
                   editScope.type = 'options'
@@ -901,32 +902,40 @@ app.directive 'spreadsheet', [
           info = editScope.info
           o = []
           defd = false
-          add = (t, f, nd) ->
+          add = (t, f, d) ->
             o.push
               text: t
               select: (cell) ->
                 f(cell ? unedit(false))
                 undefined
-              default: !nd && !defd
-            defd ||= !nd
+              default: d && !defd
+            defd ||= d
           if !input && info.r
             add("Remove " + info.record.displayName + " from this session",
-              (cell) -> setRecord(cell, info, null))
+              (cell) -> setRecord(cell, info, null),
+              true)
           else if !info.r || input != info.record.measures[info.metric.id]
+            inputl = input.toLowerCase()
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
             for r in editScope.records
-              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v != input) if r.d.includes(input)
-            if info.metric.options
-              # TODO
-            else if input
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.l.includes(inputl)
+            v = if info.metric.options
+                (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
+              else if input
+                [input]
+              else
+                []
+            v.forEach (i) ->
               if info.r
-                add("Change all " + info.record.displayName + " " + info.metric.display + " to '" + input + "'",
-                  (cell) -> saveMeasure(cell, info.record, info.metric, input))
-              add("Create new " + info.category.name + " with " + info.metric.name + " '" + input + "'",
-                (cell) -> setRecord(cell, info).then (r) ->
-                  saveMeasure(cell, r, info.metric, input) if r
-                  return)
+                add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
+                  (cell) -> saveMeasure(cell, info.record, info.metric, i),
+                  i == input)
+              add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'"
+                , (cell) -> setRecord(cell, info).then (r) ->
+                    saveMeasure(cell, r, info.metric, i) if r
+                    return
+                , i == input)
           o
 
         optionCompletions = (input) ->
