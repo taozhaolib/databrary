@@ -702,6 +702,9 @@ app.directive 'spreadsheet', [
               c = optionCompletions(value) if value
               value = c[0] if c?.length
 
+          if type == 'ident'
+            return
+
           switch info.t
             when 'name', 'date', 'consent'
               saveSlot(cell, info, value)
@@ -886,7 +889,35 @@ app.directive 'spreadsheet', [
 
         editScope.identCompleter = (input) ->
           info = editScope.info
-          []
+          o = []
+          defd = false
+          add = (t, f, d) ->
+            o.push
+              text: t
+              select: () ->
+                f(unedit(false))
+                undefined
+              default: d && !defd
+            defd ||= d
+          if input
+            set = (r) -> (cell) ->
+              setRecord(cell, info, r)
+            for ri, r of volume.records
+              if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
+                v = r.measures[info.metric.id]
+                add("Use " + r.displayName, set(r), v == input) if v.includes(input)
+            if !info.r || input != info.record.measures[info.metric.id]
+              if info.r
+                add("Change all " + info.record.displayName + " " + info.metric.display + " to '" + input + "'", (cell) ->
+                  saveMeasure(cell, info.record, info.metric, input))
+              add("Create new " + info.category.name + " with " + info.metric.name + " '" + input + "'", (cell) ->
+                setRecord(cell, info).then (r) ->
+                  saveMeasure(cell, r, info.metric, input) if r
+                  return)
+          else if info.r
+            add("Remove " + info.record.displayName + " from this session", (cell) ->
+              setRecord(cell, info, null))
+          o
 
         optionCompletions = (input) ->
           i = input.toLowerCase()
