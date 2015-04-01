@@ -90,7 +90,9 @@ app.directive 'inputCompleter', [
         $scope.selected %= $scope.choices.length
         if $scope.selected < 0
           $scope.selected += $scope.choices.length
-        setValue($scope.choices[$scope.selected].text)
+        c = $scope.choices[$scope.selected]
+        if typeof c.select == 'string'
+          setValue(c.select)
         return
 
       $scope.search(input.value)
