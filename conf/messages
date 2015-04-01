@@ -517,6 +517,7 @@ wizard.register-agent.instructions=In order to access Databrary resources, you m
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
+wizard.register-request.instructions=
 
 wizard.register-pending.name=Stay Tuned
 wizard.register-pending.description=Tips for exploring Databrary.
