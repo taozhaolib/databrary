@@ -144,7 +144,7 @@ app.directive 'spreadsheet', [
             info.category = getCategory(info.c)
           if 'i' of info
             info.slot = slots[info.i]
-            if 'n' of info
+            if 'n' of info && info.n of records[info.c].id
               info.record = volume.records[info.r = records[info.c].id[info.n][info.i]]
             if 'a' of info
               info.asset = assets[info.i][info.a]
@@ -211,7 +211,7 @@ app.directive 'spreadsheet', [
             metrics.pop() # remove 'id' (necessarily last)
             metrics = _.map metrics, getMetric
             # add back the 'id' column first if needed
-            if !metrics.length || editing && !(metrics.length == 1 && metrics[0].options)
+            if !metrics.length
               metrics.unshift(pseudoMetric.id)
             si = metricCols.length
             metricCols.push.apply metricCols, _.map metrics, (m) ->
@@ -283,7 +283,7 @@ app.directive 'spreadsheet', [
             td.id = i
           td
 
-        generateMultiple = (cat, cols, row, i, n, t) ->
+        generateMultiple = (cat, cols, row, i, n, t, m) ->
           if n == undefined
             return if t == 1
           else
@@ -301,7 +301,11 @@ app.directive 'spreadsheet', [
                 td.appendChild(document.createTextNode(cat.not))
               else if editing
                 td.appendChild(document.createTextNode("add " + cat.name))
-              if edit
+              if editing
+                if cols > 1 && m != undefined
+                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+(n||0)+'_'+m)
+                  row.appendChild(td)
+                  td.setAttribute("colspan", cols-1)
                 td.className = 'null add'
                 td.id = id + '-add_' + i + '_' + cat.id
           td
@@ -312,7 +316,7 @@ app.directive 'spreadsheet', [
           c = col.category.id
           t = counts[i][c] || 0
           r = records[c]
-          if td = generateMultiple(col.category, l, row, i, n, t)
+          if td = generateMultiple(col.category, l, row, i, n, t, col.start)
             if n == undefined
               for n in [0..t-1] by 1
                 td.classList.add('ss-rec_' + r.id[n][i])
@@ -561,7 +565,7 @@ app.directive 'spreadsheet', [
           saveRun cell, act.then (record) ->
             if record
               r = record.id
-              info.n = inc(counts[info.i], info.c) unless 'n' of info
+              info.n = inc(counts[info.i], info.c) unless info.record
 
               for m, rcm of records[info.c]
                 v = if m of record then record[m] else record.measures[m]
@@ -679,8 +683,6 @@ app.directive 'spreadsheet', [
               else if !isNaN(v = parseInt(value, 10))
                 if v != info.r
                   setRecord(cell, info, volume.records[v])
-                else
-                  #edit(cell, info, true) # broken and/or unreachable for most events
               return
             when 'metric'
               if value != undefined
@@ -697,8 +699,12 @@ app.directive 'spreadsheet', [
             when 'options'
               # force completion of the first match
               # this completely prevents people from using prefixes of options but maybe that's reasonable
-              c = editCompletions(value) if value
+              c = optionCompletions(value) if value
               value = c[0] if c?.length
+
+          if type == 'ident'
+            editScope.identCompleter(value).find((o) -> o.default)?.select(cell)
+            return
 
           switch info.t
             when 'name', 'date', 'consent'
@@ -726,7 +732,7 @@ app.directive 'spreadsheet', [
           save(cell, editScope.type, editInput.value) if event != false
           cell
 
-        edit = (cell, info, alt) ->
+        edit = (cell, info) ->
           switch info.t
             when 'name'
               return if info.slot.id == volume.top.id
@@ -746,14 +752,28 @@ app.directive 'spreadsheet', [
                 return
               return if info.slot.id == volume.top.id
               if info.t == 'rec' && info.metric.id == 'id'
+                # trash/bullet: remove
                 setRecord(cell, info, null)
                 return
-              if info.t == 'rec' && (!info.col.first || alt)
+              if info.t == 'rec'
                 m = info.metric.id
                 # we need a real metric here:
                 return unless typeof m == 'number'
-                editInput.value = volume.records[info.r].measures[m] ? ''
-                if info.metric.options
+                editInput.value = info.record?.measures[m] ? ''
+                if info.col.first
+                  editScope.type = 'ident'
+                  editScope.info = info
+                  rs = []
+                  mf = (r) -> (m) -> r.measures[m]
+                  for ri, r of volume.records
+                    if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
+                      rs.push
+                        r:r
+                        v:r.measures[info.metric.id]
+                        d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
+                        l:Object.keys(r.measures).map(mf(r)).join(' ').toLowerCase()
+                  editScope.records = rs
+                else if info.metric.options
                   editScope.type = 'options'
                   editScope.options = info.metric.options
                 else if info.metric.long
@@ -873,17 +893,57 @@ app.directive 'spreadsheet', [
           unedit($event)
           false
 
-        editCompletions = (input) ->
-          i = input.toLowerCase()
-          (o for o in editScope.options when o.toLowerCase().startsWith(i))
-
         editSelect = () ->
           editInput.value = @text
           unedit(true)
           @text
 
-        editScope.completer = (input) ->
-          match = editCompletions(input)
+        editScope.identCompleter = (input) ->
+          info = editScope.info
+          o = []
+          defd = false
+          add = (t, f, d) ->
+            o.push
+              text: t
+              select: (cell) ->
+                f(cell ? unedit(false))
+                undefined
+              default: d && !defd
+            defd ||= d
+          if !input && info.r
+            add("Remove " + info.record.displayName + " from this session",
+              (cell) -> setRecord(cell, info, null),
+              true)
+          else if !info.r || input != info.record.measures[info.metric.id]
+            inputl = input.toLowerCase()
+            set = (r) -> (cell) ->
+              setRecord(cell, info, r)
+            for r in editScope.records
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.l.includes(inputl)
+            v = if info.metric.options
+                (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
+              else if input
+                [input]
+              else
+                []
+            v.forEach (i) ->
+              if info.r
+                add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
+                  (cell) -> saveMeasure(cell, info.record, info.metric, i),
+                  i == input)
+              add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'"
+                , (cell) -> setRecord(cell, info).then (r) ->
+                    saveMeasure(cell, r, info.metric, i) if r
+                    return
+                , i == input)
+          o
+
+        optionCompletions = (input) ->
+          i = input.toLowerCase()
+          (o for o in editScope.options when o.toLowerCase().startsWith(i))
+
+        editScope.optionsCompleter = (input) ->
+          match = optionCompletions(input)
           switch match.length
             when 0
               input
