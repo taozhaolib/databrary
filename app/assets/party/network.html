@@ -57,9 +57,9 @@
   </article>
 
   <fieldset class="clean">
-    <button class="green" ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('apply'))" message="network.apply.local"></button>
-    <button class="green" ng-if="::isParent" ng-click="page.$location.url(page.models.Login.user.editRoute('grant') + '#auth-' + party.id)" ng-bind="::'network.apply.foreign' | message:party.name"></button>
-    <button class="green" ng-if="::!(party.institution || isRelation)" ng-click="grant()" ng-bind="::'network.apply.foreign' | message:party.name"></button>
+    <button ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('apply'))" message="network.apply.local"></button>
+    <button ng-if="::isParent" ng-click="page.$location.url(page.models.Login.user.editRoute('grant') + '#auth-' + party.id)" ng-bind="::'network.apply.foreign' | message:party.name"></button>
+    <button ng-if="::!(party.institution || isRelation)" ng-click="grant()" ng-bind="::'network.apply.foreign' | message:party.name"></button>
   </fieldset>
 </div>
 
@@ -121,7 +121,7 @@
   </article>
 
   <fieldset class="clean">
-    <button class="green" ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('grant'))" message="network.grant.local"></button>
-    <button class="green" ng-if="::!isRelation" ng-click="apply()" ng-bind="::'network.grant.foreign' | message:party.name"></button>
+    <button ng-if="::isAdmin" ng-click="page.$location.url(party.editRoute('grant'))" message="network.grant.local"></button>
+    <button ng-if="::!isRelation" ng-click="apply()" ng-bind="::'network.grant.foreign' | message:party.name"></button>
   </fieldset>
 </div>
