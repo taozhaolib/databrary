@@ -87,7 +87,7 @@
             <ul class="flat">
               <li><strong ng-bind="::page.models.Login.user.name"></strong></li>
               <li ng-if="::!page.models.Login.isAuthorized()">
-                <a ng-href="{{::page.router.register()}}" message="toolbar.reregister"></a>
+                <a ng-href="{{::page.router.partyEdit(page.models.Login.user, {page:'apply'})}}" message="toolbar.reregister"></a>
               </li>
               <li>
                 <a ng-href="{{::page.router.profile()}}" message="toolbar.profile"></a>
