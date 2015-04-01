@@ -703,6 +703,7 @@ app.directive 'spreadsheet', [
               value = c[0] if c?.length
 
           if type == 'ident'
+            editScope.identCompleter(value).find((o) -> o.default)?.select(cell)
             return
 
           switch info.t
@@ -762,6 +763,15 @@ app.directive 'spreadsheet', [
                 if info.col.first
                   editScope.type = 'ident'
                   editScope.info = info
+                  rs = []
+                  mf = (r) -> (m) -> r.measures[m]
+                  for ri, r of volume.records
+                    if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
+                      rs.push
+                        r:r
+                        v:r.measures[info.metric.id]
+                        d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
+                  editScope.records = rs
                 else if info.metric.options
                   editScope.type = 'options'
                   editScope.options = info.metric.options
@@ -891,32 +901,32 @@ app.directive 'spreadsheet', [
           info = editScope.info
           o = []
           defd = false
-          add = (t, f, d) ->
+          add = (t, f, nd) ->
             o.push
               text: t
-              select: () ->
-                f(unedit(false))
+              select: (cell) ->
+                f(cell ? unedit(false))
                 undefined
-              default: d && !defd
-            defd ||= d
-          if input
+              default: !nd && !defd
+            defd ||= !nd
+          if !input && info.r
+            add("Remove " + info.record.displayName + " from this session",
+              (cell) -> setRecord(cell, info, null))
+          else if !info.r || input != info.record.measures[info.metric.id]
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
-            for ri, r of volume.records
-              if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
-                v = r.measures[info.metric.id]
-                add("Use " + r.displayName, set(r), v == input) if v.includes(input)
-            if !info.r || input != info.record.measures[info.metric.id]
+            for r in editScope.records
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v != input) if r.d.includes(input)
+            if info.metric.options
+              # TODO
+            else if input
               if info.r
-                add("Change all " + info.record.displayName + " " + info.metric.display + " to '" + input + "'", (cell) ->
-                  saveMeasure(cell, info.record, info.metric, input))
-              add("Create new " + info.category.name + " with " + info.metric.name + " '" + input + "'", (cell) ->
-                setRecord(cell, info).then (r) ->
+                add("Change all " + info.record.displayName + " " + info.metric.display + " to '" + input + "'",
+                  (cell) -> saveMeasure(cell, info.record, info.metric, input))
+              add("Create new " + info.category.name + " with " + info.metric.name + " '" + input + "'",
+                (cell) -> setRecord(cell, info).then (r) ->
                   saveMeasure(cell, r, info.metric, input) if r
                   return)
-          else if info.r
-            add("Remove " + info.record.displayName + " from this session", (cell) ->
-              setRecord(cell, info, null))
           o
 
         optionCompletions = (input) ->
