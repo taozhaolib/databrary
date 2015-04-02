@@ -52,13 +52,16 @@ final class Tag private (val id : Tag.Id, val name : String) extends TableRowId[
     TagWeight.getSlot(this, slot)
   def containers(implicit site : Site) : Future[Seq[TagWeightContainer]] =
     TagWeightContainer.get(this)
+  def coverage(implicit site : Site) : Future[Seq[TagCoverage]] =
+    TagCoverage.getTag(this)
   def coverage(slot : Slot) : Future[TagCoverage] =
     TagCoverage.getSlot(this, slot)
 
   def json : JsonRecord = JsonRecord(name)
   def json(options : JsonOptions.Options)(implicit site : Site) : Future[JsonRecord] =
-    JsonOptions(json, options,
-      "containers" -> (opt => containers.map(JsonArray.map(_.json)))
+    JsonOptions(json, options
+    , "containers" -> (opt => containers.map(JsonArray.map(_.json)))
+    , "coverage" -> (opt => coverage.map(JsonArray.map(c => c.slot.slotJson ++ c.json)))
     )
 }
 
@@ -127,7 +130,7 @@ private[models] object KeywordUse extends Table[Unit]("keyword_use") {
 }
 
 sealed class TagWeight protected (val tag : Tag, val weight : Int, val keyword : Boolean, val vote : Boolean) {
-  def json : JsonRecord = tag.json ++ JsonObject.flatten(
+  def json = JsonObject.flatten(
     Some('weight -> weight),
     if (keyword) Some('keyword -> keyword) else None,
     if (vote) Some('vote -> vote) else None
@@ -202,9 +205,9 @@ object TagWeightContainer extends TagWeightView[TagWeightContainer] {
     rows(tag, sql"WHERE tag_use.tag = ${tag.id}")
 }
 
-final class TagCoverage private (tag : Tag, weight : Int, val coverage : Seq[Segment], val keywords : Seq[Segment], val votes : Seq[Segment])
+final class TagCoverage private (val slot : Slot, tag : Tag, weight : Int, val coverage : Seq[Segment], val keywords : Seq[Segment], val votes : Seq[Segment])
   extends TagWeight(tag, weight, keywords.nonEmpty, votes.nonEmpty) {
-  override def json = tag.json ++ JsonObject.flatten(
+  override def json = JsonObject.flatten(
     Some('weight -> weight),
     Some('coverage -> coverage),
     if (keywords.nonEmpty) Some('keyword -> keywords) else None,
@@ -219,29 +222,37 @@ object TagCoverage extends Table[TagCoverage]("tag_coverage") {
     , SelectAs[IndexedSeq[Segment]]("segments_union(CASE WHEN tag_use.tableoid = " + KeywordUse.tableOID + " THEN tag_use.segment ELSE 'empty' END)", "keywords")
     , SelectAs[IndexedSeq[Segment]](("segments_union(CASE WHEN tag_use.tableoid = " + TagUse.tableOID) +: sql" AND tag_use.who = ${site.identity.id} THEN tag_use.segment ELSE 'empty' END)", "votes")
     )(FromTable("tag_use"))
-  private val groupColumn = SelectColumn[Tag.Id]("tag")
-  private[this] def groupBy = groupColumn.fromTable(FromTable("tag_use"))
-  protected def columns(query : Statement)(implicit site : Site) =
-    aggregateColumns.fromTable
-    .fromQuery((aggregateColumns ~+ groupBy).statement + " " ++ query ++ (" GROUP BY " +: groupBy))
-
-  private def rows(query : Statement = EmptyStatement, limit : Int = 64)(implicit site : Site) =
-    columns(query)
-    .join(Tag.row on "tag_coverage.tag = tag.id")
-    .map { case ((weight, coverage, keywords, votes), tag) =>
-      new TagCoverage(tag, weight, coverage, keywords, votes)
-    }
-    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
-    .list
 
   private[models] def getSlot(tag : Tag, slot : Slot) =
     aggregateColumns(slot.site)
     .map { (weight, coverage, keywords, votes) =>
-      new TagCoverage(tag, weight, coverage, keywords, votes)
+      new TagCoverage(slot, tag, weight, coverage, keywords, votes)
     }
     .SELECT(sql"WHERE tag_use.tag = ${tag.id} AND tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment")
     .single
 
-  private[models] def getSlot(slot : Slot, limit : Int = 64) =
-    rows(sql"WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment", limit)(slot.site)
+  private[models] def getSlot(slot : Slot, limit : Int = 64) = {
+    implicit val site = slot.site
+    val groupBy = SelectColumn[Tag.Id]("tag_use", "tag")
+    aggregateColumns.fromTable
+    .fromQuery((aggregateColumns ~+ groupBy).statement ++ sql" WHERE tag_use.container = ${slot.containerId} AND tag_use.segment && ${slot.segment}::segment GROUP BY " ++ groupBy)
+    .join(Tag.row on "tag_coverage.tag = tag.id")
+    .map { case ((weight, coverage, keywords, votes), tag) =>
+      new TagCoverage(slot, tag, weight, coverage, keywords, votes)
+    }
+    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
+    .list
+  }
+
+  private[models] def getTag(tag : Tag, limit : Int = 64)(implicit site : Site) = {
+    val groupBy = SelectColumn[Tag.Id]("tag_use", "container")
+    aggregateColumns.fromTable
+    .fromQuery((aggregateColumns ~+ groupBy).statement ++ sql" WHERE tag_use.tag = ${tag.id} GROUP BY " ++ groupBy)
+    .join(Container.row on "tag_coverage.container = container.id")
+    .map { case ((weight, coverage, keywords, votes), container) =>
+      new TagCoverage(container, tag, weight, coverage, keywords, votes)
+    }
+    .SELECT(sql"ORDER BY weight DESC LIMIT $limit")
+    .list
+  }
 }

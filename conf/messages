@@ -253,7 +253,7 @@ wizard.party-edit-account.instructions=
 
 wizard.party-edit-apply.name=Sponsors
 wizard.party-edit-apply.description=Authorizations and memberships granted by others
-wizard.party-edit-apply.instructions=Search here for the Authorized Investigator or Institution from whom you are requesting authorization. Read more about the <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">authorization process</a> and <a href="http://databrary.org/access/guide/investigators.html" target="_blank">its requirements</a>.
+wizard.party-edit-apply.instructions=Search here for the Authorized Investigator or Institution from whom you are requesting authorization. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>.
 
 wizard.party-edit-grant.name=Affiliates
 wizard.party-edit-grant.description=Authorizations and memberships granted to others
@@ -513,7 +513,7 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about the <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">authorization process</a> and <a href="http://databrary.org/access/guide/investigators.html" target="_blank">its requirements</a>.
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. 
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.

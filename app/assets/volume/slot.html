@@ -33,7 +33,7 @@
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
                   <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
-                  <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
+                  <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.asset.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
                 </h1>
@@ -213,7 +213,7 @@
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length && t.asset.segment.full}">
-                    <span ng-bind="t.name"></span>
+                    <span ng-bind="t.asset.name || t.data.time || t.file.file.name"></span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>

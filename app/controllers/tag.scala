@@ -56,6 +56,6 @@ object TagApi extends TagController with ApiController {
   }
 
   def top() = SiteAction.async { implicit request =>
-    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](_.json)(l)))
+    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](w => w.tag.json ++ w.json)(l)))
   }
 }

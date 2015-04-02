@@ -809,6 +809,7 @@ app.controller('volume/slot', [
               $scope.form.comment.text = $scope.form.reply = ''
               $scope.comments = (new Comment(comment) for comment in res.comments)
               comment.update() for comment in $scope.comments
+              return
             , (res) ->
                 messages.addError
                   body: constants.message('comments.update.error')

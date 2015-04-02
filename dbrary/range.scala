@@ -251,6 +251,7 @@ object Range {
   implicit def jsonWrites[T : json.Writes] : json.Writes[Range[T]] =
     json.Writes[Range[T]] { o =>
       if (o.isEmpty) json.JsNull
+      else if (o.isFull) json.JsArray(Seq())
       else o.singleton.fold[json.JsValue](
         json.JsArray(Seq(json.Json.toJson(o.lowerBound), json.Json.toJson(o.upperBound))))(
         json.Json.toJson(_))
