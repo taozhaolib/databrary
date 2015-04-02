@@ -921,10 +921,10 @@ app.directive 'spreadsheet', [
               add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.v.startsWith(inputl)
             v = if info.metric.options
                 (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
-              else if input
-                [input]
               else
                 []
+            if input && !v.length
+              v = [input]
             v.forEach (i) ->
               if info.r
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
@@ -935,6 +935,10 @@ app.directive 'spreadsheet', [
                     saveMeasure(cell, r, info.metric, i) if r
                     return
                 , i == input)
+          else
+            add("Keep " + info.record.displayName,
+              (cell) -> return,
+              true)
           o
 
         optionCompletions = (input) ->
