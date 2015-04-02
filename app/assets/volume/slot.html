@@ -243,7 +243,7 @@
         <section ng-if="::!editing" id="slot-comments" class="slot-comments">
           <div ng-if="!commentReply">
             <textarea ng-model="form.comment.text" placeholder="{{::'comments.prompt' | message}}"></textarea>
-            <button ng-click="addComment(form.comment.text)" class="mini">Submit</button>
+            <button ng-click="addComment(form.comment.text)" class="mini" message="comments.post"></button>
           </div>
 
           <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.classes">
@@ -268,13 +268,12 @@
                 <div class="panel-comments-body" ng-if="commentReply !== comment">
                   <button ng-click="comment.setReply($event)" class="mini" message="comments.reply"></button>
                 </div>
-
               </div>
             </div>
             <div ng-if="commentReply === comment">
              <textarea ng-model="form.comment.reply" focus></textarea>
-             <button ng-click="addComment(form.comment.reply, comment)">Post</button>
-             <button ng-click="comment.setReply()">Cancel</button>
+             <button ng-click="addComment(form.comment.reply, comment)" message="comments.post"></button>
+             <button ng-click="comment.setReply()" message="comments.cancel"></button>
             </div>
           </article>
         </section>
