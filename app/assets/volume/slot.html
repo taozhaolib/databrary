@@ -272,7 +272,7 @@
               </div>
             </div>
             <div ng-if="commentReply === comment">
-             <textarea ng-model="form.comment.reply"></textarea>
+             <textarea ng-model="form.comment.reply" focus></textarea>
              <button ng-click="addComment(form.comment.reply, comment)">Post</button>
              <button ng-click="comment.setReply()">Cancel</button>
             </div>

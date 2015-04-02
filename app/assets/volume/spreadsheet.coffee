@@ -769,7 +769,7 @@ app.directive 'spreadsheet', [
                     if (r.category || 0) == info.category.id && !(ri of depends && info.i of depends[ri])
                       rs.push
                         r:r
-                        v:r.measures[info.metric.id].toLowerCase()
+                        v:(r.measures[info.metric.id] ? '').toLowerCase()
                         d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
                   editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
                 else if info.metric.options
