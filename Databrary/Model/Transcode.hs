@@ -15,7 +15,7 @@ import Data.Monoid ((<>))
 import Database.PostgreSQL.Typed.Query (pgSQL)
 
 import Databrary.DB
-import Databrary.Has (view, peek)
+import Databrary.Has (peek)
 import Databrary.Resource
 import Databrary.Crypto
 import Databrary.Store.Types
@@ -23,7 +23,6 @@ import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Id
 import Databrary.Model.Party
-import Databrary.Model.Identity
 import Databrary.Model.Offset
 import Databrary.Model.Segment
 import Databrary.Model.Format
@@ -43,18 +42,17 @@ lookupTranscode :: DBM m => Id Transcode -> m (Maybe Transcode)
 lookupTranscode a =
   dbQuery1 $(selectQuery selectTranscode "WHERE transcode.asset = ${a}")
 
-addTranscode :: (MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeArgs -> Maybe Offset -> m Transcode
+addTranscode :: (MonadHasSiteAuth c m, MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeArgs -> Maybe Offset -> m Transcode
 addTranscode orig seg@(Segment rng) opts dur = do
-  Identified sess <- peek
-  let own = view sess
-      Just fmt = formatTranscodable (assetFormat orig)
+  own <- peek
+  let Just fmt = formatTranscodable (assetFormat orig)
   a <- addAsset orig
     { assetFormat = fmt
     , assetDuration = dur
     , assetSHA1 = Nothing
     , assetSize = Nothing
     } Nothing
-  dbExecute1' [pgSQL|INSERT INTO transcode (asset, owner, orig, segment, options) VALUES (${assetId a}, ${partyId $ accountParty own}, ${assetId orig}, ${seg}, ${map Just opts})|]
+  dbExecute1' [pgSQL|INSERT INTO transcode (asset, owner, orig, segment, options) VALUES (${assetId a}, ${partyId $ accountParty $ siteAccount own}, ${assetId orig}, ${seg}, ${map Just opts})|]
   dbExecute1 [pgSQL|UPDATE slot_asset SET asset = ${assetId a}, segment = segment(lower(segment) + ${fromMaybe 0 $ lowerBound rng}, COALESCE(lower(segment) + ${upperBound rng}, upper(segment))) WHERE asset = ${assetId orig}|]
   return Transcode
     { transcodeAsset = a

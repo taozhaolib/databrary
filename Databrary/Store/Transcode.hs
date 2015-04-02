@@ -65,7 +65,7 @@ startTranscode tc = do
   return pid
   where lock = Just (-1)
 
-collectTranscode :: (MonadResourceT c m, MonadStorage c m, DBM m, MonadAudit c m) => Transcode -> Int -> Maybe BS.ByteString -> String -> m ()
+collectTranscode :: (MonadResourceT c m, MonadStorage c m, MonadAudit c m) => Transcode -> Int -> Maybe BS.ByteString -> String -> m ()
 collectTranscode tc 0 sha1 logs = do
   tc' <- updateTranscode tc Nothing (Just logs)
   (f, h) <- makeTempFile

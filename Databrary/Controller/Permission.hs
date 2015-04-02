@@ -22,3 +22,4 @@ authAccount = do
   case ident of
     UnIdentified -> result =<< forbiddenResponse
     Identified s -> return $ view s
+    ReIdentified u -> return $ view u

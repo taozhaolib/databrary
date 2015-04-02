@@ -126,6 +126,7 @@ routes = do
       , "upload" >>                   act uploadChunk
                                   <|> act testChunk
       , "funder" >>                   act queryFunder
+      , R.route >>= \t ->             act (remoteTranscode t)
       ]
 
     , html >> msum                    -- /

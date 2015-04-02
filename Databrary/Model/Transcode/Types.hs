@@ -21,7 +21,7 @@ type instance IdType Transcode = Int32
 
 data Transcode = Transcode
   { transcodeAsset :: Asset
-  , transcodeOwner :: Account
+  , transcodeOwner :: SiteAuth
   , transcodeOrig :: Asset
   , transcodeSegment :: Segment
   , transcodeOptions :: TranscodeArgs

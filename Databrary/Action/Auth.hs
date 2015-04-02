@@ -6,6 +6,7 @@ module Databrary.Action.Auth
   , AuthAction
   , withAuth
   , withoutAuth
+  , withReAuth
   ) where
 
 import Control.Monad.Reader (withReaderT, asks)
@@ -14,6 +15,7 @@ import Databrary.Has (makeHasRec)
 import Databrary.Action.Types
 import Databrary.Action.App
 import Databrary.Model.Identity
+import Databrary.Model.Party
 import Databrary.Controller.Analytics
 
 data AuthRequest = AuthRequest
@@ -40,3 +42,8 @@ withAuth f = do
 withoutAuth :: AuthAction -> AppAction
 withoutAuth f =
   withReaderT (\a -> AuthRequest a UnIdentified) $ angularAnalytics >> f
+
+withReAuth :: SiteAuth -> AuthAction -> AppAction
+withReAuth u =
+  withReaderT (\a -> AuthRequest a (ReIdentified u))
+

@@ -28,8 +28,8 @@ determineIdentity = do
   return $ maybe UnIdentified Identified s
 
 foldIdentity :: a -> (Session -> a) -> Identity -> a
-foldIdentity u _ UnIdentified = u
 foldIdentity _ i (Identified s) = i s
+foldIdentity u _ _ = u
 
 maybeIdentity :: (MonadHasIdentity c m) => m a -> (Session -> m a) -> m a
 maybeIdentity u i = foldIdentity u i =<< peek

@@ -12,9 +12,9 @@ import Data.Word (Word8)
 
 import Databrary.Ops
 import Databrary.Crypto
-import Databrary.Web.Form
 import Databrary.Web.Form.Deform
 import Databrary.Action
+import Databrary.Action.Auth
 import Databrary.Model.Id
 import Databrary.Model.Transcode
 import Databrary.Store.Transcode
@@ -38,13 +38,14 @@ sha1Form = do
 remoteTranscode :: Id Transcode -> AppRAction
 remoteTranscode ti = action POST (JSON, ti) $ do
   t <- maybeAction =<< lookupTranscode ti
-  auth <- transcodeAuth t
-  (res, sha1, log) <- runForm Nothing $ do
-    "auth" .:> (deformCheck "Invalid authentication" (constEqBytes auth) =<< deform)
-    "pid" .:> (deformCheck "PID mismatch" (transcodeProcess t ==) =<< deform)
-    liftM3 (,,)
-      ("res" .:> deform)
-      ("sha1" .:> optional sha1Form)
-      ("log" .:> deform)
-  collectTranscode t res sha1 log
-  okResponse [] BS.empty
+  withReAuth (transcodeOwner t) $ do
+    auth <- transcodeAuth t
+    (res, sha1, logs) <- runForm Nothing $ do
+      "auth" .:> (deformCheck "Invalid authentication" (constEqBytes auth) =<< deform)
+      "pid" .:> (deformCheck "PID mismatch" (transcodeProcess t ==) =<< deform)
+      liftM3 (,,)
+        ("res" .:> deform)
+        ("sha1" .:> optional sha1Form)
+        ("log" .:> deform)
+    collectTranscode t res sha1 logs
+    okResponse [] BS.empty
