@@ -26,6 +26,7 @@ app.controller('party/register', [
 
       agreement: function (step) {
         step.$scope.proceed = function () {
+          $scope.registerForm.$setPristine(); // maybe should be $setSubmitted
           page.models.Login.register($scope.registerForm.data)
             .then(function () {
               $scope.registerForm.sent = true;
