@@ -272,8 +272,8 @@
             </div>
             <div ng-if="commentReply === comment">
              <textarea ng-model="form.comment.reply" focus></textarea>
-             <button ng-click="addComment(form.comment.reply, comment)" message="comments.post"></button>
-             <button ng-click="comment.setReply()" message="comments.cancel"></button>
+             <button ng-disabled="form.comment.reply.length <= 0 || form.comment.reply == null" ng-click="addComment(form.comment.reply, comment)" message="comments.post"></button>
+             <button ng-disabled="form.comment.reply.length <= 0 || form.comment.reply == null" ng-click="comment.setReply()" message="comments.cancel"></button>
             </div>
           </article>
         </section>
