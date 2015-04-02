@@ -6,7 +6,6 @@ app.controller('volume/slot', [
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
- #    $scope.newComment = ""
     $scope.volume = slot.volume
     $scope.editing = editing # $scope.editing (but not editing) is also a modal (toolbar) indicator
     $scope.mode = if editing then 'edit' else 'view'
@@ -47,6 +46,27 @@ app.controller('volume/slot', [
       fullRange.l = finite(slot.segment.l, l, 0)
       fullRange.u = finite(slot.segment.u, u, 0)
       return
+
+
+    snapping = (selectionEnd) ->
+     # placeholder pseudo-code, figure out what to replace next
+     listOfAllPlacements = []
+
+     # Make a list of all the stuff that is within four pixels
+     smallPlacements = listOfAllPlacements.filter (i) -> getDistance(i) <= 4
+
+     # It's not inconcievable that we could have multiple items
+     # that are within four pixels.  Subsequently, let's sort so we
+     # can get a handle on the closest
+     smallPlacements.sort (a, b) -> getDistance(a) - getDistance(b)
+
+     # Now that everything is sorted, let's separate out the first element
+     # of the array, which should be the closest. 
+     [closest, rest...] = smallPlacements
+
+     # "snap" the element by setting position to the closest
+     dragPosition = closest.position
+       
 
     offsetPosition = (offset) ->
       return offset unless isFinite offset
@@ -612,6 +632,7 @@ app.controller('volume/slot', [
             return
 
       dragLeft: (event) ->
+        do snapping
         @segment.l = positionOffset(event.clientX)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
