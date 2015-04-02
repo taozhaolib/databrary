@@ -20,10 +20,10 @@ app.directive 'tooltip', [
         wx = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0)
         center = box.left + Math.min(box.width/2, 128)
         if 2*center > ww
-          $scope.style.right = (ww - center - wx - 32) + 'px'
+          $scope.style.right = (ww - center - wx - 20) + 'px'
           $scope.classes.push('tooltip-left')
         else
-          $scope.style.left = (center + wx - 32) + 'px'
+          $scope.style.left = (center + wx - 20) + 'px'
           $scope.classes.push('tooltip-right')
 
         wh = doc.clientHeight

@@ -808,6 +808,7 @@ app.controller('volume/slot', [
           slot.getSlot(slot.segment, ['comments']).then((res) ->
               $scope.form.comment.text = $scope.form.reply = ''
               $scope.comments = (new Comment(comment) for comment in res.comments)
+              comment.update() for comment in $scope.comments
             , (res) ->
                 messages.addError
                   body: constants.message('comments.update.error')
