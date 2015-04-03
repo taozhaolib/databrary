@@ -175,7 +175,7 @@ party.contact.title=Contact
 volumes.title=Volumes
 
 network.title=Authorizations
-network.apply.local=Manage and apply for authorization
+network.apply.local=Request authorization
 network.apply.foreign=Grant authorization to {0}
 network.grant.local=Manage and grant authorizations
 network.grant.foreign=Apply for authorization from {0}
