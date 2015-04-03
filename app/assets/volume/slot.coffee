@@ -56,11 +56,11 @@ app.controller('volume/slot', [
     positionOffset = (position) ->
       tlr = tl.getBoundingClientRect()
       p = (position - tlr.left) / tlr.width
-      if p >= 0 && p <= 1
+      if p >= 0 && p < 1
         Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
       else if p < 0
         -Infinity
-      else if p > 1
+      else if p >= 1
         Infinity
 
     $scope.positionStyle = (p) ->
@@ -293,7 +293,7 @@ app.controller('volume/slot', [
         return
 
       updatePosition: () ->
-        @segment.u = @segment.l + @asset.duration
+        @segment.u = @segment.l + (@asset.duration || 0)
         return
 
       setPosition: (p) ->
