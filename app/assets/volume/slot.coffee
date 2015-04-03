@@ -546,7 +546,7 @@ app.controller('volume/slot', [
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
       metrics: ->
-        ident = constants.category[@record.category]?.ident || [constants.metricName.ident.id]
+        ident = constants.category[@record.category]?.ident || [constants.metricName.ID.id]
         (constants.metric[m] for m of @record.measures when !(+m in ident)).sort(byId)
 
       addMetric = {id:'',name:'Add new value...'}

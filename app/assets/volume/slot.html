@@ -47,7 +47,7 @@
                       <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
-                    <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
+                    <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>
                     <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
                     <dt ng-if="!!current.age">age</dt>
                     <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
@@ -68,7 +68,7 @@
                   <div ng-switch-when="record">
                     <ng-form name="form.measures">
                     <dl class="cf">
-                      <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
+                      <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                         <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>

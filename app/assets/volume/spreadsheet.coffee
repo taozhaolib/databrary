@@ -66,7 +66,7 @@ app.directive 'spreadsheet', [
         id: 0
         name: 'record'
         not: 'No record'
-        template: [constants.metricName.ident.id]
+        template: [constants.metricName.ID.id]
       asset:
         id: 'asset'
         name: 'file'

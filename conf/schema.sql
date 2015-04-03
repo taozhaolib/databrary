@@ -656,7 +656,7 @@ ALTER TABLE "metric"
 	ALTER "name" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
 COMMENT ON COLUMN "metric"."options" IS '(Suggested) options for text enumerations, not enforced.';
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ident', 'SHARED', 'text');
+INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ID', 'SHARED', 'text');
 INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'RESTRICTED', 'date');
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
 INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'SHARED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);

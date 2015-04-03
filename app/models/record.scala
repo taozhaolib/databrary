@@ -86,7 +86,7 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
     }
 
   def ident : String =
-    Maybe(category.fold[Seq[Metric[_]]](Seq(Metric.Ident))(_.ident)
+    Maybe(category.fold[Seq[Metric[_]]](Seq(Metric.ID))(_.ident)
       .flatMap(measures.datum(_)))
     .fold(category.fold("[" + id + "]")(_.name))(_.mkString(", "))
 
