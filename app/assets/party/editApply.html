@@ -18,6 +18,8 @@
           <div class="permission-heading">
             <a ng-href="{{::auth.party.route()}}" class="permission-auth-username" ng-bind="::auth.party.name"></a>
             <span class="permission-auth-email" ng-if="::!!auth.party.email" ng-bind="::auth.party.email"></span>
+            <span ng-if="::!(auth.member || auth.site)" message="auth.pending" class="permission-auth-pending"></span>
+          </div>
           </div>
 
           <div ng-if="::auth.member">
@@ -44,9 +46,6 @@
             <div class="permission-auth-heading" message="auth.expiration"></div>
             <div ng-bind="::auth.expires | date:'longDate'"></div>
             <div ng-if="::!auth.expires" message="auth.expiration.none"></div>
-          </div>
-          <div ng-if="::!(auth.member || auth.site)">
-            <div class="permission-auth-heading" message="auth.pending"></div>
           </div>
         </div>
       </div>
