@@ -1,17 +1,21 @@
-{-# LANGUAGE ForeignFunctionInterface, OverloadedStrings #-}
+{-# LANGUAGE ForeignFunctionInterface, OverloadedStrings, TemplateHaskell #-}
 module Databrary.Passwd
   ( passwordPolicy
   , passwdCheck
+  , Passwd
+  , MonadHasPasswd
+  , initPasswd
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Concurrent.QSem
-import Control.Exception (bracket_)
+import Control.Concurrent.MVar (MVar, newMVar, withMVar)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.ByteString as BS
 import Foreign.C.String (CString)
 import Foreign.Ptr (nullPtr)
-import System.IO.Unsafe (unsafePerformIO)
+
+import Databrary.Has (makeHasRec, peeks)
 
 passwordPolicy :: BCrypt.HashingPolicy
 passwordPolicy = BCrypt.HashingPolicy
@@ -22,13 +26,19 @@ passwordPolicy = BCrypt.HashingPolicy
 foreign import ccall unsafe "crack.h FascistCheckUser"
   fascistCheckUser :: CString -> CString -> CString -> CString -> IO CString
 
-{-# NOINLINE crackSem #-}
-crackSem :: QSem
-crackSem = unsafePerformIO $ newQSem 1
+data Passwd = Passwd
+  { passwdLock :: MVar ()
+  }
 
-passwdCheck :: BS.ByteString -> BS.ByteString -> BS.ByteString -> IO (Maybe BS.ByteString)
-passwdCheck passwd user name =
-  bracket_ (waitQSem crackSem) (signalQSem crackSem) $
+makeHasRec ''Passwd []
+
+initPasswd :: IO Passwd
+initPasswd = Passwd <$> newMVar ()
+
+passwdCheck :: (MonadHasPasswd c m, MonadIO m) => BS.ByteString -> BS.ByteString -> BS.ByteString -> m (Maybe BS.ByteString)
+passwdCheck passwd user name = do
+  lock <- peeks passwdLock
+  liftIO $ withMVar lock $ \() ->
     BS.useAsCString passwd $ \p ->
       BS.useAsCString user $ \u ->
         BS.useAsCString name $ \n -> do

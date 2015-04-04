@@ -1,4 +1,5 @@
 {-# LANGUAGE DataKinds, PatternGuards #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Segment
   ( Segment(..)
   , lowerBound, upperBound

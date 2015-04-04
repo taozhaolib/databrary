@@ -15,6 +15,8 @@ import Databrary.DB (DBConn, initDB)
 import Databrary.Entropy (Entropy, initEntropy)
 import Databrary.Web.Client (HTTPClient, initHTTPClient)
 import Databrary.Store.Storage (Storage, initStorage)
+import Databrary.Passwd (Passwd, initPasswd)
+import Databrary.Media.AV (AV, initAV)
 
 data Resource = Resource
   { resourceConfig :: C.Config
@@ -23,9 +25,11 @@ data Resource = Resource
   , resourceEntropy :: Entropy
   , resourceHTTPClient :: HTTPClient
   , resourceStorage :: Storage
+  , resourcePasswd :: Passwd
+  , resourceAV :: AV
   }
 
-makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy, 'resourceHTTPClient, 'resourceStorage]
+makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy, 'resourceHTTPClient, 'resourceStorage, 'resourcePasswd, 'resourceAV]
 
 initResource :: IO Resource
 initResource = do
@@ -36,3 +40,5 @@ initResource = do
     <*> initEntropy
     <*> initHTTPClient
     <*> initStorage (C.subconfig "store" conf)
+    <*> initPasswd
+    <*> initAV

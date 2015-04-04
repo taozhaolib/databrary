@@ -14,6 +14,7 @@ import Control.Applicative (Applicative, (<$>), (<*>), (<|>))
 import Control.Monad ((<=<))
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Reader (ask)
+import Control.Monad.Trans.Class (lift)
 import qualified Crypto.BCrypt as BCrypt
 import qualified Data.Aeson as JSON
 import qualified Data.ByteString as BS
@@ -69,12 +70,12 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
 emailTextForm = deformRegex "Invalid email address" emailRegex . T.strip =<< deform
 
-passwordForm :: (MonadIO m, Functor m, Monad m) => Account -> DeformT m BS.ByteString
+passwordForm :: (MonadIO m, MonadHasPasswd c m) => Account -> DeformT m BS.ByteString
 passwordForm acct = do
   p <- "once" .:> do
     p <- deform
     deformGuard "Password too short. Must be 7 characters." (7 <= BS.length p)
-    c <- liftIO $ passwdCheck p (TE.encodeUtf8 $ accountEmail acct) (TE.encodeUtf8 $ partyName $ accountParty acct)
+    c <- lift $ passwdCheck p (TE.encodeUtf8 $ accountEmail acct) (TE.encodeUtf8 $ partyName $ accountParty acct)
     Fold.mapM_ (deformError . ("Insecure password: " <>) . TE.decodeLatin1) c
     return p
   "again" .:> do

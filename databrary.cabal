@@ -13,6 +13,8 @@ Cabal-version:       >=1.2
 Executable databrary
   main-is: Databrary/Warp.hs
 
+  other-modules: Databrary.Media.AV
+
   Build-depends:
     base,
     bytestring,
@@ -67,4 +69,5 @@ Executable databrary
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
                -fno-warn-unused-do-bind
 
+  pkgconfig-depends: libavformat, libswscale, libavcodec, libavutil
   extra-libraries: crack
