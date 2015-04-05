@@ -9,6 +9,8 @@ module Databrary.View.Form
   , inputSelect
   , inputEnum
   , inputDate
+  , inputFile
+  , inputHidden
   , htmlForm
   ) where
 
@@ -131,6 +133,19 @@ inputDate val ref dat = H.input
   H.! HA.id    ref
   H.! HA.name  ref
   !? (HA.value <$> (fmap byteStringValue dat <|> fmap (H.toValue . formatTime defaultTimeLocale "%F") val))
+
+inputFile :: Field
+inputFile ref _ = H.input
+  H.! HA.type_ "file"
+  H.! HA.id    ref
+  H.! HA.name  ref
+
+inputHidden :: H.ToValue a => a -> Field
+inputHidden val ref dat = H.input
+  H.! HA.type_ "hidden"
+  H.! HA.id    ref
+  H.! HA.name  ref
+  H.! HA.value (maybe (H.toValue val) byteStringValue dat)
 
 htmlForm :: T.Text -> RouteAction q -> AuthRequest -> FormHtml -> FormHtml
 htmlForm title act req = liftFormHtml $ \form ->

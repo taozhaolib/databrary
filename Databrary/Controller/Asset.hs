@@ -1,9 +1,14 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, PatternGuards #-}
 module Databrary.Controller.Asset
   ( getAsset
   , viewAsset
+  , AssetTarget(..)
   , postAsset
+  , viewEditAsset
   , createAsset
+  , viewCreateAsset
+  , createSlotAsset
+  , viewCreateSlotAsset
   , deleteAsset
   , downloadAsset
   ) where
@@ -14,7 +19,6 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
-import Data.Either (isLeft, isRight)
 import Data.Maybe (fromMaybe, fromJust, isNothing, isJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -25,7 +29,7 @@ import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
-import Databrary.Has (Has, peek, peeks)
+import Databrary.Has (Has, view, peek, peeks)
 import Databrary.Resource
 import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
@@ -57,6 +61,7 @@ import Databrary.Media.AV
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
+import Databrary.Controller.Slot
 import Databrary.Controller.Angular
 import Databrary.View.Asset
 
@@ -79,6 +84,11 @@ viewAsset api i = action GET (api, i) $ withAuth $ do
   case api of
     JSON -> okResponse [] =<< assetJSONQuery asset =<< peeks Wai.queryString
     HTML -> okResponse [] $ show $ assetId $ slotAsset asset -- TODO
+
+data AssetTarget
+  = AssetTargetVolume Volume
+  | AssetTargetSlot Slot
+  | AssetTargetAsset AssetSlot
 
 data FileUploadFile
   = FileUploadForm (FileInfo TempFile)
@@ -120,19 +130,22 @@ detectUpload f =
     _ -> fail "Unhandled format conversion."
     where u = FileUpload f fmt
 
-processAsset :: API -> Either Volume AssetSlot -> AuthAction
+processAsset :: API -> AssetTarget -> AuthAction
 processAsset api target = do
   (fd, ufs) <- getFormData [("file", maxAssetSize)]
-  let as@AssetSlot{ slotAsset = a, assetSlot = s } = either (assetNoSlot . blankAsset) id target
+  let as@AssetSlot{ slotAsset = a, assetSlot = s } = case target of
+        AssetTargetVolume t -> assetNoSlot $ blankAsset t
+        AssetTargetSlot t -> AssetSlot (blankAsset (view t)) (Just t) Nothing
+        AssetTargetAsset t -> t
   (as', up') <- runFormWith fd (api == HTML ?> htmlAssetForm target) $ do
     let file = lookup "file" ufs
     upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
     upfile <- case (file, upload) of
       (Just f, Nothing) -> return $ Just $ FileUploadForm f
       (Nothing, Just u) -> return $ Just $ FileUploadToken u
-      (Nothing, Nothing) -> do
-        when (isLeft target) $ deformError "File or upload required."
-        return $ Nothing
+      (Nothing, Nothing)
+        | AssetTargetAsset _ <- target -> return Nothing
+        | otherwise -> Nothing <$ deformError "File or upload required."
       _ -> Nothing <$ deformError "Conflicting uploaded files found."
     up <- Trav.mapM detectUpload upfile
     let fmt = maybe (assetFormat a) fileUploadFormat up
@@ -162,7 +175,9 @@ processAsset api target = do
       { assetName = Just $ TE.decodeUtf8 $ fileUploadName upfile
       } . Just =<< peeks (fileUploadPath upfile)
     fileUploadRemove upfile
-    when (isRight target) $ supersedeAsset a a'
+    case target of
+      AssetTargetAsset _ -> supersedeAsset a a'
+      _ -> return ()
     t <- Trav.mapM (addTranscode a' fullSegment defaultTranscodeOptions) (fileUploadProbe up)
     -- TODO startTranscode
     return as'
@@ -183,12 +198,35 @@ postAsset api ai = action POST (api, ai) $ withAuth $ do
   r <- assetIsSuperseded (slotAsset asset)
   guardAction (not r) $
     returnResponse conflict409 [] ("This file has already been replaced." :: T.Text)
-  processAsset api (Right asset)
+  processAsset api $ AssetTargetAsset asset
+
+viewEditAsset :: Id Asset -> AppRAction
+viewEditAsset ai = action GET (HTML, ai, "edit" :: T.Text) $ withAuth $ do
+  angular
+  asset <- getAsset PermissionEDIT ai
+  blankForm $ htmlAssetForm $ AssetTargetAsset asset
 
 createAsset :: API -> Id Volume -> AppRAction
 createAsset api vi = action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
-  processAsset api $ Left v
+  processAsset api $ AssetTargetVolume v
+
+viewCreateAsset :: Id Volume -> AppRAction
+viewCreateAsset vi = action GET (HTML, vi, "asset" :: T.Text) $ withAuth $ do
+  angular
+  v <- getVolume PermissionEDIT vi
+  blankForm $ htmlAssetForm $ AssetTargetVolume v
+
+createSlotAsset :: API -> Id Slot -> AppRAction
+createSlotAsset api si = action POST (api, si, "asset" :: T.Text) $ withAuth $ do
+  v <- getSlot PermissionEDIT si
+  processAsset api $ AssetTargetSlot v
+
+viewCreateSlotAsset :: Id Slot -> AppRAction
+viewCreateSlotAsset si = action GET (HTML, si, "asset" :: T.Text) $ withAuth $ do
+  angular
+  s <- getSlot PermissionEDIT si
+  blankForm $ htmlAssetForm $ AssetTargetSlot s
 
 deleteAsset :: API -> Id Asset -> AppRAction
 deleteAsset api ai = action DELETE (api, ai) $ withAuth $ do

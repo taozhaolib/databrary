@@ -70,7 +70,7 @@ routes = do
     , R.route >>= \p -> msum          -- /party/ID
       [                               act (viewParty api p)
       ,                               act (postParty api p)
-      , html >> "edit" >>             act (viewPartyForm p)
+      , html >> "edit" >>             act (viewEditParty p)
       , R.route >>= \a -> msum        --          /authorize/ID
         [                             act (viewAuthorize api p a)
         ,                             act (postAuthorize api p a)
@@ -93,7 +93,8 @@ routes = do
                                   <|> act (deleteVolumeFunder v f)
       , "slot" >>                     act (createContainer api v)
       , "record" >>                   act (createRecord api v)
-      , "asset" >>                    act (createAsset api v)
+      , "asset" >>           (html >> act (viewCreateAsset v))
+                                  <|> act (createAsset api v)
       , json >> "upload" >>           act (uploadStart v)
       ]
     , "volume" >>                     act (createVolume api)
@@ -102,6 +103,8 @@ routes = do
     , R.route >>= \s -> msum          -- /slot/ID/SEG
       [                               act (viewSlot api s)
       ,                               act (postContainer api s)
+      , "asset" >>           (html >> act (viewCreateSlotAsset s))
+                                  <|> act (createSlotAsset api s)
       , R.route >>= \t ->             act (postTag api s t)
                                   <|> act (deleteTag api s t)
       , "comment" >>                  act (postComment api s)
@@ -115,6 +118,7 @@ routes = do
     , R.route >>= \a -> msum          -- /asset/ID
       [                               act (viewAsset api a)
       ,                               act (postAsset api a)
+      , html >> "edit" >>             act (viewEditAsset a)
       ,                               act (deleteAsset api a)
       , html >> "download" >>         act (downloadAsset a)
       , "excerpt" >>          json >> act (postExcerpt a)

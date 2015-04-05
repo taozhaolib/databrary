@@ -3,7 +3,7 @@ module Databrary.Controller.Party
   ( PartyTarget(..)
   , getParty
   , viewParty
-  , viewPartyForm
+  , viewEditParty
   , postParty
   , createParty
   , queryParties
@@ -100,8 +100,8 @@ partyForm p = do
     , partyURL = url
     }
 
-viewPartyForm :: PartyTarget -> AppRAction
-viewPartyForm i = action GET (HTML, i, "edit" :: T.Text) $ withAuth $ do
+viewEditParty :: PartyTarget -> AppRAction
+viewEditParty i = action GET (HTML, i, "edit" :: T.Text) $ withAuth $ do
   angular
   p <- getParty (Just PermissionADMIN) i
   blankForm $ htmlPartyForm $ Just p

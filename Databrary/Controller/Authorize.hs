@@ -82,7 +82,7 @@ postAuthorize api i at@(AuthorizeTarget app oi) = action POST (api, i, at) $ wit
         changeAuthorize c'
         dl <- partyDelegates parent
         agent <- peeks $ fmap accountEmail . partyAccount
-        url <- peeks $ actionURL (viewPartyForm $ TargetParty $ partyId parent) . Just
+        url <- peeks $ actionURL (viewEditParty $ TargetParty $ partyId parent) . Just
         sendMail
           (map Right dl ++ authorizeAddr)
           ("Databrary authorization request from " <> partyName child)
