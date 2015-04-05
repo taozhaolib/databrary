@@ -1,23 +1,37 @@
-{-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable #-}
+{-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable, EmptyDataDecls, OverloadedStrings #-}
 module Databrary.Media.AV
   ( AVError(..)
   , AV
   , initAV
+  , AVProbe(..)
+  , avProbe
+  , avProbeLength
+  , avProbeIsVideo
   ) where
 
-import Control.Applicative ((<$>), (<$))
+import Control.Applicative ((<*>))
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
-import Control.Exception (Exception, throwIO)
-import Control.Monad (when)
+import Control.Exception (Exception, throwIO, bracket_)
+import Control.Monad (void, when, forM)
+import qualified Data.ByteString as BS
+import Data.Int (Int64)
+import Data.List (isPrefixOf)
+import Data.Ratio ((%))
+import Data.Time.Clock (DiffTime)
 import Data.Typeable (Typeable)
 import Data.Word (Word32)
 import Foreign.C.String (CString, peekCAString)
-import Foreign.C.Types (CInt(..), CSize(..))
+import Foreign.C.Types (CInt(..), CUInt(..), CSize(..))
 import Foreign.Marshal.Alloc (allocaBytes)
-import Foreign.Ptr (Ptr, FunPtr)
+import Foreign.Marshal.Utils (with)
+import Foreign.Ptr (Ptr, FunPtr, nullPtr)
 import Foreign.StablePtr
-import Foreign.Storable (peek, poke)
+import Foreign.Storable (peek, poke, peekByteOff, peekElemOff)
 import System.IO.Unsafe (unsafeDupablePerformIO)
+
+import Databrary.Ops
+import Databrary.Store
+import Databrary.Model.Offset
 
 #include <libavformat/avformat.h>
 
@@ -33,19 +47,39 @@ avShowError e = unsafeDupablePerformIO $
 
 data AVError = AVError
   { avErrorCode :: CInt
+  , avErrorFunction :: String
+  , avErrorFile :: Maybe RawFilePath
   } deriving (Typeable)
 
 instance Exception AVError
 
 instance Show AVError where
-  showsPrec p (AVError e) = showParen (p > 10) $
-    showString "AVError " . showString (avShowError e)
+  showsPrec p (AVError e c f) = showParen (p > 10) $
+    showString "AVError "
+    . showString c
+    . maybe id (((' ' :) .) . shows) f
+    . showString ": "
+    . showString (avShowError e)
 
-throwAVErrorIfNegative :: IO CInt -> IO CInt
-throwAVErrorIfNegative f = do
-  r <- f
-  when (r < 0) $ throwIO $ AVError r
+data ErrorFile
+  = NoFile
+  | FileName RawFilePath
+  | FileContext (Ptr AVFormatContext)
+
+errorFile :: ErrorFile -> IO (Maybe RawFilePath)
+errorFile NoFile = return Nothing
+errorFile (FileName f) = return $ Just f
+errorFile (FileContext a) = Just <$> (BS.packCString =<< #{peek AVFormatContext, filename} a)
+
+throwAVErrorIf :: String -> ErrorFile -> IO CInt -> IO CInt
+throwAVErrorIf c f g = do
+  r <- g
+  when (r < 0) $
+    throwIO . AVError r c =<< errorFile f
   return r
+
+throwAVErrorIf_ :: String -> ErrorFile -> IO CInt -> IO ()
+throwAVErrorIf_ c f = void . throwAVErrorIf c f
 
 type AVLockOp = #type enum AVLockOp
 type AVLockmgr a = Ptr (Ptr a) -> AVLockOp -> IO CInt
@@ -80,6 +114,67 @@ initAV :: IO AV
 initAV = do
   avRegisterAll
   mgr <- mkAVLockmgr avLockmgr
-  throwAVErrorIfNegative $ avLockmgrRegister mgr
+  throwAVErrorIf "av_lockmgr_register" NoFile $ avLockmgrRegister mgr
   -- leak mgr
   return AV
+
+data AVFormatContext
+data AVInputFormat
+data AVDictionary
+
+foreign import ccall safe "libavformat/avformat.h avformat_open_input"
+  avformatOpenInput :: Ptr (Ptr AVFormatContext) -> CString -> Ptr AVInputFormat -> Ptr (Ptr AVDictionary) -> IO CInt
+
+foreign import ccall safe "libavformat/avformat.h avformat_close_input"
+  avformatCloseInput :: Ptr (Ptr AVFormatContext) -> IO ()
+
+withAVInput :: AV -> RawFilePath -> (Ptr AVFormatContext -> IO a) -> IO a
+withAVInput AV f g =
+  BS.useAsCString f $ \cf ->
+    with nullPtr $ \a ->
+      bracket_
+        (throwAVErrorIf "avformat_open_input" (FileName f) $ avformatOpenInput a cf nullPtr nullPtr)
+        (avformatCloseInput a)
+        (g =<< peek a)
+
+foreign import ccall safe "libavformat/avformat.h avformat_find_stream_info"
+  avformatFindStreamInfo :: Ptr AVFormatContext -> Ptr (Ptr AVDictionary) -> IO CInt
+
+findAVStreamInfo :: Ptr AVFormatContext -> IO ()
+findAVStreamInfo a = throwAVErrorIf_ "avformat_find_stream_info" (FileContext a) $
+  avformatFindStreamInfo a nullPtr
+
+type AVCodecID = #type enum AVCodecID
+
+foreign import ccall unsafe "libavcodec/avcodec.h avcodec_get_name"
+  avcodecGetName :: AVCodecID -> IO CString
+
+data AVProbe = AVProbe
+  { avProbeFormat :: BS.ByteString
+  , avProbeDuration :: DiffTime
+  , avProbeStreams :: [BS.ByteString]
+  }
+
+-- |Test if this represents a video in standard format.
+avProbeIsVideo :: AVProbe -> Bool
+avProbeIsVideo AVProbe{ avProbeFormat = "mov,mp4,m4a,3gp,3g2,mj2", avProbeStreams = ("h264":s) } =
+  s `isPrefixOf` ["aac"]
+avProbeIsVideo _ = False
+
+avProbeLength :: AVProbe -> Maybe Offset
+avProbeLength AVProbe{ avProbeDuration = o } = o > 0 ?> Offset o
+
+avTime :: Int64 -> DiffTime
+avTime t = realToFrac $ t % #{const AV_TIME_BASE}
+
+avProbe :: AV -> RawFilePath -> IO AVProbe
+avProbe av f = withAVInput av f $ \ic -> do
+  findAVStreamInfo ic
+  AVProbe
+    <$> (BS.packCString =<< #{peek AVInputFormat, name} =<< #{peek AVFormatContext, iformat} ic)
+    <*> (avTime <$> #{peek AVFormatContext, duration} ic)
+    <*> do
+      nb :: CUInt <- #{peek AVFormatContext, nb_streams} ic
+      ss <- #{peek AVFormatContext, streams} ic
+      forM [0..pred (fromIntegral nb)] $ \i ->
+        BS.packCString =<< avcodecGetName =<< #{peek AVCodecContext, codec_id} =<< #{peek AVStream, codec} =<< peekElemOff ss i
