@@ -47,6 +47,7 @@ import Databrary.Model.Asset
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
 import Databrary.Model.Excerpt
+import Databrary.Model.Transcode
 import Databrary.Store
 import Databrary.Store.Types
 import Databrary.Store.Asset
@@ -162,8 +163,10 @@ processAsset api target = do
       } . Just =<< peeks (fileUploadPath upfile)
     fileUploadRemove upfile
     when (isRight target) $ supersedeAsset a a'
+    t <- Trav.mapM (addTranscode a' fullSegment defaultTranscodeOptions) (fileUploadProbe up)
+    -- TODO startTranscode
     return as'
-      { slotAsset = a'
+      { slotAsset = (maybe a' transcodeAsset t)
         { assetName = assetName (slotAsset as')
         }
       })

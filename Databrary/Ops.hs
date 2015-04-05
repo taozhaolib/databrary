@@ -1,10 +1,12 @@
+{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module Databrary.Ops
   ( (<$>)
   , (<$), ($>)
   , (<?), (?>)
   , (<!?), (?!>)
-  , (?$), ($?)
   , (>$), ($<)
+  , Min(..)
+  , Max(..)
   , maybeA
   , fromMaybeM
   , orElseM
@@ -12,9 +14,8 @@ module Databrary.Ops
   ) where
 
 import Control.Applicative
-import qualified Data.Foldable as Fold
 import Data.Functor
-import Data.Monoid (Endo(..))
+import Data.Monoid (Monoid(..))
 
 infixl 1 <?, <!?
 infixr 1 ?>, ?!>
@@ -44,21 +45,6 @@ a <!? False = pure a
 {-# SPECIALIZE (?!>) :: Bool -> a -> Maybe a #-}
 {-# SPECIALIZE (<!?) :: a -> Bool -> Maybe a #-}
 
-
-infixr 0 ?$
-infixl 0 $?
-
--- |Fold over endomorphic composition.
-(?$) :: (Functor f, Fold.Foldable f) => f (a -> a) -> a -> a
-(?$) = appEndo . Fold.fold . fmap Endo
-
--- |@flip '(?$)'@
-($?) :: (Functor f, Fold.Foldable f) => a -> f (a -> a) -> a
-($?) = flip (?$)
-
-{-# SPECIALIZE (?$) :: Maybe (a -> a) -> a -> a #-}
-{-# SPECIALIZE ($?) :: a -> Maybe (a -> a) -> a #-}
-
 infix 4 >$, $<
 
 -- |@(=<<) ($>)@
@@ -68,6 +54,20 @@ f >$ a = f a $> a
 -- |@flip '(>$)'@
 ($<) :: Functor f => a -> (a -> f ()) -> f a
 a $< f = a <$ f a
+
+newtype Min a = Min { getMin :: a } deriving (Eq, Ord, Bounded, Num)
+
+instance (Ord a, Bounded a) => Monoid (Min a) where
+  mempty = maxBound
+  mappend = min
+  mconcat = minimum
+
+newtype Max a = Max { getMax :: a } deriving (Eq, Ord, Bounded, Num)
+
+instance (Ord a, Bounded a) => Monoid (Max a) where
+  mempty = minBound
+  mappend = max
+  mconcat = maximum
 
 maybeA :: Alternative m => Maybe a -> m a
 maybeA (Just x) = pure x

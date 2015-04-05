@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell, QuasiQuotes #-}
 module Databrary.Model.Transcode
   ( module Databrary.Model.Transcode.Types
+  , defaultTranscodeOptions
   , transcodeAuth
   , lookupTranscode
   , addTranscode
@@ -14,16 +15,17 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Database.PostgreSQL.Typed.Query (pgSQL)
 
-import Databrary.DB
+import Databrary.Ops
 import Databrary.Has (peek)
+import Databrary.DB
 import Databrary.Resource
 import Databrary.Crypto
 import Databrary.Store.Types
+import Databrary.Media.AV
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Id
 import Databrary.Model.Party
-import Databrary.Model.Offset
 import Databrary.Model.Segment
 import Databrary.Model.Format
 import Databrary.Model.Asset
@@ -42,10 +44,17 @@ lookupTranscode :: DBM m => Id Transcode -> m (Maybe Transcode)
 lookupTranscode a =
   dbQuery1 $(selectQuery selectTranscode "WHERE transcode.asset = ${a}")
 
-addTranscode :: (MonadHasSiteAuth c m, MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeArgs -> Maybe Offset -> m Transcode
-addTranscode orig seg@(Segment rng) opts dur = do
+minAppend :: Ord a => Maybe a -> Maybe a -> Maybe a
+minAppend (Just x) (Just y) = Just $ min x y
+minAppend Nothing x = x
+minAppend x Nothing = x
+
+addTranscode :: (MonadHasSiteAuth c m, MonadAudit c m, MonadStorage c m) => Asset -> Segment -> TranscodeArgs -> AVProbe -> m Transcode
+addTranscode orig seg@(Segment rng) opts probe = do
   own <- peek
   let Just fmt = formatTranscodable (assetFormat orig)
+      dur = maybe id (flip (-) . max 0) (lowerBound rng) <$>
+        minAppend (avProbeLength probe) (upperBound rng)
   a <- addAsset orig
     { assetFormat = fmt
     , assetDuration = dur

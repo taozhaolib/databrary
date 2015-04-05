@@ -4,7 +4,7 @@ module Databrary.Store.Transcode
   , collectTranscode
   ) where
 
-import Control.Monad (guard, when, unless)
+import Control.Monad (guard, unless, void)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
@@ -67,14 +67,17 @@ startTranscode tc = do
 
 collectTranscode :: (MonadResourceT c m, MonadStorage c m, MonadAudit c m) => Transcode -> Int -> Maybe BS.ByteString -> String -> m ()
 collectTranscode tc 0 sha1 logs = do
-  tc' <- updateTranscode tc Nothing (Just logs)
+  tc' <- updateTranscode tc (Just (-2)) (Just logs)
   (f, h) <- makeTempFile
   liftIO $ hClose h
   (r, out, err) <- ctlTranscode tc ["-c", BSC.unpack $ tempFilePath f]
-  when (r /= ExitSuccess) $ do
-    updateTranscode tc' Nothing (Just $ out ++ err)
-    fail $ "collectTranscode " ++ show (transcodeId tc) ++ ": " ++ show r ++ "\n" ++ out ++ err
-  -- TODO: probe
-  changeAsset (transcodeAsset tc)
-    { assetSHA1 = sha1
-    } (Just $ tempFilePath f)
+  updateTranscode tc' Nothing (Just $ out ++ err)
+  if r /= ExitSuccess
+    then fail $ "collectTranscode " ++ show (transcodeId tc) ++ ": " ++ show r ++ "\n" ++ out ++ err
+    else do
+      -- TODO: probe
+      changeAsset (transcodeAsset tc)
+        { assetSHA1 = sha1
+        } (Just $ tempFilePath f)
+collectTranscode tc e _ logs =
+  void $ updateTranscode tc Nothing (Just $ "exit " ++ show e ++ '\n' : logs)
