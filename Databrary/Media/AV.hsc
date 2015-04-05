@@ -1,6 +1,7 @@
 {-# LANGUAGE ForeignFunctionInterface, DeriveDataTypeable, EmptyDataDecls, OverloadedStrings #-}
 module Databrary.Media.AV
   ( AVError(..)
+  , avErrorString
   , AV
   , initAV
   , AVProbe(..)
@@ -52,6 +53,9 @@ data AVError = AVError
   } deriving (Typeable)
 
 instance Exception AVError
+
+avErrorString :: AVError -> String
+avErrorString = avShowError . avErrorCode
 
 instance Show AVError where
   showsPrec p (AVError e c f) = showParen (p > 10) $
@@ -144,10 +148,8 @@ findAVStreamInfo :: Ptr AVFormatContext -> IO ()
 findAVStreamInfo a = throwAVErrorIf_ "avformat_find_stream_info" (FileContext a) $
   avformatFindStreamInfo a nullPtr
 
-type AVCodecID = #type enum AVCodecID
-
 foreign import ccall unsafe "libavcodec/avcodec.h avcodec_get_name"
-  avcodecGetName :: AVCodecID -> IO CString
+  avcodecGetName :: #{type enum AVCodecID} -> IO CString
 
 data AVProbe = AVProbe
   { avProbeFormat :: BS.ByteString
@@ -168,13 +170,14 @@ avTime :: Int64 -> DiffTime
 avTime t = realToFrac $ t % #{const AV_TIME_BASE}
 
 avProbe :: AV -> RawFilePath -> IO AVProbe
-avProbe av f = withAVInput av f $ \ic -> do
-  findAVStreamInfo ic
-  AVProbe
-    <$> (BS.packCString =<< #{peek AVInputFormat, name} =<< #{peek AVFormatContext, iformat} ic)
-    <*> (avTime <$> #{peek AVFormatContext, duration} ic)
-    <*> do
-      nb :: CUInt <- #{peek AVFormatContext, nb_streams} ic
-      ss <- #{peek AVFormatContext, streams} ic
-      forM [0..pred (fromIntegral nb)] $ \i ->
-        BS.packCString =<< avcodecGetName =<< #{peek AVCodecContext, codec_id} =<< #{peek AVStream, codec} =<< peekElemOff ss i
+avProbe av f =
+  withAVInput av f $ \ic -> do
+    findAVStreamInfo ic
+    AVProbe
+      <$> (BS.packCString =<< #{peek AVInputFormat, name} =<< #{peek AVFormatContext, iformat} ic)
+      <*> (avTime <$> #{peek AVFormatContext, duration} ic)
+      <*> do
+        nb :: CUInt <- #{peek AVFormatContext, nb_streams} ic
+        ss <- #{peek AVFormatContext, streams} ic
+        forM [0..pred (fromIntegral nb)] $ \i ->
+          BS.packCString =<< avcodecGetName =<< #{peek AVCodecContext, codec_id} =<< #{peek AVStream, codec} =<< peekElemOff ss i

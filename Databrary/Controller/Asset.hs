@@ -9,7 +9,9 @@ module Databrary.Controller.Asset
   ) where
 
 import Control.Applicative ((<|>))
+import Control.Exception (try)
 import Control.Monad ((<=<), when, void)
+import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import Data.Either (isLeft, isRight)
@@ -23,7 +25,8 @@ import qualified Network.Wai as Wai
 import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
-import Databrary.Has (peeks)
+import Databrary.Has (Has, peek, peeks)
+import Databrary.Resource
 import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.DB
@@ -49,6 +52,7 @@ import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Store.Upload
 import Databrary.Store.Temp
+import Databrary.Media.AV
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
@@ -75,47 +79,62 @@ viewAsset api i = action GET (api, i) $ withAuth $ do
     JSON -> okResponse [] =<< assetJSONQuery asset =<< peeks Wai.queryString
     HTML -> okResponse [] $ show $ assetId $ slotAsset asset -- TODO
 
-data FileUpload
-  = FileUploadForm
-    { _fileUploadForm :: FileInfo TempFile
-    , fileUploadFormat :: Format
-    }
-  | FileUploadToken
-    { _fileUploadToken :: Upload
-    , fileUploadFormat :: Format
-    }
+data FileUploadFile
+  = FileUploadForm (FileInfo TempFile)
+  | FileUploadToken Upload
 
-fileUploadName :: FileUpload -> BS.ByteString
-fileUploadName (FileUploadForm f _) = fileName f
-fileUploadName (FileUploadToken u _) = uploadFilename u
+fileUploadName :: FileUploadFile -> BS.ByteString
+fileUploadName (FileUploadForm f) = fileName f
+fileUploadName (FileUploadToken u) = uploadFilename u
 
-fileUploadPath :: FileUpload -> Storage -> RawFilePath
-fileUploadPath (FileUploadForm f _) _ = tempFilePath $ fileContent f
-fileUploadPath (FileUploadToken u _) s = uploadFile u s
+fileUploadPath :: FileUploadFile -> Storage -> RawFilePath
+fileUploadPath (FileUploadForm f) _ = tempFilePath $ fileContent f
+fileUploadPath (FileUploadToken u) s = uploadFile u s
 
-fileUploadRemove :: (MonadResourceT c m, DBM m, MonadStorage c m) => FileUpload -> m ()
-fileUploadRemove (FileUploadForm f _) = releaseTempFile $ fileContent f
-fileUploadRemove (FileUploadToken u _) = void $ removeUpload u
+fileUploadRemove :: (MonadResourceT c m, DBM m, MonadStorage c m) => FileUploadFile -> m ()
+fileUploadRemove (FileUploadForm f) = releaseTempFile $ fileContent f
+fileUploadRemove (FileUploadToken u) = void $ removeUpload u
+
+data FileUpload = FileUpload
+  { fileUploadFile :: FileUploadFile
+  , fileUploadFormat :: Format
+  , fileUploadProbe :: Maybe AVProbe
+  }
 
 deformLookup :: (Monad m, Functor m, Deform a) => FormErrorMessage -> (a -> m (Maybe b)) -> DeformT m (Maybe b)
 deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deform
+
+detectUpload :: (MonadHasResource c m, Has AV c, Has Storage c, MonadIO m) => FileUploadFile -> DeformT m FileUpload
+detectUpload f =
+  fd =<< deformMaybe' "Unknown or unsupported file format."
+    (getFormatByFilename (fileUploadName f)) where
+  fd fmt = case formatTranscodable fmt of
+    Nothing -> return $ u Nothing
+    Just t | t == videoFormat -> do
+      av <- lift peek
+      pr <- liftIO . try . avProbe av =<< lift (peeks (fileUploadPath f))
+      case pr of
+        Left e -> fail $ "Could not read video file: " ++ avErrorString e
+        Right p -> return $ u $ Just p
+    _ -> fail "Unhandled format conversion."
+    where u = FileUpload f fmt
 
 processAsset :: API -> Either Volume AssetSlot -> AuthAction
 processAsset api target = do
   (fd, ufs) <- getFormData [("file", maxAssetSize)]
   let as@AssetSlot{ slotAsset = a, assetSlot = s } = either (assetNoSlot . blankAsset) id target
-  (as', upfile) <- runFormWith fd (api == HTML ?> htmlAssetForm target) $ do
+  (as', up') <- runFormWith fd (api == HTML ?> htmlAssetForm target) $ do
     let file = lookup "file" ufs
     upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
-    let ffmt = deformMaybe' "Unknown or unsupported file format." . getFormatByFilename
     upfile <- case (file, upload) of
-      (Just f, Nothing) -> Just . FileUploadForm f <$> ffmt (fileName f)
-      (Nothing, Just u) -> Just . FileUploadToken u <$> ffmt (uploadFilename u)
+      (Just f, Nothing) -> return $ Just $ FileUploadForm f
+      (Nothing, Just u) -> return $ Just $ FileUploadToken u
       (Nothing, Nothing) -> do
         when (isLeft target) $ deformError "File or upload required."
         return $ Nothing
       _ -> Nothing <$ deformError "Conflicting uploaded files found."
-    let fmt = maybe (assetFormat a) fileUploadFormat upfile
+    up <- Trav.mapM detectUpload upfile
+    let fmt = maybe (assetFormat a) fileUploadFormat up
     name <- "name" .:> fmap (dropFormatExtension fmt) <$> deform
     classification <- "classification" .:> deform
     slot <-
@@ -135,20 +154,20 @@ processAsset api target = do
           }
         , assetSlot = slot
         }
-      , upfile
+      , up
       )
-  as'' <- maybe (return as') (\up -> do
+  as'' <- maybe (return as') (\up@FileUpload{ fileUploadFile = upfile } -> do
     a' <- addAsset (slotAsset as')
-      { assetName = Just $ TE.decodeUtf8 $ fileUploadName up
-      } . Just =<< peeks (fileUploadPath up)
-    fileUploadRemove up
+      { assetName = Just $ TE.decodeUtf8 $ fileUploadName upfile
+      } . Just =<< peeks (fileUploadPath upfile)
+    fileUploadRemove upfile
     when (isRight target) $ supersedeAsset a a'
     return as'
       { slotAsset = a'
         { assetName = assetName (slotAsset as')
         }
       })
-    upfile
+    up'
   changeAsset (slotAsset as'') Nothing
   changeAssetSlot as''
   case api of

@@ -7,6 +7,7 @@ module Databrary.Model.Format
   , getFormat'
   , getFormatByFilename
   , dropFormatExtension
+  , videoFormat
   , formatTranscodable
   , formatJSON
   ) where

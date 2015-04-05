@@ -5,6 +5,7 @@ module Databrary.Model.Format.Types
   ) where
 
 import qualified Data.ByteString as BS
+import Data.Function (on)
 import Data.Int (Int16)
 import qualified Data.Text as T
 import Instances.TH.Lift ()
@@ -25,6 +26,10 @@ data Format = Format
 
 instance Kinded Format where
   kindOf _ = "format"
+
+instance Eq Format where
+  (==) = on (==) formatId
+  (/=) = on (/=) formatId
 
 makeHasRec ''Format ['formatId]
 deriveLift ''Format
