@@ -10,7 +10,7 @@ import Control.Monad (void)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Resource (ReleaseKey, allocate, release, unprotect)
 import System.IO (Handle)
-import System.Posix.FilePath (RawFilePath, (</>))
+import System.Posix.FilePath (RawFilePath)
 import System.Posix.Files.ByteString (removeLink, rename)
 import System.Posix.Temp.ByteString (mkstemp)
 
@@ -26,7 +26,7 @@ data TempFile = TempFile
 makeTempFile :: (MonadResourceT c m, MonadStorage c m) => m (TempFile, Handle)
 makeTempFile = do
   d <- peeks storageTemp
-  (k, (f, h)) <- liftResourceT $ allocate (mkstemp (d </> "XXXXXX")) (removeLink . fst)
+  (k, (f, h)) <- liftResourceT $ allocate (mkstemp d) (removeLink . fst)
   return (TempFile k f, h)
 
 releaseTempFile :: MonadResourceT c m => TempFile -> m ()

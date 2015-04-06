@@ -4,7 +4,8 @@ module Databrary.Store.Asset
   , storeAssetFile
   ) where
 
-import Control.Monad ((<=<), unless)
+import Control.Exception (handleJust)
+import Control.Monad ((<=<), unless, guard)
 import Control.Monad.IO.Class (liftIO)
 import Crypto.Hash (Digest, SHA1)
 import Data.Byteable (toBytes)
@@ -13,7 +14,9 @@ import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Lazy as BSL
 import qualified Data.Traversable as Trav
 import Data.Word (Word64)
-import System.Posix.FilePath ((</>))
+import System.IO.Error (isAlreadyExistsError)
+import System.Posix.Directory.ByteString (createDirectory)
+import System.Posix.FilePath ((</>), takeDirectory)
 import System.Posix.Files.ByteString (fileExist, getFileStatus, fileSize, createLink)
 
 import Databrary.Ops
@@ -49,7 +52,7 @@ getAssetFile a = do
 
 storeAssetFile :: MonadStorage c m => Asset -> RawFilePath -> m Asset
 storeAssetFile ba fp = peeks storageMaster >>= \sm -> liftIO $ do
-  size <- (fromIntegral . fileSize                   <$> getFileStatus fp) `fromMaybeM` assetSize ba
+  size <- (fromIntegral . fileSize              <$> getFileStatus fp) `fromMaybeM` assetSize ba
   sha1 <- ((toBytes :: Digest SHA1 -> BS.ByteString) <$> hashFile fp) `fromMaybeM` assetSHA1 ba
   let a = ba
         { assetSize = Just size
@@ -62,5 +65,7 @@ storeAssetFile ba fp = peeks storageMaster >>= \sm -> liftIO $ do
     then do
       sf <- sameFile fp as
       unless sf $ fail "storage hash collision"
-    else createLink fp as
+    else do
+      handleJust (guard . isAlreadyExistsError) return $ createDirectory (takeDirectory as) 0o750
+      createLink fp as
   return a

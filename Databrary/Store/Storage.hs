@@ -12,6 +12,7 @@ import qualified Data.Configurator.Types as C
 import qualified Data.Foldable as Fold
 import System.Directory (getTemporaryDirectory)
 import System.IO.Error (mkIOError, doesNotExistErrorType, illegalOperationErrorType)
+import System.Posix.FilePath (addTrailingPathSeparator)
 import System.Posix.Files.ByteString (getFileStatus, isDirectory, deviceID)
 
 import Databrary.Store
@@ -42,7 +43,7 @@ initStorage conf = do
   return $ Storage
     { storageMaster = master
     , storageFallback = fallback
-    , storageTemp = temp
+    , storageTemp = addTrailingPathSeparator temp
     , storageUpload = upload
     , storageTranscoder = tc
     }
