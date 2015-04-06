@@ -156,6 +156,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
     Some('format -> format.id),
     Some('classification -> classification),
     name.map('name -> _),
+    _duration.map('duration -> _),
     if (this.isInstanceOf[BackedAsset]) None else Some('pending -> true)
   )
 
@@ -218,9 +219,6 @@ final class TimeseriesAsset private[models] (id : Asset.Id, volume : Volume, ove
   override def source = this
   def entire = true
   def section : Section = Segment(Offset.ZERO, duration)
-
-  override def json : JsonRecord =
-    super.json + ('duration -> duration)
 }
 
 final case class TimeseriesSample private[models] (val parent : TimeseriesData, val offset : Offset) extends TimeseriesData {
