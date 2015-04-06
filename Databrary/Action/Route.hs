@@ -25,6 +25,7 @@ import qualified Databrary.Web.Route as R
 
 data RouteAction q = RouteAction 
   { actionMethod :: Method
+  , actionMultipart :: Bool
   , actionRoute :: BS.ByteString
   , routeAction :: Action q
   }
@@ -37,6 +38,7 @@ actionURL RouteAction{ actionMethod = g, actionRoute = r } req
 action :: R.Routable r => StdMethod -> r -> Action q -> RouteAction q
 action meth r act = RouteAction
   { actionMethod = renderStdMethod meth
+  , actionMultipart = False
   , actionRoute = eps $ R.toRoute r
   , routeAction = act
   } where
@@ -44,7 +46,7 @@ action meth r act = RouteAction
   eps p = BSL.toStrict $ BSB.toLazyByteString $ encodePathSegments p
 
 mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
-mapRouteAction f (RouteAction m r a) = RouteAction m r (f a)
+mapRouteAction f (RouteAction m p r a) = RouteAction m p r (f a)
 
 instance Contravariant RouteAction where
   contramap f = mapRouteAction (withReaderT f)

@@ -192,8 +192,11 @@ processAsset api target = do
     JSON -> okResponse [] $ assetSlotJSON as''
     HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as''))
 
+asMultipart :: AppRAction -> AppRAction
+asMultipart a = a{ actionMultipart = True }
+
 postAsset :: API -> Id Asset -> AppRAction
-postAsset api ai = action POST (api, ai) $ withAuth $ do
+postAsset api ai = asMultipart $ action POST (api, ai) $ withAuth $ do
   asset <- getAsset PermissionEDIT ai
   r <- assetIsSuperseded (slotAsset asset)
   guardAction (not r) $
@@ -207,7 +210,7 @@ viewEditAsset ai = action GET (HTML, ai, "edit" :: T.Text) $ withAuth $ do
   blankForm $ htmlAssetForm $ AssetTargetAsset asset
 
 createAsset :: API -> Id Volume -> AppRAction
-createAsset api vi = action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
+createAsset api vi = asMultipart $ action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
   processAsset api $ AssetTargetVolume v
 
@@ -218,7 +221,7 @@ viewCreateAsset vi = action GET (HTML, vi, "asset" :: T.Text) $ withAuth $ do
   blankForm $ htmlAssetForm $ AssetTargetVolume v
 
 createSlotAsset :: API -> Id Slot -> AppRAction
-createSlotAsset api si = action POST (api, si, "asset" :: T.Text) $ withAuth $ do
+createSlotAsset api si = asMultipart $ action POST (api, si, "asset" :: T.Text) $ withAuth $ do
   v <- getSlot PermissionEDIT si
   processAsset api $ AssetTargetSlot v
 

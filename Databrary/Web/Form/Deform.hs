@@ -19,7 +19,7 @@ module Databrary.Web.Form.Deform
   ) where
 
 import Control.Applicative (Applicative(..), Alternative(..), liftA2)
-import Control.Arrow (first, second, (***), left)
+import Control.Arrow (first, second, (***), (+++), left)
 import Control.Monad (MonadPlus(..), liftM, mapAndUnzipM, guard)
 import Control.Monad.Reader (MonadReader(..))
 import Control.Monad.IO.Class (MonadIO(..))
@@ -246,7 +246,7 @@ instance Deform Int where
       (i, r) <- BSC.readInt b
       guard $ BS.null r
       return i
-    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.String t)) = T.pack +++ fst $ TR.signed TR.decimal t
     fv (FormDatumJSON (JSON.Number n)) = return $ round n
     fv (FormDatumJSON (JSON.Bool True)) = return 1
     fv (FormDatumJSON (JSON.Bool False)) = return 0
@@ -255,7 +255,7 @@ instance Deform Int where
 instance Deform Int64 where
   deform = deformParse 0 fv where
     fv (FormDatumBS b) = readParser $ BSC.unpack b
-    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.String t)) = T.pack +++ fst $ TR.signed TR.decimal t
     fv (FormDatumJSON (JSON.Number n)) = return $ round n
     fv (FormDatumJSON (JSON.Bool True)) = return 1
     fv (FormDatumJSON (JSON.Bool False)) = return 0
@@ -264,7 +264,7 @@ instance Deform Int64 where
 instance Deform Int32 where
   deform = deformParse 0 fv where
     fv (FormDatumBS b) = readParser $ BSC.unpack b
-    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.String t)) = T.pack +++ fst $ TR.signed TR.decimal t
     fv (FormDatumJSON (JSON.Number n)) = return $ round n
     fv (FormDatumJSON (JSON.Bool True)) = return 1
     fv (FormDatumJSON (JSON.Bool False)) = return 0
@@ -273,7 +273,7 @@ instance Deform Int32 where
 instance Deform Int16 where
   deform = deformParse 0 fv where
     fv (FormDatumBS b) = readParser $ BSC.unpack b
-    fv (FormDatumJSON (JSON.String t)) = either (Left . T.pack) (Right . fst) $ TR.signed TR.decimal t
+    fv (FormDatumJSON (JSON.String t)) = T.pack +++ fst $ TR.signed TR.decimal t
     fv (FormDatumJSON (JSON.Number n)) = return $ round n
     fv (FormDatumJSON (JSON.Bool True)) = return 1
     fv (FormDatumJSON (JSON.Bool False)) = return 0

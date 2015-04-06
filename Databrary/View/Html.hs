@@ -42,9 +42,9 @@ actionLink :: RouteAction q -> H.Attribute
 actionLink r = HA.href $ byteStringValue $ actionURL r Nothing
 
 actionForm :: RouteAction q -> H.Html -> H.Html
-actionForm RouteAction{ actionMethod = g, actionRoute = r } = H.form
+actionForm RouteAction{ actionMethod = g, actionMultipart = p, actionRoute = r } = H.form
   H.! HA.method (H.unsafeByteStringValue g)
-  -- H.! HA.enctype (H.toValue $ show $ F.viewEncType form)
+  H.!? (p, HA.enctype $ H.toValue "multipart/form-data")
   H.! HA.action (byteStringValue r)
 
 (!?) :: Markup.Attributable h => h -> Maybe H.Attribute -> h
