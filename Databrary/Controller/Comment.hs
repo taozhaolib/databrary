@@ -4,7 +4,6 @@ module Databrary.Controller.Comment
   ) where
 
 import Data.Maybe (maybeToList)
-import qualified Data.Text as T
 
 import Databrary.Ops
 import Databrary.Model.Permission
@@ -23,8 +22,8 @@ postComment api si = action POST (api, si) $ withAuth $ do
   u <- authAccount
   s <- getSlot PermissionSHARED si
   c <- runForm (api == HTML ?> htmlCommentForm s) $ do
-    text <- "text" .:> (deformCheck "Comment text required." (not . T.null) . T.strip =<< deform)
-    parent <- "parent" .:> deform
+    text <- "text" .:> (deformRequired =<< deform)
+    parent <- "parent" .:> deformNonEmpty deform
     return (blankComment u s)
       { commentText = text
       , commentParents = maybeToList parent

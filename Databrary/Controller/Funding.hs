@@ -26,7 +26,7 @@ queryFunder :: AppRAction
 queryFunder = action GET (JSON, "funder" :: T.Text) $ withAuth $ do
   _ <- authAccount
   (q, a) <- runForm Nothing $ liftM2 (,)
-    ("query" .:> (deformCheck "Required" (not . T.null) . T.strip =<< deform))
+    ("query" .:> (deformRequired =<< deform))
     ("all" .:> deform)
   r <- if a
     then searchFundRef q
@@ -38,7 +38,7 @@ postVolumeFunding vi fi = action POST (JSON, vi, fi) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
   f <- maybeAction =<< lookupFunderRef fi
   a <- runForm Nothing $ do
-    "awards" .:> filter (not . T.null) <$> withSubDeforms (T.strip <$> deform)
+    "awards" .:> filter (not . T.null) <$> withSubDeforms deform
   let fa = Funding f a
   changeVolumeFunding v fa
   okResponse [] $ fundingJSON fa

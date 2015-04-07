@@ -94,7 +94,7 @@ postUser api = action POST (api, "user" :: T.Text) $ withAuth $ do
     "auth" .:> do
       p <- deform
       deformGuard "Incorrect password." (checkPassword p acct)
-    email <- "email" .:> deform
+    email <- "email" .:> deformNonEmpty deform
     passwd <- "password" .:> deformNonEmpty (passwordForm acct)
     return acct
       { accountEmail = fromMaybe (accountEmail acct) email

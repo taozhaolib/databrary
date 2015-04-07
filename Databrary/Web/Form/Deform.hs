@@ -16,6 +16,7 @@ module Databrary.Web.Form.Deform
   , deformParse
   , deformRead
   , deformRegex
+  , deformRequired
   ) where
 
 import Control.Applicative (Applicative(..), Alternative(..), liftA2)
@@ -188,13 +189,20 @@ deformParseJSON def p = do
 class Deform a where
   deform :: (Functor m, Monad m) => DeformT m a
 
-instance Deform a => Deform (Maybe a) where
-  deform = deformNonEmpty deform
+instance Deform FormDatum where
+  deform = peek
 
+instance Deform (Maybe FormFile) where
+  deform = peek
+
+instance Deform FormFile where
+  deform = deformMaybe' "File upload required" =<< deform
+
+-- |'Text' fields are stripped of whitespace, while other string types are not.
 instance Deform T.Text where
   deform = deformParse "" fv where
-    fv (FormDatumBS b) = return $ TE.decodeUtf8 b
-    fv (FormDatumJSON (JSON.String t)) = return t
+    fv (FormDatumBS b) = return $ T.strip $ TE.decodeUtf8 b
+    fv (FormDatumJSON (JSON.String t)) = return $ T.strip t
     fv (FormDatumJSON (JSON.Number n)) = return $ T.pack $ show n
     fv (FormDatumJSON (JSON.Bool True)) = return "1"
     fv (FormDatumJSON (JSON.Bool False)) = return ""
@@ -303,3 +311,6 @@ deformRead def = deformEither def . readParser =<< deform
 
 deformRegex :: (Functor m, Monad m) => FormErrorMessage -> Regex.Regex -> T.Text -> DeformT m T.Text
 deformRegex err regex = deformCheck err (Regex.matchTest regex . T.unpack)
+
+deformRequired :: (Functor m, Monad m) => T.Text -> DeformT m T.Text
+deformRequired = deformCheck "Required" (not . T.null)

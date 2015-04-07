@@ -11,7 +11,7 @@ module Databrary.Controller.Volume
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, optional)
-import Control.Monad (mfilter, guard, when, liftM2)
+import Control.Monad (mfilter, guard, void, when, liftM2)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
@@ -81,16 +81,16 @@ viewVolume api vi = action GET (api, vi) $ withAuth $ do
 
 citationForm :: (Functor m, Applicative m, Monad m) => DeformT m Citation
 citationForm = Citation
-  <$> ("head" .:> T.strip <$> deform)
-  <*> ("url" .:> deform)
-  <*> ("year" .:> deform)
+  <$> ("head" .:> deform)
+  <*> ("url" .:> deformNonEmpty deform)
+  <*> ("year" .:> deformNonEmpty deform)
   <*> pure Nothing
 
 volumeForm :: (Functor m, Monad m) => Volume -> DeformT m Volume
 volumeForm v = do
-  name <- "name" .:> T.strip <$> deform
-  alias <- "alias" .:> fmap T.strip <$> deform
-  body <- "body" .:> fmap T.strip <$> deform
+  name <- "name" .:> deform
+  alias <- "alias" .:> deformNonEmpty deform
+  body <- "body" .:> deformNonEmpty deform
   return v
     { volumeName = name
     , volumeAlias = alias
@@ -109,10 +109,9 @@ volumeCitationForm v = do
         | Just title <- citationTitle fill
         , T.null (volumeName vol) = title
         | otherwise = volumeName vol
-  when (T.null name) $
-    "name" .:> deformError "Required"
-  when (not empty && T.null (citationHead fill)) $
-    "citation" .:> "name" .:> deformError "Required"
+  "name" .:> deformRequired name
+  when (not empty) $ void $
+    "citation" .:> "name" .:> deformRequired (citationHead fill)
   return (vol{ volumeName = name }, empty ?!> fill)
 
 viewVolumeForm :: Id Volume -> AppRAction
@@ -171,7 +170,7 @@ postVolumeLinks api vi = action POST (api, vi, "link" :: T.Text) $ withAuth $ do
 
 volumeSearchForm :: (Applicative m, Monad m) => DeformT m VolumeFilter
 volumeSearchForm = VolumeFilter
-  <$> ("query" .:> deform)
+  <$> ("query" .:> deformNonEmpty deform)
   <*> ("party" .:> optional deform)
 
 queryVolumes :: API -> AppRAction

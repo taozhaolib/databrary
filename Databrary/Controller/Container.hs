@@ -32,9 +32,9 @@ viewContainer api = viewSlot api . containerSlotId
 
 containerForm :: (Functor m, Monad m) => Container -> DeformT m Container
 containerForm c = do
-  name <- "name" .:> fmap T.strip <$> deform
-  date <- "date" .:> deform
-  consent <- "consent" .:> deform
+  name <- "name" .:> deformNonEmpty deform
+  date <- "date" .:> deformNonEmpty deform
+  consent <- "consent" .:> deformNonEmpty deform
   return c
     { containerName = name
     , containerDate = date

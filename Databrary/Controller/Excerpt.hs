@@ -22,7 +22,7 @@ import Databrary.Controller.Asset
 excerptForm :: (Functor m, Applicative m, Monad m) => AssetSlot -> DeformT m Excerpt
 excerptForm a = Excerpt a
   <$> ("segment" .:> deform)
-  <*> ("classification" .:> (fromMaybe ClassificationPRIVATE <$> deform))
+  <*> ("classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform))
 
 postExcerpt :: Id Asset -> AppRAction
 postExcerpt ai = action POST (JSON, ai, "excerpt" :: T.Text) $ withAuth $ do

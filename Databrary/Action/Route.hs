@@ -4,6 +4,7 @@ module Databrary.Action.Route
   , RouteAction(..)
   , actionURL
   , action
+  , multipartAction
   , R.toRoute
   , API(..)
   ) where
@@ -44,6 +45,9 @@ action meth r act = RouteAction
   } where
   eps [] = "/"
   eps p = BSL.toStrict $ BSB.toLazyByteString $ encodePathSegments p
+
+multipartAction :: RouteAction q -> RouteAction q
+multipartAction a = a{ actionMultipart = True }
 
 mapRouteAction :: (Action q -> Action q') -> RouteAction q -> RouteAction q'
 mapRouteAction f (RouteAction m p r a) = RouteAction m p r (f a)

@@ -42,7 +42,7 @@ remoteTranscode ti = action POST (JSON, ti) $ do
     auth <- transcodeAuth t
     (res, sha1, logs) <- runForm Nothing $ do
       "auth" .:> (deformCheck "Invalid authentication" (constEqBytes auth) =<< deform)
-      "pid" .:> (deformCheck "PID mismatch" (transcodeProcess t ==) =<< deform)
+      "pid" .:> (deformCheck "PID mismatch" (transcodeProcess t ==) =<< deformNonEmpty deform)
       liftM3 (,,)
         ("res" .:> deform)
         ("sha1" .:> optional sha1Form)

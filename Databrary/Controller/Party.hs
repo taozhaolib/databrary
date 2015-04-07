@@ -33,6 +33,7 @@ import Databrary.Model.Party
 import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
+import Databrary.Model.Asset
 import qualified Databrary.Web.Route as R
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Permission
@@ -87,18 +88,21 @@ viewParty api i = action GET (api, i) $ withAuth $ do
     JSON -> okResponse [] =<< partyJSONQuery p =<< peeks Wai.queryString
     HTML -> okResponse [] $ partyName p -- TODO
 
-partyForm :: (Functor m, Monad m) => Party -> DeformT m Party
-partyForm p = do
-  name <- "name" .:> (deformCheck "Required" (not . T.null) . T.strip =<< deform)
-  prename <- "prename" .:> fmap T.strip <$> deform
-  affiliation <- "affiliation" .:> fmap T.strip <$> deform
-  url <- "url" .:> deform
-  return p
-    { partySortName = name
-    , partyPreName = prename
-    , partyAffiliation = affiliation
-    , partyURL = url
-    }
+processParty :: API -> Maybe Party -> AuthActionM (Party, Maybe Asset)
+processParty api p =
+  runFormFiles [("avatar", maxAvatarSize)] (api == HTML ?> htmlPartyForm p) $ do
+    name <- "name" .:> (deformRequired =<< deform)
+    prename <- "prename" .:> deformNonEmpty deform
+    affiliation <- "affiliation" .:> deformNonEmpty deform
+    url <- "url" .:> deformNonEmpty deform
+    -- avatar <- "avatar" .:> deform
+    return ((fromMaybe blankParty p)
+      { partySortName = name
+      , partyPreName = prename
+      , partyAffiliation = affiliation
+      , partyURL = url
+      }, Nothing)
+  where maxAvatarSize = 10*1024*1024
 
 viewEditParty :: PartyTarget -> AppRAction
 viewEditParty i = action GET (HTML, i, "edit" :: T.Text) $ withAuth $ do
@@ -107,19 +111,19 @@ viewEditParty i = action GET (HTML, i, "edit" :: T.Text) $ withAuth $ do
   blankForm $ htmlPartyForm $ Just p
 
 postParty :: API -> PartyTarget -> AppRAction
-postParty api i = action POST (api, i) $ withAuth $ do
+postParty api i = multipartAction $ action POST (api, i) $ withAuth $ do
   p <- getParty (Just PermissionADMIN) i
-  p' <- runForm (api == HTML ?> htmlPartyForm (Just p)) $ partyForm p
+  (p', a) <- processParty api (Just p)
   changeParty p'
   case api of
     JSON -> okResponse [] $ partyJSON p'
     HTML -> redirectRouteResponse [] $ viewParty api i
 
 createParty :: API -> AppRAction
-createParty api = action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
+createParty api = multipartAction $ action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
   perm <- peeks accessPermission'
   _ <- checkPermission PermissionADMIN perm
-  bp <- runForm (api == HTML ?> htmlPartyForm Nothing) $ partyForm blankParty
+  (bp, a) <- processParty api Nothing
   p <- addParty bp
   case api of
     JSON -> okResponse [] $ partyJSON p
@@ -127,7 +131,7 @@ createParty api = action POST (api, kindOf blankParty :: T.Text) $ withAuth $ do
 
 partySearchForm :: (Applicative m, Monad m) => DeformT m PartyFilter
 partySearchForm = PartyFilter
-  <$> ("query" .:> deform)
+  <$> ("query" .:> deformNonEmpty deform)
   <*> ("access" .:> optional deform)
   <*> ("institution" .:> optional deform)
   <*> pure Nothing

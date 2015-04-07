@@ -34,11 +34,11 @@ import Databrary.Resource
 import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Web.Form
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
 import Databrary.Web.File
 import Databrary.Action
+import Databrary.Action.Route
 import Databrary.Model.Segment
 import Databrary.Model.Permission
 import Databrary.Model.Id
@@ -113,7 +113,7 @@ data FileUpload = FileUpload
   }
 
 deformLookup :: (Monad m, Functor m, Deform a) => FormErrorMessage -> (a -> m (Maybe b)) -> DeformT m (Maybe b)
-deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deform
+deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deformNonEmpty deform
 
 detectUpload :: (MonadHasResource c m, Has AV c, Has Storage c, MonadIO m) => FileUploadFile -> DeformT m FileUpload
 detectUpload f =
@@ -132,13 +132,12 @@ detectUpload f =
 
 processAsset :: API -> AssetTarget -> AuthAction
 processAsset api target = do
-  (fd, ufs) <- getFormData [("file", maxAssetSize)]
   let as@AssetSlot{ slotAsset = a, assetSlot = s } = case target of
         AssetTargetVolume t -> assetNoSlot $ blankAsset t
         AssetTargetSlot t -> AssetSlot (blankAsset (view t)) (Just t) Nothing
         AssetTargetAsset t -> t
-  (as', up') <- runFormWith fd (api == HTML ?> htmlAssetForm target) $ do
-    let file = lookup "file" ufs
+  (as', up') <- runFormFiles [("file", maxAssetSize)] (api == HTML ?> htmlAssetForm target) $ do
+    file <- "file" .:> deform
     upload <- "upload" .:> deformLookup "Uploaded file not found." lookupUpload
     upfile <- case (file, upload) of
       (Just f, Nothing) -> return $ Just $ FileUploadForm f
@@ -149,13 +148,13 @@ processAsset api target = do
       _ -> Nothing <$ deformError "Conflicting uploaded files found."
     up <- Trav.mapM detectUpload upfile
     let fmt = maybe (assetFormat a) fileUploadFormat up
-    name <- "name" .:> fmap (dropFormatExtension fmt) <$> deform
+    name <- "name" .:> fmap (dropFormatExtension fmt) <$> deformNonEmpty deform
     classification <- "classification" .:> deform
     slot <-
       "container" .:> (<|> slotContainer <$> s) <$> deformLookup "Container not found." (lookupVolumeContainer (assetVolume a))
       >>= Trav.mapM (\c -> "position" .:> do
         let seg = slotSegment <$> s
-        p <- (<|> (lowerBound . segmentRange =<< seg)) <$> deform
+        p <- (<|> (lowerBound . segmentRange =<< seg)) <$> deformNonEmpty deform
         Slot c . maybe fullSegment
           (\l -> Segment $ Range.bounded l (l + fromMaybe 0 ((segmentLength =<< seg) <|> assetDuration a)))
           <$> orElseM p (flatMapM (lift . findAssetContainerEnd) (isNothing s && isJust (assetDuration a) ?> c)))
@@ -192,11 +191,8 @@ processAsset api target = do
     JSON -> okResponse [] $ assetSlotJSON as''
     HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as''))
 
-asMultipart :: AppRAction -> AppRAction
-asMultipart a = a{ actionMultipart = True }
-
 postAsset :: API -> Id Asset -> AppRAction
-postAsset api ai = asMultipart $ action POST (api, ai) $ withAuth $ do
+postAsset api ai = multipartAction $ action POST (api, ai) $ withAuth $ do
   asset <- getAsset PermissionEDIT ai
   r <- assetIsSuperseded (slotAsset asset)
   guardAction (not r) $
@@ -210,7 +206,7 @@ viewEditAsset ai = action GET (HTML, ai, "edit" :: T.Text) $ withAuth $ do
   blankForm $ htmlAssetForm $ AssetTargetAsset asset
 
 createAsset :: API -> Id Volume -> AppRAction
-createAsset api vi = asMultipart $ action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
+createAsset api vi = multipartAction $ action POST (api, vi, "asset" :: T.Text) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
   processAsset api $ AssetTargetVolume v
 
@@ -221,7 +217,7 @@ viewCreateAsset vi = action GET (HTML, vi, "asset" :: T.Text) $ withAuth $ do
   blankForm $ htmlAssetForm $ AssetTargetVolume v
 
 createSlotAsset :: API -> Id Slot -> AppRAction
-createSlotAsset api si = asMultipart $ action POST (api, si, "asset" :: T.Text) $ withAuth $ do
+createSlotAsset api si = multipartAction $ action POST (api, si, "asset" :: T.Text) $ withAuth $ do
   v <- getSlot PermissionEDIT si
   processAsset api $ AssetTargetSlot v
 

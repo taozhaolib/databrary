@@ -6,6 +6,7 @@ module Databrary.Web.Form
   , FormData
   , getFormData
   , FormDatum(..)
+  , FormFile
   , Form
   , MonadHasForm
   , initForm
@@ -28,32 +29,35 @@ import qualified Data.Text.Encoding as TE
 import qualified Data.Vector as V
 import Data.Word (Word64)
 import qualified Network.Wai as Wai
-import Network.Wai.Parse (File)
+import Network.Wai.Parse (FileInfo)
 
 import Databrary.Has (makeHasRec, Has(..), peeks)
 import Databrary.Store.Temp (TempFile)
 import Databrary.Web.Parse
 import Databrary.Action.App (MonadAppAction)
 
+type FormFile = FileInfo TempFile
+
 data FormData = FormData
   { formDataQuery :: Map.Map BS.ByteString (Maybe BS.ByteString)
   , formDataPost :: Map.Map BS.ByteString BS.ByteString
   , formDataJSON :: Maybe JSON.Value
+  , formDataFiles :: Map.Map BS.ByteString FormFile
   }
 
 instance Monoid FormData where
-  mempty = FormData mempty mempty Nothing
-  mappend (FormData q1 p1 j1) (FormData q2 p2 j2) =
-    FormData (mappend q1 q2) (mappend p1 p2) (j1 <|> j2)
+  mempty = FormData mempty mempty Nothing mempty
+  mappend (FormData q1 p1 j1 f1) (FormData q2 p2 j2 f2) =
+    FormData (mappend q1 q2) (mappend p1 p2) (j1 <|> j2) (mappend f1 f2)
 
-getFormData :: (MonadAppAction c m, MonadIO m) => [(BS.ByteString, Word64)] -> m (FormData, [File TempFile])
+getFormData :: (MonadAppAction c m, MonadIO m) => [(BS.ByteString, Word64)] -> m FormData
 getFormData fs = do
   f <- peeks $ FormData . Map.fromList . Wai.queryString
   c <- parseRequestContent (fromMaybe 0 . (`lookup` fs))
   return $ case c of
-    ContentForm p u -> (f (Map.fromList p) Nothing, u)
-    ContentJSON j -> (f Map.empty (Just j), [])
-    _ -> (f Map.empty Nothing, [])
+    ContentForm p u -> f (Map.fromList p) Nothing (Map.fromList u)
+    ContentJSON j -> f Map.empty (Just j) Map.empty
+    _ -> f Map.empty Nothing Map.empty
 
 data FormKey 
   = FormField !T.Text
@@ -103,12 +107,13 @@ data Form = Form
   , formPathBS :: BS.ByteString
   , formJSON :: Maybe JSON.Value
   , formDatum :: FormDatum
+  , formFile :: Maybe FormFile
   }
 
-makeHasRec ''Form ['formData, 'formPath, 'formPathBS, 'formDatum]
+makeHasRec ''Form ['formData, 'formPath, 'formPathBS, 'formDatum, 'formFile]
 
 initForm :: FormData -> Form
-initForm d = form where form = Form d [] "" (formDataJSON d) (getFormDatum form)
+initForm d = form where form = Form d [] "" (formDataJSON d) (getFormDatum form) Nothing
 
 formSubJSON :: FormKey -> JSON.Value -> Maybe JSON.Value
 formSubJSON k (JSON.Object o) = HM.lookup (view k) o
@@ -122,6 +127,7 @@ subForm key form = form' where
     , formPathBS = formSubBS key $ formPathBS form
     , formJSON = formSubJSON key =<< formJSON form
     , formDatum = getFormDatum form'
+    , formFile = getFormFile form'
     }
 
 formEmpty :: Form -> Bool
@@ -154,3 +160,6 @@ postFormDatum Form{ formData = FormData{ formDataPost = m }, formPathBS = p } =
 
 getFormDatum :: Form -> FormDatum
 getFormDatum form = postFormDatum form <> jsonFormDatum form <> queryFormDatum form
+
+getFormFile :: Form -> Maybe FormFile
+getFormFile Form{ formData = FormData{ formDataFiles = f }, formPathBS = p } = Map.lookup p f

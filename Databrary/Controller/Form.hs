@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Form
   ( FormData
-  , runFormWith
+  , runFormFiles
   , runForm
   , blankForm
 
@@ -22,6 +22,7 @@ import qualified Data.Foldable as Fold
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import Data.Word (Word64)
 import Network.HTTP.Types (badRequest400)
 import qualified Text.Blaze.Html5 as Html
 import qualified Text.Regex.Posix as Regex
@@ -54,10 +55,13 @@ runFormWith fd mf fa = do
   let fv hv = runFormView (hv req) fd
   handleFormErrors (fv <$> mf) =<< runDeform fa fd
 
-runForm :: (MonadAppAction q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
-runForm mf fa = do
-  (fd, _) <- getFormData []
+runFormFiles :: (MonadAppAction q m, MonadIO m) => [(BS.ByteString, Word64)] -> Maybe (q -> FormHtml) -> DeformT m a -> m a
+runFormFiles fl mf fa = do
+  fd <- getFormData fl
   runFormWith fd mf fa
+
+runForm :: (MonadAppAction q m, MonadIO m) => Maybe (q -> FormHtml) -> DeformT m a -> m a
+runForm = runFormFiles []
 
 blankForm :: ActionData q => (q -> FormHtml) -> Action q
 blankForm hv =
@@ -68,7 +72,7 @@ emailRegex = Regex.makeRegexOpts Regex.compIgnoreCase Regex.blankExecOpt
   ("^[-a-z0-9!#$%&'*+/=?^_`{|}~.]*@[a-z0-9][a-z0-9\\.-]*[a-z0-9]\\.[a-z][a-z\\.]*[a-z]$" :: String)
 
 emailTextForm :: (Functor m, Monad m) => DeformT m T.Text
-emailTextForm = deformRegex "Invalid email address" emailRegex . T.strip =<< deform
+emailTextForm = deformRegex "Invalid email address" emailRegex =<< deform
 
 passwordForm :: (MonadIO m, MonadHasPasswd c m) => Account -> DeformT m BS.ByteString
 passwordForm acct = do
