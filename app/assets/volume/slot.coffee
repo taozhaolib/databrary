@@ -797,6 +797,8 @@ app.controller('volume/slot', [
           @classes.push('notselected')
 
       setReply: (event) ->
+        $scope.form.comment?.text = ''
+        $scope.form.comment?.reply = ''
         $scope.commentReply = if event
           $scope.selectAll(event, this) unless @segment.full
           this
