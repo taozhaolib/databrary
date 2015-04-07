@@ -341,8 +341,8 @@ access.edit.ADMIN.who=For fellow volume investigators only.
 
 consent.NONE=There is no release for this session.
 consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
-consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
-consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
+consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
+consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used for research and educational purposes.
 consent.PUBLIC=Public: The identifying data in this session have been released publicly.
 
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
