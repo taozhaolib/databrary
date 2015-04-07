@@ -197,25 +197,31 @@ app.provider('routerService', [
 
     //
 
-    var partyView = {
+    routes.profile = makeRoute(controllers.PartyHtml.profile, [], {
+      controller: 'party/profile',
+      templateUrl: 'party/profile.html',
+      resolve: {
+        party: [
+          'modelService', function (models) {
+            return models.Login.user.get(['parents', 'children', 'volumes']);
+          }
+        ],
+      },
+      reloadOnSearch: false,
+    });
+
+    routes.party = makeRoute(controllers.PartyHtml.view, ['id'], {
       controller: 'party/view',
       templateUrl: 'party/view.html',
       resolve: {
         party: [
           'pageService', function (page) {
-            var req = ['access', 'openid', 'parents', 'children', 'volumes'];
-            if ('id' in page.$route.current.params)
-              return page.models.Party.get(page.$route.current.params.id, req);
-            else
-              return page.models.Login.user.get(req);
+            return page.models.Party.get(page.$route.current.params.id, ['parents', 'children', 'volumes']);
           }
         ],
       },
       reloadOnSearch: false,
-    };
-
-    routes.profile = makeRoute(controllers.PartyHtml.profile, [], partyView);
-    routes.party = makeRoute(controllers.PartyHtml.view, ['id'], partyView);
+    });
 
     //
 
