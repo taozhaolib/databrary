@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, QuasiQuotes, RecordWildCards #-}
 module Databrary.Model.Volume 
   ( module Databrary.Model.Volume.Types
+  , coreVolume
   , lookupVolume
   , changeVolume
   , addVolume
@@ -28,8 +29,12 @@ import Databrary.Model.Party.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
+import Databrary.Model.Volume.Boot
 
 useTPG
+
+coreVolume :: Volume
+coreVolume = $(loadVolume (Id 0) PermissionSHARED)
 
 lookupVolume :: (DBM m, MonadHasIdentity c m) => Id Volume -> m (Maybe Volume)
 lookupVolume vi = do

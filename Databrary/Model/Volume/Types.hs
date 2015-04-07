@@ -7,6 +7,7 @@ module Databrary.Model.Volume.Types
 
 import qualified Data.Text as T
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
+import Language.Haskell.TH.Lift (deriveLift)
 
 import Databrary.Has (makeHasRec)
 import Databrary.Model.Time
@@ -29,6 +30,7 @@ instance Kinded Volume where
   kindOf _ = "volume"
 
 makeHasRec ''Volume ['volumeId, 'volumePermission]
+deriveLift ''Volume
 
 blankVolume :: Volume
 blankVolume = Volume

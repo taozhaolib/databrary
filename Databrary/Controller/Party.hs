@@ -16,7 +16,10 @@ import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (fromMaybe)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import qualified Data.Traversable as Trav
 import qualified Network.Wai as Wai
+import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
 import Databrary.Has (view, peek, peeks)
@@ -34,6 +37,8 @@ import Databrary.Model.Authorize
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
 import Databrary.Model.Asset
+import Databrary.Model.Format
+import Databrary.Store.Temp
 import qualified Databrary.Web.Route as R
 import Databrary.Web.Form.Deform
 import Databrary.Controller.Permission
@@ -89,19 +94,33 @@ viewParty api i = action GET (api, i) $ withAuth $ do
     HTML -> okResponse [] $ partyName p -- TODO
 
 processParty :: API -> Maybe Party -> AuthActionM (Party, Maybe Asset)
-processParty api p =
-  runFormFiles [("avatar", maxAvatarSize)] (api == HTML ?> htmlPartyForm p) $ do
+processParty api p = do
+  (p', a) <- runFormFiles [("avatar", maxAvatarSize)] (api == HTML ?> htmlPartyForm p) $ do
     name <- "name" .:> (deformRequired =<< deform)
     prename <- "prename" .:> deformNonEmpty deform
     affiliation <- "affiliation" .:> deformNonEmpty deform
     url <- "url" .:> deformNonEmpty deform
-    -- avatar <- "avatar" .:> deform
+    avatar <- "avatar" .:>
+      (Trav.mapM (\a -> do
+        f <- deformCheck "Must be an image." formatIsImage =<<
+          deformMaybe' "Unknown or unsupported file format."
+          (getFormatByFilename (fileName a))
+        return (a, f)) =<< deform)
     return ((fromMaybe blankParty p)
       { partySortName = name
       , partyPreName = prename
       , partyAffiliation = affiliation
       , partyURL = url
-      }, Nothing)
+      }, avatar)
+  a' <- Trav.forM a $ \(af, fmt) -> do
+    a' <- addAsset (blankAsset coreVolume)
+      { assetFormat = fmt
+      , assetClassification = ClassificationPUBLIC
+      , assetName = Just $ TE.decodeUtf8 $ fileName af
+      } $ Just $ tempFilePath (fileContent af)
+    releaseTempFile $ fileContent af
+    return a'
+  return (p', a')
   where maxAvatarSize = 10*1024*1024
 
 viewEditParty :: PartyTarget -> AppRAction

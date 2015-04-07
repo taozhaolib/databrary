@@ -17,5 +17,5 @@ useTPG
 
 loadParty :: Id Party -> Permission -> TH.ExpQ -- ^ @'Party'@
 loadParty i perm = do
-  Just p <- dbQuery1 $(selectQuery partyRow "$WHERE party.id = ${i}")
+  p <- dbQuery1' $(selectQuery partyRow "WHERE party.id = ${i}")
   TH.lift $ p Nothing perm Nothing
