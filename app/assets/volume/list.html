@@ -23,7 +23,7 @@
         <div class="volume-list-investigators" ng-if="::volume.access && profile">
           <span>Collaborators: </span>
           <ul class="inline-block comma">
-            <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.READ}">
+            <li ng-repeat="access in ::volume.access" ng-if="::access.individual >= page.permission.READ && access.individual < page.permission.ADMIN">
               <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
             </li>
           </ul>
