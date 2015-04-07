@@ -15,7 +15,7 @@
           <div class="permission-heading col-desktop-15 col-tablet-9 col-mobile-6">
             <a ng-href="{{::parent.party.route()}}" class="permission-auth-username">{{parent.party.name}}</a>
             <span class="permission-auth-email" ng-if="::!!parent.party.email" ng-bind="::parent.party.email"></span>
-            <div class="permission-auth-pending" ng-if="::!(parent.member || parent.site)" message="auth.pending"></div>
+            <div class="permission-auth-pending" ng-if="::isAdmin && !(parent.member || parent.site)" message="auth.pending"></div>
           </div>
 
           <div ng-if="::isAdmin">
@@ -80,7 +80,7 @@
           <div class="permission-heading col-desktop-14 col-tablet-8 col-mobile-5">
             <a ng-href="{{::child.party.route()}}" class="permission-auth-username" ng-bind="::child.party.name"></a>
             <span class="permission-auth-email" ng-if="::!!child.party.email" ng-bind="::child.party.email"></span>
-            <div ng-if="::!(child.member || child.site)" class="permission-auth-pending" message="auth.pending"></div>
+            <div ng-if="::isAdmin && !(child.member || child.site)" class="permission-auth-pending" message="auth.pending"></div>
           </div>
 
           <div ng-if="::isAdmin">
