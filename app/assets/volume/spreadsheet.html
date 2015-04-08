@@ -24,9 +24,6 @@
   <span ng-if="::editing">
     <a href="" ng-click="refresh()">refresh</a>
   </span>
-  <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
-    |
-  </span>
   <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
 </div>
 
