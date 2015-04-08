@@ -62,7 +62,7 @@ app.controller('volume/slot', [
 
      # Now that everything is sorted, let's separate out the first element
      # of the array, which should be the closest. 
-     [closest]= smallPlacements
+     [closest] = smallPlacements
 
      # "snap" the element by setting position to the closest
      dragPosition = closest.position
