@@ -7,13 +7,14 @@ module Databrary.Controller.Party
   , postParty
   , createParty
   , queryParties
+  , viewAvatar
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, (<|>), optional)
-import Control.Monad (unless, when, liftM2)
+import Control.Monad (unless, when, liftM2, void)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isJust, fromJust)
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
@@ -39,11 +40,14 @@ import Databrary.Model.VolumeAccess
 import Databrary.Model.Asset
 import Databrary.Model.Format
 import Databrary.Store.Temp
+import Databrary.Store.Asset
 import qualified Databrary.Web.Route as R
 import Databrary.Web.Form.Deform
+import Databrary.Web.File
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular
+import Databrary.Controller.Static
 import Databrary.View.Party
 
 data PartyTarget
@@ -134,6 +138,8 @@ postParty api i = multipartAction $ action POST (api, i) $ withAuth $ do
   p <- getParty (Just PermissionADMIN) i
   (p', a) <- processParty api (Just p)
   changeParty p'
+  when (isJust a) $
+    void $ changeAvatar p' a
   case api of
     JSON -> okResponse [] $ partyJSON p'
     HTML -> redirectRouteResponse [] $ viewParty api i
@@ -144,6 +150,8 @@ createParty api = multipartAction $ action POST (api, kindOf blankParty :: T.Tex
   _ <- checkPermission PermissionADMIN perm
   (bp, a) <- processParty api Nothing
   p <- addParty bp
+  when (isJust a) $
+    void $ changeAvatar p a
   case api of
     JSON -> okResponse [] $ partyJSON p
     HTML -> redirectRouteResponse [] $ viewParty api $ TargetParty $ partyId p
@@ -165,3 +173,13 @@ queryParties api = action GET (api, "party" :: T.Text) $ withAuth $ do
   case api of
     JSON -> okResponse [] $ JSON.toJSON $ map partyJSON p
     HTML -> blankForm $ htmlPartySearchForm pf
+
+viewAvatar :: Id Party -> AppRAction
+viewAvatar i = action GET (i, "avatar" :: T.Text) $
+  maybe
+    (redirectRouteResponse [] $ staticPublicFile $ staticPath ["images", "avatar.png"])
+    (\a -> do
+      -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
+      store <- maybeAction =<< getAssetFile a
+      serveFile store (assetFormat a) (fromJust $ assetSHA1 a))
+    =<< lookupAvatar i

@@ -16,6 +16,8 @@ module Databrary.Model.Party
   , partyJSON
   , PartyFilter(..)
   , findParties
+  , lookupAvatar
+  , changeAvatar
   ) where
 
 import Control.Applicative ((<|>))
@@ -27,7 +29,7 @@ import Data.Monoid (Monoid(..), (<>))
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
-import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
+import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
 
 import Databrary.Ops
@@ -36,11 +38,14 @@ import Databrary.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Web.Request
 import Databrary.Model.Id
-import Databrary.Model.SQL (selectQuery)
+import Databrary.Model.SQL
 import Databrary.Model.Permission
 import Databrary.Model.Audit
+import Databrary.Model.Audit.SQL
 import Databrary.Model.Identity.Types
-import Databrary.Model.Volume.Types
+import Databrary.Model.Volume
+import Databrary.Model.Asset.Types
+import Databrary.Model.Asset.SQL
 import Databrary.Model.Party.Types
 import Databrary.Model.Party.SQL
 import Databrary.Model.Party.Boot
@@ -167,3 +172,17 @@ findParties pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectParty 'ident) "")
     (++ partyFilter pf ident ++ " LIMIT " ++ show limit ++ " OFFSET " ++ show offset)
+
+lookupAvatar :: DBM m => Id Party -> m (Maybe Asset)
+lookupAvatar p =
+  dbQuery1 $ ($ coreVolume) <$> $(selectQuery selectVolumeAsset $ "$JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p} AND asset.volume = " ++ pgLiteralRep (volumeId coreVolume))
+
+changeAvatar :: MonadAudit c m => Party -> Maybe Asset -> m Bool
+changeAvatar p Nothing = do
+  ident <- getAuditIdentity
+  dbExecute1 $(auditDelete 'ident "avatar" "party = ${partyId p}" Nothing)
+changeAvatar p (Just a) = do
+  ident <- getAuditIdentity
+  (0 <) . fst <$> updateOrInsert
+    $(auditInsert 'ident "avatar" [("asset", "${assetId a}"), ("party", "${partyId p}")] Nothing)
+    $(auditUpdate 'ident "avatar" [("asset", "${assetId a}")] "party = ${partyId p}" Nothing)

@@ -77,6 +77,8 @@ routes = do
         ,                             act (deleteAuthorize api p a)
         ]
       ]
+    , R.route >>= \p ->
+                  html >> "avatar" >> act (viewAvatar p)
     , "party" >>                      act (createParty api)
                                   <|> act (queryParties api)
     , R.route >>= \v -> msum          -- /vo/ume/ID
