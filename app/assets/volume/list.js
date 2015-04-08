@@ -18,7 +18,7 @@ app.directive('volumeList', [
       };
       $scope.name = function (volume) {
         console.log(volume);
-        return page.$location.path() === '/profile' && volume.alias || volume.name;
+        return $scope.profile && volume.alias || volume.name;
       };
     }
   }; }

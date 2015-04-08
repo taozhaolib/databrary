@@ -3,7 +3,7 @@
     <div class="col-desktop-12 col-tablet-6 col-mobile-6 col-cell">
       <hgroup>
         <h1 class="panel-title smaller">
-          <span>{{party.name}}</span>
+          <span>{{profile? 'Your Profile' : party.name}}</span>
           <a ng-if="::party.checkPermission(page.permission.EDIT)" ng-href="{{::party.editRoute()}}"><span class="green button icon edit"></span></a>
         </h1>
       </hgroup>
@@ -12,6 +12,9 @@
         <div frame frame-title="party.contact.title" fold>
           <div>
             <dl class="flat">
+              <dt ng-if="profile">Name</dt>
+              <dd ng-if="profile" ng-bind="::party.name"></dd>
+
               <dt ng-if="::party.affiliation" message="affiliation"/>
               <dd ng-if="::party.affiliation" ng-bind="::party.affiliation"></dd>
 
