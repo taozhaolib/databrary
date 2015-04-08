@@ -33,7 +33,7 @@
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
                   <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
-                  <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.name"></span>
+                  <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.asset.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
                 </h1>
@@ -47,7 +47,7 @@
                       <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
-                    <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.display || metric.name"></dt>
+                    <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>
                     <dd ng-if="!!current.record" ng-repeat-end ng-bind="::current.record.measures[metric.id]"></dd>
                     <dt ng-if="!!current.age">age</dt>
                     <dd ng-if="!!current.age"><display-age value="current.age"></display-age></dd>
@@ -68,7 +68,7 @@
                   <div ng-switch-when="record">
                     <ng-form name="form.measures">
                     <dl class="cf">
-                      <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.display || metric.name"></dt><br>
+                      <dt ng-repeat-start="m in current.sortedMetrics" ng-init="metric=page.constants.metric[m]" ng-bind="::metric.name"></dt><br>
                       <dd ng-repeat-end ng-switch="::metric.options ? 'select' : (metric.long ? 'long' : metric.type)">
                         <select ng-switch-when="select" name="{{::m}}" ng-model="current.data.measures[m]" ng-options="o for o in metric.options"/>
                         <input ng-switch-when="text" type="text" name="{{::m}}" ng-model="current.data.measures[m]"/>
@@ -213,7 +213,7 @@
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length && t.asset.segment.full}">
-                    <span ng-bind="t.name"></span>
+                    <span ng-bind="t.asset.name || t.data.time || t.file.file.name"></span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
@@ -243,7 +243,7 @@
         <section ng-if="::!editing" id="slot-comments" class="slot-comments">
           <div ng-if="!commentReply">
             <textarea ng-model="form.comment.text" placeholder="{{::'comments.prompt' | message}}"></textarea>
-            <button ng-click="addComment(form.comment.text)" class="mini">Submit</button>
+            <button ng-disabled="!form.comment.text.length" ng-click="addComment(form.comment.text)" class="mini" message="comments.post"></button>
           </div>
 
           <article ng-repeat="comment in comments" class="panel-comments-comment" ng-class="comment.classes">
@@ -268,13 +268,12 @@
                 <div class="panel-comments-body" ng-if="commentReply !== comment">
                   <button ng-click="comment.setReply($event)" class="mini" message="comments.reply"></button>
                 </div>
-
               </div>
             </div>
             <div ng-if="commentReply === comment">
              <textarea ng-model="form.comment.reply" focus></textarea>
-             <button ng-click="addComment(form.comment.reply, comment)">Post</button>
-             <button ng-click="comment.setReply()">Cancel</button>
+             <button class="mini" ng-disabled="!form.comment.reply.length" ng-click="addComment(form.comment.reply, comment)" message="comments.post"></button>
+             <button class="mini" ng-click="comment.setReply()" message="comments.cancel"></button>
             </div>
           </article>
         </section>

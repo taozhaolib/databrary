@@ -175,7 +175,7 @@ party.contact.title=Contact
 volumes.title=Volumes
 
 network.title=Authorizations
-network.apply.local=Manage and apply for authorization
+network.apply.local=Request authorization
 network.apply.foreign=Grant authorization to {0}
 network.grant.local=Manage and grant authorizations
 network.grant.foreign=Apply for authorization from {0}
@@ -253,7 +253,7 @@ wizard.party-edit-account.instructions=
 
 wizard.party-edit-apply.name=Sponsors
 wizard.party-edit-apply.description=Authorizations and memberships granted by others
-wizard.party-edit-apply.instructions=Search here for the Authorized Investigator or Institution from whom you are requesting authorization. Read more about the <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">authorization process</a> and <a href="http://databrary.org/access/guide/investigators.html" target="_blank">its requirements</a>.
+wizard.party-edit-apply.instructions=Search here for the Authorized Investigator or Institution from whom you are requesting authorization. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>.
 
 wizard.party-edit-grant.name=Affiliates
 wizard.party-edit-grant.description=Authorizations and memberships granted to others
@@ -341,8 +341,8 @@ access.edit.ADMIN.who=For fellow volume investigators only.
 
 consent.NONE=There is no release for this session.
 consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
-consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used in public settings.
-consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used in public settings for research and educational purposes.
+consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
+consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used for research and educational purposes.
 consent.PUBLIC=Public: The identifying data in this session have been released publicly.
 
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
@@ -513,7 +513,7 @@ wizard.register-password.instructions=Please set a secure password. Remember tha
 
 wizard.register-agent.name=Request Authorization
 wizard.register-agent.description=Begin the authorization process.
-wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about the <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">authorization process</a> and <a href="http://databrary.org/access/guide/investigators.html" target="_blank">its requirements</a>.
+wizard.register-agent.instructions=In order to access Databrary resources, you must be authorized either as an Authorized Investigator through a sponsoring institution, or by an authorized Databrary Investigator as an Affiliate. Read more about <a href="http://databrary.org/access/guide/investigators.html" target="_blank">who qualifies for authorization</a> and <a href="http://databrary.org/access/guide/investigators/authorization.html" target="_blank">how to get authorized</a>. 
 
 wizard.register-request.name=Submit Authorization
 wizard.register-request.description=Confirm your authorization request.
@@ -559,7 +559,7 @@ volume.edit.success=Volume saved successfully.
 
 wizard.volume-edit-materials.name=Materials
 wizard.volume-edit-materials.description=Upload clips, images, stimuli, documents, and other materials.
-wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as highlights, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
+wizard.volume-edit-materials.instructions=<p>Provide any files related to this volume.  For each file, you must indicate whether it contains <b>restricted</b> identifying information (such as faces or birthdates), or <b>shared</b> or <b>public</b> non-data (stimuli or displays used during data collection, blank questionnaire forms).</p><p>Any representative video clips or still images may additionally be selected as highlights, and possibly shared more broadly given appropriate, explicit consent for release by depicted individuals.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session.png">) on the left or "no file" to upload files. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab. Any highlighted cells will be modified by your current edit.</p>See our <a href="/asset/formats">list of accepted file types</a>.</p>
 
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.

@@ -16,7 +16,7 @@ private[controllers] sealed class TagController extends SiteController {
       tag.set(request.obj, form.vote.get, form.keyword.get)
       .flatMap(_.fold(form.vote.withError("error.conflict")._throw) { t =>
         if (request.isApi)
-          t.coverage(request.obj.container).map(t => Ok(t.json.js))
+          t.coverage(request.obj.container).map(t => Ok((t.tag.json ++ t.json).js))
         else
           ARedirect(request.obj.pageURL)
       })
@@ -56,6 +56,6 @@ object TagApi extends TagController with ApiController {
   }
 
   def top() = SiteAction.async { implicit request =>
-    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](_.json)(l)))
+    TagWeight.getAll().map(l => Ok(JsonArray.map[TagWeight, JsonRecord](w => w.tag.json ++ w.json)(l)))
   }
 }

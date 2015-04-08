@@ -76,11 +76,11 @@ app.controller('volume/slot', [
     positionOffset = (position) ->
       tlr = tl.getBoundingClientRect()
       p = (position - tlr.left) / tlr.width
-      if p >= 0 && p <= 1
+      if p >= 0 && p < 1
         Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
       else if p < 0
         -Infinity
-      else if p > 1
+      else if p >= 1
         Infinity
 
     $scope.positionStyle = (p) ->
@@ -313,7 +313,7 @@ app.controller('volume/slot', [
         return
 
       updatePosition: () ->
-        @segment.u = @segment.l + @asset.duration
+        @segment.u = @segment.l + (@asset.duration || 0)
         return
 
       setPosition: (p) ->
@@ -566,7 +566,7 @@ app.controller('volume/slot', [
 
       ### jshint ignore:start #### fixed in jshint 2.5.7
       metrics: ->
-        ident = constants.category[@record.category]?.ident || [constants.metricName.ident.id]
+        ident = constants.category[@record.category]?.ident || [constants.metricName.ID.id]
         (constants.metric[m] for m of @record.measures when !(+m in ident)).sort(byId)
 
       addMetric = {id:'',name:'Add new value...'}
@@ -818,6 +818,8 @@ app.controller('volume/slot', [
           @classes.push('notselected')
 
       setReply: (event) ->
+        $scope.form.comment?.text = ''
+        $scope.form.comment?.reply = ''
         $scope.commentReply = if event
           $scope.selectAll(event, this) unless @segment.full
           this
@@ -830,6 +832,7 @@ app.controller('volume/slot', [
               $scope.form.comment.text = $scope.form.reply = ''
               $scope.comments = (new Comment(comment) for comment in res.comments)
               comment.update() for comment in $scope.comments
+              return
             , (res) ->
                 messages.addError
                   body: constants.message('comments.update.error')

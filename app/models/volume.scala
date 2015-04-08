@@ -127,7 +127,7 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
       ("links", opt => VolumeLink.get(this).map(JsonArray.map(_.json))),
       ("funding", opt => funding.map(JsonArray.map(_.json))),
       ("comments", opt => comments.map(JsonArray.map(_.json))),
-      ("tags", opt => tags.map(JsonArray.map(_.json))),
+      ("tags", opt => tags.map(JsonArray.map(t => t.tag.json ++ t.json))),
       ("records", opt => records.map(JsonArray.map(_.json - "volume"))),
       ("containers", opt => containers.map(JsonArray.map { c =>
         c.json - "volume" ++ c._jsonRecords(false).peek.map[JsonField]('records -> _)

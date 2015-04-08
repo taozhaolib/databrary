@@ -110,7 +110,7 @@ object Metric extends TableId[Metric[_]]("metric") {
       (byId(m), i)
     })
 
-  final val Ident : Metric[String] = _getName[String]("ident")
+  final val ID : Metric[String] = _getName[String]("ID")
   final val Birthdate : Metric[Date] = _getName[Date]("birthdate")
 }
 
