@@ -909,16 +909,21 @@ app.directive 'spreadsheet', [
                 undefined
               default: d && !defd
             defd ||= d
-          if !input && info.r
-            add("Remove " + info.record.displayName + " from this session",
-              (cell) -> setRecord(cell, info, null),
-              true)
-          else if !info.r || input != info.record.measures[info.metric.id]
+          if info.r
+            if input == info.record.measures[info.metric.id]
+              add("Keep " + info.record.displayName,
+                (cell) -> return,
+                true)
+            if !input
+              add("Remove " + info.record.displayName + " from this session",
+                (cell) -> setRecord(cell, info, null),
+                true)
+          if !info.r || input && input != info.record.measures[info.metric.id]
             inputl = (input ? '').toLowerCase()
             set = (r) -> (cell) ->
               setRecord(cell, info, r)
             for r in editScope.records
-              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == input) if r.v.startsWith(inputl)
+              add("Use " + info.category.name + ' ' + r.d, set(r.r), r.v == inputl) if r.v.startsWith(inputl)
             v = if info.metric.options
                 (x for x in info.metric.options when x.toLowerCase().startsWith(inputl))
               else
@@ -935,10 +940,6 @@ app.directive 'spreadsheet', [
                     saveMeasure(cell, r, info.metric, i) if r
                     return
                 , i == input)
-          else
-            add("Keep " + info.record.displayName,
-              (cell) -> return,
-              true)
           o
 
         optionCompletions = (input) ->
