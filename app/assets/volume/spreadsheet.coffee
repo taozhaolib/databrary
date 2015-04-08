@@ -935,11 +935,11 @@ app.directive 'spreadsheet', [
                 add("Change all " + info.record.displayName + " " + info.metric.name + " to '" + i + "'",
                   (cell) -> saveMeasure(cell, info.record, info.metric, i),
                   i == input)
-              add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'"
-                , (cell) -> setRecord(cell, info).then (r) ->
-                    saveMeasure(cell, r, info.metric, i) if r
-                    return
-                , i == input)
+              add("Create new " + info.category.name + " with " + info.metric.name + " '" + i + "'",
+                (cell) -> setRecord(cell, info).then((r) ->
+                  saveMeasure(cell, r, info.metric, i) if r
+                  return),
+                i == input)
           o
 
         optionCompletions = (input) ->
