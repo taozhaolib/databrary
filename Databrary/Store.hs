@@ -8,17 +8,23 @@ module Databrary.Store
 
 import Crypto.Hash (HashAlgorithm, hashInit, hashUpdate, hashFinalize, Digest)
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BSC
 import Data.ByteString.Lazy.Internal (defaultChunkSize)
+import qualified GHC.Foreign as GHC
+import GHC.IO.Encoding (getFileSystemEncoding)
 import System.IO (withFile, IOMode(ReadMode))
 import System.Posix.FilePath (RawFilePath)
 import System.Posix.Files.ByteString (getFileStatus, deviceID, fileID)
+import System.IO.Unsafe (unsafeDupablePerformIO)
 
 rawFilePath :: FilePath -> RawFilePath
-rawFilePath = BSC.pack
+rawFilePath s = unsafeDupablePerformIO $ do
+  enc <- getFileSystemEncoding
+  GHC.withCStringLen enc s BS.packCStringLen
 
 unRawFilePath :: RawFilePath -> FilePath
-unRawFilePath = BSC.unpack
+unRawFilePath b = unsafeDupablePerformIO $ do
+  enc <- getFileSystemEncoding
+  BS.useAsCStringLen b $ GHC.peekCStringLen enc
 
 sameFile :: RawFilePath -> RawFilePath -> IO Bool
 sameFile f1 f2 = do
