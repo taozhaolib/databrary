@@ -703,7 +703,8 @@ app.directive 'spreadsheet', [
               value = c[0] if c?.length
 
           if type == 'ident'
-            editScope.identCompleter(value).find((o) -> o.default)?.select(cell)
+            r = editScope.identCompleter(value)
+            r.find((o) -> o.default)?.select(cell) if Array.isArray(r)
             return
 
           switch info.t
@@ -940,7 +941,7 @@ app.directive 'spreadsheet', [
                   saveMeasure(cell, r, info.metric, i) if r
                   return),
                 i == input)
-          o
+          if o.length then o else input
 
         optionCompletions = (input) ->
           i = input.toLowerCase()
