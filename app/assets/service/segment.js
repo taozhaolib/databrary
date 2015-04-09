@@ -133,9 +133,13 @@ app.factory('Segment', [
       if (this.full || Segment.isEmpty(that))
         return that;
       that = Segment.make(that);
-      return new Segment(
+      var r = new Segment(
           Math.max(this.l, that.l),
           Math.min(this.u, that.u));
+      // fix ,y) && [y, => [y,y]
+      if (this.l < this.u && this.u <= r.l || that.l < that.u && that.u <= r.l)
+        return Segment.empty;
+      return r;
     };
 
     /* If segments are disjoint, assume the excluded middle. */
@@ -156,12 +160,14 @@ app.factory('Segment', [
 
     Segment.prototype.contains = function (that) {
       if (typeof that === 'number')
-        return that >= this.l && (that < this.u || that == this.u && this.l == this.u);
+        return that >= this.l && (that < this.u || that === this.u && this.l === this.u);
       if (Segment.isFull(that))
         return this.full;
       if (Segment.isEmpty(that))
         return !this.empty;
       that = Segment.make(that);
+      if (that.l === that.u)
+        return this.contains(that.l);
       return this.l <= that.l && this.u >= that.u;
     };
 
