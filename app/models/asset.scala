@@ -205,8 +205,8 @@ trait TimeseriesData extends BackedAsset {
 }
 
 /** File assets: objects within the system backed by primary file storage. */
-sealed class FileAsset private[models] (id : Asset.Id, volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte])
-  extends Asset(id, volume, format, classification_, name_, None) with BackedAsset {
+sealed class FileAsset private[models] (id : Asset.Id, volume : Volume, override val format : AssetFormat, classification_ : Classification.Value, name_ : Option[String], val sha1 : Array[Byte], _duration : Option[Offset] = None)
+  extends Asset(id, volume, format, classification_, name_, _duration) with BackedAsset {
   def source = this
   override def sourceId = id
 }
@@ -215,7 +215,7 @@ sealed class FileAsset private[models] (id : Asset.Id, volume : Volume, override
   * These assets may be handled in their entirety as FileAssets, extracted from to produce Clips.
   * They are never created directly by users but through a conversion process on existing FileAssets. */
 final class TimeseriesAsset private[models] (id : Asset.Id, volume : Volume, override val format : TimeseriesFormat, classification : Classification.Value, override val duration : Offset, name : Option[String], sha1 : Array[Byte])
-  extends FileAsset(id, volume, format, classification, name, sha1) with TimeseriesData {
+  extends FileAsset(id, volume, format, classification, name, sha1, Some(duration)) with TimeseriesData {
   override def source = this
   def entire = true
   def section : Section = Segment(Offset.ZERO, duration)
