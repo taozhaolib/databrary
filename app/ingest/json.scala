@@ -164,7 +164,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       }
 
       _ <- jc.children
-        .filterNot(jc => Seq("key", "category", "position").contains(jc.key.as[String]))
+        .filterNot(jc => Seq("id", "key", "category", "position").contains(jc.key.as[String]))
         .foreachAsync { implicit jc =>
           val met = jc.key.as[models.Metric[_]]
           write(r, r.measures.datum(met), jc)(v => r.setMeasure(new models.Measure(met, v)))(readsValue)
