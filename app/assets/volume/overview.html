@@ -15,6 +15,7 @@
       <div ng-if="::!shared" class="overview-access">
         <span>ACCESS: </span>
         <span message="volume.access.private"></span>
+        <span message="volume.access.private.extra"></span>
         <a ng-if="::volume.checkPermission(page.permission.ADMIN)" ng-href="{{::volume.editRoute('access')}}"><button class="yellow icon edit"></button></a>
       </div>
 
