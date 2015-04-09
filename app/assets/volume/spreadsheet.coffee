@@ -940,7 +940,7 @@ app.directive 'spreadsheet', [
                   saveMeasure(cell, r, info.metric, i) if r
                   return),
                 i == input)
-          o
+          if o.length then o else input
 
         optionCompletions = (input) ->
           i = input.toLowerCase()
