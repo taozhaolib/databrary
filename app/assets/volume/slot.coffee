@@ -454,6 +454,7 @@ app.controller('volume/slot', [
       else
         frame.style.overflow = 'hidden'
         bar.style.top = '0px'
+        bar.style.borderTop = "none"
         playerHeight = h
         setPlayerHeight()
       return
