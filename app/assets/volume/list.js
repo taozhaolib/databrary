@@ -17,8 +17,13 @@ app.directive('volumeList', [
         });
       };
       $scope.name = function (volume) {
-        console.log(volume);
         return $scope.profile && volume.alias || volume.name;
+      };
+
+      $scope.accessList = function (volume,min,max){
+        return volume.access.filter(function(a) {
+          return a.individual >= min && a.individual <= max;
+        });
       };
     }
   }; }

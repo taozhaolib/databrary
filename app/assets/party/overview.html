@@ -9,26 +9,22 @@
       </hgroup>
 
       <div>
-        <div frame frame-title="party.contact.title" fold>
-          <div>
-            <dl class="flat">
-              <dt ng-if="profile">Name</dt>
-              <dd ng-if="profile" ng-bind="::party.name"></dd>
+        <dl class="flat">
+          <dt ng-if="profile">Name</dt>
+          <dd ng-if="profile" ng-bind="::party.name"></dd>
 
-              <dt ng-if="::party.affiliation" message="affiliation"/>
-              <dd ng-if="::party.affiliation" ng-bind="::party.affiliation"></dd>
+          <dt ng-if="::party.affiliation" message="affiliation"/>
+          <dd ng-if="::party.affiliation" ng-bind="::party.affiliation"></dd>
 
-              <dt ng-if="::party.email" message="email"/>
-              <dd ng-if="::party.email"><a ng-href="mailto:{{::party.email}}" ng-bind="::party.email"></a></dd>
+          <dt ng-if="::party.email" message="email"/>
+          <dd ng-if="::party.email"><a ng-href="mailto:{{::party.email}}" ng-bind="::party.email"></a></dd>
 
-              <dt ng-if="::party.orcid" message="orcid"/>
-              <dd ng-if="::party.orcid"><a ng-href="http://orcid.org/{{::party.orcid}}" ng-bind="::party.orcid"></a></dd>
+          <dt ng-if="::party.orcid" message="orcid"/>
+          <dd ng-if="::party.orcid"><a ng-href="http://orcid.org/{{::party.orcid}}" ng-bind="::party.orcid"></a></dd>
 
-              <dt ng-if="::party.url" message="party.view.url"/>
-              <dd ng-if="::party.url"><a ng-href="{{::party.url}}" ng-bind="::party.url"></a></dd>
-            </dl>
-          </div>
-        </div>
+          <dt ng-if="::party.url" message="party.view.url"/>
+          <dd ng-if="::party.url"><a ng-href="{{::party.url}}" ng-bind="::party.url"></a></dd>
+        </dl>
       </div>
     </div>
 

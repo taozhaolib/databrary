@@ -13,17 +13,17 @@
         <div class="volume-list-investigators" ng-if="::volume.access">
           <span ng-if="profile">Investigators: </span>
           <ul class="inline-block comma">
-            <li ng-repeat="access in ::volume.access | filter:{individual: page.permission.ADMIN}">
+            <li ng-repeat="access in ::accessList(volume,page.permission.ADMIN,page.permission.ADMIN)">
               <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
             </li>
           </ul>
           <span class="year" ng-if="::volume.citation && volume.citation.year && !profile" ng-bind="::' (' + volume.citation.year + ')'"></span>
         </div>
 
-        <div class="volume-list-investigators" ng-if="::volume.access && profile">
+        <div class="volume-list-investigators" ng-if="::volume.access && profile && accessList(volume,page.permission.READ,page.permission.EDIT).length">
           <span>Collaborators: </span>
           <ul class="inline-block comma">
-            <li ng-repeat="access in ::volume.access" ng-if="::access.individual >= page.permission.READ && access.individual < page.permission.ADMIN">
+            <li ng-repeat="access in ::accessList(volume,page.permission.READ,page.permission.EDIT)">
               <a ng-href="{{::access.party.route()}}" ng-bind="::access.party.name"></a>
             </li>
           </ul>
