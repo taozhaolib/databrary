@@ -15,7 +15,7 @@ import Control.Applicative ((<*>))
 import Control.Arrow (first)
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
 import Control.Exception (Exception, throwIO, bracket, bracket_, finally, onException)
-import Control.Monad (void, when, forM)
+import Control.Monad (void, when, unless, forM)
 import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Int (Int32, Int64)
@@ -82,7 +82,7 @@ foreign import ccall unsafe "libavutil/frame.h av_frame_unref"
 foreign import ccall unsafe "libavutil/frame.h av_frame_get_best_effort_timestamp"
   avFrameGetBestEffortTimestamp :: Ptr AVFrame -> IO Int64
 
-foreign import ccall safe "libavcodec/avcodec.h av_lockmgr_register"
+foreign import ccall "libavcodec/avcodec.h av_lockmgr_register"
   avLockmgrRegister :: FunPtr (AVLockmgr a) -> IO CInt
 
 foreign import ccall "wrapper"
@@ -97,19 +97,22 @@ foreign import ccall unsafe "libavcodec/avcodec.h av_init_packet"
 foreign import ccall unsafe "libavcodec/avcodec.h av_free_packet"
   avFreePacket :: Ptr AVPacket -> IO ()
 
-foreign import ccall safe "libavcodec/avcodec.h avcodec_open2"
+foreign import ccall "libavcodec/avcodec.h avcodec_open2"
   avcodecOpen2 :: Ptr AVCodecContext -> Ptr AVCodec -> Ptr (Ptr AVDictionary) -> IO CInt
 
-foreign import ccall safe "libavcodec/avcodec.h avcodec_close"
+foreign import ccall "libavcodec/avcodec.h avcodec_close"
   avcodecClose :: Ptr AVCodecContext -> IO CInt
 
-foreign import ccall safe "libavcodec/avcodec.h avcodec_decode_video2"
+foreign import ccall "libavcodec/avcodec.h avcodec_decode_video2"
   avcodecDecodeVideo2 :: Ptr AVCodecContext -> Ptr AVFrame -> Ptr CInt -> Ptr AVPacket -> IO CInt
 
-foreign import ccall safe "libavcodec/avcodec.h avcodec_find_encoder"
+foreign import ccall "libavcodec/avcodec.h avcodec_encode_video2"
+  avcodecEncodeVideo2 :: Ptr AVCodecContext -> Ptr AVPacket -> Ptr AVFrame -> Ptr CInt -> IO CInt
+
+foreign import ccall "libavcodec/avcodec.h avcodec_find_encoder"
   avcodecFindEncoder :: AVCodecID -> IO (Ptr AVCodec)
 
-foreign import ccall safe "libavcodec/avcodec.h avcodec_find_best_pix_fmt_of_list"
+foreign import ccall "libavcodec/avcodec.h avcodec_find_best_pix_fmt_of_list"
   avcodecFindBestPixFmtOfList :: Ptr AVPixelFormat -> AVPixelFormat -> CInt -> Ptr CInt -> IO AVPixelFormat
 
 foreign import ccall unsafe "libavformat/avio.h avio_open_dyn_buf"
@@ -118,38 +121,47 @@ foreign import ccall unsafe "libavformat/avio.h avio_open_dyn_buf"
 foreign import ccall unsafe "libavformat/avio.h avio_close_dyn_buf"
   avioCloseDynBuf :: Ptr AVIOContext -> Ptr CString -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h av_register_all"
+foreign import ccall "libavformat/avformat.h av_register_all"
   avRegisterAll :: IO ()
 
-foreign import ccall safe "libavformat/avformat.h avformat_open_input"
+foreign import ccall "libavformat/avformat.h avformat_open_input"
   avformatOpenInput :: Ptr (Ptr AVFormatContext) -> CString -> Ptr AVInputFormat -> Ptr (Ptr AVDictionary) -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h avformat_close_input"
+foreign import ccall "libavformat/avformat.h avformat_close_input"
   avformatCloseInput :: Ptr (Ptr AVFormatContext) -> IO ()
 
-foreign import ccall safe "libavformat/avformat.h avformat_find_stream_info"
+foreign import ccall "libavformat/avformat.h avformat_find_stream_info"
   avformatFindStreamInfo :: Ptr AVFormatContext -> Ptr (Ptr AVDictionary) -> IO CInt
 
 foreign import ccall unsafe "libavformat/avformat.h av_find_input_format"
   avFindInputFormat :: CString -> IO (Ptr AVInputFormat)
 
-foreign import ccall safe "libavformat/avformat.h av_find_best_stream"
+foreign import ccall "libavformat/avformat.h av_find_best_stream"
   avFindBestStream :: Ptr AVFormatContext -> #{type enum AVMediaType} -> CInt -> CInt -> Ptr (Ptr AVCodec) -> CInt -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h avformat_seek_file"
+foreign import ccall "libavformat/avformat.h avformat_seek_file"
   avformatSeekFile :: Ptr AVFormatContext -> CInt -> Int64 -> Int64 -> Int64 -> CInt -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h av_read_frame"
+foreign import ccall "libavformat/avformat.h av_read_frame"
   avReadFrame :: Ptr AVFormatContext -> Ptr AVPacket -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h avformat_alloc_output_context2"
+foreign import ccall "libavformat/avformat.h avformat_alloc_output_context2"
   avformatAllocOutputContext2 :: Ptr (Ptr AVFormatContext) -> Ptr AVOutputFormat -> CString -> CString -> IO CInt
 
-foreign import ccall safe "libavformat/avformat.h avformat_free_context"
+foreign import ccall "libavformat/avformat.h avformat_free_context"
   avformatFreeContext :: Ptr AVFormatContext -> IO ()
 
-foreign import ccall safe "libavformat/avformat.h avformat_new_stream"
+foreign import ccall "libavformat/avformat.h avformat_new_stream"
   avformatNewStream :: Ptr AVFormatContext -> Ptr AVCodec -> IO (Ptr AVStream)
+
+foreign import ccall "libavformat/avformat.h avformat_write_header"
+  avformatWriteHeader :: Ptr AVFormatContext -> Ptr (Ptr AVDictionary) -> IO CInt
+
+foreign import ccall "libavformat/avformat.h av_write_frame"
+  avWriteFrame :: Ptr AVFormatContext -> Ptr AVPacket -> IO CInt
+
+foreign import ccall "libavformat/avformat.h av_write_trailer"
+  avWriteTrailer :: Ptr AVFormatContext -> IO CInt
 
 
 newtype AVRational = AVRational (Ratio CInt) deriving (Eq, Ord, Num, Fractional, Real, RealFrac)
@@ -200,7 +212,11 @@ data ErrorFile
 errorFile :: ErrorFile -> IO (Maybe RawFilePath)
 errorFile NoFile = return Nothing
 errorFile (FileName f) = return $ Just f
-errorFile (FileContext a) = Just <$> (BS.packCString =<< #{peek AVFormatContext, filename} a)
+errorFile (FileContext a) = do
+  n <- #{peek AVFormatContext, filename} a
+  if n == nullPtr
+    then return Nothing
+    else Just <$> BS.packCString n
 
 throwAVError :: CInt -> String -> ErrorFile -> IO a
 throwAVError e c f = throwIO . AVError e c =<< errorFile f
@@ -401,6 +417,9 @@ avSeekStream ctx s frame offset = do
 foreign import ccall unsafe "av.h avFrame_initialize_stream"
   avFrameInitializeStream :: Ptr AVStream -> Ptr AVFormatContext -> Ptr AVStream -> Ptr AVFrame -> CInt -> CInt -> IO ()
 
+foreign import ccall "av.h avFrame_rescale"
+  avFrameRescale :: Ptr AVCodecContext -> Ptr AVFrame -> IO CInt
+
 avFrame :: AV -> RawFilePath -> Maybe DiffTime -> Maybe Int -> Maybe Int -> Maybe RawFilePath -> IO (Maybe BS.ByteString)
 avFrame AV infile offset width height outfile =
   withAVInput infile (isimg ?> "image2") $ \inctx ->
@@ -423,7 +442,6 @@ avFrame AV infile offset width height outfile =
 
     setAVDictionary opts "threads" "1"
     icodec <- peek icodecp
-    ic :: Ptr AVCodecContext <- #{peek AVStream, codec} is
     withAVCodec inctx is icodec opts $
       withAVFrame $ \frame -> do
         avSeekStream inctx is frame offset
@@ -443,12 +461,24 @@ avFrame AV infile offset width height outfile =
             avcodecFindBestPixFmtOfList (#{ptr AVCodec, pix_fmts} ocodec) ffmt 0 nullPtr
           #{poke AVCodecContext, pix_fmt} oc fmt
           when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $ do
-            -- TODO
+            r <- avFrameRescale oc frame
+            unless (r == 0) $
+              throwAVError 0 "av_frame_get_buffer" (FileContext outctx)
 
           setAVDictionary opts "threads" "1"
           withAVCodec outctx os ocodec opts $
-
-            return ()
-
+            withAVPacket $ \pkt ->
+            with 0 $ \gpp -> do
+              throwAVErrorIf_ "avformat_write_header" (FileContext outctx) $
+                avformatWriteHeader outctx nullPtr
+              throwAVErrorIf_ "avcodec_encode_video2" (FileContext outctx) $
+                avcodecEncodeVideo2 oc pkt frame gpp
+              gp <- peek gpp
+              when (gp == 0) $
+                throwAVError 0 "avcodec_encode_video2 packet" (FileContext outctx)
+              throwAVErrorIf_ "av_write_frame" (FileContext outctx) $
+                avWriteFrame outctx pkt
+              throwAVErrorIf_ "av_write_trailer" (FileContext outctx) $
+                avWriteTrailer outctx
   where
   isimg = isNothing offset

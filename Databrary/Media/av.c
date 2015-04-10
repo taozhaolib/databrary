@@ -1,4 +1,5 @@
 #include "av.h"
+#include <libswscale/swscale.h>
 
 void avFrame_initialize_stream(AVStream *o, AVFormatContext *c, AVStream *i, AVFrame *f, int w, int h)
 {
@@ -20,4 +21,24 @@ void avFrame_initialize_stream(AVStream *o, AVFormatContext *c, AVStream *i, AVF
 	}
 	o->codec->colorspace = av_frame_get_colorspace(f);
 	o->codec->color_range = av_frame_get_color_range(f);
+}
+
+int avFrame_rescale(const AVCodecContext *c, AVFrame *f)
+{
+	AVFrame t = {};
+	t.format = c->pix_fmt;
+	t.width = c->width;
+	t.height = c->height;
+	av_frame_copy_props(&t, f);
+	if (!av_frame_get_buffer(&t, 32))
+		return -1;
+	struct SwsContext *sws = sws_getContext(
+			f->width, f->height, f->format,
+			t.width, t.height, t.format,
+			SWS_POINT, NULL, NULL, NULL);
+	sws_scale(sws, (const uint8_t *const *)f->data, f->linesize, 0, f->height, t.data, t.linesize);
+	sws_freeContext(sws);
+	av_frame_unref(f);
+	av_frame_move_ref(f, &t);
+	return 0;
 }
