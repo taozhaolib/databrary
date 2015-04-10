@@ -283,13 +283,14 @@ app.directive 'spreadsheet', [
             td.id = i
           td
 
-        generateMultiple = (cat, cols, row, i, n, t, m) ->
+        generateMultiple = (col, cols, row, i, n, t) ->
           if n == undefined
             return if t == 1
           else
             return if n < t
           td = row.appendChild(document.createElement('td'))
           td.setAttribute("colspan", cols)
+          cat = col.category
           if n == undefined && t > 1
             td.appendChild(document.createTextNode(t + " " + cat.name + "s"))
             td.className = 'more'
@@ -302,10 +303,13 @@ app.directive 'spreadsheet', [
               else if editing
                 td.appendChild(document.createTextNode("add " + cat.name))
               if editing
-                if cols > 1 && m != undefined
-                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+(n||0)+'_'+m)
-                  row.appendChild(td)
-                  td.setAttribute("colspan", cols-1)
+                if 'metrics' of col && col.metrics[0].id != 'id'
+                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+(n||0)+'_'+col.start)
+                  if cols > 1
+                    row.appendChild(td)
+                    td.setAttribute("colspan", cols-1)
+                  else
+                    row.removeChild(td)
                 td.className = 'null add'
                 td.id = id + '-add_' + i + '_' + cat.id
           td
@@ -316,7 +320,7 @@ app.directive 'spreadsheet', [
           c = col.category.id
           t = counts[i][c] || 0
           r = records[c]
-          if td = generateMultiple(col.category, l, row, i, n, t, col.start)
+          if td = generateMultiple(col, l, row, i, n, t)
             if n == undefined
               for n in [0..t-1] by 1
                 td.classList.add('ss-rec_' + r.id[n][i])
@@ -339,7 +343,7 @@ app.directive 'spreadsheet', [
 
         generateAsset = (row, i, n) ->
           a = assets[i]
-          return if generateMultiple(pseudoCategory.asset, 3, row, i, n, a.length)
+          return if generateMultiple({category:pseudoCategory.asset}, 3, row, i, n, a.length)
           b = i
           if n == undefined
             a = a[0]
@@ -703,7 +707,8 @@ app.directive 'spreadsheet', [
               value = c[0] if c?.length
 
           if type == 'ident'
-            editScope.identCompleter(value).find((o) -> o.default)?.select(cell)
+            r = editScope.identCompleter(value)
+            r.find((o) -> o.default)?.select(cell) if Array.isArray(r)
             return
 
           switch info.t
