@@ -45,6 +45,8 @@ instance Has (Maybe (Id Container)) AssetSlot where
   view = fmap view . assetSlot
 instance Has (Maybe Segment) AssetSlot where
   view = fmap view . assetSlot
+instance Has Segment AssetSlot where
+  view = maybe emptySegment slotSegment . assetSlot
 instance Has (Maybe Consent) AssetSlot where
   view = (view =<<) . assetSlot
 

@@ -34,7 +34,8 @@ selectVolume :: TH.Name -- ^ @'Identity'@
 selectVolume i = selectJoin 'setPermission
   [ volumeRow
   , joinOn "volume_permission.permission >= 'PUBLIC'::permission"
-    $ selector ("LATERAL (VALUES (CASE WHEN ${identitySuperuser " ++ is ++ "} THEN enum_last(NULL::permission) ELSE volume_access_check(volume.id, ${view " ++ is ++ " :: Id Party}) END)) AS volume_permission (permission)") "volume_permission.permission"
+    $ selector ("LATERAL (VALUES (CASE WHEN ${identitySuperuser " ++ is ++ "} THEN enum_last(NULL::permission) ELSE volume_access_check(volume.id, ${view " ++ is ++ " :: Id Party}) END)) AS volume_permission (permission)")
+    "volume_permission.permission"
   ]
   where is = nameRef i
 

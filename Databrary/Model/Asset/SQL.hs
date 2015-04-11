@@ -27,11 +27,11 @@ makeAsset i = Asset i . getFormat'
 assetRow :: Selector -- ^ @'Volume' -> 'Asset'@
 assetRow = selectColumns 'makeAsset "asset" ["id", "format", "classification", "name", "duration", "sha1", "size"]
 
-selectVolumeAsset :: Selector -- ^ @'Volume' -> 'Container'@
+selectVolumeAsset :: Selector -- ^ @'Volume' -> 'Asset'@
 selectVolumeAsset = assetRow
 
 selectAsset :: TH.Name -- ^ @'Identity'@
-  -> Selector -- ^ @'Container'@
+  -> Selector -- ^ @'Asset'@
 selectAsset ident = selectJoin '($)
   [ selectVolumeAsset
   , joinOn "asset.volume = volume.id" $ selectVolume ident

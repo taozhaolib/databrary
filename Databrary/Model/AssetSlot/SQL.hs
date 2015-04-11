@@ -1,6 +1,9 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.AssetSlot.SQL
-  ( selectContainerSlotAsset
+  ( slotAssetRow
+  , excerptRow
+  , makeSlotAsset
+  , selectContainerSlotAsset
   , selectAssetSlotAsset
   , selectVolumeSlotAsset
   , selectSlotAsset

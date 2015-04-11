@@ -43,12 +43,12 @@ lookupAssetSlot ai = do
 
 lookupAssetAssetSlot :: (DBM m) => Asset -> m AssetSlot
 lookupAssetAssetSlot a = fromMaybe assetNoSlot
-  <$> dbQuery1 $(selectQuery selectAssetSlotAsset "$WHERE slot_asset.asset = ${assetId a}")
+  <$> dbQuery1 $(selectQuery selectAssetSlotAsset "$WHERE slot_asset.asset = ${assetId a} AND container.volume = ${volumeId $ assetVolume a}")
   <*> return a
 
 lookupSlotAssets :: (DBM m) => Slot -> m [AssetSlot]
 lookupSlotAssets (Slot c s) =
-  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c} AND slot_asset.segment && ${s}")
+  dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c} AND slot_asset.segment && ${s} AND asset.volume = ${volumeId $ containerVolume c}")
 
 lookupContainerAssets :: (DBM m) => Container -> m [AssetSlot]
 lookupContainerAssets = lookupSlotAssets . containerSlot

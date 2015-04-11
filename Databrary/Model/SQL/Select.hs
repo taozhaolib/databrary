@@ -7,6 +7,7 @@ module Databrary.Model.SQL.Select
   , selectColumns
   , addSelects
   , fromMap
+  , crossJoin
   , joinOn
   , joinUsing
   , maybeJoinOn
@@ -122,6 +123,9 @@ maybeJoinWith :: (String -> String) -> Selector -> Selector
 maybeJoinWith j sel = sel
   { selectJoined = j (selectSource sel)
   , selectOutput = outputMaybe (selectOutput sel) }
+
+crossJoin :: Selector -> Selector
+crossJoin = joinWith (" CROSS JOIN " ++)
 
 joinOn :: String -> Selector -> Selector
 joinOn on = joinWith (\s -> " JOIN " ++ s ++ " ON " ++ on)

@@ -5,7 +5,10 @@ module Databrary.Model.Segment
   , lowerBound, upperBound
   , segmentLength
   , fullSegment
+  , emptySegment
   , segmentFull
+  , segmentEmpty
+  , segmentIntersect
   ) where
 
 import Control.Applicative ((<|>), optional)
@@ -27,7 +30,7 @@ lowerBound, upperBound :: Range.Range a -> Maybe a
 lowerBound = Range.bound . Range.lowerBound
 upperBound = Range.bound . Range.upperBound
 
-newtype Segment = Segment { segmentRange :: Range.Range Offset }
+newtype Segment = Segment { segmentRange :: Range.Range Offset } deriving (Eq)
 
 instance PGType "segment"
 instance Range.PGRangeType "segment" "interval"
@@ -92,5 +95,14 @@ instance JSON.FromJSON Segment where
 fullSegment :: Segment
 fullSegment = Segment Range.full
 
+emptySegment :: Segment
+emptySegment = Segment Range.empty
+
 segmentFull :: Segment -> Bool
 segmentFull = Range.isFull . segmentRange
+
+segmentEmpty :: Segment -> Bool
+segmentEmpty = Range.isEmpty . segmentRange
+
+segmentIntersect :: Segment -> Segment -> Segment
+segmentIntersect (Segment a) (Segment b) = Segment (Range.intersect a b)

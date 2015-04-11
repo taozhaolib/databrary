@@ -43,7 +43,8 @@ instance Has Container AssetSegment where
 instance Has (Id Container) AssetSegment where
   view = containerId . slotContainer . view
 instance Has Segment AssetSegment where
-  view = assetSegment
+  view AssetSegment{ segmentAsset = AssetSlot{ assetSlot = Just s }, assetSegment = seg } = seg `segmentIntersect` slotSegment s
+  view _ = emptySegment
 instance Has (Maybe Consent) AssetSegment where
   view = view . (view :: AssetSegment -> Slot)
 
