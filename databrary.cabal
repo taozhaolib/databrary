@@ -14,6 +14,7 @@ Executable databrary
   main-is: Databrary/Warp.hs
 
   other-modules: Databrary.Media.AV
+  c-sources: Databrary/Media/av.c
 
   Build-depends:
     base,
