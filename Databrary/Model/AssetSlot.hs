@@ -86,5 +86,5 @@ assetSlotJSON as@AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
   , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
   , Just $ "permission" JSON..= (view as :: Permission)
-  , ("excerpt" JSON..=) <$> assetSlotExcerpt
+  -- , ("excerpt" JSON..=) <$> assetSlotExcerpt
   ]

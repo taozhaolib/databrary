@@ -134,7 +134,7 @@ processAsset :: API -> AssetTarget -> AuthAction
 processAsset api target = do
   let as@AssetSlot{ slotAsset = a, assetSlot = s } = case target of
         AssetTargetVolume t -> assetNoSlot $ blankAsset t
-        AssetTargetSlot t -> AssetSlot (blankAsset (view t)) (Just t) Nothing
+        AssetTargetSlot t -> AssetSlot (blankAsset (view t)) (Just t)
         AssetTargetAsset t -> t
   (as', up') <- runFormFiles [("file", maxAssetSize)] (api == HTML ?> htmlAssetForm target) $ do
     file <- "file" .:> deform

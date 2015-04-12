@@ -18,11 +18,10 @@ import Databrary.Model.Slot.Types
 data AssetSlot = AssetSlot
   { slotAsset :: Asset
   , assetSlot :: Maybe Slot
-  , assetSlotExcerpt :: Maybe Classification
   }
 
 assetNoSlot :: Asset -> AssetSlot
-assetNoSlot a = AssetSlot a Nothing Nothing
+assetNoSlot a = AssetSlot a Nothing
 
 instance Has Asset AssetSlot where
   view = slotAsset
@@ -32,9 +31,13 @@ instance Has Format AssetSlot where
   view = view . slotAsset
 instance Has (Id Format) AssetSlot where
   view = view . slotAsset
+instance Has Classification AssetSlot where
+  view = view . slotAsset
 instance Has Volume AssetSlot where
   view = view . slotAsset
 instance Has (Id Volume) AssetSlot where
+  view = view . slotAsset
+instance Has Permission AssetSlot where
   view = view . slotAsset
 
 instance Has (Maybe Slot) AssetSlot where
@@ -49,11 +52,3 @@ instance Has Segment AssetSlot where
   view = maybe emptySegment slotSegment . assetSlot
 instance Has (Maybe Consent) AssetSlot where
   view = (view =<<) . assetSlot
-
-instance Has Classification AssetSlot where
-  view AssetSlot{ assetSlotExcerpt = Just c } = c
-  view AssetSlot{ slotAsset = a } = view a
-
-instance Has Permission AssetSlot where
-  view AssetSlot{ slotAsset = a, assetSlot = Just s } = dataPermission (view a) (view a) (view s)
-  view AssetSlot{ slotAsset = a } = view a

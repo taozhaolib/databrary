@@ -15,30 +15,30 @@ import Databrary.Model.Segment
 import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSegment.Types
 
-makeExcerpt :: Segment -> Classification -> AssetSlot -> AssetSegment
-makeExcerpt s c a = AssetSegment a s (Just c)
+makeExcerpt :: Segment -> Classification -> AssetSlot -> Excerpt
+makeExcerpt s c a = newExcerpt a s c
 
-excerptRow :: Selector -- ^ @'AssetSlot' -> 'AssetSegment'@
+excerptRow :: Selector -- ^ @'AssetSlot' -> 'Excerpt'@
 excerptRow = selectColumns 'makeExcerpt "excerpt" ["segment", "classification"]
 
-selectAssetSlotExcerpt :: Selector -- ^ @'AssetSlot' -> 'AssetSegment'@
+selectAssetSlotExcerpt :: Selector -- ^ @'AssetSlot' -> 'Excerpt'@
 selectAssetSlotExcerpt = excerptRow
 
-excerptKeys :: String -- ^ @'AssetSegment'@
+excerptKeys :: String -- ^ @'Excerpt'@
   -> [(String, String)]
 excerptKeys o =
-  [ ("asset", "${assetId $ slotAsset $ segmentAsset " ++ o ++ "}")
-  , ("segment", "${assetSegment " ++ o ++ "}")
+  [ ("asset", "${assetId $ slotAsset $ segmentAsset $ excerptAsset " ++ o ++ "}")
+  , ("segment", "${assetSegment $ excerptAsset " ++ o ++ "}")
   ]
 
-excerptSets :: String -- ^ @'AssetSegment'@
+excerptSets :: String -- ^ @'Excerpt'@
   -> [(String, String)]
 excerptSets o =
-  [ ("classification", "${assetSegmentExcerpt " ++ o ++ "}")
+  [ ("classification", "${excerptClassification " ++ o ++ "}")
   ]
 
 insertExcerpt :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'AssetSegment'@
+  -> TH.Name -- ^ @'Excerpt'@
   -> TH.ExpQ
 insertExcerpt ident o = auditInsert ident "excerpt"
   (excerptKeys os ++ excerptSets os)
@@ -46,7 +46,7 @@ insertExcerpt ident o = auditInsert ident "excerpt"
   where os = nameRef o
 
 updateExcerpt :: TH.Name -- ^ @'AuditIdentity'@
-  -> TH.Name -- ^ @'AssetSegment'@
+  -> TH.Name -- ^ @'Excerpt'@
   -> TH.ExpQ
 updateExcerpt ident o = auditUpdate ident "excerpt"
   (excerptSets os)

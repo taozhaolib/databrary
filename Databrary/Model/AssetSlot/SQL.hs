@@ -1,13 +1,10 @@
 {-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.AssetSlot.SQL
   ( slotAssetRow
-  , excerptRow
   , makeSlotAsset
   , selectContainerSlotAsset
   , selectAssetSlotAsset
-  , selectVolumeSlotAsset
   , selectSlotAsset
-  , selectVolumeAssetSlot
   , selectAssetSlot
   , insertSlotAsset
   , updateSlotAsset
@@ -19,7 +16,6 @@ import qualified Language.Haskell.TH as TH
 
 import Databrary.Has (view)
 import Databrary.Model.Segment
-import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Asset.Types
 import Databrary.Model.Asset.SQL
@@ -34,45 +30,38 @@ import Databrary.Model.AssetSlot.Types
 slotAssetRow :: Selector -- ^ @'Segment'@
 slotAssetRow = selector "slot_asset" "slot_asset.segment"
 
-excerptRow :: Selector -- ^ @'Classification'@
-excerptRow = selector "excerpt" "excerpt.classification"
+makeSlotAsset :: Asset -> Container -> Segment -> AssetSlot
+makeSlotAsset a c s = AssetSlot a (Just (Slot c s))
 
-makeSlotAsset :: Segment -> Maybe Classification -> Asset -> Container -> AssetSlot
-makeSlotAsset seg cls a c = AssetSlot a (Just (Slot c seg)) cls
+_selectAssetContainerSlotAsset :: Selector -- ^ @'Asset' -> 'Container' -> 'AssetSlot'@
+_selectAssetContainerSlotAsset = selectMap (TH.VarE 'makeSlotAsset `TH.AppE`) slotAssetRow
 
-selectAssetContainerSlotAsset :: Selector -- ^ @'Asset' -> 'Container' -> 'AssetSlot'@
-selectAssetContainerSlotAsset = selectJoin 'makeSlotAsset
-  [ slotAssetRow
-  , maybeJoinOn "slot_asset.asset = excerpt.asset AND slot_asset.segment <@ excerpt.segment"
-    excerptRow
-  ]
-
-makeContainerSlotAsset :: (Asset -> Container -> AssetSlot) -> (Volume -> Asset) -> Container -> AssetSlot
-makeContainerSlotAsset f af c = f (af (view c)) c
+makeContainerSlotAsset :: Segment -> (Volume -> Asset) -> Container -> AssetSlot
+makeContainerSlotAsset s af c = makeSlotAsset (af (view c)) c s
 
 selectContainerSlotAsset :: Selector -- ^ @'Container' -> 'AssetSlot'@
 selectContainerSlotAsset = selectJoin 'makeContainerSlotAsset
-  [ selectAssetContainerSlotAsset
+  [ slotAssetRow
   , joinOn "slot_asset.asset = asset.id"
     selectVolumeAsset -- XXX volumes match?
   ]
 
-makeAssetSlotAsset :: (Asset -> Container -> AssetSlot) -> (Volume -> Container) -> Asset -> AssetSlot
-makeAssetSlotAsset f cf a = f a (cf (view a))
+makeAssetSlotAsset :: Segment -> (Volume -> Container) -> Asset -> AssetSlot
+makeAssetSlotAsset s cf a = makeSlotAsset a (cf (view a)) s
 
 selectAssetSlotAsset :: Selector -- ^ @'Asset' -> 'AssetSlot'@
 selectAssetSlotAsset = selectJoin 'makeAssetSlotAsset
-  [ selectAssetContainerSlotAsset
+  [ slotAssetRow
   , joinOn "slot_asset.container = container.id"
     selectVolumeContainer -- XXX volumes match?
   ]
 
-makeVolumeSlotAsset :: (Asset -> Container -> AssetSlot) -> (Volume -> Asset) -> (Volume -> Container) -> Volume -> AssetSlot
-makeVolumeSlotAsset f af cf v = f (af v) (cf v)
+makeVolumeSlotAsset :: Segment -> (Volume -> Asset) -> (Volume -> Container) -> Volume -> AssetSlot
+makeVolumeSlotAsset s af cf v = makeSlotAsset (af v) (cf v) s
 
 selectVolumeSlotAsset :: Selector -- ^ @'Volume' -> 'AssetSlot'@
 selectVolumeSlotAsset = selectJoin 'makeVolumeSlotAsset
-  [ selectAssetContainerSlotAsset
+  [ slotAssetRow
   , joinOn "slot_asset.asset = asset.id"
     selectVolumeAsset
   , joinOn "slot_asset.container = container.id AND asset.volume = container.volume"

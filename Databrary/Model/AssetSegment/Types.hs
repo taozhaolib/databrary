@@ -1,8 +1,13 @@
 module Databrary.Model.AssetSegment.Types
   ( AssetSegment(..)
+  , newAssetSegment
   , assetFullSegment
+  , Excerpt(..)
+  , newExcerpt
+  , excerptInSegment
   ) where
 
+import Databrary.Ops
 import Databrary.Has (Has(..))
 import Databrary.Model.Permission
 import Databrary.Model.Segment
@@ -16,13 +21,16 @@ import Databrary.Model.AssetSlot.Types
 
 data AssetSegment = AssetSegment
   { segmentAsset :: AssetSlot
-  , assetSegment :: Segment
-  , assetSegmentExcerpt :: Maybe Classification
+  , assetSegment :: !Segment
+  , assetExcerpt :: Maybe Excerpt
   }
 
-assetFullSegment :: AssetSlot -> Maybe AssetSegment
-assetFullSegment a@(AssetSlot _ (Just s) e) = Just $ AssetSegment a (slotSegment s) e
-assetFullSegment _ = Nothing
+newAssetSegment :: AssetSlot -> Segment -> Maybe Excerpt -> AssetSegment
+newAssetSegment a s e = AssetSegment a (view a `segmentIntersect` s) e
+
+assetFullSegment :: AssetSegment -> AssetSegment
+assetFullSegment AssetSegment{ assetExcerpt = Just e } = excerptFullSegment e
+assetFullSegment AssetSegment{ segmentAsset = a } = newAssetSegment a fullSegment Nothing
 
 instance Has AssetSlot AssetSegment where
   view = segmentAsset
@@ -49,8 +57,57 @@ instance Has (Maybe Consent) AssetSegment where
   view = view . (view :: AssetSegment -> Slot)
 
 instance Has Classification AssetSegment where
-  view AssetSegment{ assetSegmentExcerpt = Just c } = c
+  view AssetSegment{ assetExcerpt = Just e } = view e
   view AssetSegment{ segmentAsset = a } = view a
 
 instance Has Permission AssetSegment where
+  view e = dataPermission (view e) (view e) (view e)
+
+
+data Excerpt = Excerpt
+  { excerptAsset :: !AssetSegment
+  , excerptClassification :: !Classification
+  }
+
+newExcerpt :: AssetSlot -> Segment -> Classification -> Excerpt
+newExcerpt a s c = e where 
+  as = newAssetSegment a s (Just e)
+  e = Excerpt as c
+
+excerptInSegment :: Excerpt -> Segment -> AssetSegment
+excerptInSegment e@Excerpt{ excerptAsset = AssetSegment{ segmentAsset = a, assetSegment = es } } s 
+  | segmentOverlaps es s = as
+  | otherwise = error "excerptInSegment: non-overlapping"
+  where as = newAssetSegment a s (es `segmentContains` assetSegment as ?> e)
+
+excerptFullSegment :: Excerpt -> AssetSegment
+excerptFullSegment e = excerptInSegment e fullSegment
+
+instance Has AssetSegment Excerpt where
+  view = excerptAsset
+instance Has AssetSlot Excerpt where
+  view = view . excerptAsset
+instance Has Asset Excerpt where
+  view = view . excerptAsset
+instance Has (Id Asset) Excerpt where
+  view = view . excerptAsset
+instance Has Volume Excerpt where
+  view = view . excerptAsset
+instance Has (Id Volume) Excerpt where
+  view = view . excerptAsset
+instance Has Slot Excerpt where
+  view = view . excerptAsset
+instance Has Container Excerpt where
+  view = view . excerptAsset
+instance Has (Id Container) Excerpt where
+  view = view . excerptAsset
+instance Has Segment Excerpt where
+  view = view . excerptAsset
+instance Has (Maybe Consent) Excerpt where
+  view = view . excerptAsset
+
+instance Has Classification Excerpt where
+  view = excerptClassification
+
+instance Has Permission Excerpt where
   view e = dataPermission (view e) (view e) (view e)

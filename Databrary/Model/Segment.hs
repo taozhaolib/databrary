@@ -8,6 +8,8 @@ module Databrary.Model.Segment
   , emptySegment
   , segmentFull
   , segmentEmpty
+  , segmentContains
+  , segmentOverlaps
   , segmentIntersect
   ) where
 
@@ -103,6 +105,12 @@ segmentFull = Range.isFull . segmentRange
 
 segmentEmpty :: Segment -> Bool
 segmentEmpty = Range.isEmpty . segmentRange
+
+segmentContains :: Segment -> Segment -> Bool
+segmentContains (Segment a) (Segment b) = a Range.@> b
+
+segmentOverlaps :: Segment -> Segment -> Bool
+segmentOverlaps (Segment a) (Segment b) = Range.overlaps a b
 
 segmentIntersect :: Segment -> Segment -> Segment
 segmentIntersect (Segment a) (Segment b) = Segment (Range.intersect a b)

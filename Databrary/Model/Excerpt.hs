@@ -2,6 +2,7 @@
 module Databrary.Model.Excerpt
   ( lookupAssetExcerpts
   , changeExcerpt
+  , removeExcerpt
   , excerptJSON
   ) where
 
@@ -21,23 +22,25 @@ import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSegment.Types
 import Databrary.Model.Excerpt.SQL
 
-lookupAssetExcerpts :: DBM m => AssetSlot -> m [AssetSegment]
+lookupAssetExcerpts :: DBM m => AssetSlot -> m [Excerpt]
 lookupAssetExcerpts a =
   dbQuery $ ($ a) <$> $(selectQuery selectAssetSlotExcerpt "$WHERE excerpt.asset = ${assetId $ slotAsset a}")
 
-changeExcerpt :: MonadAudit c m => AssetSegment -> m Bool
+changeExcerpt :: MonadAudit c m => Excerpt -> m Bool
 changeExcerpt e = do
   ident <- getAuditIdentity
-  case assetSegmentExcerpt e of
-    Just _ ->
-      either (const False) ((0 <) . fst) <$> tryUpdateOrInsert (guard . isExclusionViolation)
-        $(updateExcerpt 'ident 'e)
-        $(insertExcerpt 'ident 'e)
-    Nothing -> dbExecute1 $(deleteExcerpt 'ident 'e)
+  either (const False) ((0 <) . fst) <$> tryUpdateOrInsert (guard . isExclusionViolation)
+    $(updateExcerpt 'ident 'e)
+    $(insertExcerpt 'ident 'e)
 
-excerptJSON :: AssetSegment -> JSON.Object
-excerptJSON e@AssetSegment{..} = JSON.object $ catMaybes
-  [ segmentFull assetSegment ?!> "segment" JSON..= assetSegment
-  , ("classification" JSON..=) <$> assetSegmentExcerpt
+removeExcerpt :: MonadAudit c m => AssetSegment -> m Bool
+removeExcerpt e = do
+  ident <- getAuditIdentity
+  dbExecute1 $(deleteExcerpt 'ident 'e)
+
+excerptJSON :: Excerpt -> JSON.Object
+excerptJSON e@Excerpt{..} = JSON.object $ catMaybes
+  [ segmentFull seg ?!> "segment" JSON..= seg
+  , Just $ "classification" JSON..= excerptClassification
   , Just $ "permission" JSON..= (view e :: Permission)
-  ]
+  ] where seg = assetSegment excerptAsset

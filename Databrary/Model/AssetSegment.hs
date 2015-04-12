@@ -15,7 +15,6 @@ import Databrary.Model.Identity
 import Databrary.Model.Segment
 import Databrary.Model.Asset
 import Databrary.Model.AssetSlot
-import Databrary.Model.AssetSlot.SQL
 import Databrary.Model.AssetSegment.Types
 import Databrary.Model.AssetSegment.SQL
 
@@ -28,5 +27,8 @@ lookupAssetSlotSegment :: DBM m => AssetSlot -> Segment -> m (Maybe AssetSegment
 lookupAssetSlotSegment a s =
   if segmentEmpty seg
     then return Nothing
-    else Just . AssetSegment a seg <$> dbQuery1 $(selectQuery excerptRow "$WHERE asset = ${view a :: Id Asset} AND segment @> ${seg}")
-  where seg = segmentIntersect (view a) s
+    else Just . as <$>
+      dbQuery1 $(selectQuery excerptRow "$WHERE asset = ${view a :: Id Asset} AND segment @> ${seg}")
+  where
+  as = makeExcerpt a s
+  seg = assetSegment $ as Nothing

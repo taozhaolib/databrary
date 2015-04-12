@@ -20,10 +20,10 @@ import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Asset
 
-excerptForm :: (Functor m, Applicative m, Monad m) => AssetSlot -> DeformT m AssetSegment
-excerptForm a = AssetSegment a
+excerptForm :: (Functor m, Applicative m, Monad m) => AssetSlot -> DeformT m Excerpt
+excerptForm a = newExcerpt a
   <$> ("segment" .:> deform)
-  <*> (Just <$> ("classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform)))
+  <*> ("classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform))
 
 postExcerpt :: Id Asset -> AppRAction
 postExcerpt ai = action POST (JSON, ai, "excerpt" :: T.Text) $ withAuth $ do
@@ -38,5 +38,5 @@ deleteExcerpt :: Id Asset -> AppRAction
 deleteExcerpt ai = action DELETE (JSON, ai, "excerpt" :: T.Text) $ withAuth $ do
   asset <- getAsset PermissionEDIT ai
   e <- runForm Nothing $ excerptForm asset
-  changeExcerpt e{ assetSegmentExcerpt = Nothing }
+  removeExcerpt $ excerptAsset e
   okResponse [] $ assetSlotJSON asset
