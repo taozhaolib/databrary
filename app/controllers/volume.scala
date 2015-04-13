@@ -47,11 +47,9 @@ private[controllers] sealed class VolumeController extends ObjectController[Volu
 
   protected def contributeAction(e : Option[models.Party.Id]) =
     PartyController.action(e, Some(Permission.NONE)) andThen
-      new ActionFilter[PartyController.Request] {
-        protected def filter[A](request : PartyController.Request[A]) =
-          request.obj.party.access.map(a =>
-            if (request.obj.access.member < Permission.ADMIN || a.site < Permission.EDIT) Some(Forbidden) else None)
-      }
+      new ForbiddenException.ActionCheck[PartyController.Request](request =>
+        request.obj.party.access.map(a =>
+          request.obj.access.member >= Permission.ADMIN && a.site >= Permission.EDIT))
 
   def create(owner : Option[Party.Id]) = SiteAction.andThen(contributeAction(owner)).async { implicit request =>
     val form = new VolumeController.CreateForm()._bind

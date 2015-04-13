@@ -95,7 +95,7 @@ final class SiteParty(val access : Access)(implicit val site : Site)
   def ===(a : SiteParty) = party === a.party
   def ===(a : Party) = party === a
 
-  def permission = max(access.permission, min(site.access.site, Permission.READ))
+  def permission = max(access.permission, max(min(site.access.site, Permission.READ), site.access.member))
 
   /** List of volumes with which this user is associated, sorted by level (ADMIN first). */
   def volumeAccess = VolumeAccess.getVolumes(party)
