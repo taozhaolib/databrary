@@ -48,7 +48,7 @@
       <col class="classification"/>
       <col class="excerpt"/>
     </colgroup>
-    <colgroup ng-if="::editing">
+    <colgroup ng-if="categories.length">
       <col class="add">
     </colgroup>
     <thead>
@@ -61,7 +61,7 @@
         <th ng-if="::assets" colspan="3">
           file
         </th>
-        <th ng-if="::editing" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
+        <th ng-if="categories.length" id="{{::id}}-add" class="add" ng-click="clickAdd($event)" tooltip="'spreadsheet.add.category' | message"></th>
       </tr>
       <tr class="spreadsheet-head-metrics">
         <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
@@ -71,7 +71,7 @@
         <th ng-if-start="::assets" class="first">name</th>
         <th>classification</th>
         <th ng-if-end class="last">excerpt</th>
-        <th ng-if="::editing" class="first last"></th>
+        <th ng-if="categories.length" class="first last"></th>
       </tr>
     </thead>
     <tbody class="spreadsheet-tbody" id="{{::id}}" ng-click="click($event)">
