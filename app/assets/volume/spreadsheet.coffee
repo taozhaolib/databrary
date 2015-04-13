@@ -737,6 +737,13 @@ app.directive 'spreadsheet', [
           save(cell, editScope.type, editInput.value) if event != false
           cell
 
+        recordDescription = (r) ->
+          k = Object.keys(r.measures)
+          if k.length
+            k.sort(byNumber).map((m) -> r.measures[m]).join(', ')
+          else
+            '[' + r.id + ']'
+
         edit = (cell, info) ->
           switch info.t
             when 'name'
@@ -775,7 +782,7 @@ app.directive 'spreadsheet', [
                       rs.push
                         r:r
                         v:(r.measures[info.metric.id] ? '').toLowerCase()
-                        d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
+                        d:recordDescription(r)
                   editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
                 else if info.metric.options
                   editScope.type = 'options'
