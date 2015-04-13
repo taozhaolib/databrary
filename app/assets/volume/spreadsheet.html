@@ -21,14 +21,8 @@
 </div>
 
 <div class="spreadsheet-options">  
-  <span ng-if="::!editing && volume.checkPermission(page.permission.EDIT)">
-    <a href="" ng-href="{{::page.router.volumeSpreadsheet(volume.id)}}#goto-{{::id}}">edit spreadsheet</a>
-  </span>
   <span ng-if="::editing">
     <a href="" ng-click="refresh()">refresh</a>
-  </span>
-  <span ng-if="::!editing && !top && volume.checkPermission(page.permission.EDIT)">
-    |
   </span>
   <a ng-if="::!editing && !top" href="" ng-href="{{::volume.csvRoute()}}" target="_self">export data</a>
 </div>

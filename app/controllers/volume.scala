@@ -265,9 +265,6 @@ object VolumeHtml extends VolumeController with HtmlController {
       (new CreateForm).Ok
     }
 
-  /* just exists in angular */
-  def spreadsheet(i : models.Volume.Id, js : Option[Boolean]) = view(i, js)
-
   private[controllers] def viewAdmin(
     accessChangeForm : Option[AccessForm] = None,
     accessSearchForm : Option[AccessSearchForm] = None,

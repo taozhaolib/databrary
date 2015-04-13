@@ -6,7 +6,6 @@ app.controller('volume/slot', [
     display.title = slot.displayName
     $scope.flowOptions = Store.flowOptions
     $scope.slot = slot
- #    $scope.newComment = ""
     $scope.volume = slot.volume
     $scope.editing = editing # $scope.editing (but not editing) is also a modal (toolbar) indicator
     $scope.mode = if editing then 'edit' else 'view'
