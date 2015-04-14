@@ -436,7 +436,7 @@ tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
-tags.vote.null.success=Tag <strong>{0}</strong> vote cancelled.
+tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
 
 # Access
@@ -591,7 +591,7 @@ asset.update.success=Updated "{0}" successfully.
 asset.update.error=Unable to update "{0}".
 asset.replace.success=Replaced "{0}" successfully.
 asset.restore=Paste the previously removed file: "{0}".
-asset.remove.success=Removed "{0}" successfully.  You may restore it by selecting "Add File" on the toolbar and then using the Paste button on the top right corner of the Viewer.
+asset.remove.success=Removed "{0}" successfully.  You may restore it by selecting "Add File" on the tool bar and then using the Paste button on the top right corner of the Viewer.
 asset.remove.error=Unable to remove "{0}".
 asset.remove.confirm=Are you sure you want to remove this file?
 asset.add=(new file)
