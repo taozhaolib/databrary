@@ -47,13 +47,21 @@ app.controller('volume/slot', [
       fullRange.u = finite(slot.segment.u, u, 0)
       return
 
+    getDistance = (item) ->
+      # get screen width
+      
 
+      # get width of the timeline. 
+      # get percentage of offset. 
+      # calculate pixels based on previous values. 
+      # return out the distance in pixels.
+      
     snapping = (selectionEnd) ->
-     # placeholder pseudo-code, figure out what to replace next
-     listOfAllPlacements = []
+     listOfAllPlacements = $scope.tracks.concat(records, $scope.consents)
 
      # Make a list of all the stuff that is within four pixels
-     smallPlacements = listOfAllPlacements.filter (i) -> getDistance(i) <= 4
+     smallPlacements = listOfAllPlacements.filter (i) ->
+       isFinite(i.segment?.l) && isFinite(i.segment?.u) && getDistance(i) <= 4
 
      # It's not inconcievable that we could have multiple items
      # that are within four pixels.  Subsequently, let's sort so we
@@ -62,10 +70,11 @@ app.controller('volume/slot', [
 
      # Now that everything is sorted, let's separate out the first element
      # of the array, which should be the closest. 
-     [closest] = smallPlacements
+     if smallPlacements.length
+       [closest] = smallPlacements
 
-     # "snap" the element by setting position to the closest
-     dragPosition = closest.position
+       # "snap" the element by setting position to the closest
+       dragPosition = closest.position
        
 
     offsetPosition = (offset) ->
@@ -355,6 +364,7 @@ app.controller('volume/slot', [
         offset = down.offset ?= positionOffset(down.clientX) - @segment.l
         pos = positionOffset(up.clientX) - offset
         return unless isFinite(pos)
+        pos = snapping()
         @setPosition(pos)
         if up.type != 'mousemove'
           $scope.updatePosition()
@@ -633,8 +643,8 @@ app.controller('volume/slot', [
             return
 
       dragLeft: (event) ->
-        do snapping
         @segment.l = positionOffset(event.clientX)
+        snapping(@segment.l)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
