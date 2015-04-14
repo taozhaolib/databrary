@@ -104,7 +104,6 @@ object AngularController extends SiteController {
     , VolumeHtml.view
     , VolumeHtml.add
     , VolumeHtml.edit
-    , VolumeHtml.spreadsheet
     , VolumeController.thumb
     , VolumeController.zip
     , VolumeController.csv

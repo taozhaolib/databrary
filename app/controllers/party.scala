@@ -51,10 +51,10 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     Party.search(query, access = access, institution = institution, limit = form.limit.get, offset = form.offset.get)
   }
 
-  protected def adminAction(i : models.Party.Id, delegate : Boolean = true) =
+  protected def adminAction(i : models.Party.Id, delegate : Boolean) =
     action(Some(i), if (delegate) Some(Permission.ADMIN) else None)
 
-  protected def AdminAction(i : models.Party.Id, delegate : Boolean = true) =
+  protected def AdminAction(i : models.Party.Id, delegate : Boolean) =
     SiteAction andThen adminAction(i, delegate)
 
   protected def adminAccount(implicit request : Request[_]) : Option[Account] =
@@ -66,7 +66,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : PartyController.CreateForm =
     if (acct) new PartyController.AccountCreateForm else new PartyController.PartyCreateForm
 
-  def update(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+  def update(i : models.Party.Id) = AdminAction(i, true).async { implicit request =>
     val form = editForm(request.asInstanceOf[Request[_] with AuthSite])._bind
     val party = request.obj.party
     for {
@@ -112,14 +112,14 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   }
 
   def remove(id : Party.Id) =
-    SiteAction.rootAccess().andThen(adminAction(id)).async { implicit request =>
+    SiteAction.rootAccess().andThen(adminAction(id, false)).async { implicit request =>
       request.obj.party.remove.map { ok =>
         Ok(request.obj.party.name + (if (ok) "" else " not") + " deleted")
       }
     }
 
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
-    AdminAction(id).async { implicit request =>
+    AdminAction(id, false).async { implicit request =>
       models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
         val form = new PartyController.AuthorizeChildForm(child)._bind
         if (form.delete.get)
@@ -140,39 +140,41 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       })
     }
 
-  def authorizeRemove(id : models.Party.Id, other : models.Party.Id) = AdminAction(id).async { implicit request =>
-    for {
-      /* users can remove themselves from any relationship */
-      _ <- models.Authorize.remove(id, other)
-      _ <- models.Authorize.remove(other, id)
-    } yield (result(request.obj))
-  }
+  def authorizeRemove(id : models.Party.Id, other : models.Party.Id) =
+    AdminAction(id, false).async { implicit request =>
+      for {
+        /* users can remove themselves from any relationship */
+        _ <- models.Authorize.remove(id, other)
+        _ <- models.Authorize.remove(other, id)
+      } yield (result(request.obj))
+    }
 
   private def delegates(party : Party) : Future[Seq[Account]] =
     party.authorizeChildren().map(_.filter(_.permission >= Permission.ADMIN).flatMap(_.child.account)
       ++ party.account)
 
-  def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) = AdminAction(id).async { implicit request =>
-    models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
-    val form = new PartyController.AuthorizeApplyForm(parent)._bind
-    for {
-      _ <- Authorize.apply(id, parentId)
-      dl <- delegates(parent)
-      _ <- async.when(Play.isProd, Mail.send(
-        to = dl.map(_.email) :+ Mail.authorizeAddr,
-        subject = Messages("mail.authorize.subject", request.obj.party.name),
-        body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId, None).absoluteURL(Play.isProd) + "?page=grant#auth-" + id,
-          request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
-          parent.name)
-      ).recover {
-        case ServiceUnavailableException => ()
+  def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) =
+    AdminAction(id, false).async { implicit request =>
+      models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
+      val form = new PartyController.AuthorizeApplyForm(parent)._bind
+      for {
+        _ <- Authorize.apply(id, parentId)
+        dl <- delegates(parent)
+        _ <- async.when(Play.isProd, Mail.send(
+          to = dl.map(_.email) :+ Mail.authorizeAddr,
+          subject = Messages("mail.authorize.subject", request.obj.party.name),
+          body = Messages("mail.authorize.body", routes.PartyHtml.edit(parentId, None).absoluteURL(Play.isProd) + "?page=grant#auth-" + id,
+            request.obj.party.name + request.user.fold("")(" <" + _.email + ">"),
+            parent.name)
+        ).recover {
+          case ServiceUnavailableException => ()
+        })
+      } yield (result(request.obj))
       })
-    } yield (result(request.obj))
-    })
-  }
+    }
 
   def authorizeSearch(id : models.Party.Id, apply : Boolean) =
-    AdminAction(id).async { implicit request =>
+    AdminAction(id, false).async { implicit request =>
       val form = new PartyController.AuthorizeSearchForm(apply)._bind
       if (form.notfound.get)
         for {
@@ -361,20 +363,21 @@ object PartyHtml extends PartyController with HtmlController {
     } yield (views.html.party.authorize(parents, forms))
   }
   
-  def edit(i : models.Party.Id, js : Option[Boolean]) = SiteAction.js.andThen(adminAction(i)).async { implicit request =>
-    editForm(request.asInstanceOf[Request[_] with AuthSite]).Ok
-  }
+  def edit(i : models.Party.Id, js : Option[Boolean]) =
+    SiteAction.js.andThen(adminAction(i, true)).async { implicit request =>
+      editForm(request.asInstanceOf[Request[_] with AuthSite]).Ok
+    }
 
   def createNew(acct : Boolean = false) = SiteAction.rootAccess().async { implicit request =>
     createForm(acct).Ok
   }
 
   def preRemove(id : Party.Id) =
-    SiteAction.rootAccess().andThen(adminAction(id)) { implicit request =>
+    SiteAction.rootAccess().andThen(adminAction(id, false)) { implicit request =>
       Ok(views.html.party.remove(request.obj))
     }
 
-  def admin(i : models.Party.Id) = AdminAction(i).async { implicit request =>
+  def admin(i : models.Party.Id) = AdminAction(i, false).async { implicit request =>
     viewAdmin().map(Ok(_))
   }
 

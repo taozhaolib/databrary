@@ -20,6 +20,7 @@ app.directive('commentReplyForm', [
         (form.target || $scope.slot || $scope.volume.top).postComment(form.data)
           .then(function () {
             form.validator.server({});
+            form.$setPristine();
 
             page.messages.add({
               body: page.constants.message('comments.add.success'),

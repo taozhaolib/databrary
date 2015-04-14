@@ -294,22 +294,6 @@ app.provider('routerService', [
       reloadOnSearch: false,
     });
 
-    routes.volumeSpreadsheet = makeRoute(controllers.VolumeHtml.spreadsheet, ['id'], {
-      controller: 'volume/spreadsheet',
-      templateUrl: 'volume/editSpreadsheet.html',
-      resolve: {
-        volume: [
-          'pageService', function (page) {
-            return checkPermission(page.$q,
-              page.models.Volume.get(page.$route.current.params.id,
-                {'top':'', 'records':'', 'containers':'', 'assets':'top'}),
-              page.permission.EDIT);
-          }
-        ]
-      },
-      reloadOnSearch: false,
-    });
-
     //
 
     function slotRoute(edit) { return {

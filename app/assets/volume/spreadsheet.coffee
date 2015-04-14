@@ -227,6 +227,12 @@ app.directive 'spreadsheet', [
             }
           $scope.metricCols = metricCols
           $scope.totalCols = 2 + !top + metricCols.length + 3*!!assets
+          if editing
+            ### jshint ignore:start #### fixed in jshint 2.5.7
+            $scope.categories = (c for ci, c of constants.category when ci not of records)
+            ### jshint ignore:end ###
+            $scope.categories.sort(byId)
+            $scope.categories.push(pseudoCategory[0]) unless 0 of records
           return
 
         # Call all populate functions
@@ -737,6 +743,13 @@ app.directive 'spreadsheet', [
           save(cell, editScope.type, editInput.value) if event != false
           cell
 
+        recordDescription = (r) ->
+          k = Object.keys(r.measures)
+          if k.length
+            k.sort(byNumber).map((m) -> r.measures[m]).join(', ')
+          else
+            '[' + r.id + ']'
+
         edit = (cell, info) ->
           switch info.t
             when 'name'
@@ -775,7 +788,7 @@ app.directive 'spreadsheet', [
                       rs.push
                         r:r
                         v:(r.measures[info.metric.id] ? '').toLowerCase()
-                        d:Object.keys(r.measures).sort(byNumber).map(mf(r)).join(', ')
+                        d:recordDescription(r)
                   editScope.records = rs.sort((a, b) -> byMagic(a.v, b.v))
                 else if info.metric.options
                   editScope.type = 'options'
@@ -829,11 +842,7 @@ app.directive 'spreadsheet', [
             when 'head'
               editScope.type = 'category'
               editInput.value = undefined
-              editScope.options = []
-              for ci, c of constants.category when ci not of records
-                editScope.options.push(c)
-              editScope.options.sort(byId)
-              editScope.options.push(pseudoCategory[0]) unless 0 of records
+              editScope.options = $scope.categories
             when 'asset'
               editScope.type = 'text'
               editInput.value = info.asset.name
