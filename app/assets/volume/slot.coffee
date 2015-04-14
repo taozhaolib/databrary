@@ -159,8 +159,9 @@ app.controller('volume/slot', [
     $scope.selectAll = (event, c) ->
       return false if $scope.editing == 'position'
       ruler.selection = range = new Segment(c.segment)
+      ruler.selection = new Segment(null) if ruler.selection.full
       finalizeSelection()
-      if range && isFinite(range.l) && !range.contains(ruler.position)
+      if isFinite(range.l) && !range.contains(ruler.position)
         seekOffset(range.l)
       event.stopPropagation()
 
