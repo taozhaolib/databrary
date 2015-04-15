@@ -4,39 +4,35 @@ module Databrary.Controller.Excerpt
   , deleteExcerpt
   ) where
 
-import Control.Applicative (Applicative, (<$>), (<*>))
+import Control.Applicative ((<$>))
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Network.HTTP.Types (StdMethod(DELETE), conflict409)
 
 import Databrary.Model.Id
 import Databrary.Model.Permission
+import Databrary.Model.Slot
 import Databrary.Model.Asset
-import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Model.Excerpt
 import Databrary.Web.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form
-import Databrary.Controller.Asset
+import Databrary.Controller.AssetSegment
 
-excerptForm :: (Functor m, Applicative m, Monad m) => AssetSlot -> DeformT m Excerpt
-excerptForm a = newExcerpt a
-  <$> ("segment" .:> deform)
-  <*> ("classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform))
-
-postExcerpt :: Id Asset -> AppRAction
-postExcerpt ai = action POST (JSON, ai, "excerpt" :: T.Text) $ withAuth $ do
-  asset <- getAsset PermissionEDIT ai
-  e <- runForm Nothing $ excerptForm asset
+postExcerpt :: Id Slot -> Id Asset -> AppRAction
+postExcerpt si ai = action POST (JSON, si, ai, "excerpt" :: T.Text) $ withAuth $ do
+  as <- getAssetSegment PermissionEDIT si ai
+  c <- runForm Nothing $ 
+    "classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform)
+  let e = Excerpt as c
   r <- changeExcerpt e
   guardAction r $
     returnResponse conflict409 [] ("The requested excerpt overlaps an existing excerpt." :: T.Text)
-  okResponse [] $ excerptJSON e
+  okResponse [] $ assetSegmentJSON (if r then as{ assetExcerpt = Just e } else as)
 
-deleteExcerpt :: Id Asset -> AppRAction
-deleteExcerpt ai = action DELETE (JSON, ai, "excerpt" :: T.Text) $ withAuth $ do
-  asset <- getAsset PermissionEDIT ai
-  e <- runForm Nothing $ excerptForm asset
-  removeExcerpt $ excerptAsset e
-  okResponse [] $ assetSlotJSON asset
+deleteExcerpt :: Id Slot -> Id Asset -> AppRAction
+deleteExcerpt si ai = action DELETE (JSON, si, ai, "excerpt" :: T.Text) $ withAuth $ do
+  as <- getAssetSegment PermissionEDIT si ai
+  r <- removeExcerpt as
+  okResponse [] $ assetSegmentJSON (if r then as{ assetExcerpt = Nothing } else as)

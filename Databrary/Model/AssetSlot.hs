@@ -84,7 +84,6 @@ auditAssetSlotDownload success AssetSlot{ slotAsset = a, assetSlot = as } = do
 assetSlotJSON :: AssetSlot -> JSON.Object
 assetSlotJSON as@AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
-  , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
+  , liftM2 (?!>) segmentFull ("position" JSON..=) =<< slotSegment <$> assetSlot
   , Just $ "permission" JSON..= (view as :: Permission)
-  -- , ("excerpt" JSON..=) <$> assetSlotExcerpt
   ]

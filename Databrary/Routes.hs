@@ -28,6 +28,7 @@ import Databrary.Controller.Record
 import Databrary.Controller.Citation
 import Databrary.Controller.Upload
 import Databrary.Controller.Asset
+import Databrary.Controller.AssetSegment
 import Databrary.Controller.Excerpt
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
@@ -105,6 +106,11 @@ routes = do
     , R.route >>= \s -> msum          -- /slot/ID/SEG
       [                               act (viewSlot api s)
       ,                               act (postContainer api s)
+      , R.route >>= \a -> msum        --             /asset/ID
+        [                             act (viewAssetSegment api s a)
+        , "excerpt" >>        json >> act (postExcerpt s a)
+                                  <|> act (deleteExcerpt s a)
+        ]
       , "asset" >>           (html >> act (viewCreateSlotAsset s))
                                   <|> act (createSlotAsset api s)
       , R.route >>= \t ->             act (postTag api s t)
@@ -123,8 +129,6 @@ routes = do
       , html >> "edit" >>             act (viewEditAsset a)
       ,                               act (deleteAsset api a)
       , html >> "download" >>         act (downloadAsset a)
-      , "excerpt" >>          json >> act (postExcerpt a)
-                                  <|> act (deleteExcerpt a)
       ]
 
     , json >> msum                    -- /api

@@ -129,6 +129,10 @@ instance (Routable a, Routable b, Routable c) => Routable (a, b, c) where
   route = (,,) <$> route <*> route <*> route
   toRoute (a, b, c) = toRoute a <> toRoute b <> toRoute c
 
+instance (Routable a, Routable b, Routable c, Routable d) => Routable (a, b, c, d) where
+  route = (,,,) <$> route <*> route <*> route <*> route
+  toRoute (a, b, c, d) = toRoute a <> toRoute b <> toRoute c <> toRoute d
+
 instance Routable T.Text where
   route = text
   toRoute = return
