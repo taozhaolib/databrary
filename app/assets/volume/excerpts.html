@@ -22,27 +22,78 @@
 
   <div class="panel-excerpts-list col-desktop-8 col-tablet-4 col-mobile-6">
     <div class="row">
-      <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts">
-        <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
-          <div class="panel-excerpts-actions">
-            <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
-          </div>
-          <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
-            <div ng-if="::hasThumbnail(excerpt)">
-              <figure fill>
-                <img ng-src="{{::excerpt.thumbRoute(109)}}">
-              </figure>
+      <div>
+        <span class="panel-excerpts-type" ng-if="publicExcerpts.length!==0">Public</span><br>      
+        <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.PUBLIC} as publicExcerpts">
+          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
+            <div class="panel-excerpts-actions">
+              <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
             </div>
-            <div ng-if="::!hasThumbnail(excerpt)">
-              <figure class="no-thumbnail">
-                <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
-                <span ng-bind="::excerpt.asset.name"></span>
-              </figure>
+            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
+              <div ng-if="::hasThumbnail(excerpt)">
+                <figure fill>
+                  <img ng-src="{{::excerpt.thumbRoute(109)}}">
+                </figure>
+              </div>
+              <div ng-if="::!hasThumbnail(excerpt)">
+                <figure class="no-thumbnail">
+                  <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
+                  <span ng-bind="::excerpt.asset.name"></span>
+                </figure>
+              </div>
+              <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
             </div>
-            <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
           </div>
         </div>
       </div>
+      <div>
+        <span class="panel-excerpts-type" ng-if="eduExcerpts.length!==0">Education Only</span><br>
+        <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.SHARED} as eduExcerpts">
+          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
+            <div class="panel-excerpts-actions">
+              <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
+            </div>
+            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
+              <div ng-if="::hasThumbnail(excerpt)">
+                <figure fill>
+                  <img ng-src="{{::excerpt.thumbRoute(109)}}">
+                </figure>
+              </div>
+              <div ng-if="::!hasThumbnail(excerpt)">
+                <figure class="no-thumbnail">
+                  <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
+                  <span ng-bind="::excerpt.asset.name"></span>
+                </figure>
+              </div>
+              <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <span class="panel-excerpts-type" ng-if="privExcerpts.length !== 0">Databrary only</span><br>
+        <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.RESTRICTED || page.classification.PRIVATE} as privExcerpts">
+          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
+            <div class="panel-excerpts-actions">
+              <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
+            </div>
+            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
+              <div ng-if="::hasThumbnail(excerpt)">
+                <figure fill>
+                  <img ng-src="{{::excerpt.thumbRoute(109)}}">
+                </figure>
+              </div>
+              <div ng-if="::!hasThumbnail(excerpt)">
+                <figure class="no-thumbnail">
+                  <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
+                  <span ng-bind="::excerpt.asset.name"></span>
+                </figure>
+              </div>
+              <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
+            </div>
+          </div>
+        </div> 
+      </div>     
     </div>
   </div>
 </div>
