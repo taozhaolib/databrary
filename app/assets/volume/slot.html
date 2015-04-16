@@ -206,11 +206,11 @@
 
             <div class="slot-timeline-tracks">
               <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.segment.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="select($event, t)" ng-dblclick="selectAll($event, t)" mouse-drag="dragSelection($down, $up, t)">
-                <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="!excerpt.segment.full" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
+                <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.segment.contains(t.segment)" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
                 </div>
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
-                  <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts.length && t.asset.segment.full}">
+                  <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts[0].segment.contains(t.segment)}">
                     <span ng-bind="t.asset.name || t.data.time || t.file.file.name"></span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
                   </div>

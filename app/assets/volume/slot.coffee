@@ -55,7 +55,7 @@ app.controller('volume/slot', [
       op = offsetPosition(item)
 
       # Grab the surrounding rectangle.
-      tlr  = tl.getBoundingClientRect()
+      tlr = tl.getBoundingClientRect()
 
       #Grab the width of the surrounding rectangle.
       totalPixels = tlr.width
@@ -66,8 +66,6 @@ app.controller('volume/slot', [
 
       # Return back the offset pixels.
       return offsetPixels
-
-
 
     snapping = (selectionEnd, exclude) ->
       listOfAllPlacements = []
@@ -92,7 +90,6 @@ app.controller('volume/slot', [
     offsetPosition = (offset) ->
       return offset unless isFinite offset
       (offset - ruler.range.base) / (ruler.range.u - ruler.range.l)
-
 
     # Takes a position in pixels returns a time position offset.
     positionOffset = (position) ->
@@ -657,15 +654,13 @@ app.controller('volume/slot', [
             return
 
       dragLeft: (event) ->
-        @segment.l = positionOffset(event.clientX)
-        @segment.l = snapping(@segment.l, @)
+        @segment.l = snapping(positionOffset(event.clientX), @)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
 
       dragRight: (event) ->
-        @segment.u = positionOffset(event.clientX)
-        @segment.u = snapping(@segment.u, @)
+        @segment.u = snapping(positionOffset(event.clientX), @)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
