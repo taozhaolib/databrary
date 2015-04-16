@@ -47,41 +47,54 @@ app.controller('volume/slot', [
       fullRange.u = finite(slot.segment.u, u, 0)
       return
 
-    getDistance = (item) ->
-      # get screen width
-      
+    tl = document.getElementById('slot-timeline')
 
-      # get width of the timeline. 
-      # get percentage of offset. 
-      # calculate pixels based on previous values. 
-      # return out the distance in pixels.
-      
-    snapping = (selectionEnd) ->
-     listOfAllPlacements = $scope.tracks.concat(records, $scope.consents)
+    # Takes a time position and convert it to an offset in pixels. 
+    getOffsetPixels = (item) ->
+      #Grab the fraction offset of the item.
+      op = offsetPosition(item)
 
-     # Make a list of all the stuff that is within four pixels
-     smallPlacements = listOfAllPlacements.filter (i) ->
-       isFinite(i.segment?.l) && isFinite(i.segment?.u) && getDistance(i) <= 4
+      # Grab the surrounding rectangle.
+      tlr  = tl.getBoundingClientRect()
 
-     # It's not inconcievable that we could have multiple items
-     # that are within four pixels.  Subsequently, let's sort so we
-     # can get a handle on the closest
-     smallPlacements.sort (a, b) -> getDistance(a) - getDistance(b)
+      #Grab the width of the surrounding rectangle.
+      totalPixels = tlr.width
 
-     # Now that everything is sorted, let's separate out the first element
-     # of the array, which should be the closest. 
-     if smallPlacements.length
-       [closest] = smallPlacements
+      # Since we have the fraction and the total pixels, we can simply do
+      # some multiplication and grab the offset pixels.
+      offsetPixels = op * totalPixels
 
-       # "snap" the element by setting position to the closest
-       dragPosition = closest.position
-       
+      # Return back the offset pixels.
+      return offsetPixels
 
+
+
+    snapping = (selectionEnd, exclude) ->
+      listOfAllPlacements = []
+      selectionOffsetPixels = getOffsetPixels selectionEnd
+      $scope.tracks.concat(records, $scope.consents).forEach (i) ->
+        if i is exclude then return
+        if isFinite(i.segment?.l)
+          listOfAllPlacements.push i.segment.l
+        if isFinite(i.segment?.u)
+          listOfAllPlacements.push i.segment.u
+      if listOfAllPlacements.length == 0
+        return selectionEnd
+
+      min = _.min listOfAllPlacements, (i) ->
+        Math.abs(selectionOffsetPixels - getOffsetPixels(i))
+      if Math.abs(selectionOffsetPixels - getOffsetPixels(min)) <= 10
+        return min
+      else
+        return selectionEnd
+
+    # Takes a time position and turns it into a fraction.
     offsetPosition = (offset) ->
       return offset unless isFinite offset
       (offset - ruler.range.base) / (ruler.range.u - ruler.range.l)
 
-    tl = document.getElementById('slot-timeline')
+
+    # Takes a position in pixels returns a time position offset.
     positionOffset = (position) ->
       tlr = tl.getBoundingClientRect()
       p = (position - tlr.left) / tlr.width
@@ -365,7 +378,7 @@ app.controller('volume/slot', [
         offset = down.offset ?= positionOffset(down.clientX) - @segment.l
         pos = positionOffset(up.clientX) - offset
         return unless isFinite(pos)
-        pos = snapping()
+        pos = snapping(pos, @)
         @setPosition(pos)
         if up.type != 'mousemove'
           $scope.updatePosition()
@@ -645,13 +658,14 @@ app.controller('volume/slot', [
 
       dragLeft: (event) ->
         @segment.l = positionOffset(event.clientX)
-        snapping(@segment.l)
+        @segment.l = snapping(@segment.l, @)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
 
       dragRight: (event) ->
         @segment.u = positionOffset(event.clientX)
+        @segment.u = snapping(@segment.u, @)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
