@@ -86,7 +86,7 @@
               </div>
 
               <div id="player-viewport" class="player-viewport">
-                <div ng-if="editing && current.type == 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-drop">
+                <div ng-if="editing && current.type === 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-drop">
                 <span class="icon line add"></span>
                 <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
@@ -197,8 +197,8 @@
             <div class="slot-annotations">
               <div class="slot-record-track slot-track" ng-repeat="rs in records">
                 <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
-                  <div ng-if="r === current && editing == 'position'" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
-                  <div ng-if="r === current && editing == 'position'" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
+                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
+                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
                 </div>
                 <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="select($event, r)" ng-dblclick="selectAll($event, r)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
               </div>
@@ -213,13 +213,13 @@
                   <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file}">
                     <span ng-bind="t.asset.name || t.data.name || t.file.file.name"></span>
                     <span ng-if="t.excerpts[0].segment.contains(t.segment)"> (highlight)</span>
-                    <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
+                    <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                   <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.segment.full" ng-style="positionStyle(t.segment)">
-                  <div ng-if="t === current && editing == 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>
+                  <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>
                 </div>
               </div>
             </div>

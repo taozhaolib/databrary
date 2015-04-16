@@ -10,7 +10,7 @@
         <div class="col">
           <div ng-bind="page.$location.url()"></div>
           <div ng-if="::error.message" ng-bind-html="::error.message"></div>
-          <div ng-if="::(error.status == 403 || error.status == 404) && !page.models.Login.isLoggedIn()">
+          <div ng-if="::(error.status === 403 || error.status === 404) && !page.models.Login.isLoggedIn()">
             You might try <a ng-href="{{::page.router.login()}}">logging in</a>.
           </div>
         </div>
