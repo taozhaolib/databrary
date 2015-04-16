@@ -210,8 +210,9 @@
                 </div>
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
-                  <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file, excerpt: t.excerpts[0].segment.contains(t.segment)}">
-                    <span ng-bind="t.asset.name || t.data.time || t.file.file.name"></span>
+                  <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file}">
+                    <span ng-bind="t.asset.name || t.data.name || t.file.file.name"></span>
+                    <span ng-if="t.excerpts[0].segment.contains(t.segment)"> (highlight)</span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type=='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
