@@ -67,20 +67,47 @@ app.controller('volume/slot', [
       # Return back the offset pixels.
       return offsetPixels
 
+
+    # Generic function that takes in a time, then will determine if it's 
+    # close enough to do a premiere-esque "snap" feature to the nearest
+    # object. 
     snapping = (selectionEnd, exclude) ->
+
+      # Let's start with an empty array, which will contain all the times 
+      # to compare against. 
       listOfAllPlacements = []
+
+      # A minor optimization; get the pixel offset of the time that was 
+      # sent into the function. 
       selectionOffsetPixels = getOffsetPixels selectionEnd
+
+      # First, let's make a giant array of all the items we want to compare
+      # times against.  Then let's extract all the times for the objects into
+      # an even bigger array. 
       $scope.tracks.concat(records, $scope.consents).forEach (i) ->
+
+        # We don't want to have the item snap to itself. 
         if i is exclude then return
+
+        # We want to have all the times that are finite in our array to compare against
         if isFinite(i.segment?.l)
           listOfAllPlacements.push i.segment.l
         if isFinite(i.segment?.u)
           listOfAllPlacements.push i.segment.u
+
+      # If there aren't any items in the timeline that we can snap to, let's just break
+      # out and return the original time sent in. 
       if listOfAllPlacements.length == 0
         return selectionEnd
 
+      # We'll utilize the lodash `_.min` function to find the smallest value based on a
+      # function we send in.  This function checks the distance (in pixels) from the 
+      # current items
       min = _.min listOfAllPlacements, (i) ->
         Math.abs(selectionOffsetPixels - getOffsetPixels(i))
+
+      # If the smallest value in the array was less than ten pixels away from an item, 
+      # send back that item's value. 
       if Math.abs(selectionOffsetPixels - getOffsetPixels(min)) <= 10
         return min
       else
