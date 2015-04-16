@@ -23,7 +23,10 @@
   <div class="panel-excerpts-list col-desktop-8 col-tablet-4 col-mobile-6">
     <div class="row">
       <div>
-        <span class="panel-excerpts-type" ng-if="publicExcerpts.length!==0">Public</span><br>      
+        <div class="panel-excerpts-type" ng-if="publicExcerpts.length">
+          <span message="excerpts.public.title">Public</span>
+          <span message="excerpts.public.desc"></span>    
+        </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.PUBLIC} as publicExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
             <div class="panel-excerpts-actions">
@@ -47,7 +50,10 @@
         </div>
       </div>
       <div>
-        <span class="panel-excerpts-type" ng-if="eduExcerpts.length!==0">Education Only</span><br>
+        <div class="panel-excerpts-type" ng-if="eduExcerpts.length">
+          <span message="excerpts.edu.title">Educational Use</span>
+          <span message="excerpts.edu.desc"></span>    
+        </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.SHARED} as eduExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
             <div class="panel-excerpts-actions">
@@ -71,7 +77,10 @@
         </div>
       </div>
       <div>
-        <span class="panel-excerpts-type" ng-if="privExcerpts.length !== 0">Databrary only</span><br>
+        <div class="panel-excerpts-type" ng-if="privExcerpts.length">
+          <span message="excerpts.databrary.title">Databrary Only</span>
+          <span message="excerpts.databrary.desc"></span>    
+        </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.RESTRICTED || page.classification.PRIVATE} as privExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
             <div class="panel-excerpts-actions">
