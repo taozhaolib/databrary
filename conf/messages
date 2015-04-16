@@ -403,6 +403,13 @@ not.group=Not grouped
 
 excerpts.title=Highlights
 excerpts.download=Download this highlight.
+excerpts.public.title=
+excerpts.public.description=
+excerpts.edu.title=
+excerpts.edu.title=
+excerpts.databrary.title=
+excerpts.databrary.title=
+
 
 position=Position
 position.placeholder=MM:SS
