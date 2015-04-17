@@ -1,10 +1,9 @@
 
 <div class="download-popup" ng-if="current && downloading"> 
     <span ng-click="toggleDownload()" class="button icon close"></span>
+    
     <div ng-if="hasThumbnail(current)">
-      <figure fill>
-        <img ng-src="{{current.thumbRoute(480)}}">
-      </figure>
+      <img ng-src="{{current.thumbRoute(480)}}">
     </div>
     <div ng-if="!hasThumbnail(current)">
       <figure class="no-thumbnail">
@@ -14,8 +13,8 @@
     </div>    
     <div>
       <span>This highlight is for </span>
-      <span message="excerpts.public.title"></span>.
-      <span message="excerpts.public.description"></span>.
+      <strong><span message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.title'}}"></span><strong>.
+      <span message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.description'}}"></span>.
     </div>
     <a ng-if="!current.pending && current.checkPermission(page.constants.permission.READ)" ng-href="{{current.downloadRoute(false)}}" class=" button tool green" target="_self" tooltip="'excerpts.download' | message">  
       <span class="download icon"></span>
@@ -74,61 +73,7 @@
             </div>
           </div>
         </div>
-      </div>
-<!--  <div>
-        <div class="panel-excerpts-type" ng-if="eduExcerpts.length">
-          <span message="excerpts.edu.title"></span>
-          <span class="icon info" tooltip="'excerpts.edu.description' | message"></span>    
-        </div>
-        <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.SHARED} as eduExcerpts">
-          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
-            <div class="panel-excerpts-actions">
-              <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
-            </div>
-            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
-              <div ng-if="::hasThumbnail(excerpt)">
-                <figure fill>
-                  <img ng-src="{{::excerpt.thumbRoute(109)}}">
-                </figure>
-              </div>
-              <div ng-if="::!hasThumbnail(excerpt)">
-                <figure class="no-thumbnail">
-                  <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
-                  <span ng-bind="::excerpt.asset.name"></span>
-                </figure>
-              </div>
-              <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="panel-excerpts-type" ng-if="privExcerpts.length">
-          <span message="excerpts.databrary.title"></span>
-          <span class="icon info" tooltip="'excerpts.databrary.description' | message"></span>
-        </div>
-        <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.RESTRICTED || page.classification.PRIVATE} as privExcerpts">
-          <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
-            <div class="panel-excerpts-actions">
-              <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
-            </div>
-            <div ng-click="setCurrent(excerpt)" class="panel-excerpts-icon">
-              <div ng-if="::hasThumbnail(excerpt)">
-                <figure fill>
-                  <img ng-src="{{::excerpt.thumbRoute(109)}}">
-                </figure>
-              </div>
-              <div ng-if="::!hasThumbnail(excerpt)">
-                <figure class="no-thumbnail">
-                  <img class="panel-excerpt-filetype-thumb" ng-src="{{::excerpt.icon}}">
-                  <span ng-bind="::excerpt.asset.name"></span>
-                </figure>
-              </div>
-              <div ng-class="::{'panel-excerpts-video-overlay':excerpt.format.type==='video'}"></div>
-            </div>
-          </div>
-        </div> 
-      </div>   -->   
+      </div>  
     </div>
   </div>
 </div>
