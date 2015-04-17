@@ -404,6 +404,8 @@ not.group=Not grouped
 
 excerpts.title=Highlights
 excerpts.download=Download this highlight.
+excerpts.private.title=Private
+excertps.private.description=These clips are private and are only available to collaborators
 excerpts.public.title=Public Use
 excerpts.public.description=These clips are available to anybody for unrestricted use
 excerpts.edu.title=Educational Only
