@@ -7,10 +7,13 @@ module Databrary.Model.Asset
   , changeAsset
   , supersedeAsset
   , assetIsSuperseded
+  , assetCreation
   , assetJSON
   ) where
 
+import Control.Arrow (first)
 import Data.Maybe (catMaybes, isNothing)
+import qualified Data.Text as T
 import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
@@ -21,7 +24,7 @@ import Databrary.Store
 import Databrary.Store.Types
 import Databrary.Store.Asset
 import Databrary.Model.SQL
-import Databrary.Model.Time ()
+import Databrary.Model.Time
 import Databrary.Model.Audit
 import Databrary.Model.Permission
 import Databrary.Model.Id
@@ -70,6 +73,10 @@ supersedeAsset old new =
 assetIsSuperseded :: DBM m => Asset -> m Bool
 assetIsSuperseded a =
   dbExecute1 [pgSQL|SELECT ''::void FROM asset_revision WHERE orig = ${assetId a} LIMIT 1|]
+
+assetCreation :: DBM m => Asset -> m (Maybe Timestamp, Maybe T.Text)
+assetCreation a = maybe (Nothing, Nothing) (first Just) <$>
+  dbQuery1 [pgSQL|$SELECT audit_time, name FROM audit.asset WHERE id = ${assetId a} AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1|]
 
 assetJSON :: Asset -> JSON.Object
 assetJSON Asset{..} = JSON.record assetId $ catMaybes

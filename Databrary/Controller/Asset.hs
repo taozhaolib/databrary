@@ -19,7 +19,7 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
-import Data.Maybe (fromMaybe, fromJust, isNothing, isJust)
+import Data.Maybe (fromMaybe, fromJust, isNothing, isJust, catMaybes)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -70,6 +70,12 @@ getAsset p i =
   checkPermission p =<< maybeAction =<< lookupAssetSlot i
 
 assetJSONField :: (DBM m, MonadHasIdentity c m) => AssetSlot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+assetJSONField a "creation" _ | view a >= PermissionEDIT = do
+  (t, n) <- assetCreation $ slotAsset a
+  return $ Just $ JSON.toJSON $ JSON.object $ catMaybes
+    [ ("date" JSON..=) <$> t
+    , ("name" JSON..=) <$> n
+    ]
 assetJSONField a "excerpts" _ =
   Just . JSON.toJSON . map excerptJSON <$> lookupAssetExcerpts a
 assetJSONField _ _ _ = return Nothing
