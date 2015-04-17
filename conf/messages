@@ -355,6 +355,7 @@ classification.excerpt.PRIVATE=Not shared.
 classification.excerpt.RESTRICTED=Shared only with authorized Databrary users with appropriate participant release.
 classification.excerpt.SHARED=Shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
+classification.excerpts.warning=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
 
 classification.select.PRIVATE=Never share this file: only available to collaborators.
 classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
@@ -409,8 +410,6 @@ excerpts.edu.title=Educational Only
 excerpts.edu.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
 excerpts.databrary.title=Databrary Only
 excerpts.databrary.description=These clips may only be used by authorized Databrary users and are not to be distributed publicly or viewed in an education setting
-excerpts.classification.warning=You are chosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
-
 
 position=Position
 position.placeholder=MM:SS
