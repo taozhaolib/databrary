@@ -409,7 +409,7 @@ excerpts.edu.title=Educational Only
 excerpts.edu.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
 excerpts.databrary.title=Databrary Only
 excerpts.databrary.description=These clips may only be used by authorized Databrary users and are not to be distributed publicly or viewed in an education setting
-excerpts.classification.warning=You have chose to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
+excerpts.classification.warning=You are chosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
 
 
 position=Position
