@@ -24,8 +24,8 @@
     <div class="row">
       <div>
         <div class="panel-excerpts-type" ng-if="publicExcerpts.length">
-          <span message="excerpts.public.title">Public</span>
-          <span message="excerpts.public.desc"></span>    
+          <span message="excerpts.public.title"></span>
+          <span class="icon info" hint="message:'excerpts.public.description'"></span>    
         </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.PUBLIC} as publicExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
@@ -51,8 +51,8 @@
       </div>
       <div>
         <div class="panel-excerpts-type" ng-if="eduExcerpts.length">
-          <span message="excerpts.edu.title">Educational Use</span>
-          <span message="excerpts.edu.desc"></span>    
+          <span message="excerpts.edu.title"></span>
+          <span class="icon info" hint="message:'excerpts.edu.description'"></span>    
         </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.SHARED} as eduExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
@@ -78,8 +78,8 @@
       </div>
       <div>
         <div class="panel-excerpts-type" ng-if="privExcerpts.length">
-          <span message="excerpts.databrary.title">Databrary Only</span>
-          <span message="excerpts.databrary.desc"></span>    
+          <span message="excerpts.databrary.title"></span>
+          <span class="icon info" hint="message:'excerpts.databrary.description'"></span>
         </div>
         <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: page.classification.RESTRICTED || page.classification.PRIVATE} as privExcerpts">
           <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
