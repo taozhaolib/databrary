@@ -404,14 +404,14 @@ not.group=Not grouped
 
 excerpts.title=Highlights
 excerpts.download=Download this highlight.
-excerpts.private.title=Private
-excertps.private.description=These clips are private and are only available to collaborators
-excerpts.public.title=Public Use
-excerpts.public.description=These clips are available to anybody for unrestricted use
-excerpts.edu.title=Educational Only
-excerpts.edu.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
-excerpts.databrary.title=Databrary Only
-excerpts.databrary.description=These clips may only be used by authorized Databrary users and are not to be distributed publicly or viewed in an education setting
+excerpts.PRIVATE.title=Private
+excertps.PRIVATE.description=These clips are private and are only available to collaborators
+excerpts.PUBLIC.title=Public Use
+excerpts.PUBLIC.description=These clips are available to anybody for unrestricted use
+excerpts.EXCERPT.title=Educational Only
+excerpts.EXCERPT.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
+excerpts.SHARED.title=Databrary Only
+excerpts.SHARED.description=These clips may only be used by authorized Databrary users and are not to be distributed publicly or viewed in an education setting
 
 position=Position
 position.placeholder=MM:SS
