@@ -103,16 +103,23 @@
   z-index 200
   position fixed
   top 36px
-  left 2%
-  bottom 36px
-  right 2%
+  left 0
+  bottom 0
+  right 0
   margin auto
-  background-color rgba(255,255,255,0.9)
-  border b1*1.5 solid #efefef
-  box-shadow box-shadow-def
+  background-color white
+  border b1*1.5 solid green52
   text-align center
   .icon.close
-    float right
-  img
+    position absolute   
+    right 0
+  .popup-thumb,a
     margin b1
-    
+  .popup-thumb 
+    box-shadow box-shadow-def
+.popup-classification-title
+  font-weight bold
+  color red
+.popup-file-info
+  span:not(:last-of-type)
+    margin-right b2

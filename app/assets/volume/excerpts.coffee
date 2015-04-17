@@ -9,6 +9,8 @@ app.directive 'volumeExcerpts', [
     link: ($scope) ->
       $scope.current = $scope.volume.excerpts[0]
       $scope.downloading = false
+      $scope.yay = () ->
+        console.log($scope.current)
 
       $scope.setCurrent = (asset) ->
         $scope.current = asset
@@ -21,4 +23,5 @@ app.directive 'volumeExcerpts', [
 
       $scope.toggleDownload = () ->
         $scope.downloading = !$scope.downloading
+        $scope.yay()
 ]
