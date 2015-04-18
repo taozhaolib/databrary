@@ -325,7 +325,10 @@ withAVPacket f = allocaBytes #{size AVPacket} $ \p -> do
   bracket_
     (avInitPacket p)
     (avFreePacket p)
-    (f p)
+    (do
+      #{poke AVPacket, data} p nullPtr
+      #{poke AVPacket, size} p (0 :: CInt)
+      f p)
 
 
 avLockmgr :: AVLockmgr ()
@@ -457,8 +460,9 @@ avFrame AV infile offset width height outfile =
           avFrameInitializeStream os inctx is frame (maybe (-1) fromIntegral width) (maybe (-1) fromIntegral height)
           owidth <- #{peek AVCodecContext, width} oc
           oheight <- #{peek AVCodecContext, height} oc
+          fmts <- #{peek AVCodec, pix_fmts} ocodec
           fmt <- throwAVErrorIf "avcodec_find_best_pix_fmt_of_list" (FileContext outctx) $
-            avcodecFindBestPixFmtOfList (#{ptr AVCodec, pix_fmts} ocodec) ffmt 0 nullPtr
+            avcodecFindBestPixFmtOfList fmts ffmt 0 nullPtr
           #{poke AVCodecContext, pix_fmt} oc fmt
           when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $ do
             r <- avFrameRescale oc frame
