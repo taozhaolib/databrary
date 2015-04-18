@@ -22,8 +22,11 @@ import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSlot.SQL
 import Databrary.Model.AssetSegment.Types
 
+excerptTuple :: Segment -> Classification -> (Segment, Classification)
+excerptTuple = (,)
+
 excerptRow :: Selector -- ^ @'Classification'@
-excerptRow = selectColumns '(,) "excerpt" ["segment", "classification"]
+excerptRow = selectColumns 'excerptTuple "excerpt" ["segment", "classification"]
 
 makeExcerpt :: AssetSlot -> Segment -> Maybe (Segment, Classification) -> AssetSegment
 makeExcerpt a s = newAssetSegment a s . fmap (uncurry $ newExcerpt a)

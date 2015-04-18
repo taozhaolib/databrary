@@ -20,8 +20,8 @@ splitHTTP = filter (not . BS.null) . map trim . BSC.split ',' where
   trim = fst . BSC.spanEnd isSpace . BSC.dropWhile isSpace
 
 quoteHTTP :: BS.ByteString -> BS.ByteString
-quoteHTTP = BSC.pack . quote . BSC.unpack where
-  quote "" = ""
+quoteHTTP = BSC.pack . ('"':) . quote . BSC.unpack where
+  quote "" = "\""
   quote ('\\':r) = '\\':'\\':quote r
   quote ('"':r) = '\\':'"':quote r
   quote (c:r)

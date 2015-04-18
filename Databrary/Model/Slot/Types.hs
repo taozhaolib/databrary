@@ -23,7 +23,7 @@ import Databrary.Model.Container.Types
 data SlotId = SlotId
   { slotContainerId :: !(Id Container)
   , slotSegmentId :: !Segment
-  }
+  } deriving (Show)
 
 instance R.Routable SlotId where
   route = SlotId <$> (Id <$> R.route) <*> (fromMaybe fullSegment <$> R.route)

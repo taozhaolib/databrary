@@ -19,7 +19,7 @@ import Control.Monad ((<=<), when, void)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
-import Data.Maybe (fromMaybe, fromJust, isNothing, isJust, catMaybes)
+import Data.Maybe (fromMaybe, isNothing, isJust, catMaybes)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import qualified Data.Traversable as Trav
@@ -36,7 +36,6 @@ import qualified Databrary.JSON as JSON
 import Databrary.DB
 import Databrary.Web.Form.Errors
 import Databrary.Web.Form.Deform
-import Databrary.Web.File
 import Databrary.Action
 import Databrary.Action.Route
 import Databrary.Model.Segment
@@ -50,6 +49,7 @@ import Databrary.Model.Format
 import Databrary.Model.Asset
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
+import Databrary.Model.AssetSegment
 import Databrary.Model.Excerpt
 import Databrary.Model.Transcode
 import Databrary.Store
@@ -62,6 +62,7 @@ import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Slot
+import Databrary.Controller.AssetSegment
 import Databrary.Controller.Angular
 import Databrary.View.Asset
 
@@ -89,7 +90,7 @@ viewAsset api i = action GET (api, i) $ withAuth $ do
   asset <- getAsset PermissionPUBLIC i
   case api of
     JSON -> okResponse [] =<< assetJSONQuery asset =<< peeks Wai.queryString
-    HTML -> okResponse [] $ show $ assetId $ slotAsset asset -- TODO
+    HTML -> okResponse [] $ T.pack $ show $ assetId $ slotAsset asset -- TODO
 
 data AssetTarget
   = AssetTargetVolume Volume
@@ -245,7 +246,4 @@ deleteAsset api ai = action DELETE (api, ai) $ withAuth $ do
 downloadAsset :: Id Asset -> AppRAction
 downloadAsset ai = action GET (ai, "download" :: T.Text) $ withAuth $ do
   as <- getAsset PermissionREAD ai
-  let a = slotAsset as
-  store <- maybeAction =<< getAssetFile a
-  auditAssetSlotDownload True as
-  serveFile store (assetFormat a) (fromJust $ assetSHA1 a)
+  serveAssetSegment $ assetSlotSegment as

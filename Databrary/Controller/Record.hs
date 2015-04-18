@@ -38,7 +38,7 @@ viewRecord api i = action GET (api, i) $ withAuth $ do
   rec <- getRecord PermissionPUBLIC i
   case api of
     JSON -> okResponse [] $ recordJSON rec
-    HTML -> okResponse [] $ show $ recordId rec -- TODO
+    HTML -> okResponse [] $ T.pack $ show $ recordId rec -- TODO
 
 createRecord :: API -> Id Volume -> AppRAction
 createRecord api vi = action POST (api, vi, "record" :: T.Text) $ withAuth $ do

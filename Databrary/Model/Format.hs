@@ -10,6 +10,7 @@ module Databrary.Model.Format
   , videoFormat
   , formatIsImage
   , formatTranscodable
+  , formatSample
   , formatJSON
   ) where
 
@@ -67,6 +68,9 @@ dropFormatExtension fmt n
 videoFormat :: Format
 videoFormat = getFormat' (Id (-800))
 
+imageFormat :: Format
+imageFormat = getFormat' (Id (-700))
+
 formatIsVideo :: Format -> Bool
 formatIsVideo Format{ formatMimeType = t } = "video/" `BS.isPrefixOf` t
 
@@ -76,6 +80,11 @@ formatIsImage Format{ formatMimeType = t } = "image/" `BS.isPrefixOf` t
 formatTranscodable :: Format -> Maybe Format
 formatTranscodable f
   | formatIsVideo f = Just videoFormat
+  | otherwise = Nothing
+
+formatSample :: Format -> Maybe Format
+formatSample f
+  | f == videoFormat = Just imageFormat
   | otherwise = Nothing
 
 formatJSON :: Format -> JSON.Object

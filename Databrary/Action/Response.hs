@@ -23,6 +23,8 @@ import Network.Wai (Response, responseBuilder, responseLBS, StreamingBody, respo
 import qualified Text.Blaze.Html as Html
 import qualified Text.Blaze.Html.Renderer.Utf8 as Html
 
+import Databrary.Store
+
 class ResponseData r where
   response :: Status -> ResponseHeaders -> r -> Response
 
@@ -41,17 +43,20 @@ instance ResponseData BS.ByteString where
 instance ResponseData StreamingBody where
   response = responseStream
 
-instance ResponseData FilePath where
-  response s h f = response s h (f, Nothing :: Maybe FilePart)
-
-instance ResponseData (FilePath, FilePart) where
-  response s h (f, p) = response s h (f, Just p)
-
 instance ResponseData (FilePath, Maybe FilePart) where
   response s h (f, p) = responseFile s h' f p where
     h'
       | isNothing p = ("accept-ranges", "bytes") : h
       | otherwise = h
+
+instance ResponseData (RawFilePath, Maybe FilePart) where
+  response s h (f, p) = response s h (unRawFilePath f, p) where
+
+instance ResponseData (FilePath, FilePart) where
+  response s h (f, p) = response s h (f, Just p)
+
+instance ResponseData (RawFilePath, FilePart) where
+  response s h (f, p) = response s h (unRawFilePath f, Just p)
 
 instance ResponseData T.Text where
   response s h =

@@ -2,6 +2,7 @@
 module Databrary.Web.File
   ( StaticPath
   , staticPath
+  , fileResponse
   , serveFile
   , serveStaticFile
   ) where
@@ -16,7 +17,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
-import Network.HTTP.Types (hLastModified, hContentType, hIfModifiedSince, notModified304, hIfRange)
+import Network.HTTP.Types (ResponseHeaders, hLastModified, hContentType, hIfModifiedSince, notModified304, hIfRange)
 import qualified Network.Wai as Wai
 import System.Posix.FilePath (joinPath, splitDirectories, (</>))
 import System.IO.Error (tryIOError)
@@ -53,8 +54,8 @@ instance R.Routable StaticPath where
   route = R.maybe . parseStaticPath =<< R.path
   toRoute (StaticPath p) = map TE.decodeLatin1 $ splitDirectories p
 
-serveFile :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response
-serveFile file fmt etag = do
+fileResponse :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m (ResponseHeaders, Maybe Wai.FilePart)
+fileResponse file fmt etag = do
   minfo <- liftIO $ tryIOError $ getFileStatus file
   info <- either (\_ -> result =<< notFoundResponse) return minfo
   let mt = posixSecondsToUTCTime $ modificationTimeHiRes info
@@ -75,7 +76,12 @@ serveFile file fmt etag = do
   let ifrng = unquoteHTTP <$> lookupRequestHeader hIfRange req
       part = mfilter (etag /=) ifrng $> -- allow range detection
         Wai.FilePart 0 sz sz -- force full file
-  okResponse fh (unRawFilePath file, part)
+  return (fh, part)
+
+serveFile :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response
+serveFile file fmt etag = do
+  (fh, part) <- fileResponse file fmt etag
+  okResponse fh (file, part)
 
 serveStaticFile :: (MonadAction c m, MonadIO m) => RawFilePath -> StaticPath -> m Response
 serveStaticFile dir (StaticPath rel) =

@@ -1,21 +1,30 @@
+{-# LANGUAGE PatternGuards #-}
 module Databrary.Model.AssetSegment.Types
   ( AssetSegment(..)
   , newAssetSegment
   , assetFullSegment
+  , assetSlotSegment
+  , assetSegmentFull
+  , assetSegmentRange
   , Excerpt(..)
   , newExcerpt
   , excerptInSegment
   ) where
 
+import Data.Maybe (fromMaybe)
+import qualified Database.PostgreSQL.Typed.Range as Range
+
 import Databrary.Ops
 import Databrary.Has (Has(..))
 import Databrary.Model.Permission
+import Databrary.Model.Offset
 import Databrary.Model.Segment
 import Databrary.Model.Id.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Consent.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
+import Databrary.Model.Format
 import Databrary.Model.Asset.Types
 import Databrary.Model.AssetSlot.Types
 
@@ -31,6 +40,17 @@ newAssetSegment a s e = AssetSegment a (view a `segmentIntersect` s) e
 assetFullSegment :: AssetSegment -> AssetSegment
 assetFullSegment AssetSegment{ assetExcerpt = Just e } = excerptFullSegment e
 assetFullSegment AssetSegment{ segmentAsset = a } = newAssetSegment a fullSegment Nothing
+
+-- |A "fake" (possibly invalid) 'AssetSegment' corresponding to the full 'AssetSlot'
+assetSlotSegment :: AssetSlot -> AssetSegment
+assetSlotSegment a = AssetSegment a (view a) Nothing
+
+assetSegmentFull :: AssetSegment -> Bool
+assetSegmentFull AssetSegment{ segmentAsset = a, assetSegment = s } = view a == s
+
+assetSegmentRange :: AssetSegment -> Range.Range Offset
+assetSegmentRange AssetSegment{ segmentAsset = a, assetSegment = Segment s } =
+  fmap (\x -> x - fromMaybe 0 (lowerBound (segmentRange (view a)))) s
 
 instance Has AssetSlot AssetSegment where
   view = segmentAsset
@@ -56,12 +76,20 @@ instance Has Segment AssetSegment where
 instance Has (Maybe Consent) AssetSegment where
   view = view . (view :: AssetSegment -> Slot)
 
+instance Has Format AssetSegment where
+  view AssetSegment{ segmentAsset = a, assetSegment = Segment rng }
+    | Just s <- formatSample fmt
+    , Just _ <- Range.getPoint rng = s
+    | otherwise = fmt
+    where fmt = view a
+instance Has (Id Format) AssetSegment where
+  view = formatId . view
 instance Has Classification AssetSegment where
   view AssetSegment{ assetExcerpt = Just e } = view e
   view AssetSegment{ segmentAsset = a } = view a
 
 instance Has Permission AssetSegment where
-  view e = dataPermission (view e) (view e) (view e)
+  view a = dataPermission (view $ segmentAsset a) (view a) (view a)
 
 
 data Excerpt = Excerpt
@@ -105,9 +133,8 @@ instance Has Segment Excerpt where
   view = view . excerptAsset
 instance Has (Maybe Consent) Excerpt where
   view = view . excerptAsset
+instance Has Permission Excerpt where
+  view = view . excerptAsset
 
 instance Has Classification Excerpt where
   view = excerptClassification
-
-instance Has Permission Excerpt where
-  view e = dataPermission (view e) (view e) (view e)

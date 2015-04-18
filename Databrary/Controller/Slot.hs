@@ -53,5 +53,5 @@ viewSlot api i = action GET (api, i) $ withAuth $ do
   c <- getSlot PermissionPUBLIC i
   case api of
     JSON -> okResponse [] =<< slotJSONQuery c =<< peeks Wai.queryString
-    HTML -> okResponse [] $ show $ containerId $ slotContainer c -- TODO
+    HTML -> okResponse [] $ BSC.pack $ show $ containerId $ slotContainer c -- TODO
 

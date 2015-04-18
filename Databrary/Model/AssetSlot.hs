@@ -7,7 +7,6 @@ module Databrary.Model.AssetSlot
   , lookupContainerAssets
   , changeAssetSlot
   , findAssetContainerEnd
-  , auditAssetSlotDownload
   , assetSlotJSON
   ) where
 
@@ -29,7 +28,6 @@ import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
-import Databrary.Model.Format.Types
 import Databrary.Model.Asset
 import Databrary.Model.Audit
 import Databrary.Model.SQL
@@ -69,21 +67,9 @@ findAssetContainerEnd :: DBM m => Container -> m (Maybe Offset)
 findAssetContainerEnd c = 
   dbQuery1' [pgSQL|SELECT max(upper(segment)) FROM slot_asset WHERE container = ${containerId c}|]
 
-auditAssetSlotDownload :: MonadAudit c m => Bool -> AssetSlot -> m ()
-auditAssetSlotDownload success AssetSlot{ slotAsset = a, assetSlot = as } = do
-  ai <- getAuditIdentity
-  maybe
-    (dbExecute1' [pgSQL|INSERT INTO audit.asset (audit_action, audit_user, audit_ip, id, volume, format, classification) VALUES
-      (${act}, ${auditWho ai}, ${auditIp ai}, ${assetId a}, ${view a :: Id Volume}, ${view a :: Id Format}, ${assetClassification a :: Classification})|])
-    (\s -> dbExecute1' [pgSQL|INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES
-      (${act}, ${auditWho ai}, ${auditIp ai}, ${view s :: Id Container}, ${view s :: Segment}, ${assetId a})|])
-    as
-  where act | success = AuditActionOpen 
-            | otherwise = AuditActionAttempt
-
 assetSlotJSON :: AssetSlot -> JSON.Object
 assetSlotJSON as@AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
-  , liftM2 (?!>) segmentFull ("position" JSON..=) =<< slotSegment <$> assetSlot
+  , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
   , Just $ "permission" JSON..= (view as :: Permission)
   ]

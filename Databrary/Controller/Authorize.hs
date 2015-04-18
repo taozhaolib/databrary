@@ -55,7 +55,7 @@ viewAuthorize api i at@(AuthorizeTarget app oi) = action GET (api, toRoute i ++ 
   case api of
     JSON -> okResponse [] $ JSON.Object $ authorizeJSON c'
     HTML
-      | app -> okResponse [] ("" :: String) -- TODO
+      | app -> okResponse [] ("" :: T.Text) -- TODO
       | otherwise -> blankForm (htmlAuthorizeForm c')
 
 partyDelegates :: (DBM m, MonadHasIdentity c m) => Party -> m [Account]

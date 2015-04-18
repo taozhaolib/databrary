@@ -1,6 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving, DataKinds #-}
 module Databrary.Model.Offset
   ( Offset(..)
+  , offsetMillis
   ) where
 
 import Control.Applicative ((<$>))
@@ -17,6 +18,9 @@ import qualified Databrary.JSON as JSON
 
 newtype Offset = Offset { offsetTime :: DiffTime } deriving (Eq, Ord, Num, Real, Fractional, RealFrac)
 
+offsetMillis :: Offset -> Integer
+offsetMillis (Offset t) = floor (1000 * t) :: Integer
+
 instance PGParameter "interval" Offset where
   pgEncode t (Offset o) = pgEncode t o
   pgEncodeValue e t (Offset o) = pgEncodeValue e t o
@@ -26,7 +30,7 @@ instance PGColumn "interval" Offset where
   pgDecodeValue e t = Offset . pgDecodeValue e t
 
 instance Show Offset where
-  -- showsPrec p (Offset t) = showsPrec p (floor (1000 * t) :: Integer)
+  -- showsPrec p = showsPrec p . offsetMillis
   showsPrec p (Offset t) = showSigned ss p t where
     ss a =
       (if h /= 0 then shows (h :: Integer) . (':' :) else id)
