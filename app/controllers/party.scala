@@ -70,7 +70,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : PartyController.CreateForm =
     if (acct) new PartyController.AccountCreateForm else new PartyController.PartyCreateForm
 
-  def update(i : models.Party.Id) = AdminAction(i, true).async { implicit request =>
+  def update(i : models.Party.Id) = Action(Some(i), Some(Permission.EDIT)).async { implicit request =>
     val form = editForm(request.asInstanceOf[Request[_] with AuthSite])._bind
     val party = request.obj.party
     for {
