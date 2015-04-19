@@ -50,7 +50,7 @@ import Databrary.Action.Response
 import Databrary.Action.App
 import Databrary.Action.Auth
 import Databrary.Action.Route
-import Databrary.Resource
+import Databrary.Service
 import qualified Databrary.Web.Route as R
 
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
@@ -81,6 +81,6 @@ maybeAction Nothing = result =<< notFoundResponse
 type AppRAction = RouteAction AppRequest
 type AuthRAction = RouteAction AuthRequest
 
-runAppRoute :: R.RouteM AppAction -> Resource -> Wai.Application
+runAppRoute :: R.RouteM AppAction -> Service -> Wai.Application
 runAppRoute route rc = runApp rc $
   fromMaybe notFoundResponse . R.routeRequest route =<< peek

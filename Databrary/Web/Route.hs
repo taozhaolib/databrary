@@ -167,11 +167,11 @@ instance Routable Int16 where
 
 instance Routable Offset where
   route = read
-  toRoute = return . T.pack . show
+  toRoute = return . T.pack . show . offsetMillis
 
 instance Routable Segment where
   route = read
-  toRoute = return . T.pack . show
+  toRoute s = return $ T.pack $ showSegmentWith (shows . offsetMillis) s ""
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString

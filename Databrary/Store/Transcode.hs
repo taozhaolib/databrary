@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
 import Databrary.DB
-import Databrary.Resource
+import Databrary.Service
 import Databrary.ResourceT
 import Databrary.Web.Request
 import Databrary.Model.Audit
@@ -38,7 +38,7 @@ ctlTranscode tc args = do
   Just ctl <- peeks storageTranscoder
   liftIO $ runTranscoder ctl ("-i" : show (transcodeId tc) : args)
 
-transcodeArgs :: (MonadStorage c m, MonadHasRequest c m, MonadHasResource c m) => Transcode -> m TranscodeArgs
+transcodeArgs :: (MonadStorage c m, MonadHasRequest c m, MonadHasService c m) => Transcode -> m TranscodeArgs
 transcodeArgs t@Transcode{..} = do
   Just f <- getAssetFile transcodeOrig
   req <- peek
@@ -54,7 +54,7 @@ transcodeArgs t@Transcode{..} = do
   rng = segmentRange transcodeSegment
   lb = lowerBound rng
 
-startTranscode :: (MonadStorage c m, DBM m, MonadHasRequest c m, MonadHasResource c m) => Transcode -> m (Maybe TranscodePID)
+startTranscode :: (MonadStorage c m, DBM m, MonadHasRequest c m, MonadHasService c m) => Transcode -> m (Maybe TranscodePID)
 startTranscode tc = do
   tc' <- updateTranscode tc lock Nothing
   unless (transcodeProcess tc' == lock) $ fail $ "startTranscode " ++ show (transcodeId tc)

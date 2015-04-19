@@ -30,7 +30,7 @@ import Network.Wai.Parse (FileInfo(..))
 
 import Databrary.Ops
 import Databrary.Has (Has, view, peek, peeks)
-import Databrary.Resource
+import Databrary.Service
 import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.DB
@@ -122,7 +122,7 @@ data FileUpload = FileUpload
 deformLookup :: (Monad m, Functor m, Deform a) => FormErrorMessage -> (a -> m (Maybe b)) -> DeformT m (Maybe b)
 deformLookup e l = Trav.mapM (deformMaybe' e <=< lift . l) =<< deformNonEmpty deform
 
-detectUpload :: (MonadHasResource c m, Has AV c, Has Storage c, MonadIO m) => FileUploadFile -> DeformT m FileUpload
+detectUpload :: (MonadHasService c m, Has AV c, Has Storage c, MonadIO m) => FileUploadFile -> DeformT m FileUpload
 detectUpload f =
   fd =<< deformMaybe' "Unknown or unsupported file format."
     (getFormatByFilename (fileUploadName f)) where

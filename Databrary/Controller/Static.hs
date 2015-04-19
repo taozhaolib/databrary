@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Static
-  ( staticPath
-  , staticPublicFile
+  ( staticPublicFile
   ) where
 
 import qualified Data.Text as T

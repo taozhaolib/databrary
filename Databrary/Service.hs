@@ -1,8 +1,8 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell #-}
-module Databrary.Resource
-  ( Resource(..)
-  , MonadHasResource
-  , initResource
+module Databrary.Service
+  ( Service(..)
+  , MonadHasService
+  , initService
   ) where
 
 import Control.Applicative ((<$>), (<*>))
@@ -18,23 +18,23 @@ import Databrary.Store.Storage (Storage, initStorage)
 import Databrary.Passwd (Passwd, initPasswd)
 import Databrary.Media.AV (AV, initAV)
 
-data Resource = Resource
-  { resourceConfig :: C.Config
-  , resourceSecret :: BS.ByteString
-  , resourceDB :: DBConn
-  , resourceEntropy :: Entropy
-  , resourceHTTPClient :: HTTPClient
-  , resourceStorage :: Storage
-  , resourcePasswd :: Passwd
-  , resourceAV :: AV
+data Service = Service
+  { serviceConfig :: C.Config
+  , serviceSecret :: BS.ByteString
+  , serviceDB :: DBConn
+  , serviceEntropy :: Entropy
+  , serviceHTTPClient :: HTTPClient
+  , serviceStorage :: Storage
+  , servicePasswd :: Passwd
+  , serviceAV :: AV
   }
 
-makeHasRec ''Resource ['resourceConfig, 'resourceDB, 'resourceEntropy, 'resourceHTTPClient, 'resourceStorage, 'resourcePasswd, 'resourceAV]
+makeHasRec ''Service ['serviceConfig, 'serviceDB, 'serviceEntropy, 'serviceHTTPClient, 'serviceStorage, 'servicePasswd, 'serviceAV]
 
-initResource :: IO Resource
-initResource = do
+initService :: IO Service
+initService = do
   conf <- C.load [C.Required "databrary.conf"]
-  Resource conf
+  Service conf
     <$> C.require conf "secret"
     <*> initDB (C.subconfig "db" conf)
     <*> initEntropy

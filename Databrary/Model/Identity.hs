@@ -14,14 +14,14 @@ import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Token
 import Databrary.Web.Request
-import Databrary.Resource
+import Databrary.Service
 import Databrary.DB
 import Databrary.Web.Cookie
 import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity.Types
 
-determineIdentity :: (MonadHasResource c m, MonadHasRequest c m, DBM m) => m Identity
+determineIdentity :: (MonadHasService c m, MonadHasRequest c m, DBM m) => m Identity
 determineIdentity = do
   c <- getSignedCookie "session"
   s <- flatMapM lookupSession c

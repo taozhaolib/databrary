@@ -16,27 +16,27 @@ import qualified Network.Wai as Wai
 
 import Databrary.Has (makeHasRec)
 import Databrary.Web.HTTP
-import Databrary.Resource
+import Databrary.Service
 import Databrary.Model.Time
 import Databrary.Action.Types
 import Databrary.Web.Request
 import Databrary.Action.Response
 
 data AppRequest = AppRequest
-  { appResource :: !Resource
+  { appService :: !Service
   , appResourceState :: !InternalState
   , appTimestamp :: !Timestamp
   , appRequest :: !Request
   }
 
-makeHasRec ''AppRequest ['appResource, 'appResourceState, 'appTimestamp, 'appRequest]
+makeHasRec ''AppRequest ['appService, 'appResourceState, 'appTimestamp, 'appRequest]
 
 type AppActionM a = ActionM AppRequest a
 type AppAction = Action AppRequest
 
 type MonadAppAction q m = (MonadHasAppRequest q m, ActionData q)
 
-runApp :: Resource -> AppAction -> Wai.Application
+runApp :: Service -> AppAction -> Wai.Application
 runApp rc act req send = do
   ts <- liftIO getCurrentTime
   runResourceT $ withInternalState $ \is ->

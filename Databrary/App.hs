@@ -4,9 +4,9 @@ module Databrary.App
 
 import Network.Wai (Application)
 
-import Databrary.Resource
+import Databrary.Service
 import Databrary.Action
 import Databrary.Routes
 
-application :: Resource -> Application
+application :: Service -> Application
 application = runAppRoute routes

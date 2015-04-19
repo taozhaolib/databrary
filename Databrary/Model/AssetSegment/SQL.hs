@@ -3,6 +3,8 @@ module Databrary.Model.AssetSegment.SQL
   ( excerptRow
   , makeExcerpt
   , selectAssetSegment
+  , selectContainerAssetSegment
+  , selectAssetAssetSegment
   ) where
 
 import Data.Maybe (fromMaybe)

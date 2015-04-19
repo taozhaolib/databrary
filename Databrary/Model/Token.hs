@@ -23,7 +23,7 @@ import System.Posix.Files.ByteString (removeLink)
 
 import Databrary.Ops
 import Databrary.Has (view, peek, peeks)
-import Databrary.Resource
+import Databrary.Service
 import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.DB
@@ -40,10 +40,10 @@ import Databrary.Model.Token.SQL
 
 useTPG
 
-loginTokenId :: (MonadHasResource c m, EntropyM c m) => LoginToken -> m (Id LoginToken)
+loginTokenId :: (MonadHasService c m, EntropyM c m) => LoginToken -> m (Id LoginToken)
 loginTokenId tok = Id <$> sign (unId (view tok :: Id Token))
 
-lookupLoginToken :: (DBM m, MonadHasResource c m) => Id LoginToken -> m (Maybe LoginToken)
+lookupLoginToken :: (DBM m, MonadHasService c m) => Id LoginToken -> m (Maybe LoginToken)
 lookupLoginToken =
   flatMapM (\t -> dbQuery1 $(selectQuery selectLoginToken "$!WHERE login_token.token = ${t} AND expires > CURRENT_TIMESTAMP"))
     <=< unSign . unId

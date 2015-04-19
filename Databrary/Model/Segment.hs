@@ -3,6 +3,7 @@
 module Databrary.Model.Segment
   ( Segment(..)
   , lowerBound, upperBound
+  , showSegmentWith
   , segmentLength
   , fullSegment
   , emptySegment
@@ -48,14 +49,17 @@ segmentLength :: Segment -> Maybe Offset
 segmentLength (Segment r) =
   liftM2 (-) (upperBound r) (lowerBound r)
 
+showSegmentWith :: (Offset -> ShowS) -> Segment -> ShowS
+showSegmentWith _ (Segment Range.Empty) = showString "empty"
+showSegmentWith sf (Segment r)
+  | Just x <- Range.getPoint r = sf x
+  | otherwise =
+  maybe id (((if Range.lowerClosed r then id else showChar '(') .) . sf) (lowerBound r)
+  . showChar ',' . maybe id sf (upperBound r)
+  . (if Range.upperClosed r then showChar ']' else id)
+
 instance Show Segment where
-  showsPrec _ (Segment Range.Empty) = showString "empty"
-  showsPrec p (Segment r)
-    | Just x <- Range.getPoint r = showsPrec p x
-    | otherwise =
-    maybe id (((if Range.lowerClosed r then id else showChar '(') .) . shows) (lowerBound r)
-    . showChar ',' . maybe id shows (upperBound r)
-    . (if Range.upperClosed r then showChar ']' else id)
+  showsPrec = showSegmentWith . showsPrec
 
 readP :: Read a => RP.ReadP a
 readP = RP.readPrec_to_P readPrec RP.minPrec

@@ -6,14 +6,14 @@ import qualified Data.Configurator as C
 import Data.Version (showVersion)
 import qualified Network.Wai.Handler.Warp as Warp
 
-import Databrary.Resource (initResource, resourceConfig)
+import Databrary.Service (initService, serviceConfig)
 import Databrary.App (application)
 import Paths_databrary (version)
 
 main :: IO ()
 main = do
-  rc <- initResource
-  let conf = resourceConfig rc
+  rc <- initService
+  let conf = serviceConfig rc
   port <- C.require conf "port"
   Warp.runSettings
     ( Warp.setPort port
