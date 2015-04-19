@@ -15,7 +15,7 @@ import qualified Text.Blaze.Html5.Attributes as HA
 import Databrary.Ops
 import Databrary.Has (view)
 import Databrary.Model.Identity
-import Databrary.Web.File (staticPath)
+import Databrary.HTTP.File (staticPath)
 import Databrary.Action.Auth
 import Databrary.Action
 import Databrary.View.Html

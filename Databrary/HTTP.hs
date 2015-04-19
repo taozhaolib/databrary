@@ -1,4 +1,4 @@
-module Databrary.Web.HTTP
+module Databrary.HTTP
   ( splitHTTP
   , quoteHTTP
   , unquoteHTTP

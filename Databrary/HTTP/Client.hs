@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Web.Client
+module Databrary.HTTP.Client
   ( HTTPClient
   , initHTTPClient
   , HTTPClientM

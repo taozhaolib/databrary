@@ -28,7 +28,7 @@ import Databrary.Model.RecordCategory
 import Databrary.Model.Format
 import Databrary.Model.Party
 import Databrary.Action
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.View.Angular
 
 jsURL :: Maybe Bool -> Wai.Request -> (Maybe Bool, BSB.Builder)

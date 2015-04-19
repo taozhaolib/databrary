@@ -19,7 +19,7 @@ import qualified Network.HTTP.Client as HC
 
 import Databrary.Has (makeHasRec)
 import qualified Databrary.JSON as JSON
-import Databrary.Web.Client
+import Databrary.HTTP.Client
 import Databrary.Model.Id.Types
 
 type instance IdType GeoName = Int64

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Web.Request
+module Databrary.HTTP.Request
   ( Wai.Request
   , MonadHasRequest
   , lookupRequestHeader

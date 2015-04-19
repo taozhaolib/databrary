@@ -10,7 +10,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Slot
 import Databrary.Model.Comment
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Permission
 import Databrary.Controller.Form

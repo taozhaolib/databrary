@@ -1,5 +1,5 @@
 {-# LANGUAGE FlexibleInstances, GeneralizedNewtypeDeriving, OverloadedStrings, UndecidableInstances #-}
-module Databrary.Web.Route
+module Databrary.HTTP.Route
   ( RouteM
 
   , maybe

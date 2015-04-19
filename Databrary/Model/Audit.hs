@@ -18,7 +18,7 @@ import Network.Wai (remoteHost)
 import Databrary.Has (peek, peeks, MonadHas)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
 import Databrary.Model.Audit.Types

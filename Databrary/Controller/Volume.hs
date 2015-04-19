@@ -24,7 +24,7 @@ import Databrary.Ops
 import Databrary.Has (peeks, peek)
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Web.Client (HTTPClientM)
+import Databrary.HTTP.Client (HTTPClientM)
 import Databrary.Model.Enum
 import Databrary.Model.Id
 import Databrary.Model.Kind
@@ -39,7 +39,7 @@ import Databrary.Model.Citation.CrossRef
 import Databrary.Model.Funding
 import Databrary.Model.Container
 import Databrary.Model.Record
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.Controller.Permission

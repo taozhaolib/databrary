@@ -16,7 +16,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Volume
 import Databrary.Model.Funding
 import Databrary.Model.Funding.FundRef
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Permission

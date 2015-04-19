@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, PatternGuards, TypeFamilies #-}
-module Databrary.Web.Form.Deform
+module Databrary.HTTP.Form.Deform
   ( DeformT
   , runDeform
   , deformSync'
@@ -51,8 +51,8 @@ import Databrary.Model.URL
 import Databrary.Model.Time
 import Databrary.Model.Offset
 import Databrary.Model.Segment
-import Databrary.Web.Form
-import Databrary.Web.Form.Errors
+import Databrary.HTTP.Form
+import Databrary.HTTP.Form.Errors
 
 newtype DeformT m a = DeformT { runDeformT :: Form -> m (FormErrors, Maybe a) }
 

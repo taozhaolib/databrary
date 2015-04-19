@@ -20,7 +20,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Party
 import Databrary.Model.Identity
 import Databrary.Model.Token
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Party
 import Databrary.Controller.Token

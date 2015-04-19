@@ -44,14 +44,14 @@ import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404
 import qualified Network.Wai as Wai
 
 import Databrary.Has (peek, peeks)
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Action.Types
 import Databrary.Action.Response
 import Databrary.Action.App
 import Databrary.Action.Auth
 import Databrary.Action.Route
 import Databrary.Service
-import qualified Databrary.Web.Route as R
+import qualified Databrary.HTTP.Route as R
 
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: BSB.Builder)

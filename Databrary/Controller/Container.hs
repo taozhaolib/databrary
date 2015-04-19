@@ -15,7 +15,7 @@ import Databrary.Model.Container
 import Databrary.Model.Segment
 import Databrary.Model.Slot
 import Databrary.Action
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Volume

@@ -19,7 +19,7 @@ import Databrary.Has (peek, peeks)
 import Databrary.DB
 import Databrary.Service
 import Databrary.ResourceT
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Model.Audit
 import Databrary.Model.Segment
 import Databrary.Model.Asset

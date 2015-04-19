@@ -14,8 +14,8 @@ import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
 import Databrary.Model.Kind
-import qualified Databrary.Web.Route as R
-import Databrary.Web.Form.Deform (Deform(..))
+import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Form.Deform (Deform(..))
 
 type family IdType a
 newtype Id a = Id { unId :: IdType a }

@@ -13,7 +13,7 @@ import qualified Data.Configurator.Types as C
 import Databrary.Has (makeHasRec)
 import Databrary.DB (DBConn, initDB)
 import Databrary.Entropy (Entropy, initEntropy)
-import Databrary.Web.Client (HTTPClient, initHTTPClient)
+import Databrary.HTTP.Client (HTTPClient, initHTTPClient)
 import Databrary.Store.Storage (Storage, initStorage)
 import Databrary.Passwd (Passwd, initPasswd)
 import Databrary.Media.AV (AV, initAV)

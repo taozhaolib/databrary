@@ -22,7 +22,7 @@ import Text.Read (readMaybe)
 
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
-import Databrary.Web.Client
+import Databrary.HTTP.Client
 import Databrary.DB
 import Databrary.Model.Id.Types
 import Databrary.Model.GeoNames

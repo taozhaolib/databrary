@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TypeFamilies #-}
-module Databrary.Web.Form.View
+module Databrary.HTTP.Form.View
   ( FormViewT
   , runFormView
   , blankFormView
@@ -19,8 +19,8 @@ import Control.Monad.Trans.Control (MonadTransControl(..))
 import Data.Monoid (mempty)
 import qualified Data.Text as T
 
-import Databrary.Web.Form
-import Databrary.Web.Form.Errors
+import Databrary.HTTP.Form
+import Databrary.HTTP.Form.Errors
 
 newtype FormViewT m a = FormViewT { runFormViewT :: Form -> FormErrors -> m (a, FormErrors) }
 

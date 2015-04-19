@@ -14,8 +14,8 @@ import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Volume
 import Databrary.Model.VolumeAccess
-import qualified Databrary.Web.Route as R
-import Databrary.Web.Form.Deform
+import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Action.Route
 import Databrary.Controller.Form

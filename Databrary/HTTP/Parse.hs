@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, PatternGuards #-}
-module Databrary.Web.Parse
+module Databrary.HTTP.Parse
   ( Content(..)
   , parseRequestContent
   ) where
@@ -25,7 +25,7 @@ import Databrary.Has (peek, peeks)
 import Databrary.Action.App
 import Databrary.Store.Temp
 import Databrary.Action.Types (MonadAction)
-import Databrary.Web.Request (lookupRequestHeader)
+import Databrary.HTTP.Request (lookupRequestHeader)
 import Databrary.Action.Response (response, result)
 
 requestTooLarge :: Response

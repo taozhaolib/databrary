@@ -41,9 +41,9 @@ import Databrary.Model.Asset
 import Databrary.Model.Format
 import Databrary.Store.Temp
 import Databrary.Store.Asset
-import qualified Databrary.Web.Route as R
-import Databrary.Web.Form.Deform
-import Databrary.Web.File
+import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.File
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular

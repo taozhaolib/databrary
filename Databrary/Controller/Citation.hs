@@ -7,7 +7,7 @@ import Data.Aeson (toJSON)
 import qualified Data.Text as T
 
 import Databrary.Action
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Model.Citation.CrossRef
 

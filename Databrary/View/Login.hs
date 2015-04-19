@@ -5,7 +5,7 @@ module Databrary.View.Login
   ) where
 
 import Databrary.Model.Party.Types
-import Databrary.Web.Form.View
+import Databrary.HTTP.Form.View
 import Databrary.Action
 import Databrary.View.Form
 

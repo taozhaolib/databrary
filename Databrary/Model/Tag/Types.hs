@@ -18,7 +18,7 @@ import qualified Text.Regex.Posix as Regex
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
 import qualified Databrary.JSON as JSON
-import qualified Databrary.Web.Route as R
+import qualified Databrary.HTTP.Route as R
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types

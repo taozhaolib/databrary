@@ -15,7 +15,7 @@ import Databrary.Model.Slot
 import Databrary.Model.Asset
 import Databrary.Model.AssetSegment
 import Databrary.Model.Excerpt
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.AssetSegment

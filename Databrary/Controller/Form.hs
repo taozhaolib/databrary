@@ -31,10 +31,10 @@ import Databrary.Model.Party
 import Databrary.Passwd
 import Databrary.Action
 import Databrary.Action.Types
-import Databrary.Web.Form (getFormData, FormData)
-import Databrary.Web.Form.Deform
-import Databrary.Web.Form.View (runFormView, blankFormView)
-import Databrary.Web.Form.Errors (FormErrors)
+import Databrary.HTTP.Form (getFormData, FormData)
+import Databrary.HTTP.Form.Deform
+import Databrary.HTTP.Form.View (runFormView, blankFormView)
+import Databrary.HTTP.Form.Errors (FormErrors)
 import Databrary.View.Form (FormHtml)
 
 apiFormErrors :: MonadAction c m => FormErrors -> m Response

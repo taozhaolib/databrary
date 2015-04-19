@@ -34,8 +34,8 @@ import Databrary.Service
 import Databrary.ResourceT
 import qualified Databrary.JSON as JSON
 import Databrary.DB
-import Databrary.Web.Form.Errors
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Errors
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Action.Route
 import Databrary.Model.Segment

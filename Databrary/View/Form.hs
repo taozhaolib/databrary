@@ -34,9 +34,9 @@ import Databrary.Has (peek, peeks)
 import Databrary.Model.Enum
 import Databrary.Model.Time
 import Databrary.Action
-import Databrary.Web.Form
-import Databrary.Web.Form.Errors
-import Databrary.Web.Form.View
+import Databrary.HTTP.Form
+import Databrary.HTTP.Form.Errors
+import Databrary.HTTP.Form.View
 import Databrary.View.Html
 import Databrary.View.Template
 

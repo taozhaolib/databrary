@@ -12,7 +12,7 @@ import Databrary.Action.Auth
 import Databrary.Action
 import Databrary.Model.Volume
 import Databrary.Model.Citation
-import Databrary.Web.Form.View
+import Databrary.HTTP.Form.View
 import Databrary.View.Form
 
 import {-# SOURCE #-} Databrary.Controller.Volume

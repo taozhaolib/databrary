@@ -21,7 +21,7 @@ import Databrary.Model.Record
 import Databrary.Model.RecordCategory
 import Databrary.Model.Metric
 import Databrary.Model.Measure
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Volume
 import Databrary.Controller.Permission

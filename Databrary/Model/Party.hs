@@ -36,7 +36,7 @@ import Databrary.Ops
 import Databrary.Has (Has(..), peek)
 import Databrary.DB
 import qualified Databrary.JSON as JSON
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Model.Id
 import Databrary.Model.SQL
 import Databrary.Model.Permission

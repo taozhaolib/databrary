@@ -10,7 +10,7 @@ import Control.Monad.Reader (ask)
 import Network.HTTP.Types (methodGet, movedPermanently301, hLocation)
 import qualified Network.Wai as Wai
 
-import qualified Databrary.Web.Route as R
+import qualified Databrary.HTTP.Route as R
 import Databrary.Action
 import Databrary.Action.Types
 import Databrary.Controller.Root

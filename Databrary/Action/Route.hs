@@ -20,9 +20,9 @@ import Data.Functor.Contravariant (Contravariant(..))
 import Data.Monoid ((<>))
 import Network.HTTP.Types (Method, methodGet, StdMethod(..), renderStdMethod, encodePathSegments)
 
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Action.Types
-import qualified Databrary.Web.Route as R
+import qualified Databrary.HTTP.Route as R
 
 data RouteAction q = RouteAction 
   { actionMethod :: Method

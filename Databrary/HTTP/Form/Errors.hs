@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Web.Form.Errors
+module Databrary.HTTP.Form.Errors
   ( FormErrorMessage
   , FormErrors
   , formErrors
@@ -21,7 +21,7 @@ import Data.Monoid (Monoid(..))
 import qualified Data.Text as T
 
 import Databrary.Has (view)
-import Databrary.Web.Form
+import Databrary.HTTP.Form
 
 type FormErrorMessage = T.Text
 data FormErrors = FormErrors

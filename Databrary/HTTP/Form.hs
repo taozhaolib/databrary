@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, RecordWildCards, PatternGuards, TemplateHaskell #-}
-module Databrary.Web.Form 
+module Databrary.HTTP.Form 
   ( FormKey(..)
   , FormPath
   , formPathText
@@ -33,7 +33,7 @@ import Network.Wai.Parse (FileInfo)
 
 import Databrary.Has (makeHasRec, Has(..), peeks)
 import Databrary.Store.Temp (TempFile)
-import Databrary.Web.Parse
+import Databrary.HTTP.Parse
 import Databrary.Action.App (MonadAppAction)
 
 type FormFile = FileInfo TempFile

@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Web.File
+module Databrary.HTTP.File
   ( StaticPath
   , staticPath
   , fileResponse
@@ -26,9 +26,9 @@ import System.Posix.Files.ByteString (getFileStatus, modificationTimeHiRes, file
 import Databrary.Ops
 import Databrary.Has (peek)
 import Databrary.Store
-import Databrary.Web.Request
-import Databrary.Web.HTTP
-import qualified Databrary.Web.Route as R
+import Databrary.HTTP.Request
+import Databrary.HTTP
+import qualified Databrary.HTTP.Route as R
 import Databrary.Action
 import Databrary.Model.Format (Format, getFormatByFilename, unknownFormat, formatMimeType)
 

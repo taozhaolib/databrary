@@ -30,7 +30,7 @@ import Databrary.Model.Asset
 import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
-import Databrary.Web.File
+import Databrary.HTTP.File
 import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Angular

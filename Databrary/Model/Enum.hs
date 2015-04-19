@@ -19,8 +19,8 @@ import Text.Read (readMaybe)
 import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.Kind
-import Databrary.Web.Form (FormDatum(..))
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form (FormDatum(..))
+import Databrary.HTTP.Form.Deform
 
 class (PGEnum a, Kinded a) => DBEnum a
 

@@ -22,13 +22,13 @@ import Databrary.Ops
 import Databrary.Has (view, peek)
 import Databrary.Action
 import Databrary.Action.Auth
-import Databrary.Web.Cookie
+import Databrary.HTTP.Cookie
 import Databrary.Model.Id.Types
 import Databrary.Model.Party
 import Databrary.Model.Identity
 import Databrary.Model.Permission
 import Databrary.Model.Token
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Controller.Form
 import Databrary.Controller.Permission
 import Databrary.Controller.Angular

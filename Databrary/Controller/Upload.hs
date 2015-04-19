@@ -34,7 +34,7 @@ import Databrary.Model.Token
 import Databrary.Store
 import Databrary.Store.Upload
 import Databrary.Store.Asset
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Controller.Form
 import Databrary.Controller.Volume

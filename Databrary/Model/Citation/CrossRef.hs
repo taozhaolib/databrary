@@ -17,7 +17,7 @@ import qualified Network.URI as URI
 
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
-import Databrary.Web.Client
+import Databrary.HTTP.Client
 import Databrary.Model.URL
 import Databrary.Model.Citation.Types
 

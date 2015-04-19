@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Web.Cookie
+module Databrary.HTTP.Cookie
   ( getSignedCookie
   , setSignedCookie
   , clearCookie
@@ -18,7 +18,7 @@ import Databrary.Entropy
 import Databrary.Crypto
 import Databrary.Service
 import Databrary.Model.Time
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 
 getCookies :: Request -> Cook.Cookies
 getCookies = maybe [] Cook.parseCookies . lookupRequestHeader hCookie

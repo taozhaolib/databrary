@@ -12,7 +12,7 @@ import Data.Word (Word8)
 
 import Databrary.Ops
 import Databrary.Crypto
-import Databrary.Web.Form.Deform
+import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Action.Auth
 import Databrary.Model.Id

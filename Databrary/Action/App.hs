@@ -15,11 +15,11 @@ import Network.HTTP.Types (hDate)
 import qualified Network.Wai as Wai
 
 import Databrary.Has (makeHasRec)
-import Databrary.Web.HTTP
+import Databrary.HTTP
 import Databrary.Service
 import Databrary.Model.Time
 import Databrary.Action.Types
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 import Databrary.Action.Response
 
 data AppRequest = AppRequest

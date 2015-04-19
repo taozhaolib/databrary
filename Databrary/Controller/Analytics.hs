@@ -14,7 +14,7 @@ import qualified Data.Vector as V
 import Databrary.Has (peek)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Audit
-import Databrary.Web.Request
+import Databrary.HTTP.Request
 
 angularAnalytics :: MonadAudit q m => m ()
 angularAnalytics = do

@@ -14,7 +14,7 @@ import Data.Maybe (fromMaybe)
 
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
-import qualified Databrary.Web.Route as R
+import qualified Databrary.HTTP.Route as R
 import Databrary.Model.Id
 import Databrary.Model.Kind
 import Databrary.Model.Segment
