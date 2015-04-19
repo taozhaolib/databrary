@@ -24,9 +24,9 @@ import System.Posix.Files.ByteString (removeLink)
 import Databrary.Ops
 import Databrary.Has (view, peek, peeks)
 import Databrary.Service
-import Databrary.Entropy
-import Databrary.Crypto
-import Databrary.DB
+import Databrary.Service.Entropy
+import Databrary.Service.Crypto
+import Databrary.Service.DB
 import Databrary.Store.Types
 import Databrary.Store.Upload
 import Databrary.Model.SQL (selectQuery)

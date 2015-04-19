@@ -13,7 +13,7 @@ import Data.List (find)
 import Data.Maybe (catMaybes, fromJust)
 
 import Databrary.Ops
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Metric.Types

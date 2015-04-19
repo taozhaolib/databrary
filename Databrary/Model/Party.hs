@@ -34,7 +34,7 @@ import Database.PostgreSQL.Typed.Types (pgQuote)
 
 import Databrary.Ops
 import Databrary.Has (Has(..), peek)
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.HTTP.Request
 import Databrary.Model.Id

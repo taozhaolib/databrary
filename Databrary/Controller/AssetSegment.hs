@@ -19,7 +19,7 @@ import qualified Network.Wai as Wai
 
 import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity

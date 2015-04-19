@@ -14,7 +14,7 @@ import Data.Maybe (catMaybes)
 import Databrary.Ops
 import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types

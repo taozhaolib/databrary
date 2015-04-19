@@ -11,7 +11,7 @@ import Data.Monoid (Monoid(..))
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Databrary.Has (Has(..))
-import Databrary.DB (useTPG)
+import Databrary.Service.DB (useTPG)
 import Databrary.Model.Enum
 
 useTPG

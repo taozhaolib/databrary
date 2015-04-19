@@ -17,7 +17,7 @@ import Database.PostgreSQL.Typed.Types (PGTypeName, pgTypeName, PGColumn(pgDecod
 
 import Databrary.Ops
 import Databrary.Has (view)
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL
 import Databrary.Model.Permission

@@ -11,11 +11,11 @@ import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 
 import Databrary.Has (makeHasRec)
-import Databrary.DB (DBConn, initDB)
-import Databrary.Entropy (Entropy, initEntropy)
+import Databrary.Service.DB (DBConn, initDB)
+import Databrary.Service.Entropy (Entropy, initEntropy)
 import Databrary.HTTP.Client (HTTPClient, initHTTPClient)
-import Databrary.Store.Storage (Storage, initStorage)
-import Databrary.Passwd (Passwd, initPasswd)
+import Databrary.Store.Service (Storage, initStorage)
+import Databrary.Service.Passwd (Passwd, initPasswd)
 import Databrary.Media.AV (AV, initAV)
 
 data Service = Service

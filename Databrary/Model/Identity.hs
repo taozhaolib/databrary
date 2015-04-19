@@ -15,7 +15,7 @@ import qualified Databrary.JSON as JSON
 import Databrary.Model.Token
 import Databrary.HTTP.Request
 import Databrary.Service
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.HTTP.Cookie
 import Databrary.Model.Party
 import Databrary.Model.Permission

@@ -16,9 +16,9 @@ import Text.Read (readMaybe)
 
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Service
-import Databrary.ResourceT
+import Databrary.Service.ResourceT
 import Databrary.HTTP.Request
 import Databrary.Model.Audit
 import Databrary.Model.Segment

@@ -19,7 +19,7 @@ import Database.PostgreSQL.Typed.Types (pgQuote)
 
 import Databrary.Ops
 import Databrary.Has (peek, view)
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id

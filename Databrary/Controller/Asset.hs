@@ -31,9 +31,9 @@ import Network.Wai.Parse (FileInfo(..))
 import Databrary.Ops
 import Databrary.Has (Has, view, peek, peeks)
 import Databrary.Service
-import Databrary.ResourceT
+import Databrary.Service.ResourceT
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.HTTP.Form.Errors
 import Databrary.HTTP.Form.Deform
 import Databrary.Action

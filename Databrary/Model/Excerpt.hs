@@ -12,7 +12,7 @@ import Data.Maybe (catMaybes)
 import Databrary.Ops
 import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Segment
 import Databrary.Model.Audit

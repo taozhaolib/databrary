@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Mail
+module Databrary.Service.Mail
   ( sendMail
   ) where
 

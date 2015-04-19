@@ -17,7 +17,7 @@ import System.Locale (defaultTimeLocale)
 
 import Databrary.Ops
 import Databrary.Has (view, peek)
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Permission

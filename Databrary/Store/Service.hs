@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Store.Storage
+module Databrary.Store.Service
   ( Storage
   , initStorage
   ) where

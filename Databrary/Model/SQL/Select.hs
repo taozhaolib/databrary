@@ -29,7 +29,7 @@ import Data.String (IsString(..))
 import Database.PostgreSQL.Typed.Query (QueryFlags, parseQueryFlags, makePGQuery)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.DB (useTPG)
+import Databrary.Service.DB (useTPG)
 
 data SelectOutput
   = OutputExpr String

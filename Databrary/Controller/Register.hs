@@ -15,7 +15,7 @@ import Databrary.Ops
 import Databrary.Has (view, peeks)
 import Databrary.Action
 import Databrary.Action.Auth
-import Databrary.Mail
+import Databrary.Service.Mail
 import Databrary.Model.Permission
 import Databrary.Model.Party
 import Databrary.Model.Identity

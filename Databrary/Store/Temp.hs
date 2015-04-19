@@ -15,7 +15,7 @@ import System.Posix.Files.ByteString (removeLink, rename)
 import System.Posix.Temp.ByteString (mkstemp)
 
 import Databrary.Has (peeks)
-import Databrary.ResourceT
+import Databrary.Service.ResourceT
 import Databrary.Store.Types
 
 data TempFile = TempFile

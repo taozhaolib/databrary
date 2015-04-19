@@ -6,7 +6,7 @@ module Databrary.Model.Volume.Boot
 import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL (selectQuery)
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission.Types

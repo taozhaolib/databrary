@@ -14,8 +14,8 @@ import qualified Web.Cookie as Cook
 
 import Databrary.Ops
 import Databrary.Has (peeks)
-import Databrary.Entropy
-import Databrary.Crypto
+import Databrary.Service.Entropy
+import Databrary.Service.Crypto
 import Databrary.Service
 import Databrary.Model.Time
 import Databrary.HTTP.Request

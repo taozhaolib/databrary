@@ -10,7 +10,7 @@ module Databrary.Model.RecordCategory
 import qualified Data.IntMap.Strict as IntMap
 import Data.Maybe (catMaybes)
 
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Id
 import Databrary.Model.Metric

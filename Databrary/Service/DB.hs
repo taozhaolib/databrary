@@ -1,5 +1,5 @@
 {-# LANGUAGE DefaultSignatures, GeneralizedNewtypeDeriving, OverloadedStrings #-}
-module Databrary.DB
+module Databrary.Service.DB
   ( DBConn
   , initDB
   , DBM

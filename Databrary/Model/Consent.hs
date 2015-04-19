@@ -7,7 +7,7 @@ module Databrary.Model.Consent
 import Control.Applicative ((<$>))
 import Control.Monad (guard)
 
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Slot.Types

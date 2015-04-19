@@ -16,7 +16,7 @@ import Database.PostgreSQL.Typed (pgSQL)
 
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Party.Types
 import Databrary.Model.Container.Types

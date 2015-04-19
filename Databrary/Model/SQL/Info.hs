@@ -7,7 +7,7 @@ import Database.PostgreSQL.Typed.Types (OID)
 import Database.PostgreSQL.Typed.Query (rawPGSimpleQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgDecodeRep)
 
-import Databrary.DB
+import Databrary.Service.DB
 
 lookupTableOID :: DBM m => String -> m OID
 lookupTableOID t = do

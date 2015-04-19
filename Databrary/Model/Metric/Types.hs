@@ -12,7 +12,7 @@ import qualified Data.Text as T
 import Language.Haskell.TH.Lift (deriveLiftMany)
 
 import Databrary.Has (makeHasRec)
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.Enum
 import Databrary.Model.Kind
 import Databrary.Model.Permission.Types

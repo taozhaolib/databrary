@@ -9,7 +9,7 @@ module Databrary.Model.Citation
 
 import Control.Applicative ((<$>))
 
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Volume.Types

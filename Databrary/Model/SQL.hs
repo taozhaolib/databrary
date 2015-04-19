@@ -12,7 +12,7 @@ import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Query (PGQuery)
 
 import Databrary.Ops
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL.Select
 
 isUniqueViolation, isExclusionViolation :: PGError -> Bool

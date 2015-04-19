@@ -7,7 +7,7 @@ module Databrary.Model.Slot
 
 import Databrary.Ops
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.Id
 import Databrary.Model.Identity
 import Databrary.Model.Segment

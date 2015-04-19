@@ -1,5 +1,5 @@
 {-# LANGUAGE ForeignFunctionInterface, OverloadedStrings, TemplateHaskell #-}
-module Databrary.Passwd
+module Databrary.Service.Passwd
   ( passwordPolicy
   , passwdCheck
   , Passwd

@@ -19,8 +19,8 @@ import Network.HTTP.Types (noContent204, StdMethod(DELETE))
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
-import Databrary.Mail
+import Databrary.Service.DB
+import Databrary.Service.Mail
 import Databrary.Model.Id
 import Databrary.Model.Party
 import Databrary.Model.Permission

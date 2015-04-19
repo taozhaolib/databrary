@@ -27,7 +27,7 @@ import Databrary.Has (view, peek, peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Action.Route
 import Databrary.Action
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.Enum
 import Databrary.Model.Kind
 import Databrary.Model.Id

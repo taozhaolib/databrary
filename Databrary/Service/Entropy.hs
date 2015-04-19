@@ -1,4 +1,4 @@
-module Databrary.Entropy
+module Databrary.Service.Entropy
   ( Entropy
   , initEntropy
   , EntropyM

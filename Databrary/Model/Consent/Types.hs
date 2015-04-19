@@ -6,7 +6,7 @@ module Databrary.Model.Consent.Types
 
 import Language.Haskell.TH.Lift (deriveLift)
 
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.Enum
 
 useTPG

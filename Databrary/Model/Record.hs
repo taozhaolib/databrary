@@ -14,7 +14,7 @@ import Control.Applicative ((<$>))
 import Data.Maybe (catMaybes)
 
 import Databrary.Has (peek, view)
-import Databrary.DB
+import Databrary.Service.DB
 import qualified Databrary.JSON as JSON
 import Databrary.Model.SQL
 import Databrary.Model.Audit

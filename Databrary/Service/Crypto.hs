@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Databrary.Crypto
+module Databrary.Service.Crypto
   ( signature
   , sign
   , unSign
@@ -15,7 +15,7 @@ import Data.Monoid ((<>))
 import Databrary.Ops
 import Databrary.Has (peeks)
 import Databrary.Service
-import Databrary.Entropy
+import Databrary.Service.Entropy
 
 hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString
 hmac key = Base64.encode . (toBytes :: Hash.HMAC Hash.Skein256_224 -> BS.ByteString) . Hash.hmac key

@@ -20,7 +20,7 @@ import Database.PostgreSQL.Typed.Query (PGQuery, unsafeModifyQuery)
 
 import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Id
 import Databrary.Model.Audit

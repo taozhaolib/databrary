@@ -11,7 +11,7 @@ import Data.Char (isHexDigit, digitToInt)
 import Data.Word (Word8)
 
 import Databrary.Ops
-import Databrary.Crypto
+import Databrary.Service.Crypto
 import Databrary.HTTP.Form.Deform
 import Databrary.Action
 import Databrary.Action.Auth

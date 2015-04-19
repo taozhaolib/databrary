@@ -19,7 +19,7 @@ import Database.PostgreSQL.Typed (pgSQL)
 import Databrary.Ops
 import Databrary.Has (view, peek)
 import qualified Databrary.JSON as JSON
-import Databrary.DB
+import Databrary.Service.DB
 import Databrary.Store
 import Databrary.Store.Types
 import Databrary.Store.Asset

@@ -1,4 +1,4 @@
-module Databrary.ResourceT
+module Databrary.Service.ResourceT
   ( MonadResourceT
   , liftResourceT
   ) where
