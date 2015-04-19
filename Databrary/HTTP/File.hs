@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.HTTP.File
   ( StaticPath
+  , staticFilePath
   , staticPath
   , fileResponse
   , serveFile
@@ -16,12 +17,9 @@ import qualified Data.Foldable as Fold
 import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
-import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import Network.HTTP.Types (ResponseHeaders, hLastModified, hContentType, hIfModifiedSince, notModified304, hIfRange)
 import qualified Network.Wai as Wai
 import System.Posix.FilePath (joinPath, splitDirectories, (</>))
-import System.IO.Error (tryIOError)
-import System.Posix.Files.ByteString (getFileStatus, modificationTimeHiRes, fileSize)
 
 import Databrary.Ops
 import Databrary.Has (peek)
@@ -32,7 +30,7 @@ import qualified Databrary.HTTP.Route as R
 import Databrary.Action
 import Databrary.Model.Format (Format, getFormatByFilename, unknownFormat, formatMimeType)
 
-newtype StaticPath = StaticPath RawFilePath
+newtype StaticPath = StaticPath { staticFilePath :: RawFilePath }
 
 ok :: Char -> Bool
 ok '.' = True
@@ -56,9 +54,8 @@ instance R.Routable StaticPath where
 
 fileResponse :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m (ResponseHeaders, Maybe Wai.FilePart)
 fileResponse file fmt etag = do
-  minfo <- liftIO $ tryIOError $ getFileStatus file
-  info <- either (\_ -> result =<< notFoundResponse) return minfo
-  let mt = posixSecondsToUTCTime $ modificationTimeHiRes info
+  (sz, mt) <- fromMaybeM (result =<< notFoundResponse) =<< liftIO (fileInfo file)
+  let szi = toInteger sz
       fh = 
         [ ("etag", quoteHTTP etag)
         , (hLastModified, formatHTTPTimestamp mt)
@@ -66,7 +63,6 @@ fileResponse file fmt etag = do
         -- , (hContentDisposition, ???)
         -- , (hCacheControl, ???)
         ]
-      sz = toInteger $ fileSize info
   req <- peek
   let ifnm = map unquoteHTTP $ (splitHTTP =<<) $ lookupRequestHeaders "if-none-match" req
       notmod
@@ -75,7 +71,7 @@ fileResponse file fmt etag = do
   when notmod $ result =<< emptyResponse notModified304 fh
   let ifrng = unquoteHTTP <$> lookupRequestHeader hIfRange req
       part = mfilter (etag /=) ifrng $> -- allow range detection
-        Wai.FilePart 0 sz sz -- force full file
+        Wai.FilePart 0 szi szi -- force full file
   return (fh, part)
 
 serveFile :: (MonadAction c m, MonadIO m) => RawFilePath -> Format -> BS.ByteString -> m Response

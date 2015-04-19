@@ -13,19 +13,26 @@ module Databrary.JSON
   , (.!?)
   , Query
   , jsonQuery
+  , escapeByteString
+  , quoteByteString
   ) where
 
 import Data.Aeson hiding (object)
 import Data.Aeson.Types hiding (object)
 import Data.Aeson.Encode (encodeToTextBuilder)
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Builder as B
+import qualified Data.ByteString.Builder.Prim as BP
+import Data.ByteString.Internal (c2w)
 import qualified Data.HashMap.Strict as HM
 import Data.List (foldl')
+import Data.Monoid ((<>))
 import qualified Data.Text.Encoding as TE
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.Builder as TLB
 import qualified Data.Traversable as Trav
 import qualified Data.Vector as V
+import Data.Word (Word8)
 import Network.HTTP.Types (Query)
 import Network.URI (URI)
 
@@ -68,3 +75,22 @@ jsonQuery j _ [] = return j
 jsonQuery j f ((k,v):q) = do
   o <- f k v
   jsonQuery (j .+? fmap ((,) (TE.decodeLatin1 k)) o) f q
+
+wordEscaped :: Char -> BP.BoundedPrim Word8
+wordEscaped q =
+  BP.condB (== c2w q) (backslash q) $
+  BP.condB (== c2w '\\') (backslash '\\') $
+  BP.condB (>= c2w ' ') (BP.liftFixedToBounded BP.word8) $
+  BP.condB (== c2w '\n') (backslash 'n') $
+  BP.condB (== c2w '\r') (backslash 'r') $
+  BP.condB (== c2w '\t') (backslash 't') $
+    BP.liftFixedToBounded $ (\c -> ('\\', ('u', fromIntegral c))) BP.>$< BP.char7 BP.>*< BP.char7 BP.>*< BP.word16HexFixed
+  where
+  backslash c = BP.liftFixedToBounded $ const ('\\', c) BP.>$< BP.char7 BP.>*< BP.char7
+
+-- | Escape (but do not quote) a ByteString
+escapeByteString :: Char -> BS.ByteString -> B.Builder
+escapeByteString = BP.primMapByteStringBounded . wordEscaped
+
+quoteByteString :: Char -> BS.ByteString -> B.Builder
+quoteByteString q s = B.char7 q <> escapeByteString q s <> B.char7 q

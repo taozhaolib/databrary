@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards, TypeFamilies #-}
+{-# LANGUAGE OverloadedStrings, TypeFamilies #-}
 module Databrary.HTTP.Form.Deform
   ( DeformT
   , runDeform

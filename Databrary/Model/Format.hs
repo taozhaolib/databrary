@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards, PatternGuards #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings, RecordWildCards #-}
 module Databrary.Model.Format
   ( module Databrary.Model.Format.Types
   , unknownFormat

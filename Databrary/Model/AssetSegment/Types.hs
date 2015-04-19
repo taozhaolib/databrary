@@ -1,4 +1,3 @@
-{-# LANGUAGE PatternGuards #-}
 module Databrary.Model.AssetSegment.Types
   ( AssetSegment(..)
   , newAssetSegment

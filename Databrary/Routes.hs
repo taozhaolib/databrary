@@ -33,8 +33,7 @@ import Databrary.Controller.Excerpt
 import Databrary.Controller.Tag
 import Databrary.Controller.Comment
 import Databrary.Controller.Transcode
-import Databrary.Controller.Angular
-import Databrary.Controller.Static
+import Databrary.Controller.Web
 
 act :: ActionData q => RouteAction q -> R.RouteM (Action q)
 act ra = do
@@ -133,7 +132,8 @@ routes = do
       ]
 
     , json >> msum                    -- /api
-      [ "cite" >>                     act getCitation
+      [ "constants" >>                act viewConstants
+      , "cite" >>                     act getCitation
       , "upload" >>                   act uploadChunk
                                   <|> act testChunk
       , "funder" >>                   act queryFunder
@@ -141,7 +141,6 @@ routes = do
       ]
 
     , html >> msum                    -- /
-      [ "public" >> R.route >>=       act . staticPublicFile
-      , "constants.js" >>             act angularConstants
+      [ "public" >> R.route >>=       act . webFile
       ]
     ]

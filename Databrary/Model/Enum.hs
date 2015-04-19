@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell, PatternGuards, OverloadedStrings #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Model.Enum
   ( DBEnum
   , readDBEnum

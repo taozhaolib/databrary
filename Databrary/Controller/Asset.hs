@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.Controller.Asset
   ( getAsset
   , viewAsset

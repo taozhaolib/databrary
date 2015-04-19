@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, PatternGuards #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Databrary.HTTP.Parse
   ( Content(..)
   , parseRequestContent

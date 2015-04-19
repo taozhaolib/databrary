@@ -47,7 +47,7 @@ import Databrary.HTTP.File
 import Databrary.Controller.Permission
 import Databrary.Controller.Form
 import Databrary.Controller.Angular
-import Databrary.Controller.Static
+import Databrary.Controller.Web
 import Databrary.View.Party
 
 data PartyTarget
@@ -177,7 +177,7 @@ queryParties api = action GET (api, "party" :: T.Text) $ withAuth $ do
 viewAvatar :: Id Party -> AppRAction
 viewAvatar i = action GET (i, "avatar" :: T.Text) $
   maybe
-    (redirectRouteResponse [] $ staticPublicFile $ staticPath ["images", "avatar.png"])
+    (redirectRouteResponse [] $ webFile $ staticPath ["images", "avatar.png"])
     (\a -> do
       -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
       store <- maybeAction =<< getAssetFile a

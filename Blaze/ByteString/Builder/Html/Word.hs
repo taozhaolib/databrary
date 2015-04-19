@@ -45,10 +45,10 @@ fromHtmlEscapedWordList :: [Word8] -> B.Builder
 fromHtmlEscapedWordList = P.primMapListBounded wordHtmlEscaped
 
 fromHtmlEscapedByteString :: BS.ByteString -> B.Builder
-fromHtmlEscapedByteString = fromHtmlEscapedWordList . BS.unpack
+fromHtmlEscapedByteString = P.primMapByteStringBounded wordHtmlEscaped
 
 fromHtmlEscapedLazyByteString :: BSL.ByteString -> B.Builder
-fromHtmlEscapedLazyByteString = fromHtmlEscapedWordList . BSL.unpack
+fromHtmlEscapedLazyByteString = P.primMapLazyByteStringBounded wordHtmlEscaped
 
 fromHtmlEscapedText :: T.Text -> B.Builder
 fromHtmlEscapedText = fromHtmlEscapedByteString . TE.encodeUtf8

@@ -15,10 +15,10 @@ data Transcoder = Transcoder
   }
 
 data Storage = Storage
-  { storageMaster :: RawFilePath
+  { storageMaster :: !RawFilePath
   , storageFallback :: Maybe RawFilePath
-  , storageTemp :: RawFilePath
-  , storageUpload :: RawFilePath
+  , storageTemp :: !RawFilePath
+  , storageUpload :: !RawFilePath
   , storageTranscoder :: Maybe Transcoder
   }
 

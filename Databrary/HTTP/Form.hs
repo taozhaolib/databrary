@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, RecordWildCards, PatternGuards, TemplateHaskell #-}
+{-# LANGUAGE OverloadedStrings, RecordWildCards, TemplateHaskell #-}
 module Databrary.HTTP.Form 
   ( FormKey(..)
   , FormPath

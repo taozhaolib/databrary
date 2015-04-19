@@ -21,14 +21,14 @@ import Databrary.Action
 import Databrary.View.Html
 import Databrary.View.Template
 
-import Databrary.Controller.Static
+import Databrary.Controller.Web
 import {-# SOURCE #-} Databrary.Controller.Angular
 
 ngAttribute :: String -> H.AttributeValue -> H.Attribute
 ngAttribute = H.customAttribute . H.stringTag . ("ng-" <>)
 
 public :: [BS.ByteString] -> H.AttributeValue
-public p = byteStringValue $ actionURL (staticPublicFile $ staticPath p) Nothing
+public p = byteStringValue $ actionURL (webFile $ staticPath p) Nothing
 
 htmlAngular :: AuthRequest -> H.Html
 htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
@@ -59,13 +59,10 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
       H.preEscapedString "window.$play={user:"
       H.unsafeLazyByteString $ JSON.encode $ identityJSON (view auth)
       H.preEscapedString "};"
-    forM_ [] $ \js ->
+    forM_ [["constants.js"], ["templates.js"]] $ \js ->
       H.script
         H.! HA.src (public js)
         $ return ()
-    H.script
-      H.! HA.src (byteStringValue $ actionURL angularConstants Nothing)
-      $ return ()
   H.body
     H.! H.customAttribute "flow-prevent-drop" mempty
     $ do
