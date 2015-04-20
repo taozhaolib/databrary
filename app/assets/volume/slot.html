@@ -42,9 +42,9 @@
                   <dl class="player-info-list cf">
                     <dt ng-if="!!current.asset" message="asset.format"></dt>
                     <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                    <dt ng-if="current.full === false || current.asset.duration">Position</dt>
+                    <dt ng-if="!current.full || current.asset.duration">Position</dt>
                     <dd>
-                      <span ng-if="current.full === false"><span ng-if="current.lBounded" ng-bind="current.l | timecode:true"></span> &ndash; <span ng-if="current.uBounded" ng-bind="current.u | timecode:true"></span></span>
+                      <span ng-if="!current.full"><span ng-if="current.lBounded" ng-bind="current.l | timecode:true"></span><span ng-if="current.u > current.l"> &ndash; <span ng-if="current.uBounded" ng-bind="current.u | timecode:true"></span></span></span>
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
                     <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>

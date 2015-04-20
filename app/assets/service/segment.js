@@ -61,12 +61,12 @@ app.factory('Segment', [
       },
       lBounded: {
         get: function () {
-          return this.l < this.u && isFinite(this.l);
+          return this.l <= this.u && isFinite(this.l);
         }
       },
       uBounded: {
         get: function () {
-          return this.u > this.l && isFinite(this.u);
+          return this.u >= this.l && isFinite(this.u);
         }
       },
       base: {

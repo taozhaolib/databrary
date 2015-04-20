@@ -217,7 +217,7 @@ app.controller('volume/slot', [
     ################################### Video/playback controls
 
     $scope.updatePosition = () ->
-      if video && $scope.asset?.segment.contains(ruler.position) && isFinite($scope.asset.segment.l)
+      if video && $scope.asset?.segment.contains(ruler.position.o) && isFinite($scope.asset.segment.l)
         video[0].currentTime = (ruler.position.o - (if $scope.editing == 'position' then $scope.current.l else $scope.asset.segment.l)) / 1000
       return
 
@@ -861,9 +861,6 @@ app.controller('volume/slot', [
         $scope.editing = 'position'
         return
 
-      updatePosition: () ->
-        return
-
       finishPosition: () ->
         $scope.editing = true
         @init(@rec.segment)
@@ -890,7 +887,7 @@ app.controller('volume/slot', [
             return
 
       drag: (event, which) ->
-        this[if which then 'u' else 'l'] = @snapping(new TimePoint(event.clientX, 'x'))
+        p = this[if which then 'ut' else 'lt'] = @snapping(x = new TimePoint(event.clientX, 'x'))
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
