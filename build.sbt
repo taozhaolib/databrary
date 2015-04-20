@@ -38,7 +38,7 @@ libraryDependencies ++= Seq(
   "com.github.fge" % "json-schema-validator" % "2.2.6",
   "org.webjars" % "jquery" % "1.11.2",
   "org.webjars" % "angularjs" % "1.3.15",
-  "org.webjars" % "ng-flow" % "2.5.1",
+  "org.webjars" % "ng-flow" % "2.6.1",
   "org.webjars" % "normalize.styl" % "3.0.0",
   "org.webjars" % "lodash" % "3.6.0"
 )
