@@ -926,7 +926,7 @@ app.directive 'spreadsheet', [
           if info.r
             if input == info.record.measures[info.metric.id]
               add("Keep " + info.record.displayName,
-                (cell) -> return,
+                () -> return,
                 true)
             if !input
               add("Remove " + info.record.displayName + " from this session",
