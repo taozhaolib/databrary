@@ -1,6 +1,6 @@
 name := "databrary"
 
-scalaVersion in ThisBuild := "2.11.5"
+scalaVersion in ThisBuild := "2.11.6"
 
 scalacOptions in ThisBuild ++= Seq("-target:jvm-1.7","-optimise","-feature","-deprecation","-Xlint","-Yinline-warnings")
 
