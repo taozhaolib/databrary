@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Rules
   ( generateWebFile
+  , generateWebFiles
   ) where
 
 import Control.Applicative ((<$>))
@@ -19,3 +20,6 @@ generateWebFile _ = return Nothing
 
 allWebFiles :: [RawFilePath]
 allWebFiles = ["constants.json", "constants.js", "templates.js"]
+
+generateWebFiles :: (MonadHasService c m, MonadIO m) => m ()
+generateWebFiles = mapM_ generateWebFile allWebFiles

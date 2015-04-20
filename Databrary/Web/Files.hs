@@ -43,8 +43,14 @@ findFiles dir ext = loop "" dir where
 webDir :: RawFilePath
 webDir = "web"
 
+genDir :: RawFilePath
+genDir = "gen"
+
 webFile :: RawFilePath -> RawFilePath
 webFile = (webDir </>)
+
+genFile :: RawFilePath -> RawFilePath
+genFile = (genDir </>)
 
 findWebFiles :: BS.ByteString -> IO [RawFilePath]
 findWebFiles = findFiles webDir
