@@ -592,7 +592,7 @@ app.controller('volume/slot', [
         router.http(router.controllers.AssetApi.uploadStart, slot.volume.id,
             filename: file.name
             size: file.size
-          ).then (res) ->
+          ).then (res) =>
             file.uniqueIdentifier = res.data
             file.resume()
             ### jshint ignore:start ###
