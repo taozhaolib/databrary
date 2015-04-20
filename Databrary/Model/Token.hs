@@ -43,21 +43,21 @@ useTPG
 loginTokenId :: (MonadHasService c m, EntropyM c m) => LoginToken -> m (Id LoginToken)
 loginTokenId tok = Id <$> sign (unId (view tok :: Id Token))
 
-lookupLoginToken :: (DBM m, MonadHasService c m) => Id LoginToken -> m (Maybe LoginToken)
+lookupLoginToken :: (MonadDB m, MonadHasService c m) => Id LoginToken -> m (Maybe LoginToken)
 lookupLoginToken =
   flatMapM (\t -> dbQuery1 $(selectQuery selectLoginToken "$!WHERE login_token.token = ${t} AND expires > CURRENT_TIMESTAMP"))
     <=< unSign . unId
 
-lookupSession :: DBM m => BS.ByteString -> m (Maybe Session)
+lookupSession :: MonadDB m => BS.ByteString -> m (Maybe Session)
 lookupSession tok =
   dbQuery1 $(selectQuery selectSession "$!WHERE session.token = ${tok} AND expires > CURRENT_TIMESTAMP")
 
-lookupUpload :: (DBM m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe Upload)
+lookupUpload :: (MonadDB m, MonadHasIdentity c m) => BS.ByteString -> m (Maybe Upload)
 lookupUpload tok = do
   auth <- peek
   dbQuery1 $ fmap ($ auth) $(selectQuery selectUpload "$!WHERE upload.token = ${tok} AND expires > CURRENT_TIMESTAMP AND upload.account = ${view auth :: Id Party}")
 
-createToken :: (DBM m, EntropyM c m) => (Id Token -> DBTransaction a) -> m a
+createToken :: (MonadDB m, EntropyM c m) => (Id Token -> DBTransaction a) -> m a
 createToken insert = do
   gen <- fmap (Id . Base64.encode) <$> entropyBytesGenerator 24
   let loop = do
@@ -70,7 +70,7 @@ createToken insert = do
     _ <- dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
 
-createLoginToken :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken
+createLoginToken :: (MonadDB m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken
 createLoginToken auth passwd = do
   when passwd $ void $ dbExecute [pgSQL|DELETE FROM login_token WHERE account = ${view auth :: Id Party} AND password|]
   (tok, ex) <- createToken $ \tok ->
@@ -87,7 +87,7 @@ sessionDuration :: Bool -> Offset
 sessionDuration False = 7*24*60*60
 sessionDuration True = 30*60
 
-createSession :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m Session
+createSession :: (MonadDB m, EntropyM c m) => SiteAuth -> Bool -> m Session
 createSession auth su = do
   (tok, ex) <- createToken $ \tok ->
     dbQuery1' [pgSQL|INSERT INTO session (token, expires, account, superuser) VALUES (${tok}, CURRENT_TIMESTAMP + ${sessionDuration su}::interval, ${view auth :: Id Party}, ${su}) RETURNING token, expires|]
@@ -99,7 +99,7 @@ createSession auth su = do
     , sessionSuperuser = su
     }
 
-createUpload :: (DBM m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload
+createUpload :: (MonadDB m, EntropyM c m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Int64 -> m Upload
 createUpload vol name size = do
   auth <- peek
   (tok, ex) <- createToken $ \tok ->
@@ -113,15 +113,15 @@ createUpload vol name size = do
     , uploadSize = size
     }
 
-removeLoginToken :: DBM m => LoginToken -> m Bool
+removeLoginToken :: MonadDB m => LoginToken -> m Bool
 removeLoginToken tok =
   dbExecute1 [pgSQL|DELETE FROM login_token WHERE token = ${view tok :: Id Token}|]
 
-removeSession :: (DBM m) => Session -> m Bool
+removeSession :: (MonadDB m) => Session -> m Bool
 removeSession tok =
   dbExecute1 [pgSQL|DELETE FROM session WHERE token = ${view tok :: Id Token}|]
 
-removeUpload :: (DBM m, MonadStorage c m) => Upload -> m Bool
+removeUpload :: (MonadDB m, MonadStorage c m) => Upload -> m Bool
 removeUpload tok = do
   r <- dbExecute1 [pgSQL|DELETE FROM upload WHERE token = ${view tok :: Id Token}|]
   when r $ liftIO . removeLink =<< peeks (uploadFile tok)

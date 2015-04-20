@@ -49,7 +49,7 @@ blankAsset vol = Asset
   , assetVolume = vol
   }
 
-lookupAsset :: (MonadHasIdentity c m, DBM m) => Id Asset -> m (Maybe Asset)
+lookupAsset :: (MonadHasIdentity c m, MonadDB m) => Id Asset -> m (Maybe Asset)
 lookupAsset ai = do
   ident <- peek
   dbQuery1 $(selectQuery (selectAsset 'ident) "$WHERE asset.id = ${ai}")
@@ -66,15 +66,15 @@ changeAsset a fp = do
   a2 <- maybe (return a) (storeAssetFile a) fp
   dbExecute1' $(updateAsset 'ident 'a2)
 
-supersedeAsset :: DBM m => Asset -> Asset -> m ()
+supersedeAsset :: MonadDB m => Asset -> Asset -> m ()
 supersedeAsset old new =
   dbExecute1' [pgSQL|SELECT asset_supersede(${assetId old}, ${assetId new})|]
 
-assetIsSuperseded :: DBM m => Asset -> m Bool
+assetIsSuperseded :: MonadDB m => Asset -> m Bool
 assetIsSuperseded a =
   dbExecute1 [pgSQL|SELECT ''::void FROM asset_revision WHERE orig = ${assetId a} LIMIT 1|]
 
-assetCreation :: DBM m => Asset -> m (Maybe Timestamp, Maybe T.Text)
+assetCreation :: MonadDB m => Asset -> m (Maybe Timestamp, Maybe T.Text)
 assetCreation a = maybe (Nothing, Nothing) (first Just) <$>
   dbQuery1 [pgSQL|$SELECT audit_time, name FROM audit.asset WHERE id = ${assetId a} AND audit_action = 'add' ORDER BY audit_time DESC LIMIT 1|]
 

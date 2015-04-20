@@ -38,17 +38,17 @@ blankComment who slot = Comment
   , commentParents = []
   }
 
-lookupComment :: (DBM m, MonadHasIdentity c m) => Id Comment -> m (Maybe Comment)
+lookupComment :: (MonadDB m, MonadHasIdentity c m) => Id Comment -> m (Maybe Comment)
 lookupComment i = do
   ident <- peek
   dbQuery1 $(selectQuery (selectComment 'ident) "$!WHERE comment.id = ${i}")
 
-lookupSlotComments :: (DBM m, MonadHasIdentity c m) => Slot -> Int -> m [Comment]
+lookupSlotComments :: (MonadDB m, MonadHasIdentity c m) => Slot -> Int -> m [Comment]
 lookupSlotComments (Slot c s) n = do
   ident <- peek
   dbQuery $ ($ c) <$> $(selectQuery (selectContainerComment 'ident) "$!WHERE comment.container = ${containerId c} AND comment.segment && ${s} ORDER BY comment.thread LIMIT ${fromIntegral n :: Int64}")
 
-addComment :: DBM m => Comment -> m Comment
+addComment :: MonadDB m => Comment -> m Comment
 addComment c@Comment{..} = do
   (i, t) <- dbQuery1' [pgSQL|INSERT INTO comment (who, container, segment, text, parent) VALUES (${partyId $ accountParty commentWho}, ${containerId $ slotContainer commentSlot}, ${slotSegment commentSlot}, ${commentText}, ${listToMaybe commentParents}) RETURNING id, time|]
   return c

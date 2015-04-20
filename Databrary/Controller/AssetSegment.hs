@@ -40,10 +40,10 @@ getAssetSegment :: Permission -> Id Slot -> Id Asset -> AuthActionM AssetSegment
 getAssetSegment p s a =
   checkPermission p =<< maybeAction =<< lookupSlotAssetSegment s a
 
-assetSegmentJSONField :: (DBM m, MonadHasIdentity c m) => AssetSegment -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+assetSegmentJSONField :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 assetSegmentJSONField _ _ _ = return Nothing
 
-assetSegmentJSONQuery :: (DBM m, MonadHasIdentity c m) => AssetSegment -> JSON.Query -> m JSON.Object
+assetSegmentJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSegment -> JSON.Query -> m JSON.Object
 assetSegmentJSONQuery vol = JSON.jsonQuery (assetSegmentJSON vol) (assetSegmentJSONField vol)
 
 viewAssetSegment :: API -> Id Slot -> Id Asset -> AppRAction

@@ -40,7 +40,7 @@ transcodeAuth t = signature $ BSL.toStrict $ BSB.toLazyByteString
   $ maybe id ((<>) . BSB.byteString) (assetSHA1 $ transcodeOrig t)
   $ BSB.int32LE (unId $ transcodeId t)
 
-lookupTranscode :: DBM m => Id Transcode -> m (Maybe Transcode)
+lookupTranscode :: MonadDB m => Id Transcode -> m (Maybe Transcode)
 lookupTranscode a =
   dbQuery1 $(selectQuery selectTranscode "WHERE transcode.asset = ${a}")
 
@@ -73,7 +73,7 @@ addTranscode orig seg@(Segment rng) opts probe = do
     , transcodeLog = Nothing
     }
 
-updateTranscode :: DBM m => Transcode -> Maybe TranscodePID -> Maybe String -> m Transcode
+updateTranscode :: MonadDB m => Transcode -> Maybe TranscodePID -> Maybe String -> m Transcode
 updateTranscode tc pid logs = do
   r <- dbQuery1 [pgSQL|UPDATE transcode SET process = ${pid}, log = COALESCE(COALESCE(log || E'\\n', '') || ${logs}, log) WHERE asset = ${assetId $ transcodeAsset tc} AND COALESCE(process, 0) = ${fromMaybe 0 $ transcodeProcess tc} RETURNING log|]
   return $ maybe tc (\l -> tc

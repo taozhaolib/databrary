@@ -40,26 +40,26 @@ filterAll :: PGQuery a b => Bool -> a -> a
 filterAll True = id
 filterAll False = (`unsafeModifyQuery` (++ "WHERE expires IS NULL OR expires > CURRENT_TIMESTAMP"))
 
-lookupAuthorizedParents :: (DBM m, MonadHasIdentity c m) => Party -> Bool -> m [Authorize]
+lookupAuthorizedParents :: (MonadDB m, MonadHasIdentity c m) => Party -> Bool -> m [Authorize]
 lookupAuthorizedParents child al = do
   ident <- peek
   dbQuery $ filterAll al $(selectQuery (selectAuthorizeParent 'child 'ident) "$")
 
-lookupAuthorizedChildren :: (DBM m, MonadHasIdentity c m) => Party -> Bool -> m [Authorize]
+lookupAuthorizedChildren :: (MonadDB m, MonadHasIdentity c m) => Party -> Bool -> m [Authorize]
 lookupAuthorizedChildren parent al = do
   ident <- peek
   dbQuery $ filterAll al $(selectQuery (selectAuthorizeChild 'parent 'ident) "$")
 
-lookupAuthorize :: (DBM m, MonadHasIdentity c m) => Party -> Party -> m (Maybe Authorize)
+lookupAuthorize :: (MonadDB m, MonadHasIdentity c m) => Party -> Party -> m (Maybe Authorize)
 lookupAuthorize child parent =
   dbQuery1 $ (\a -> a child parent) <$> $(selectQuery authorizeRow "$WHERE authorize.child = ${partyId child} AND authorize.parent = ${partyId parent}")
 
-lookupAuthorizeParent :: (DBM m, MonadHasIdentity c m) => Party -> Id Party -> m (Maybe Authorize)
+lookupAuthorizeParent :: (MonadDB m, MonadHasIdentity c m) => Party -> Id Party -> m (Maybe Authorize)
 lookupAuthorizeParent child parent = do
   ident <- peek
   dbQuery1 $ $(selectQuery (selectAuthorizeParent 'child 'ident) "$WHERE authorize.parent = ${parent}")
 
-lookupAuthorization :: (DBM m, MonadHasIdentity c m) => Party -> Party -> m Authorization
+lookupAuthorization :: (MonadDB m, MonadHasIdentity c m) => Party -> Party -> m Authorization
 lookupAuthorization child parent 
   | partyId child == partyId parent = return $ authorization $ selfAuthorize child
   | otherwise = do

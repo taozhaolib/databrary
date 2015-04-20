@@ -16,11 +16,11 @@ import Databrary.Model.Volume.Types
 import Databrary.Model.Citation.Types
 import Databrary.Model.Citation.SQL
 
-lookupVolumeCitation :: (DBM m) => Volume -> m (Maybe Citation)
+lookupVolumeCitation :: (MonadDB m) => Volume -> m (Maybe Citation)
 lookupVolumeCitation vol =
   dbQuery1 $ fmap ($ Just (volumeName vol)) $(selectQuery selectVolumeCitation "$WHERE volume_citation.volume = ${volumeId vol}")
 
-lookupVolumeLinks :: (DBM m) => Volume -> m [Citation]
+lookupVolumeLinks :: (MonadDB m) => Volume -> m [Citation]
 lookupVolumeLinks vol =
   dbQuery $(selectQuery selectVolumeLink "$WHERE volume_link.volume = ${volumeId vol}")
 

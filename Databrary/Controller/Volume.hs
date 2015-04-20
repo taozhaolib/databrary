@@ -51,7 +51,7 @@ getVolume :: Permission -> Id Volume -> AuthActionM Volume
 getVolume p i =
   checkPermission p =<< maybeAction =<< lookupVolume i
 
-volumeJSONField :: (DBM m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+volumeJSONField :: (MonadDB m, MonadHasIdentity c m) => Volume -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 volumeJSONField vol "access" ma = do
   Just . JSON.toJSON . map (\va -> 
     volumeAccessJSON va JSON..+ ("party" JSON..= partyJSON (volumeAccessParty va)))
@@ -68,7 +68,7 @@ volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
 volumeJSONField _ _ _ = return Nothing
 
-volumeJSONQuery :: (DBM m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
+volumeJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
 volumeJSONQuery vol = JSON.jsonQuery (volumeJSON vol) (volumeJSONField vol)
 
 viewVolume :: API -> Id Volume -> AppRAction

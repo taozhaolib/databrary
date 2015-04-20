@@ -25,7 +25,7 @@ import Databrary.Model.Audit.Types
 
 useTPG
 
-type MonadAudit c m = (MonadHasRequest c m, MonadHas (Id Party) c m, DBM m)
+type MonadAudit c m = (MonadHasRequest c m, MonadHas (Id Party) c m, MonadDB m)
 
 getRemoteIp :: MonadHasRequest c m => m PGInet
 getRemoteIp = peeks (fromMaybe (PGInet 0 32) . sockAddrPGInet . remoteHost)

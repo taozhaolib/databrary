@@ -22,7 +22,7 @@ import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSegment.Types
 import Databrary.Model.Excerpt.SQL
 
-lookupAssetExcerpts :: DBM m => AssetSlot -> m [Excerpt]
+lookupAssetExcerpts :: MonadDB m => AssetSlot -> m [Excerpt]
 lookupAssetExcerpts a =
   dbQuery $ ($ a) <$> $(selectQuery selectAssetSlotExcerpt "$WHERE excerpt.asset = ${assetId $ slotAsset a}")
 

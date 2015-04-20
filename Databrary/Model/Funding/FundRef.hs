@@ -94,7 +94,7 @@ lookupFundRef fi = runMaybeT $ do
   g <- flatMapM lookupGeoName gi
   return $ annotateFunder f [] (geoName <$> g)
 
-lookupFunderRef :: (DBM m, HTTPClientM c m, MonadThrow m) => Id Funder -> m (Maybe Funder)
+lookupFunderRef :: (MonadDB m, HTTPClientM c m, MonadThrow m) => Id Funder -> m (Maybe Funder)
 lookupFunderRef fi =
   (`orElseM` lookupFundRef fi) =<< lookupFunder fi
 

@@ -58,7 +58,7 @@ viewAuthorize api i at@(AuthorizeTarget app oi) = action GET (api, toRoute i ++ 
       | app -> okResponse [] ("" :: T.Text) -- TODO
       | otherwise -> blankForm (htmlAuthorizeForm c')
 
-partyDelegates :: (DBM m, MonadHasIdentity c m) => Party -> m [Account]
+partyDelegates :: (MonadDB m, MonadHasIdentity c m) => Party -> m [Account]
 partyDelegates p =
   mapMaybe partyAccount
     . (p :)

@@ -30,17 +30,17 @@ import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment.Types
 import Databrary.Model.AssetSegment.SQL
 
-lookupAssetSegment :: (MonadHasIdentity c m, DBM m) => Segment -> Id Asset -> m (Maybe AssetSegment)
+lookupAssetSegment :: (MonadHasIdentity c m, MonadDB m) => Segment -> Id Asset -> m (Maybe AssetSegment)
 lookupAssetSegment seg ai = do
   ident :: Identity <- peek
   dbQuery1 $(selectQuery (selectAssetSegment 'ident 'seg) "$WHERE slot_asset.asset = ${ai} AND slot_asset.segment && ${seg}")
 
-lookupSlotAssetSegment :: (MonadHasIdentity c m, DBM m) => Id Slot -> Id Asset -> m (Maybe AssetSegment)
+lookupSlotAssetSegment :: (MonadHasIdentity c m, MonadDB m) => Id Slot -> Id Asset -> m (Maybe AssetSegment)
 lookupSlotAssetSegment (Id (SlotId ci seg)) ai = do
   ident :: Identity <- peek
   dbQuery1 $(selectQuery (selectAssetSegment 'ident 'seg) "$WHERE slot_asset.container = ${ci} AND slot_asset.asset = ${ai} AND slot_asset.segment && ${seg}")
 
-lookupAssetSlotSegment :: DBM m => AssetSlot -> Segment -> m (Maybe AssetSegment)
+lookupAssetSlotSegment :: MonadDB m => AssetSlot -> Segment -> m (Maybe AssetSegment)
 lookupAssetSlotSegment a s =
   if segmentEmpty seg
     then return Nothing

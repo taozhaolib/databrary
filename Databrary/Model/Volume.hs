@@ -36,7 +36,7 @@ useTPG
 coreVolume :: Volume
 coreVolume = $(loadVolume (Id 0) PermissionSHARED)
 
-lookupVolume :: (DBM m, MonadHasIdentity c m) => Id Volume -> m (Maybe Volume)
+lookupVolume :: (MonadDB m, MonadHasIdentity c m) => Id Volume -> m (Maybe Volume)
 lookupVolume vi = do
   ident :: Identity <- peek
   dbQuery1 $(selectQuery (selectVolume 'ident) "$WHERE volume.id = ${vi}")
@@ -84,7 +84,7 @@ volumeFilter VolumeFilter{..} =
   where
   withq v f = maybe "" f v
 
-findVolumes :: (MonadHasIdentity c m, DBM m) => VolumeFilter -> Int -> Int -> m [Volume]
+findVolumes :: (MonadHasIdentity c m, MonadDB m) => VolumeFilter -> Int -> Int -> m [Volume]
 findVolumes pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectVolume 'ident) "")

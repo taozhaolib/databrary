@@ -21,7 +21,7 @@ import Databrary.Model.Party
 import Databrary.Model.Permission
 import Databrary.Model.Identity.Types
 
-determineIdentity :: (MonadHasService c m, MonadHasRequest c m, DBM m) => m Identity
+determineIdentity :: (MonadHasService c m, MonadHasRequest c m, MonadDB m) => m Identity
 determineIdentity = do
   c <- getSignedCookie "session"
   s <- flatMapM lookupSession c

@@ -38,12 +38,12 @@ blankRecord vol = Record
   , recordMeasures = []
   }
 
-lookupRecord :: (MonadHasIdentity c m, DBM m) => Id Record -> m (Maybe Record)
+lookupRecord :: (MonadHasIdentity c m, MonadDB m) => Id Record -> m (Maybe Record)
 lookupRecord ri = do
   ident <- peek
   dbQuery1 $(selectQuery (selectRecord 'ident) "$WHERE record.id = ${ri}")
 
-lookupVolumeRecords :: DBM m => Volume -> m [Record]
+lookupVolumeRecords :: MonadDB m => Volume -> m [Record]
 lookupVolumeRecords vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeRecord "$WHERE record.volume = ${volumeId vol}")
 

@@ -70,7 +70,7 @@ getAsset :: Permission -> Id Asset -> AuthActionM AssetSlot
 getAsset p i =
   checkPermission p =<< maybeAction =<< lookupAssetSlot i
 
-assetJSONField :: (DBM m, MonadHasIdentity c m) => AssetSlot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+assetJSONField :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 assetJSONField a "creation" _ | view a >= PermissionEDIT = do
   (t, n) <- assetCreation $ slotAsset a
   return $ Just $ JSON.toJSON $ JSON.object $ catMaybes
@@ -81,7 +81,7 @@ assetJSONField a "excerpts" _ =
   Just . JSON.toJSON . map excerptJSON <$> lookupAssetExcerpts a
 assetJSONField _ _ _ = return Nothing
 
-assetJSONQuery :: (DBM m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
+assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
 assetJSONQuery vol = JSON.jsonQuery (assetSlotJSON vol) (assetJSONField vol)
 
 viewAsset :: API -> Id Asset -> AppRAction
@@ -109,7 +109,7 @@ fileUploadPath :: FileUploadFile -> Storage -> RawFilePath
 fileUploadPath (FileUploadForm f) _ = tempFilePath $ fileContent f
 fileUploadPath (FileUploadToken u) s = uploadFile u s
 
-fileUploadRemove :: (MonadResourceT c m, DBM m, MonadStorage c m) => FileUploadFile -> m ()
+fileUploadRemove :: (MonadResourceT c m, MonadDB m, MonadStorage c m) => FileUploadFile -> m ()
 fileUploadRemove (FileUploadForm f) = releaseTempFile $ fileContent f
 fileUploadRemove (FileUploadToken u) = void $ removeUpload u
 

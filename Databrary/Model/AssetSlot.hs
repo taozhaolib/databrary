@@ -34,21 +34,21 @@ import Databrary.Model.SQL
 import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSlot.SQL
 
-lookupAssetSlot :: (MonadHasIdentity c m, DBM m) => Id Asset -> m (Maybe AssetSlot)
+lookupAssetSlot :: (MonadHasIdentity c m, MonadDB m) => Id Asset -> m (Maybe AssetSlot)
 lookupAssetSlot ai = do
   ident <- peek
   dbQuery1 $(selectQuery (selectAssetSlot 'ident) "$WHERE asset.id = ${ai}")
 
-lookupAssetAssetSlot :: (DBM m) => Asset -> m AssetSlot
+lookupAssetAssetSlot :: (MonadDB m) => Asset -> m AssetSlot
 lookupAssetAssetSlot a = fromMaybe assetNoSlot
   <$> dbQuery1 $(selectQuery selectAssetSlotAsset "$WHERE slot_asset.asset = ${assetId a} AND container.volume = ${volumeId $ assetVolume a}")
   <*> return a
 
-lookupSlotAssets :: (DBM m) => Slot -> m [AssetSlot]
+lookupSlotAssets :: (MonadDB m) => Slot -> m [AssetSlot]
 lookupSlotAssets (Slot c s) =
   dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotAsset "$WHERE slot_asset.container = ${containerId c} AND slot_asset.segment && ${s} AND asset.volume = ${volumeId $ containerVolume c}")
 
-lookupContainerAssets :: (DBM m) => Container -> m [AssetSlot]
+lookupContainerAssets :: (MonadDB m) => Container -> m [AssetSlot]
 lookupContainerAssets = lookupSlotAssets . containerSlot
 
 changeAssetSlot :: (MonadAudit c m) => AssetSlot -> m Bool
@@ -63,7 +63,7 @@ changeAssetSlot as = do
       when (r /= 1) $ fail $ "changeAssetSlot: " ++ show r ++ " rows"
       return True
 
-findAssetContainerEnd :: DBM m => Container -> m (Maybe Offset)
+findAssetContainerEnd :: MonadDB m => Container -> m (Maybe Offset)
 findAssetContainerEnd c = 
   dbQuery1' [pgSQL|SELECT max(upper(segment)) FROM slot_asset WHERE container = ${containerId c}|]
 

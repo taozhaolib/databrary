@@ -9,7 +9,7 @@ import Database.PostgreSQL.Typed.Dynamic (pgLiteralRep, pgDecodeRep)
 
 import Databrary.Service.DB
 
-lookupTableOID :: DBM m => String -> m OID
+lookupTableOID :: MonadDB m => String -> m OID
 lookupTableOID t = do
   [r] <- dbQuery1' $ rawPGSimpleQuery $ "SELECT oid FROM pg_class WHERE relname = " ++ pgLiteralRep t
   return $ pgDecodeRep r

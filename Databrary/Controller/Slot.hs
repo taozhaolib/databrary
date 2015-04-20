@@ -30,7 +30,7 @@ getSlot :: Permission -> Id Slot -> AuthActionM Slot
 getSlot p i =
   checkPermission p =<< maybeAction =<< lookupSlot i
 
-slotJSONField :: (DBM m, MonadHasIdentity c m) => Slot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+slotJSONField :: (MonadDB m, MonadHasIdentity c m) => Slot -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 slotJSONField o "assets" _ =
   Just . JSON.toJSON . map assetSlotJSON <$> lookupSlotAssets o
 slotJSONField o "records" _ =
@@ -44,7 +44,7 @@ slotJSONField o "comments" n = do
   return $ Just $ JSON.toJSON $ map commentJSON c
 slotJSONField _ _ _ = return Nothing
 
-slotJSONQuery :: (DBM m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object
+slotJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object
 slotJSONQuery o = JSON.jsonQuery (slotJSON o) (slotJSONField o)
 
 viewSlot :: API -> Id Slot -> AppRAction

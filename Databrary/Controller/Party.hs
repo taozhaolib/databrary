@@ -69,7 +69,7 @@ getParty _ mi = do
   unless (isme mi) $ result =<< forbiddenResponse
   return u
 
-partyJSONField :: (DBM m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
+partyJSONField :: (MonadDB m, MonadHasIdentity c m) => Party -> BS.ByteString -> Maybe BS.ByteString -> m (Maybe JSON.Value)
 partyJSONField p "parents" _ =
   Just . JSON.toJSON . map (\a ->
     authorizeJSON a JSON..+ ("party" JSON..= partyJSON (authorizeParent (authorization a))))
@@ -86,7 +86,7 @@ partyJSONField p "access" _ = do
   Just . JSON.toJSON . accessSite <$> lookupAuthorization p rootParty
 partyJSONField _ _ _ = return Nothing
 
-partyJSONQuery :: (DBM m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
+partyJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Party -> JSON.Query -> m JSON.Object
 partyJSONQuery p = JSON.jsonQuery (partyJSON p) (partyJSONField p)
 
 viewParty :: API -> PartyTarget -> AppRAction

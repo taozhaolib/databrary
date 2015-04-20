@@ -41,16 +41,16 @@ blankContainer vol = Container
   , containerVolume = vol
   }
 
-lookupContainer :: (DBM m, MonadHasIdentity c m) => Id Container -> m (Maybe Container)
+lookupContainer :: (MonadDB m, MonadHasIdentity c m) => Id Container -> m (Maybe Container)
 lookupContainer ci = do
   ident <- peek
   dbQuery1 $(selectQuery (selectContainer 'ident) "$WHERE container.id = ${ci}")
 
-lookupVolumeContainer :: DBM m => Volume -> Id Container -> m (Maybe Container)
+lookupVolumeContainer :: MonadDB m => Volume -> Id Container -> m (Maybe Container)
 lookupVolumeContainer vol ci =
   dbQuery1 $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.id = ${ci} AND container.volume = ${volumeId vol}")
 
-lookupVolumeContainers :: DBM m => Volume -> m [Container]
+lookupVolumeContainers :: MonadDB m => Volume -> m [Container]
 lookupVolumeContainers vol =
   dbQuery $ fmap ($ vol) $(selectQuery selectVolumeContainer "$WHERE container.volume = ${volumeId vol}")
 

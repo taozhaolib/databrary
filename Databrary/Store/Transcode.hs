@@ -54,7 +54,7 @@ transcodeArgs t@Transcode{..} = do
   rng = segmentRange transcodeSegment
   lb = lowerBound rng
 
-startTranscode :: (MonadStorage c m, DBM m, MonadHasRequest c m, MonadHasService c m) => Transcode -> m (Maybe TranscodePID)
+startTranscode :: (MonadStorage c m, MonadDB m, MonadHasRequest c m, MonadHasService c m) => Transcode -> m (Maybe TranscodePID)
 startTranscode tc = do
   tc' <- updateTranscode tc lock Nothing
   unless (transcodeProcess tc' == lock) $ fail $ "startTranscode " ++ show (transcodeId tc)

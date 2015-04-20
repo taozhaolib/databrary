@@ -30,15 +30,15 @@ import Databrary.Model.SQL
 import Databrary.Model.RecordSlot.Types
 import Databrary.Model.RecordSlot.SQL
 
-lookupRecordSlots :: (DBM m) => Record -> m [RecordSlot]
+lookupRecordSlots :: (MonadDB m) => Record -> m [RecordSlot]
 lookupRecordSlots r =
   dbQuery $ ($ r) <$> $(selectQuery selectRecordSlotRecord "$WHERE slot_record.record = ${recordId r}")
 
-lookupSlotRecords :: (DBM m) => Slot -> m [RecordSlot]
+lookupSlotRecords :: (MonadDB m) => Slot -> m [RecordSlot]
 lookupSlotRecords (Slot c s) =
   dbQuery $ ($ c) <$> $(selectQuery selectContainerSlotRecord "$WHERE slot_record.container = ${containerId c} AND slot_record.segment && ${s}")
 
-lookupContainerRecords :: (DBM m) => Container -> m [RecordSlot]
+lookupContainerRecords :: (MonadDB m) => Container -> m [RecordSlot]
 lookupContainerRecords = lookupSlotRecords . containerSlot
 
 moveRecordSlot :: (MonadAudit c m) => RecordSlot -> Segment -> m Bool

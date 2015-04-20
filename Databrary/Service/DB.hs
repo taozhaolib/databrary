@@ -2,7 +2,7 @@
 module Databrary.Service.DB
   ( DBConn
   , initDB
-  , DBM
+  , MonadDB
   , dbRunQuery
   , dbTryQuery
   , dbExecute
@@ -64,28 +64,28 @@ initDB conf = do
     pgDisconnect
     1 60 16
 
-class (Functor m, Applicative m, Monad m) => DBM m where
+class (Functor m, Applicative m, Monad m) => MonadDB m where
   liftDB :: (PGConnection -> IO a) -> m a
   default liftDB :: (MonadIO m, MonadHas DBConn c m) => (PGConnection -> IO a) -> m a
   liftDB f = do
     PGPool db <- peek
     liftIO $ withResource db f
 
-instance (Functor m, Applicative m, MonadIO m, Has DBConn c) => DBM (ReaderT c m)
+instance (Functor m, Applicative m, MonadIO m, Has DBConn c) => MonadDB (ReaderT c m)
 
-dbRunQuery :: (DBM m, PGQuery q a) => q -> m (Int, [a])
+dbRunQuery :: (MonadDB m, PGQuery q a) => q -> m (Int, [a])
 dbRunQuery q = liftDB $ \c -> pgRunQuery c q
 
-dbTryQuery :: (DBM m, PGQuery q a) => (PGError -> Maybe e) -> q -> m (Either e (Int, [a]))
+dbTryQuery :: (MonadDB m, PGQuery q a) => (PGError -> Maybe e) -> q -> m (Either e (Int, [a]))
 dbTryQuery err q = liftDB $ \c -> tryJust err (pgRunQuery c q)
 
-dbExecute :: (DBM m, PGQuery q ()) => q -> m Int
+dbExecute :: (MonadDB m, PGQuery q ()) => q -> m Int
 dbExecute q = liftDB $ \c -> pgExecute c q
 
-dbExecuteSimple :: DBM m => PGSimpleQuery () -> m Int
+dbExecuteSimple :: MonadDB m => PGSimpleQuery () -> m Int
 dbExecuteSimple = dbExecute
 
-dbExecute1 :: (DBM m, PGQuery q ()) => q -> m Bool
+dbExecute1 :: (MonadDB m, PGQuery q ()) => q -> m Bool
 dbExecute1 q = do
   r <- dbExecute q
   case r of
@@ -93,15 +93,15 @@ dbExecute1 q = do
     1 -> return True
     _ -> fail $ "pgExecute1: " ++ show r ++ " rows"
 
-dbExecute1' :: (DBM m, PGQuery q ()) => q -> m ()
+dbExecute1' :: (MonadDB m, PGQuery q ()) => q -> m ()
 dbExecute1' q = do
   r <- dbExecute1 q
   unless r $ fail $ "pgExecute1': failed"
 
-dbQuery :: (DBM m, PGQuery q a) => q -> m [a]
+dbQuery :: (MonadDB m, PGQuery q a) => q -> m [a]
 dbQuery q = liftDB $ \c -> pgQuery c q
 
-dbQuery1 :: (DBM m, PGQuery q a) => q -> m (Maybe a)
+dbQuery1 :: (MonadDB m, PGQuery q a) => q -> m (Maybe a)
 dbQuery1 q = do
   r <- dbQuery q
   case r of
@@ -109,15 +109,15 @@ dbQuery1 q = do
     [x] -> return $ Just x
     _ -> fail "pgQuery1: too many results"
 
-dbQuery1' :: (DBM m, PGQuery q a) => q -> m a
+dbQuery1' :: (MonadDB m, PGQuery q a) => q -> m a
 dbQuery1' = maybe (fail "pgQuery1': no results") return <=< dbQuery1
 
 newtype DBTransaction a = DBTransaction { runDBTransaction :: ReaderT PGConnection IO a } deriving (Functor, Applicative, Monad, MonadIO)
 
-instance DBM DBTransaction where
+instance MonadDB DBTransaction where
   liftDB = DBTransaction . ReaderT
 
-dbTransaction :: DBM m => DBTransaction a -> m a
+dbTransaction :: MonadDB m => DBTransaction a -> m a
 dbTransaction f = liftDB $ \c -> do
   _ <- pgSimpleQuery c "BEGIN"
   onException (do
@@ -139,7 +139,7 @@ useTPG = do
     then return []
     else loadTPG
 
-instance DBM TH.Q where
+instance MonadDB TH.Q where
   liftDB f = do
     _ <- useTPG
     TH.runIO $ withTPGConnection f

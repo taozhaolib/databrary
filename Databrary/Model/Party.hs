@@ -111,29 +111,29 @@ lookupFixedParty (Id (-1)) _ = Just nobodyParty
 lookupFixedParty (Id 0) _ = Just rootParty
 lookupFixedParty i a = view a <? (i == view a)
 
-lookupParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
+lookupParty :: (MonadDB m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupParty i = do
   ident <- peek
   lookupFixedParty i ident `orElseM`
     dbQuery1 $(selectQuery (selectParty 'ident) "$WHERE party.id = ${i}")
 
-lookupAuthParty :: (DBM m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
+lookupAuthParty :: (MonadDB m, MonadHasIdentity c m) => Id Party -> m (Maybe Party)
 lookupAuthParty i = do
   ident <- peek
   lookupFixedParty i ident `orElseM`
     dbQuery1 $(selectQuery (selectAuthParty 'ident) "$WHERE party.id = ${i}")
 
-lookupSiteAuthByEmail :: DBM m => T.Text -> m (Maybe SiteAuth)
+lookupSiteAuthByEmail :: MonadDB m => T.Text -> m (Maybe SiteAuth)
 lookupSiteAuthByEmail e =
   dbQuery1 $(selectQuery selectSiteAuth "WHERE account.email = ${e}")
 
-auditAccountLogin :: (MonadHasRequest c m, DBM m) => Bool -> Party -> T.Text -> m ()
+auditAccountLogin :: (MonadHasRequest c m, MonadDB m) => Bool -> Party -> T.Text -> m ()
 auditAccountLogin success who email = do
   ip <- getRemoteIp
   dbExecute1' [pgSQL|INSERT INTO audit.account (audit_action, audit_user, audit_ip, id, email) VALUES
     (${if success then AuditActionOpen else AuditActionAttempt}, -1, ${ip}, ${partyId who}, ${email})|]
 
-recentAccountLogins :: DBM m => Party -> m Int64
+recentAccountLogins :: MonadDB m => Party -> m Int64
 recentAccountLogins who = fromMaybe 0 <$>
   dbQuery1 [pgSQL|!SELECT count(*) FROM audit.account WHERE audit_action = 'attempt' AND id = ${partyId who} AND audit_time > CURRENT_TIMESTAMP - interval '1 hour'|]
 
@@ -167,13 +167,13 @@ partyFilter PartyFilter{..} ident =
     | showEmail ident = "(name || COALESCE(' ' || email, ''))"
     | otherwise = "name"
 
-findParties :: (MonadHasIdentity c m, DBM m) => PartyFilter -> Int -> Int -> m [Party]
+findParties :: (MonadHasIdentity c m, MonadDB m) => PartyFilter -> Int -> Int -> m [Party]
 findParties pf limit offset = do
   ident <- peek
   dbQuery $ unsafeModifyQuery $(selectQuery (selectParty 'ident) "")
     (++ partyFilter pf ident ++ " LIMIT " ++ show limit ++ " OFFSET " ++ show offset)
 
-lookupAvatar :: DBM m => Id Party -> m (Maybe Asset)
+lookupAvatar :: MonadDB m => Id Party -> m (Maybe Asset)
 lookupAvatar p =
   dbQuery1 $ ($ coreVolume) <$> $(selectQuery selectVolumeAsset $ "$JOIN avatar ON asset.id = avatar.asset WHERE avatar.party = ${p} AND asset.volume = " ++ pgLiteralRep (volumeId coreVolume))
 

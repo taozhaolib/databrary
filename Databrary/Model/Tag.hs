@@ -26,29 +26,29 @@ import Databrary.Model.Tag.SQL
 
 useTPG
 
-lookupTag :: DBM m => TagName -> m (Maybe Tag)
+lookupTag :: MonadDB m => TagName -> m (Maybe Tag)
 lookupTag n =
   dbQuery1 $(selectQuery selectTag "$WHERE tag.name = ${n}::varchar")
 
-addTag :: DBM m => TagName -> m Tag
+addTag :: MonadDB m => TagName -> m Tag
 addTag n =
   dbQuery1' $ (`Tag` n) <$> [pgSQL|!SELECT get_tag(${n})|]
 
-addTagUse :: DBM m => TagUse -> m Bool
+addTagUse :: MonadDB m => TagUse -> m Bool
 addTagUse t =
   either (const False) ((0 <) . fst) <$> dbTryQuery (guard . isExclusionViolation)
     (if tagKeyword t
       then $(insertTagUse True 't)
       else $(insertTagUse False 't))
 
-removeTagUse :: DBM m => TagUse -> m Bool
+removeTagUse :: MonadDB m => TagUse -> m Bool
 removeTagUse t =
   dbExecute1
     (if tagKeyword t 
       then $(deleteTagUse True 't)
       else $(deleteTagUse False 't))
 
-lookupSlotTagCoverage :: DBM m => Party -> Slot -> Int -> m [TagCoverage]
+lookupSlotTagCoverage :: MonadDB m => Party -> Slot -> Int -> m [TagCoverage]
 lookupSlotTagCoverage acct slot lim =
   dbQuery $(selectSlotTagCoverage 'acct 'slot >>= (`selectQuery` "$!ORDER BY weight DESC LIMIT ${fromIntegral lim :: Int64}"))
 

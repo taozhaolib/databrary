@@ -24,26 +24,26 @@ import Databrary.Model.Funding.SQL
 
 useTPG
 
-lookupFunder :: DBM m => Id Funder -> m (Maybe Funder)
+lookupFunder :: MonadDB m => Id Funder -> m (Maybe Funder)
 lookupFunder fi =
   dbQuery1 $(selectQuery selectFunder "$WHERE funder.fundref_id = ${fi}")
 
-findFunders :: DBM m => T.Text -> m [Funder]
+findFunders :: MonadDB m => T.Text -> m [Funder]
 findFunders q =
   dbQuery $(selectQuery selectFunder "$WHERE funder.name ILIKE '%' || ${q} || '%'")
 
-lookupVolumeFunding :: (DBM m) => Volume -> m [Funding]
+lookupVolumeFunding :: (MonadDB m) => Volume -> m [Funding]
 lookupVolumeFunding vol =
   dbQuery $(selectQuery selectVolumeFunding "$WHERE volume_funding.volume = ${volumeId vol}")
 
-changeVolumeFunding :: DBM m => Volume -> Funding -> m Bool
+changeVolumeFunding :: MonadDB m => Volume -> Funding -> m Bool
 changeVolumeFunding v Funding{..} =
   (0 <) . fst <$> updateOrInsert
     [pgSQL|UPDATE volume_funding SET awards = ${a} WHERE volume = ${volumeId v} AND funder = ${funderId fundingFunder}|]
     [pgSQL|INSERT INTO volume_funding (volume, funder, awards) VALUES (${volumeId v}, ${funderId fundingFunder}, ${a})|]
   where a = map Just fundingAwards
 
-removeVolumeFunder :: DBM m => Volume -> Id Funder -> m Bool
+removeVolumeFunder :: MonadDB m => Volume -> Id Funder -> m Bool
 removeVolumeFunder v f =
   dbExecute1 [pgSQL|DELETE FROM volume_funding WHERE volume = ${volumeId v} AND funder = ${f}|]
 
