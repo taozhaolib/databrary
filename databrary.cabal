@@ -68,7 +68,8 @@ Executable databrary
     regex-posix,
     bcrypt,
     http-client,
-    mime-mail
+    mime-mail,
+    fast-logger
 
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds, PatternGuards
 
