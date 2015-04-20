@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Files
   ( webDir
-  , webFile
+  , genDir
   , findWebFiles
   , webRegenerate
   ) where
@@ -12,10 +12,11 @@ import Control.Monad (ap)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Foldable as Fold
+import System.Directory (createDirectoryIfMissing)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
-import System.Posix.FilePath ((</>))
+import System.Posix.FilePath ((</>), takeDirectory)
 
 import Databrary.Model.Time
 import Databrary.Store
@@ -46,12 +47,6 @@ webDir = "web"
 genDir :: RawFilePath
 genDir = "gen"
 
-webFile :: RawFilePath -> RawFilePath
-webFile = (webDir </>)
-
-genFile :: RawFilePath -> RawFilePath
-genFile = (genDir </>)
-
 findWebFiles :: BS.ByteString -> IO [RawFilePath]
 findWebFiles = findFiles webDir
 
@@ -60,5 +55,7 @@ webRegenerate t f g = do
   fi <- fileInfo wf
   if Fold.any ((t < ) . snd) fi
     then return False
-    else True <$ g wf
-  where wf = webFile f
+    else True <$ do
+      createDirectoryIfMissing True $ unRawFilePath $ takeDirectory wf
+      g wf
+  where wf = genDir </> f

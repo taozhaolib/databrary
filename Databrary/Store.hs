@@ -36,10 +36,13 @@ unRawFilePath b = unsafeDupablePerformIO $ do
   enc <- getFileSystemEncoding
   BS.useAsCStringLen b $ GHC.peekCStringLen enc
 
+catchDoesNotExist :: IO a -> IO (Maybe a)
+catchDoesNotExist f = either (const Nothing) Just <$> tryJust (guard . isDoesNotExistError) f
+
 fileInfo :: RawFilePath -> IO (Maybe (FileOffset, Timestamp))
 fileInfo f =
-  either (const Nothing) (liftM2 (?>) isRegularFile $ fileSize &&& posixSecondsToUTCTime . modificationTimeHiRes)
-  <$> tryJust (guard . isDoesNotExistError) (getFileStatus f)
+  (=<<) (liftM2 (?>) isRegularFile $ fileSize &&& posixSecondsToUTCTime . modificationTimeHiRes)
+  <$> catchDoesNotExist (getFileStatus f)
 
 sameFile :: RawFilePath -> RawFilePath -> IO Bool
 sameFile f1 f2 = do

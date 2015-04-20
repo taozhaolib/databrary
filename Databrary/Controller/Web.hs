@@ -4,12 +4,18 @@ module Databrary.Controller.Web
   , webFile
   ) where
 
+import Control.Concurrent.MVar (MVar, newMVar, readMVar, modifyMVar_)
+import Control.Monad (guard)
+import Control.Monad.IO.Class (liftIO)
+import Crypto.Hash (Digest, MD5, digestToHexByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
-import Data.Maybe (fromMaybe)
+import qualified Data.HashMap.Strict as HM
+import Data.Maybe (fromMaybe, isJust)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
+import System.IO.Unsafe (unsafePerformIO)
 import System.Posix.FilePath (joinPath, splitDirectories, (</>))
 
 import Databrary.Ops
@@ -19,7 +25,7 @@ import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
 import qualified Databrary.HTTP.Route as R
-import Databrary.Web.Files (webDir)
+import Databrary.Web.Files
 import Databrary.Web.Rules
 
 newtype StaticPath = StaticPath RawFilePath
@@ -44,9 +50,30 @@ instance R.Routable StaticPath where
   route = R.maybe . parseStaticPath =<< R.path
   toRoute (StaticPath p) = map TE.decodeLatin1 $ splitDirectories p
 
+webCache :: MVar (HM.HashMap RawFilePath (Bool, Digest MD5))
+webCache = unsafePerformIO $ newMVar HM.empty
+
 webFile :: StaticPath -> AppRAction
 webFile sp@(StaticPath p) = action GET ("public" :: T.Text, sp) $ do
 #ifdef DEVEL
-  _ <- generateWebFile p
+  g <- generateWebFile p
+  let d = isJust g
+#else
+  (d, h) <- maybeAction . HM.lookup p =<< readMVar webCache
 #endif
-  serveFile (webDir </> p) (fromMaybe unknownFormat $ getFormatByFilename p) p
+  let f = (if d then genDir else webDir) </> p
+#ifdef DEVEL
+      rehash = do
+        h <- hashFile f
+        modifyMVar_ webCache (return . HM.insert p (d, h))
+        return h
+  h <- liftIO $ case g of
+    Just True -> rehash
+    _ -> do
+      c <- readMVar webCache
+      fromMaybeM rehash $ do
+        (cd, ch) <- HM.lookup p c
+        guard (cd == d)
+        return ch
+#endif
+  serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) (digestToHexByteString h)

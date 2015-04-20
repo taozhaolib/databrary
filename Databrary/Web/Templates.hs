@@ -11,6 +11,7 @@ import Data.Char (isSpace)
 import Data.Monoid ((<>))
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import System.IO (withFile, IOMode(ReadMode, WriteMode), hPutStr)
+import System.Posix.FilePath ((</>))
 
 import qualified Databrary.JSON as JSON
 import Databrary.Store
@@ -30,13 +31,13 @@ generateTemplatesJS :: RawFilePath -> IO Bool
 generateTemplatesJS f = do
   tl <- templateFiles
   if null tl then return False else do
-  ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . webFile) tl
+  ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . (webDir </>)) tl
   webRegenerate (maximum ti) f $ \wf ->
     withFile (unRawFilePath wf) WriteMode $ \h -> do
       hPutStr h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do
         BSB.hPutBuilder h $ BSB.string7 "t.put(" <> JSON.quoteByteString q tf <> BSB.char7 ',' <> BSB.char7 q
-        processTemplate (webFile tf) $
+        processTemplate (webDir </> tf) $
           BSB.hPutBuilder h . JSON.escapeByteString q
         hPutStr h $ q : ");"
       hPutStr h "}]);"
