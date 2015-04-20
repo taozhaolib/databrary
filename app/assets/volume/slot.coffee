@@ -738,12 +738,6 @@ app.controller('volume/slot', [
             return
         return
 
-      @addBlank = ->
-        unless blank
-          $scope.assets.push(blank = new Asset())
-        blank.choose()
-        blank
-
       @sort = ->
         return unless $scope.assets
         $scope.assets.sort (a, b) ->
@@ -769,6 +763,12 @@ app.controller('volume/slot', [
         for e in slot.excerpts
           assets[e.id]?.excerpts.push(new Excerpt(e))
         return
+
+    $scope.addBlank = ->
+      unless blank
+        $scope.assets.push(blank = new Asset())
+      blank.choose()
+      blank
 
     $scope.fileAdded = (file) ->
       $flow = file.flowObj
