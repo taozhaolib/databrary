@@ -10,6 +10,11 @@ Category:            Web
 Build-type:          Simple
 Cabal-version:       >=1.2
 
+Flag devel
+  description: Enable development mode
+  default: True
+  manual: True
+
 Executable databrary
   main-is: Databrary/Warp.hs
 
@@ -68,7 +73,9 @@ Executable databrary
   Extensions: MultiParamTypeClasses, FlexibleContexts, FlexibleInstances, ScopedTypeVariables, ConstraintKinds, PatternGuards
 
   ghc-options: -threaded -Wall -fwarn-tabs -funbox-strict-fields -O2
-               -fno-warn-unused-do-bind
+
+  if flag(devel)
+    cpp-options: -DDEVEL
 
   pkgconfig-depends: libavformat, libswscale, libavcodec, libavutil
   extra-libraries: crack

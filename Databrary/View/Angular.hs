@@ -88,10 +88,8 @@ htmlAngular auth = H.docTypeHtml H.! ngAttribute "ng-app" "databraryModule" $ do
           H.div H.! HA.class_ "loading-mask" $
             H.div H.! HA.class_ "loading-cicle" $
               return ()
-        H.div H.! HA.class_ "loading-text" $ do
-          "["
-          H.span "loading"
-          "]"
+        H.div H.! HA.class_ "loading-text" $
+          "[" >> H.span "loading" >> "]"
     H.script
       $ H.preEscapedString "document.getElementById('loading').style.display='block';"
   where

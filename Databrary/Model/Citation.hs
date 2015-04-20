@@ -38,5 +38,5 @@ changeVolumeLinks :: (MonadAudit c m) => Volume -> [Citation] -> m ()
 changeVolumeLinks vol links = do
   ident <- getAuditIdentity
   dbTransaction $ do
-    dbExecute $(deleteVolumeLink 'ident 'vol)
+    _ <- dbExecute $(deleteVolumeLink 'ident 'vol)
     mapM_ (\link -> dbExecute $(insertVolumeLink 'ident 'vol 'link)) links

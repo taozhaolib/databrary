@@ -61,7 +61,7 @@ startTranscode tc = do
   args <- transcodeArgs tc
   (r, out, err) <- ctlTranscode tc' args
   let pid = guard (r == ExitSuccess) >> readMaybe out
-  updateTranscode tc' pid $ (isNothing pid ?> out) <> (null err ?!> err)
+  _ <- updateTranscode tc' pid $ (isNothing pid ?> out) <> (null err ?!> err)
   return pid
   where lock = Just (-1)
 
@@ -71,7 +71,7 @@ collectTranscode tc 0 sha1 logs = do
   (f, h) <- makeTempFile
   liftIO $ hClose h
   (r, out, err) <- ctlTranscode tc ["-c", BSC.unpack $ tempFilePath f]
-  updateTranscode tc' Nothing (Just $ out ++ err)
+  _ <- updateTranscode tc' Nothing (Just $ out ++ err)
   if r /= ExitSuccess
     then fail $ "collectTranscode " ++ show (transcodeId tc) ++ ": " ++ show r ++ "\n" ++ out ++ err
     else do

@@ -28,11 +28,11 @@ tryUpdateOrInsert err upd ins = dbTransaction uoi where
     u <- dbTryQuery err upd
     case u of
       Right (0, _) -> do
-        dbExecuteSimple "SAVEPOINT pre_insert"
+        _ <- dbExecuteSimple "SAVEPOINT pre_insert"
         i <- dbTryQuery err' ins
         case i of
           Left Nothing -> do
-            dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
+            _ <- dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
             uoi
           Left (Just e) -> return $ Left e
           Right r -> return $ Right r
@@ -46,9 +46,9 @@ updateOrInsert upd ins = dbTransaction uoi where
     if n /= 0
       then return u
       else do
-        dbExecuteSimple "SAVEPOINT pre_insert"
+        _ <- dbExecuteSimple "SAVEPOINT pre_insert"
         i <- dbTryQuery (guard . ("23505" ==) . pgErrorCode) ins
         either (\() -> do
-          dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
+          _ <- dbExecuteSimple "ROLLBACK TO SAVEPOINT pre_insert"
           uoi)
           return i

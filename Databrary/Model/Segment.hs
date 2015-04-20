@@ -74,7 +74,7 @@ instance Read Segment where
       lb <- optional $ ('[' ==) <$> RP.satisfy (`elem` "([")
       l <- optional readP
       (guard (isNothing lb) >> Range.point <$> maybeA l) RP.+++ do
-        RP.satisfy (`elem` ",-")
+        _ <- RP.satisfy (`elem` ",-")
         u <- optional readP
         ub <- optional $ ('[' ==) <$> RP.satisfy (`elem` ")]")
         return $ Range.range (mb True lb l) (mb False ub u)

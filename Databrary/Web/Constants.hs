@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, CPP #-}
 module Databrary.Web.Constants
   ( constantsJSON
   , constantsJS
@@ -10,8 +10,10 @@ import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString.Builder as BSB
 import Data.Monoid ((<>))
+import Data.Version (showVersion)
 import System.IO (withFile, IOMode(WriteMode))
 
+import qualified Paths_databrary as Databrary
 import Databrary.Has (peeks)
 import qualified Databrary.JSON as JSON
 import Databrary.Service
@@ -37,6 +39,10 @@ constantsJSON = JSON.Object $ JSON.object
     [ "nobody" JSON..= partyJSON nobodyParty
     , "root" JSON..= partyJSON rootParty
     ]
+  , "version" JSON..= showVersion Databrary.version
+#ifdef DEVEL
+  , "devel" JSON..= True
+#endif
   -- TODO: mode? url? version?
   ]
   where

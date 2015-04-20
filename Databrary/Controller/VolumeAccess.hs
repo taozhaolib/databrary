@@ -60,7 +60,7 @@ postVolumeAccess api vi at@(VolumeAccessTarget ap) = action POST (api, vi, at) $
       { volumeAccessIndividual = individual
       , volumeAccessChildren = children
       }
-  changeVolumeAccess a'
+  _ <- changeVolumeAccess a'
   case api of
     JSON -> okResponse [] $ JSON.Object $ volumeAccessJSON a
     HTML -> redirectRouteResponse [] $ viewVolumeAccess vi at

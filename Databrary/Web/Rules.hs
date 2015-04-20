@@ -15,6 +15,7 @@ generateWebFile :: (MonadHasService c m, MonadIO m) => RawFilePath -> m (Maybe B
 generateWebFile f@"constants.json" = Just <$> generateConstantsJSON f
 generateWebFile f@"constants.js" = Just <$> generateConstantsJS f
 generateWebFile f@"templates.js" = Just <$> liftIO (generateTemplatesJS f)
-generateWebFile f = do
-  liftIO $ print f
-  return Nothing
+generateWebFile _ = return Nothing
+
+allWebFiles :: [RawFilePath]
+allWebFiles = ["constants.json", "constants.js", "templates.js"]

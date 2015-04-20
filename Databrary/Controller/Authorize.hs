@@ -123,7 +123,7 @@ deleteAuthorize api i at@(AuthorizeTarget app oi) = action DELETE (api, i, at) $
   p <- getParty (Just PermissionADMIN) i
   o <- maybeAction =<< lookupParty oi
   let (child, parent) = if app then (p, o) else (o, p)
-  removeAuthorize $ Authorize (Authorization mempty child parent) Nothing
+  _ <- removeAuthorize $ Authorize (Authorization mempty child parent) Nothing
   case api of
     JSON -> emptyResponse noContent204 []
     HTML -> redirectRouteResponse [] $ viewAuthorize api i at

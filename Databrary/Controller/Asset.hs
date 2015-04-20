@@ -193,7 +193,7 @@ processAsset api target = do
       })
     up'
   changeAsset (slotAsset as'') Nothing
-  changeAssetSlot as''
+  _ <- changeAssetSlot as''
   case api of
     JSON -> okResponse [] $ assetSlotJSON as''
     HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset as''))
@@ -238,7 +238,7 @@ deleteAsset :: API -> Id Asset -> AppRAction
 deleteAsset api ai = action DELETE (api, ai) $ withAuth $ do
   asset <- getAsset PermissionEDIT ai
   let asset' = asset{ assetSlot = Nothing }
-  changeAssetSlot asset'
+  _ <- changeAssetSlot asset'
   case api of
     JSON -> okResponse [] $ assetSlotJSON asset'
     HTML -> redirectRouteResponse [] $ viewAsset api (assetId (slotAsset asset'))

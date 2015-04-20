@@ -62,7 +62,7 @@ addTranscode orig seg@(Segment rng) opts probe = do
     , assetSize = Nothing
     } Nothing
   dbExecute1' [pgSQL|INSERT INTO transcode (asset, owner, orig, segment, options) VALUES (${assetId a}, ${partyId $ accountParty $ siteAccount own}, ${assetId orig}, ${seg}, ${map Just opts})|]
-  dbExecute1 [pgSQL|UPDATE slot_asset SET asset = ${assetId a}, segment = segment(lower(segment) + ${fromMaybe 0 $ lowerBound rng}, COALESCE(lower(segment) + ${upperBound rng}, upper(segment))) WHERE asset = ${assetId orig}|]
+  _ <- dbExecute1 [pgSQL|UPDATE slot_asset SET asset = ${assetId a}, segment = segment(lower(segment) + ${fromMaybe 0 $ lowerBound rng}, COALESCE(lower(segment) + ${upperBound rng}, upper(segment))) WHERE asset = ${assetId orig}|]
   return Transcode
     { transcodeAsset = a
     , transcodeOwner = own

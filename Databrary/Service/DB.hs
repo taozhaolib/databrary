@@ -119,10 +119,10 @@ instance DBM DBTransaction where
 
 dbTransaction :: DBM m => DBTransaction a -> m a
 dbTransaction f = liftDB $ \c -> do
-  pgSimpleQuery c "BEGIN"
+  _ <- pgSimpleQuery c "BEGIN"
   onException (do
     r <- runReaderT (runDBTransaction f) c
-    pgSimpleQuery c "COMMIT"
+    _ <- pgSimpleQuery c "COMMIT"
     return r)
     (pgSimpleQuery c "ROLLBACK")
 

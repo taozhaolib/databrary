@@ -15,7 +15,7 @@ import Control.Applicative ((<*>))
 import Control.Arrow (first)
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar)
 import Control.Exception (Exception, throwIO, bracket, bracket_, finally, onException)
-import Control.Monad (void, when, unless, forM)
+import Control.Monad (void, when, unless, forM, forM_)
 import qualified Data.ByteString as BS
 import qualified Data.Foldable as Fold
 import Data.Int (Int32, Int64)
@@ -181,7 +181,7 @@ instance Storable AVRational where
 avShowError :: CInt -> String
 avShowError e = unsafeDupablePerformIO $
   allocaBytes len $ \p -> do
-    avStrerror e p (fromIntegral len)
+    _ <- avStrerror e p (fromIntegral len)
     peekCAString p
   where len = 256
 
@@ -352,7 +352,7 @@ initAV :: IO AV
 initAV = do
   avRegisterAll
   mgr <- mkAVLockmgr avLockmgr
-  throwAVErrorIf "av_lockmgr_register" NoFile $ avLockmgrRegister mgr
+  throwAVErrorIf_ "av_lockmgr_register" NoFile $ avLockmgrRegister mgr
   -- leak mgr
   return AV
 
@@ -437,7 +437,7 @@ avFrame AV infile offset width height outfile =
       avFindBestStream inctx #{const AVMEDIA_TYPE_VIDEO} (-1) (-1) icodecp 0
     nb :: CUInt <- #{peek AVFormatContext, nb_streams} inctx
     isl <- #{peek AVFormatContext, streams} inctx
-    forM [0..pred (fromIntegral nb)] $ \i ->
+    forM_ [0..pred (fromIntegral nb)] $ \i ->
       when (i /= si) $ do
         is <- peekElemOff isl (fromIntegral i)
         #{poke AVStream, discard} is (#{const AVDISCARD_ALL} :: #{type enum AVDiscard})

@@ -67,7 +67,7 @@ createToken insert = do
           Nothing -> insert tok
           Just _ -> loop
   dbTransaction $ do
-    dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
+    _ <- dbQuery "LOCK TABLE token IN SHARE ROW EXCLUSIVE MODE"
     loop
 
 createLoginToken :: (DBM m, EntropyM c m) => SiteAuth -> Bool -> m LoginToken

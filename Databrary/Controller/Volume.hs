@@ -109,7 +109,7 @@ volumeCitationForm v = do
         | Just title <- citationTitle fill
         , T.null (volumeName vol) = title
         | otherwise = volumeName vol
-  "name" .:> deformRequired name
+  _ <- "name" .:> deformRequired name
   when (not empty) $ void $
     "citation" .:> "name" .:> deformRequired (citationHead fill)
   return (vol{ volumeName = name }, empty ?!> fill)
@@ -126,7 +126,7 @@ postVolume api vi = action POST (api, vi) $ withAuth $ do
   cite <- lookupVolumeCitation v
   (v', cite') <- runForm (api == HTML ?> htmlVolumeForm (Just v) cite) $ volumeCitationForm v
   changeVolume v'
-  changeVolumeCitation v' cite'
+  _ <- changeVolumeCitation v' cite'
   case api of
     JSON -> okResponse [] $ volumeJSON v'
     HTML -> redirectRouteResponse [] $ viewVolume api vi
@@ -146,8 +146,8 @@ createVolume api = action POST (api, kindOf blankVolume :: T.Text) $ withAuth $ 
       PermissionEDIT <= accessSite auth
     return (bv, cite, own)
   v <- addVolume bv
-  changeVolumeCitation v cite
-  changeVolumeAccess $ VolumeAccess PermissionADMIN PermissionEDIT owner v
+  _ <- changeVolumeCitation v cite
+  _ <- changeVolumeAccess $ VolumeAccess PermissionADMIN PermissionEDIT owner v
   case api of
     JSON -> okResponse [] $ volumeJSON v
     HTML -> redirectRouteResponse [] $ viewVolume api $ volumeId v

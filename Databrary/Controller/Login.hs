@@ -77,7 +77,7 @@ postLogin api = action POST (api, ["user", "login" :: T.Text]) $ withoutAuth $ d
 
 postLogout :: API -> AppRAction
 postLogout api = action POST (api, ["user", "logout" :: T.Text]) $ withAuth $ do
-  maybeIdentity (return False) removeSession
+  _ <- maybeIdentity (return False) removeSession
   case api of
     JSON -> okResponse [cook] $ identityJSON UnIdentified
     HTML -> redirectRouteResponse [cook] $ viewRoot HTML

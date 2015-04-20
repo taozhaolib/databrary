@@ -32,7 +32,7 @@ viewLoginToken api ti = action GET (api, ti) $ withoutAuth $ do
         ]
       HTML -> blankForm $ htmlPasswordToken ti
     else do
-      removeLoginToken tok
+      _ <- removeLoginToken tok
       withReaderT authApp $ loginAccount api (view tok) False
 
 postPasswordToken :: API -> Id LoginToken -> AppRAction
@@ -43,5 +43,5 @@ postPasswordToken api ti = action POST (api, ti) $ withoutAuth $ do
   pw <- runForm (api == HTML ?> htmlPasswordToken ti) $
     passwordForm acct
   changeAccount acct{ accountPasswd = Just pw } -- or should this be withAuth?
-  removeLoginToken tok
+  _ <- removeLoginToken tok
   withReaderT authApp $ loginAccount api (view tok) False

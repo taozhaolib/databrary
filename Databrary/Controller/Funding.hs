@@ -40,11 +40,11 @@ postVolumeFunding vi fi = action POST (JSON, vi, fi) $ withAuth $ do
   a <- runForm Nothing $ do
     "awards" .:> filter (not . T.null) <$> withSubDeforms deform
   let fa = Funding f a
-  changeVolumeFunding v fa
+  _ <- changeVolumeFunding v fa
   okResponse [] $ fundingJSON fa
 
 deleteVolumeFunder :: Id Volume -> Id Funder -> AppRAction
 deleteVolumeFunder vi fi = action DELETE (JSON, vi, fi) $ withAuth $ do
   v <- getVolume PermissionEDIT vi
-  removeVolumeFunder v fi
+  _ <- removeVolumeFunder v fi
   okResponse [] $ volumeJSON v
