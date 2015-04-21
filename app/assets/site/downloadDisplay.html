@@ -1,0 +1,26 @@
+<div class="download-popup" ng-if="current && downloading"> 
+  <span ng-click="toggleDownload()" class="button icon close"></span>
+
+  <div class="popup-file-info">
+    <h3>
+      <img class="popup-format-icon" ng-src="{{::current.icon}}"/> 
+      <span ng-bind="::current.name"></span>
+    </h3>
+    <span>File format: {{current.format.extension}}</span>
+    <span ng-if="::current.segment.length" ng-bind="::current.segment.length | timecode"></span>
+  </div>
+  <div ng-if="::hasThumbnail(current)">
+    <img class="popup-thumb" ng-src="{{::current.thumbRoute(480)}}">
+  </div>
+  <div class="popup-cite">
+    <cite-volume></cite-volume>
+  </div>
+  <div class="popup-classification">
+    <span>This download is for </span>
+    <span class="popup-classification-title" message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.title'}}"></span>.<br>
+    <span message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.description'}}"></span>.
+  </div>
+  <a ng-href="{{current.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">  
+    <span class="download icon"></span><span>Download</span>
+  </a>  
+</div>
