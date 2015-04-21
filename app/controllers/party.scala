@@ -24,14 +24,18 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     zip[Party.Id, Permission.Value, ActionFunction[SiteRequest.Base,Request]](i, p, (i, p) =>
       RequestObject.check[SiteParty](models.SiteParty.get(i)(_), p))
     .getOrElse {
-      SiteAction.Auth andThen new ActionRefiner[SiteRequest.Auth,Request] {
-        protected def refine[A](request : SiteRequest.Auth[A]) =
+      SiteAction.Auth andThen new ActionTransformer[SiteRequest.Auth,Request] {
+        protected def transform[A](request : SiteRequest.Auth[A]) =
           if (i.forall(_ === request.identity.id))
             request.identity.perSite(request).map { p =>
-              Right(request.withObj(p))
+              request.withObj(p)
             }
+          /*
+          else if (request.superuser)
+            RequestObject.getter[SiteParty](models.SiteParty.get(i.get)(_)).transform[A](request)
+          */
           else
-            async(Left(Forbidden))
+            throw ForbiddenException
       }
     }
 
@@ -66,7 +70,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
   protected def createForm(acct : Boolean)(implicit request : SiteRequest[_]) : PartyController.CreateForm =
     if (acct) new PartyController.AccountCreateForm else new PartyController.PartyCreateForm
 
-  def update(i : models.Party.Id) = AdminAction(i, true).async { implicit request =>
+  def update(i : models.Party.Id) = Action(Some(i), Some(Permission.EDIT)).async { implicit request =>
     val form = editForm(request.asInstanceOf[Request[_] with AuthSite])._bind
     val party = request.obj.party
     for {
@@ -119,7 +123,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     }
 
   def authorizeChange(id : models.Party.Id, childId : models.Party.Id) =
-    AdminAction(id, false).async { implicit request =>
+    AdminAction(id, true).async { implicit request =>
       models.Party.get(childId).flatMap(_.fold(ANotFound) { child =>
         val form = new PartyController.AuthorizeChildForm(child)._bind
         if (form.delete.get)
@@ -141,7 +145,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     }
 
   def authorizeRemove(id : models.Party.Id, other : models.Party.Id) =
-    AdminAction(id, false).async { implicit request =>
+    AdminAction(id, true).async { implicit request =>
       for {
         /* users can remove themselves from any relationship */
         _ <- models.Authorize.remove(id, other)
@@ -154,7 +158,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       ++ party.account)
 
   def authorizeApply(id : models.Party.Id, parentId : models.Party.Id) =
-    AdminAction(id, false).async { implicit request =>
+    AdminAction(id, true).async { implicit request =>
       models.Party.get(parentId).flatMap(_.fold(ANotFound) { parent =>
       val form = new PartyController.AuthorizeApplyForm(parent)._bind
       for {
@@ -174,7 +178,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
     }
 
   def authorizeSearch(id : models.Party.Id, apply : Boolean) =
-    AdminAction(id, false).async { implicit request =>
+    AdminAction(id, true).async { implicit request =>
       val form = new PartyController.AuthorizeSearchForm(apply)._bind
       if (form.notfound.get)
         for {
