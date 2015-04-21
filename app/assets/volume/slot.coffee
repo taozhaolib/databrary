@@ -896,9 +896,8 @@ app.controller('volume/slot', [
         records.sort (a, b) ->
           a.record.category - b.record.category || a.record.id - b.record.id
         t = []
-        overlaps = (rr) -> rr.record.id != r.record.id && s.overlaps(rr.segment)
+        overlaps = (rr) -> rr.record.id != r.record.id && r.overlaps(rr)
         for r in records
-          s = r.segment
           for o, i in t
             break unless o[0].record.category != r.record.category || o.some(overlaps)
           t[i] = [] unless i of t
@@ -930,7 +929,7 @@ app.controller('volume/slot', [
         for ri, r of slot.volume.records
           rs[ri] = r
         for sr in records
-          if sr.record.id of rs && sr.segment.overlaps(seg)
+          if sr.record.id of rs && sr.overlaps(seg)
             delete rs[sr.record.id]
         $scope.addRecord.records = rs
         rc = {}
