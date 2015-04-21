@@ -94,7 +94,7 @@ SELECT audit.CREATE_TABLE ('account');
 
 ----------------------------------------------------------- permissions
 
-CREATE TYPE permission AS ENUM ('NONE',
+CREATE TYPE permission AS ENUM ('NONE', -- stand-in for NULL due to LEAST semantics
 	'PUBLIC', 	-- read access to metadata and PUBLIC data
 	'SHARED',	-- read access to SHARED data
 	'READ', 	-- full read access to all data
@@ -103,51 +103,36 @@ CREATE TYPE permission AS ENUM ('NONE',
 );
 COMMENT ON TYPE permission IS 'Levels of access parties can have to the site data.';
 
-CREATE TYPE consent AS ENUM (
-	'PRIVATE', 	-- did not consent to any sharing
-	'SHARED', 	-- consented to share on databrary
-	'EXCERPTS', 	-- SHARED, but consented that excerpts may be "PUBLIC"
-	'PUBLIC' 	-- consented to share openly
+CREATE TYPE release AS ENUM (
+	'PRIVATE', 	-- no sharing beyond those with full access
+	'SHARED', 	-- restricted sharing to authorized users
+	'EXCERPTS', 	-- SHARED, but excerpts may be shown externally
+	'PUBLIC' 	-- shared publically with anyone
 );
-COMMENT ON TYPE consent IS 'Levels of sharing that participants may consent to.';
+COMMENT ON TYPE release IS 'Levels at which participants or researchers may choose to share data.';
 
-CREATE TYPE classification AS ENUM (
-	'PRIVATE',	-- private data, never shared beyond those with full access
-	'RESTRICTED', 	-- data containing HIPPA identifiers, requiring appropriate consent and authorization
-	'SHARED',	-- available with any SHARED access
-	'PUBLIC' 	-- available with any PUBLIC access
-);
-COMMENT ON TYPE classification IS 'Data (file or measure)-level settings affecting permissions.';
-
-CREATE FUNCTION "read_classification" ("p" permission, "c" consent) RETURNS classification LANGUAGE sql IMMUTABLE AS $$
+CREATE FUNCTION "read_release" ("p" permission) RETURNS release LANGUAGE sql IMMUTABLE STRICT AS $$
 	SELECT CASE
-		WHEN p >= 'READ' THEN 'PRIVATE'::classification
-		WHEN p >= 'SHARED' THEN CASE
-			WHEN c >= 'SHARED' THEN 'RESTRICTED'::classification
-			ELSE 'SHARED'::classification
-		END
-		WHEN p >= 'PUBLIC' THEN CASE
-			WHEN c >= 'PUBLIC' THEN 'RESTRICTED'::classification
-			ELSE 'PUBLIC'::classification
-		END
+		WHEN p >= 'READ' THEN 'PRIVATE'::release
+		WHEN p >= 'SHARED' THEN 'SHARED'::release
+		WHEN p >= 'PUBLIC' THEN 'PUBLIC'::release
 	END
 $$;
-COMMENT ON FUNCTION "read_classification" (permission, consent) IS 'Minimum classification level readable at the given permission level, in a slot with the given consent.';
+COMMENT ON FUNCTION "read_release" (permission) IS 'Minimum release level readable at the given permission level.';
 
-CREATE FUNCTION "read_permission" ("t" classification, "c" consent) RETURNS permission LANGUAGE sql IMMUTABLE AS $$
+CREATE FUNCTION "read_permission" ("r" release) RETURNS permission LANGUAGE sql IMMUTABLE CALLED ON NULL INPUT AS $$
 	SELECT CASE
-		WHEN t = 'PRIVATE' THEN 'READ'::permission
-		WHEN t = 'PUBLIC' OR c >= 'PUBLIC' THEN 'PUBLIC'::permission
-		WHEN t = 'SHARED' OR c >= 'SHARED' THEN 'SHARED'::permission
+		WHEN r >= 'PUBLIC' THEN 'PUBLIC'::permission
+		WHEN r >= 'SHARED' THEN 'SHARED'::permission
 		ELSE 'READ'::permission
 	END
 $$;
-COMMENT ON FUNCTION "read_permission" (classification, consent) IS 'Necessary permission level to read a data object with the given classification, in a slot with the given consent.';
+COMMENT ON FUNCTION "read_permission" (release) IS 'Minimum permission level to read a data object with the given release.';
 
-CREATE FUNCTION "check_permission" ("p" permission, "t" classification, "c" consent) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$
-	SELECT p >= read_permission(t, c)
+CREATE FUNCTION "check_permission" ("p" permission, "r" release) RETURNS boolean LANGUAGE sql IMMUTABLE AS $$
+	SELECT p >= read_permission(r)
 $$;
-COMMENT ON FUNCTION "check_permission" (permission, classification, consent) IS 'Effective permission level on a data object with the given access level and classification, in a slot with the given consent.';
+COMMENT ON FUNCTION "check_permission" (permission, release) IS 'Effective permission level on a data object with the given permission level and release.';
 
 CREATE TABLE "authorize" (
 	"child" integer NOT NULL References "party" ON DELETE CASCADE,
@@ -369,16 +354,16 @@ COMMENT ON TABLE "slot" IS 'Generic table for objects associated with a temporal
 
 SELECT audit.CREATE_TABLE ('slot');
 
-CREATE TABLE "slot_consent" (
+CREATE TABLE "slot_release" (
 	"container" integer NOT NULL References "container" ON DELETE CASCADE,
 	"segment" segment NOT NULL,
-	"consent" consent NOT NULL,
+	"release" release NOT NULL,
 	Primary Key ("container", "segment"),
 	Exclude USING gist (singleton("container") WITH =, "segment" WITH &&)
 ) INHERITS ("slot");
-COMMENT ON TABLE "slot_consent" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
+COMMENT ON TABLE "slot_release" IS 'Sharing/release permissions granted by participants on (portions of) contained data.';
 
-SELECT audit.CREATE_TABLE ('slot_consent', 'slot');
+SELECT audit.CREATE_TABLE ('slot_release', 'slot');
 
 
 ----------------------------------------------------------- studies
@@ -436,7 +421,7 @@ CREATE TABLE "asset" (
 	"id" serial Primary Key,
 	"volume" integer NOT NULL References "volume",
 	"format" smallint NOT NULL References "format",
-	"classification" classification NOT NULL,
+	"release" release,
 	"duration" interval HOUR TO SECOND (3) Check ("duration" > interval '0'),
 	"name" text,
 	"sha1" bytea Check (octet_length("sha1") = 20),
@@ -490,15 +475,15 @@ END; $$;
 CREATE TABLE "excerpt" (
 	"asset" integer NOT NULL References "slot_asset" ON UPDATE CASCADE ON DELETE CASCADE,
 	"segment" segment NOT NULL Check (NOT isempty("segment")),
-	"classification" classification NOT NULL Default 'PRIVATE',
+	"release" release,
 	Primary Key ("asset", "segment"),
 	Exclude USING gist (singleton("asset") WITH =, "segment" WITH &&)
 );
 ALTER TABLE "excerpt"
 	ALTER "segment" SET STORAGE PLAIN;
-COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for reclassification to possible public release or top-level display.';
+COMMENT ON TABLE "excerpt" IS 'Asset segments that have been selected for rerelease and/or top-level display.';
 COMMENT ON COLUMN "excerpt"."segment" IS 'Segment within slot_asset.container space (not asset).';
-COMMENT ON COLUMN "excerpt"."classification" IS 'Override (by relaxing only) asset''s original classification.';
+COMMENT ON COLUMN "excerpt"."release" IS 'Override (by relaxing only) asset''s original release.';
 
 SELECT audit.CREATE_TABLE ('excerpt');
 
@@ -647,7 +632,7 @@ COMMENT ON TYPE data_type IS 'Types of measurement data corresponding to measure
 CREATE TABLE "metric" (
 	"id" serial Primary Key,
 	"name" varchar(64) NOT NULL Unique,
-	"classification" classification NOT NULL,
+	"release" release,
 	"type" data_type NOT NULL,
 	"options" text[],
 	"assumed" text
@@ -656,20 +641,20 @@ ALTER TABLE "metric"
 	ALTER "name" SET STORAGE EXTERNAL;
 COMMENT ON TABLE "metric" IS 'Types of measurements for data stored in measure_$type tables.';
 COMMENT ON COLUMN "metric"."options" IS '(Suggested) options for text enumerations, not enforced.';
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-900, 'ID', 'SHARED', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-590, 'birthdate', 'RESTRICTED', 'date');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-540, 'ethnicity', 'SHARED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-580, 'gender', 'SHARED', 'text', ARRAY['Female','Male']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-140, 'state', 'SHARED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-90, 'info', 'PUBLIC', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-600, 'description', 'PUBLIC', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-700, 'reason', 'SHARED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
-INSERT INTO "metric" ("id", "name", "classification", "type", "options") VALUES (-180, 'setting', 'PUBLIC', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
-INSERT INTO "metric" ("id", "name", "classification", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
-INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-520, 'disability', 'RESTRICTED', 'text', 'typical');
-INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-510, 'language', 'SHARED', 'text', 'English');
-INSERT INTO "metric" ("id", "name", "classification", "type", "assumed") VALUES (-150, 'country', 'SHARED', 'text', 'US');
+INSERT INTO "metric" ("id", "name", "release", "type") VALUES (-900, 'ID', 'SHARED', 'text');
+INSERT INTO "metric" ("id", "name", "type") VALUES (-590, 'birthdate', 'date');
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-550, 'race', 'SHARED', 'text', ARRAY['American Indian or Alaska Native','Asian','Native Hawaiian or Other Pacific Islander','Black or African American','White','Multiple']);
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-540, 'ethnicity', 'SHARED', 'text', ARRAY['Not Hispanic or Latino','Hispanic or Latino']);
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-580, 'gender', 'SHARED', 'text', ARRAY['Female','Male']);
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-140, 'state', 'SHARED', 'text', ARRAY['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','MD','MA','MI','MN','MS','MO','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY']);
+INSERT INTO "metric" ("id", "name", "release", "type") VALUES (-90, 'info', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "release", "type") VALUES (-600, 'description', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-700, 'reason', 'SHARED', 'text', ARRAY['Did not meet inclusion criteria','Procedural/experimenter error','Withdrew/fussy/tired','Outlier']);
+INSERT INTO "metric" ("id", "name", "release", "type", "options") VALUES (-180, 'setting', 'PUBLIC', 'text', ARRAY['Lab','Home','Classroom','Outdoor','Clinic']);
+INSERT INTO "metric" ("id", "name", "release", "type") VALUES (-650, 'summary', 'PUBLIC', 'text');
+INSERT INTO "metric" ("id", "name", "type", "assumed") VALUES (-520, 'disability', 'text', 'typical');
+INSERT INTO "metric" ("id", "name", "release", "type", "assumed") VALUES (-510, 'language', 'SHARED', 'text', 'English');
+INSERT INTO "metric" ("id", "name", "release", "type", "assumed") VALUES (-150, 'country', 'SHARED', 'text', 'US');
 
 CREATE TABLE "record_template" (
 	"category" smallint References "record_category" ON UPDATE CASCADE ON DELETE CASCADE,
@@ -832,10 +817,9 @@ COMMENT ON TABLE "slot_record" IS 'Attachment of records to slots.';
 
 SELECT audit.CREATE_TABLE ('slot_record', 'slot');
 
--- TODO review this: other places we may effectively enforce the much looser MAX(consent) with &&
-CREATE FUNCTION "record_consent" ("record" integer) RETURNS consent LANGUAGE sql STABLE STRICT AS
-	$$ SELECT MIN(consent) FROM slot_record JOIN slot_consent ON slot_record.container = slot_consent.container AND slot_record.segment <@ slot_consent.segment WHERE record = $1 $$;
-COMMENT ON FUNCTION "record_consent" (integer) IS 'Effective (minimal) consent level granted on the specified record.';
+CREATE FUNCTION "record_release" ("record" integer) RETURNS release LANGUAGE sql STABLE STRICT AS
+	$$ SELECT MAX(release) FROM slot_record JOIN slot_release ON slot_record.container = slot_release.container AND slot_record.segment <@ slot_release.segment WHERE record = $1 $$;
+COMMENT ON FUNCTION "record_release" (integer) IS 'Effective (maximal) release level granted on the specified record.';
 
 CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
 	SELECT daterange(min(date), max(date), '[]') 
@@ -911,7 +895,7 @@ CREATE VIEW "volume_text" ("volume", "text") AS
 	UNION ALL SELECT volume, name FROM volume_funding JOIN funder ON funder = fundref_id
 	UNION ALL SELECT volume, name FROM container WHERE name IS NOT NULL
 	UNION ALL SELECT volume, name FROM asset JOIN slot_asset ON asset.id = asset WHERE name IS NOT NULL
-	UNION ALL SELECT volume, datum FROM record JOIN measure_text ON record.id = record JOIN metric ON metric = metric.id WHERE metric.classification >= 'SHARED'
+	UNION ALL SELECT volume, datum FROM record JOIN measure_text ON record.id = record JOIN metric ON metric = metric.id WHERE metric.release >= 'SHARED'
 	UNION ALL SELECT volume, tag.name FROM tag JOIN tag_use ON tag.id = tag JOIN container ON container = container.id; -- might want DISTINCT here
 COMMENT ON VIEW "volume_text" IS 'All (searchable) text data associated with a volume.';
 
@@ -980,7 +964,7 @@ INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 1, 'A
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, 3, 'ADMIN', 'NONE');
 INSERT INTO volume_access (volume, party, individual, children) VALUES (1, -1, 'PUBLIC', 'PUBLIC');
 
-INSERT INTO asset (id, volume, format, classification, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
+INSERT INTO asset (id, volume, format, release, duration, name, sha1) VALUES (1, 1, -800, 'PUBLIC', interval '40', 'counting', '\x3dda3931202cbe06a9e4bbb5f0873c879121ef0a');
 INSERT INTO slot_asset VALUES (1, '[0,40)'::segment, 1);
 SELECT setval('asset_id_seq', 1);
 SELECT setval('container_id_seq', 2);
