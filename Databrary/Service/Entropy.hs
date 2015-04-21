@@ -1,6 +1,7 @@
 module Databrary.Service.Entropy
   ( Entropy
   , initEntropy
+  , finiEntropy
   , EntropyM
   , entropyBytes
   , entropyBytesGenerator
@@ -17,6 +18,9 @@ newtype Entropy = Entropy Entropy.CryptHandle
 
 initEntropy :: IO Entropy
 initEntropy = Entropy <$> Entropy.openHandle
+
+finiEntropy :: Entropy -> IO ()
+finiEntropy (Entropy h) = Entropy.closeHandle h
 
 type EntropyM c m = (MonadIO m, MonadHas Entropy c m)
 

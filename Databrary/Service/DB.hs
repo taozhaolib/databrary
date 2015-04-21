@@ -2,6 +2,7 @@
 module Databrary.Service.DB
   ( DBConn
   , initDB
+  , finiDB
   , MonadDB
   , dbRunQuery
   , dbTryQuery
@@ -26,7 +27,7 @@ import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 import Data.IORef (IORef, newIORef, atomicModifyIORef')
 import Data.Maybe (fromMaybe, isJust)
-import Data.Pool (Pool, withResource, createPool)
+import Data.Pool (Pool, withResource, createPool, destroyAllResources)
 import Database.PostgreSQL.Typed.Protocol
 import Database.PostgreSQL.Typed.Query
 import Database.PostgreSQL.Typed.TH (withTPGConnection, useTPGDatabase)
@@ -59,10 +60,17 @@ newtype DBConn = PGPool (Pool PGConnection)
 initDB :: C.Config -> IO DBConn
 initDB conf = do
   db <- getPGDatabase conf
+  stripes <- C.lookupDefault 1 conf "stripes"
+  idle <- C.lookupDefault 60 conf "idle"
+  conn <- C.lookupDefault 16 conf "maxconn"
   PGPool <$> createPool
     (pgConnect db)
     pgDisconnect
-    1 60 16
+    stripes (fromRational idle) conn
+
+finiDB :: DBConn -> IO ()
+finiDB (PGPool p) = do
+  destroyAllResources p
 
 class (Functor m, Applicative m, Monad m) => MonadDB m where
   liftDB :: (PGConnection -> IO a) -> m a

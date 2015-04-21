@@ -2,6 +2,7 @@
 module Databrary.HTTP.Client
   ( HTTPClient
   , initHTTPClient
+  , finiHTTPClient
   , HTTPClientM
   , httpRequest
   , httpRequestJSON
@@ -26,6 +27,9 @@ initHTTPClient = HC.newManager HC.defaultManagerSettings
   { HC.managerConnCount = 2
   , HC.managerIdleConnectionCount = 4
   }
+
+finiHTTPClient :: HTTPClient -> IO ()
+finiHTTPClient = HC.closeManager
 
 type HTTPClientM c m = (MonadHas HTTPClient c m, MonadIO m)
 

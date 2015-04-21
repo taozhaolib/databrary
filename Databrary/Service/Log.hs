@@ -3,6 +3,7 @@ module Databrary.Service.Log
   ( Logs
   , MonadLog
   , initLogs
+  , finiLogs
   , logMsg
   , logAccess
   ) where
@@ -13,7 +14,7 @@ import qualified Data.ByteString.Char8 as BSC
 import qualified Data.Configurator as C
 import qualified Data.Configurator.Types as C
 import qualified Data.Foldable as Fold
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, catMaybes)
 import Data.Monoid ((<>))
 import Data.Time.Clock (getCurrentTime, diffUTCTime)
 import Data.Time.Format (formatTime)
@@ -54,6 +55,10 @@ initLogs conf = Logs
   <$> initLog (C.subconfig "access" conf)
   <*> initLog (C.subconfig "messages" conf)
 
+finiLogs :: Logs -> IO ()
+finiLogs (Logs lm la) =
+  Fold.mapM_ flushLogStr $ catMaybes [lm, la]
+
 str :: ToLogStr a => a -> LogStr
 str = toLogStr
 
@@ -68,32 +73,38 @@ pad n m
   s = str m
   p = str $ BSC.replicate (abs n - logStrLength s) ' '
 
-quote :: Show a => a -> LogStr
-quote = str . show
+quote :: Show a => Maybe a -> LogStr
+quote = maybe (char '-') (str . show)
 
-logTo :: (MonadLog c m, MonadHas Timestamp c m, ToLogStr a) => (Logs -> Maybe LoggerSet) -> a -> m ()
-logTo w m = peeks w >>= Fold.mapM_ (\l -> do
-  t :: Timestamp <- peek
-  liftIO $ pushLogStr l $ str (formatTime defaultTimeLocale "%F %X " t) <> str m <> char '\n')
+time :: Timestamp -> LogStr
+time = str . formatTime defaultTimeLocale "%F %X"
+
+infixr 6 &
+(&) :: LogStr -> LogStr -> LogStr
+x & y = x <> char ' ' <> y
 
 logMsg :: (MonadLog c m, MonadHas Timestamp c m, ToLogStr a) => a -> m ()
-logMsg = logTo loggerMessages
+logMsg m = peeks loggerMessages >>= Fold.mapM_ (\l -> do
+  t :: Timestamp <- peek
+  liftIO $ pushLogStr l $ time t & str m <> char '\n')
 
-logAccess :: (MonadLog c m, MonadHas Timestamp c m, MonadHas Wai.Request c m) => Wai.Response -> m ()
-logAccess r = do
-  q <- peek
-  let qh = Wai.requestHeaders q
-      rh = Wai.responseHeaders r
+logAccess :: Logs -> Timestamp -> Wai.Request -> Wai.Response -> IO ()
+logAccess Logs{ loggerAccess = Just l } qt q r = do
   (Just h, Nothing) <- liftIO $ Net.getNameInfo [Net.NI_NUMERICHOST] True False $ Wai.remoteHost q
-  qt <- peek
-  rt <- liftIO $ getCurrentTime
-  logTo loggerAccess
-    $ pad (-15) h
-    <> pad 3 (show $ HTTP.statusCode $ Wai.responseStatus r)
-    <> pad 4 (fromMaybe "-" $ lookup "user" rh)
-    <> pad 4 (show (floor $ 1000 * rt `diffUTCTime` qt :: Integer))
-    <> str (Wai.requestMethod q)
-    <> str (Wai.rawPathInfo q)
-    <> quote (fromMaybe "" $ lookup "location" rh)
-    <> quote (fromMaybe "" $ lookup "referer" qh)
-    <> quote (fromMaybe "" $ lookup "user-agent" qh)
+  rt <- getCurrentTime
+  pushLogStr l
+    $ time qt
+    & pad (-15) h
+    & pad 3 (show $ HTTP.statusCode $ Wai.responseStatus r)
+    & pad 4 (fromMaybe "-" $ lookup "user" rh)
+    & pad 4 (show (floor $ 1000 * rt `diffUTCTime` qt :: Integer))
+    & str (Wai.requestMethod q)
+    & str (Wai.rawPathInfo q)
+    & quote (lookup "location" rh)
+    & quote (lookup "referer" qh)
+    & quote (lookup "user-agent" qh)
+    <> char '\n'
+  where
+  qh = Wai.requestHeaders q
+  rh = Wai.responseHeaders r
+logAccess _ _ _ _ = return ()

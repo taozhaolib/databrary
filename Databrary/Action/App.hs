@@ -17,6 +17,7 @@ import qualified Network.Wai as Wai
 import Databrary.Has (makeHasRec)
 import Databrary.HTTP
 import Databrary.Service
+import Databrary.Service.Log
 import Databrary.Model.Time
 import Databrary.Action.Types
 import Databrary.HTTP.Request
@@ -39,8 +40,10 @@ type MonadAppAction q m = (MonadHasAppRequest q m, ActionData q)
 runApp :: Service -> AppAction -> Wai.Application
 runApp rc act req send = do
   ts <- liftIO getCurrentTime
-  runResourceT $ withInternalState $ \is ->
-    send =<< runResult (runReaderT act (AppRequest rc is ts req))
+  runResourceT $ withInternalState $ \is -> do
+    r <- runResult (runReaderT act (AppRequest rc is ts req))
+    logAccess (serviceLogs rc) ts req r
+    send r
 
 instance ActionData AppRequest where
   returnResponse s h r = do
