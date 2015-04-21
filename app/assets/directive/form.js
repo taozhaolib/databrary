@@ -34,6 +34,10 @@ app.directive('ngForm', [
           controls.push(control);
         return $addControl(control);
       };
+      form.$etUnsubmitted = function () {
+        $animate.removeClass($element, 'ng-submitted');
+        form.$submitted = false; 
+      };
 
       form.$removeControl = function (control) {
         controls.remove(control);
