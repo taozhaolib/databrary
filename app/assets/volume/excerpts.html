@@ -1,4 +1,3 @@
-
 <div class="download-popup" ng-if="current && downloading"> 
   <span ng-click="toggleDownload()" class="button icon close"></span>
 
@@ -7,7 +6,6 @@
       <img class="popup-format-icon" ng-src="{{::current.icon}}"/> 
       <span ng-bind="::current.name"></span>
     </h3>
-<!--     <span ng-bind="::volume.name"></span> -->
     <span>File format: {{current.format.extension}}</span>
     <span ng-if="::current.segment.length" ng-bind="::current.segment.length | timecode"></span>
   </div>
@@ -18,15 +16,13 @@
     <cite-volume></cite-volume>
   </div>
   <div class="popup-classification">
-    <span class="bigger">This highlight is for </span>
-    <span class="bigger popup-classification-title" message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.title'}}"></span>.<br>
+    <span>This highlight is for </span>
+    <span class="popup-classification-title" message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.title'}}"></span>.<br>
     <span message="{{::'excerpts.'+page.constants.classification[current.excerpt]+'.description'}}"></span>.
   </div>
-  <a ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-href="{{current.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">  
-    <span class="download icon"></span>
-    <span>Download</span>
+  <a ng-href="{{current.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">  
+    <span class="download icon"></span><span>Download</span>
   </a>  
-</div>
 </div>
 
 <div class="row">
