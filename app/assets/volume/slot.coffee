@@ -929,7 +929,7 @@ app.controller('volume/slot', [
         for ri, r of slot.volume.records
           rs[ri] = r
         for sr in records
-          if sr.record.id of rs && sr.segment.overlaps(seg)
+          if sr.record.id of rs && sr.overlaps(seg)
             delete rs[sr.record.id]
         $scope.addRecord.records = rs
         rc = {}
