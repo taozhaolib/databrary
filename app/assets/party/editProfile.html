@@ -1,7 +1,7 @@
 <ng-form name="partyEditProfileForm">
   <scroll-float>
     <fieldset class="clean">
-      <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid"></button>
+      <button ng-click="partyEditProfileForm.save()" message="save" class="green" ng-disabled="partyEditProfileForm.$pristine || partyEditProfileForm.$invalid || partyEditProfileForm.$submitted"></button>
       <button ng-click="partyEditProfileForm.resetAll()" message="revert" class="red" ng-disabled="partyEditProfileForm.$pristine"></button>
     </fieldset>
   </scroll-float>
