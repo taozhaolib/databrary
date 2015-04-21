@@ -23,12 +23,15 @@ instance Has a a where
 
 type MonadHas a c m = (Functor m, Applicative m, MonadReader c m, Has a c)
 
+{-# INLINE peek #-}
 peek :: (MonadReader c m, Has a c) => m a
 peek = reader view
 
+{-# INLINE peeks #-}
 peeks :: (MonadReader c m, Has a c) => (a -> b) -> m b
 peeks f = reader (f . view)
 
+{-# INLINE focus #-}
 focus :: Has a c => ReaderT a m r -> ReaderT c m r
 focus = withReaderT peek
 
