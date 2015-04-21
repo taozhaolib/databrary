@@ -31,7 +31,7 @@ import Databrary.Model.Funding
 fundRefDOI :: String
 fundRefDOI = "10.13039/"
 
--- Not quite like Data.CaseInsensitive
+-- Not quite like Data.CaseInsensitive (non-strict 'ciFolded')
 data CI = CI
   { unCI :: !T.Text
   , ciFolded :: T.Text

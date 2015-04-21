@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TemplateHaskell, OverloadedStrings #-}
 module Databrary.Action.Auth
   ( AuthRequest(..)
   , MonadAuthAction
@@ -10,11 +10,13 @@ module Databrary.Action.Auth
   ) where
 
 import Control.Monad.Reader (withReaderT, asks)
+import qualified Data.ByteString.Char8 as BSC
 
-import Databrary.Has (makeHasRec)
+import Databrary.Has (view, peek, makeHasRec)
 import Databrary.Action.Types
 import Databrary.Action.App
 import Databrary.Model.Identity
+import Databrary.Model.Id
 import Databrary.Model.Party
 import Databrary.Controller.Analytics
 
@@ -31,7 +33,12 @@ type AuthAction = Action AuthRequest
 type MonadAuthAction q m = (MonadHasAuthRequest q m, ActionData q)
 
 instance ActionData AuthRequest where
-  returnResponse s h r = asks (returnResponse s h r . authApp)
+  returnResponse s h r = do
+    u <- peek
+    let h' = case u of
+          UnIdentified -> h
+          i -> ("user", BSC.pack $ show (view i :: Id Party)) : h
+    asks (returnResponse s h' r . authApp)
 
 withAuth :: AuthAction -> AppAction
 withAuth f = do
