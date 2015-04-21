@@ -377,7 +377,7 @@ object AssetApi extends AssetController with ApiController {
         Iteratee.foreach[Array[Byte]](f.write(_))
         .map[Result] { _ =>
           f.close
-          Ok // TODO: NoContent once ng-flow >= 2.6
+          NoContent
         }
         .recover[Result] { case e : Throwable =>
           f.close
@@ -394,11 +394,11 @@ object AssetApi extends AssetController with ApiController {
     uploadChunkPrepare[Result](NotFound, false) { (f, z) =>
       @scala.annotation.tailrec def test(z : Int) : Result = {
         if (z == 0)
-          return NoContent
+          return ResetContent
         val x = new Array[Byte](z)
         val r = f.read(x)
         if (x.take(r).exists(_ != 0))
-          return Ok
+          return NoContent
         test(z-r)
       }
       test(z)

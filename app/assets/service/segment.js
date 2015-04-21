@@ -3,75 +3,76 @@
 app.factory('Segment', [
   'constantService', 'Offset',
   function (constants, Offset) {
-    function Segment(l, u) {
+    function Segment() {
+      this.init.apply(this, arguments);
+    }
+
+    Segment.prototype.init = function(a, u) {
+      var l;
       if (arguments.length >= 2) {
-        this.l = l;
-        this.u = u;
-      } else if (l === undefined) {
-        this.l = -Infinity;
-        this.u = Infinity;
-      } else if (Array.isArray(l)) {
-        this.l = typeof l[0] === 'number' ? l[0] : -Infinity;
-        this.u = typeof l[1] === 'number' ? l[1] : Infinity;
-      } else if (typeof l === 'number') {
-        this.l = this.u = l;
-      } else if (l === null || l === '') {
-        this.l = Infinity;
-        this.u = -Infinity;
-      } else if (typeof l === 'object' && 'l' in l && 'u' in l) {
-        this.l = l.l;
-        this.u = l.u;
-      } else if (typeof l === 'string') {
+        l = a;
+      } else if (arguments.length < 1 || a === null || a === '') {
+        l = Infinity;
+        u = -Infinity;
+      } else if (a === undefined) {
+        l = -Infinity;
+        u = Infinity;
+      } else if (Array.isArray(a)) {
+        l = typeof a[0] === 'number' ? a[0] : -Infinity;
+        u = typeof a[1] === 'number' ? a[1] : Infinity;
+      } else if (typeof a === 'number') {
+        l = u = a;
+      } else if (typeof a === 'object' && 'l' in a && 'u' in a) {
+        l = a.l;
+        u = a.u;
+      } else if (typeof a === 'string') {
         /* this is not a full parser as the backend has, but just needs to be sufficient to parse the output of .format */
-        var i = l.indexOf(',');
+        var i = a.indexOf(',');
         if (i === -1) {
-          i = l.indexOf('-', 1);
+          i = a.indexOf('-', 1);
           if (i === -1) {
-            this.l = this.u = Offset.parse(l);
+            l = u = Offset.parse(a);
             return;
           }
         }
-        this.l = i === 0 ? -Infinity : Offset.parse(l.substr(0,i));
-        this.u = i === l.length-1 ? Infinity : Offset.parse(l.substr(i+1));
+        l = i === 0 ? -Infinity : Offset.parse(a.substr(0,i));
+        u = i === a.length-1 ? Infinity : Offset.parse(a.substr(i+1));
       } else
         throw new Error('invalid Segment construction');
-      this.l = Math.round(this.l);
-      this.u = Math.round(this.u);
-    }
+      this.l = Math.round(l);
+      this.u = Math.round(u);
+    };
 
-    Object.defineProperty(Segment.prototype, 'full', {
-      get: function () {
-        return this.l === -Infinity && this.u === Infinity;
-      }
-    });
-
-    Object.defineProperty(Segment.prototype, 'empty', {
-      get: function () {
-        return this.l > this.u;
-      }
-    });
-
-    Object.defineProperty(Segment.prototype, 'length', {
-      get: function () {
-        return this.u - this.l;
-      }
-    });
-
-    Object.defineProperty(Segment.prototype, 'lBounded', {
-      get: function () {
-        return this.l < this.u && isFinite(this.l);
-      }
-    });
-
-    Object.defineProperty(Segment.prototype, 'uBounded', {
-      get: function () {
-        return this.u > this.l && isFinite(this.u);
-      }
-    });
-
-    Object.defineProperty(Segment.prototype, 'base', {
-      get: function () {
-        return isFinite(this.l) ? this.l : 0;
+    Object.defineProperties(Segment.prototype, {
+      full: {
+        get: function () {
+          return this.l === -Infinity && this.u === Infinity;
+        }
+      },
+      empty: {
+        get: function () {
+          return this.l > this.u;
+        }
+      },
+      length: {
+        get: function () {
+          return this.u - this.l;
+        }
+      },
+      lBounded: {
+        get: function () {
+          return this.l <= this.u && isFinite(this.l);
+        }
+      },
+      uBounded: {
+        get: function () {
+          return this.u >= this.l && isFinite(this.u);
+        }
+      },
+      base: {
+        get: function () {
+          return isFinite(this.l) ? this.l : 0;
+        }
       }
     });
 

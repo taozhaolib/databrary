@@ -30,7 +30,6 @@ app.directive 'volumeComments', [
       $scope.replyTo = undefined
 
       $scope.setReply = (comment) ->
-        console.log "ID", comment
         $scope.replyTo = comment
 
       $scope.$on 'commentReplyForm-init', (event, form) ->

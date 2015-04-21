@@ -7,7 +7,7 @@
     <div class="row">
       <div class="col">
         <hgroup class="session-header">
-          <a class="view-link" ng-href="{{::editing ? volume.editRoute(slot.top ? 'materials' : 'data') : volume.route()}}" ng-bind="::volume.alias || volume.name"></a>
+          <a class="view-link" ng-href="{{::editing ? volume.editRoute(slot.top ? 'materials' : 'data') : volume.route() + '#panel-' + (slot.top ? 'materials' : 'sessions')}}" ng-bind="::volume.alias || volume.name"></a>
           <h3 class="view-title smaller">
             <span ng-bind="::slot.displayName"></span>
             <span ng-if="::slot.date" ng-bind="::' (' + slot.date + ')'"></span>
@@ -42,9 +42,9 @@
                   <dl class="player-info-list cf">
                     <dt ng-if="!!current.asset" message="asset.format"></dt>
                     <dd ng-if="!!current.asset" ng-bind="(current.asset.format.description || current.asset.format.name) + ' (' + current.asset.format.extension + ')'"></dd>
-                    <dt ng-if="current.segment.full === false || current.asset.duration">Position</dt>
+                    <dt ng-if="!current.full || current.asset.duration">Position</dt>
                     <dd>
-                      <span ng-if="current.segment.full === false"><span ng-if="current.segment.lBounded" ng-bind="current.segment.l | timecode:true"></span> &ndash; <span ng-if="current.segment.uBounded" ng-bind="current.segment.u | timecode:true"></span></span>
+                      <span ng-if="!current.full"><span ng-if="current.lBounded" ng-bind="current.l | timecode:true"></span><span ng-if="current.u > current.l"> &ndash; <span ng-if="current.uBounded" ng-bind="current.u | timecode:true"></span></span></span>
                       <span ng-if="current.asset.duration"> (<span ng-bind="current.asset.duration | timecode:true"></span>)</span>
                     </dd>
                     <dt ng-if="!!current.record" ng-repeat-start="metric in current.metrics() track by metric.id" ng-bind="::metric.name"></dt>
@@ -144,9 +144,9 @@
               </select>
             </ng-form>
             <ng-form ng-switch-when="position" name="form.position">
-              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.segment.l" position-max="current.segment.u" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.u" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
-              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.segment.u" position-min="current.segment.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
               &#32;
               <button ng-click="current.finishPosition()">Cancel</button>
               <button class="green" ng-click="current.savePosition()" ng-disabled="form.position.$pristine || form.position.$invalid">Save</button>
@@ -159,19 +159,19 @@
           </div>
           <div class="slot-timeline-timeline">
             <div class="slot-timeline-now-zone">
-              <div class="slot-timeline-now" ng-class="::{edit: editing}" ng-if="ruler.position != null" ng-style="positionStyle(ruler.position)"></div>
+              <div class="slot-timeline-now" ng-class="::{edit: editing}" ng-if="ruler.position.defined()" ng-style="ruler.position.style()"></div>
             </div>
 
             <div class="slot-timeline-selection" ng-if="!ruler.selection.empty">
-              <div class="selection" ng-class="::{edit: editing}" ng-style="positionStyle(ruler.selection)"></div>
+              <div class="selection" ng-class="::{edit: editing}" ng-style="ruler.selection.style()"></div>
             </div>
 
             <div class="slot-timeline-temporal" ng-if="ruler.range.length" ng-form="form.ruler">
               <div class="slot-timeline-control">
                 <input input-position="-Infinity" class="slot-timeline-time start" type="text" size="10" ng-model="ruler.selection.l" position-max="ruler.selection.u" name="selection-l" ng-change="updateSelection()"></input>
-                <button id="setOnset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,0)">&larr;</button>
-                <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position" name="position" key-enter="updatePosition()"></input>
-                <button id="setOffset" ng-disabled="ruler.position == null" ng-click="setSelection(ruler.position,1)">&rarr;</button>
+                <button id="setOnset" ng-disabled="!ruler.position.defined()" ng-click="setSelectionEnd(false)">&larr;</button>
+                <input input-position class="slot-timeline-time" type="text" size="10" ng-model="ruler.position.o" name="position" key-enter="updatePosition()"></input>
+                <button id="setOffset" ng-disabled="!ruler.position.defined()" ng-click="setSelectionEnd(true)">&rarr;</button>
                 <input input-position="Infinity" class="slot-timeline-time stop" type="text" size="10" ng-model="ruler.selection.u" position-min="ruler.selection.l" name="selection-u" ng-change="updateSelection()"></input>
                 <div class="slot-timeline-zoom">
                   <span class="icon zoomin" ng-click="zoom(ruler.selection)" ng-if="!ruler.selection.empty && !ruler.selection.contains(ruler.range)"></span>
@@ -179,46 +179,46 @@
                 </div>
               </div>
               
-              <div class="slot-timeline-ruler" ng-click="select($event)" mouse-drag="dragSelection($down, $up)">
+              <div class="slot-timeline-ruler" ng-click="click($event)" mouse-drag="dragSelection($down, $up)">
                 <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
                 <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>
               </div>
             </div>
 
             <div>
-              <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-if="t.active" ng-class="{select: t === current}" ng-click="select($event, t)" mouse-drag="dragSelection($down, $up, t)">
-                <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
-                <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
-                <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="positionStyle(ts)" ng-dblclick="selectAll($event, {segment:ts})"></div>
+              <div class="slot-tag-track slot-track" ng-repeat="t in tags" ng-if="t.active" ng-class="{select: t === current}" ng-click="t.click($event)" mouse-drag="dragSelection($down, $up, t)">
+                <div class="slot-tag-segment" ng-repeat="ts in t.coverage" ng-style="ts.style()" ng-dblclick="ts.select($event)"></div>
+                <div class="slot-tag-keyword" ng-repeat="ts in t.keyword" ng-style="ts.style()" ng-dblclick="ts.select($event)"></div>
+                <div class="slot-tag-vote" ng-repeat="ts in t.vote" ng-style="ts.style()" ng-dblclick="ts.select($event)"></div>
                 <div class="slot-tag-name" ng-bind="t.id"></div>
               </div>
             </div>
 
             <div class="slot-annotations">
               <div class="slot-record-track slot-track" ng-repeat="rs in records">
-                <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="positionStyle(r.segment)">
-                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-left" mouse-drag="r.dragLeft($up)"></div>
-                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-right" mouse-drag="r.dragRight($up)"></div>
+                <div class="slot-record" ng-repeat-start="r in rs" ng-class="{'slot-record-select': r === current}" ng-style="r.style()">
+                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-left" mouse-drag="r.drag($up, false)"></div>
+                  <div ng-if="r === current && editing === 'position'" class="slot-handle slot-handle-right" mouse-drag="r.drag($up, true)"></div>
                 </div>
-                <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="select($event, r)" ng-dblclick="selectAll($event, r)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
+                <div class="slot-record-background" ng-repeat-end ng-style="positionBackgroundStyle(rs, $index)" ng-click="r.click($event)" ng-dblclick="r.select($event)" mouse-drag="dragSelection($down, $up, r)" ng-bind="r.record.displayName"></div>
               </div>
             </div>
 
             <div class="slot-timeline-tracks">
-              <div ng-repeat="t in tracks" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.segment.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="select($event, t)" ng-dblclick="selectAll($event, t)" mouse-drag="dragSelection($down, $up, t)">
-                <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.segment.contains(t.segment)" ng-style="positionStyle(excerpt.segment)" ng-dblclick="selectAll($event, excerpt)">
+              <div ng-repeat="t in assets" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="t.click($event)" ng-dblclick="t.select($event)" mouse-drag="dragSelection($down, $up, t)">
+                <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.contains(t)" ng-style="excerpt.style()" ng-dblclick="excerpt.select($event)">
                 </div>
                 <div class="slot-track-asset-info">
                   <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file}">
                     <span ng-bind="t.asset.name || t.data.name || t.file.file.name"></span>
-                    <span ng-if="t.excerpts[0].segment.contains(t.segment)"> (highlight)</span>
+                    <span ng-if="t.excerpts[0].contains(t)"> (highlight)</span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
                   <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
                 </div>
-                <div class="slot-track-asset" ng-if="t.asset && !t.segment.full" ng-style="positionStyle(t.segment)">
+                <div class="slot-track-asset" ng-if="t.asset && !t.full" ng-style="t.style()">
                   <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>
                 </div>
               </div>
@@ -226,13 +226,13 @@
 
             <div>
               <div class="slot-consent-track slot-track">
-                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="positionStyle(c.segment)" ng-click="select($event, c)" ng-dblclick="selectAll($event, c)" mouse-drag="dragSelection($down, $up, c)"></div>
+                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="c.style()" ng-click="c.click($event)" ng-dblclick="c.select($event)" mouse-drag="dragSelection($down, $up, c)"></div>
               </div>
             </div>
           </div>
         </section>
 
-        <div ng-if="::!editing" class="slot-download" ng-show="!!tracks[0].asset">
+        <div ng-if="::!editing" class="slot-download" ng-show="!!assets[0].asset">
           <a ng-href="{{::slot.zipRoute()}}" target="_self">
             <span class="icon download"></span>
             <span class="download" message="download.zip"></span>
