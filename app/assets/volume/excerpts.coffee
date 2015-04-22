@@ -8,8 +8,9 @@ app.directive 'volumeExcerpts', [
     scope: false
     link: ($scope) ->
       $scope.current = $scope.volume.excerpts[0]
+      $scope.downloading = false
 
-      $scope.setCurrent = (asset) ->
+      $scope.setCurrent = (asset) ->       
         $scope.current = asset
 
       $scope.hasThumbnail = (asset) ->
@@ -19,5 +20,6 @@ app.directive 'volumeExcerpts', [
         excerpt.container.route {asset: excerpt.id, select:excerpt.segment.format()}
 
       $scope.download = () ->
+        console.log "open open open!" 
         $scope.downloading = true
 ]

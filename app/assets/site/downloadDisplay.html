@@ -8,7 +8,7 @@
     </h3>
     <ul>
       <li>File format: {{current.format.extension}}</li>
-      <li ng-if="::current.segment.length">
+      <li ng-if="::!current.segment.full && !current.segment.empty">
         <span>Duration: </span>
         <span ng-bind="::current.segment.length | timecode"></span>
       </li>
@@ -22,8 +22,8 @@
   </div>
   <div class="popup-classification">
     <span>This download is for </span>
-    <span class="popup-classification-title" message="{{::'excerpts.'+classification+'.title'}}"></span>.<br>
-    <span message="{{::'excerpts.' + classification + '.description'}}"></span>.
+    <span class="popup-classification-title" ng-bind="::'excerpts.'+classification+'.title' | message"></span>.<br>
+    <span ng-bind="::'excerpts.' + classification + '.description' | message"></span>.
   </div>
   <a ng-href="{{current.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">  
     <span class="download icon"></span><span>Download</span>

@@ -13,8 +13,5 @@ app.directive 'downloadDisplay', [
       $scope.volume = asset.volume
       $scope.classification = page.constants.classification[asset.classification]
       $scope.hasThumbnail = asset.checkPermission(constants.permission.READ) && (asset.format.type == 'image' || asset.format.type == 'video' && asset.asset.duration)
-      
-      $scope.closeDownload = () ->
-        console.log 'meep'
 
   ]
