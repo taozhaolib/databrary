@@ -1,6 +1,9 @@
 <div>
-  <label class="option classification level-{{::i}}" ng-repeat="(i, l) in ::classification" ng-show="value >= i">
-    <input ng-if="::i < max" type="checkbox" name="{{::name+'.'+l}}" ng-model="check[i]" ng-change="update()">
-    <span ng-class="::{'reminder': i >= max}" message="classification.select.{{::l}}"></span>
+  <label class="option classification">
+    <input type="checkbox" name="{{::name+'.check'}}" ng-model="form.check" ng-change="update()">
+    <span message="classification.select.{{::release[0]}}"></span>
   </label>
+  <select ng-if="!form.check" name="{{::name}}" ng-model="form.value" ng-options="i as 'classification.select.'+l | message for (i, l) in ::release.slice(1)" ng-change="update()">
+    <option value="">Override sharing release level...</option>
+  </select>
 </div>

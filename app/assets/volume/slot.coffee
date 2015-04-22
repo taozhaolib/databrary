@@ -489,9 +489,9 @@ app.controller('volume/slot', [
         @data =
           if @asset
             name: @asset.name
-            release: @asset.release+''
+            classification: (@asset.classification || 0)+''
           else
-            release: ''
+            classification: '0'
         return
 
       Object.defineProperty @prototype, 'id',
@@ -695,7 +695,7 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         l = {}
-        l[0] = constants.release[@data.release]
+        l[0] = constants.release[@data.classification]
         for c, i in constants.release when i > @data.release
           l[i] = c
         l[@excerpt.release] = 'prompt' unless @excerpt.release of l

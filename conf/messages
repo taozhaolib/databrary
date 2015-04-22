@@ -356,9 +356,10 @@ classification.excerpt.SHARED=Shared only with authorized Databrary users with a
 classification.excerpt.EXCERPTS=Shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
 
+classification.select.DEFAULT=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release.
 classification.select.PRIVATE=Never share this file: only available to collaborators.
-classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
-classification.select.EXCERPTS=Only share this file with authorized Databrary users for educational or research purposes.
+classification.select.SHARED=This file may only be shared with authorized Databrary users.
+classification.select.EXCERPTS=This file may be shared with authorized Databrary users for educational or research purposes.
 classification.select.PUBLIC=This file may be available to anybody for unrestricted use.
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.

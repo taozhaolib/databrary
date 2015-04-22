@@ -8,11 +8,15 @@ app.directive 'classificationSelect', [
     scope:
       value: '=ngModel'
       name: '@'
-    link: ($scope) ->
-      $scope.classification = constants.release.slice(0)
-      $scope.max = constants.release.PUBLIC
-      $scope.check = _.map constants.release, (l, i) -> $scope.value <= i
-      $scope.update = () ->
-        $scope.value = $scope.check.indexOf(true)
-      return
+    link:
+      pre: ($scope) ->
+        $scope.release = constants.release
+        return
+      post: ($scope) ->
+        $scope.form = form =
+          check: `$scope.value == '0'`
+          value: parseInt($scope.value,10)-1+''
+        $scope.update = () ->
+          $scope.value = if form.check then '0' else parseInt(form.value,10)+1+''
+        return
 ]

@@ -911,6 +911,7 @@ app.factory('modelService', [
 
     AssetSlot.prototype.fields = angular.extend({
       permission: true,
+      release: true,
       excerpt: true,
       context: true
     }, AssetSlot.prototype.fields);
@@ -924,7 +925,7 @@ app.factory('modelService', [
     };
 
     delegate(AssetSlot, 'asset',
-        'id', 'container', 'format', 'duration', 'release', 'name', 'pending');
+        'id', 'container', 'format', 'duration', 'classification', 'name', 'pending');
 
     Object.defineProperty(AssetSlot.prototype, 'displayName', {
       get: function () {
@@ -994,7 +995,7 @@ app.factory('modelService', [
 
     Asset.prototype.fields = angular.extend({
       id: true,
-      release: true,
+      classification: true,
       name: true,
       duration: true,
       pending: true,

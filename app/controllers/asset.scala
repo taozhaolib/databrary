@@ -42,7 +42,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       }
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
-        release = form.release.get)
+        release = form.classification.get)
       _ <- slot.foreachAsync(asset.link)
       _ <- form.excerpt.get.foreachAsync(e => Excerpt.set(asset, Segment.full, e).map(r =>
           if (!r && e.nonEmpty) form.excerpt.withError("error.conflict")._throw))
@@ -94,22 +94,22 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
         .orElse(fname.flatMap(AssetFormat.getFilename(_)))
         .getOrElse(form.format.withError("file.format.unknown")._throw)
       name = fname.map(fmt.stripExtension)
-      release = form.release.get.getOrElse(Release.PRIVATE)
+      classification = form.classification.get.getOrElse(Release.PRIVATE)
       asset <- fmt match {
         case fmt : TimeseriesFormat if adm && form.timeseries.get =>
-          models.TimeseriesAsset.create(form.volume, fmt, release, name, file)
+          models.TimeseriesAsset.create(form.volume, fmt, classification, name, file)
         case fmt if fmt.isTranscodable.nonEmpty =>
           val av = try {
             media.AV.probe(file.file)
           } catch { case e : media.AV.Error =>
             form.file.withError("file.invalid", e.getMessage)._throw
           }
-          models.FileAsset.create(form.volume, fmt, release, name, file)
+          models.FileAsset.create(form.volume, fmt, classification, name, file)
           .flatMap(Transcode.create(_, duration = av.duration)
             .whenSuccess(_.start)
             .map(_.asset))
         case fmt =>
-          models.FileAsset.create(form.volume, fmt, release, name, file)
+          models.FileAsset.create(form.volume, fmt, classification, name, file)
       }
     } yield asset
   }
@@ -147,7 +147,7 @@ object AssetController extends AssetController {
     def volume : Volume
 
     val name = Field(OptionMapping(Mappings.maybeText))
-    val release = Field(OptionMapping(Mappings.enum(Release)))
+    val classification = Field(OptionMapping(Mappings.enum(Release)))
     val container = Field(Forms.optional(Forms.of[Container.Id]))
     val position = Field(Forms.optional(Forms.of[Offset]))
     val excerpt = Field(OptionMapping(Forms.optional(Mappings.enum(Release))))
@@ -157,7 +157,7 @@ object AssetController extends AssetController {
     def asset : Asset
     def volume = asset.volume
     name.fill(Some(asset.name))
-    release.fill(Some(asset.release))
+    classification.fill(Some(asset.release))
     container.fill(None)
     position.fill(None)
   }
@@ -183,7 +183,7 @@ object AssetController extends AssetController {
     with AssetUploadForm {
     def actionName = "Upload"
     def volume = request.obj
-    release.fill(Some(Release.DEFAULT))
+    classification.fill(Some(Release.DEFAULT))
   }
 
   final class ReplaceForm(implicit request : Request[_])

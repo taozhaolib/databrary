@@ -154,7 +154,7 @@ sealed class Asset protected (val id : Asset.Id, val volume : Volume, val format
 
   def json : JsonRecord = JsonRecord.flatten(id,
     Some('format -> format.id),
-    Some('release -> release),
+    Maybe(release).opt('classification -> _),
     name.map('name -> _),
     _duration.map('duration -> _),
     if (this.isInstanceOf[BackedAsset]) None else Some('pending -> true)
