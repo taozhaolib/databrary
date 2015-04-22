@@ -216,7 +216,7 @@
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
-                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.excerpt || t.asset.release]" hint="classification-{{page.constants.release[t.asset.excerpt || t.asset.release]}}"></span>
+                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.release]" hint="classification-{{page.constants.release[t.asset.release]}}"></span>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.full" ng-style="t.style()">
                   <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>

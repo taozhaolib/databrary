@@ -339,20 +339,22 @@ access.edit.READ.who=For those you trust to view all data.
 access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
 access.edit.ADMIN.who=For fellow volume investigators only.
 
-consent.NONE=There is no release for this session.
+consent.DEFAULT=There is no release for this session.
 consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
 consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
 consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used for research and educational purposes.
 consent.PUBLIC=Public: The identifying data in this session have been released publicly.
 
+classification.DEFAULT=Identifying: shared according to participant session release level.
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
-classification.SHARED=Restricted: potentially identifying data; shared only with authorized Databrary users with appropriate participant release.
+classification.SHARED=Restricted: shared only with authorized Databrary users.
 classification.EXCERPTS=Shared: shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 classification.excerpt.prompt=Choose sharing level...
+classification.excerpt.DEFAULT=Use current file or participant release level.
 classification.excerpt.PRIVATE=Not shared.
-classification.excerpt.SHARED=Shared only with authorized Databrary users with appropriate participant release.
+classification.excerpt.SHARED=Shared only with authorized Databrary users.
 classification.excerpt.EXCERPTS=Shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
 

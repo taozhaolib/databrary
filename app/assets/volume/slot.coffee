@@ -695,8 +695,9 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         l = {}
-        l[0] = constants.release[@data.classification]
-        for c, i in constants.release when i > @data.release
+        r = @asset.release || 0
+        l[0] = constants.release[0]
+        for c, i in constants.release when i > r
           l[i] = c
         l[@excerpt.release] = 'prompt' unless @excerpt.release of l
         l

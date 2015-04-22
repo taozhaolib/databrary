@@ -13,10 +13,16 @@ app.directive 'classificationSelect', [
         $scope.release = constants.release
         return
       post: ($scope) ->
-        $scope.form = form =
-          check: `$scope.value == '0'`
-          value: parseInt($scope.value,10)-1+''
-        $scope.update = () ->
-          $scope.value = if form.check then '0' else parseInt(form.value,10)+1+''
+        $scope.form = Object.defineProperties {},
+          check:
+            get: ->
+              `$scope.value == '0'`
+            set: (c) ->
+              $scope.value = if c then '0' else ''
+          value:
+            get: ->
+              ~~$scope.value-1+''
+            set: (v) ->
+              $scope.value = ++v+''
         return
 ]

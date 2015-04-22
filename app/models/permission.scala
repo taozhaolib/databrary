@@ -56,8 +56,7 @@ object Release extends SQL.Enum("release") {
       _.fold[Option[Value]](Some(DEFAULT))(withNameOpt),
       v => Maybe(v).opt(_.toString))
   override implicit object jsonFormat extends json.Format[Value] {
-    def writes(v : Value) =
-      if (v == DEFAULT) json.JsNull else json.JsNumber(v.id)
+    def writes(v : Value) = json.JsNumber(v.id)
     def reads(j : json.JsValue) = j match {
       case json.JsNull => json.JsSuccess(DEFAULT)
       case json.JsNumber(i) if i.isValidInt && i >= 0 && i < maxId => json.JsSuccess(apply(i.toInt))
