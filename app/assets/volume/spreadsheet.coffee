@@ -258,7 +258,7 @@ app.directive 'spreadsheet', [
 
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (c, m, v, assumed) ->
-          if m == 'consent'
+          if m == 'release'
             cn = constants.release[v || 0]
             c.className = cn + ' release icon hint-consent-' + cn
             v = ''
@@ -397,7 +397,7 @@ app.directive 'spreadsheet', [
           a.className = "session icon hint-action-slot"
 
           generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
-          generateCell(row, 'consent', slot.release, id + '-consent_' + i)
+          generateCell(row, 'release', slot.release, id + '-release_' + i)
           for c in recordCols
             generateRecord(row, i, c)
           if assets
@@ -676,7 +676,7 @@ app.directive 'spreadsheet', [
           if value == ''
             value = undefined
           else switch type
-            when 'consent'
+            when 'release'
               value = parseInt(value, 10)
             when 'record'
               if value == 'new'
@@ -718,7 +718,7 @@ app.directive 'spreadsheet', [
             return
 
           switch info.t
-            when 'name', 'date', 'consent'
+            when 'name', 'date', 'release'
               saveSlot(cell, info, value)
             when 'rec'
               saveMeasure(cell, info.record, info.metric, value)
@@ -760,8 +760,8 @@ app.directive 'spreadsheet', [
               return if info.slot.id == volume.top.id
               editScope.type = 'date'
               editInput.value = info.slot.date
-            when 'consent'
-              editScope.type = 'consent'
+            when 'release'
+              editScope.type = 'release'
               editInput.value = (info.slot.release || 0) + ''
             when 'rec', 'add'
               if info.c == 'asset'
