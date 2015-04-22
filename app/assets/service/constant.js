@@ -24,8 +24,7 @@ app.factory('constantService', [
     };
 
     invertArray(constants.permission);
-    invertArray(constants.classification);
-    invertArray(constants.consent);
+    invertArray(constants.release);
     constants.categoryName = invertBy(constants.category, "name");
     constants.metricName = invertBy(constants.metric, "name");
 

@@ -25,7 +25,7 @@ sealed trait AssetSlot extends Slot {
   override def release = Maybe(excerpt.fold(asset.release)(e => max(asset.release, e.release))).orElse(super.release)
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
-    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
+    * Asset permissions depend on volume permissions, but can be further restricted by release levels. */
   final override val permission : Permission.Value =
     dataPermission().permission
 

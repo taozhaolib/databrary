@@ -14,7 +14,7 @@ app.directive 'volumeOverview', [
       Participant = constants.categoryName.participant.id
       for ci, c of volume.containers when !c.top
         sessions++
-        shared++ if c.consent >= constants.consent.SHARED
+        shared++ if c.release >= constants.release.SHARED
         for r in c.records when 'age' of r and volume.records[r.id].category == Participant
           if r.age < agemin
             agemin = r.age

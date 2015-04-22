@@ -13,9 +13,6 @@
     padding-left b1 - b6
   &.excerpts
     padding-left b1
-  &.classification.RESTRICTED,
-  &.classification.SHARED
-    padding-left b1 - b12
   &.volume
     size b1
   &.record,
@@ -38,32 +35,17 @@
   &.close
     background-image url('/public/images/icon/close.png')
 
-  &.consent.PRIVATE
-    background-image url('/public/icons/consent/private.svg')
+  &.release.PRIVATE
+    background-image url('/public/icons/release/private.svg')
 
-  &.consent.SHARED
-    background-image url('/public/icons/consent/shared.svg')
+  &.release.SHARED
+    background-image url('/public/icons/release/shared.svg')
 
-  &.consent.EXCERPTS
-    background-image url('/public/icons/consent/excerpts.svg')
+  &.release.EXCERPTS
+    background-image url('/public/icons/release/excerpts.svg')
 
-  &.consent.PUBLIC
-    background-image url('/public/icons/consent/public.svg')
-
-  &.classification
-    width b1
-  
-  &.classification.PRIVATE
-    background-image url('/public/icons/classification/private.svg')
-
-  &.classification.RESTRICTED
-    background-image url('/public/icons/classification/restricted.png')
-
-  &.classification.SHARED
-    background-image url('/public/icons/classification/shared.png')
-
-  &.classification.PUBLIC
-    background-image url('/public/icons/classification/public.svg')
+  &.release.PUBLIC
+    background-image url('/public/icons/release/public.svg')
 
   &.record
     background-image url('/public/images/icon/record.png')
@@ -152,11 +134,8 @@
     &.public,
     &.excerpt
       background-position 2px 4px
-    &.consent.EXCERPTS
+    &.release.EXCERPTS
       padding-left b1 + 2px
-      background-position 1px 4px
-    &.classification.RESTRICTED,
-    &.classification.SHARED
       background-position 1px 4px
 
 .sort

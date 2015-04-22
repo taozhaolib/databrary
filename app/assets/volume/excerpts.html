@@ -7,7 +7,7 @@
           <a ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-href="{{::current.downloadRoute(false)}}" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></a>
 
           <h1 class="panel-excerpts-player-heading">
-            <div class="classification icon line" ng-class="::page.constants.classification[current.excerpt || current.asset.classification]" hint="classification-{{::page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
+            <div class="release icon line" ng-class="::page.constants.release[current.excerpt || current.asset.release]" hint="classification-{{::page.constants.release[current.excerpt || current.asset.release]}}"></div>
             <img class="icon" ng-src="{{::current.icon}}" hint="format-{{::current.format.extension}}">
             <span ng-bind="::current.displayName"></span>
           </h1>

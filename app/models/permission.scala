@@ -16,7 +16,7 @@ object Permission extends SQL.Enum("permission") {
   def VIEW = PUBLIC
   /** Alias for EDIT. */
   def CONTRIBUTE = EDIT
-  /** Alias for READ. Grants full access to private data, bypassing consent permissions. */
+  /** Alias for READ. Grants full access to private data, bypassing release permissions. */
   def PRIVATE = READ
 
   def message(v : Value, kind : String, args : Any*) : Option[String] = {
@@ -94,7 +94,7 @@ trait HasPermission extends PerSite {
     def site = self.site
     val permission = {
       val p = self.permission
-      if (self.permission >= Permission.read(release))
+      if (p >= Permission.read(release))
         p
       else
         Permission.NONE
