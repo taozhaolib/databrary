@@ -113,7 +113,7 @@ COMMENT ON TYPE release IS 'Levels at which participants or researchers may choo
 
 CREATE FUNCTION "read_release" ("p" permission) RETURNS release LANGUAGE sql IMMUTABLE STRICT AS $$
 	SELECT CASE
-		WHEN p >= 'READ' THEN 'PRIVATE'::release
+		WHEN p >= 'READ' THEN 'PRIVATE'::release -- should include NULL
 		WHEN p >= 'SHARED' THEN 'SHARED'::release
 		WHEN p >= 'PUBLIC' THEN 'PUBLIC'::release
 	END
@@ -820,6 +820,10 @@ SELECT audit.CREATE_TABLE ('slot_record', 'slot');
 CREATE FUNCTION "record_release" ("record" integer) RETURNS release LANGUAGE sql STABLE STRICT AS
 	$$ SELECT MAX(release) FROM slot_record JOIN slot_release ON slot_record.container = slot_release.container AND slot_record.segment <@ slot_release.segment WHERE record = $1 $$;
 COMMENT ON FUNCTION "record_release" (integer) IS 'Effective (maximal) release level granted on the specified record.';
+
+CREATE FUNCTION "record_release_party" ("record" integer, "party" integer) RETURNS boolean LANGUAGE sql STABLE STRICT AS
+	$$ SELECT check_permission(volume_access_check(volume, $2), record_release($1)) FROM record WHERE id = $1 $$;
+COMMENT ON FUNCTION "record_release_party" (integer, integer) IS 'This function has no (good) reason for existing.';
 
 CREATE FUNCTION "record_daterange" ("record" integer) RETURNS daterange LANGUAGE sql STABLE STRICT AS $$
 	SELECT daterange(min(date), max(date), '[]') 
