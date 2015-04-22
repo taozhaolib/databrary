@@ -26,9 +26,9 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       for {
         cont <- cast[SlotController.ContainerEditForm](form).fold(async(request.obj))(form =>
           request.obj.container.change(name = form.name.get, date = form.date.get))
-        _ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c).map(r =>
-            if (!r) form.consent.withError("error.conflict")._throw))
-        /* refresh consent: */
+        _ <- form.release.get.foreachAsync((c : Release.Value) => cont.setRelease(c).map(r =>
+            if (!r) form.release.withError("error.conflict")._throw))
+        /* refresh release: */
         s <- Slot.get(i, segment)
       } yield (result(s.get))
     }
@@ -38,7 +38,7 @@ private[controllers] sealed class SlotController extends ObjectController[Slot] 
       val form = new SlotController.ContainerCreateForm()._bind
       for {
         cont <- models.Container.create(request.obj, name = form.name.get.flatten, date = form.date.get.flatten, top = form.top.get)
-        _ <- form.consent.get.foreachAsync((c : Consent.Value) => cont.setConsent(c))
+        _ <- form.release.get.foreachAsync((c : Release.Value) => cont.setRelease(c))
       } yield (result(cont))
     }
 }
@@ -48,7 +48,7 @@ object SlotController extends SlotController {
     def actionName : String
     def formName : String = actionName + " Session"
 
-    val consent = Field(OptionMapping(Mappings.enum(Consent)))
+    val release = Field(OptionMapping(Mappings.enum(Release)))
   }
   sealed trait ContainerForm extends SlotForm {
     val name = Field(OptionMapping(Mappings.maybeText))
@@ -62,7 +62,7 @@ object SlotController extends SlotController {
     with SlotForm {
     def actionName = "Update"
     override def formName = "Edit Session"
-    consent.fill(Some(request.obj.consent))
+    release.fill(Some(request.obj.release))
   }
   final class ContainerEditForm(implicit request : Request[_])
     extends EditForm with ContainerForm {

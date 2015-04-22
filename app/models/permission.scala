@@ -32,14 +32,12 @@ object Permission extends SQL.Enum("permission") {
   def check(has : Value, need : Value)(implicit site : Site) : Boolean =
     has >= need || site.superuser
 
-  /** The necessary permission level to read a data object with the given classification.
+  /** The necessary permission level to read a data object with the given release.
     * Equivalent to the SQL function read_permission. */
-  def read(t : Classification.Value, c : Consent.Value) : Value =
-    if (t == Classification.PRIVATE)
-      PRIVATE
-    else if (t == Classification.PUBLIC || c >= Consent.PUBLIC)
+  def read(r : Release.Value) : Value =
+    if (r >= Release.PUBLIC)
       PUBLIC
-    else if (t == Classification.SHARED || c >= Consent.SHARED)
+    else if (r >= Release.SHARED)
       SHARED
     else
       PRIVATE
@@ -47,77 +45,59 @@ object Permission extends SQL.Enum("permission") {
   final val publicDateFields = Array(org.joda.time.DateTimeFieldType.year)
 }
 
-trait HasPermission extends PerSite {
-  self =>
-  def permission : Permission.Value
-  final def checkPermission(need : Permission.Value) : Boolean =
-    Permission.check(permission, need)(site)
-  /** The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE. */
-  def dataPermission(classification : Classification.Value, consent : Consent.Value) : HasPermission = new HasPermission {
-    def site = self.site
-    val permission = {
-      val p = self.permission
-      if (p >= Permission.READ)
-        p
-      else if (p >= Permission.read(classification, consent))
-        Permission.READ
-      else
-        Permission.NONE
-    }
-  }
-}
+/** The possible levels of sharing for data.
+  * Must match the corresponding postgres "release" type, except for the NONE value which represents NULL (missing) as this is a common case. */
+object Release extends SQL.Enum("release") {
+  val DEFAULT, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
 
-/** The possible levels of participant consent governing [Classification.IDENTIFIED] data.
-  * Must match the corresponding postgres "consent" type, except for the NONE value which represents NULL (missing) as this is a common possibility. */
-object Consent extends SQL.Enum("consent") {
-  val NONE, PRIVATE, SHARED, EXCERPTS, PUBLIC = Value
-  def message(v : Value) : Option[String] = {
-    val m = "consent." + v.toString
-    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
-  }
-  implicit val truth : Truth[Value] = Truth[Value](_ != NONE)
+  implicit val truth : Truth[Value] = Truth[Value](_ != DEFAULT)
   override implicit val sqlType : SQL.Type[Value] =
-    SQL.Type.transform[Option[String],Value]("consent", classOf[Value])(
-      _.fold[Option[Value]](Some(NONE))(withNameOpt),
-      v => Maybe(v).opt.map(_.toString))
+    SQL.Type.transform[Option[String],Value]("release", classOf[Value])(
+      _.fold[Option[Value]](Some(DEFAULT))(withNameOpt),
+      v => Maybe(v).opt(_.toString))
   override implicit object jsonFormat extends json.Format[Value] {
     def writes(v : Value) =
-      if (v == NONE) json.JsNull else json.JsNumber(v.id)
+      if (v == DEFAULT) json.JsNull else json.JsNumber(v.id)
     def reads(j : json.JsValue) = j match {
-      case json.JsNull => json.JsSuccess(NONE)
+      case json.JsNull => json.JsSuccess(DEFAULT)
       case json.JsNumber(i) if i.isValidInt && i >= 0 && i < maxId => json.JsSuccess(apply(i.toInt))
       case json.JsString(s) => fromString(s).fold[json.JsResult[Value]](json.JsError("error.expected.jsnumber"))(json.JsSuccess(_))
       case _ => json.JsError("error.expected.jsnumber")
     }
   }
-}
 
-/** The possible types of data sensitivity according to the presence of identifying user data.
-  * Must match the corresponding postgres "consent" type. */
-object Classification extends SQL.Enum("classification") {
-  val PRIVATE, RESTRICTED, SHARED, PUBLIC = Value
-  def IDENTIFIED = RESTRICTED
-
-  def message(v : Value) : Option[String] = {
-    val m = "classification." + v.toString
-    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
-  }
-
-  /** The most restrictive data classification level that the current user may access under the given permission and consent level.
-    * Equivalent to the SQL function read_classification. */
-  def read(p : Permission.Value, c : Consent.Value) : Option[Value] =
+  /** The most restrictive release level that the current user may access under the given permission.
+    * Equivalent to the SQL function read_release. */
+  def read(p : Permission.Value) : Option[Value] =
     if (p >= Permission.PRIVATE)
-      Some(PRIVATE)
+      Some(DEFAULT)
     else if (p >= Permission.SHARED)
-      if (c >= Consent.SHARED)
-        Some(RESTRICTED)
-      else
-        Some(SHARED)
+      Some(SHARED)
     else if (p >= Permission.PUBLIC)
-      if (c >= Consent.PUBLIC)
-        Some(RESTRICTED)
-      else
-        Some(SHARED)
+      Some(PUBLIC)
     else
       None
+
+  def message(v : Value, kind : String) : Option[String] = {
+    val m = kind + "." + v.toString
+    if (Messages.isDefinedAt(m)) Some(Messages(m)) else None
+  }
+}
+
+trait HasPermission extends PerSite {
+  self =>
+  def permission : Permission.Value
+  final def checkPermission(need : Permission.Value) : Boolean =
+    Permission.check(permission, need)(site)
+  /** The effective permission for data objects with the given attributes, effectively collapsing ineffective permissions to NONE. */
+  def dataPermission(release : Release.Value) : HasPermission = new HasPermission {
+    def site = self.site
+    val permission = {
+      val p = self.permission
+      if (self.permission >= Permission.read(release))
+        p
+      else
+        Permission.NONE
+    }
+  }
 }

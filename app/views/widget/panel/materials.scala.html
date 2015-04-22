@@ -8,9 +8,9 @@
             <ul class="flat panel_materials_items">
             @if(assets.nonEmpty) {
                 @assets.map { link =>
-                        <li class="panel_materials_item @link.classification">
+                        <li class="panel_materials_item @link.release">
                             <a href="@link.pageURL" class="filename">@link.pageName.@link.format.extension</a>
-                            <span class="classification">@link.classification.toString.charAt(0)</span>
+                            <span class="release">@link.release.toString.charAt(0)</span>
                             @cast[TimeseriesAssetSlot](link).map { ts =>
                               <span class="duration">ts.duration</span>
                             }

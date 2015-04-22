@@ -64,7 +64,7 @@ final class TranscodeJob private[models] (override val asset : Asset, owner : Pa
     val sha1 = sha1o.getOrElse(store.SHA1(file.file))
     for {
       _ <- Audit.change("asset", SQLTerms('duration -> duration, 'sha1 -> sha1, 'size -> file.file.length), SQLTerms('id -> id))
-      a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.classification, duration, asset.name, sha1)
+      a = new TimeseriesAsset(id, asset.volume, asset.format.asInstanceOf[TimeseriesFormat], asset.release, duration, asset.name, sha1)
       _ = store.FileAsset.store(a, file)
       _ <- lsql"UPDATE slot_asset SET segment = segment(lower(segment), lower(segment) + $duration) WHERE asset = $id"
         .execute
@@ -112,7 +112,7 @@ object Transcode extends TableId[Asset]("transcode") {
 
   def create(orig : FileAsset, segment : Segment = Segment.full, options : IndexedSeq[String] = defaultOptions, duration : Option[Offset] = None)(implicit site : Site, siteDB : Site.DB, exc : ExecutionContext) : Future[TranscodeJob] =
     for {
-      asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.classification, orig.name, duration)
+      asset <- Asset.createPending(orig.volume, orig.format.isTranscodable.get, orig.release, orig.name, duration)
       tc = new TranscodeJob(asset, site.identity, orig, segment, options)
       _ <- INSERT('asset -> tc.id, 'owner -> tc.ownerId, 'orig -> tc.origId, 'segment -> tc.segment, 'options -> tc.options).execute
       _ <- lsql"UPDATE slot_asset SET asset = ${asset.id}, segment = segment(lower(segment) + ${tc.offset}, COALESCE(lower(segment) + ${segment.upperBound}, upper(segment))) WHERE asset = ${orig.id}"

@@ -9,8 +9,8 @@
             @widget.tag.form(form) {
 
                 @widget.tag.inputText(form.name(), 'placeholder -> "Name")
-                @widget.enumSelect(form.classification(), Classification)
-                @widget.tag.select(form.excerpt(), ("" -> "NONE") +: Classification.values.toSeq.map(v => (v.id.toString, v.toString)), 'class -> "half")
+                @widget.enumSelect(form.release(), Release)
+                @widget.tag.select(form.excerpt(), ("" -> "") +: Release.values.toSeq.map(v => (v.id.toString, v.toString)), 'class -> "half")
 
                 @widget.tag.inputHidden(form.container())
                 @widget.tag.inputHidden(form.position())

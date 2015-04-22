@@ -346,19 +346,19 @@ consent.EXCERPTS=Excerpt: The identifying data in this session have been release
 consent.PUBLIC=Public: The identifying data in this session have been released publicly.
 
 classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
-classification.RESTRICTED=Restricted: potentially identifying data; shared only with authorized Databrary users with appropriate participant release.
-classification.SHARED=Shared: shared with authorized Databrary users for educational or research purposes.
+classification.SHARED=Restricted: potentially identifying data; shared only with authorized Databrary users with appropriate participant release.
+classification.EXCERPTS=Shared: shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
 classification.excerpt.prompt=Choose sharing level...
 classification.excerpt.PRIVATE=Not shared.
-classification.excerpt.RESTRICTED=Shared only with authorized Databrary users with appropriate participant release.
-classification.excerpt.SHARED=Shared with authorized Databrary users for educational or research purposes.
+classification.excerpt.SHARED=Shared only with authorized Databrary users with appropriate participant release.
+classification.excerpt.EXCERPTS=Shared with authorized Databrary users for educational or research purposes.
 classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
 
 classification.select.PRIVATE=Never share this file: only available to collaborators.
 classification.select.RESTRICTED=This file contains identifiable data such as faces, voices, or dates.
-classification.select.SHARED=Only share this file with authorized Databrary users for educational or research purposes.
+classification.select.EXCERPTS=Only share this file with authorized Databrary users for educational or research purposes.
 classification.select.PUBLIC=This file may be available to anybody for unrestricted use.
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.

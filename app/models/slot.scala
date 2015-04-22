@@ -22,7 +22,7 @@ trait Slot extends InVolume with SiteObject {
   final def containerId : Container.Id = container.id
   def volume = container.volume
 
-  def consent : Consent.Value = context.consent
+  def release : Release.Value = context.release
 
   /** True if this is its container's full slot. */
   def isFull : Boolean = segment.isFull
@@ -30,28 +30,28 @@ trait Slot extends InVolume with SiteObject {
   /** Effective start point of this slot within the container. */
   final def position : Offset = segment.lowerBound.getOrElse(Offset.ZERO)
 
-  def consents : Future[Seq[ContextSlot]] =
-    if (consent != Consent.NONE) async(Seq(context)) else
-    SlotConsent.rowContainer(container)
-    .SELECT(sql"WHERE slot_consent.container = $containerId AND slot_consent.segment && $segment")
+  def releases : Future[Seq[ContextSlot]] =
+    if (Maybe(release)) async(Seq(context)) else
+    SlotRelease.rowContainer(container)
+    .SELECT(sql"WHERE slot_release.container = $containerId AND slot_release.segment && $segment")
     .list
 
   /** Update the given values in the database. */
-  final def setConsent(c : Consent.Value) : Future[Boolean] =
-    if (c == Consent.NONE)
-      Audit.remove("slot_consent", slotSql).execute.map(_ => true)
-    else
-      Audit.changeOrAdd("slot_consent", SQLTerms('consent -> c), slotSql).execute
+  final def setRelease(c : Release.Value) : Future[Boolean] =
+    if (Maybe(c))
+      Audit.changeOrAdd("slot_release", SQLTerms('release -> c), slotSql).execute
         .recover {
           case SQLDuplicateKeyException() => false
         }
+    else
+      Audit.remove("slot_release", slotSql).execute.map(_ => true)
 
   /** The permisison level granted to restricted data within this slot. */
-  final def dataPermission(classification : Classification.Value) : HasPermission =
-    dataPermission(classification, consent)
+  final override def dataPermission(r : Release.Value = Release.DEFAULT) : HasPermission =
+    super.dataPermission(Maybe(r).orElse(release))
   /** Whether the current user may not download restricted data within this slot. */
   final def restricted : Boolean =
-    !dataPermission(Classification.RESTRICTED).checkPermission(Permission.READ)
+    !dataPermission().checkPermission(Permission.VIEW)
 
   final def getDate : Option[org.joda.time.ReadablePartial] =
     container.date.map { date =>
@@ -94,7 +94,7 @@ trait Slot extends InVolume with SiteObject {
   private[this] def _ident : FutureVar[String] =
     _idents.map(_.mkString(" - "))
 
-  def pageName = container.name orElse _ident.peek.flatMap(Maybe(_).opt) getOrElse {
+  def pageName = container.name orElse _ident.peek.flatMap(Maybe(_).opt()) getOrElse {
     if (container.top)
       volume.name
     else
@@ -107,13 +107,13 @@ trait Slot extends InVolume with SiteObject {
   def fileName : Future[String] =
     idents.map(i => store.fileName(container.name ++: i : _*))
 
-  protected def consentJson : Option[JsonField] =
-    if (consent == Consent.NONE) None else Some('consent -> consent)
+  protected def releaseJson : Option[JsonField] =
+    Maybe(release).opt('release -> _)
 
   final def slotJson : JsonObject = JsonObject.flatten(
     Some('container -> container.json),
     if (segment.isFull) None else Some('segment -> segment),
-    consentJson
+    releaseJson
   )
 
   def json : JsonValue = slotJson
@@ -133,12 +133,12 @@ trait Slot extends InVolume with SiteObject {
     , "records" -> (opt => jsonRecords)
     , "tags" -> (opt => TagCoverage.getSlot(this).map(JsonRecord.map(c => c.tag.json ++ c.json)))
     , "comments" -> (opt => comments.map(JsonArray.map(_.json - "container")))
-    , "consents" -> (opt => consents.map {
+    , "releases" -> (opt => releases.map {
         case Seq() => JsNull
-        case Seq(c) if c.segment === segment => Json.toJson(c.consent)
+        case Seq(c) if c.segment === segment => Json.toJson(c.release)
         case s => JsonArray(s.map { s => JsonObject(
           'segment -> s.segment,
-          'consent -> s.consent)
+          'release -> s.release)
         })
       })
     , "excerpts" -> (opt => Excerpt.getSlot(this).map(JsonArray.map(e =>
@@ -155,7 +155,7 @@ trait ContextSlot extends Slot {
     }.orNull
 }
 
-final class SlotConsent private (override val container : Container, val segment : Segment, override val consent : Consent.Value)
+final class SlotRelease private (override val container : Container, val segment : Segment, override val release : Release.Value)
   extends ContextSlot {
   private[models] def sqlKey = slotSql
 }
@@ -178,7 +178,7 @@ object Slot extends SlotTable("slot") {
 
   def get(container : Container, segment : Segment) : Future[Slot] =
     if (segment.isFull) async(container)
-    else if (container.consent != Consent.NONE) async(new Row(container, segment))
+    else if (Maybe(container.release)) async(new Row(container, segment))
     else ContextSlot.rowContainer(container, SQL.Arg(container.id), SQL.Arg(segment))
       .map { context =>
         new Row(context, segment)
@@ -196,40 +196,40 @@ object Slot extends SlotTable("slot") {
 }
 
 private[models] object ContextSlot {
-  private[models] def rowContainer(container : Selector[Consent.Value => Container], segment : Statement) : Selector[ContextSlot] =
-    container.join(SlotConsent.rowUsing(segment = segment))
-    .map { case (container, consent) =>
-      consent(container)
+  private[models] def rowContainer(container : Selector[Release.Value => Container], segment : Statement) : Selector[ContextSlot] =
+    container.join(SlotRelease.rowUsing(segment = segment))
+    .map { case (container, release) =>
+      release(container)
     }
   private[models] def rowContainer(container : Container, containerSql : Statement, segment : Statement) : Selector[ContextSlot] = {
     val c = Container.fixed(container).on(containerSql + " = container.id")
-    if (container.consent != Consent.NONE) c
-    else c.join(SlotConsent.rowUsing(segment = segment)).map { case (_, consent) =>
-      consent(container)
+    if (Maybe(container.release)) c
+    else c.join(SlotRelease.rowUsing(segment = segment)).map { case (_, release) =>
+      release(container)
     }
   }
 }
 
-private[models] object SlotConsent extends Table[SlotConsent]("slot_consent") with TableSlot[SlotConsent] {
-  private[models] final case class Row(consent : Consent.Value, segment : Segment) {
-    def apply(container : Consent.Value => Container) : ContextSlot =
-      if (consent == Consent.NONE || segment.isFull) container(consent)
-      else new SlotConsent(container(Consent.NONE), segment, consent)
+private[models] object SlotRelease extends Table[SlotRelease]("slot_release") with TableSlot[SlotRelease] {
+  private[models] final case class Row(release : Release.Value, segment : Segment) {
+    def apply(container : Release.Value => Container) : ContextSlot =
+      if (release == Release.DEFAULT || segment.isFull) container(release)
+      else new SlotRelease(container(Release.DEFAULT), segment, release)
     def apply(container : Container) : ContextSlot =
-      apply(c => container.ensuring(_.consent == c))
+      apply(c => container.ensuring(_.release == c))
   }
-  val No = Row(Consent.NONE, Segment.empty)
+  val No = Row(Release.DEFAULT, Segment.empty)
 
-  private[models] val consent = Columns(
-      SelectColumn[Consent.Value]("consent")
+  private[models] val release = Columns(
+      SelectColumn[Release.Value]("release")
     )
   private val columns = 
-    (consent ~+ segment).map(Row.apply _)
+    (release ~+ segment).map(Row.apply _)
   private[models] def rowContainer(container : Container) : Selector[ContextSlot] =
     columns.map(_(container))
 
   private[models] def rowUsing(container : Statement = "container.id", segment : Statement) : Selector[Row] =
-    columns.on_?(container + " = slot_consent.container AND " ++ segment + " <@ slot_consent.segment")
+    columns.on_?(container + " = slot_release.container AND " ++ segment + " <@ slot_release.segment")
     .map(_.getOrElse(No))
 }
 

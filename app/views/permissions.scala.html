@@ -1,8 +1,8 @@
 @()(implicit request : Request[_])
 
 @html("Permissions", None) {
-@defining(Classification.values.toSeq) { cs =>
-@defining(Consent.values.toSeq) { rs =>
+@defining(Release.values.toSeq) { cs =>
+@defining(Release.values.toSeq) { rs =>
 <article class="wrap">
   <div class="row">
     <h1 class="view-title">Who can access which data?</h3>
@@ -22,7 +22,7 @@
             </th>
             @cs.map { c =>
             <th>
-              <img src="@routes.Assets.at("icons/classification/" + c.toString.toLowerCase + ".png")"></img> @c
+              <img src="@routes.Assets.at("icons/release/" + c.toString.toLowerCase + ".svg")"></img> @c
             </th>
             }
           </tr>
@@ -54,8 +54,8 @@
           @rs.map { r =>
           <tr>
             <th>
-              @r @if(r != Consent.NONE) {
-                <img src="@routes.Assets.at("icons/consent/" + r.toString.toLowerCase + ".png")"></img>
+              @r @if(Maybe(r)) {
+                <img src="@routes.Assets.at("icons/release/" + r.toString.toLowerCase + ".svg")"></img>
               }
             </th>
             <td>
@@ -63,7 +63,7 @@
             </td>
             @cs.map { c =>
             <td>
-              @Permission.read(c, r) match {
+              @Permission.read(Maybe(c).orElse(r)) match {
               case Permission.READ => {
                 Collaborators
               }

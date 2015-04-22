@@ -57,8 +57,7 @@ object AngularController extends SiteController {
         /* hack to fix quoting (consider using https://github.com/SlexAxton/messageformat.js if things get more complicated) */
         _.mapValues(java.text.MessageFormat.format(_)))))
     , ('permission, json.Json.toJson(Permission.values.toSeq.map(_.toString)))
-    , ('consent, json.Json.toJson(Consent.values.toSeq.map(_.toString)))
-    , ('classification, json.Json.toJson(Classification.values.toSeq.map(_.toString)))
+    , ('release, json.Json.toJson(Release.values.toSeq.map(_.toString)))
     , ('metric, JsonRecord.map[Metric[_]](_.json)(Metric.getAll))
     , ('category, JsonRecord.map[RecordCategory](_.json)(RecordCategory.getAll))
     , ('format, JsonRecord.map[AssetFormat](_.json)(AssetFormat.getAll))
