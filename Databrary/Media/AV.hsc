@@ -405,15 +405,15 @@ avSeekStream ctx s frame offset = do
       throwAVErrorIf_ "av_read_frame" (FileContext ctx) $
         avReadFrame ctx pkt
       psi <- #{peek AVPacket, stream_index} pkt
-      if psi /= si then seek else
-        with 0 $ \gpp -> do
-          throwAVErrorIf_ "avcodec_decode_video2" (FileContext ctx) $
-            avcodecDecodeVideo2 codec frame gpp pkt
-          gp <- peek gpp
-          if gp == 0 then seek else do
-            pts <- avFrameGetBestEffortTimestamp frame
-            if Fold.any (pts <) off then seek else
-              #{poke AVFrame, pts} frame pts -- done
+      if psi /= si then seek else do
+      with 0 $ \gpp -> do
+      throwAVErrorIf_ "avcodec_decode_video2" (FileContext ctx) $
+        avcodecDecodeVideo2 codec frame gpp pkt
+      gp <- peek gpp
+      if gp == 0 then seek else do
+      pts <- avFrameGetBestEffortTimestamp frame
+      if Fold.any (pts <) off then seek else do
+      #{poke AVFrame, pts} frame pts -- done
   seek
 
 
@@ -427,62 +427,61 @@ avFrame :: AV -> RawFilePath -> Maybe DiffTime -> Maybe Int -> Maybe Int -> Mayb
 avFrame AV infile offset width height outfile =
   withAVInput infile (isimg ?> "image2") $ \inctx ->
   with nullPtr $ \icodecp ->
-  withAVDictionary $ \opts ->
-  do
-    when isimg $
-      #{poke AVFormatContext, video_codec_id} inctx (#{const AV_CODEC_ID_MJPEG} :: AVCodecID)
-    findAVStreamInfo inctx
+  withAVDictionary $ \opts -> do
+  when isimg $
+    #{poke AVFormatContext, video_codec_id} inctx (#{const AV_CODEC_ID_MJPEG} :: AVCodecID)
+  findAVStreamInfo inctx
 
-    si <- throwAVErrorIf "av_find_best_stream" (FileContext inctx) $
-      avFindBestStream inctx #{const AVMEDIA_TYPE_VIDEO} (-1) (-1) icodecp 0
-    nb :: CUInt <- #{peek AVFormatContext, nb_streams} inctx
-    isl <- #{peek AVFormatContext, streams} inctx
-    forM_ [0..pred (fromIntegral nb)] $ \i ->
-      when (i /= si) $ do
-        is <- peekElemOff isl (fromIntegral i)
-        #{poke AVStream, discard} is (#{const AVDISCARD_ALL} :: #{type enum AVDiscard})
-    is <- peekElemOff isl (fromIntegral si)
+  si <- throwAVErrorIf "av_find_best_stream" (FileContext inctx) $
+    avFindBestStream inctx #{const AVMEDIA_TYPE_VIDEO} (-1) (-1) icodecp 0
+  nb :: CUInt <- #{peek AVFormatContext, nb_streams} inctx
+  isl <- #{peek AVFormatContext, streams} inctx
+  forM_ [0..pred (fromIntegral nb)] $ \i ->
+    when (i /= si) $ do
+      is <- peekElemOff isl (fromIntegral i)
+      #{poke AVStream, discard} is (#{const AVDISCARD_ALL} :: #{type enum AVDiscard})
+  is <- peekElemOff isl (fromIntegral si)
 
-    setAVDictionary opts "threads" "1"
-    icodec <- peek icodecp
-    withAVCodec inctx is icodec opts $
-      withAVFrame $ \frame -> do
-        avSeekStream inctx is frame offset
-        ffmt <- #{peek AVFrame, format} frame
-        fwidth :: CInt <- #{peek AVFrame, width} frame
-        fheight :: CInt <- #{peek AVFrame, height} frame
-        fmap fst $ withAVOutput outfile (maybe "image2pipe" (const "image2") outfile) $ \outctx -> do
-          ocodec <- throwAVErrorIfNull "avcodec_find_encoder(AV_CODEC_ID_MJPEG)" (FileContext outctx) $
-            avcodecFindEncoder #{const AV_CODEC_ID_MJPEG}
-          os <- throwAVErrorIfNull "avformat_new_stream" (FileContext outctx) $
-            avformatNewStream outctx ocodec
-          oc :: Ptr AVCodecContext <- #{peek AVStream, codec} os
-          avFrameInitializeStream os inctx is frame (maybe (-1) fromIntegral width) (maybe (-1) fromIntegral height)
-          owidth <- #{peek AVCodecContext, width} oc
-          oheight <- #{peek AVCodecContext, height} oc
-          fmts <- #{peek AVCodec, pix_fmts} ocodec
-          fmt <- throwAVErrorIf "avcodec_find_best_pix_fmt_of_list" (FileContext outctx) $
-            avcodecFindBestPixFmtOfList fmts ffmt 0 nullPtr
-          #{poke AVCodecContext, pix_fmt} oc fmt
-          when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $ do
-            r <- avFrameRescale oc frame
-            unless (r == 0) $
-              throwAVError 0 "av_frame_get_buffer" (FileContext outctx)
+  setAVDictionary opts "threads" "1"
+  icodec <- peek icodecp
+  withAVCodec inctx is icodec opts $ do
+  withAVFrame $ \frame -> do
+  avSeekStream inctx is frame offset
+  ffmt <- #{peek AVFrame, format} frame
+  fwidth :: CInt <- #{peek AVFrame, width} frame
+  fheight :: CInt <- #{peek AVFrame, height} frame
+  fmap fst $ withAVOutput outfile (maybe "image2pipe" (const "image2") outfile) $ \outctx -> do
+  ocodec <- throwAVErrorIfNull "avcodec_find_encoder(AV_CODEC_ID_MJPEG)" (FileContext outctx) $
+    avcodecFindEncoder #{const AV_CODEC_ID_MJPEG}
+  os <- throwAVErrorIfNull "avformat_new_stream" (FileContext outctx) $
+    avformatNewStream outctx ocodec
+  oc :: Ptr AVCodecContext <- #{peek AVStream, codec} os
+  avFrameInitializeStream os inctx is frame (maybe (-1) fromIntegral width) (maybe (-1) fromIntegral height)
+  owidth <- #{peek AVCodecContext, width} oc
+  oheight <- #{peek AVCodecContext, height} oc
+  fmts <- #{peek AVCodec, pix_fmts} ocodec
+  fmt <- throwAVErrorIf "avcodec_find_best_pix_fmt_of_list" (FileContext outctx) $
+    avcodecFindBestPixFmtOfList fmts ffmt 0 nullPtr
+  #{poke AVCodecContext, pix_fmt} oc fmt
+  when (fmt /= ffmt || owidth /= fwidth || oheight /= fheight) $ do
+    r <- avFrameRescale oc frame
+    unless (r == 0) $
+      throwAVError 0 "av_frame_get_buffer" (FileContext outctx)
 
-          setAVDictionary opts "threads" "1"
-          withAVCodec outctx os ocodec opts $
-            withAVPacket $ \pkt ->
-            with 0 $ \gpp -> do
-              throwAVErrorIf_ "avformat_write_header" (FileContext outctx) $
-                avformatWriteHeader outctx nullPtr
-              throwAVErrorIf_ "avcodec_encode_video2" (FileContext outctx) $
-                avcodecEncodeVideo2 oc pkt frame gpp
-              gp <- peek gpp
-              when (gp == 0) $
-                throwAVError 0 "avcodec_encode_video2 packet" (FileContext outctx)
-              throwAVErrorIf_ "av_write_frame" (FileContext outctx) $
-                avWriteFrame outctx pkt
-              throwAVErrorIf_ "av_write_trailer" (FileContext outctx) $
-                avWriteTrailer outctx
+  setAVDictionary opts "threads" "1"
+  withAVCodec outctx os ocodec opts $ do
+  withAVPacket $ \pkt -> do
+  with 0 $ \gpp -> do
+  throwAVErrorIf_ "avformat_write_header" (FileContext outctx) $
+    avformatWriteHeader outctx nullPtr
+  throwAVErrorIf_ "avcodec_encode_video2" (FileContext outctx) $
+    avcodecEncodeVideo2 oc pkt frame gpp
+  gp <- peek gpp
+  when (gp == 0) $
+    throwAVError 0 "avcodec_encode_video2 packet" (FileContext outctx)
+  throwAVErrorIf_ "av_write_frame" (FileContext outctx) $
+    avWriteFrame outctx pkt
+  throwAVErrorIf_ "av_write_trailer" (FileContext outctx) $
+    avWriteTrailer outctx
   where
   isimg = isNothing offset

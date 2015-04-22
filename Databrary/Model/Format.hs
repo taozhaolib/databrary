@@ -8,6 +8,7 @@ module Databrary.Model.Format
   , getFormatByFilename
   , dropFormatExtension
   , videoFormat
+  , imageFormat
   , formatIsImage
   , formatTranscodable
   , formatSample

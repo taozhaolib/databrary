@@ -76,4 +76,4 @@ webFile sp@(StaticPath p) = action GET ("public" :: T.Text, sp) $ do
         guard (cd == d)
         return ch
 #endif
-  serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) (digestToHexByteString h)
+  serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) Nothing (digestToHexByteString h)

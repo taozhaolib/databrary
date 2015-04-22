@@ -6,10 +6,12 @@ module Databrary.Controller.AssetSegment
   , downloadAssetSegment
   ) where
 
+import Control.Applicative ((<$>))
 import Control.Monad (when)
 import Control.Monad.IO.Class (liftIO)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
+import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
 import Data.Maybe (isNothing, isJust)
 import Data.Monoid (mempty, (<>))
@@ -31,6 +33,7 @@ import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment
 import Databrary.Store.Asset
 import Databrary.HTTP.File
+import Databrary.HTTP.Request
 import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Angular
@@ -57,17 +60,25 @@ viewAssetSegment api si ai = action GET (api, si, ai) $ withAuth $ do
 serveAssetSegment :: AssetSegment -> AuthAction
 serveAssetSegment as = do
   store <- maybeAction =<< getAssetFile a
+  szs <- peeks $ lookupQueryParameters "size"
+  let sz = case szs of
+        [Just n] -> fst <$> BSC.readInt n
+        _ -> Nothing
   auditAssetSegmentDownload True as
-  (hd, part) <- fileResponse store (view as) etag
+  (hd, part) <- fileResponse store (view as) Nothing etag
+  av <- peek
+  let samp p = do
+        Just s <- liftIO $ avFrame av store p sz Nothing Nothing
+        okResponse hd s
   if full
-    then okResponse hd (store, part)
+    then
+      if isJust sz && afmt == imageFormat
+        then samp Nothing
+        else okResponse hd (store, part)
     else do
-      av <- peek
       maybe
         (fail "unimplemented")
-        (\(Offset p) -> do
-          Just samp <- liftIO $ avFrame av store (Just p) Nothing Nothing Nothing
-          okResponse hd samp)
+        (\(Offset p) -> samp (Just p))
         point
   where
   a = slotAsset $ segmentAsset as

@@ -74,7 +74,7 @@ pad n m
   p = str $ BSC.replicate (abs n - logStrLength s) ' '
 
 quote :: Show a => Maybe a -> LogStr
-quote = maybe (char '-') (str . show)
+quote = maybe (char '-') (str . show) -- FIXME, inefficient
 
 time :: Timestamp -> LogStr
 time = str . formatTime defaultTimeLocale "%F %X"

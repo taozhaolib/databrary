@@ -181,5 +181,5 @@ viewAvatar i = action GET (i, "avatar" :: T.Text) $
     (\a -> do
       -- elsewhere? size <- runForm Nothing $ "size" .:> optional deform
       store <- maybeAction =<< getAssetFile a
-      serveFile store (assetFormat a) (fromJust $ assetSHA1 a))
+      serveFile store (assetFormat a) Nothing (fromJust $ assetSHA1 a))
     =<< lookupAvatar i
