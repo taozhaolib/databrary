@@ -738,6 +738,9 @@ app.controller('volume/slot', [
             return
         return
 
+      download: () ->
+        @downloading = true
+
       @sort = ->
         return unless $scope.assets
         $scope.assets.sort (a, b) ->

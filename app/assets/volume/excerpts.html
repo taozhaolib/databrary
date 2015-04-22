@@ -1,4 +1,4 @@
-<download-display></download-display>
+<download-display ng-if="downloading" asset="current"></download-display>
 
 <div class="row">
   <div class="panel-excerpts-player col-desktop-7 col-tablet-5 col-mobile-6">
@@ -6,7 +6,7 @@
       <div ng-repeat="current in [current]">
         <header>
           <a ng-href="{{::jumpLink(current)}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
-          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-click="toggleDownload()" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
+          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-click="download()" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
           <h1 class="panel-excerpts-player-heading">
             <div class="classification icon line" ng-class="::page.constants.classification[current.excerpt || current.asset.classification]" hint="classification-{{::page.constants.classification[current.excerpt || current.asset.classification]}}"></div>
             <img class="icon" ng-src="{{::current.icon}}" hint="format-{{::current.format.extension}}">
