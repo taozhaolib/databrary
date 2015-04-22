@@ -48,7 +48,7 @@ trait Slot extends InVolume with SiteObject {
 
   /** The permisison level granted to restricted data within this slot. */
   final override def dataPermission(r : Release.Value = Release.DEFAULT) : HasPermission =
-    super.dataPermission(Maybe(r).orElse(release))
+    volume.dataPermission(Maybe(r).orElse(release))
   /** Whether the current user may not download restricted data within this slot. */
   final def restricted : Boolean =
     !dataPermission().checkPermission(Permission.VIEW)
