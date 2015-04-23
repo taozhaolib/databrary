@@ -1,4 +1,4 @@
-<download-display ng-if="current.downloading" asset="current.asset"></download-display>
+<download-display ng-if="current.downloading" asset="current.asset" close="current.downloading = false"></download-display>
 
 <article class="view slot-view" flow-init="flowOptions"
     flow-file-added="fileAdded($file, $event)"
@@ -27,7 +27,7 @@
               <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending">Save</button>
               <button ng-if="editing && !current.file && current.asset" class="player-action-word yellow" flow-btn>Replace File</button>
               <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-action-icon icon trash2 button"></a>
-              <span ng-click="current.download()" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
+              <span ng-click="current.downloading = true" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
               <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
             </nav>
             <div ng-if="!(folded || !current)" id="player-scroll" class="player-scroll" ng-style="{height:playerHeight+'px'}">

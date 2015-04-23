@@ -1,4 +1,4 @@
-<download-display ng-if="downloading" asset="current"></download-display>
+<download-display ng-if="downloading" asset="current" close="download(false)"></download-display>
 
 <div class="row">
   <div class="panel-excerpts-player col-desktop-7 col-tablet-5 col-mobile-6">
@@ -6,7 +6,7 @@
       <div ng-repeat="current in [current]">
         <header>
           <a ng-href="{{::jumpLink(current)}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
-          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-click="download()" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
+          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-click="download(true)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
           <h1 class="panel-excerpts-player-heading">
             <div class="release icon line" ng-class="::page.constants.release[current.release]" hint="classification-{{::page.constants.release[current.release]}}"></div>
             <img class="icon" ng-src="{{::current.icon}}" hint="format-{{::current.format.extension}}">
@@ -23,13 +23,13 @@
 
   <div class="panel-excerpts-list col-desktop-8 col-tablet-4 col-mobile-6">
     <div class="row">
-      <div ng-repeat="(revval, revname) in page.constants.classification">
-        <div ng-init="val = page.constants.classification.length - revval - 1; name = page.constants.classification[val]">
+      <div ng-repeat="(revval, revname) in page.constants.release">
+        <div ng-init="val = page.constants.release.length - revval - 1; name = page.constants.release[val]">
           <div class="panel-excerpts-type" ng-if="excerpts.length">
             <span message="{{::'excerpts.'+name+'.title'}}"></span>
             <span class="icon info" tooltip="'excerpts.'+name+'.description' | message"></span>    
           </div>
-          <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{excerpt: val} as excerpts">
+          <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{release: val} as excerpts">
             <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
               <div class="panel-excerpts-actions">
                 <a ng-href="{{::jumpLink(excerpt)}}" class="icon session tool" tooltip="'session.jump' | message:'highlight'"></a>
