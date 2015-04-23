@@ -26,8 +26,8 @@
       <div ng-repeat="(revval, revname) in page.constants.release">
         <div ng-init="val = page.constants.release.length - revval - 1; name = page.constants.release[val]">
           <div class="panel-excerpts-type" ng-if="excerpts.length">
+            <span class="release icon" ng-class="::name" tooltip="'excerpts.'+name+'.description' | message"></span>
             <span message="{{::'excerpts.'+name+'.title'}}"></span>
-            <span class="icon info" tooltip="'excerpts.'+name+'.description' | message"></span>    
           </div>
           <div class="panel-excerpts-box" ng-repeat="excerpt in volume.excerpts | filter:{release: val} as excerpts">
             <div class="panel-excerpts-binder" ng-class="{'panel-excerpts-list-current':excerpt===current}">
