@@ -3,7 +3,7 @@
     <input type="checkbox" name="{{::name+'.check'}}" ng-model="form.check">
     <span message="classification.select.{{::release[0]}}"></span>
   </label>
-  <select ng-if="!form.check" name="{{::name}}" ng-model="form.value" ng-options="i as 'classification.select.'+l | message for (i, l) in ::release.slice(1)">
+  <select ng-if="!form.check" name="{{::name}}" ng-model="form.value" ng-options="i as 'classification.select.'+l | message for (i, l) in ::release.slice(1)" required>
     <option value="">Override sharing release level...</option>
   </select>
 </div>

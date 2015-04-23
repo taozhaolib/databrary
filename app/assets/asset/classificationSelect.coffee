@@ -19,10 +19,12 @@ app.directive 'classificationSelect', [
               `$scope.value == '0'`
             set: (c) ->
               $scope.value = if c then '0' else ''
+              return
           value:
             get: ->
               ~~$scope.value-1+''
             set: (v) ->
               $scope.value = ++v+''
+              return
         return
 ]
