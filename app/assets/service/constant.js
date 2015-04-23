@@ -29,6 +29,7 @@ app.factory('constantService', [
     constants.metricName = invertBy(constants.metric, "name");
 
     /* convenient aliases: */
+    constants.permission.VIEW = constants.permission.PUBLIC;
     constants.permission.CONTRIBUTE = constants.permission.EDIT;
     constants.permission.SUPER = constants.permission.length;
 

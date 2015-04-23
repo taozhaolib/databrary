@@ -6,7 +6,7 @@
       <div ng-repeat="current in [current]">
         <header>
           <a ng-href="{{::jumpLink(current)}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
-          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.READ)" ng-click="download(true)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
+          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.VIEW)" ng-click="download(true)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
           <h1 class="panel-excerpts-player-heading">
             <div class="release icon line" ng-class="::page.constants.release[current.release]" hint="classification-{{::page.constants.release[current.release]}}"></div>
             <img class="icon" ng-src="{{::current.icon}}" hint="format-{{::current.format.extension}}">

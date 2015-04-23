@@ -20,7 +20,7 @@ object Zip {
   private def slotAssets(slot : Slot, prefix : String) : Future[Enumerator[ZipFile.StreamEntry]] =
     slot.assets.map { assets =>
       val names = mutable.Set.empty[String]
-      Enumerator(assets.flatMap(cast[SlotFileAsset](_).filter(_.checkPermission(Permission.READ))).map { sa =>
+      Enumerator(assets.flatMap(cast[SlotFileAsset](_).filter(_.checkPermission(Permission.VIEW))).map { sa =>
         val base = sa.asset.name.getOrElse(sa.asset.format.name)
         val ext = sa.format.extension.fold("")("." + _)
         var name = base + ext
