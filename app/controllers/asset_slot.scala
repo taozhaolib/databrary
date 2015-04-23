@@ -37,7 +37,7 @@ object AssetSlotController extends AssetSlotController {
     }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
-    Action(s, segment, o, Permission.READ).async { implicit request =>
+    Action(s, segment, o, Permission.VIEW).async { implicit request =>
       request.obj match {
         case a : BackedAsset =>
           (if (inline) macros.async(None) else for {
@@ -51,10 +51,10 @@ object AssetSlotController extends AssetSlotController {
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset, size : Int = AssetController.defaultThumbSize) =
     head(i, Range.singleton(eo), o, size)
-  def head(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+  def head(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.VIEW).async { implicit request =>
     getFrame(Right(Offset.ZERO), size)
   }
-  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.VIEW).async { implicit request =>
     getFrame(Left(0.25f), size)
   }
 }

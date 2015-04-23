@@ -27,7 +27,7 @@
                 <span></span>
 
                 @assets.map { link =>
-                    @cast[FileAssetSlot](link).filter(_.checkPermission(Permission.READ)).map { link =>
+                    @cast[FileAssetSlot](link).filter(_.checkPermission(Permission.VIEW)).map { link =>
                         <div id="asset_@link.sourceId.toString" class="panel_materials_frame">
                             <h2>
                                 @link.pageName.@link.format.extension <a href='@routes.AssetSlotController.download(link.containerId, link.segment, link.assetId, false)' class="link">download</a>
