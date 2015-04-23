@@ -265,9 +265,13 @@ app.directive 'spreadsheet', [
           else if v == undefined
             c.classList.add('blank')
             v = assumed || ''
-          else if m == 'classification' || m == 'excerpt'
+          else if m == 'classification'
             cn = constants.release[v]
             c.className = cn + ' release icon hint-classification-' + cn
+            v = ''
+          else if m == 'excerpt'
+            if v
+              c.className = 'icon bullet'
             v = ''
           else
             c.classList.remove('blank')
@@ -364,7 +368,7 @@ app.directive 'spreadsheet', [
             $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "format hint-format-" + a.format.extension
           generateCell(row, 'classification', a.release, id + '-class_' + b)
-          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
+          generateCell(row, 'excerpt', a.excerpt?, id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].
