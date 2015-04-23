@@ -489,9 +489,9 @@ app.controller('volume/slot', [
         @data =
           if @asset
             name: @asset.name
-            classification: @asset.classification+''
+            classification: (@asset.classification || 0)+''
           else
-            classification: constants.classification.RESTRICTED+''
+            classification: '0'
         return
 
       Object.defineProperty @prototype, 'id',
@@ -678,12 +678,12 @@ app.controller('volume/slot', [
           if !e
             target: @asset.inSegment(seg)
             on: false
-            classification: ''
+            release: ''
           else if e.equals(seg)
             current: e
             target: e.excerpt
             on: true
-            classification: e.excerpt.excerpt+''
+            release: e.excerpt.excerpt+''
           else
             null
         return
@@ -695,10 +695,11 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         l = {}
-        l[0] = constants.classification[@data.classification]
-        for c, i in constants.classification when i > @data.classification
+        r = @asset.release || 0
+        l[0] = constants.release[0]
+        for c, i in constants.release when i > r
           l[i] = c
-        l[@excerpt.classification] = 'prompt' unless @excerpt.classification of l
+        l[@excerpt.release] = 'prompt' unless @excerpt.release of l
         l
 
       saveExcerpt: (value) ->
@@ -896,9 +897,8 @@ app.controller('volume/slot', [
         records.sort (a, b) ->
           a.record.category - b.record.category || a.record.id - b.record.id
         t = []
-        overlaps = (rr) -> rr.record.id != r.record.id && s.overlaps(rr.segment)
+        overlaps = (rr) -> rr.record.id != r.record.id && r.overlaps(rr)
         for r in records
-          s = r.segment
           for o, i in t
             break unless o[0].record.category != r.record.category || o.some(overlaps)
           t[i] = [] unless i of t
@@ -930,7 +930,7 @@ app.controller('volume/slot', [
         for ri, r of slot.volume.records
           rs[ri] = r
         for sr in records
-          if sr.record.id of rs && sr.segment.overlaps(seg)
+          if sr.record.id of rs && sr.overlaps(seg)
             delete rs[sr.record.id]
         $scope.addRecord.records = rs
         rc = {}
@@ -966,7 +966,7 @@ app.controller('volume/slot', [
     class Consent extends TimeBar
       constructor: (c) ->
         if typeof c == 'object'
-          @consent = c.consent
+          @consent = c.release
           super(c.segment)
         else
           @consent = c
@@ -976,9 +976,9 @@ app.controller('volume/slot', [
       type: 'consent'
 
       classes: ->
-        cn = constants.consent[@consent]
+        cn = constants.release[@consent]
         cls = [cn, 'hint-consent-' + cn]
-        cls.push('slot-consent-select') if $scope.current == this
+        cls.push('slot-release-select') if $scope.current == this
         cls
 
     class TagName extends TimeBar
@@ -1104,7 +1104,7 @@ app.controller('volume/slot', [
     records = slot.records.map((r) -> new Record(r))
 
     $scope.consents =
-      if Array.isArray(consents = slot.consents)
+      if Array.isArray(consents = slot.releases)
         _.map consents, (c) -> new Consent(c)
       else if (consents)
         [new Consent(consents)]

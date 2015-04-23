@@ -53,10 +53,10 @@ private[models] object MeasureType {
 
 
 /** Types of measurements (i.e., "units").
-  * @param classification privacy-determining identification level of measurements of this type.
+  * @param release privacy-determining identification level of measurements of this type.
   * @param values possible values of categorical text data types (nominal/factors), or empty if unrestricted.
   */
-final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val classification : Classification.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T])
+final class Metric[T] private[models] (final val id : Metric.Id, final val name : String, final val release : Release.Value, final val options : IndexedSeq[String] = IndexedSeq.empty[String], _assumed : Option[String] = None)(implicit final val measureType : MeasureType[T])
   extends TableRowId[Metric[_]] {
   final def dataType = measureType.dataType
   final def sqlType : SQL.Type[T] = measureType.sqlType
@@ -66,7 +66,7 @@ final class Metric[T] private[models] (final val id : Metric.Id, final val name 
   final def json = JsonRecord.flatten(id
     , Some('name -> name)
     , Some('type -> dataType.toString)
-    , Some('classification -> classification)
+    , Maybe(release).opt('release -> _)
     , if (options.nonEmpty) Some('options -> options) else None
     , _assumed.map('assumed -> _)
     , if (long) Some('long -> true) else None
@@ -76,13 +76,13 @@ object Metric extends TableId[Metric[_]]("metric") {
   private val row : Selector[Metric[_]] = Columns(
       SelectColumn[Id]("id")
     , SelectColumn[String]("name")
-    , SelectColumn[Classification.Value]("classification")
+    , SelectColumn[Release.Value]("release")
     , SelectColumn[DataType.Value]("type")
     , SelectColumn[Option[IndexedSeq[String]]]("options")
     , SelectColumn[Option[String]]("assumed")
-    ).map { (id, name, classification, dataType, options, assumed) =>
+    ).map { (id, name, release, dataType, options, assumed) =>
       implicit val mt = MeasureType(dataType)
-      new Metric(id, name, classification, options.getOrElse(IndexedSeq.empty[String]), assumed)
+      new Metric(id, name, release, options.getOrElse(IndexedSeq.empty[String]), assumed)
     }
 
   private val list : Seq[Metric[_]] =
@@ -213,8 +213,8 @@ class MeasuresView protected (private val map : collection.Map[Metric[_],Measure
   def value[T](metric : Metric[T]) : Option[T] =
     apply[T](metric).map(_.value)
 
-  def filter(c : Classification.Value) =
-    new MeasuresView(map.filterKeys(_.classification >= c))
+  def filter(f : Release.Value => Boolean) =
+    new MeasuresView(map.filterKeys(m => f(m.release)))
 }
 
 final class Measures private (private val map : collection.mutable.Map[Metric[_],Measure[_]]) extends MeasuresView(map) {
@@ -244,7 +244,7 @@ object Measures extends Table[Measures]("measures") {
   private implicit val sqlMeasure : SQL.Type[Measure[_]] =
     SQL.Type("measure", classOf[Measure[_]])(s =>
       for {
-        i <- Maybe(s.indexOf(':')).opt
+        i <- Maybe(s.indexOf(':')).opt()
         id <- Metric.get(Metric.asId(s.substring(0,i).toInt))
       } yield (new Measure(id, s.substring(i+1))),
       m => m.metricId.toString + ":" + m.datum)

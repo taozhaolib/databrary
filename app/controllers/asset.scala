@@ -42,7 +42,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
       }
       _ <- asset.change(
         name = form.name.get.map(_.map(asset.format.stripExtension)),
-        classification = form.classification.get)
+        release = form.classification.get)
       _ <- slot.foreachAsync(asset.link)
       _ <- form.excerpt.get.foreachAsync(e => Excerpt.set(asset, Segment.full, e).map(r =>
           if (!r && e.nonEmpty) form.excerpt.withError("error.conflict")._throw))
@@ -70,7 +70,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
     for {
       (file, ftype, fname) <- (form.file.get, form.upload.get, form.localfile.get) match {
         case (Some(file), None, None) =>
-          async((file.ref, file.contentType, Maybe(file.filename).opt))
+          async((file.ref, file.contentType, Maybe(file.filename).opt()))
         case (None, Some(token), None) =>
           UploadToken.take(token)(request.asInstanceOf[AuthSite])
           .map(_.fold(form.upload.withError("file.notfound")._throw) { u =>
@@ -94,7 +94,7 @@ private[controllers] sealed class AssetController extends ObjectController[Asset
         .orElse(fname.flatMap(AssetFormat.getFilename(_)))
         .getOrElse(form.format.withError("file.format.unknown")._throw)
       name = fname.map(fmt.stripExtension)
-      classification = form.classification.get.getOrElse(Classification(0))
+      classification = form.classification.get.getOrElse(Release.PRIVATE)
       asset <- fmt match {
         case fmt : TimeseriesFormat if adm && form.timeseries.get =>
           models.TimeseriesAsset.create(form.volume, fmt, classification, name, file)
@@ -147,17 +147,17 @@ object AssetController extends AssetController {
     def volume : Volume
 
     val name = Field(OptionMapping(Mappings.maybeText))
-    val classification = Field(OptionMapping(Mappings.enum(Classification)))
+    val classification = Field(OptionMapping(Mappings.enum(Release)))
     val container = Field(Forms.optional(Forms.of[Container.Id]))
     val position = Field(Forms.optional(Forms.of[Offset]))
-    val excerpt = Field(OptionMapping(Forms.optional(Mappings.enum(Classification))))
+    val excerpt = Field(OptionMapping(Forms.optional(Mappings.enum(Release))))
   }
 
   sealed trait AssetUpdateForm extends AssetForm {
     def asset : Asset
     def volume = asset.volume
     name.fill(Some(asset.name))
-    classification.fill(Some(asset.classification))
+    classification.fill(Some(asset.release))
     container.fill(None)
     position.fill(None)
   }
@@ -183,7 +183,7 @@ object AssetController extends AssetController {
     with AssetUploadForm {
     def actionName = "Upload"
     def volume = request.obj
-    classification.fill(Some(Classification.IDENTIFIED))
+    classification.fill(Some(Release.DEFAULT))
   }
 
   final class ReplaceForm(implicit request : Request[_])
@@ -249,7 +249,7 @@ object AssetHtml extends AssetController with HtmlController {
     Action(o, Permission.EDIT).async { implicit request =>
       request.obj.slot.flatMap { sa =>
         val form = new ChangeForm()
-        form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.classification))))
+        form.excerpt.fill(Some(sa.flatMap(_.excerpt.map(_.release))))
         form.Ok
       }
     }
@@ -281,7 +281,7 @@ object AssetHtml extends AssetController with HtmlController {
         for {
           revs <- Asset.getRevisions(a)
           o = if (revs.nonEmpty) revs.minBy(_._id) else a
-          s <- a.slot.flatMapAsync(s => s.consents.map(_.headOption.flatMap { c =>
+          s <- a.slot.flatMapAsync(s => s.releases.map(_.headOption.flatMap { c =>
             for {
               l <- s.segment.lowerBound
               u <- s.segment.upperBound

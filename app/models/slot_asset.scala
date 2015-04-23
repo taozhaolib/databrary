@@ -9,7 +9,7 @@ import dbrary._
 import dbrary.SQL._
 import site._
 
-final case class Excerpt(segment : Segment, classification : Classification.Value) {
+final case class Excerpt(segment : Segment, release : Release.Value) {
   def apply(seg : Segment) : Boolean = segment @> seg
 }
 
@@ -22,12 +22,12 @@ sealed trait AssetSlot extends Slot {
   protected final def assetSegment = slotAsset.segment
   def format = asset.format
   def entire : Boolean
-  def classification = excerpt.fold(asset.classification)(e => max(asset.classification, e.classification))
+  override def release = Maybe(excerpt.fold(asset.release)(e => max(asset.release, e.release))).orElse(super.release)
 
   /** Effective permission the site user has over this segment, specifically in regards to the asset itself.
-    * Asset permissions depend on volume permissions, but can be further restricted by consent levels. */
+    * Asset permissions depend on volume permissions, but can be further restricted by release levels. */
   final override val permission : Permission.Value =
-    volume.dataPermission(classification, consent).permission
+    dataPermission().permission
 
   final override def auditDownload(implicit site : Site) : Future[Boolean] =
     Audit.download("slot_asset", 'container -> containerId, 'segment -> segment, 'asset -> assetId)
@@ -37,7 +37,7 @@ sealed trait AssetSlot extends Slot {
       vol <- volume.fileName
       slot <- super.fileName
     } yield {
-      store.fileName(Seq(vol) ++ Maybe(slot).opt ++ asset.name.map(store.truncate(_)) : _*)
+      store.fileName(Seq(vol) ++ Maybe(slot).opt() ++ asset.name.map(store.truncate(_)) : _*)
     }
 
   override def pageURL = controllers.routes.AssetSlotHtml.view(containerId, segment, assetId)
@@ -45,8 +45,8 @@ sealed trait AssetSlot extends Slot {
   override def json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),
     if (segment.isFull) None else Some('segment -> segment),
-    consentJson, // probably no-one uses this
-    excerpt.map('excerpt -> _.classification)
+    releaseJson,
+    excerpt.map('excerpt -> _.release)
   )
 
   def json(options : JsonOptions.Options) : Future[JsObject] =
@@ -222,7 +222,7 @@ object AssetSlot extends Table[AssetSlot]("slot_asset") with TableSlot[AssetSlot
 object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
   private[models] val columns = Columns(
       segment
-    , SelectColumn[Classification.Value]("classification")
+    , SelectColumn[Release.Value]("release")
     ).map(Excerpt.apply _)
 
   private def rowVolume(volume : Volume) =
@@ -247,7 +247,7 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     rowVolume(vol)
     .SELECT(sql"""JOIN format ON asset.format = format.id
        WHERE container.volume = ${vol.id} AND asset.volume = ${vol.id}
-         AND GREATEST(excerpt.classification, asset.classification) >= read_classification(${vol.permission}::permission, slot_consent.consent)
+         AND COALESCE(GREATEST(excerpt.release, asset.release), slot_release.release) >= ${Release.read(vol.permission).map(Maybe(_).orElse(Release.PRIVATE))}::release
          AND (asset.duration IS NOT NULL AND format.mimetype LIKE 'video/%' OR format.mimetype LIKE 'image/%')
        ORDER BY container.top DESC LIMIT 1""")
     .singleOpt
@@ -264,13 +264,13 @@ object Excerpt extends Table[AssetSlot]("excerpt") with TableSlot[AssetSlot] {
     .SELECT(sql"WHERE asset.volume = ${slot.volumeId} AND excerpt.segment && ${slot.segment}")
     .list
 
-  def set(asset : Asset, segment : Segment, classification : Option[Classification.Value]) : Future[Boolean] = {
+  def set(asset : Asset, segment : Segment, release : Option[Release.Value]) : Future[Boolean] = {
     implicit val site = asset.site
     val key = SQLTerms('asset -> asset.id)
-    classification.fold {
+    release.fold {
       Audit.remove("excerpt", key :+ SQLTerm.eq("segment", "&&", segment))
-    } { classification =>
-      Audit.changeOrAdd("excerpt", SQLTerms('classification -> classification), key :+ ('segment -> segment))
+    } { release =>
+      Audit.changeOrAdd("excerpt", SQLTerms('release -> release), key :+ ('segment -> segment))
     }.execute.recover {
       case SQLDuplicateKeyException() => false
     }

@@ -2,8 +2,8 @@
   <a href="" ng-click="showConsents=false" ng-show="showConsents" message="wizard.volume-edit-data.releasekeyhide"></a>
   <a href="" ng-click="showConsents=true" ng-hide="showConsents" message="wizard.volume-edit-data.releasekeyshow"></a>
   <ul ng-show="showConsents">
-    <li ng-repeat="(i,c) in page.constants.consent" ng-if="i>0">
-      <span class="icon consent" ng-class="c"></span>
+    <li ng-repeat="(i,c) in page.constants.release" ng-if="i>0">
+      <span class="icon release" ng-class="c"></span>
       <span ng-bind="'consent.'+c | message"></span>
     </li>
   </ul>
@@ -13,8 +13,8 @@
   <a href="" ng-click="showClassification=false" ng-show="showClassification" message="wizard.volume-edit-data.classkeyhide"></a>
   <a href="" ng-click="showClassification=true" ng-hide="showClassification" message="wizard.volume-edit-data.classkeyshow"></a>
   <ul ng-show="showClassification">
-    <li ng-repeat="(i,c) in page.constants.classification" ng-if="i>=0">
-      <span class="icon classification" ng-class="c"></span>
+    <li ng-repeat="(i,c) in page.constants.release" ng-if="i>=0">
+      <span class="icon release" ng-class="c"></span>
       <span ng-bind="'classification.'+c | message"></span>
     </li>
   </ul>
@@ -32,7 +32,7 @@
     <colgroup>
       <col class="name"/>
       <col ng-if="::!top" class="date"/>
-      <col class="consent"/>
+      <col class="release"/>
     </colgroup>
     <colgroup ng-repeat="col in recordCols track by col.category.id">
       <col ng-repeat="metric in col.metrics track by metric.id" ng-class="[col.category.name, metric.name]"/>
@@ -60,7 +60,7 @@
       <tr class="spreadsheet-head-metrics">
         <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
         <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
-        <th id="{{::id}}-consent" class="last" ng-click="clickSlot($event, 'consent')" ng-class="colClasses('consent')">release</th>
+        <th id="{{::id}}-release" class="last" ng-click="clickSlot($event, 'release')" ng-class="colClasses('release')">release</th>
         <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
         <th ng-if-start="::assets" class="first">name</th>
         <th>classification</th>

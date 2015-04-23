@@ -1,3 +1,5 @@
+<download-display ng-if="current.downloading" asset="current.asset" close="current.downloading = false"></download-display>
+
 <article class="view slot-view" flow-init="flowOptions"
     flow-file-added="fileAdded($file, $event)"
     flow-file-success="fileSuccess($file)"
@@ -25,14 +27,14 @@
               <button ng-if="editing && !!(current.asset || current.record)" ng-init="current.dirty && form.edit.$setDirty()" class="player-action-word green" ng-click="current.save()" ng-disabled="form.edit.$pristine || form.edit.$invalid || current.pending">Save</button>
               <button ng-if="editing && !current.file && current.asset" class="player-action-word yellow" flow-btn>Replace File</button>
               <a ng-if="editing && !!(current.asset || current.file || current.record) && !current.pending" ng-click="current.remove()" class="player-action-icon icon trash2 button"></a>
-              <a ng-href="{{current.asset.downloadRoute(false)}}" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.READ)" class="player-action-icon icon download button"></a>
+              <span ng-click="current.downloading = true" target="_self" ng-if="!!current.asset && !current.asset.pending && current.asset.checkPermission(page.permission.VIEW)" class="player-action-icon icon download button"></a>
               <button ng-if="current.canRestore()" class="paste icon" tooltip="'asset.restore' | message:current.canRestore().name" ng-click="current.restore()"></button>
             </nav>
             <div ng-if="!(folded || !current)" id="player-scroll" class="player-scroll" ng-style="{height:playerHeight+'px'}">
               <div class="player-info">
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
-                  <span ng-if="!editing && !!current.asset" class="classification icon" ng-class="page.constants.classification[current.asset.classification]" hint="classification-{{page.constants.classification[current.asset.classification]}}"></span>              
+                  <span ng-if="!editing && !!current.asset" class="release icon" ng-class="page.constants.release[current.asset.release]" hint="classification-{{page.constants.classification[current.asset.release]}}"></span>              
                   <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.asset.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
@@ -88,7 +90,7 @@
               <div id="player-viewport" class="player-viewport">
                 <div ng-if="editing && current.type === 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-drop">
                 <span class="icon line add"></span>
-                <span class="vem-float-dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
+                <span class="dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
               </div>
               <upload-progress class="upload-progress-info" ng-if="!!current.file" progress-value="current.progress"></upload-progress>
               <asset-display ng-repeat="asset in [asset]" ng-if="!!asset" asset="asset"></asset-display>
@@ -154,7 +156,7 @@
             <ng-form ng-switch-when="excerpt" name="form.excerpt">
               <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
               <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove highlight</button>&#32;
-              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.classification" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.classification)"></select>
+              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.release" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.release)"></select>
             </ng-form>
           </div>
           <div class="slot-timeline-timeline">
@@ -209,14 +211,14 @@
                 <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.contains(t)" ng-style="excerpt.style()" ng-dblclick="excerpt.select($event)">
                 </div>
                 <div class="slot-track-asset-info">
-                  <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.READ)" ng-src="{{t.asset.thumbRoute(24)}}">
+                  <img class="slot-track-asset-thumb" ng-if="!!t.asset && t.asset.checkPermission(page.constants.permission.VIEW)" ng-src="{{t.asset.thumbRoute(24)}}">
                   <div class="slot-track-asset-info-name" ng-class="{uploading: !!t.file}">
                     <span ng-bind="t.asset.name || t.data.name || t.file.file.name"></span>
-                    <span ng-if="t.excerpts[0].contains(t)"> (highlight)</span>
+                    <span ng-if="t.asset.excerpt != null"> (highlight)</span>
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
-                  <span ng-if="!!t.asset" class="classification-info classification icon" ng-class="page.constants.classification[t.asset.excerpt || t.asset.classification]" hint="classification-{{page.constants.classification[t.asset.excerpt || t.asset.classification]}}"></span>
+                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.release]" hint="classification-{{page.constants.release[t.asset.release]}}"></span>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.full" ng-style="t.style()">
                   <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>
@@ -225,8 +227,8 @@
             </div>
 
             <div>
-              <div class="slot-consent-track slot-track">
-                <div class="slot-consent consent icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="c.style()" ng-click="c.click($event)" ng-dblclick="c.select($event)" mouse-drag="dragSelection($down, $up, c)"></div>
+              <div class="slot-release-track slot-track">
+                <div class="slot-release release icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="c.style()" ng-click="c.click($event)" ng-dblclick="c.select($event)" mouse-drag="dragSelection($down, $up, c)"></div>
               </div>
             </div>
           </div>

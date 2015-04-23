@@ -37,7 +37,7 @@ object AssetSlotController extends AssetSlotController {
     }
 
   def download(s : Container.Id, segment : Segment, o : models.Asset.Id, inline : Boolean) =
-    Action(s, segment, o, Permission.READ).async { implicit request =>
+    Action(s, segment, o, Permission.VIEW).async { implicit request =>
       request.obj match {
         case a : BackedAsset =>
           (if (inline) macros.async(None) else for {
@@ -51,10 +51,10 @@ object AssetSlotController extends AssetSlotController {
 
   def frame(i : Container.Id, o : Asset.Id, eo : Offset, size : Int = AssetController.defaultThumbSize) =
     head(i, Range.singleton(eo), o, size)
-  def head(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+  def head(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.VIEW).async { implicit request =>
     getFrame(Right(Offset.ZERO), size)
   }
-  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.READ).async { implicit request =>
+  def thumb(i : Container.Id, segment : Segment, o : models.Asset.Id, size : Int = AssetController.defaultThumbSize) = Action(i, segment, o, Permission.VIEW).async { implicit request =>
     getFrame(Left(0.25f), size)
   }
 }
@@ -74,16 +74,16 @@ object AssetSlotApi extends AssetSlotController with ApiController {
 
   private class ExcerptForm(implicit request : Request[_])
     extends ApiForm(routes.AssetSlotApi.setExcerpt(request.obj.containerId, request.obj.segment, request.obj.assetId)) {
-    val classification = Field(Mappings.enum(Classification))
+    val release = Field(Mappings.enum(Release))
   }
 
   def setExcerpt(c : Container.Id, segment : Segment, a : Asset.Id) =
     Action(c, segment, a, Permission.EDIT).async { implicit request =>
       val form = new ExcerptForm()._bind
-      Excerpt.set(request.obj.asset, request.obj.segment, Some(form.classification.get))
+      Excerpt.set(request.obj.asset, request.obj.segment, Some(form.release.get))
       .map {
         case false => form.withGlobalError("error.conflict")._throw
-        case true => Ok(request.obj.json - "excerpt" + ('excerpt -> form.classification.get))
+        case true => Ok(request.obj.json - "excerpt" + ('excerpt -> form.release.get))
       }
     }
 

@@ -27,8 +27,8 @@ final class VolumeAccess(val volume : Volume, val party : Party, val individual 
   def json = JsonObject.flatten(
     Some('volume -> volume.json),
     Some('party -> party.json),
-    Maybe(individual).opt.map('individual -> _),
-    Maybe(children).opt.map('children -> _)
+    Maybe(individual).opt('individual -> _),
+    Maybe(children).opt('children -> _)
   )
 }
 

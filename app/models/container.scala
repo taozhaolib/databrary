@@ -13,7 +13,7 @@ import site._
   * @param name descriptive name to help with organization by contributors.
   * @param date the date at which the contained data were collected. Note that this is covered (in part) by dataAccess permissions due to birthday/age restrictions.
   */
-final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val consent : Consent.Value)
+final class Container protected (val id : Container.Id, override val volume : Volume, override val top : Boolean = false, val name : Option[String], val date : Option[Date], override val release : Release.Value)
   extends ContextSlot with TableRowId[Container] {
   override def container = this
   def segment = Segment.full
@@ -24,7 +24,7 @@ final class Container protected (val id : Container.Id, override val volume : Vo
   def change(name : Option[Option[String]] = None, date : Option[Option[Date]] = None) : Future[Container] =
     Audit.change("container", SQLTerms.flatten(name.map('name -> _), date.map('date -> _)), SQLTerms('id -> id)).ensure
       .map { _ =>
-        new Container(id, volume, top, name.getOrElse(this.name), date.getOrElse(this.date), consent)
+        new Container(id, volume, top, name.getOrElse(this.name), date.getOrElse(this.date), release)
       }
 
   def remove : Future[Boolean] =
@@ -43,7 +43,7 @@ final class Container protected (val id : Container.Id, override val volume : Vo
     Some('volume -> volumeId),
     if (top) Some('top -> top) else None,
     getDate.map(d => 'date -> org.joda.time.format.ISODateTimeFormat.date.print(d).replaceAllLiterally("\ufffd", "X")),
-    consentJson,
+    releaseJson,
     name.map('name -> _)
   )
 }
@@ -55,7 +55,7 @@ object Container extends TableId[Container]("container") {
     , SelectColumn[Option[String]]("name")
     , SelectColumn[Option[Date]]("date")
     ).map { (id, top, name, date) =>
-      (new Container(id, _ : Volume, top, name, date, _ : Consent.Value)).curried
+      (new Container(id, _ : Volume, top, name, date, _ : Release.Value)).curried
     }
   private[models] def columnsVolume(volume : Selector[Volume]) =
     columns
@@ -64,8 +64,8 @@ object Container extends TableId[Container]("container") {
 
   private def rowVolume(volume : Selector[Volume]) : Selector[Container] =
     columnsVolume(volume)
-    .join(SlotConsent.consent on_? "container.id = slot_consent.container AND slot_consent.segment = '(,)'")
-    .map { case (container, consent) => container(consent.getOrElse(Consent.NONE)) }
+    .join(SlotRelease.release on_? "container.id = slot_release.container AND slot_release.segment = '(,)'")
+    .map { case (container, release) => container(release.getOrElse(Release.DEFAULT)) }
   private[models] def rowVolume(volume : Volume) : Selector[Container] =
     rowVolume(Volume.fixed(volume))
   private[models] def row(implicit site : Site) =
@@ -90,5 +90,5 @@ object Container extends TableId[Container]("container") {
   /** Create a new container in the specified volume. */
   def create(volume : Volume, top : Boolean = false, name : Option[String] = None, date : Option[Date] = None)(implicit site : Site) : Future[Container] =
     Audit.add(table, SQLTerms('volume -> volume.id, 'top -> top, 'name -> name, 'date -> date), "id")
-    .single(SQL.Cols[Id].map(new Container(_, volume, top, name, date, Consent.NONE)))
+    .single(SQL.Cols[Id].map(new Container(_, volume, top, name, date, Release.DEFAULT)))
 }

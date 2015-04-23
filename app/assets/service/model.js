@@ -574,9 +574,9 @@ app.factory('modelService', [
     Slot.prototype.class = 'slot';
 
     Slot.prototype.fields = {
-      consent: true,
+      release: true,
       tags: false,
-      consents: false,
+      releases: false,
     };
 
     Slot.prototype.clear = function (/*f...*/) {
@@ -719,9 +719,9 @@ app.factory('modelService', [
       var s = this;
       return router.http(router.controllers.SlotApi.update, this.container.id, this.segment.format(), data)
         .then(function (res) {
-          if ('consent' in data) {
-            s.clear('consents');
-            s.container.clear('consents');
+          if ('release' in data) {
+            s.clear('releases');
+            s.container.clear('releases');
           }
           return s.update(res.data);
         });
@@ -911,6 +911,7 @@ app.factory('modelService', [
 
     AssetSlot.prototype.fields = angular.extend({
       permission: true,
+      release: true,
       excerpt: true,
       context: true
     }, AssetSlot.prototype.fields);
@@ -956,9 +957,9 @@ app.factory('modelService', [
       return new AssetSlot(this.asset, {permission:this.permission, segment:segment});
     };
 
-    AssetSlot.prototype.setExcerpt = function (classification) {
+    AssetSlot.prototype.setExcerpt = function (release) {
       var a = this;
-      return router.http(classification != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.id, {classification:classification})
+      return router.http(release != null ? router.controllers.AssetSlotApi.setExcerpt : router.controllers.AssetSlotApi.removeExcerpt, this.container.id, this.segment.format(), this.id, {release:release})
         .then(function (res) {
           a.clear('excerpts');
           a.volume.clear('excerpts');

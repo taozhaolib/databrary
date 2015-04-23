@@ -11,7 +11,7 @@
                     @widget.tag.inputDate(form.date(), 'placeholder -> "Date", 'class -> "half")
                 }
 
-                @widget.enumSelect(form.consent(), Consent)
+                @widget.enumSelect(form.release(), Release)
 
                 @widget.formErrors(form)
                 <button type='submit' class="button">@form.actionName</button>

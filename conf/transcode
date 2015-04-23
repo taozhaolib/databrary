@@ -3,7 +3,7 @@
 # This is run on transcode.host, called from conf/transctl.sh
 # It is also the PBS script so is in fact run twice, once with arguments (up to the qsub), once with varibles.
 
-#PBS -l nodes=1:ppn=1,mem=2048mb
+#PBS -l nodes=1:ppn=1,mem=1024mb
 
 PBS=$0
 if [[ $PBS != /* ]] ; then
