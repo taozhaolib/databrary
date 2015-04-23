@@ -8,17 +8,14 @@
   background-position center
   width b23+1px
   height b23
-  &.public,
-  &.excerpt
-    padding-left b1 - b6
-  &.excerpts
-    padding-left b1
   &.volume
     size b1
   &.record,
   &.session
     height b23
     width b23+b8
+  &.release
+    min-width 28px
 
   &.activity
     background-image url('/public/images/icon/activity.svg')
@@ -135,12 +132,6 @@
       width b1
     &.session
       width b1+b8    
-    &.public,
-    &.excerpt
-      background-position 2px 4px
-    &.release.EXCERPTS
-      padding-left b1 + 2px
-      background-position 1px 4px
 
 .sort
   background-position right
@@ -154,8 +145,7 @@
 
   &.sort-desc
     background-image url('/public/images/icon/sort-desc.png')
-
-
+    
 th
   &.add
     background-repeat no-repeat
