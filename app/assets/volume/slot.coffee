@@ -32,12 +32,7 @@ app.controller('volume/slot', [
             else
               p = @p
               @_o =
-                if p >= 0 && p < 1
-                  Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
-                else if p < 0
-                  -Infinity
-                else if p >= 1
-                  Infinity
+                Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
           set: (o) ->
             return if o == @_o
             @_o = o
@@ -48,11 +43,7 @@ app.controller('volume/slot', [
           get: ->
             if '_o' of @
               o = @_o
-              @_p =
-                if isFinite o
-                  (o - ruler.range.base) / (ruler.range.u - ruler.range.l)
-                else
-                  o
+              @_p = (o - ruler.range.base) / (ruler.range.u - ruler.range.l)
             else if '_x' of @
               x = @_x
               tlr = tl.getBoundingClientRect()
@@ -80,7 +71,15 @@ app.controller('volume/slot', [
             delete @_p
             return
 
-      defined: () ->
+      clip: ->
+        p = @p
+        if p > 1
+          @p = Infinity
+        if p < 0
+          @p = -Infinity
+        this
+
+      defined: ->
         isFinite(@o)
 
       minus: (t) ->
@@ -427,6 +426,7 @@ app.controller('volume/slot', [
 
       startPos = down.position ?= new TimePoint(down.clientX, 'x')
       endPos = new TimePoint(up.clientX, 'x')
+      endPos.clip()
       ruler.selection =
         if startPos.x < endPos.x
           new TimeSegment(startPos, endPos)
@@ -888,7 +888,14 @@ app.controller('volume/slot', [
             return
 
       drag: (event, which) ->
-        p = this[if which then 'ut' else 'lt'] = @snapping(x = new TimePoint(event.clientX, 'x'))
+        x = new TimePoint(event.clientX, 'x')
+        p = this[if which then 'ut' else 'lt'] =
+          if which && x.p > 1
+            new TimePoint(Infinity)
+          else if !which && x.p < 0
+            new TimePoint(-Infinity)
+          else
+            @snapping(x)
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
