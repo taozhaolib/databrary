@@ -17,8 +17,8 @@
   <div ng-if="::hasThumbnail">
     <img class="popup-thumb" ng-src="{{::asset.thumbRoute(480)}}">
   </div>
-  <div class="popup-cite">
-<!--     <cite-volume></cite-volume> -->
+  <div class="popup-cite" ng-if="::volume">
+    <cite-volume></cite-volume>
   </div>
   <div class="popup-classification">
     <span>This download is for </span>
