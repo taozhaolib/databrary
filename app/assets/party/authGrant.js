@@ -42,7 +42,7 @@ app.directive('authGrantForm', [
 
       form.save = function () {
         page.messages.clear(form);
-        party.authorizeSave(auth.party.id, form.data).then(function () {
+        return party.authorizeSave(auth.party.id, form.data).then(function () {
           form.validator.server({});
           page.messages.add({
             body: page.constants.message('auth.grant.save.success'),
