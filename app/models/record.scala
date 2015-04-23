@@ -57,7 +57,7 @@ object RecordCategory extends TableId[RecordCategory]("record_category") {
 }
 
 /** A set of Measures. */
-final class Record private (val id : Record.Id, val volume : Volume, val category : Option[RecordCategory] = None, val consent : Consent.Value = Consent.NONE, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
+final class Record private (val id : Record.Id, val volume : Volume, val category : Option[RecordCategory] = None, val release : Release.Value = Release.DEFAULT, measures_ : Measures = Measures.empty) extends TableRowId[Record] with SiteObject with InVolume {
   def categoryId = category.map(_.id)
 
   /** Update the given values in the database and this object in-place. */
@@ -66,12 +66,12 @@ final class Record private (val id : Record.Id, val volume : Volume, val categor
         category.map('category -> _.map(_.id))),
       sqlKey)
       .ensure.map { _ =>
-        new Record(id, volume, category.getOrElse(this.category), consent, measures_)
+        new Record(id, volume, category.getOrElse(this.category), release, measures_)
       }
 
   /** The set of measures on the current volume readable by the current user. */
   lazy val measures : MeasuresView =
-    Classification.read(volume.permission, consent).fold[MeasuresView](Measures.empty)(measures_.filter _)
+    Release.read(permission).fold[MeasuresView](Measures.empty)(r => measures_.filter(Maybe(_).orElse(release) >= r))
 
   /** Add or change a measure on this record.
     * This is not type safe so may generate SQL exceptions. */
@@ -160,11 +160,11 @@ object Record extends TableId[Record]("record") {
     ).mapFrom("record_measures AS " +: _)
   private[models] def sessionRow(vol : Volume) = columns
     .map { case (id, cat, meas) =>
-      (consent : Consent.Value) =>
-        new Record(id, vol, cat.flatMap(RecordCategory.get(_)), consent, meas)
+      (release : Release.Value) =>
+        new Record(id, vol, cat.flatMap(RecordCategory.get(_)), release, meas)
     }
   private def rowVolume(volume : Selector[Volume]) : Selector[Record] = columns
-    .~(SelectAs[Consent.Value]("record_consent(record.id)", "record_consent"))
+    .~(SelectAs[Release.Value]("record_release(record.id)", "record_release"))
     .join(volume on "record.volume = volume.id")
     .map { case (((id, cat, meas), cons), vol) =>
       new Record(id, vol, cat.flatMap(RecordCategory.get(_)), cons, meas)

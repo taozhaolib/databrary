@@ -197,7 +197,7 @@ object LoginHtml extends LoginController with HtmlController {
   }
 
   def openID(email : String) = SiteAction.async { implicit request =>
-    val em = Maybe(email).opt
+    val em = Maybe(email).opt()
     (for {
       info <- OpenID.verifiedId
       acct <- Account.getOpenid(info.id, em)

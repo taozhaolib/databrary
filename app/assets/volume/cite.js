@@ -1,11 +1,12 @@
 'use strict';
 
 app.directive('citeVolume', [
-  'pageService', function (page) {
+  'constantService', 'routerService',
+  function (constants, router) {
     var link = function ($scope) {
       var authors = '';
       var ai = 0;
-      var access = $scope.volume.access[ai];
+      var access = $scope.volume.access && $scope.volume.access[ai];
 
       function initial(p) {
         if (p)
@@ -14,7 +15,7 @@ app.directive('citeVolume', [
 
       while (access) {
         var next = $scope.volume.access[++ai];
-        if (next && (next.individual || 0) < page.permission.ADMIN)
+        if (next && (next.individual || 0) < constants.permission.ADMIN)
           next = undefined;
 
         if (authors !== '') {
@@ -36,7 +37,7 @@ app.directive('citeVolume', [
 
       $scope.authors = authors;
       $scope.today = new Date();
-      $scope.permalink = page.router.permalink($scope.volume.route());
+      $scope.permalink = router.permalink($scope.volume.route());
     };
 
     return {

@@ -74,16 +74,16 @@ object AssetSlotApi extends AssetSlotController with ApiController {
 
   private class ExcerptForm(implicit request : Request[_])
     extends ApiForm(routes.AssetSlotApi.setExcerpt(request.obj.containerId, request.obj.segment, request.obj.assetId)) {
-    val classification = Field(Mappings.enum(Classification))
+    val release = Field(Mappings.enum(Release))
   }
 
   def setExcerpt(c : Container.Id, segment : Segment, a : Asset.Id) =
     Action(c, segment, a, Permission.EDIT).async { implicit request =>
       val form = new ExcerptForm()._bind
-      Excerpt.set(request.obj.asset, request.obj.segment, Some(form.classification.get))
+      Excerpt.set(request.obj.asset, request.obj.segment, Some(form.release.get))
       .map {
         case false => form.withGlobalError("error.conflict")._throw
-        case true => Ok(request.obj.json - "excerpt" + ('excerpt -> form.classification.get))
+        case true => Ok(request.obj.json - "excerpt" + ('excerpt -> form.release.get))
       }
     }
 

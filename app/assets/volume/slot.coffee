@@ -489,9 +489,9 @@ app.controller('volume/slot', [
         @data =
           if @asset
             name: @asset.name
-            classification: @asset.classification+''
+            classification: (@asset.classification || 0)+''
           else
-            classification: constants.classification.RESTRICTED+''
+            classification: '0'
         return
 
       Object.defineProperty @prototype, 'id',
@@ -678,12 +678,12 @@ app.controller('volume/slot', [
           if !e
             target: @asset.inSegment(seg)
             on: false
-            classification: ''
+            release: ''
           else if e.equals(seg)
             current: e
             target: e.excerpt
             on: true
-            classification: e.excerpt.excerpt+''
+            release: e.excerpt.excerpt+''
           else
             null
         return
@@ -695,10 +695,11 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         l = {}
-        l[0] = constants.classification[@data.classification]
-        for c, i in constants.classification when i > @data.classification
+        r = @asset.release || 0
+        l[0] = constants.release[0]
+        for c, i in constants.release when i > r
           l[i] = c
-        l[@excerpt.classification] = 'prompt' unless @excerpt.classification of l
+        l[@excerpt.release] = 'prompt' unless @excerpt.release of l
         l
 
       saveExcerpt: (value) ->
@@ -965,7 +966,7 @@ app.controller('volume/slot', [
     class Consent extends TimeBar
       constructor: (c) ->
         if typeof c == 'object'
-          @consent = c.consent
+          @consent = c.release
           super(c.segment)
         else
           @consent = c
@@ -975,9 +976,9 @@ app.controller('volume/slot', [
       type: 'consent'
 
       classes: ->
-        cn = constants.consent[@consent]
+        cn = constants.release[@consent]
         cls = [cn, 'hint-consent-' + cn]
-        cls.push('slot-consent-select') if $scope.current == this
+        cls.push('slot-release-select') if $scope.current == this
         cls
 
     class TagName extends TimeBar
@@ -1103,7 +1104,7 @@ app.controller('volume/slot', [
     records = slot.records.map((r) -> new Record(r))
 
     $scope.consents =
-      if Array.isArray(consents = slot.consents)
+      if Array.isArray(consents = slot.releases)
         _.map consents, (c) -> new Consent(c)
       else if (consents)
         [new Consent(consents)]

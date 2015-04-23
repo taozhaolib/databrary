@@ -12,12 +12,12 @@ app.directive('hint', [
           page.constants.message('access.edit.' + a + '.who', 'You');
     });
 
-    _.each(page.constants.consent, function (a) {
+    _.each(page.constants.release, function (a) {
       hints['consent-' + a] =
         page.constants.message('consent.' + a);
     });
 
-    _.each(page.constants.classification, function (a) {
+    _.each(page.constants.release, function (a) {
       hints['classification-' + a] =
         page.constants.message('classification.' + a);
       hints['excerpt-' + a] =
