@@ -102,7 +102,7 @@ final class SiteParty(val access : Access)(implicit val site : Site)
 
   def setAvatar(file : play.api.libs.Files.TemporaryFile, format : AssetFormat, name : Option[String] = None)  : Future[FileAsset] =
     for {
-      asset <- FileAsset.create(Volume.Core, format, Classification.PUBLIC, name, file)
+      asset <- FileAsset.create(Volume.Core, format, Release.PUBLIC, name, file)
       _ <- Audit.changeOrAdd("avatar", SQLTerms('asset -> asset.id), SQLTerms('party -> party.id)).execute
     } yield asset
 

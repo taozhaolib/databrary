@@ -91,7 +91,7 @@ sealed abstract class PartyController extends ObjectController[SiteParty] {
       _ <- form.avatar.get foreachAsync { file : form.FilePart =>
         val fmt = AssetFormat.getFilePart(file).filter(_.isImage) getOrElse
           form.avatar.withError("file.format.unknown", file.contentType.getOrElse("unknown"))._throw
-        request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt)
+        request.obj.setAvatar(file.ref, fmt, Maybe(file.filename).opt())
       }
     } yield (result(request.obj))
   }

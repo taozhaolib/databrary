@@ -53,10 +53,10 @@
         "top": {"type": "boolean",
           "default": false
         },
-        "consent": {
+        "release": {
           "description": "Sharing/release permissions granted by participants on (portions of) contained data.",
           "anyOf": [
-            {"$ref": "#/definitions/consent"}
+            {"$ref": "#/definitions/release"}
           ],
           "default": null
         },
@@ -74,14 +74,10 @@
       "required": ["key"],
       "additionalProperties": false
     },
-    "consent": {
-      "title": "participant release",
-      "description": "Levels of sharing that participants may consent to.",
+    "release": {
+      "title": "sharing release level",
+      "description": "Levels at which participants or researchers may choose to share data.",
       "enum": [null, "PRIVATE", "SHARED", "EXCERPTS", "PUBLIC"]
-    },
-    "classification": {
-      "description": "Data (file or measure)-level settings affecting permissions.",
-      "enum": ["PRIVATE", "RESTRICTED", "SHARED", "PUBLIC"]
     },
     "offset": {
       "description": "Point in time in milliseconds or MM:SS.sss, used as endpoint for segment.  Null represents indeterminate value, usually representing +-Infinity as an endpoint.",
@@ -148,7 +144,7 @@
       "description": "Assets reflecting files in primary storage.",
       "type": "object",
       "properties": {
-        "classification": {"$ref": "#/definitions/classification"},
+        "release": {"$ref": "#/definitions/release"},
         "name": {"type": "string"},
         "position": {"anyOf": [
           {"$ref": "#/definitions/offset",
@@ -171,7 +167,7 @@
           "description": "Additional transcode options to pass to ffmpeg."
         }
       },
-      "required": ["classification", "file"],
+      "required": ["release", "file"],
       "additionalProperties": false
     }
   },

@@ -81,12 +81,12 @@ app.directive 'spreadsheet', [
         name: 'id'
         display: ' '
         type: 'number'
-        classification: constants.classification.PUBLIC
+        release: constants.release.PUBLIC
       age:
         id: 'age'
         name: 'age'
         type: 'number'
-        classification: constants.classification.SHARED
+        release: constants.release.EXCERPTS
     constants.deepFreeze(pseudoMetric)
     getMetric = (m) ->
       pseudoMetric[m] || constants.metric[m]
@@ -258,16 +258,16 @@ app.directive 'spreadsheet', [
 
         # Add or replace the text contents of cell c for measure/type m with value v
         generateText = (c, m, v, assumed) ->
-          if m == 'consent'
-            cn = constants.consent[v || 0]
-            c.className = cn + ' consent icon hint-consent-' + cn
+          if m == 'release'
+            cn = constants.release[v || 0]
+            c.className = cn + ' release icon hint-consent-' + cn
             v = ''
           else if v == undefined
             c.classList.add('blank')
             v = assumed || ''
           else if m == 'classification' || m == 'excerpt'
-            cn = constants.classification[v]
-            c.className = cn + ' classification icon hint-classification-' + cn
+            cn = constants.release[v]
+            c.className = cn + ' release icon hint-classification-' + cn
             v = ''
           else
             c.classList.remove('blank')
@@ -363,8 +363,8 @@ app.directive 'spreadsheet', [
             t = {asset:a.id}
             $location.url if editing then slots[i].editRoute(t) else slots[i].route(t)
           icon.className = "format hint-format-" + a.format.extension
-          generateCell(row, 'classification', a.classification, id + '-class_' + b)
-          generateCell(row, 'excerpt', Math.max(a.classification, a.excerpt), id + '-excerpt_' + b)
+          generateCell(row, 'classification', a.release, id + '-class_' + b)
+          generateCell(row, 'excerpt', a.excerpt, id + '-excerpt_' + b)
           return
 
         # Fill out rows[i].
@@ -397,7 +397,7 @@ app.directive 'spreadsheet', [
           a.className = "session icon hint-action-slot"
 
           generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
-          generateCell(row, 'consent', slot.consent, id + '-consent_' + i)
+          generateCell(row, 'release', slot.release, id + '-release_' + i)
           for c in recordCols
             generateRecord(row, i, c)
           if assets
@@ -676,7 +676,7 @@ app.directive 'spreadsheet', [
           if value == ''
             value = undefined
           else switch type
-            when 'consent'
+            when 'release'
               value = parseInt(value, 10)
             when 'record'
               if value == 'new'
@@ -718,7 +718,7 @@ app.directive 'spreadsheet', [
             return
 
           switch info.t
-            when 'name', 'date', 'consent'
+            when 'name', 'date', 'release'
               saveSlot(cell, info, value)
             when 'rec'
               saveMeasure(cell, info.record, info.metric, value)
@@ -760,9 +760,9 @@ app.directive 'spreadsheet', [
               return if info.slot.id == volume.top.id
               editScope.type = 'date'
               editInput.value = info.slot.date
-            when 'consent'
-              editScope.type = 'consent'
-              editInput.value = (info.slot.consent || 0) + ''
+            when 'release'
+              editScope.type = 'release'
+              editInput.value = (info.slot.release || 0) + ''
             when 'rec', 'add'
               if info.c == 'asset'
                 # for now, just go to slot edit

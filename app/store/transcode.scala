@@ -14,8 +14,8 @@ import site._
 object Transcode {
   private implicit def context : ExecutionContext = site.context.background
   private val logger = play.api.Logger("transcode")
-  private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt)
-  private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt).map { s =>
+  private val host : Option[String] = current.configuration.getString("transcode.host").flatMap(Maybe(_).opt())
+  private val dir : Option[File] = current.configuration.getString("transcode.dir").flatMap(Maybe(_).opt()).map { s =>
     new File(s)
   }
 

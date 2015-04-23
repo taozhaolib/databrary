@@ -32,7 +32,7 @@ object Comment extends TableId[Comment]("comment") with TableSlot[Comment] {
       new Comment(id, _ : Account, _ : ContextSlot, segment, time, text, thread.tail)
     } from "comment_thread AS comment"
 
-  private def row(who : Selector[Account], container : Selector[Consent.Value => Container]) =
+  private def row(who : Selector[Account], container : Selector[Release.Value => Container]) =
     columns.join(
       who on "comment.who = account.id",
       ContextSlot.rowContainer(

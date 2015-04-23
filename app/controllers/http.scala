@@ -29,7 +29,7 @@ object HTTP extends HeaderNames {
   def parseRange(s : String, size : Long) : Option[(Long, Long)] =
     (s match {
       case rangeRegex(start, end) => Maybe.toNumber {
-        (Maybe(start).opt.map(_.toLong), Maybe(end).opt.map(_.toLong))
+        (Maybe(start).opt(_.toLong), Maybe(end).opt(_.toLong))
       } getOrElse ((None, None))
       case _ => (None, None)
     }) match {

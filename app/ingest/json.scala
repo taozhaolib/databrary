@@ -187,13 +187,13 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       /* for now copy and don't delete */
       val infile = store.TemporaryFileLinkOrCopy(file)
       for {
-        a <- models.FileAsset.create(v, fmt, (jc \ "classification").as[models.Classification.Value], (jc \ "name").asOpt[String], infile)
+        a <- models.FileAsset.create(v, fmt, (jc \ "release").as[models.Release.Value], (jc \ "name").asOpt[String], infile)
         _ <- models.Ingest.setAsset(a, path)
       } yield a
     } {
       case a : models.FileAsset =>
         for {
-          _ <- update(a, Some(a.classification), jc \ "classification")
+          _ <- update(a, Some(a.release), jc \ "release")
           _ <- update(a, a.name, jc \ "name")
         } yield a
       case a =>
@@ -216,7 +216,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
           } yield t.asset
         } { a =>
           for {
-            _ <- update(a, Some(a.classification), jc \ "classification")
+            _ <- update(a, Some(a.release), jc \ "release")
             _ <- update(a, a.name, jc \ "name")
           } yield a
         })
@@ -249,7 +249,7 @@ final class Json(v : models.Volume, data : json.JsValue, overwrite : Boolean = f
       }
 
       // XXX this doesn't update the model
-      _ <- write(c, Maybe(c.consent).opt, jc \ "consent")(c.setConsent(_))
+      _ <- write(c, Maybe(c.release).opt(), jc \ "release")(c.setRelease(_))
 
       _ <- (jc \ "records").children.foreachAsync { implicit jc =>
         for {

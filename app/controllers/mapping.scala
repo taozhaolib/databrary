@@ -18,7 +18,7 @@ object Mappings {
   val text : Mapping[String] = Forms.text.transform[String](_.trim, identity)
   val nonEmptyText : Mapping[String] = text verifying Constraints.nonEmpty
   val maybeText : Mapping[Option[String]] =
-    Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt), identity)
+    Forms.optional(Forms.text).transform[Option[String]](_.flatMap(s => Maybe(s.trim).opt()), identity)
   import models.{AbstractTag,TagName}
   val tag : Mapping[AbstractTag] = Forms.text
     .verifying("tag.invalid", t => TagName.validate(t).nonEmpty)
