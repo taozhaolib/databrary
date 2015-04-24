@@ -339,6 +339,7 @@ access.edit.READ.who=For those you trust to view all data.
 access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
 access.edit.ADMIN.who=For fellow volume investigators only.
 
+### THIS SECTION IS BEING CONSOLIDATED - TO BE DELETED
 consent.DEFAULT=There is no release for this session.
 consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
 consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
@@ -375,6 +376,37 @@ excerpts.EXCERPTS.title=educational use
 excerpts.EXCERPTS.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
 excerpts.PUBLIC.title=public use
 excerpts.PUBLIC.description=These clips are available to anybody for unrestricted use
+
+### END OF SECTION TO BE CONSOLIDATED AND DELETED
+
+### NEW PROPOSED CONSOLIDATION OF RELEASE MESSAGES
+
+# --- Options
+release.select.DEFAULT.session=There is no release for this session
+release.select.DEFAULT.file=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release
+release.select.DEFAULT.excerpt=Use current file or participant release level
+release.select.PRIVATE=Private: Not shared and only accessible to collaborators
+release.select.SHARED=Shared: Shared only with authorized Databrary users and may not be used in presentations
+release.select.EXCERPTS=Excerpts: May be shared with authorized Databrary users for educational or research purposes
+release.select.PUBLIC=Public: May be available to anybody for unrestricted use
+
+# --- Labels 
+release.DEFAULT.session=Shared according to participant session release level
+release.DEFAULT.title=Unreleased
+release.DEFAULT.description=These clips have not been shared
+release.PRIVATE.title=Private
+release.PRIVATE.description=This content has not been shared and is only available to collaborators
+release.SHARED.title=Databrary Only
+release.SHARED.description=This content has been shared only with authorized Databrary users and may not be used in presentations
+release.EXCERPTS.title=Presentations
+release.EXCERPTS.description=This content has been shared with authorized Databrary users for educational or research purposes
+release.PUBLIC.title=Public
+release.PUBLIC.description=This content is available to anybody for unrestricted use
+
+# --- Warnings
+release.excerpt.warning=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
+
+### END OF NEW PROPOSED RELEASE MESSAGES
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
