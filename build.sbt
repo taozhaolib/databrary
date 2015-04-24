@@ -30,7 +30,7 @@ lazy val databrary = (project in file("."))
   .dependsOn(macros, dbrary, media)
 
 libraryDependencies ++= Seq(
-  "org.databrary" %% "play-logback-access" % "0.2",
+  "org.databrary" %% "play-logback-access" % "0.3",
   "org.databrary" %% "iteratees" % "0.1",
   "org.mindrot" % "jbcrypt" % "0.3m",
   ws,
