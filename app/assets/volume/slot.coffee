@@ -877,13 +877,13 @@ app.controller('volume/slot', [
       savePosition: () ->
         messages.clear(this)
         slot.moveRecord(@rec, @rec.segment, this).then (r) =>
-            return unless r # nothing happened
-            if @empty
+            if r && @empty
               records.remove(this)
               unchoose() if this == $scope.current
             @finishPosition()
-            Record.place()
-            updateRange()
+            if r
+              Record.place()
+              updateRange()
             return
           , (res) =>
             messages.addError
