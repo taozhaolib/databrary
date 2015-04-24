@@ -3,6 +3,6 @@
     <input type="checkbox" name="{{::name+'.check'}}" ng-model="form.check">
     <span message="release.DEFAULT.deselect"></span>
   </label>
-  <select ng-if="form.check" name="{{::name}}" ng-model="form.value" ng-options="i as l for (i, l) in ::releases">
+  <select class="classification-select-dropdown" ng-if="form.check" name="{{::name}}" ng-model="form.value" ng-options="i as l for (i, l) in ::releases">
   </select>
 </div>
