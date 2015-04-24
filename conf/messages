@@ -404,7 +404,7 @@ release.PUBLIC.title=Public
 release.PUBLIC.description=This content is available to anybody for unrestricted use
 
 # --- Warnings
-release.excerpt.warning=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
+release.excerpt.warning=You are choosing to make this clip more widely available than the file from which it originates. Click OK if this is acceptable.
 
 ### END OF NEW PROPOSED RELEASE MESSAGES
 
