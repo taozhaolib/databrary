@@ -352,14 +352,6 @@ classification.SHARED=Restricted: shared only with authorized Databrary users.
 classification.EXCERPTS=Shared: shared with authorized Databrary users for educational or research purposes.
 classification.PUBLIC=Public: available to anybody for unrestricted use.
 
-classification.excerpt.prompt=Choose sharing level...
-classification.excerpt.DEFAULT=Use current file or participant release level.
-classification.excerpt.PRIVATE=Not shared.
-classification.excerpt.SHARED=Shared only with authorized Databrary users.
-classification.excerpt.EXCERPTS=Shared with authorized Databrary users for educational or research purposes.
-classification.excerpt.PUBLIC=Available to anybody for unrestricted use.
-classification.excerpt.warning=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
-
 excerpts.DEFAULT.title=unreleased
 excerpts.DEFAULT.description=These clips have not been shared
 excerpts.PRIVATE.title=private use
@@ -375,13 +367,15 @@ excerpts.PUBLIC.description=These clips are available to anybody for unrestricte
 
 ### NEW PROPOSED CONSOLIDATION OF RELEASE MESSAGES
 
+release.prompt=Choose sharing level...
+
 release.select.DEFAULT.session=There is no release for this session
 release.select.DEFAULT.file=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release
-release.select.DEFAULT.excerpt=Use current file or participant release level
 
 release.DEFAULT.session=Shared according to participant session release level
 release.DEFAULT.title=Unreleased
 release.DEFAULT.deselect=This file is deidentified (no faces, voices, dates, etc.), or I wish to override any participant release
+release.DEFAULT.select=Use current file or participant release level
 release.DEFAULT.description=These clips have not been shared
 release.PRIVATE.title=Private
 release.PRIVATE.select=Not shared and only accessible to collaborators
@@ -396,7 +390,6 @@ release.PUBLIC.title=Public
 release.PUBLIC.description=This content is available to anybody for unrestricted use
 release.PUBLIC.select=May be available to anybody for unrestricted use
 
-# --- Warnings
 release.excerpt.warning=You are choosing to make this clip more widely available than the file from which it originates. Click OK if this is acceptable.
 
 ### END OF NEW PROPOSED RELEASE MESSAGES

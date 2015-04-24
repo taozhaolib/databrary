@@ -704,10 +704,10 @@ app.controller('volume/slot', [
       excerptOptions: () ->
         l = {}
         r = @asset.release || 0
-        l[0] = constants.release[0]
+        l[0] = constants.message('release.DEFAULT.select') + ' (' + constants.message('release.' + constants.release[r] + '.title') + ')'
         for c, i in constants.release when i > r
-          l[i] = c
-        l[@excerpt.release] = 'prompt' unless @excerpt.release of l
+          l[i] = constants.message('release.' + c + '.title') + ': ' + constants.message('release.' + c + '.select')
+        l[@excerpt.release] = constants.message('release.prompt') unless @excerpt.release of l
         l
 
       saveExcerpt: (value) ->

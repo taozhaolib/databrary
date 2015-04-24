@@ -20,8 +20,6 @@ app.directive('hint', [
     _.each(page.constants.release, function (a) {
       hints['classification-' + a] =
         page.constants.message('classification.' + a);
-      hints['excerpt-' + a] =
-        page.constants.message('classification.excerpt.' + a);
     });
 
     _.each(page.constants.format, function (a) {

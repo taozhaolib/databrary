@@ -156,7 +156,7 @@
             <ng-form ng-switch-when="excerpt" name="form.excerpt">
               <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
               <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove highlight</button>&#32;
-              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.release" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.release)"></select>
+              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.release" ng-options="i as c for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.release)"></select>
             </ng-form>
           </div>
           <div class="slot-timeline-timeline">
