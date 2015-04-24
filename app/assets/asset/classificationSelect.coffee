@@ -8,17 +8,20 @@ app.directive 'classificationSelect', [
     scope:
       value: '=ngModel'
       name: '@'
+      defaultFn: '&default'
     link:
       pre: ($scope) ->
-        $scope.release = constants.release
         return
       post: ($scope) ->
+        def = ($scope.defaultFn() || 1)+''
+        $scope.releases = constants.release.slice(1).map (l) ->
+          constants.message('release.'+l+'.title') + ': ' + constants.message('release.'+l+'.select')
         $scope.form = Object.defineProperties {},
           check:
             get: ->
-              `$scope.value == '0'`
+              `$scope.value != '0'`
             set: (c) ->
-              $scope.value = if c then '0' else ''
+              $scope.value = if c then def else '0'
               return
           value:
             get: ->
