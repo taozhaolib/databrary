@@ -149,19 +149,25 @@ app.controller('volume/slot', [
       style: ->
         style = {}
         l = @lt.p
+        r = @ut.p
         if l < 0
-          style.left = '0px'
-          style['border-left'] = '0px'
-          style['border-top-left-radius'] = '0px'
-          style['border-bottom-left-radius'] = '0px'
+          if r < 0
+            style.display = 'none'
+          else
+            style.left = '0px'
+            style['border-left'] = '0px'
+            style['border-top-left-radius'] = '0px'
+            style['border-bottom-left-radius'] = '0px'
         else if l < 1
           style.left = 100*l + '%'
-        r = @ut.p
         if r > 1
-          style.right = '0px'
-          style['border-right'] = '0px'
-          style['border-top-right-radius'] = '0px'
-          style['border-bottom-right-radius'] = '0px'
+          if l > 1
+            style.display = 'none'
+          else
+            style.right = '0px'
+            style['border-right'] = '0px'
+            style['border-top-right-radius'] = '0px'
+            style['border-bottom-right-radius'] = '0px'
         else if r > 0
           style.right = 100*(1-r) + '%'
         style
@@ -871,13 +877,13 @@ app.controller('volume/slot', [
       savePosition: () ->
         messages.clear(this)
         slot.moveRecord(@rec, @rec.segment, this).then (r) =>
-            return unless r # nothing happened
-            if @empty
+            if r && @empty
               records.remove(this)
               unchoose() if this == $scope.current
             @finishPosition()
-            Record.place()
-            updateRange()
+            if r
+              Record.place()
+              updateRange()
             return
           , (res) =>
             messages.addError
