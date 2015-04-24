@@ -889,13 +889,18 @@ app.controller('volume/slot', [
 
       drag: (event, which) ->
         x = new TimePoint(event.clientX, 'x')
-        p = this[if which then 'ut' else 'lt'] =
+        this[if which then 'ut' else 'lt'] =
           if which && x.p > 1
             new TimePoint(Infinity)
           else if !which && x.p < 0
             new TimePoint(-Infinity)
           else
             @snapping(x)
+        if @empty
+          if which
+            @lt = @ut
+          else
+            @ut = @lt
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
