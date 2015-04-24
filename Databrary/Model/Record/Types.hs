@@ -3,14 +3,16 @@ module Databrary.Model.Record.Types
   ( Record(..)
   , MonadHasRecord
   , Measure(..)
-  , MonadHasMeasure
   , Measures
   ) where
+
+import Control.Applicative ((<|>))
 
 import Databrary.Has (makeHasRec, Has(..))
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
-import Databrary.Model.Consent.Types
+import Databrary.Model.Permission.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Metric.Types
 import Databrary.Model.RecordCategory.Types
@@ -21,7 +23,7 @@ data Record = Record
   { recordId :: Id Record
   , recordVolume :: Volume
   , recordCategory :: Maybe RecordCategory
-  , recordConsent :: Maybe Consent
+  , recordRelease :: Maybe Release
   , recordMeasures :: Measures
   }
 
@@ -39,8 +41,33 @@ instance Kinded Measure where
 
 type Measures = [Measure]
 
-makeHasRec ''Record ['recordId, 'recordVolume, 'recordCategory, 'recordConsent]
-makeHasRec ''Measure ['measureRecord, 'measureMetric]
-
+makeHasRec ''Record ['recordId, 'recordVolume, 'recordCategory, 'recordRelease]
 instance Has (Maybe (Id RecordCategory)) Record where
   view = fmap recordCategoryId . recordCategory
+
+instance Has Record Measure where
+  view = measureRecord
+instance Has (Id Record) Measure where
+  view = view . measureRecord
+instance Has Volume Measure where
+  view = view . measureRecord
+instance Has (Id Volume) Measure where
+  view = view . measureRecord
+instance Has (Maybe RecordCategory) Measure where
+  view = view . measureRecord
+instance Has (Maybe (Id RecordCategory)) Measure where
+  view = view . measureRecord
+instance Has Permission Measure where
+  view = view . measureRecord
+
+instance Has Metric Measure where
+  view = measureMetric
+instance Has (Id Metric) Measure where
+  view = view . measureMetric
+instance Has MeasureType Measure where
+  view = view . measureMetric
+
+instance Has (Maybe Release) Measure where
+  view m = metricRelease (measureMetric m) <|> recordRelease (measureRecord m)
+instance Has Release Measure where
+  view = view . (view :: Measure -> Maybe Release)

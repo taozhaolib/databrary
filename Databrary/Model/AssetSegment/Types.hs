@@ -10,17 +10,18 @@ module Databrary.Model.AssetSegment.Types
   , excerptInSegment
   ) where
 
+import Control.Applicative ((<|>))
 import Data.Maybe (fromMaybe)
 import qualified Database.PostgreSQL.Typed.Range as Range
 
 import Databrary.Ops
 import Databrary.Has (Has(..))
-import Databrary.Model.Permission
 import Databrary.Model.Offset
 import Databrary.Model.Segment
 import Databrary.Model.Id.Types
+import Databrary.Model.Permission.Types
 import Databrary.Model.Volume.Types
-import Databrary.Model.Consent.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Container.Types
 import Databrary.Model.Slot.Types
 import Databrary.Model.Format
@@ -61,6 +62,8 @@ instance Has Volume AssetSegment where
   view = view . segmentAsset
 instance Has (Id Volume) AssetSegment where
   view = view . segmentAsset
+instance Has Permission AssetSegment where
+  view = view . segmentAsset
 
 instance Has Slot AssetSegment where
   view AssetSegment{ segmentAsset = AssetSlot{ assetSlot = Just s }, assetSegment = seg } = s{ slotSegment = seg }
@@ -72,8 +75,6 @@ instance Has (Id Container) AssetSegment where
 instance Has Segment AssetSegment where
   view AssetSegment{ segmentAsset = AssetSlot{ assetSlot = Just s }, assetSegment = seg } = seg `segmentIntersect` slotSegment s
   view _ = emptySegment
-instance Has (Maybe Consent) AssetSegment where
-  view = view . (view :: AssetSegment -> Slot)
 
 instance Has Format AssetSegment where
   view AssetSegment{ segmentAsset = a, assetSegment = Segment rng }
@@ -83,23 +84,23 @@ instance Has Format AssetSegment where
     where fmt = view a
 instance Has (Id Format) AssetSegment where
   view = formatId . view
-instance Has Classification AssetSegment where
-  view AssetSegment{ assetExcerpt = Just e } = view e
-  view AssetSegment{ segmentAsset = a } = view a
 
-instance Has Permission AssetSegment where
-  view a = dataPermission (view $ segmentAsset a) (view a) (view a)
+instance Has (Maybe Release) AssetSegment where
+  view AssetSegment{ segmentAsset = a, assetExcerpt = Just e } = excerptRelease e <|> view a
+  view AssetSegment{ segmentAsset = a } = view a
+instance Has Release AssetSegment where
+  view = view . (view :: AssetSegment -> Maybe Release)
 
 
 data Excerpt = Excerpt
   { excerptAsset :: !AssetSegment
-  , excerptClassification :: !Classification
+  , excerptRelease :: !(Maybe Release)
   }
 
-newExcerpt :: AssetSlot -> Segment -> Classification -> Excerpt
-newExcerpt a s c = e where 
+newExcerpt :: AssetSlot -> Segment -> Maybe Release -> Excerpt
+newExcerpt a s r = e where 
   as = newAssetSegment a s (Just e)
-  e = Excerpt as c
+  e = Excerpt as r
 
 excerptInSegment :: Excerpt -> Segment -> AssetSegment
 excerptInSegment e@Excerpt{ excerptAsset = AssetSegment{ segmentAsset = a, assetSegment = es } } s 
@@ -130,10 +131,3 @@ instance Has (Id Container) Excerpt where
   view = view . excerptAsset
 instance Has Segment Excerpt where
   view = view . excerptAsset
-instance Has (Maybe Consent) Excerpt where
-  view = view . excerptAsset
-instance Has Permission Excerpt where
-  view = view . excerptAsset
-
-instance Has Classification Excerpt where
-  view = excerptClassification

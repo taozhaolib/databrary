@@ -11,6 +11,7 @@ module Databrary.Model.Measure
 import Control.Monad (guard)
 import Data.Function (on)
 import Data.List (find)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Protocol (PGError(..), pgErrorCode)
 import Database.PostgreSQL.Typed.Types (PGTypeName, pgTypeName, PGColumn(pgDecode))
@@ -71,8 +72,8 @@ removeRecordMeasure m = do
     else measureRecord m
 
 getRecordMeasures :: Record -> Measures
-getRecordMeasures r = maybe [] filt $ readClassification (view r) (view r) where
-  filt c = filter ((>= c) . view) $ recordMeasures r
+getRecordMeasures r = maybe [] filt $ readRelease (view r) where
+  filt rr = filter ((rr <=) . fromMaybe (view r) . view) $ recordMeasures r
 
 decodeMeasure :: PGColumn t d => PGTypeName t -> Measure -> Maybe d
 decodeMeasure t Measure{ measureMetric = Metric{ metricType = m }, measureDatum = d } =

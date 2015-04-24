@@ -37,7 +37,7 @@ blankContainer vol = Container
   , containerTop = False
   , containerName = Nothing
   , containerDate = Nothing
-  , containerConsent = Nothing
+  , containerRelease = Nothing
   , containerVolume = vol
   }
 
@@ -72,7 +72,7 @@ removeContainer c = do
 formatContainerDate :: Container -> Maybe String
 formatContainerDate c = formatTime defaultTimeLocale fmt <$> containerDate c where
   fmt
-    | dataPermission (view c) ClassificationRESTRICTED (view c) >= PermissionREAD = "%Y-%m-%d"
+    | dataPermission c > PermissionNONE = "%Y-%m-%d"
     | otherwise = "%Y-XX-XX"
 
 containerJSON :: Container -> JSON.Object
@@ -80,6 +80,6 @@ containerJSON c@Container{..} = JSON.record containerId $ catMaybes
   [ "top" JSON..= containerTop <? containerTop
   , ("name" JSON..=) <$> containerName
   , ("date" JSON..=) <$> formatContainerDate c
-  , ("consent" JSON..=) <$> containerConsent
+  , ("release" JSON..=) <$> containerRelease
   ]
 

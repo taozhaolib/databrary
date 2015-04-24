@@ -14,7 +14,6 @@ import qualified Database.PostgreSQL.Typed.Range as Range
 import Database.PostgreSQL.Typed.Types (PGTypeName(..))
 
 import Databrary.Ops
-import Databrary.Has (view)
 import qualified Databrary.JSON as JSON
 import Databrary.Service.DB
 import Databrary.Model.Segment
@@ -59,7 +58,7 @@ recordSlotAge rs@RecordSlot{..} =
   clip <$> liftM2 age (decodeMeasure (PGTypeProxy :: PGTypeName "date") =<< getMeasure birthdateMetric (recordMeasures slotRecord)) (containerDate $ slotContainer recordSlot)
   where
   clip a
-    | dataPermission (view rs) (view birthdateMetric) (view rs) < PermissionREAD = a `min` ageLimit
+    | dataPermission rs == PermissionNONE = a `min` ageLimit
     | otherwise = a
   ageLimit = yearsAge (90 :: Int)
 

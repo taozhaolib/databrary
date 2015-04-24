@@ -8,7 +8,7 @@ import Control.Applicative ((<|>))
 import Databrary.Has (Has(..))
 import Databrary.Model.Id.Types
 import Databrary.Model.Permission
-import Databrary.Model.Consent
+import Databrary.Model.Release
 import Databrary.Model.Segment
 import Databrary.Model.Volume.Types
 import Databrary.Model.Container.Types
@@ -45,6 +45,8 @@ instance Has (Id Container) RecordSlot where
 instance Has Segment RecordSlot where
   view = view . recordSlot
 
-instance Has (Maybe Consent) RecordSlot where
+instance Has (Maybe Release) RecordSlot where
   view rs = view (recordSlot rs) <|> view (slotRecord rs)
+instance Has Release RecordSlot where
+  view = view . (view :: RecordSlot -> Maybe Release)
 

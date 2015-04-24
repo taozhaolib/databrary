@@ -685,7 +685,7 @@ CREATE TABLE "measure_abstract" ( -- ABSTRACT
 	Primary Key ("record", "metric"),
 	Check (false) NO INHERIT
 );
-COMMENT ON TABLE "measure" IS 'Abstract parent of all measure tables containing data values.';
+COMMENT ON TABLE "measure_abstract" IS 'Abstract parent of all measure tables containing data values.';
 
 CREATE TABLE "measure_text" (
 	"record" integer NOT NULL References "record" ON DELETE CASCADE,
@@ -754,7 +754,6 @@ END; $delete$;
 CREATE TRIGGER "measure_delete" INSTEAD OF DELETE ON "measure" FOR EACH ROW EXECUTE PROCEDURE "measure_delete" ();
 
 SELECT audit.CREATE_TABLE ('measure');
-ALTER TABLE audit."measure" ADD "datum" text NOT NULL;
 
 CREATE FUNCTION audit."measure_i" () RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
 	IF NEW.audit_time IS NULL THEN

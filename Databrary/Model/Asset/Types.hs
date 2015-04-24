@@ -11,7 +11,7 @@ import qualified Data.Text as T
 import Databrary.Has (makeHasRec)
 import Databrary.Model.Offset
 import Databrary.Model.Kind
-import Databrary.Model.Permission.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Format.Types
@@ -21,7 +21,7 @@ type instance IdType Asset = Int32
 data Asset = Asset
   { assetId :: Id Asset
   , assetFormat :: Format
-  , assetClassification :: Classification
+  , assetRelease :: Maybe Release
   , assetName :: Maybe T.Text
   , assetDuration :: Maybe Offset
   , assetSHA1 :: Maybe BS.ByteString
@@ -32,4 +32,4 @@ data Asset = Asset
 instance Kinded Asset where
   kindOf _ = "asset"
 
-makeHasRec ''Asset ['assetId, 'assetFormat, 'assetClassification, 'assetVolume]
+makeHasRec ''Asset ['assetId, 'assetFormat, 'assetRelease, 'assetVolume]

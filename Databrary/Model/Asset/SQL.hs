@@ -14,18 +14,18 @@ import qualified Language.Haskell.TH as TH
 import Databrary.Model.Offset
 import Databrary.Model.Format
 import Databrary.Model.Id.Types
-import Databrary.Model.Permission.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
 import Databrary.Model.Asset.Types
 
-makeAsset :: Id Asset -> Id Format -> Classification -> Maybe T.Text -> Maybe Offset -> Maybe BS.ByteString -> Maybe Int64 -> Volume -> Asset
+makeAsset :: Id Asset -> Id Format -> Maybe Release -> Maybe T.Text -> Maybe Offset -> Maybe BS.ByteString -> Maybe Int64 -> Volume -> Asset
 makeAsset i = Asset i . getFormat'
 
 assetRow :: Selector -- ^ @'Volume' -> 'Asset'@
-assetRow = selectColumns 'makeAsset "asset" ["id", "format", "classification", "name", "duration", "sha1", "size"]
+assetRow = selectColumns 'makeAsset "asset" ["id", "format", "release", "name", "duration", "sha1", "size"]
 
 selectVolumeAsset :: Selector -- ^ @'Volume' -> 'Asset'@
 selectVolumeAsset = assetRow
@@ -47,7 +47,7 @@ assetSets :: String -- ^ @'Asset'@
 assetSets a =
   [ ("volume", "${volumeId (assetVolume " ++ a ++ ")}")
   , ("format", "${formatId (assetFormat " ++ a ++ ")}")
-  , ("classification", "${assetClassification " ++ a ++ "}")
+  , ("release", "${assetRelease " ++ a ++ "}")
   , ("duration", "${assetDuration " ++ a ++ "}")
   , ("name", "${assetName " ++ a ++ "}")
   , ("sha1", "${assetSHA1 " ++ a ++ "}")

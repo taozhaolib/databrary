@@ -4,8 +4,6 @@ module Databrary.Controller.Excerpt
   , deleteExcerpt
   ) where
 
-import Control.Applicative ((<$>))
-import Data.Maybe (fromMaybe)
 import qualified Data.Text as T
 import Network.HTTP.Types (StdMethod(DELETE), conflict409)
 
@@ -24,7 +22,7 @@ postExcerpt :: Id Slot -> Id Asset -> AppRAction
 postExcerpt si ai = action POST (JSON, si, ai, "excerpt" :: T.Text) $ withAuth $ do
   as <- getAssetSegment PermissionEDIT si ai
   c <- runForm Nothing $ 
-    "classification" .:> (fromMaybe ClassificationPRIVATE <$> deformNonEmpty deform)
+    "release" .:> deformNonEmpty deform
   let e = Excerpt as c
   r <- changeExcerpt e
   guardAction r $

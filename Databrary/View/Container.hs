@@ -22,6 +22,6 @@ htmlContainerForm targ req = htmlForm
   $ do
   field "name" $ inputText (containerName =<< cont)
   field "date" $ inputDate (containerDate =<< cont)
-  field "consent" $ inputEnum (containerConsent =<< cont)
+  field "release" $ inputEnum (containerRelease =<< cont)
   where
   cont = either (const Nothing) Just targ

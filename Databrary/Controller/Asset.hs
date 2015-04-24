@@ -78,7 +78,7 @@ assetJSONField a "creation" _ | view a >= PermissionEDIT = do
     , ("name" JSON..=) <$> n
     ]
 assetJSONField a "excerpts" _ =
-  Just . JSON.toJSON . map excerptJSON <$> lookupAssetExcerpts a
+  Just . JSON.toJSON . map (assetSegmentJSON . excerptAsset) <$> lookupAssetExcerpts a
 assetJSONField _ _ _ = return Nothing
 
 assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
@@ -156,7 +156,7 @@ processAsset api target = do
     up <- Trav.mapM detectUpload upfile
     let fmt = maybe (assetFormat a) fileUploadFormat up
     name <- "name" .:> fmap (dropFormatExtension fmt) <$> deformNonEmpty deform
-    classification <- "classification" .:> deform
+    classification <- "classification" .:> deformNonEmpty deform
     slot <-
       "container" .:> (<|> slotContainer <$> s) <$> deformLookup "Container not found." (lookupVolumeContainer (assetVolume a))
       >>= Trav.mapM (\c -> "position" .:> do
@@ -169,7 +169,7 @@ processAsset api target = do
       ( as
         { slotAsset = a
           { assetName = TE.decodeUtf8 <$> name
-          , assetClassification = classification
+          , assetRelease = classification
           , assetFormat = fmt
           }
         , assetSlot = slot

@@ -12,7 +12,7 @@ import qualified Language.Haskell.TH as TH
 
 import Databrary.Has (view)
 import Databrary.Model.SQL.Select
-import Databrary.Model.Permission.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Segment
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
@@ -24,16 +24,16 @@ import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSlot.SQL
 import Databrary.Model.AssetSegment.Types
 
-excerptTuple :: Segment -> Classification -> (Segment, Classification)
+excerptTuple :: Segment -> Maybe Release -> (Segment, Maybe Release)
 excerptTuple = (,)
 
-excerptRow :: Selector -- ^ @'Classification'@
-excerptRow = selectColumns 'excerptTuple "excerpt" ["segment", "classification"]
+excerptRow :: Selector -- ^ @('Segment', Maybe 'Release')@
+excerptRow = selectColumns 'excerptTuple "excerpt" ["segment", "release"]
 
-makeExcerpt :: AssetSlot -> Segment -> Maybe (Segment, Classification) -> AssetSegment
+makeExcerpt :: AssetSlot -> Segment -> Maybe (Segment, Maybe Release) -> AssetSegment
 makeExcerpt a s = newAssetSegment a s . fmap (uncurry $ newExcerpt a)
 
-makeAssetSegment :: Segment -> Maybe Segment -> Maybe (Segment, Classification) -> Asset -> Container -> AssetSegment
+makeAssetSegment :: Segment -> Maybe Segment -> Maybe (Segment, Maybe Release) -> Asset -> Container -> AssetSegment
 makeAssetSegment as ss e a c = makeExcerpt sa ss' e where
   sa = makeSlotAsset a c as
   ss' = fromMaybe emptySegment ss -- should not happen

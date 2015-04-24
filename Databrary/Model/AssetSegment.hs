@@ -18,14 +18,16 @@ import Databrary.Service.DB
 import Databrary.Model.SQL
 import Databrary.Model.Audit
 import Databrary.Model.Id
-import Databrary.Model.Party
+import Databrary.Model.Party.Types
 import Databrary.Model.Identity
+import Databrary.Model.Permission
+import Databrary.Model.Release.Types
 import Databrary.Model.Segment
-import Databrary.Model.Volume
-import Databrary.Model.Container
-import Databrary.Model.Slot
-import Databrary.Model.Format
-import Databrary.Model.Asset
+import Databrary.Model.Volume.Types
+import Databrary.Model.Container.Types
+import Databrary.Model.Slot.Types
+import Databrary.Model.Format.Types
+import Databrary.Model.Asset.Types
 import Databrary.Model.AssetSlot
 import Databrary.Model.AssetSegment.Types
 import Databrary.Model.AssetSegment.SQL
@@ -54,8 +56,8 @@ auditAssetSegmentDownload :: MonadAudit c m => Bool -> AssetSegment -> m ()
 auditAssetSegmentDownload success AssetSegment{ segmentAsset = AssetSlot{ slotAsset = a, assetSlot = as }, assetSegment = seg } = do
   ai <- getAuditIdentity
   maybe
-    (dbExecute1' [pgSQL|INSERT INTO audit.asset (audit_action, audit_user, audit_ip, id, volume, format, classification) VALUES
-      (${act}, ${auditWho ai}, ${auditIp ai}, ${assetId a}, ${volumeId $ assetVolume a}, ${formatId $ assetFormat a}, ${assetClassification a})|])
+    (dbExecute1' [pgSQL|INSERT INTO audit.asset (audit_action, audit_user, audit_ip, id, volume, format, release) VALUES
+      (${act}, ${auditWho ai}, ${auditIp ai}, ${assetId a}, ${volumeId $ assetVolume a}, ${formatId $ assetFormat a}, ${assetRelease a})|])
     (\s -> dbExecute1' [pgSQL|$INSERT INTO audit.slot_asset (audit_action, audit_user, audit_ip, container, segment, asset) VALUES
       (${act}, ${auditWho ai}, ${auditIp ai}, ${containerId $ slotContainer s}, ${seg}, ${assetId a})|])
     as
@@ -63,10 +65,17 @@ auditAssetSegmentDownload success AssetSegment{ segmentAsset = AssetSlot{ slotAs
             | otherwise = AuditActionAttempt
 
 assetSegmentJSON :: AssetSegment -> JSON.Object
-assetSegmentJSON as@AssetSegment{..} = assetSlotJSON segmentAsset JSON..++ catMaybes
-  -- conflicts with asset...
-  [ assetSegmentFull as ?!> ("segment" JSON..= assetSegment)
-  , view segmentAsset == fmt ?!> "format" JSON..= formatId fmt
-  , ("excerpt" JSON..=) . excerptClassification <$> assetExcerpt
-  -- , context? excerpt segment?
-  ] where fmt = view as
+assetSegmentJSON as@AssetSegment{..}
+  | assetSegmentFull as = assetSlotJSON segmentAsset JSON..++ catMaybes fields
+  | otherwise = JSON.object $ catMaybes $
+    [ Just $ "asset" JSON..= assetSegmentJSON (assetFullSegment as)
+    , Just $ ("segment" JSON..= assetSegment)
+    , view segmentAsset == fmt ?!> "format" JSON..= formatId fmt
+    ] ++ fields
+  where
+  fields =
+    [ ("release" JSON..=) <$> (view as :: Maybe Release)
+    , Just $ "permission" JSON..= dataPermission as
+    , ("excerpt" JSON..=) . excerptRelease <$> assetExcerpt
+    ]
+  fmt = view as

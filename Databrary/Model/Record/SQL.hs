@@ -14,7 +14,7 @@ import qualified Language.Haskell.TH as TH
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Id.Types
-import Databrary.Model.Consent.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Volume.Types
 import Databrary.Model.Volume.SQL
 import Databrary.Model.RecordCategory
@@ -25,16 +25,16 @@ parseMeasure :: Record -> BSC.ByteString -> Measure
 parseMeasure r s = (\(m, d) -> Measure r (getMetric' (Id (read (BSC.unpack m)))) (BSC.tail d))
   $ BSC.splitAt (fromMaybe (error $ "parseMeasure: " ++ BSC.unpack s) $ BSC.elemIndex ':' s) s
 
-makeRecord :: Id Record -> Maybe (Id RecordCategory) -> [Maybe BSC.ByteString] -> Maybe Consent -> Volume -> Record
+makeRecord :: Id Record -> Maybe (Id RecordCategory) -> [Maybe BSC.ByteString] -> Maybe Release -> Volume -> Record
 makeRecord i c ms p v = r where
   r = Record i v (fmap getRecordCategory' c) p (map (parseMeasure r . fromMaybe (error "NULL record.measure")) ms)
 
-recordRow :: Selector -- ^ @'Consent' -> 'Volume' -> 'Record'@
+recordRow :: Selector -- ^ @Maybe 'Release' -> 'Volume' -> 'Record'@
 recordRow = fromMap ("record_measures AS " ++) $
   selectColumns 'makeRecord "record" ["id", "category", "measures"]
 
 selectVolumeRecord :: Selector -- ^ @'Volume' -> 'Record'@
-selectVolumeRecord = addSelects '($) recordRow ["record_consent(record.id)"]
+selectVolumeRecord = addSelects '($) recordRow ["record_release(record.id)"]
 
 selectRecord :: TH.Name -- ^ @'Identity'@
   -> Selector -- ^ @'Record'@

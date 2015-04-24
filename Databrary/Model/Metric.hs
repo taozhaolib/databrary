@@ -43,7 +43,7 @@ birthdateMetric = fromJust $ {- castMetric =<< -} find (("birthdate" ==) . metri
 metricJSON :: Metric -> JSON.Object
 metricJSON m@Metric{..} = JSON.record metricId $ catMaybes
   [ Just $ "name" JSON..= metricName
-  , Just $ "classification" JSON..= metricClassification
+  , ("release" JSON..=) <$> metricRelease
   , Just $ "type" JSON..= show metricType
   , "options" JSON..= metricOptions <!? null metricOptions
   , ("assumed" JSON..=) <$> metricAssumed

@@ -22,7 +22,6 @@ import Databrary.Service.DB
 import Databrary.Model.Offset
 import Databrary.Model.Segment
 import Databrary.Model.Id
-import Databrary.Model.Permission
 import Databrary.Model.Party.Types
 import Databrary.Model.Identity.Types
 import Databrary.Model.Volume.Types
@@ -68,8 +67,7 @@ findAssetContainerEnd c =
   dbQuery1' [pgSQL|SELECT max(upper(segment)) FROM slot_asset WHERE container = ${containerId c}|]
 
 assetSlotJSON :: AssetSlot -> JSON.Object
-assetSlotJSON as@AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
+assetSlotJSON AssetSlot{..} = assetJSON slotAsset JSON..++ catMaybes
   [ ("container" JSON..=) . containerId . slotContainer <$> assetSlot
   , liftM2 (?!>) segmentFull ("segment" JSON..=) =<< slotSegment <$> assetSlot
-  , Just $ "permission" JSON..= (view as :: Permission)
   ]

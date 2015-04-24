@@ -20,7 +20,7 @@ import Databrary.Service
 import Databrary.Store
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types
-import Databrary.Model.Consent.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Metric
 import Databrary.Model.RecordCategory
 import Databrary.Model.Format
@@ -30,8 +30,7 @@ import Databrary.Web.Files
 constantsJSON :: JSON.Value
 constantsJSON = JSON.Object $ JSON.object
   [ "permission" JSON..= enumValues PermissionPUBLIC
-  , "consent" JSON..= enumValues ConsentPUBLIC
-  , "classification" JSON..= enumValues ClassificationPUBLIC
+  , "release" JSON..= enumValues ReleasePUBLIC
   , "metric" JSON..= JSON.recordMap (map metricJSON allMetrics)
   , "category" JSON..= JSON.recordMap (map recordCategoryJSON allRecordCategories)
   , "format" JSON..= JSON.recordMap (map formatJSON allFormats)

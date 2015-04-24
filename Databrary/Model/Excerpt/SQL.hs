@@ -10,16 +10,16 @@ import qualified Language.Haskell.TH as TH
 
 import Databrary.Model.SQL.Select
 import Databrary.Model.Audit.SQL
-import Databrary.Model.Permission.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Segment
 import Databrary.Model.AssetSlot.Types
 import Databrary.Model.AssetSegment.Types
 
-makeExcerpt :: Segment -> Classification -> AssetSlot -> Excerpt
-makeExcerpt s c a = newExcerpt a s c
+makeExcerpt :: Segment -> Maybe Release -> AssetSlot -> Excerpt
+makeExcerpt s r a = newExcerpt a s r
 
 excerptRow :: Selector -- ^ @'AssetSlot' -> 'Excerpt'@
-excerptRow = selectColumns 'makeExcerpt "excerpt" ["segment", "classification"]
+excerptRow = selectColumns 'makeExcerpt "excerpt" ["segment", "release"]
 
 selectAssetSlotExcerpt :: Selector -- ^ @'AssetSlot' -> 'Excerpt'@
 selectAssetSlotExcerpt = excerptRow
@@ -34,7 +34,7 @@ excerptKeys o =
 excerptSets :: String -- ^ @'Excerpt'@
   -> [(String, String)]
 excerptSets o =
-  [ ("classification", "${excerptClassification " ++ o ++ "}")
+  [ ("release", "${excerptRelease " ++ o ++ "}")
   ]
 
 insertExcerpt :: TH.Name -- ^ @'AuditIdentity'@

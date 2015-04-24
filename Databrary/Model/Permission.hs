@@ -5,14 +5,14 @@ module Databrary.Model.Permission
   , permissionVIEW
   , permissionPRIVATE
   , readPermission
-  , readClassification
+  , readRelease
   , dataPermission
   , accessJSON
   ) where
 
-import Databrary.Has (view)
+import Databrary.Has (Has, view)
 import qualified Databrary.JSON as JSON
-import Databrary.Model.Consent.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Permission.Types
 
 -- |Level at which things become visible.
@@ -23,36 +23,30 @@ permissionVIEW = PermissionPUBLIC
 permissionPRIVATE :: Permission
 permissionPRIVATE = PermissionREAD
 
--- |The necessary permission level to read a data object with the given classification.
+-- |The necessary permission level to read a data object with the given release.
 -- Equivalent to the SQL function read_permission.
-readPermission :: Classification -> Maybe Consent -> Permission
-readPermission ClassificationPRIVATE _  = permissionPRIVATE
-readPermission ClassificationPUBLIC  _  = PermissionPUBLIC
-readPermission _ (Just ConsentPUBLIC)   = PermissionPUBLIC
-readPermission ClassificationSHARED  _  = PermissionSHARED
-readPermission _ (Just ConsentEXCERPTS) = PermissionSHARED
-readPermission _ (Just ConsentSHARED)   = PermissionSHARED
-readPermission _ _                      = permissionPRIVATE
+readPermission :: Release -> Permission
+readPermission ReleasePUBLIC   = PermissionPUBLIC
+readPermission ReleaseSHARED   = PermissionSHARED
+readPermission ReleaseEXCERPTS = PermissionSHARED
+readPermission ReleasePRIVATE  = permissionPRIVATE
 
--- |The most restrictive data classification level that the current user may access under the given permission and consent level.
--- Equivalent to the SQL function read_classification.
-readClassification :: Permission -> Maybe Consent -> Maybe Classification
-readClassification PermissionNONE _   = Nothing
-readClassification PermissionPUBLIC (Just ConsentPUBLIC) 
-                                      = Just ClassificationRESTRICTED
-readClassification PermissionPUBLIC _ = Just ClassificationSHARED
-readClassification PermissionSHARED (Just c) | c >= ConsentSHARED 
-                                      = Just ClassificationRESTRICTED
-readClassification PermissionSHARED _ = Just ClassificationSHARED
-readClassification _ _                = Just ClassificationPRIVATE
+-- |The most restrictive data release level that the current user may access under the given permission.
+-- Equivalent to the SQL function read_release.  Inverse of 'readPermission' module meaning of @Nothing@.
+readRelease :: Permission -> Maybe Release
+readRelease PermissionNONE   = Nothing
+readRelease PermissionPUBLIC = Just ReleasePUBLIC
+readRelease PermissionSHARED = Just ReleaseSHARED
+readRelease _                = Just ReleasePRIVATE
 
--- |The effective permission for data objects with the given attributes, effectively collapsing selective read permissions to READ or NONE.
-dataPermission :: Permission -> Classification -> Maybe Consent -> Permission
-dataPermission o c = dp (view o) . readPermission c where
-  dp p r
-    | p >= PermissionREAD = p
-    | p >= r = PermissionREAD
-    | otherwise = PermissionNONE
+-- |The effective permission for data objects with the given attributes, effectively collapsing ineffective permissions NONE.
+releasePermission :: Release -> Permission -> Permission
+releasePermission r p
+  | p >= readPermission r = p
+  | otherwise = PermissionNONE
+
+dataPermission :: (Has Release a, Has Permission a) => a -> Permission
+dataPermission a = releasePermission (view a) (view a)
 
 accessJSON :: Access -> JSON.Object
 accessJSON Access{..} = JSON.object

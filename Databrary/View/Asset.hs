@@ -9,7 +9,6 @@ import Data.Monoid ((<>))
 import Databrary.Action.Auth
 import Databrary.Action
 import Databrary.Model.Volume
-import Databrary.Model.Permission
 import Databrary.Model.Asset
 import Databrary.Model.Container
 import Databrary.Model.Slot
@@ -28,7 +27,7 @@ htmlAssetForm targ req = htmlForm
   req
   $ do
   field "name" $ inputText (assetName =<< asset)
-  field "classification" $ inputEnum $ Just $ maybe ClassificationRESTRICTED assetClassification asset
+  field "classification" $ inputEnum (assetRelease =<< asset)
   field "file" inputFile
   field "container" $ inputHidden (case targ of
     AssetTargetSlot s -> show $ containerId $ slotContainer s

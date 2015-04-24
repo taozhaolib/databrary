@@ -34,7 +34,7 @@ blankRecord vol = Record
   { recordId = error "blankRecord"
   , recordVolume = vol
   , recordCategory = Nothing
-  , recordConsent = Nothing
+  , recordRelease = Nothing
   , recordMeasures = []
   }
 

@@ -32,6 +32,7 @@ import Databrary.Model.Enum
 import Databrary.Model.Kind
 import Databrary.Model.Id
 import Databrary.Model.Permission
+import Databrary.Model.Release
 import Databrary.Model.Identity
 import Databrary.Model.Party
 import Databrary.Model.Authorize
@@ -119,7 +120,7 @@ processParty api p = do
   a' <- Trav.forM a $ \(af, fmt) -> do
     a' <- addAsset (blankAsset coreVolume)
       { assetFormat = fmt
-      , assetClassification = ClassificationPUBLIC
+      , assetRelease = Just ReleasePUBLIC
       , assetName = Just $ TE.decodeUtf8 $ fileName af
       } $ Just $ tempFilePath (fileContent af)
     releaseTempFile $ fileContent af

@@ -9,7 +9,7 @@ import qualified Data.Text as T
 import Databrary.Has (makeHasRec)
 import Databrary.Model.Time
 import Databrary.Model.Kind
-import Databrary.Model.Consent.Types
+import Databrary.Model.Release.Types
 import Databrary.Model.Id.Types
 import Databrary.Model.Volume.Types
 
@@ -20,11 +20,11 @@ data Container = Container
   , containerTop :: Bool
   , containerName :: Maybe T.Text
   , containerDate :: Maybe Date
-  , containerConsent :: Maybe Consent
+  , containerRelease :: Maybe Release
   , containerVolume :: Volume
   }
 
 instance Kinded Container where
   kindOf _ = "container"
 
-makeHasRec ''Container ['containerId, 'containerConsent, 'containerVolume]
+makeHasRec ''Container ['containerId, 'containerRelease, 'containerVolume]

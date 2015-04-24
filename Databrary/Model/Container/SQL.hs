@@ -13,17 +13,17 @@ import Databrary.Model.SQL.Select
 import Databrary.Model.Id.Types
 import Databrary.Model.Audit.SQL
 import Databrary.Model.Volume.SQL
-import Databrary.Model.Consent.SQL
+import Databrary.Model.Release.SQL
 import Databrary.Model.Container.Types
 
-containerRow :: Selector -- ^ @Maybe 'Consent' -> 'Permission' -> 'Container'@
+containerRow :: Selector -- ^ @Maybe 'Release' -> 'Permission' -> 'Container'@
 containerRow = selectColumns 'Container "container" ["id", "top", "name", "date"]
 
 selectVolumeContainer :: Selector -- ^ @'Volume' -> 'Container'@
 selectVolumeContainer = selectJoin '($)
   [ containerRow
-  , maybeJoinOn "container.id = slot_consent.container AND slot_consent.segment = '(,)'"
-    consentRow
+  , maybeJoinOn "container.id = slot_release.container AND slot_release.segment = '(,)'"
+    releaseRow
   ]
 
 selectContainer :: TH.Name -- ^ @'Identity'@

@@ -26,7 +26,6 @@ import Databrary.Store.Asset
 import Databrary.Model.SQL
 import Databrary.Model.Time
 import Databrary.Model.Audit
-import Databrary.Model.Permission
 import Databrary.Model.Id
 import Databrary.Model.Identity
 import Databrary.Model.Party
@@ -41,7 +40,7 @@ blankAsset :: Volume -> Asset
 blankAsset vol = Asset
   { assetId = error "blankAsset"
   , assetFormat = unknownFormat
-  , assetClassification = ClassificationRESTRICTED
+  , assetRelease = Nothing
   , assetName = Nothing
   , assetDuration = Nothing
   , assetSHA1 = Nothing
@@ -81,7 +80,7 @@ assetCreation a = maybe (Nothing, Nothing) (first Just) <$>
 assetJSON :: Asset -> JSON.Object
 assetJSON Asset{..} = JSON.record assetId $ catMaybes
   [ Just $ "format" JSON..= formatId assetFormat
-  , Just $ "classification" JSON..= assetClassification
+  , ("classification" JSON..=) <$> assetRelease
   , ("name" JSON..=) <$> assetName
   , ("duration" JSON..=) <$> assetDuration
   , ("pending" JSON..= True) <? isNothing assetSHA1
