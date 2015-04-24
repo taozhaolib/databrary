@@ -973,17 +973,17 @@ app.controller('volume/slot', [
     class Consent extends TimeBar
       constructor: (c) ->
         if typeof c == 'object'
-          @consent = c.release
+          @release = c.release
           super(c.segment)
         else
-          @consent = c
+          @release = c
           super(undefined)
         return
 
       type: 'consent'
 
       classes: ->
-        cn = constants.release[@consent]
+        cn = constants.release[@release]
         cls = [cn, 'hint-consent-' + cn]
         cls.push('slot-release-select') if $scope.current == this
         cls

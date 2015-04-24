@@ -9,17 +9,6 @@
   </ul>
 </div>
 
-<div class="spreadsheet-legend" ng-if="::editing && top">
-  <a href="" ng-click="showClassification=false" ng-show="showClassification" message="wizard.volume-edit-data.classkeyhide"></a>
-  <a href="" ng-click="showClassification=true" ng-hide="showClassification" message="wizard.volume-edit-data.classkeyshow"></a>
-  <ul ng-show="showClassification">
-    <li ng-repeat="(i,c) in page.constants.release" ng-if="i>=0">
-      <span class="icon release" ng-class="c"></span>
-      <span ng-bind="'classification.'+c | message"></span>
-    </li>
-  </ul>
-</div>
-
 <div class="spreadsheet-options">  
   <span ng-if="::editing">
     <a href="" ng-click="refresh()">refresh</a>
