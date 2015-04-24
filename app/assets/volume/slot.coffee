@@ -154,7 +154,7 @@ app.controller('volume/slot', [
           style['border-left'] = '0px'
           style['border-top-left-radius'] = '0px'
           style['border-bottom-left-radius'] = '0px'
-        else if l <= 1
+        else if l < 1
           style.left = 100*l + '%'
         r = @ut.p
         if r > 1
@@ -162,7 +162,7 @@ app.controller('volume/slot', [
           style['border-right'] = '0px'
           style['border-top-right-radius'] = '0px'
           style['border-bottom-right-radius'] = '0px'
-        else if r >= 0
+        else if r > 0
           style.right = 100*(1-r) + '%'
         style
 
