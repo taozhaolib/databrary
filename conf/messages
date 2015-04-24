@@ -382,29 +382,29 @@ excerpts.PUBLIC.description=These clips are available to anybody for unrestricte
 ### NEW PROPOSED CONSOLIDATION OF RELEASE MESSAGES
 
 # --- Options
-release.select.DEFAULT.session=There is no release for this session.
-release.select.DEFAULT.file=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release.
-release.select.DEFAULT.excerpt=Use current file or participant release level.
-release.select.PRIVATE=Private: Not shared and only accesible to collaborators
-release.select.SHARED=Shared: Shared only with authorized Databrary users and not be used in presentations
+release.select.DEFAULT.session=There is no release for this session
+release.select.DEFAULT.file=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release
+release.select.DEFAULT.excerpt=Use current file or participant release level
+release.select.PRIVATE=Private: Not shared and only accessible to collaborators
+release.select.SHARED=Shared: Shared only with authorized Databrary users and may not be used in presentations
 release.select.EXCERPTS=Excerpts: May be shared with authorized Databrary users for educational or research purposes
 release.select.PUBLIC=Public: May be available to anybody for unrestricted use
 
 # --- Labels 
-release.DEFAULT.session=Shared according to participant session release level.
-release.DEFAULT.exceprt.title=Unreleased
-release.DEFAULT.excerpt.description=These clips have not been shared
-release.title.PRIVARE=Private
-release.description.PRIVATE=This content has not been shared and is only available to collaborators
-release.title.SHARED=Databrary Only
-release.description.SHARED=This content has been shared only with authorized Databrary users and may not be used in presentations
-release.title.EXCERPTS=Presentations
-release.description.EXCERPTS=This content has been shared with authorized Databrary users for educational or research purposes
-release.title.PUBLIC=Public
-release.description.PUBLIC=This content is available to anybody for unrestricted use
+release.DEFAULT.session=Shared according to participant session release level
+release.DEFAULT.title=Unreleased
+release.DEFAULT.description=These clips have not been shared
+release.PRIVATE.title=Private
+release.PRIVATE.description=This content has not been shared and is only available to collaborators
+release.SHARED.title=Databrary Only
+release.SHARED.description=This content has been shared only with authorized Databrary users and may not be used in presentations
+release.EXCERPTS.title=Presentations
+release.EXCERPTS.description=This content has been shared with authorized Databrary users for educational or research purposes
+release.PUBLIC.title=Public
+release.PUBLIC.description=This content is available to anybody for unrestricted use
 
 # --- Warnings
-release.WARNING.excerpt=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
+release.excerpt.warning=You are choosing to make this clip more widely available than the file it originates from. Click OK if you intend to do this and have the authorization to do so.
 
 ### END OF NEW PROPOSED RELEASE MESSAGES
 
