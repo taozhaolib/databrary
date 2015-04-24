@@ -339,44 +339,13 @@ access.edit.READ.who=For those you trust to view all data.
 access.edit.EDIT.who=For those you trust to view, change, add, and remove data.
 access.edit.ADMIN.who=For fellow volume investigators only.
 
-### THIS SECTION IS BEING CONSOLIDATED - TO BE DELETED
-consent.DEFAULT=There is no release for this session.
-consent.PRIVATE=Private: The identifying data in this session have not been released for sharing.
-consent.SHARED=Shared: The identifying data in this session have been released for sharing only with authorized Databrary users. No excerpts may be used.
-consent.EXCERPTS=Excerpt: The identifying data in this session have been released for sharing with authorized Databrary users, and excerpts may be used for research and educational purposes.
-consent.PUBLIC=Public: The identifying data in this session have been released publicly.
-
-classification.DEFAULT=Identifying: shared according to participant session release level.
-classification.PRIVATE=Private: never shared; only available to individuals and groups explicitly granted access.
-classification.SHARED=Restricted: shared only with authorized Databrary users.
-classification.EXCERPTS=Shared: shared with authorized Databrary users for educational or research purposes.
-classification.PUBLIC=Public: available to anybody for unrestricted use.
-
-excerpts.DEFAULT.title=unreleased
-excerpts.DEFAULT.description=These clips have not been shared
-excerpts.PRIVATE.title=private use
-excerpts.PRIVATE.description=These clips are private and are only available to collaborators
-excerpts.SHARED.title=Databrary only
-excerpts.SHARED.description=These clips may only be used by authorized Databrary users and are not to be distributed publicly or viewed in an education setting
-excerpts.EXCERPTS.title=educational use
-excerpts.EXCERPTS.description=These clips may be downloaded and used outside of Databrary for educational purposes such as in the classroom or at a conference
-excerpts.PUBLIC.title=public use
-excerpts.PUBLIC.description=These clips are available to anybody for unrestricted use
-
-### END OF SECTION TO BE CONSOLIDATED AND DELETED
-
-### NEW PROPOSED CONSOLIDATION OF RELEASE MESSAGES
-
 release.prompt=Choose sharing level...
-
-release.select.DEFAULT.session=There is no release for this session
-release.select.DEFAULT.file=This file contains identifiable data such as faces, voices, or dates and may only be shared with appropriate participant release
 
 release.DEFAULT.session=Shared according to participant session release level
 release.DEFAULT.title=Unreleased
 release.DEFAULT.deselect=This file is deidentified (no faces, voices, dates, etc.), or I wish to override any participant release
 release.DEFAULT.select=Use current file or participant release level
-release.DEFAULT.description=These clips have not been shared
+release.DEFAULT.description=This content has not been shared
 release.PRIVATE.title=Private
 release.PRIVATE.select=Not shared and only accessible to collaborators
 release.PRIVATE.description=This content has not been shared and is only available to collaborators
@@ -391,8 +360,6 @@ release.PUBLIC.description=This content is available to anybody for unrestricted
 release.PUBLIC.select=May be available to anybody for unrestricted use
 
 release.excerpt.warning=You are choosing to make this clip more widely available than the file from which it originates. Click OK if this is acceptable.
-
-### END OF NEW PROPOSED RELEASE MESSAGES
 
 asset.untranscoded=This video is being converted to Databrary''s standard format, so some features may not work yet.
 
@@ -597,11 +564,6 @@ wizard.volume-edit-materials.instructions=<p>Provide any files related to this v
 wizard.volume-edit-data.name=Data
 wizard.volume-edit-data.description=Provide data from collected sessions.
 wizard.volume-edit-data.instructions=<p>Here you can enter data about individual sessions, participants, or data collections.  Each row in this spreadsheet represents a single session.</p><p>Click the <em>folder</em> (<img src="/public/images/icon/session.png">) on the left to upload files for each session. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign on the rightmost tab to add a new tab. Click the <em>plus</em> (<img src="/public/images/icon/add.png">) sign within a tab to add a new column within the given tab.</p>
-wizard.volume-edit-data.releasekeyhide=Hide legend of session release levels
-wizard.volume-edit-data.releasekeyshow=Show legend of session release levels
-wizard.volume-edit-data.classkeyhide=Hide legend of file classification levels
-wizard.volume-edit-data.classkeyshow=Show legend of file classification levels
-
 
 asset.file=File
 asset.file.help=Select the file you wish to upload.

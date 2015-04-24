@@ -260,14 +260,14 @@ app.directive 'spreadsheet', [
         generateText = (c, m, v, assumed) ->
           if m == 'release'
             cn = constants.release[v || 0]
-            c.className = cn + ' release icon hint-consent-' + cn
+            c.className = cn + ' release icon hint-release-' + cn
             v = ''
           else if v == undefined
             c.classList.add('blank')
             v = assumed || ''
           else if m == 'classification'
             cn = constants.release[v]
-            c.className = cn + ' release icon hint-classification-' + cn
+            c.className = cn + ' release icon hint-release-' + cn
             v = ''
           else if m == 'excerpt'
             if v

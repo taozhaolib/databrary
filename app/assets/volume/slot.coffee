@@ -997,7 +997,7 @@ app.controller('volume/slot', [
 
       classes: ->
         cn = constants.release[@release]
-        cls = [cn, 'hint-consent-' + cn]
+        cls = [cn, 'hint-release-' + cn]
         cls.push('slot-release-select') if $scope.current == this
         cls
 
