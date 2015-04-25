@@ -16,7 +16,7 @@ import qualified Network.Wai as Wai
 
 import Databrary.Has (makeHasRec)
 import Databrary.HTTP
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Service.Log
 import Databrary.Model.Time
 import Databrary.Action.Types

@@ -6,7 +6,6 @@ module Databrary.Web.Constants
   , generateConstantsJS
   ) where
 
-import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.Aeson.Encode as JSON
 import qualified Data.ByteString.Builder as BSB
 import Data.Monoid ((<>))
@@ -14,9 +13,7 @@ import Data.Version (showVersion)
 import System.IO (withFile, IOMode(WriteMode))
 
 import qualified Paths_databrary as Databrary
-import Databrary.Has (peeks)
 import qualified Databrary.JSON as JSON
-import Databrary.Service
 import Databrary.Store
 import Databrary.Model.Enum
 import Databrary.Model.Permission.Types
@@ -54,15 +51,14 @@ constantsJSONB = JSON.encodeToByteStringBuilder constantsJSON
 constantsJS :: BSB.Builder
 constantsJS = BSB.string7 "app.constant('constantData'," <> constantsJSONB <> BSB.string7 ");"
 
-regenerateConstants :: (MonadHasService c m, MonadIO m) => BSB.Builder -> RawFilePath -> m Bool
-regenerateConstants b f = do
-  st <- peeks serviceStartTime
-  liftIO $ webRegenerate st f $ \wf ->
+regenerateConstants :: BSB.Builder -> RawFilePath -> IO Bool
+regenerateConstants b f =
+  webRegenerate undefined f Nothing $ \wf ->
     withFile (unRawFilePath wf) WriteMode $ \h ->
       BSB.hPutBuilder h b
 
-generateConstantsJSON :: (MonadHasService c m, MonadIO m) => RawFilePath -> m Bool
+generateConstantsJSON :: RawFilePath -> IO Bool
 generateConstantsJSON = regenerateConstants constantsJSONB
 
-generateConstantsJS :: (MonadHasService c m, MonadIO m) => RawFilePath -> m Bool
+generateConstantsJS :: RawFilePath -> IO Bool
 generateConstantsJS = regenerateConstants constantsJS

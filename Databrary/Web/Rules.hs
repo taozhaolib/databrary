@@ -1,25 +1,35 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, CPP #-}
 module Databrary.Web.Rules
   ( generateWebFile
   , generateWebFiles
   ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad.IO.Class (MonadIO, liftIO)
+import Control.Monad (forM)
+import qualified Data.Traversable as Trav
+import System.Posix.FilePath ((</>))
+import System.Posix.Files.ByteString (createLink)
 
-import Databrary.Service
 import Databrary.Store
+import Databrary.Model.Time
+import Databrary.Web.Files
 import Databrary.Web.Constants
 import Databrary.Web.Templates
 
-generateWebFile :: (MonadHasService c m, MonadIO m) => RawFilePath -> m (Maybe Bool)
-generateWebFile f@"constants.json" = Just <$> generateConstantsJSON f
-generateWebFile f@"constants.js" = Just <$> generateConstantsJS f
-generateWebFile f@"templates.js" = Just <$> liftIO (generateTemplatesJS f)
-generateWebFile _ = return Nothing
+generateWebFile :: RawFilePath -> Maybe Timestamp -> IO (Maybe Bool)
+generateWebFile f@"constants.json" t = Just <$> maybe (generateConstantsJSON f) (const $ return False) t
+generateWebFile f@"constants.js" t = Just <$> maybe (generateConstantsJS f) (const $ return False) t
+generateWebFile f@"templates.js" t = Just <$> generateTemplatesJS t f
+generateWebFile f t = do
+  wi <- fileInfo wf
+  Trav.forM wi $ \(_, wt) ->
+    webRegenerate wt f t $ createLink wf
+  where wf = webDir </> f
 
 allWebFiles :: [RawFilePath]
 allWebFiles = ["constants.json", "constants.js", "templates.js"]
 
-generateWebFiles :: (MonadHasService c m, MonadIO m) => m ()
-generateWebFiles = mapM_ generateWebFile allWebFiles
+generateWebFiles :: IO [RawFilePath]
+generateWebFiles = forM allWebFiles $ \f -> do
+  Just _ <- generateWebFile f Nothing
+  return f

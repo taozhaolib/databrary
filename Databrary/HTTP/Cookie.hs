@@ -16,7 +16,7 @@ import Databrary.Ops
 import Databrary.Has (peeks)
 import Databrary.Service.Entropy
 import Databrary.Service.Crypto
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Model.Time
 import Databrary.HTTP.Request
 

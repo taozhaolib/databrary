@@ -8,14 +8,15 @@ module Databrary.Web.Files
 
 import Control.Applicative ((<$>), (<$))
 import Control.Exception (bracket)
-import Control.Monad (ap)
+import Control.Monad (ap, liftM2)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import qualified Data.Foldable as Fold
+import Data.Maybe (isNothing)
 import System.Directory (createDirectoryIfMissing)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
+import System.Posix.Files.ByteString (removeLink)
 import System.Posix.FilePath ((</>), takeDirectory)
 
 import Databrary.Model.Time
@@ -50,12 +51,11 @@ genDir = "gen"
 findWebFiles :: BS.ByteString -> IO [RawFilePath]
 findWebFiles = findFiles webDir
 
-webRegenerate :: Timestamp -> RawFilePath -> (RawFilePath -> IO ()) -> IO Bool
-webRegenerate t f g = do
-  fi <- fileInfo wf
-  if Fold.any ((t < ) . snd) fi
-    then return False
-    else True <$ do
-      createDirectoryIfMissing True $ unRawFilePath $ takeDirectory wf
-      g wf
-  where wf = genDir </> f
+webRegenerate :: Timestamp -> RawFilePath -> Maybe Timestamp -> (RawFilePath -> IO ()) -> IO Bool
+webRegenerate src _ (Just dst) _ | dst >= src = return False
+webRegenerate _ f ft g = True <$
+  liftM2 (>>)
+    (if isNothing ft
+      then createDirectoryIfMissing True . unRawFilePath . takeDirectory
+      else removeLink)
+    g (genDir </> f)

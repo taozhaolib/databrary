@@ -17,7 +17,7 @@ import Text.Read (readMaybe)
 import Databrary.Ops
 import Databrary.Has (peek, peeks)
 import Databrary.Service.DB
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Service.ResourceT
 import Databrary.HTTP.Request
 import Databrary.Model.Audit

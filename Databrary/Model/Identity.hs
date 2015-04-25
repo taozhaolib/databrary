@@ -14,7 +14,7 @@ import Databrary.Has (peek, view)
 import qualified Databrary.JSON as JSON
 import Databrary.Model.Token
 import Databrary.HTTP.Request
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Service.DB
 import Databrary.HTTP.Cookie
 import Databrary.Model.Party

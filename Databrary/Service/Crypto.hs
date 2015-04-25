@@ -14,7 +14,7 @@ import Data.Monoid ((<>))
 
 import Databrary.Ops
 import Databrary.Has (peeks)
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Service.Entropy
 
 hmac :: BS.ByteString -> BS.ByteString -> BS.ByteString

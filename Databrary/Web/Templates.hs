@@ -15,6 +15,7 @@ import System.Posix.FilePath ((</>))
 
 import qualified Databrary.JSON as JSON
 import Databrary.Store
+import Databrary.Model.Time
 import Databrary.Web.Files
 
 processTemplate :: RawFilePath -> (BS.ByteString -> IO ()) -> IO ()
@@ -27,12 +28,12 @@ processTemplate f g = withFile (unRawFilePath f) ReadMode go where
 templateFiles :: IO [RawFilePath]
 templateFiles = findWebFiles ".html"
 
-generateTemplatesJS :: RawFilePath -> IO Bool
-generateTemplatesJS f = do
+generateTemplatesJS :: Maybe Timestamp -> RawFilePath -> IO Bool
+generateTemplatesJS t f = do
   tl <- templateFiles
   if null tl then return False else do
   ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . (webDir </>)) tl
-  webRegenerate (maximum ti) f $ \wf ->
+  webRegenerate (maximum ti) f t $ \wf ->
     withFile (unRawFilePath wf) WriteMode $ \h -> do
       hPutStr h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do

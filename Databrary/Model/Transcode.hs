@@ -18,7 +18,7 @@ import Database.PostgreSQL.Typed.Query (pgSQL)
 import Databrary.Ops
 import Databrary.Has (peek)
 import Databrary.Service.DB
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Service.Crypto
 import Databrary.Store.Types
 import Databrary.Media.AV
