@@ -4,6 +4,7 @@ module Databrary.Controller.AssetSegment
   , viewAssetSegment
   , serveAssetSegment
   , downloadAssetSegment
+  , thumbAssetSegment
   ) where
 
 import Control.Applicative ((<$>))
@@ -13,7 +14,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Builder as BSB
 import qualified Data.ByteString.Char8 as BSC
 import qualified Data.ByteString.Lazy as BSL
-import Data.Maybe (isNothing, isJust)
+import Data.Maybe (isNothing, isJust, fromMaybe)
 import Data.Monoid (mempty, (<>))
 import qualified Data.Text as T
 import qualified Database.PostgreSQL.Typed.Range as Range
@@ -26,6 +27,7 @@ import Databrary.Model.Id
 import Databrary.Model.Permission
 import Databrary.Model.Identity
 import Databrary.Model.Offset
+import Databrary.Model.Segment
 import Databrary.Model.Slot
 import Databrary.Model.Format
 import Databrary.Model.Asset
@@ -38,6 +40,7 @@ import Databrary.Media.AV
 import Databrary.Action
 import Databrary.Controller.Angular
 import Databrary.Controller.Permission
+import Databrary.Controller.Web
 
 getAssetSegment :: Permission -> Id Slot -> Id Asset -> AuthActionM AssetSegment
 getAssetSegment p s a =
@@ -72,7 +75,7 @@ serveAssetSegment as = do
         okResponse hd s
   if full
     then
-      if isJust sz && afmt == imageFormat
+      if isJust sz && formatIsImage afmt
         then samp Nothing
         else okResponse hd (store, part)
     else do
@@ -97,3 +100,15 @@ downloadAssetSegment :: Id Slot -> Id Asset -> AppRAction
 downloadAssetSegment si ai = action GET (si, ai, "download" :: T.Text) $ withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
   serveAssetSegment as
+
+thumbAssetSegment :: Id Slot -> Id Asset -> AppRAction
+thumbAssetSegment si ai = action GET (si, ai, "thumb" :: T.Text) $ withAuth $ do
+  as <- getAssetSegment PermissionREAD si ai
+  let afmt = view as
+  if formatIsImage (fromMaybe afmt (formatSample afmt))
+    then do
+      let as' = as{ assetSegment = segmentInterp (assetSegment as) 0.25 }
+      -- redirectRouteResponse [] $ downloadAssetSegment (view as') (view as') -- loses size
+      serveAssetSegment as'
+    else
+      redirectRouteResponse [] $ formatIcon afmt

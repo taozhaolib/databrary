@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, TemplateHaskell, RecordWildCards #-}
-module Databrary.Service
+module Databrary.Service.Init
   ( Service
   , withService
   ) where
@@ -8,7 +8,9 @@ import Control.Applicative ((<$>), (<*>))
 import Control.Exception (bracket)
 import qualified Data.Configurator as C
 import Data.Time.Clock (getCurrentTime)
+import System.FilePath.Posix ((</>))
 
+import Paths_databrary (getSysconfDir)
 import Databrary.Service.DB (initDB, finiDB)
 import Databrary.Service.Entropy (initEntropy, finiEntropy)
 import Databrary.HTTP.Client (initHTTPClient, finiHTTPClient)
@@ -21,7 +23,8 @@ import Databrary.Service.Types
 
 initService :: IO Service
 initService = do
-  conf <- C.load [C.Required "databrary.conf"]
+  etc <- getSysconfDir
+  conf <- C.load [C.Required (etc </> "databrary.conf")]
   Service conf
     <$> getCurrentTime
     <*> initLogs (C.subconfig "log" conf)

@@ -2,6 +2,7 @@
 module Databrary.Controller.Web
   ( staticPath
   , webFile
+  , formatIcon
   ) where
 
 import Crypto.Hash (digestToHexByteString)
@@ -9,13 +10,14 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Char (isAscii, isAlphaNum)
 import Data.Maybe (fromMaybe)
+import Data.Monoid ((<>))
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import System.Posix.FilePath (joinPath, splitDirectories, (</>))
 
 import Databrary.Ops
 import Databrary.Store
-import Databrary.Model.Format (getFormatByFilename, unknownFormat)
+import Databrary.Model.Format
 import Databrary.Action.Route
 import Databrary.Action
 import Databrary.HTTP.File
@@ -51,3 +53,9 @@ webFile sp@(StaticPath p) = action GET ("public" :: T.Text, sp) $ do
   wf <- maybeAction =<< lookupWebFile p
   let f = webDir </> p
   serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) Nothing (digestToHexByteString $ webFileTag wf)
+
+formatIcon :: Format -> AppRAction
+formatIcon f = webFile $ staticPath
+  [ "images", "filetype"
+  , case formatExtension f of { e:_ -> e ; _ -> "_blank" } <> ".svg"
+  ]

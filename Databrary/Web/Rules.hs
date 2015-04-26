@@ -27,7 +27,7 @@ generateWebFile f t = do
     webRegenerate wt f t $ createLink wf
 
 allWebFiles :: [RawFilePath]
-allWebFiles = ["constants.json", "constants.js", "templates.js"]
+allWebFiles = ["constants.json", "constants.js" {-, "templates.js"-}]
 
 generateWebFiles :: IO [RawFilePath]
 generateWebFiles = do

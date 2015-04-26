@@ -37,6 +37,7 @@ Executable databrary
     time,
     old-locale,
     unix,
+    filepath,
     posix-paths,
     directory,
     process,

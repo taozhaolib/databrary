@@ -14,6 +14,7 @@ import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
 import System.Directory (createDirectoryIfMissing)
+import qualified System.FilePath.Posix as FP
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
@@ -44,7 +45,7 @@ listFiles dir = loop "" dir where
         (ent b d dh)
 
 webDataFile :: RawFilePath -> IO RawFilePath
-webDataFile = fmap rawFilePath . getDataFileName . unRawFilePath . ("web" </>)
+webDataFile = fmap rawFilePath . getDataFileName . ("web" FP.</>) . unRawFilePath
 
 webDataFiles :: IO [RawFilePath]
 webDataFiles = listFiles =<< webDataFile "."
