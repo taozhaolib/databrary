@@ -13,6 +13,7 @@ module Databrary.HTTP.Route
   , readText
   , Routable(..)
   , query
+  , readQuery
 
   , routeRequest
   ) where
@@ -25,6 +26,7 @@ import Control.Monad ((<=<), MonadPlus(..), mzero, mfilter, ap, join, guard)
 import Control.Monad.Reader.Class (MonadReader(..), asks)
 import Control.Monad.State.Class (MonadState(..))
 import qualified Data.ByteString as BS
+import qualified Data.ByteString.Char8 as BSC
 import Data.Int (Int64, Int32, Int16)
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
@@ -175,6 +177,9 @@ instance Routable Segment where
 
 query :: BS.ByteString -> RouteM BS.ByteString
 query k = maybe . (fmap $ fromMaybe "") . lookup k =<< asks Wai.queryString
+
+readQuery :: Read a => BS.ByteString -> RouteM a
+readQuery k = maybe . readMaybe . BSC.unpack =<< query k
 
 routeRequest :: RouteM a -> Wai.Request -> Maybe a
 routeRequest (RouteM r) q = fst <$> r q (filter (not . T.null) $ Wai.pathInfo q)

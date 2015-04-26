@@ -7,12 +7,15 @@ module Databrary.Model.Volume
   , addVolume
   , VolumeFilter(..)
   , findVolumes
+  , getVolumeAlias
   , volumeJSON
   ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad (guard)
 import Data.Maybe (catMaybes)
 import Data.Monoid (Monoid(..), (<>))
+import qualified Data.Text as T
 import Database.PostgreSQL.Typed.Query (unsafeModifyQuery)
 import Database.PostgreSQL.Typed.Dynamic (pgSafeLiteral)
 import Database.PostgreSQL.Typed.Types (pgQuote)
@@ -51,10 +54,13 @@ addVolume bv = do
   ident <- getAuditIdentity
   dbQuery1' $ fmap ($ PermissionADMIN) $(insertVolume 'ident 'bv)
 
+getVolumeAlias :: Volume -> Maybe T.Text
+getVolumeAlias v = guard (volumePermission v >= PermissionREAD) >> volumeAlias v
+
 volumeJSON :: Volume -> JSON.Object
-volumeJSON Volume{..} = JSON.record volumeId $ catMaybes
+volumeJSON v@Volume{..} = JSON.record volumeId $ catMaybes
   [ Just $ "name" JSON..= volumeName
-  , "alias" JSON..= volumeAlias <? (volumePermission >= PermissionREAD)
+  , ("alias" JSON..=) <$> getVolumeAlias v
   , Just $ "body" JSON..= volumeBody
   , Just $ "creation" JSON..= volumeCreation
   , Just $ "permission" JSON..= volumePermission

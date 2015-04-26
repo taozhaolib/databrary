@@ -25,8 +25,8 @@ import Databrary.Action.Types
 import qualified Databrary.HTTP.Route as R
 
 data RouteAction q = RouteAction 
-  { actionMethod :: Method
-  , actionMultipart :: Bool
+  { actionMethod :: !Method
+  , actionMultipart :: !Bool
   , actionRoute :: BS.ByteString
   , routeAction :: Action q
   }

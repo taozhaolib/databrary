@@ -8,6 +8,7 @@ module Databrary.Controller.Volume
   , viewVolumeLinks
   , postVolumeLinks
   , queryVolumes
+  , volumeFilenames
   ) where
 
 import Control.Applicative (Applicative, (<*>), pure, optional)
@@ -15,7 +16,7 @@ import Control.Monad (mfilter, guard, void, when, liftM2)
 import Control.Monad.Trans.Class (lift)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
-import Data.Maybe (fromMaybe, isNothing)
+import Data.Maybe (fromMaybe, isNothing, maybeToList)
 import Data.Monoid ((<>), mempty)
 import qualified Data.Text as T
 import qualified Network.Wai as Wai
@@ -70,6 +71,15 @@ volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object
 volumeJSONQuery vol = JSON.jsonQuery (volumeJSON vol) (volumeJSONField vol)
+
+volumeFilenames :: (MonadDB m, MonadHasIdentity c m) => Volume -> m [T.Text]
+volumeFilenames v = do
+  owns <- lookupVolumeAccess v PermissionADMIN
+  cite <- lookupVolumeCitation v
+  return $ (T.pack $ "databrary" ++ show (volumeId v))
+    : map (partySortName . volumeAccessParty) owns
+    ++ maybeToList ((T.pack . show) <$> (citationYear =<< cite))
+    ++ [fromMaybe (volumeName v) (getVolumeAlias v)]
 
 viewVolume :: API -> Id Volume -> AppRAction
 viewVolume api vi = action GET (api, vi) $ withAuth $ do

@@ -99,6 +99,7 @@ serveAssetSegment as = do
 downloadAssetSegment :: Id Slot -> Id Asset -> AppRAction
 downloadAssetSegment si ai = action GET (si, ai, "download" :: T.Text) $ withAuth $ do
   as <- getAssetSegment PermissionREAD si ai
+  inline <- peeks $ lookupQueryParameters "inline"
   serveAssetSegment as
 
 thumbAssetSegment :: Id Slot -> Id Asset -> AppRAction
