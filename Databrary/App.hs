@@ -4,7 +4,7 @@ module Databrary.App
 
 import Network.Wai (Application)
 
-import Databrary.Service
+import Databrary.Service.Types
 import Databrary.Action
 import Databrary.Routes
 

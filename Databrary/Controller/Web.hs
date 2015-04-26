@@ -49,5 +49,5 @@ instance R.Routable StaticPath where
 webFile :: StaticPath -> AppRAction
 webFile sp@(StaticPath p) = action GET ("public" :: T.Text, sp) $ do
   wf <- maybeAction =<< lookupWebFile p
-  let f = genDir </> p
+  let f = webDir </> p
   serveFile f (fromMaybe unknownFormat $ getFormatByFilename p) Nothing (digestToHexByteString $ webFileTag wf)

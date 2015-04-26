@@ -21,15 +21,18 @@ generateWebFile f@"constants.json" t = Just <$> maybe (generateConstantsJSON f) 
 generateWebFile f@"constants.js" t = Just <$> maybe (generateConstantsJS f) (const $ return False) t
 generateWebFile f@"templates.js" t = Just <$> generateTemplatesJS t f
 generateWebFile f t = do
+  wf <- webDataFile f
   wi <- fileInfo wf
   Trav.forM wi $ \(_, wt) ->
     webRegenerate wt f t $ createLink wf
-  where wf = webDir </> f
 
 allWebFiles :: [RawFilePath]
 allWebFiles = ["constants.json", "constants.js", "templates.js"]
 
 generateWebFiles :: IO [RawFilePath]
-generateWebFiles = forM allWebFiles $ \f -> do
-  Just _ <- generateWebFile f Nothing
-  return f
+generateWebFiles = do
+  wd <- webDataFiles
+  forM (wd ++ allWebFiles) $ \f -> do
+    _ <- removeFile (webDir </> f)
+    Just _ <- generateWebFile f Nothing
+    return f

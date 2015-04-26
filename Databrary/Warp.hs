@@ -6,10 +6,10 @@ import qualified Data.Configurator as C
 import Data.Version (showVersion)
 import qualified Network.Wai.Handler.Warp as Warp
 
+import Paths_databrary (version)
 import Databrary.Service (withService)
 import Databrary.Service.Types (serviceConfig)
 import Databrary.App (application)
-import Paths_databrary (version)
 
 main :: IO ()
 main = withService $ \rc -> do

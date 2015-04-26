@@ -1,14 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Databrary.Web.Files
-  ( webDir
-  , genDir
+  ( webDataFile
+  , webDataFiles
+  , webDir
   , findWebFiles
   , webRegenerate
   ) where
 
 import Control.Applicative ((<$>), (<$))
 import Control.Exception (bracket)
-import Control.Monad (ap, liftM2)
+import Control.Monad (void, ap, liftM2)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
 import Data.Maybe (isNothing)
@@ -16,14 +17,14 @@ import System.Directory (createDirectoryIfMissing)
 import System.Posix.Directory.ByteString (openDirStream, closeDirStream)
 import System.Posix.Directory.Foreign (dtDir, dtReg)
 import System.Posix.Directory.Traversals (readDirEnt)
-import System.Posix.Files.ByteString (removeLink)
 import System.Posix.FilePath ((</>), takeDirectory)
 
+import Paths_databrary (getDataFileName)
 import Databrary.Model.Time
 import Databrary.Store
 
-findFiles :: RawFilePath -> BS.ByteString -> IO [RawFilePath]
-findFiles dir ext = loop "" dir where
+listFiles :: RawFilePath -> IO [RawFilePath]
+listFiles dir = loop "" dir where
   loop b d = bracket
     (openDirStream d)
     closeDirStream
@@ -37,19 +38,25 @@ findFiles dir ext = loop "" dir where
           then return id
         else if t == dtDir
           then (++) <$> loop (b </> f) (d </> f)
-        else if t == dtReg && BS.isSuffixOf ext f
+        else if t == dtReg
           then return $ (:) (b </> f)
         else   return id)
         (ent b d dh)
 
-webDir :: RawFilePath
-webDir = "web"
+webDataFile :: RawFilePath -> IO RawFilePath
+webDataFile = fmap rawFilePath . getDataFileName . unRawFilePath . ("web" </>)
 
-genDir :: RawFilePath
-genDir = "gen"
+webDataFiles :: IO [RawFilePath]
+webDataFiles = listFiles =<< webDataFile "."
+
+webDir :: RawFilePath
+webDir = "gen"
+
+webFiles :: IO [RawFilePath]
+webFiles = listFiles webDir
 
 findWebFiles :: BS.ByteString -> IO [RawFilePath]
-findWebFiles = findFiles webDir
+findWebFiles ext = filter (BS.isSuffixOf ext) <$> webFiles
 
 webRegenerate :: Timestamp -> RawFilePath -> Maybe Timestamp -> (RawFilePath -> IO ()) -> IO Bool
 webRegenerate src _ (Just dst) _ | dst >= src = return False
@@ -57,5 +64,5 @@ webRegenerate _ f ft g = True <$
   liftM2 (>>)
     (if isNothing ft
       then createDirectoryIfMissing True . unRawFilePath . takeDirectory
-      else removeLink)
-    g (genDir </> f)
+      else void . removeFile)
+    g (webDir </> f)

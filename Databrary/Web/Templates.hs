@@ -33,7 +33,7 @@ generateTemplatesJS t f = do
   tl <- templateFiles
   if null tl then return False else do
   ti <- mapM (fmap (maybe (posixSecondsToUTCTime 0) snd) . fileInfo . (webDir </>)) tl
-  webRegenerate (maximum ti) f t $ \wf ->
+  webRegenerate (maximum ti) f t $ \wf -> do
     withFile (unRawFilePath wf) WriteMode $ \h -> do
       hPutStr h "app.run(['$templateCache',function(t){"
       forM_ tl $ \tf -> do

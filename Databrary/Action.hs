@@ -50,7 +50,7 @@ import Databrary.Action.Response
 import Databrary.Action.App
 import Databrary.Action.Auth
 import Databrary.Action.Route
-import Databrary.Service
+import Databrary.Service.Types
 import qualified Databrary.HTTP.Route as R
 
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response

@@ -23,7 +23,7 @@ makeWebFile :: RawFilePath -> IO WebFile
 makeWebFile f = WebFile
   <$> hashFile wf
   <*> (snd . fromJust <$> fileInfo wf)
-  where wf = genDir </> f
+  where wf = webDir </> f
 
 lookupWebFile :: MonadWeb c m => RawFilePath -> m (Maybe WebFile)
 lookupWebFile f = do

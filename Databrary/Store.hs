@@ -3,22 +3,24 @@ module Databrary.Store
   , rawFilePath
   , unRawFilePath
   , fileInfo
+  , removeFile
   , sameFile
   , hashFile
   ) where
 
 import Control.Arrow ((&&&))
-import Control.Exception (tryJust)
+import Control.Exception (handleJust)
 import Control.Monad (guard, liftM2)
 import Crypto.Hash (HashAlgorithm, hashInit, hashUpdate, hashFinalize, Digest)
 import qualified Data.ByteString as BS
 import Data.ByteString.Lazy.Internal (defaultChunkSize)
+import Data.Maybe (isJust)
 import Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import qualified GHC.Foreign as GHC
 import GHC.IO.Encoding (getFileSystemEncoding)
 import System.IO (withFile, IOMode(ReadMode))
 import System.Posix.FilePath (RawFilePath)
-import System.Posix.Files.ByteString (getFileStatus, isRegularFile, fileSize, modificationTimeHiRes, deviceID, fileID)
+import System.Posix.Files.ByteString (getFileStatus, isRegularFile, fileSize, modificationTimeHiRes, deviceID, fileID, removeLink)
 import System.Posix.Types (FileOffset)
 import System.IO.Error (isDoesNotExistError)
 import System.IO.Unsafe (unsafeDupablePerformIO)
@@ -37,12 +39,15 @@ unRawFilePath b = unsafeDupablePerformIO $ do
   BS.useAsCStringLen b $ GHC.peekCStringLen enc
 
 catchDoesNotExist :: IO a -> IO (Maybe a)
-catchDoesNotExist f = either (const Nothing) Just <$> tryJust (guard . isDoesNotExistError) f
+catchDoesNotExist f = handleJust (guard . isDoesNotExistError) (\_ -> return Nothing) $ Just <$> f
 
 fileInfo :: RawFilePath -> IO (Maybe (FileOffset, Timestamp))
 fileInfo f =
   (=<<) (liftM2 (?>) isRegularFile $ fileSize &&& posixSecondsToUTCTime . modificationTimeHiRes)
   <$> catchDoesNotExist (getFileStatus f)
+
+removeFile :: RawFilePath -> IO Bool
+removeFile f = isJust <$> catchDoesNotExist (removeLink f)
 
 sameFile :: RawFilePath -> RawFilePath -> IO Bool
 sameFile f1 f2 = do

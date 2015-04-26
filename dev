@@ -1,0 +1,4 @@
+#!/bin/sh -e
+[[ -f dist/setup-config ]] || runhaskell ./Setup.hs configure --user -f devel
+runhaskell ./Setup.hs build
+databrary_datadir=. dist/build/databrary/databrary "$@"

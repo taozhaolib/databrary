@@ -12,7 +12,7 @@ import Data.Monoid ((<>))
 import Data.Version (showVersion)
 import System.IO (withFile, IOMode(WriteMode))
 
-import qualified Paths_databrary as Databrary
+import Paths_databrary (version)
 import qualified Databrary.JSON as JSON
 import Databrary.Store
 import Databrary.Model.Enum
@@ -35,7 +35,7 @@ constantsJSON = JSON.Object $ JSON.object
     [ "nobody" JSON..= partyJSON nobodyParty
     , "root" JSON..= partyJSON rootParty
     ]
-  , "version" JSON..= showVersion Databrary.version
+  , "version" JSON..= showVersion version
 #ifdef DEVEL
   , "devel" JSON..= True
 #endif
