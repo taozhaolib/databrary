@@ -378,7 +378,7 @@ app.directive 'spreadsheet', [
           slot = slots[i]
           stop = slot.id == volume.top.id
           row = document.createElement('tr')
-          rows[i]?.parentNode?.replaceChild(row, rows[i])
+          $(rows[i]).remove() if rows[i]
           rows[i] = row
           row.id = id + '_' + i
           row.data = i
@@ -545,7 +545,7 @@ app.directive 'spreadsheet', [
               return
             unedit(false)
             collapse()
-            rows[i].parentNode.removeChild(rows[i])
+            $(rows[i]).remove()
             slots.splice(i, 1)
             counts.splice(i, 1)
             rows.splice(i, 1)
@@ -630,7 +630,7 @@ app.directive 'spreadsheet', [
           t = 0
           while (el = row.nextSibling) && el.data == i
             t++
-            tbody.removeChild(el)
+            $(el).remove()
 
           el = row.firstChild
           while el
@@ -740,9 +740,9 @@ app.directive 'spreadsheet', [
         unedit = (event) ->
           return unless edit = editCell
           editCell = undefined
-          $(edit).children('[name=edit]').off()
-          return unless cell = edit.parentNode
-          cell.removeChild(edit)
+          cell = edit.parentNode
+          $(edit).remove()
+          return unless cell
           cell.classList.remove('editing')
           tooltips.clear()
 
