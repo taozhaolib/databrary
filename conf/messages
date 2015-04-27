@@ -448,8 +448,7 @@ access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and select
 access.global.restricted=You must be an authorized Databrary Investigator in order to share volumes.
 
 access.grant.legend=Collaborators
-access.grant.inherit=Extend access to {0}''s affiliates
-access.grant.inherit.mine=Extend access to my affilliates
+access.grant.inherit=Extend access to {0} affiliates
 access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
 access.grant.remove.success=Access removed successfully.
