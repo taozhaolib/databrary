@@ -25,7 +25,8 @@
         <fieldset class="clean skinny radio-set">
           <div ng-if="::!access.party.institution">
             <input type="checkbox" ng-model="accessGrantForm.data.extend">
-            <label class="option" ng-bind="::'access.grant.inherit' | message:access.party.name"></label>
+            <label class="option inline" ng-if="access.party.id != page.models.Login.user.id" ng-bind="::'access.grant.inherit' | message:access.party.name"></label>
+            <label class="option inline" ng-if="access.party.id == page.models.Login.user.id" message="access.grant.inherit.mine"></label><span> (access will be based on<a ng-href="{{::access.party.route()}}#affiliates" target="_blank"> individual access permissions</a>).</span>
           </div>
         </fieldset>
       </div>
