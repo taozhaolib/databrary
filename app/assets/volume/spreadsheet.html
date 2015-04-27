@@ -8,7 +8,8 @@
   <ul ng-show="showConsents">
     <li ng-repeat="(i,c) in page.constants.release" ng-if="i>0">
       <span class="icon release" ng-class="c"></span>
-      <span ng-bind="'release.'+c | message"></span>
+      <span ng-bind="'release.'+c+'.title' | message"></span>: 
+      <span ng-bind="'release.'+c+'.description' | message"></span>
     </li>
   </ul>
 </div>

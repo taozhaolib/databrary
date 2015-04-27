@@ -320,8 +320,10 @@ app.directive 'spreadsheet', [
                     td.setAttribute("colspan", cols-1)
                   else
                     row.removeChild(td)
-                td.className = 'null add'
-                td.id = id + '-add_' + i + '_' + cat.id
+                  td.className = 'null'
+                else
+                  td.className = 'null add'
+                  td.id = id + '-add_' + i + '_' + cat.id
           td
 
         # Add all the measure tds to row i for count n, record r
