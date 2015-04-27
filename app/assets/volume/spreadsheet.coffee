@@ -378,7 +378,7 @@ app.directive 'spreadsheet', [
           slot = slots[i]
           stop = slot.id == volume.top.id
           row = document.createElement('tr')
-          $(rows[i]).remove() if rows[i]
+          rows[i]?.parentNode?.replaceChild(row, rows[i])
           rows[i] = row
           row.id = id + '_' + i
           row.data = i
