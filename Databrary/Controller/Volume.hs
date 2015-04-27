@@ -40,6 +40,7 @@ import Databrary.Model.Citation.CrossRef
 import Databrary.Model.Funding
 import Databrary.Model.Container
 import Databrary.Model.Record
+import Databrary.Model.Excerpt
 import Databrary.HTTP.Form.Deform
 import Databrary.Action.Route
 import Databrary.Action
@@ -67,6 +68,8 @@ volumeJSONField vol "containers" _ =
   Just . JSON.toJSON . map containerJSON <$> lookupVolumeContainers vol
 volumeJSONField vol "records" _ =
   Just . JSON.toJSON . map recordJSON <$> lookupVolumeRecords vol
+volumeJSONField o "excerpts" _ =
+  Just . JSON.toJSON . map excerptJSON <$> lookupVolumeExcerpts o
 volumeJSONField _ _ _ = return Nothing
 
 volumeJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Volume -> JSON.Query -> m JSON.Object

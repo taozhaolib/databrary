@@ -19,6 +19,7 @@ import Databrary.Model.Permission
 import Databrary.Model.Container
 import Databrary.Model.Slot
 import Databrary.Model.AssetSlot
+import Databrary.Model.Excerpt
 import Databrary.Model.RecordSlot
 import Databrary.Model.Tag
 import Databrary.Model.Comment
@@ -42,6 +43,8 @@ slotJSONField o "tags" n = do
 slotJSONField o "comments" n = do
   c <- lookupSlotComments o (maybe 64 fst $ BSC.readInt =<< n)
   return $ Just $ JSON.toJSON $ map commentJSON c
+slotJSONField o "excerpts" _ =
+  Just . JSON.toJSON . map excerptJSON <$> lookupSlotExcerpts o
 slotJSONField _ _ _ = return Nothing
 
 slotJSONQuery :: (MonadDB m, MonadHasIdentity c m) => Slot -> JSON.Query -> m JSON.Object

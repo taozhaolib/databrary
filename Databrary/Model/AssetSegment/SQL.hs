@@ -10,7 +10,6 @@ module Databrary.Model.AssetSegment.SQL
 import Data.Maybe (fromMaybe)
 import qualified Language.Haskell.TH as TH
 
-import Databrary.Has (view)
 import Databrary.Model.SQL.Select
 import Databrary.Model.Release.Types
 import Databrary.Model.Segment
@@ -50,7 +49,7 @@ selectAssetContainerAssetSegment seg = selectJoin 'makeAssetSegment
   ]
 
 makeContainerAssetSegment :: (Asset -> Container -> AssetSegment) -> (Volume -> Asset) -> Container -> AssetSegment
-makeContainerAssetSegment f af c = f (af (view c)) c
+makeContainerAssetSegment f af c = f (af (containerVolume c)) c
 
 selectContainerAssetSegment :: TH.Name -- ^ @'Segment'@
   -> Selector -- ^ @'Container' -> 'AssetSegment'@
@@ -61,7 +60,7 @@ selectContainerAssetSegment seg = selectJoin 'makeContainerAssetSegment
   ]
 
 makeAssetAssetSegment :: (Asset -> Container -> AssetSegment) -> (Volume -> Container) -> Asset -> AssetSegment
-makeAssetAssetSegment f cf a = f a (cf (view a))
+makeAssetAssetSegment f cf a = f a (cf (assetVolume a))
 
 selectAssetAssetSegment :: TH.Name -- ^ @'Segment'@
   -> Selector -- ^ @'Container' -> 'AssetSegment'@

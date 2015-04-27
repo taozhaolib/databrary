@@ -78,7 +78,7 @@ assetJSONField a "creation" _ | view a >= PermissionEDIT = do
     , ("name" JSON..=) <$> n
     ]
 assetJSONField a "excerpts" _ =
-  Just . JSON.toJSON . map (assetSegmentJSON . excerptAsset) <$> lookupAssetExcerpts a
+  Just . JSON.toJSON . map excerptJSON <$> lookupAssetExcerpts a
 assetJSONField _ _ _ = return Nothing
 
 assetJSONQuery :: (MonadDB m, MonadHasIdentity c m) => AssetSlot -> JSON.Query -> m JSON.Object
