@@ -94,11 +94,9 @@ final class Volume private (val id : Volume.Id, val name : String, alias_ : Opti
   def pageURL = controllers.routes.VolumeHtml.view(id, None)
 
   lazy val fileName : Future[String] = {
-    def last(s : String) =
-      Maybe(s.lastIndexOf(' ')).fold(s)(i => s.substring(i+1))
     for {
       owns <- partyAccess(Permission.ADMIN)
-      own = owns.headOption.map(_.party.name).map(last _)
+      own = owns.headOption.map(_.party.sortname)
       cite <- citation
       nme = store.truncate(alias.getOrElse(name))
     } yield {
