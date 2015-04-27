@@ -8,21 +8,23 @@ app.directive 'classificationSelect', [
     scope:
       value: '=ngModel'
       name: '@'
-    link:
-      pre: ($scope) ->
-        $scope.release = constants.release
-        return
-      post: ($scope) ->
-        $scope.form = Object.defineProperties {},
-          check:
-            get: ->
-              `$scope.value == '0'`
-            set: (c) ->
-              $scope.value = if c then '0' else ''
-          value:
-            get: ->
-              ~~$scope.value-1+''
-            set: (v) ->
-              $scope.value = ++v+''
-        return
+      defaultFn: '&default'
+    link: ($scope) ->
+      def = ($scope.defaultFn() || 1)+''
+      $scope.releases = constants.release.slice(1).map (l) ->
+        constants.message('release.'+l+'.title') + ': ' + constants.message('release.'+l+'.select')
+      $scope.form = Object.defineProperties {},
+        check:
+          get: ->
+            `$scope.value != '0'`
+          set: (c) ->
+            $scope.value = if c then def else '0'
+            return
+        value:
+          get: ->
+            ~~$scope.value-1+''
+          set: (v) ->
+            $scope.value = ++v+''
+            return
+      return
 ]

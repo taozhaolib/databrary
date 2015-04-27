@@ -32,12 +32,7 @@ app.controller('volume/slot', [
             else
               p = @p
               @_o =
-                if p >= 0 && p < 1
-                  Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
-                else if p < 0
-                  -Infinity
-                else if p >= 1
-                  Infinity
+                Math.round(ruler.range.l + p * (ruler.range.u - ruler.range.l))
           set: (o) ->
             return if o == @_o
             @_o = o
@@ -48,11 +43,7 @@ app.controller('volume/slot', [
           get: ->
             if '_o' of @
               o = @_o
-              @_p =
-                if isFinite o
-                  (o - ruler.range.base) / (ruler.range.u - ruler.range.l)
-                else
-                  o
+              @_p = (o - ruler.range.base) / (ruler.range.u - ruler.range.l)
             else if '_x' of @
               x = @_x
               tlr = tl.getBoundingClientRect()
@@ -80,7 +71,15 @@ app.controller('volume/slot', [
             delete @_p
             return
 
-      defined: () ->
+      clip: ->
+        p = @p
+        if p > 1
+          @p = Infinity
+        if p < 0
+          @p = -Infinity
+        this
+
+      defined: ->
         isFinite(@o)
 
       minus: (t) ->
@@ -150,20 +149,28 @@ app.controller('volume/slot', [
       style: ->
         style = {}
         l = @lt.p
+        r = @ut.p
         if l < 0
           style.left = '0px'
-          style['border-left'] = '0px'
           style['border-top-left-radius'] = '0px'
-          style['border-bottom-left-radius'] = '0px'
-        else if l <= 1
+          style['border-bottom-left-radius'] = '0px'          
+          if r < 0
+            style.border = '#f26363 3px solid'
+          else
+            style['border-left'] = '0px'
+
+        else if l < 1
           style.left = 100*l + '%'
-        r = @ut.p
         if r > 1
           style.right = '0px'
-          style['border-right'] = '0px'
           style['border-top-right-radius'] = '0px'
-          style['border-bottom-right-radius'] = '0px'
-        else if r >= 0
+          style['border-bottom-right-radius'] = '0px'          
+          if l > 1
+            style.border = '#f26363 3px solid'
+          else
+            style['border-right'] = '0px'
+
+        else if r > 0
           style.right = 100*(1-r) + '%'
         style
 
@@ -427,6 +434,7 @@ app.controller('volume/slot', [
 
       startPos = down.position ?= new TimePoint(down.clientX, 'x')
       endPos = new TimePoint(up.clientX, 'x')
+      endPos.clip()
       ruler.selection =
         if startPos.x < endPos.x
           new TimeSegment(startPos, endPos)
@@ -696,10 +704,10 @@ app.controller('volume/slot', [
       excerptOptions: () ->
         l = {}
         r = @asset.release || 0
-        l[0] = constants.release[0]
+        l[0] = constants.message('release.DEFAULT.select') + ' (' + constants.message('release.' + constants.release[r] + '.title') + ')'
         for c, i in constants.release when i > r
-          l[i] = c
-        l[@excerpt.release] = 'prompt' unless @excerpt.release of l
+          l[i] = constants.message('release.' + c + '.title') + ': ' + constants.message('release.' + c + '.select')
+        l[@excerpt.release] = constants.message('release.prompt') unless @excerpt.release of l
         l
 
       saveExcerpt: (value) ->
@@ -871,13 +879,13 @@ app.controller('volume/slot', [
       savePosition: () ->
         messages.clear(this)
         slot.moveRecord(@rec, @rec.segment, this).then (r) =>
-            return unless r # nothing happened
-            if @empty
+            if r && @empty
               records.remove(this)
               unchoose() if this == $scope.current
             @finishPosition()
-            Record.place()
-            updateRange()
+            if r
+              Record.place()
+              updateRange()
             return
           , (res) =>
             messages.addError
@@ -888,7 +896,19 @@ app.controller('volume/slot', [
             return
 
       drag: (event, which) ->
-        p = this[if which then 'ut' else 'lt'] = @snapping(x = new TimePoint(event.clientX, 'x'))
+        x = new TimePoint(event.clientX, 'x')
+        this[if which then 'ut' else 'lt'] =
+          if which && x.p > 1
+            new TimePoint(Infinity)
+          else if !which && x.p < 0
+            new TimePoint(-Infinity)
+          else
+            @snapping(x)
+        if @empty
+          if which
+            @lt = @ut
+          else
+            @ut = @lt
         if event.type != 'mousemove'
           $scope.form.position.$setDirty()
         return
@@ -966,18 +986,18 @@ app.controller('volume/slot', [
     class Consent extends TimeBar
       constructor: (c) ->
         if typeof c == 'object'
-          @consent = c.release
+          @release = c.release
           super(c.segment)
         else
-          @consent = c
+          @release = c
           super(undefined)
         return
 
       type: 'consent'
 
       classes: ->
-        cn = constants.release[@consent]
-        cls = [cn, 'hint-consent-' + cn]
+        cn = constants.release[@release]
+        cls = [cn, 'hint-release-' + cn]
         cls.push('slot-release-select') if $scope.current == this
         cls
 

@@ -34,7 +34,7 @@
               <div class="player-info">
                 <h1 class="player-info-name">
                   <img ng-if="!editing && !!current.asset" ng-src="{{current.asset.icon}}" hint="format-{{current.asset.format.extension}}" class="player-info-file-icon">
-                  <span ng-if="!editing && !!current.asset" class="release icon" ng-class="page.constants.release[current.asset.release]" hint="classification-{{page.constants.classification[current.asset.release]}}"></span>              
+                  <span ng-if="!editing && !!current.asset" class="release icon" ng-class="page.constants.release[current.asset.release]" hint="release-{{page.constants.release[current.asset.release]}}"></span>              
                   <span class="filename" ng-if="!editing && !!current.asset" ng-bind="current.asset.name"></span>
                   <span class="category" ng-if="!editing && !!current.record" ng-bind="current.record.displayName"></span>
                   <span class="category" ng-if="editing && !!current.record.category" ng-bind="page.constants.category[current.record.category].name"></span>
@@ -63,7 +63,7 @@
                     </validator>
 
                     <validator name="classification" label="asset.classification">
-                      <classification-select name="classification" ng-model="current.data.classification"></classification-select>
+                      <classification-select name="classification" ng-model="current.data.classification" default="slot.release"></classification-select>
                     </validator>
                   </div>
 
@@ -146,7 +146,7 @@
               </select>
             </ng-form>
             <ng-form ng-switch-when="position" name="form.position">
-              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.u" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
+              <input input-position="-Infinity" class="position-input" type="text" size="10" name="position-lower" ng-model="current.l" position-max="current.record ? current.u : Infinity" ng-change="current.updatePosition()" key-enter="updatePosition()" placeholder="{{::'position.placeholder' | message}}">
               &ndash;
               <input input-position="Infinity" class="position-input" type="text" size="10" name="position-upper" ng-model="current.u" position-min="current.l" ng-disabled="!current.record" placeholder="{{::'position.placeholder' | message}}">
               &#32;
@@ -156,7 +156,7 @@
             <ng-form ng-switch-when="excerpt" name="form.excerpt">
               <button ng-click="current.saveExcerpt()" class="mini">Cancel</button>
               <button ng-if="current.excerpt.on" ng-click="current.saveExcerpt(null)" class="mini">Remove highlight</button>&#32;
-              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.release" ng-options="i as 'classification.excerpt.'+c | message for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.release)"></select>
+              <select ng-if="current.excerpt.on !== undefined" id="slot-toolbar-select-excerpt" class="slot-toolbar-select" name="excerpt" ng-model="current.excerpt.release" ng-options="i as c for (i, c) in current.excerptOptions()" ng-change="current.saveExcerpt(current.excerpt.release)"></select>
             </ng-form>
           </div>
           <div class="slot-timeline-timeline">
@@ -207,7 +207,7 @@
             </div>
 
             <div class="slot-timeline-tracks">
-              <div ng-repeat="t in assets" class="slot-timeline-track slot-track" ng-class="{select: t === current, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="t.click($event)" ng-dblclick="t.select($event)" mouse-drag="dragSelection($down, $up, t)">
+              <div ng-repeat="t in assets" class="slot-timeline-track slot-track" ng-class="{select: t.asset === asset, dirty: t.dirty, 'slot-track-positioned': t.asset && !t.full, 'slot-track-select': t === current, 'slot-track-empty': !(t.asset || t.file)}" ng-click="t.click($event)" ng-dblclick="t.select($event)" mouse-drag="dragSelection($down, $up, t)">
                 <div class="slot-excerpt" ng-repeat="excerpt in t.excerpts" ng-if="editing !== 'position' && !excerpt.contains(t)" ng-style="excerpt.style()" ng-dblclick="excerpt.select($event)">
                 </div>
                 <div class="slot-track-asset-info">
@@ -218,7 +218,7 @@
                     <span class="track-status" ng-if="t.asset && !t.asset.duration && t.asset.format.type==='video'"> (processing)</span>
                   </div>
                   <upload-progress class="upload-progress-info" ng-if="!!t.file" progress-value="t.progress"></upload-progress>
-                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.release]" hint="classification-{{page.constants.release[t.asset.release]}}"></span>
+                  <span ng-if="!!t.asset" class="classification-info release icon" ng-class="page.constants.release[t.asset.release]" hint="release-{{page.constants.release[t.asset.release]}}"></span>
                 </div>
                 <div class="slot-track-asset" ng-if="t.asset && !t.full" ng-style="t.style()">
                   <div ng-if="t === current && editing === 'position'" class="slot-handle slot-handle-move" mouse-drag="t.dragMove($down, $up)"></div>

@@ -260,14 +260,14 @@ app.directive 'spreadsheet', [
         generateText = (c, m, v, assumed) ->
           if m == 'release'
             cn = constants.release[v || 0]
-            c.className = cn + ' release icon hint-consent-' + cn
+            c.className = cn + ' release icon hint-release-' + cn
             v = ''
           else if v == undefined
             c.classList.add('blank')
             v = assumed || ''
           else if m == 'classification'
             cn = constants.release[v]
-            c.className = cn + ' release icon hint-classification-' + cn
+            c.className = cn + ' release icon hint-release-' + cn
             v = ''
           else if m == 'excerpt'
             if v
@@ -320,8 +320,10 @@ app.directive 'spreadsheet', [
                     td.setAttribute("colspan", cols-1)
                   else
                     row.removeChild(td)
-                td.className = 'null add'
-                td.id = id + '-add_' + i + '_' + cat.id
+                  td.className = 'null'
+                else
+                  td.className = 'null add'
+                  td.id = id + '-add_' + i + '_' + cat.id
           td
 
         # Add all the measure tds to row i for count n, record r

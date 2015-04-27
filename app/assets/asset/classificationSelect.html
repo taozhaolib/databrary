@@ -1,9 +1,8 @@
 <div>
   <label class="option classification">
     <input type="checkbox" name="{{::name+'.check'}}" ng-model="form.check">
-    <span message="classification.select.{{::release[0]}}"></span>
+    <span message="release.DEFAULT.deselect"></span>
   </label>
-  <select ng-if="!form.check" name="{{::name}}" ng-model="form.value" ng-options="i as 'classification.select.'+l | message for (i, l) in ::release.slice(1)">
-    <option value="">Override sharing release level...</option>
+  <select class="classification-select-dropdown" ng-if="form.check" name="{{::name}}" ng-model="form.value" ng-options="i as l for (i, l) in ::releases">
   </select>
 </div>
