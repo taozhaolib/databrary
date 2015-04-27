@@ -396,7 +396,7 @@ object PartyHtml extends PartyController with HtmlController {
 
   /** Resend the investigator agreement through Mail.investigator. */
   def investigator(i : models.Party.Id) =
-    SiteAction.rootAccess().andThen(action(Some(i))).async { implicit request =>
+    SiteAction.rootMember().andThen(action(Some(i))).async { implicit request =>
       Mail.investigator(request.obj.party).map(HTTP.wsResult)
     }
 
