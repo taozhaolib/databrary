@@ -16,11 +16,13 @@ app.directive('loginForm', [
       };
 
       form.submit = function () {
+        form.$setSubmitted();
         page.models.Login.login(form.data).then(function () {
           form.validator.server({});
-
+          form.$setUnsubmitted();
           page.router.back();
         }, function (res) {
+          form.$setUnsubmitted();
           form.validator.server(res, true);
         });
       };
