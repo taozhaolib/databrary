@@ -47,7 +47,7 @@
               </label>
             </p>
 
-            <button class="green" ng-click="proceed()" ng-disabled="registerForm.$pristine || registerForm.$invalid || !registerForm.data.agreement" message="register.register">Agree and register</button>
+            <button class="green" ng-click="proceed()" ng-disabled="registerForm.$pristine || registerForm.$invalid || !registerForm.data.agreement || registerForm.$submitted" message="register.register">Agree and register</button>
           </wizard-step>
 
           <wizard-step name="email">
@@ -66,7 +66,7 @@
                 <input id="fieldPasswordAgain" name="password.again" type="password" ng-model="passwordForm.data.password.again" key-enter="passwordForm.save()">
               </validator>
 
-              <button class="green" type="submit" ng-disabled="passwordForm.$pristine || passwordForm.$invalid || passwordForm.data.password.once !== passwordForm.data.password.again" ng-click="passwordForm.save()" message="register.continue"></button>
+              <button class="green" type="submit" ng-disabled="passwordForm.$pristine || passwordForm.$invalid || passwordForm.data.password.once !== passwordForm.data.password.again || passwordForm.$submitted" ng-click="passwordForm.save()" message="register.continue"></button>
             </ng-form>
           </wizard-step>
 
