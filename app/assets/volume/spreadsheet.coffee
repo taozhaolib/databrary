@@ -314,7 +314,7 @@ app.directive 'spreadsheet', [
                 td.appendChild(document.createTextNode("add " + cat.name))
               if editing
                 if 'metrics' of col && col.metrics[0].id != 'id'
-                  generateCell(row, undefined, undefined, id+'-rec_'+i+'_'+(n||0)+'_'+col.start)
+                  generateCell(row, undefined, undefined, id+'-rec_'+i+(if n then '_'+n else '')+'_'+col.start)
                   if cols > 1
                     row.appendChild(td)
                     td.setAttribute("colspan", cols-1)
@@ -502,6 +502,8 @@ app.directive 'spreadsheet', [
 
         ################################# Backend saving
 
+        setFocus = undefined
+
         saveRun = (cell, run) ->
           messages.clear(cell)
           cell.classList.remove('error')
@@ -605,6 +607,9 @@ app.directive 'spreadsheet', [
             collapse()
             generateRow(info.i)
             expand(info) if info.n
+            if record && setFocus == (i = id+'-'+info.id) && (cell = document.getElementById(i)?.nextSibling) && (i = parseId(cell))
+              select(cell, i)
+            setFocus = undefined
             record
 
         saveAsset = (cell, info, v) ->
@@ -744,7 +749,7 @@ app.directive 'spreadsheet', [
           editCell = undefined
           cell = edit.parentNode
           $(edit).remove()
-          return unless cell
+          return unless cell?.parentNode
           cell.classList.remove('editing')
           tooltips.clear()
 
@@ -981,6 +986,7 @@ app.directive 'spreadsheet', [
         editScope.next = ($event) ->
           cell = unedit($event)
           return unless cell
+          setFocus = !$event.shiftKey && cell.id
           while true
             cell = if $event.shiftKey then cell.previousSibling else cell.nextSibling
             return unless cell && cell.tagName == 'TD' && info = parseId(cell)
