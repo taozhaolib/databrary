@@ -448,7 +448,7 @@ access.global.PUBLIC.SHARED=Shared: Share with authorized researchers and select
 access.global.restricted=You must be an authorized Databrary Investigator in order to share volumes.
 
 access.grant.legend=Collaborators
-access.grant.inherit=Extend access to those in {0}''s lab/group.
+access.grant.inherit=Extend access to {0} affiliates
 access.grant.save.success=Access changed successfully.
 access.grant.save.error=Could not update access at this time.
 access.grant.remove.success=Access removed successfully.
@@ -611,6 +611,9 @@ volume.edit.access.success=Volume access updated successfully.
 volume.edit.access.error=Unable to update volume access.
 
 download.zip=Download all files as zip
+download.zip.prompt.empty=You do not have download access to any of the files in this volume. Check with your sponsoring party or the volume creator if you think you have arrived at this message in error.
+download.zip.prompt.partial=Based on the release levels for the files in this volume, you will download the files listed below, which may be a partial list of the files available in this volume. Please be aware of the individual file permissions as specified for each file. 
+download.csv.prompt=The data contained in this CSV export may contain personally identifying information such as birthdate, gender, race, and ethnicity, dates of testing, and location of testing. Please handle with care and do not distribute to parties who do not have authorization to view these data.
 
 # --- Spreadsheet
 slot.remove.notempty=You must remove all associated records and files before you can remove this.
