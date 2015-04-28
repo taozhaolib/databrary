@@ -347,17 +347,17 @@ release.DEFAULT.deselect=This file is deidentified (no faces, voices, dates, etc
 release.DEFAULT.select=Use current file or participant release level
 release.DEFAULT.description=This content has not been shared
 release.PRIVATE.title=Private
-release.PRIVATE.select=Not shared and only accessible to collaborators
+release.PRIVATE.select=Only available to collaborators
 release.PRIVATE.description=This content has not been shared and is only available to collaborators
-release.SHARED.title=Databrary
-release.SHARED.select=Shared only with authorized Databrary users and may not be used in presentations
-release.SHARED.description=This content has been shared only with authorized Databrary users and may not be used in presentations
+release.SHARED.title=Authorized Users
+release.SHARED.select=Available only to authorized Databrary users
+release.SHARED.description=This content is restricted to authorized Databrary users only
 release.EXCERPTS.title=Excerpts
-release.EXCERPTS.select=May be shared with authorized Databrary users for educational or research purposes
-release.EXCERPTS.description=This content has been shared with authorized Databrary users for educational or research purposes
+release.EXCERPTS.select=Available to authorized Databrary users and may also be used in presentations for informational or educational purposes
+release.EXCERPTS.description=This content has been made available to authorized Databrary users and may also be used in presentations for informational or educational purposes
 release.PUBLIC.title=Public
-release.PUBLIC.description=This content is available to anybody for unrestricted use
-release.PUBLIC.select=May be available to anybody for unrestricted use
+release.PUBLIC.select=Available openly to anybody
+release.PUBLIC.description=This content is available openly to anyone
 
 release.excerpt.warning=You are choosing to make this clip more widely available than the file from which it originates. Click OK if this is acceptable.
 
