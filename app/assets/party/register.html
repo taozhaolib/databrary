@@ -47,7 +47,7 @@
               </label>
             </p>
 
-            <button class="green" ng-click="proceed()" ng-disabled="registerForm.$pristine || registerForm.$invalid || !registerForm.data.agreement || registerForm.$submitted" message="register.register">Agree and register</button>
+            <button class="green" ng-click="proceed()" ng-disabled="registerForm.$pristine || registerForm.$invalid || !registerForm.data.agreement" message="register.register">Agree and register</button>
           </wizard-step>
 
           <wizard-step name="email">
