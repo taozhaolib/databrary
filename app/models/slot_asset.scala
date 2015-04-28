@@ -40,7 +40,7 @@ sealed trait AssetSlot extends Slot {
       store.fileName(Seq(vol) ++ Maybe(slot).opt() ++ asset.name.map(store.truncate(_)) : _*)
     }
 
-  override def pageURL = controllers.routes.AssetSlotHtml.view(containerId, segment, assetId)
+  override def pageURL = controllers.routes.AssetSlotHtml.view(volumeId, containerId, segment, assetId)
 
   override def json : JsonObject = JsonObject.flatten(
     Some('permission -> permission),

@@ -60,11 +60,12 @@ object AssetSlotController extends AssetSlotController {
 }
 
 object AssetSlotHtml extends AssetSlotController with HtmlController {
-  def view(i : Container.Id, segment : Segment, a : models.Asset.Id) = Action(i, segment, a).async { implicit request =>
-    for {
-      comments <- request.obj.comments
-    } yield (Ok(views.html.asset.view(request.obj, comments)))
-  }
+  def view(v : Volume.Id, i : Container.Id, segment : Segment, a : models.Asset.Id) =
+    SiteAction.js.andThen(action(i, segment, a)).async { implicit request =>
+      for {
+        comments <- request.obj.comments
+      } yield (Ok(views.html.asset.view(request.obj, comments)))
+    }
 }
 
 object AssetSlotApi extends AssetSlotController with ApiController {

@@ -83,7 +83,7 @@ GET     /transcode                                                              
 GET     /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcoding(assetId : models.Asset.Id)
 POST    /transcode/$assetId<[0-9]+>                                                               controllers.AssetHtml.transcode(assetId : models.Asset.Id)
 
-GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                                     controllers.AssetSlotHtml.view(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
+GET     /volume/$vID<[0-9]+>/slot/$sID<[0-9]+>/asset/$aID<[0-9]+>                                 controllers.AssetSlotHtml.view(vID : models.Volume.Id, sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/download                                            controllers.AssetSlotController.download(sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, inline : Boolean ?= false)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/head                                                controllers.AssetSlotController.head(    sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)
 GET     /slot/$sID<[0-9]+>/asset/$aID<[0-9]+>/thumb                                               controllers.AssetSlotController.thumb(   sID : models.Container.Id, segment : dbrary.Segment, aID : models.Asset.Id, size : Int ?= controllers.AssetController.defaultThumbSize)

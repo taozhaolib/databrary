@@ -321,7 +321,12 @@ app.provider('routerService', [
 
     //
 
-    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['sid', 'segment', 'id']);
+    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['vid', 'sid', 'segment', 'id'], {
+      controller: 'asset/view',
+      templateUrl: 'asset/slot.html',
+      reloadOnSearch: false,
+    });
+
     routes.record = makeRoute(controllers.RecordHtml.view, ['id']);
     routes.volumeThumb = makeRoute(controllers.VolumeController.thumb, ['id', 'size']);
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
@@ -334,12 +339,6 @@ app.provider('routerService', [
     routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
 
     //
-
-    /*
-    $routeProvider.otherwise({
-      redirectTo: '/'
-    });
-    */
 
     this.$get = [
       '$rootScope', '$location', '$http', '$cacheFactory', 'constantService', 'analyticService',
