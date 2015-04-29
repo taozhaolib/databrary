@@ -24,7 +24,7 @@
     @defining(form.transcode) { t =>
     @widget.tag.form(form) {
     <tr>
-      <td>@t.id</td>
+      <td><a href="@controllers.routes.AssetHtml.view(t.id)">@t.id</a></td>
       <td>@display(t.owner)</td>
       <td>@display(t.orig)</td>
       <td>
