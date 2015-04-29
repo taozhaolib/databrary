@@ -715,7 +715,7 @@ app.controller('volume/slot', [
         if value == undefined || value == ''
           return
         messages.clear(this)
-        if @excerpt.target.permission > slot.volume.permission
+        if !@asset.classification && value > (slot.release || 0)
           confirmation = confirm("The highlight level you have chosen is more open then the volume.  Are you sure you want to proceed?")
         if confirmation
           @excerpt.target.setExcerpt(value)
