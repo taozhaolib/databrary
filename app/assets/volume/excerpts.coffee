@@ -8,7 +8,6 @@ app.directive 'volumeExcerpts', [
     scope: false
     link: ($scope) ->
       $scope.current = $scope.volume.excerpts[0]
-      $scope.downloading = false
 
       $scope.setCurrent = (asset) ->
         $scope.current = asset
@@ -18,7 +17,4 @@ app.directive 'volumeExcerpts', [
 
       $scope.jumpLink = (excerpt) ->
         excerpt.container.route {asset: excerpt.id, select:excerpt.segment.format()}
-
-      $scope.download = (set) ->
-        $scope.downloading = set
 ]

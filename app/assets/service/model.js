@@ -934,8 +934,12 @@ app.factory('modelService', [
     });
 
     AssetSlot.prototype.route = function (params) {
+      return router.slotAsset([this.volume.id, this.container.id, this.segment.format(), this.id]);
+    };
+
+    AssetSlot.prototype.slotRoute = function (params) {
       params.asset = this.id;
-      return router.slot([this.volume.id, this.container.id, this.segment.format()], params);
+      return Slot.prototype.route.call(this, params);
     };
 
     AssetSlot.prototype.inContext = function () {
@@ -1028,6 +1032,16 @@ app.factory('modelService', [
         l[i] = assetMake(context, l[i]);
       return l;
     }
+
+    Volume.prototype.getAsset = function (asset, container, segment) {
+      var v = this;
+      return (container === undefined ?
+          router.http(router.controllers.AssetApi.get, v.id, asset) :
+          router.http(router.controllers.AssetSlotApi.get, container, Segment.format(segment), asset))
+        .then(function (res) {
+          return assetMake(v, res.data);
+        });
+    };
 
     Asset.prototype.get = function (options) {
       var a = this;

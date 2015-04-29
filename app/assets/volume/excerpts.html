@@ -1,12 +1,10 @@
-<download-display ng-if="downloading" asset="current" close="download(false)"></download-display>
-
 <div class="row">
   <div class="panel-excerpts-player col-desktop-7 col-tablet-5 col-mobile-6">
     <section ng-if="!!current" class="panel-excerpts-player-frame">
       <div ng-repeat="current in [current]">
         <header>
           <a ng-href="{{::jumpLink(current)}}" class="icon line session tool" tooltip="'session.jump' | message:'highlight'"></a>
-          <span ng-if="::!current.pending && current.checkPermission(page.constants.permission.VIEW)" ng-click="download(true)" class="icon line download tool" target="_self" tooltip="'excerpts.download' | message"></span> 
+          <a ng-if="::!current.pending && current.checkPermission(page.constants.permission.VIEW)" ng-href="{{::current.route()}}" class="icon line download tool" tooltip="'excerpts.download' | message"></a>
           <h1 class="panel-excerpts-player-heading">
             <div class="release icon line" ng-class="::page.constants.release[current.release]" hint="release-{{::page.constants.release[current.release]}}"></div>
             <img class="icon" ng-src="{{::current.icon}}" hint="format-{{::current.format.extension}}">

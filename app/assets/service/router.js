@@ -321,9 +321,19 @@ app.provider('routerService', [
 
     //
 
-    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['vid', 'sid', 'segment', 'id'], {
+    routes.slotAsset = makeRoute(controllers.AssetSlotHtml.view, ['vid', 'cid', 'segment', 'id'], {
       controller: 'asset/view',
-      templateUrl: 'asset/slot.html',
+      templateUrl: 'asset/view.html',
+      resolve: {
+        asset: [
+          'pageService', function (page) {
+            return page.models.Volume.get(page.$route.current.params.vid)
+              .then(function (volume) {
+                return volume.getAsset(page.$route.current.params.id, page.$route.current.params.cid, page.$route.current.params.segment);
+              });
+          },
+        ]
+      },
       reloadOnSearch: false,
     });
 
@@ -332,8 +342,8 @@ app.provider('routerService', [
     routes.volumeZip = makeRoute(controllers.VolumeController.zip, ['id']);
     routes.volumeCSV = makeRoute(controllers.VolumeController.csv, ['id']);
     routes.slotZip = makeRoute(controllers.SlotController.zip, ['vid', 'id', 'segment']);
-    routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['sid', 'segment', 'id', 'size']);
-    routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['sid', 'segment', 'id', 'inline']);
+    routes.assetThumb = makeRoute(controllers.AssetSlotController.thumb, ['cid', 'segment', 'id', 'size']);
+    routes.assetDownload = makeRoute(controllers.AssetSlotController.download, ['cid', 'segment', 'id', 'inline']);
     routes.partyAvatar = makeRoute(controllers.PartyHtml.avatar, ['id', 'size']);
     routes.assetEdit = makeRoute(controllers.AssetHtml.edit, ['id']);
     routes.recordEdit = makeRoute(controllers.RecordHtml.edit, ['id']);
