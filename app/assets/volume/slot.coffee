@@ -716,7 +716,7 @@ app.controller('volume/slot', [
           return
         messages.clear(this)
         if !@asset.classification && value > (slot.release || 0)
-          confirmation = confirm("The highlight level you have chosen is more open then the volume.  Are you sure you want to proceed?")
+          confirmation = confirm(constants.message('classification.excerpt.warning'))
         if confirmation
           @excerpt.target.setExcerpt(value)
             .then (excerpt) =>
