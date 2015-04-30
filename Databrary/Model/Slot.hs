@@ -18,6 +18,12 @@ lookupSlot :: (MonadDB m, MonadHasIdentity c m) => Id Slot -> m (Maybe Slot)
 lookupSlot (Id (SlotId c s)) =
   fmap (`Slot` s) <$> lookupContainer c
 
+slotIdIso :: (Id Container, Segment) <-> SlotId
+slotIdIso = uncurry . SlotId :<->: \(SlotId c s) -> (c, s)
+
+pathSlot :: PathParser SlotId
+pathSlot = isomap slotIdIso $ isoMap idIso PathDynamic </> fullSegment =/= PathDynamic
+
 slotJSON :: Slot -> JSON.Object
 slotJSON Slot{..} = containerJSON slotContainer JSON..+?
   ( segmentFull slotSegment ?!> ("segment" JSON..= slotSegment)

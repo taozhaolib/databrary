@@ -1,4 +1,4 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving, DataKinds #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, DataKinds, DeriveDataTypeable #-}
 module Databrary.Model.Offset
   ( Offset(..)
   , offsetMillis
@@ -8,6 +8,7 @@ import Control.Applicative ((<$>))
 import Data.Fixed (Fixed(..), Milli)
 import qualified Data.Text as T
 import Data.Time (DiffTime)
+import Data.Typeable (Typeable)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 import Numeric (showSigned, showFFloat)
 import qualified Text.ParserCombinators.ReadP as RP
@@ -16,7 +17,7 @@ import Text.Read (readMaybe, readPrec)
 
 import qualified Databrary.JSON as JSON
 
-newtype Offset = Offset { offsetTime :: DiffTime } deriving (Eq, Ord, Num, Real, Fractional, RealFrac)
+newtype Offset = Offset { offsetTime :: DiffTime } deriving (Eq, Ord, Num, Real, Fractional, RealFrac, Typeable)
 
 offsetMillis :: Offset -> Integer
 offsetMillis (Offset t) = floor (1000 * t) :: Integer

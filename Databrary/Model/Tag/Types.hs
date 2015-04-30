@@ -36,9 +36,9 @@ validateTag :: BS.ByteString -> Maybe TagName
 validateTag t = Regex.matchTest validTag tt ?> TagName tt where
   tt = BSC.unwords $ BSC.words t
 
-instance R.Routable TagName where
-  route = R.maybe . validateTag =<< R.route
-  toRoute (TagName n) = R.toRoute n
+instance PathDynamic TagName where
+  pathDynamic = validateTag =<< pathDynamic
+  dynamicPath (TagName n) = dynamicPath n
 
 instance PGParameter "character varying" TagName where
   pgEncode t (TagName n) = pgEncode t n

@@ -1,4 +1,4 @@
-{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE DataKinds, DeriveDataTypeable #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 module Databrary.Model.Segment
   ( Segment(..)
@@ -19,6 +19,7 @@ import Control.Applicative ((<|>), optional)
 import Control.Monad (guard, liftM2)
 import Data.Maybe (fromMaybe, isNothing)
 import qualified Data.Text as T
+import Data.Typeable (Typeable)
 import Database.PostgreSQL.Typed.Types (PGType, PGParameter(..), PGColumn(..))
 import Database.PostgreSQL.Typed.Array (PGArrayType)
 import qualified Database.PostgreSQL.Typed.Range as Range
@@ -34,7 +35,7 @@ lowerBound, upperBound :: Range.Range a -> Maybe a
 lowerBound = Range.bound . Range.lowerBound
 upperBound = Range.bound . Range.upperBound
 
-newtype Segment = Segment { segmentRange :: Range.Range Offset } deriving (Eq)
+newtype Segment = Segment { segmentRange :: Range.Range Offset } deriving (Eq, Typeable)
 
 instance PGType "segment"
 instance Range.PGRangeType "segment" "interval"

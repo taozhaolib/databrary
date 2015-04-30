@@ -13,8 +13,6 @@ import Database.PostgreSQL.Typed.Dynamic (PGRep)
 import qualified Language.Haskell.TH as TH
 import qualified Language.Haskell.TH.Syntax as TH
 
-import Databrary.Model.Kind
-import qualified Databrary.HTTP.Route as R
 import Databrary.HTTP.Form.Deform (Deform(..))
 
 type family IdType a
@@ -35,10 +33,6 @@ instance (PGParameter t (IdType a), PGColumn t (IdType a), PGRep t (IdType a)) =
 instance Show (IdType a) => Show (Id a) where
   showsPrec p (Id a) = showsPrec p a
   show (Id a) = show a
-
-instance (R.Routable (IdType a), Kinded a) => R.Routable (Id a) where
-  route = R.fixed (kindOf (undefined :: a)) >> Id <$> R.route
-  toRoute (Id i) = kindOf (undefined :: a) : R.toRoute i
 
 instance JSON.ToJSON (IdType a) => JSON.ToJSON (Id a) where
   toJSON (Id a) = JSON.toJSON a

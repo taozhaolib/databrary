@@ -9,12 +9,7 @@ module Databrary.Model.Slot.Types
   , MonadHasSlot
   ) where
 
-import Control.Applicative ((<*>))
-import Data.Maybe (fromMaybe)
-
-import Databrary.Ops
 import Databrary.Has (makeHasRec)
-import qualified Databrary.HTTP.Route as R
 import Databrary.Model.Id
 import Databrary.Model.Kind
 import Databrary.Model.Segment
@@ -24,10 +19,6 @@ data SlotId = SlotId
   { slotContainerId :: !(Id Container)
   , slotSegmentId :: !Segment
   } deriving (Show)
-
-instance R.Routable SlotId where
-  route = SlotId <$> (Id <$> R.route) <*> (fromMaybe fullSegment <$> R.route)
-  toRoute (SlotId (Id c) s) = R.toRoute c ++ R.toRoute (segmentFull s ?!> s :: Maybe Segment)
 
 type instance IdType Slot = SlotId
 
