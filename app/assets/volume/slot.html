@@ -224,7 +224,7 @@
               </div>
             </div>
 
-            <div>
+            <div ng-if="::!slot.top || consents.length">
               <div class="slot-release-track slot-track">
                 <div class="slot-release release icon" ng-repeat="c in consents" ng-class="c.classes()" ng-style="c.style()" ng-click="c.click($event)" ng-dblclick="c.select($event)" mouse-drag="dragSelection($down, $up, c)"></div>
               </div>

@@ -54,7 +54,7 @@
       <tr class="spreadsheet-head-metrics">
         <th id="{{::id}}-name" class="first" ng-click="clickSlot($event, 'name')" ng-class="colClasses('name')"/>
         <th ng-if="::!top" id="{{::id}}-date" ng-click="clickSlot($event, 'date')" ng-class="colClasses('date')">test date</th>
-        <th id="{{::id}}-release" class="last" ng-click="clickSlot($event, 'release')" ng-class="colClasses('release')">release</th>
+        <th ng-if="::!top" id="{{::id}}-release" class="last" ng-click="clickSlot($event, 'release')" ng-class="colClasses('release')">release</th>
         <th ng-repeat="col in metricCols" id="{{::id}}-metric_{{::$index}}" ng-click="clickMetric(col)" ng-class="colClasses(col)" ng-bind="col.metric.name"></th>
         <th ng-if-start="::assets" class="first">name</th>
         <th>classification</th>

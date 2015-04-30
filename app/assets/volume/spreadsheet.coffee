@@ -404,8 +404,9 @@ app.directive 'spreadsheet', [
           a.setAttribute('href', if editing then slot.editRoute() else slot.route())
           a.className = "session icon hint-action-slot"
 
-          generateCell(row, 'date', slot.date, id + '-date_' + i) unless slot.top
-          generateCell(row, 'release', slot.release, id + '-release_' + i)
+          unless slot.top
+            generateCell(row, 'date', slot.date, id + '-date_' + i)
+            generateCell(row, 'release', slot.release, id + '-release_' + i)
           for c in recordCols
             generateRecord(row, i, c)
           if assets
