@@ -730,6 +730,9 @@ app.controller('volume/slot', [
                   body: constants.message('asset.update.error', @name)
                   report: res
                   owner: this
+        else
+          return
+
 
       canRestore: () ->
         uploads.removedAsset? if editing && this == blank && uploads.removedAsset?.volume.id == slot.volume.id
