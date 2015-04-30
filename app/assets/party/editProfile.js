@@ -19,6 +19,7 @@ app.directive('partyEditProfileForm', [
 
       form.save = function () {
         page.messages.clear(form);
+        form.$setSubmitted();
         var fd, upload;
         if (angular.isObject(form.data.avatar)) {
           fd = new FormData();
@@ -40,7 +41,7 @@ app.directive('partyEditProfileForm', [
         party.save(fd)
           .then(function () {
             form.validator.server({});
-
+            form.$setUnsubmitted();
             page.messages.add({
               type: 'green',
               body: page.constants.message('party.edit.profile.success'),
@@ -57,6 +58,7 @@ app.directive('partyEditProfileForm', [
               form.avatarUrl = party.avatarRoute(undefined, Date.now());
           }, function (res) {
             form.validator.server(res);
+            form.$setUnsubmitted();
 
             if (upload)
               upload.remove();

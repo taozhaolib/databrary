@@ -1,8 +1,8 @@
 <ng-form name="partyEditAccountForm">
   <scroll-float>
     <fieldset class="clean">
-      <button ng-click="partyEditAccountForm.save()" message="save" class="green" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$invalid"></button>
-      <button ng-click="partyEditAccountForm.resetAll()" message="revert" class="red" ng-disabled="partyEditAccountForm.$pristine"></button>
+      <button ng-click="partyEditAccountForm.save()" message="save" class="green" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$invalid || partyEditAccountForm.$submitted"></button>
+      <button ng-click="partyEditAccountForm.resetAll()" message="revert" class="red" ng-disabled="partyEditAccountForm.$pristine || partyEditAccountForm.$submitted"></button>
     </fieldset>
   </scroll-float>  
 

@@ -542,6 +542,7 @@ app.controller('volume/slot', [
 
       save: ->
         return if @pending # sorry
+        $scope.form.edit.$setSubmitted()
         @pending = 1
         messages.clear(this)
         (if @file
@@ -552,6 +553,7 @@ app.controller('volume/slot', [
         ).then (asset) =>
             delete @pending
 
+            $scope.form.edit.$setUnsubmitted()
             first = !@asset
             @setAsset(asset)
 
@@ -573,6 +575,7 @@ app.controller('volume/slot', [
             return
           , (res) =>
             delete @pending
+            $scope.form.edit.$setUnsubmitted()
             messages.addError
               type: 'red'
               body: constants.message('asset.update.error', @name)

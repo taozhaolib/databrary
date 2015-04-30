@@ -35,6 +35,16 @@ app.directive('ngForm', [
         return $addControl(control);
       };
 
+      // This method sets the form state back to its unsubitted state
+      form.$setUnsubmitted = function () {
+
+        // remove the angular helper classes that `setSubmit` creates. 
+        $animate.removeClass($element, 'ng-submitted');
+
+        // actually set the state of the form. 
+        form.$submitted = false; 
+      };
+
       form.$removeControl = function (control) {
         controls.remove(control);
         checkDirty();

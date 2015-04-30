@@ -1,7 +1,7 @@
 'use strict';
 
 app.directive('partyEditGrantForm', [
-  'pageService', function (page) {
+  'pageService','$q', function (page, $q) {
     var link = function ($scope) {
       var party = $scope.party;
       var form = $scope.partyEditGrantForm;
@@ -11,9 +11,16 @@ app.directive('partyEditGrantForm', [
       var subforms = [];
 
       form.saveAll = function () {
-        subforms.forEach(function (subform) {
+        form.$setSubmitted();
+        var formPromises = subforms.map(function (subform) {
           if (subform.$dirty)
             subform.save(false);
+        });
+
+        $q.all(formPromises).then(function(){
+          form.$setUnsubmitted();
+        }, function(){
+          form.$setUnsubmitted();
         });
       };
 

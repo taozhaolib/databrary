@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <button id="loginSubmit" type="submit" class="green" ng-click="loginForm.submit()" ng-disabled="loginForm.$pristine || loginForm.$invalid" message="login.login"></button>
+  <button id="loginSubmit" type="submit" class="green" ng-click="loginForm.submit()" ng-disabled="loginForm.$pristine || loginForm.$invalid || loginForm.$submitted" message="login.login"></button>
 
   <a ng-click="loginForm.switchMethod('openid')" ng-hide="true || loginForm.method === 'openid'" message="login.method.openid"></a>
   <a ng-click="loginForm.switchMethod('databrary')" ng-hide="loginForm.method === 'databrary'" message="login.method.password"></a>
