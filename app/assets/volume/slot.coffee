@@ -716,7 +716,7 @@ app.controller('volume/slot', [
           return
         messages.clear(this)
         if !@asset.classification && value > (slot.release || 0)
-          confirmation = confirm(constants.message('classification.excerpt.warning'))
+          confirmation = confirm(constants.message('release.excerpt.warning'))
         if confirmation
           @excerpt.target.setExcerpt(value)
             .then (excerpt) =>
