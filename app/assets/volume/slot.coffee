@@ -158,7 +158,6 @@ app.controller('volume/slot', [
             style.border = '#f26363 3px solid'
           else
             style['border-left'] = '0px'
-
         else if l < 1
           style.left = 100*l + '%'
         if r > 1
@@ -169,7 +168,6 @@ app.controller('volume/slot', [
             style.border = '#f26363 3px solid'
           else
             style['border-right'] = '0px'
-
         else if r > 0
           style.right = 100*(1-r) + '%'
         style
@@ -703,7 +701,7 @@ app.controller('volume/slot', [
 
       excerptOptions: () ->
         l = {}
-        r = @asset.release || 0
+        r = @asset.release || constants.release.PRIVATE
         l[0] = constants.message('release.DEFAULT.select') + ' (' + constants.message('release.' + constants.release[r] + '.title') + ')'
         for c, i in constants.release when i > r
           l[i] = constants.message('release.' + c + '.title') + ': ' + constants.message('release.' + c + '.select')
@@ -715,24 +713,20 @@ app.controller('volume/slot', [
         if value == undefined || value == ''
           return
         messages.clear(this)
-        if !@asset.classification && value > (slot.release || 0)
-          confirmation = confirm(constants.message('release.excerpt.warning'))
-        if confirmation
-          @excerpt.target.setExcerpt(value)
-            .then (excerpt) =>
-                @excerpts.remove(@excerpt.current)
-                if 'excerpt' of excerpt
-                  @excerpts.push(new Excerpt(excerpt))
-                @updateExcerpt()
-              , (res) =>
-                messages.addError
-                  type: 'red'
-                  body: constants.message('asset.update.error', @name)
-                  report: res
-                  owner: this
-        else
+        if !@asset.classification && value > (slot.release || constants.release.PRIVATE) && !confirm(constants.message('release.excerpt.warning'))
           return
-
+        @excerpt.target.setExcerpt(value)
+          .then (excerpt) =>
+              @excerpts.remove(@excerpt.current)
+              if 'excerpt' of excerpt
+                @excerpts.push(new Excerpt(excerpt))
+              @updateExcerpt()
+            , (res) =>
+              messages.addError
+                type: 'red'
+                body: constants.message('asset.update.error', @name)
+                report: res
+                owner: this
 
       canRestore: () ->
         uploads.removedAsset? if editing && this == blank && uploads.removedAsset?.volume.id == slot.volume.id
