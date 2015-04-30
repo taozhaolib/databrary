@@ -153,7 +153,7 @@ app.controller('volume/slot', [
         if l < 0
           style.left = '0px'
           style['border-top-left-radius'] = '0px'
-          style['border-bottom-left-radius'] = '0px'          
+          style['border-bottom-left-radius'] = '0px'
           if r < 0
             style.border = '#f26363 3px solid'
           else
@@ -164,7 +164,7 @@ app.controller('volume/slot', [
         if r > 1
           style.right = '0px'
           style['border-top-right-radius'] = '0px'
-          style['border-bottom-right-radius'] = '0px'          
+          style['border-bottom-right-radius'] = '0px'
           if l > 1
             style.border = '#f26363 3px solid'
           else
@@ -715,18 +715,24 @@ app.controller('volume/slot', [
         if value == undefined || value == ''
           return
         messages.clear(this)
-        @excerpt.target.setExcerpt(value)
-          .then (excerpt) =>
-              @excerpts.remove(@excerpt.current)
-              if 'excerpt' of excerpt
-                @excerpts.push(new Excerpt(excerpt))
-              @updateExcerpt()
-            , (res) =>
-              messages.addError
-                type: 'red'
-                body: constants.message('asset.update.error', @name)
-                report: res
-                owner: this
+        if !@asset.classification && value > (slot.release || 0)
+          confirmation = confirm(constants.message('release.excerpt.warning'))
+        if confirmation
+          @excerpt.target.setExcerpt(value)
+            .then (excerpt) =>
+                @excerpts.remove(@excerpt.current)
+                if 'excerpt' of excerpt
+                  @excerpts.push(new Excerpt(excerpt))
+                @updateExcerpt()
+              , (res) =>
+                messages.addError
+                  type: 'red'
+                  body: constants.message('asset.update.error', @name)
+                  report: res
+                  owner: this
+        else
+          return
+
 
       canRestore: () ->
         uploads.removedAsset? if editing && this == blank && uploads.removedAsset?.volume.id == slot.volume.id
