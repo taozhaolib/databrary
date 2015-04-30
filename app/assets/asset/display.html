@@ -12,7 +12,7 @@
   </div>
 
   <div ng-switch-when="application">
-    <object ng-if="::asset.format.mimetype == 'application/pdf'" type="application/pdf" ng-attr-data="{{::asset.downloadRoute(true)}}">
+    <object ng-if="::asset.format.mimetype == 'application/pdf'" width="80%" type="application/pdf" ng-attr-data="{{::asset.downloadRoute(true)}}">
       You do not appear to you have a PDF viewer for this browser. Click <a ng-href="{{::asset.downloadRoute(false)}}" target="_self">here</a> to download the file directly
     </object>
     <span ng-if="::asset.format.mimetype != 'application/pdf'" message="asset.display.unavailable">
