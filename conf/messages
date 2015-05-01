@@ -432,12 +432,17 @@ comments.text.help=Comment on the content of this page.
 comments.text.error=Must be at least 3 characters long.
 
 tags.title=Tags
+tags.display.description=Community-generated terms that help users find similar content across volumes
+tags.add.description=Add a tag to label content and help other users find specific types of data
 tags.vote.up=Vote this tag up.
 tags.vote.null=Remove your vote on this tag.
 tags.auto.error=The auto-suggestion list is out-of-order.
 tags.vote.up.success=Tag <strong>{0}</strong> voted up.
 tags.vote.null.success=Tag <strong>{0}</strong> vote canceled.
 tags.vote.error=Error while voting for tag <strong>{0}</strong>.
+
+keywords.display.description=Data-owner generated terms that use a preferred vocabulary to help users find data
+keywords.add.description=Add preferred terms to label your data. For example, you might use the keywords associated with the publication for this dataset if there is one
 
 # Access
 access.global.legend=Share this volume
