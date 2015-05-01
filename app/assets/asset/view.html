@@ -7,6 +7,10 @@
       <span ng-bind="::asset.name"></span>
     </h3>
     <ul>
+      <li>
+        <span>Content from </span>
+        <a ng-href="{{::asset.slotRoute()}}" ng-bind="::asset.container.displayName"></a>
+      </li>
       <li>File format: {{asset.format.extension}}</li>
       <li ng-if="::!asset.segment.full && !asset.segment.empty">
         <span>Duration: </span>
@@ -21,8 +25,8 @@
     <cite-volume></cite-volume>
   </div>
   <div class="popup-classification">
-    <span>This download is </span>
-    <span class="popup-classification-title" ng-bind="::'release.'+page.constants.release[asset.release]+'.title' | message"></span>.<br>
+    <span class="icon release" ng-class="::page.constants.release[asset.release]"></span>
+    <span class="popup-classification-title" ng-bind="::'release.'+page.constants.release[asset.release]+'.title' | message"></span>: 
     <span ng-bind="::'release.'+page.constants.release[asset.release]+'.description' | message"></span>.
   </div>
   <a ng-href="{{::asset.downloadRoute(false)}}" class=" button green" target="_self" tooltip="'excerpts.download' | message">
