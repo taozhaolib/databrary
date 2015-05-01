@@ -320,6 +320,8 @@ app.controller('volume/slot', [
       return
     setPlayerHeight()
 
+    $scope.setPlayerHeight = updatePlayerHeight
+
     $scope.resizePlayer = (down, up) ->
       frame = document.getElementById('slot-player')
       frame.style.overflow = 'visible'

@@ -85,7 +85,7 @@
                 </ng-form>
               </div>
 
-              <div id="player-viewport" class="player-viewport">
+              <div ng-init="setPlayerHeight()" id="player-viewport" class="player-viewport">
                 <div ng-if="editing && current.type === 'asset' && !current.file && !current.asset" flow-drop flow-btn flow-drag-enter="dropClasses['over-zone'] = true" flow-drag-leave="dropClasses['over-zone'] = false" ng-class="dropClasses" class="player-drop">
                   <span class="icon line add"></span>
                   <span class="dropzone-message" message="asset.add-drop{{current.asset ? '.replace' : ''}}"></span>
