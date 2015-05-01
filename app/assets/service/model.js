@@ -937,7 +937,8 @@ app.factory('modelService', [
       return router.slotAsset([this.volume.id, this.container.id, this.segment.format(), this.id]);
     };
 
-    AssetSlot.prototype.slotRoute = function (params) {
+    AssetSlot.prototype.slotRoute = function () {
+      var params = {};
       params.asset = this.id;
       return Slot.prototype.route.call(this, params);
     };
