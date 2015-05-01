@@ -25,11 +25,9 @@ module Databrary.Action
   , maybeAction
 
   , StdMethod(GET, POST)
-  , RouteAction(..)
   , API(..)
   , actionURL
-  , AppRAction
-  , AuthRAction
+  , AppRoute
   , action
   , withAuth
 
@@ -43,7 +41,7 @@ import Data.Monoid (mempty)
 import Network.HTTP.Types (Status, ok200, seeOther303, forbidden403, notFound404, ResponseHeaders, hLocation)
 import qualified Network.Wai as Wai
 
-import Databrary.Has (peek, peeks)
+import Databrary.Has (peeks)
 import Databrary.HTTP.Request
 import Databrary.Action.Types
 import Databrary.Action.Response
@@ -51,14 +49,14 @@ import Databrary.Action.App
 import Databrary.Action.Auth
 import Databrary.Action.Route
 import Databrary.Service.Types
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route
 
 emptyResponse :: MonadAction q m => Status -> ResponseHeaders -> m Response
 emptyResponse s h = returnResponse s h (mempty :: BSB.Builder)
 
-redirectRouteResponse :: MonadAction q m => ResponseHeaders -> RouteAction qa -> m Response
-redirectRouteResponse h a = do
-  url <- peeks $ actionURL a . Just
+redirectRouteResponse :: MonadAction c m => ResponseHeaders -> Route a r -> a -> m Response
+redirectRouteResponse h r a = do
+  url <- peeks $ actionURL r a . Just
   emptyResponse seeOther303 ((hLocation, url) : h)
 
 forbiddenResponse :: MonadAction q m => m Response
@@ -78,9 +76,9 @@ maybeAction :: (MonadAction q m, MonadIO m) => Maybe a -> m a
 maybeAction (Just a) = return a
 maybeAction Nothing = result =<< notFoundResponse
 
-type AppRAction = RouteAction AppRequest
-type AuthRAction = RouteAction AuthRequest
+type AppRoute a = Route a (Action AppRequest)
 
-runAppRoute :: R.RouteM AppAction -> Service -> Wai.Application
-runAppRoute route rc = runApp rc $
-  fromMaybe notFoundResponse . R.routeRequest route =<< peek
+runAppRoute :: RouteMap (Action AppRequest) -> Service -> Wai.Application
+runAppRoute rm rc req = runApp rc
+  (fromMaybe notFoundResponse (lookupRoute req rm))
+  req

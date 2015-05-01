@@ -4,10 +4,10 @@ import Databrary.Model.Id.Types
 import Databrary.Model.Volume.Types
 import Databrary.Action
 
-viewVolume :: API -> Id Volume -> AppRAction
-viewVolumeForm :: Id Volume -> AppRAction
-postVolume :: API -> Id Volume -> AppRAction
-createVolume :: API -> AppRAction
-viewVolumeLinks :: Id Volume -> AppRAction
-postVolumeLinks :: API -> Id Volume -> AppRAction
-queryVolumes :: API -> AppRAction
+viewVolume :: AppRoute (API, Id Volume)
+viewVolumeForm :: AppRoute (Id Volume)
+postVolume :: AppRoute (API, Id Volume)
+createVolume :: AppRoute API
+viewVolumeLinks :: AppRoute (Id Volume)
+postVolumeLinks :: AppRoute (API, Id Volume)
+queryVolumes :: AppRoute API

@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies, DataKinds, GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE OverloadedStrings, TemplateHaskell, TypeFamilies, DataKinds, GeneralizedNewtypeDeriving, DeriveDataTypeable #-}
 module Databrary.Model.Tag.Types
   ( TagName(..)
   , validateTag
@@ -10,15 +10,17 @@ module Databrary.Model.Tag.Types
   , MonadHasTagCoverage
   ) where
 
+import Control.Monad ((<=<))
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BSC
+import Data.Typeable (Typeable)
 import Database.PostgreSQL.Typed.Types (PGParameter(..), PGColumn(..))
 import qualified Text.Regex.Posix as Regex
 
 import Databrary.Ops
 import Databrary.Has (makeHasRec)
 import qualified Databrary.JSON as JSON
-import qualified Databrary.HTTP.Route as R
+import Databrary.HTTP.Route.Path
 import Databrary.Model.Kind
 import Databrary.Model.Id.Types
 import Databrary.Model.Party.Types
@@ -26,7 +28,7 @@ import Databrary.Model.Container.Types
 import Databrary.Model.Segment
 import Databrary.Model.Slot.Types
 
-newtype TagName = TagName BS.ByteString deriving (JSON.ToJSON)
+newtype TagName = TagName BS.ByteString deriving (JSON.ToJSON, Typeable)
 
 validTag :: Regex.Regex
 validTag = Regex.makeRegex
@@ -37,7 +39,7 @@ validateTag t = Regex.matchTest validTag tt ?> TagName tt where
   tt = BSC.unwords $ BSC.words t
 
 instance PathDynamic TagName where
-  pathDynamic = validateTag =<< pathDynamic
+  pathDynamic = validateTag <=< pathDynamic
   dynamicPath (TagName n) = dynamicPath n
 
 instance PGParameter "character varying" TagName where

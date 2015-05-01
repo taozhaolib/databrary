@@ -11,6 +11,7 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Token
 
 htmlPasswordToken :: Id LoginToken -> AuthRequest -> FormHtml
-htmlPasswordToken tok req = htmlForm "Reset Password" (postPasswordToken HTML tok) req $ do
+htmlPasswordToken tok req = htmlForm "Reset Password"
+  postPasswordToken (HTML, tok) req $ do
   field "once" inputPassword
   field "again" inputPassword

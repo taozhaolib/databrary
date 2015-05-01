@@ -2,7 +2,7 @@ module Databrary.Controller.Register where
 
 import Databrary.Action
 
-viewRegister :: AppRAction
-postRegister :: API -> AppRAction
-viewPasswordReset :: AppRAction
-postPasswordReset :: API -> AppRAction
+viewRegister :: AppRoute ()
+postRegister :: AppRoute API
+viewPasswordReset :: AppRoute ()
+postPasswordReset :: AppRoute API

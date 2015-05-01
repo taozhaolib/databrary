@@ -5,7 +5,7 @@ module Databrary.View.Volume
   , htmlVolumeSearchForm
   ) where
 
-import qualified Data.Text as T
+import Data.Monoid ((<>))
 
 import Databrary.Ops
 import Databrary.Action.Auth
@@ -18,7 +18,7 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Volume
 
 htmlVolumeForm :: Maybe Volume -> Maybe Citation -> AuthRequest -> FormHtml
-htmlVolumeForm vol cite req = htmlForm (maybe "Create volume" ((T.append "Edit ") . volumeName) vol) (maybe (createVolume HTML) (postVolume HTML . volumeId) vol) req $ do
+htmlVolumeForm vol cite req = f req $ do
   field "name" $ inputText $ volumeName <$> vol
   field "alias" $ inputText $ volumeAlias =<< vol
   field "body" $ inputTextarea $ volumeBody =<< vol
@@ -26,13 +26,20 @@ htmlVolumeForm vol cite req = htmlForm (maybe "Create volume" ((T.append "Edit "
     field "head" $ inputText $ citationHead <$> cite
     field "url" $ inputText $ fmap show $ citationURL =<< cite
     field "year" $ inputText $ fmap show $ citationYear =<< cite
+  where
+  f = maybe
+    (htmlForm "Create volume" createVolume HTML)
+    (\v -> htmlForm
+      ("Edit " <> volumeName v)
+      postVolume (HTML, volumeId v))
+    vol
 
 htmlVolumeLinksForm :: Volume -> [Citation] -> AuthRequest -> FormHtml
-htmlVolumeLinksForm vol links req = htmlForm "Edit volume links" (postVolumeLinks HTML (volumeId vol)) req $
+htmlVolumeLinksForm vol links req = htmlForm "Edit volume links" postVolumeLinks (HTML, volumeId vol) req $
   withSubFormsViews links $ \link -> do
     field "head" $ inputText $ citationHead <$> link
     field "url" $ inputText $ fmap show $ citationURL =<< link
 
 htmlVolumeSearchForm :: VolumeFilter -> AuthRequest -> FormHtml
-htmlVolumeSearchForm vf req = htmlForm "Search volumes" (queryVolumes HTML) req $ do
+htmlVolumeSearchForm vf req = htmlForm "Search volumes" queryVolumes HTML req $ do
   field "query" $ inputText $ volumeFilterQuery vf

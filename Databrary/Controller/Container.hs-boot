@@ -5,5 +5,5 @@ import Databrary.Model.Volume.Types
 import Databrary.Model.Slot.Types
 import Databrary.Action
 
-postContainer :: API -> Id Slot -> AppRAction
-createContainer :: API -> Id Volume -> AppRAction
+postContainer :: AppRoute (API, Id Slot)
+createContainer :: AppRoute (API, Id Volume)

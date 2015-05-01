@@ -147,10 +147,10 @@ inputHidden val ref dat = H.input
   H.! HA.name  ref
   H.! HA.value (maybe (H.toValue val) byteStringValue dat)
 
-htmlForm :: T.Text -> RouteAction q -> AuthRequest -> FormHtml -> FormHtml
-htmlForm title act req = liftFormHtml $ \form ->
+htmlForm :: T.Text -> AppRoute a -> a -> AuthRequest -> FormHtml -> FormHtml
+htmlForm title act arg req = liftFormHtml $ \form ->
   htmlTemplate req (Just title) $
-    actionForm act $ do
+    actionForm act arg $ do
       err <- form
       errorLists $ allFormErrors err
       H.input

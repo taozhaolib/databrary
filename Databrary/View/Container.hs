@@ -16,12 +16,13 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Container
 
 htmlContainerForm :: Either Volume Container -> AuthRequest -> FormHtml
-htmlContainerForm targ req = htmlForm
-  (either (const "Create container") (("Edit container " <>) . fromMaybe "" . containerName) targ)
-  (either (createContainer HTML . volumeId) (postContainer HTML . containerSlotId . containerId) targ) req
-  $ do
+htmlContainerForm targ req = f req $ do
   field "name" $ inputText (containerName =<< cont)
   field "date" $ inputDate (containerDate =<< cont)
   field "release" $ inputEnum (containerRelease =<< cont)
   where
   cont = either (const Nothing) Just targ
+  f = either
+    (\v -> htmlForm "Create container" createContainer (HTML, volumeId v))
+    (\c -> htmlForm ("Edit container " <> fromMaybe "" (containerName c)) postContainer (HTML, containerSlotId $ containerId c))
+    targ

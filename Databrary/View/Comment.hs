@@ -13,5 +13,5 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Comment
 
 htmlCommentForm :: Slot -> AuthRequest -> FormHtml
-htmlCommentForm slot req = htmlForm "Comment" (postComment HTML $ slotId slot) req $ do
+htmlCommentForm slot req = htmlForm "Comment" postComment (HTML, slotId slot) req $ do
   field "text" $ inputText (Nothing :: Maybe T.Text)

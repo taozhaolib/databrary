@@ -14,13 +14,13 @@ import Databrary.Controller.Angular
 import Databrary.View.Root
 import Databrary.Web.Constants
 
-viewRoot :: API -> AppRAction
-viewRoot api = action GET api $ withAuth $ do
+viewRoot :: AppRoute API
+viewRoot = action GET pathAPI $ \api -> withAuth $ do
   when (api == HTML) angular
   case api of
     JSON -> okResponse [] JSON.emptyObject
     HTML -> okResponse [] . htmlRoot =<< peek
 
-viewConstants :: AppRAction
-viewConstants = action GET (JSON, "constants" :: T.Text) $
+viewConstants :: AppRoute ()
+viewConstants = action GET (pathJSON </> "constants") $ \() ->
   okResponse [] constantsJSON

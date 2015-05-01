@@ -2,7 +2,7 @@ module Databrary.Controller.Login where
 
 import Databrary.Action
 
-viewLogin :: AppRAction
-postLogin :: API -> AppRAction
-postLogout :: API -> AppRAction
-postUser :: API -> AppRAction
+viewLogin :: AppRoute ()
+postLogin :: AppRoute API
+postLogout :: AppRoute API
+postUser :: AppRoute API

@@ -8,7 +8,7 @@ data PartyTarget
   = TargetProfile
   | TargetParty (Id Party)
 
-viewParty :: API -> PartyTarget -> AppRAction
-postParty :: API -> PartyTarget -> AppRAction
-createParty :: API -> AppRAction
-queryParties :: API -> AppRAction
+viewParty :: AppRoute (API, PartyTarget)
+postParty :: AppRoute (API, PartyTarget)
+createParty :: AppRoute API
+queryParties :: AppRoute API

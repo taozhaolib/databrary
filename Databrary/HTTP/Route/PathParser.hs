@@ -75,7 +75,7 @@ pathGenerate (PathTuple p q) (a, b) = pathGenerate p a ++ pathGenerate q b
 pathGenerate (PathEither p _) (Left a) = pathGenerate p a
 pathGenerate (PathEither _ q) (Right b) = pathGenerate q b
 
-infixl 2 </>, >/>, </<
+infixr 2 </>, >/>, </<
 (</>) :: PathParser a -> PathParser b -> PathParser (a, b)
 (</>) = PathTuple
 

@@ -9,5 +9,5 @@ newtype VolumeAccessTarget = VolumeAccessTarget
   { volumeAccessTarget :: Id Party
   }
 
-viewVolumeAccess :: Id Volume -> VolumeAccessTarget -> AppRAction
-postVolumeAccess :: API -> Id Volume -> VolumeAccessTarget -> AppRAction
+viewVolumeAccess :: AppRoute (Id Volume, VolumeAccessTarget)
+postVolumeAccess :: AppRoute (API, Id Volume, VolumeAccessTarget)

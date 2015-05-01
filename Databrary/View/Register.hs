@@ -10,7 +10,7 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Register
 
 htmlRegister :: AuthRequest -> FormHtml
-htmlRegister req = htmlForm "Register" (postRegister HTML) req $ do
+htmlRegister req = htmlForm "Register" postRegister HTML req $ do
   field "prename" $ inputText (Nothing :: Maybe String)
   field "name" $ inputText (Nothing :: Maybe String)
   field "email" $ inputText (Nothing :: Maybe String)
@@ -18,5 +18,5 @@ htmlRegister req = htmlForm "Register" (postRegister HTML) req $ do
   field "agreement" $ inputCheckbox False
 
 htmlPasswordReset :: AuthRequest -> FormHtml
-htmlPasswordReset req = htmlForm "Password Reset" (postPasswordReset HTML) req $ do
+htmlPasswordReset req = htmlForm "Password Reset" postPasswordReset HTML req $ do
   field "email" $ inputText (Nothing :: Maybe String)

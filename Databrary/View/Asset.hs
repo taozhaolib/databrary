@@ -18,14 +18,7 @@ import Databrary.View.Form
 import {-# SOURCE #-} Databrary.Controller.Asset
 
 htmlAssetForm :: AssetTarget -> AuthRequest -> FormHtml
-htmlAssetForm targ req = htmlForm
-  (maybe "Create asset" (("Edit asset " <>) . fromMaybe "" . assetName) asset)
-  (case targ of
-    AssetTargetVolume v -> createAsset HTML $ volumeId v
-    AssetTargetSlot s -> createSlotAsset HTML $ slotId s
-    AssetTargetAsset a -> postAsset HTML $ assetId $ slotAsset a)
-  req
-  $ do
+htmlAssetForm targ req = f req $ do
   field "name" $ inputText (assetName =<< asset)
   field "classification" $ inputEnum (assetRelease =<< asset)
   field "file" inputFile
@@ -37,3 +30,7 @@ htmlAssetForm targ req = htmlForm
   asset = case targ of
     AssetTargetAsset a -> Just $ slotAsset a
     _ -> Nothing
+  f = case targ of
+    AssetTargetVolume v -> htmlForm "Create asset" createAsset (HTML, volumeId v)
+    AssetTargetSlot s -> htmlForm "Create asset" createSlotAsset (HTML, slotId s)
+    AssetTargetAsset a -> htmlForm ("Edit asset " <> fromMaybe "" (assetName (slotAsset a))) postAsset (HTML, assetId (slotAsset a))
