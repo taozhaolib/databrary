@@ -180,8 +180,8 @@
               </div>
               
               <div class="slot-timeline-ruler" ng-click="click($event)" mouse-drag="dragSelection($down, $up)">
-                <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode"></div>
-                <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode"></div>
+                <div class="slot-timeline-ruler-time left" ng-bind="ruler.range.l | timecode:true"></div>
+                <div class="slot-timeline-ruler-time right" ng-bind="ruler.range.u | timecode:true"></div>
               </div>
             </div>
 
