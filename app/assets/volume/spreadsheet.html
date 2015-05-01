@@ -41,7 +41,7 @@
     </colgroup>
     <thead>
       <tr class="spreadsheet-head-groups">
-        <th colspan="{{::2+!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
+        <th colspan="{{::1+2*!top}}" id="{{::id}}-head" ng-class="::top ? 'col-materials' : 'col-sessions'" ng-click="clickSlot($event)" message="{{::top ? 'materials' : 'session'}}"></th>
         <th class="metric-col" ng-repeat="col in recordCols track by col.category.id" id="{{::id}}-category_{{::col.category.id}}" colspan="{{col.metrics.length}}" ng-class="::'col'+col.category.id">
           <span ng-bind="col.category.name"></span>
           <span ng-if="::editing" ng-click="clickCategoryAdd($event, col)" class="icon add addSessionInfo" tooltip="'spreadsheet.add.metric' | message:col.category.name"></span>

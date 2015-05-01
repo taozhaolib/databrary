@@ -18,6 +18,17 @@
     </video>
   </div>
 
+  <div ng-switch-when="application">
+    <object ng-if="::asset.format.mimetype === 'application/pdf'" width="100%" type="application/pdf" ng-attr-data="{{::asset.downloadRoute(true)}}">
+      <div class="no-preview">
+        <span message="asset.display.unavailable"></span>
+      </div>
+    </object>
+    <div ng-if="::asset.format.mimetype !== 'application/pdf'" class="no-preview">
+      <span message="asset.display.unavailable"></span>
+    </div>
+  </div>
+
   <div class="no-preview" ng-switch-default>
     <span message="asset.display.unavailable"></span>
   </div>

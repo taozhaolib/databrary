@@ -226,7 +226,7 @@ app.directive 'spreadsheet', [
               start: si
             }
           $scope.metricCols = metricCols
-          $scope.totalCols = 2 + !top + metricCols.length + 3*!!assets
+          $scope.totalCols = 1 + 2*!top + metricCols.length + 3*!!assets
           if editing
             ### jshint ignore:start #### fixed in jshint 2.5.7
             $scope.categories = (c for ci, c of constants.category when ci not of records)
