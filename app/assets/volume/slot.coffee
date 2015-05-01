@@ -320,7 +320,7 @@ app.controller('volume/slot', [
       return
     setPlayerHeight()
 
-    $scope.setPlayerHeight = updatePlayerHeight
+    $scope.updatePlayerHeight = updatePlayerHeight
 
     $scope.resizePlayer = (down, up) ->
       frame = document.getElementById('slot-player')
