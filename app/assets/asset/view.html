@@ -9,7 +9,10 @@
     <ul>
       <li>
         <span>Content from </span>
-        <a ng-href="{{::asset.slotRoute()}}" ng-bind="::asset.container.displayName"></a>
+        <a ng-href="{{::asset.slotRoute()}}">
+          <span ng-bind="::asset.container.displayName"></span>
+          <span ng-if="::asset.container.date" ng-bind="::' (' + asset.container.date + ')'"></span>
+        </a>
       </li>
       <li>File format: {{asset.format.extension}}</li>
       <li ng-if="::!asset.segment.full && !asset.segment.empty">
